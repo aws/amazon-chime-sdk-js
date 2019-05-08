@@ -1,0 +1,868 @@
+// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import * as chai from 'chai';
+
+import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
+import RealtimeController from '../../src/realtimecontroller/RealtimeController';
+
+// @ts-ignore
+class PseudoMediaStreamTrack implements MediaStreamTrack {
+  enabled: boolean = true;
+}
+
+// @ts-ignore
+class PseudoMediaStream implements MediaStream {
+  // @ts-ignore
+  track: MediaStreamTrack = new PseudoMediaStreamTrack();
+  getTracks(): MediaStreamTrack[] {
+    // @ts-ignore
+    return [this.track];
+  }
+}
+
+function getPseudoMediaStream(): MediaStream {
+  // @ts-ignore
+  return new PseudoMediaStream();
+}
+
+describe('DefaultRealtimeController', () => {
+  let expect: Chai.ExpectStatic;
+
+  before(() => {
+    expect = chai.expect;
+  });
+
+  describe('construction', () => {
+    it('can be constructed', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      expect(rt).to.not.equal(null);
+    });
+  });
+
+  describe('error handling', () => {
+    it('does not call an event if one is not assigned', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeMuteLocalAudio();
+    });
+
+    it('calls the event function', () => {
+      let eventFired = false;
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
+        eventFired = true;
+        expect(muted).to.equal(true);
+      });
+      rt.realtimeMuteLocalAudio();
+      expect(eventFired).to.be.true;
+    });
+
+    it('calls fatal error callback if there is an error', () => {
+      let fatalErrorOccurred = false;
+      let errMsg = 'this is a test';
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
+        expect(muted).to.equal(true);
+        throw new Error(errMsg);
+      });
+      rt.realtimeSubscribeToFatalError((error: Error) => {
+        fatalErrorOccurred = true;
+        expect(error.message).to.equal(errMsg);
+      });
+      rt.realtimeMuteLocalAudio();
+      expect(fatalErrorOccurred).to.be.true;
+    });
+
+    it('recovers if fatal error callback also throws an error', () => {
+      let fatalErrorOccurred = false;
+      let fatalErrorObject = null;
+      let errMsg = 'this is a test';
+      const oldConsoleError = console.error;
+      console.error = (object: Error) => {
+        fatalErrorObject = object;
+      };
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
+        expect(muted).to.equal(true);
+        throw new Error(errMsg);
+      });
+      rt.realtimeSubscribeToFatalError((error: Error) => {
+        fatalErrorOccurred = true;
+        expect(error.message).to.equal(errMsg);
+        throw error;
+      });
+      rt.realtimeMuteLocalAudio();
+      console.error = oldConsoleError;
+      expect(fatalErrorOccurred).to.be.true;
+      expect(fatalErrorObject).to.not.be.null;
+    });
+
+    it('recovers if console.error also throws an error', () => {
+      let fatalErrorOccurred = false;
+      let errMsg = 'this is a test';
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
+        expect(muted).to.equal(true);
+        throw new Error(errMsg);
+      });
+      rt.realtimeSubscribeToFatalError((error: Error) => {
+        fatalErrorOccurred = true;
+        expect(error.message).to.equal(errMsg);
+        throw error;
+      });
+      const oldConsoleError = console.error;
+      console.error = null;
+      rt.realtimeMuteLocalAudio();
+      console.error = oldConsoleError;
+      expect(fatalErrorOccurred).to.be.true;
+    });
+
+    it('has the correct this object for events', () => {
+      let errMsg = 'this is a test';
+      let muteFired = false;
+      let unmuteFired = false;
+      let setCanUnmuteFired = false;
+      let fatalErrorFired = false;
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
+        if (muted) {
+          muteFired = true;
+        } else {
+          unmuteFired = true;
+        }
+      });
+      rt.realtimeSubscribeToSetCanUnmuteLocalAudio((canUnmute: boolean) => {
+        setCanUnmuteFired = true;
+        expect(canUnmute).to.equal(false);
+        throw new Error(errMsg);
+      });
+      rt.realtimeSubscribeToFatalError((error: Error) => {
+        expect(error.message).to.equal(errMsg);
+        fatalErrorFired = true;
+      });
+      rt.realtimeMuteLocalAudio();
+      rt.realtimeUnmuteLocalAudio();
+      rt.realtimeSetCanUnmuteLocalAudio(false);
+      expect(muteFired).to.be.true;
+      expect(unmuteFired).to.be.true;
+      expect(setCanUnmuteFired).to.be.true;
+      expect(fatalErrorFired).to.be.true;
+    });
+  });
+
+  describe('muting', () => {
+    it('can toggle can-unmute on and off', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
+      rt.realtimeSetCanUnmuteLocalAudio(false);
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.false;
+      rt.realtimeSetCanUnmuteLocalAudio(false);
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.false;
+      rt.realtimeSetCanUnmuteLocalAudio(true);
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
+      rt.realtimeSetCanUnmuteLocalAudio(true);
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
+    });
+
+    it('only triggers the event if can-unmute changes', () => {
+      let changedToCanUnmute = false;
+      let changedToCannotUnmute = false;
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToSetCanUnmuteLocalAudio((canUnmute: boolean) => {
+        if (canUnmute) {
+          changedToCanUnmute = true;
+        } else {
+          changedToCannotUnmute = true;
+        }
+      });
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
+      rt.realtimeSetCanUnmuteLocalAudio(true);
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
+      expect(changedToCanUnmute).to.be.false;
+      expect(changedToCannotUnmute).to.be.false;
+      rt.realtimeSetCanUnmuteLocalAudio(false);
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.false;
+      expect(changedToCanUnmute).to.be.false;
+      expect(changedToCannotUnmute).to.be.true;
+      changedToCannotUnmute = false;
+      changedToCanUnmute = false;
+      rt.realtimeSetCanUnmuteLocalAudio(false);
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.false;
+      expect(changedToCanUnmute).to.be.false;
+      expect(changedToCannotUnmute).to.be.false;
+      rt.realtimeSetCanUnmuteLocalAudio(true);
+      expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
+      expect(changedToCanUnmute).to.be.true;
+      expect(changedToCannotUnmute).to.be.false;
+    });
+
+    it('disables the media stream if mute is called', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const ms: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(ms);
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.false;
+      expect(ms.getTracks()[0].enabled).to.be.true;
+      rt.realtimeMuteLocalAudio();
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+    });
+
+    it('enables the media stream if unmute is called', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const ms: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(ms);
+      rt.realtimeMuteLocalAudio();
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+      expect(rt.realtimeUnmuteLocalAudio()).to.be.true;
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.false;
+      expect(ms.getTracks()[0].enabled).to.be.true;
+    });
+
+    it('does nothing if mute is called when already muted', () => {
+      let eventFired = false;
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
+        expect(muted).to.equal(true);
+        eventFired = true;
+      });
+      const ms: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(ms);
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.false;
+      expect(ms.getTracks()[0].enabled).to.be.true;
+      rt.realtimeMuteLocalAudio();
+      expect(eventFired).to.be.true;
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+      eventFired = false;
+      rt.realtimeMuteLocalAudio();
+      expect(eventFired).to.be.false;
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+    });
+
+    it('does nothing if unmute is called when already unmuted', () => {
+      let muteFired = false;
+      let unmuteFired = false;
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
+        if (muted) {
+          muteFired = true;
+        } else {
+          unmuteFired = true;
+        }
+      });
+      const ms: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(ms);
+      rt.realtimeMuteLocalAudio();
+      expect(muteFired).to.equal(true);
+      expect(unmuteFired).to.equal(false);
+      muteFired = false;
+      unmuteFired = false;
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+      expect(rt.realtimeUnmuteLocalAudio()).to.be.true;
+      expect(muteFired).to.equal(false);
+      expect(unmuteFired).to.equal(true);
+      muteFired = false;
+      unmuteFired = false;
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.false;
+      expect(ms.getTracks()[0].enabled).to.be.true;
+      expect(rt.realtimeUnmuteLocalAudio()).to.be.true;
+      expect(muteFired).to.equal(false);
+      expect(unmuteFired).to.equal(false);
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.false;
+      expect(ms.getTracks()[0].enabled).to.be.true;
+    });
+
+    it('does not unmute if can-unmute is disabled', () => {
+      let muteFired = false;
+      let unmuteFired = false;
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
+        if (muted) {
+          muteFired = true;
+        } else {
+          unmuteFired = true;
+        }
+      });
+      const ms: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(ms);
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.false;
+      expect(ms.getTracks()[0].enabled).to.be.true;
+      rt.realtimeMuteLocalAudio();
+      expect(muteFired).to.equal(true);
+      expect(unmuteFired).to.equal(false);
+      muteFired = false;
+      unmuteFired = false;
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+      rt.realtimeSetCanUnmuteLocalAudio(true);
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+      expect(rt.realtimeUnmuteLocalAudio()).to.be.true;
+      expect(muteFired).to.equal(false);
+      expect(unmuteFired).to.equal(true);
+      muteFired = false;
+      unmuteFired = false;
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.false;
+      expect(ms.getTracks()[0].enabled).to.be.true;
+      rt.realtimeSetCanUnmuteLocalAudio(false);
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.false;
+      expect(ms.getTracks()[0].enabled).to.be.true;
+      rt.realtimeMuteLocalAudio();
+      expect(muteFired).to.equal(true);
+      expect(unmuteFired).to.equal(false);
+      muteFired = false;
+      unmuteFired = false;
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+      expect(rt.realtimeUnmuteLocalAudio()).to.be.false;
+      expect(muteFired).to.equal(false);
+      expect(unmuteFired).to.equal(false);
+      expect(rt.realtimeIsLocalAudioMuted()).to.be.true;
+      expect(ms.getTracks()[0].enabled).to.be.false;
+    });
+
+    it('disables the old audio input when setting a new one', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const oldAudioInput: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(oldAudioInput);
+      expect(oldAudioInput.getTracks()[0].enabled).to.be.true;
+      const newAudioInput: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(newAudioInput);
+      expect(oldAudioInput.getTracks()[0].enabled).to.be.false;
+      expect(newAudioInput.getTracks()[0].enabled).to.be.true;
+    });
+
+    it('does not disable the old audio input if new one is the same', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const audioInput: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(audioInput);
+      expect(audioInput.getTracks()[0].enabled).to.be.true;
+      rt.realtimeSetLocalAudioInput(audioInput);
+      expect(audioInput.getTracks()[0].enabled).to.be.true;
+    });
+
+    it('re-enables the first audio input when set after the second one', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const oldAudioInput: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(oldAudioInput);
+      expect(oldAudioInput.getTracks()[0].enabled).to.be.true;
+      const newAudioInput: MediaStream = getPseudoMediaStream();
+      rt.realtimeSetLocalAudioInput(newAudioInput);
+      expect(oldAudioInput.getTracks()[0].enabled).to.be.false;
+      expect(newAudioInput.getTracks()[0].enabled).to.be.true;
+      rt.realtimeSetLocalAudioInput(oldAudioInput);
+      expect(oldAudioInput.getTracks()[0].enabled).to.be.true;
+      expect(newAudioInput.getTracks()[0].enabled).to.be.false;
+    });
+  });
+
+  describe('volume indicators', () => {
+    it('will send volume indicator callbacks to subscribers', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      const sentVolume = 0.5;
+      const sentMuted = false;
+      const sentSignalStrength = 1;
+      let callbackFired = false;
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(sentVolume);
+          expect(muted).to.equal(sentMuted);
+          expect(signalStrength).to.equal(sentSignalStrength);
+        }
+      );
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      expect(callbackFired).to.be.true;
+    });
+
+    it('will send all volume indicator callbacks to subscribers', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      const sentVolume = 0.5;
+      const sentMuted = false;
+      const sentSignalStrength = 1;
+      let callbackFired = false;
+      let callbackFired2 = false;
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(sentVolume);
+          expect(muted).to.equal(sentMuted);
+          expect(signalStrength).to.equal(sentSignalStrength);
+        }
+      );
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired2 = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(sentVolume);
+          expect(muted).to.equal(sentMuted);
+          expect(signalStrength).to.equal(sentSignalStrength);
+        }
+      );
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      expect(callbackFired).to.be.true;
+      expect(callbackFired2).to.be.true;
+    });
+
+    it('will not send volume callbacks to unsubscribed attendees', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      const sentVolume = 0.5;
+      const sentMuted = false;
+      const sentSignalStrength = 1;
+      let callbackFired = false;
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(sentVolume);
+          expect(muted).to.equal(sentMuted);
+          expect(signalStrength).to.equal(sentSignalStrength);
+        }
+      );
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      expect(callbackFired).to.be.true;
+      callbackFired = false;
+      rt.realtimeUpdateVolumeIndicator(
+        'an-unsubscribed-attendee',
+        sentVolume,
+        sentMuted,
+        sentSignalStrength
+      );
+      expect(callbackFired).to.be.false;
+      callbackFired = false;
+      rt.realtimeUnsubscribeFromVolumeIndicator(sentAttendeeId);
+      expect(callbackFired).to.be.false;
+    });
+
+    it('will send the current volume indicator state when subscribing', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      const sentVolume = 0.5;
+      const sentMuted = false;
+      const sentSignalStrength = 1;
+      let callbackFired = false;
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(sentVolume);
+          expect(muted).to.equal(sentMuted);
+          expect(signalStrength).to.equal(sentSignalStrength);
+        }
+      );
+      expect(callbackFired).to.be.true;
+    });
+
+    it('will tolerate an exception thrown in a volume indicator callback', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      const sentVolume = 0.5;
+      const sentMuted = false;
+      const sentSignalStrength = 1;
+      let callbackFired = false;
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(sentVolume);
+          expect(muted).to.equal(sentMuted);
+          expect(signalStrength).to.equal(sentSignalStrength);
+          throw new Error('this is a test');
+        }
+      );
+      expect(callbackFired).to.be.true;
+    });
+
+    it('will not send a volume update if no data has changed', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      const sentVolume = 0.5;
+      const sentMuted = false;
+      const sentSignalStrength = 1;
+      let callbackFired = false;
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(sentVolume);
+          expect(muted).to.equal(sentMuted);
+          expect(signalStrength).to.equal(sentSignalStrength);
+        }
+      );
+      expect(callbackFired).to.be.true;
+      callbackFired = false;
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      expect(callbackFired).to.be.false;
+    });
+
+    it('will set volume to zero if muted even if volume was non-zero', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      const sentVolume = 0.5;
+      const sentMuted = true;
+      const sentSignalStrength = 1;
+      let callbackFired = false;
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(0.0);
+          expect(muted).to.equal(sentMuted);
+          expect(signalStrength).to.equal(sentSignalStrength);
+        }
+      );
+      expect(callbackFired).to.be.false;
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      expect(callbackFired).to.be.true;
+    });
+
+    it('will send volume update when unmuted only if volume changed', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      let callbackIndex = 0;
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          if (callbackIndex === 0) {
+            expect(attendeeId).to.equal(sentAttendeeId);
+            expect(volume).to.equal(0.0);
+            expect(muted).to.equal(true);
+            expect(signalStrength).to.equal(null);
+          } else if (callbackIndex === 1) {
+            expect(attendeeId).to.equal(sentAttendeeId);
+            expect(volume).to.equal(1.0);
+            expect(muted).to.equal(false);
+            expect(signalStrength).to.equal(null);
+          }
+          if (callbackIndex === 2) {
+            expect(attendeeId).to.equal(sentAttendeeId);
+            expect(volume).to.equal(0.0);
+            expect(muted).to.equal(true);
+            expect(signalStrength).to.equal(null);
+          } else if (callbackIndex === 3) {
+            expect(attendeeId).to.equal(sentAttendeeId);
+            expect(volume).to.equal(null);
+            expect(muted).to.equal(false);
+            expect(signalStrength).to.equal(null);
+          }
+          callbackIndex += 1;
+        }
+      );
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, true, null);
+      expect(callbackIndex).to.equal(1);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, 1.0, false, null);
+      expect(callbackIndex).to.equal(2);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, true, null);
+      expect(callbackIndex).to.equal(3);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, false, null);
+      expect(callbackIndex).to.equal(4);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, null);
+      expect(callbackIndex).to.equal(4);
+    });
+
+    it('will send mute state if no mute state set and a volume is sent', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      let callbackIndex = 0;
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(0.0);
+          expect(muted).to.equal(false);
+          expect(signalStrength).to.equal(null);
+          callbackIndex += 1;
+        }
+      );
+      expect(callbackIndex).to.equal(0);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, 0.0, null, null);
+      expect(callbackIndex).to.equal(1);
+    });
+
+    it('will send a volume update when muted with audio input', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      let callbackFired = false;
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeSetLocalAudioInput(getPseudoMediaStream());
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(0.0);
+          expect(muted).to.equal(true);
+          expect(signalStrength).to.equal(null);
+        }
+      );
+      rt.realtimeMuteLocalAudio();
+      expect(callbackFired).to.equal(true);
+    });
+
+    it('will send a volume update when unmuted with audio input', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      let callbackFired = false;
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeSetLocalAudioInput(getPseudoMediaStream());
+      rt.realtimeMuteLocalAudio();
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          attendeeId: string,
+          volume: number | null,
+          muted: boolean | null,
+          signalStrength: number | null
+        ) => {
+          callbackFired = true;
+          expect(attendeeId).to.equal(sentAttendeeId);
+          expect(volume).to.equal(0.0);
+          expect(muted).to.equal(false);
+          expect(signalStrength).to.equal(null);
+        }
+      );
+      rt.realtimeUnmuteLocalAudio();
+      expect(callbackFired).to.equal(true);
+    });
+
+    it('will not send a volume update when muted without audio input', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      let callbackFired = false;
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          _attendeeId: string,
+          _volume: number | null,
+          _muted: boolean | null,
+          _signalStrength: number | null
+        ) => {
+          callbackFired = true;
+        }
+      );
+      rt.realtimeMuteLocalAudio();
+      expect(callbackFired).to.equal(false);
+    });
+
+    it('will not send a volume update when unmuted without audio input', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      let callbackFired = false;
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeMuteLocalAudio();
+      rt.realtimeSubscribeToVolumeIndicator(
+        sentAttendeeId,
+        (
+          _attendeeId: string,
+          _volume: number | null,
+          _muted: boolean | null,
+          _signalStrength: number | null
+        ) => {
+          callbackFired = true;
+        }
+      );
+      rt.realtimeUnmuteLocalAudio();
+      expect(callbackFired).to.equal(false);
+    });
+
+    it('will send a signal strength change when it changes', () => {
+      let callbackIndex = 0;
+      const rt: RealtimeController = new DefaultRealtimeController();
+      rt.realtimeSubscribeToLocalSignalStrengthChange((signalStrength: number) => {
+        if (callbackIndex === 0) {
+          expect(signalStrength).to.equal(0);
+        } else if (callbackIndex === 1) {
+          expect(signalStrength).to.equal(0.5);
+        } else if (callbackIndex === 2) {
+          expect(signalStrength).to.equal(1);
+        }
+        callbackIndex += 1;
+      });
+      const sentAttendeeId = 'foo-attendee';
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0);
+      expect(callbackIndex).to.equal(1);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0.5);
+      expect(callbackIndex).to.equal(2);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 1);
+      expect(callbackIndex).to.equal(3);
+    });
+
+    it('will send an initial signal strength upon subscribing', () => {
+      let callbackIndex = 0;
+      const rt: RealtimeController = new DefaultRealtimeController();
+      const sentAttendeeId = 'foo-attendee';
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0);
+      expect(callbackIndex).to.equal(0);
+      rt.realtimeSubscribeToLocalSignalStrengthChange((signalStrength: number) => {
+        if (callbackIndex === 0) {
+          expect(signalStrength).to.equal(0);
+        }
+        callbackIndex += 1;
+      });
+      expect(callbackIndex).to.equal(1);
+    });
+  });
+
+  describe('attendee ids', () => {
+    it('will send attendee id change callbacks', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let callbackIndex = 0;
+      const fooAttendee = 'foo-attendee';
+      rt.realtimeSubscribeToAttendeeIdPresence((attendeeId: string, present: boolean) => {
+        if (callbackIndex === 0) {
+          expect(attendeeId).to.equal(fooAttendee);
+          expect(present).to.be.true;
+        } else if (callbackIndex === 1) {
+          expect(attendeeId).to.equal(fooAttendee);
+          expect(present).to.be.false;
+        }
+        callbackIndex += 1;
+      });
+      expect(callbackIndex).to.equal(0);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, true);
+      expect(callbackIndex).to.equal(1);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, false);
+      expect(callbackIndex).to.equal(2);
+    });
+  });
+
+  describe('unsubscribe', () => {
+    it('can unsubscribe from callbacks', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+
+      // subscribe to callbacks
+      let callbacksRemoved = true;
+      let fatalErrorCallbackRemoved = true;
+      let AttendeeIdPresenceCallback = (_attendeeId: string, _present: boolean): void => {
+        callbacksRemoved = false;
+        throw new Error('fake error');
+      };
+      let SetCanUnmuteLocalAudioCallback = (_canUnmute: boolean): void => {
+        callbacksRemoved = false;
+      };
+      let MuteAndUnmuteLocalAudioCallback = (_muted: boolean): void => {
+        callbacksRemoved = false;
+      };
+      let LocalSignalStrengthChangeCallback = (_signalStrength: number): void => {
+        callbacksRemoved = false;
+      };
+      let fatalErrorCallback = (_error: Error): void => {
+        fatalErrorCallbackRemoved = false;
+      };
+      rt.realtimeSubscribeToAttendeeIdPresence(AttendeeIdPresenceCallback);
+      rt.realtimeSubscribeToSetCanUnmuteLocalAudio(SetCanUnmuteLocalAudioCallback);
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio(MuteAndUnmuteLocalAudioCallback);
+      rt.realtimeSubscribeToVolumeIndicator(
+        'fakeAttendeeId',
+        (
+          _attendeeId: string,
+          _volume: number | null,
+          _muted: boolean | null,
+          _signalStrength: number | null
+        ) => {
+          callbacksRemoved = false;
+        }
+      );
+      rt.realtimeSubscribeToLocalSignalStrengthChange(LocalSignalStrengthChangeCallback);
+      rt.realtimeSubscribeToFatalError(fatalErrorCallback);
+
+      // attempt to trigger a fake error after unsubscribing to fatal errors
+      rt.realtimeUnsubscribeToFatalError(fatalErrorCallback);
+      rt.realtimeSetAttendeeIdPresence('unused', true);
+      expect(fatalErrorCallbackRemoved).to.be.true;
+
+      // unsubscribe from other callbacks
+      callbacksRemoved = true;
+      rt.realtimeUnsubscribeToAttendeeIdPresence(AttendeeIdPresenceCallback);
+      rt.realtimeUnsubscribeToSetCanUnmuteLocalAudio(SetCanUnmuteLocalAudioCallback);
+      rt.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(MuteAndUnmuteLocalAudioCallback);
+      rt.realtimeUnsubscribeFromVolumeIndicator('fakeAttendeeId');
+      rt.realtimeUnsubscribeToLocalSignalStrengthChange(LocalSignalStrengthChangeCallback);
+
+      // attempt to trigger callbacks
+      rt.realtimeSetAttendeeIdPresence('unused', true);
+      rt.realtimeSetCanUnmuteLocalAudio(false);
+      rt.realtimeMuteLocalAudio();
+      // also triggers local signal strength callbacks
+      rt.realtimeUpdateVolumeIndicator('fakeAttendeeId', 0.5, null, 1);
+      expect(callbacksRemoved).to.be.true;
+    });
+  });
+});

@@ -1,0 +1,250 @@
+// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto2";
+
+message SdkSignalFrame {
+    enum Type {
+        JOIN = 1;
+        JOIN_ACK = 2;
+        SUBSCRIBE = 3;
+        SUBSCRIBE_ACK = 4;
+        INDEX = 5;
+        PAUSE = 7;
+        RESUME = 8;
+        LEAVE = 9;
+        LEAVE_ACK = 10;
+        AUDIO_CONTROL = 16;
+        AUDIO_METADATA = 17;
+        AUDIO_STREAM_ID_INFO = 18;
+        PING_PONG = 19;
+        AUDIO_STATUS = 20;
+        CLIENT_METRIC = 21;
+    }
+    required uint64 timestamp_ms = 1;
+    required Type type = 2;
+    optional SdkErrorFrame error = 3;
+    optional SdkJoinFrame join = 4;
+    optional SdkJoinAckFrame joinack = 5;
+    optional SdkSubscribeFrame sub = 6;
+    optional SdkSubscribeAckFrame suback = 7;
+    optional SdkIndexFrame index = 8;
+    optional SdkPauseResumeFrame pause = 10;
+    optional SdkLeaveFrame leave = 11;
+    optional SdkLeaveAckFrame leave_ack = 12;
+    optional SdkBitrateFrame bitrates = 14;
+    optional SdkAudioControlFrame audio_control = 17;
+    optional SdkAudioMetadataFrame audio_metadata = 18;
+    optional SdkAudioStreamIdInfoFrame audio_stream_id_info = 19;
+    optional SdkPingPongFrame ping_pong = 20;
+    optional SdkAudioStatusFrame audio_status = 21;
+    optional SdkClientMetricFrame client_metric = 22;
+}
+
+message SdkErrorFrame {
+    optional uint32 status = 1;
+    optional string description = 2;
+}
+
+enum SdkJoinFlags {
+    SEND_BITRATES = 1;
+    HAS_STREAM_UPDATE = 2;
+}
+
+message SdkClientDetails {
+    required string app_version_name = 1;
+    required string app_version_code = 2;
+    required string device_model = 3;
+    required string device_make = 4;
+    required string platform_name = 5;
+    required string platform_version = 6;
+}
+
+message SdkJoinFrame {
+    optional uint32 protocol_version = 1 [default=2];
+    optional uint32 max_num_of_videos = 2 [default=8];
+    optional uint32 flags = 3;
+    optional SdkClientDetails client_details = 4;
+}
+
+message SdkJoinAckFrame {}
+
+message SdkLeaveFrame {}
+
+message SdkLeaveAckFrame {}
+
+enum SdkStreamServiceType {
+    RX = 1;
+    TX = 2;
+    DUPLEX = 3;
+}
+
+enum SdkStreamMediaType {
+    AUDIO = 1;
+    VIDEO = 2;
+}
+
+message SdkSubscribeFrame {
+    optional SdkStreamServiceType duplex = 1 [default=RX];
+    repeated SdkStreamDescriptor send_streams = 2;
+    repeated uint32 receive_stream_ids = 3;
+    optional string sdp_offer = 4;
+    optional string audio_host = 5;
+    optional bool audio_checkin = 6;
+    optional bool audio_muted = 7;
+}
+
+message SdkSubscribeAckFrame {
+    optional SdkStreamServiceType duplex = 1;
+    repeated SdkStreamAllocation allocations = 2;
+    optional string sdp_answer = 3;
+    repeated SdkTrackMapping tracks = 4;
+}
+
+message SdkIndexFrame {
+    optional bool at_capacity = 1;
+    repeated SdkStreamDescriptor sources = 2;
+    repeated uint32 paused_at_source_ids = 3;
+}
+
+message SdkPauseResumeFrame {
+    repeated uint32 stream_ids = 1;
+}
+
+message SdkBitrateFrame {
+    repeated SdkBitrate bitrates = 1;
+}
+
+message SdkStreamDescriptor {
+    optional uint32 stream_id = 1;
+    optional uint32 framerate = 2;
+    optional uint32 max_bitrate_kbps = 3;
+    optional string track_label = 4;
+    optional uint32 group_id = 6;
+    optional uint32 avg_bitrate_bps = 7;
+    optional string attendee_id = 8;
+    optional SdkStreamMediaType media_type = 9;
+}
+
+message SdkStreamAllocation {
+    optional string track_label = 1;
+    optional uint32 stream_id = 2;
+    optional uint32 group_id = 3;
+}
+
+message SdkTrackMapping {
+    optional uint32 stream_id = 1;
+    optional uint32 ssrc = 2;
+    optional string track_label = 3;
+}
+
+message SdkBitrate {
+    optional uint32 source_stream_id = 1;
+    optional uint32 avg_bitrate_bps = 2;
+}
+
+message SdkAudioControlFrame {
+    optional bool muted = 1;
+}
+
+message SdkAudioMetadataFrame {
+    repeated SdkAudioAttendeeState attendee_states = 1;
+}
+
+message SdkAudioAttendeeState {
+    optional uint32 audio_stream_id = 1;
+    optional uint32 volume = 2;
+    optional bool muted = 3;
+    optional uint32 signal_strength = 4;
+}
+
+message SdkAudioStreamIdInfoFrame {
+    repeated SdkAudioStreamIdInfo streams = 1;
+}
+
+message SdkAudioStreamIdInfo {
+    optional uint32 audio_stream_id = 1;
+    optional string attendee_id = 2;
+    optional bool muted = 3;
+}
+
+enum SdkPingPongType {
+    PING = 1;
+    PONG = 2;
+}
+
+message SdkPingPongFrame {
+    required SdkPingPongType type = 1;
+    required uint32 ping_id = 2;
+}
+
+message SdkAudioStatusFrame {
+    optional uint32 audio_status = 1;
+}
+
+message SdkMetric {
+    enum Type {
+        VIDEO_ACTUAL_ENCODER_BITRATE = 1;
+        VIDEO_AVAILABLE_SEND_BANDWIDTH = 2;
+        VIDEO_RETRANSMIT_BITRATE = 3;
+        VIDEO_AVAILABLE_RECEIVE_BANDWIDTH = 4;
+        VIDEO_TARGET_ENCODER_BITRATE = 5;
+        VIDEO_BUCKET_DELAY_MS = 6;
+        STUN_RTT_MS = 7;
+        SOCKET_DISCARDED_PPS = 8;
+        RTC_MIC_JITTER_MS = 9;
+        RTC_MIC_PPS = 10;
+        RTC_MIC_FRACTION_PACKET_LOST_PERCENT = 11;
+        RTC_MIC_BITRATE = 12;
+        RTC_MIC_RTT_MS = 13;
+        RTC_SPK_PPS = 14;
+        RTC_SPK_FRACTION_PACKET_LOST_PERCENT = 15;
+        RTC_SPK_JITTER_MS = 16;
+        RTC_SPK_FRACTION_DECODER_LOSS_PERCENT = 17;
+        RTC_SPK_BITRATE = 18;
+        RTC_SPK_CURRENT_DELAY_MS = 19;
+        RTC_SPK_JITTER_BUFFER_MS = 20;
+        VIDEO_SENT_RTT_MS = 21;
+        VIDEO_ENCODE_USAGE_PERCENT = 22;
+        VIDEO_NACKS_RECEIVED = 23;
+        VIDEO_PLIS_RECEIVED = 24;
+        VIDEO_AVERAGE_ENCODE_MS = 25;
+        VIDEO_INPUT_FPS = 26;
+        VIDEO_ENCODE_FPS = 27;
+        VIDEO_SENT_FPS = 28;
+        VIDEO_FIRS_RECEIVED = 29;
+        VIDEO_SENT_PPS = 30;
+        VIDEO_SENT_FRACTION_PACKET_LOST_PERCENT = 31;
+        VIDEO_SENT_BITRATE = 32;
+        VIDEO_DROPPED_FPS = 33;
+        VIDEO_TARGET_DELAY_MS = 34;
+        VIDEO_DECODE_MS = 35;
+        VIDEO_OUTPUT_FPS = 36;
+        VIDEO_RECEIVED_PPS = 37;
+        VIDEO_RECEIVED_FRACTION_PACKET_LOST_PERCENT = 38;
+        VIDEO_RENDER_DELAY_MS = 39;
+        VIDEO_RECEIVED_FPS = 40;
+        VIDEO_DECODE_FPS = 41;
+        VIDEO_NACKS_SENT = 42;
+        VIDEO_FIRS_SENT = 43;
+        VIDEO_RECEIVED_BITRATE = 44;
+        VIDEO_CURRENT_DELAY_MS = 45;
+        VIDEO_JITTER_BUFFER_MS = 46;
+        VIDEO_DISCARDED_PPS = 47;
+        VIDEO_PLIS_SENT = 48;
+        VIDEO_RECEIVED_JITTER_MS = 49;
+    }
+    optional Type type = 1;
+    optional double value = 2;
+}
+
+message SdkStreamMetricFrame {
+    optional uint32 stream_id = 3;
+    optional uint32 group_id = 4;
+    repeated SdkMetric metrics = 5;
+}
+
+message SdkClientMetricFrame {
+    repeated SdkMetric global_metrics = 1;
+    repeated SdkStreamMetricFrame stream_metric_frames = 2;
+}

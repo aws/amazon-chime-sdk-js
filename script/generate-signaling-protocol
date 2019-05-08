@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+
+def verbose command
+  puts "--> #{command}"
+  system(command) || fail("Failed: #{command}")
+end
+
+['SignalingProtocol', 'ScreenSignalingProtocol'].each do |protocol|
+  dir = protocol.downcase
+
+  verbose "rm -rf src/#{dir}"
+  verbose "mkdir -p src/#{dir}"
+
+  # workaround for https://github.com/hegemonic/requizzle/issues/5
+  verbose "brew install node@10"
+  node = "#{`brew --prefix node@10`.strip}/bin/node"
+
+  # workaround for https://github.com/protobufjs/protobuf.js/issues/1217
+  verbose "#{node} node_modules/.bin/pbjs -t static-module -w commonjs -o src/#{dir}/#{protocol}.js ./protocol/#{protocol}.proto"
+  File.write('node_modules/protobufjs/package.json', File.read('node_modules/protobufjs/package.json').gsub('"jsdoc": "^3.5.5",', '"jsdoc": "~3.5.5",'))
+
+  verbose "#{node} node_modules/.bin/pbjs -t static-module -w commonjs -o src/#{dir}/#{protocol}.js ./protocol/#{protocol}.proto"
+  verbose "#{node} node_modules/.bin/pbts -o src/#{dir}/#{protocol}.d.ts src/#{dir}/#{protocol}.js"
+
+  # workaround for the Long type import issue. Remove when https://github.com/protobufjs/protobuf.js/pull/1166/files is released.
+  File.write("src/#{dir}/#{protocol}.d.ts", "import * as Long from \"long\";\n" + File.read("src/#{dir}/#{protocol}.d.ts"))
+end

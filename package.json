@@ -1,0 +1,99 @@
+{
+  "name": "amazon-chime-sdk-js",
+  "version": "0.9.0",
+  "description": "Amazon Chime SDK for JavaScript",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "clean": "rm -rf .nyc_output build node_modules",
+    "copy": "node script/copy-protocol.js",
+    "check": "node script/check-code-style.js",
+    "prepublishOnly": "script/publish",
+    "lint": "eslint . --ext .ts,.tsx,.js --fix",
+    "build": "npm install && node script/barrelize.js && tsc && npm run copy",
+    "doc": "npm run build && node node_modules/typedoc/bin/typedoc --options typedoc.js",
+    "test": "npm run build && npm run lint && npm run check && npm run test:fast",
+    "test:fast": "cross-env TS_NODE_CACHE=false nyc mocha -rv ts-node/register \"test/**/*.test.ts\"",
+    "test:slow": "cross-env MOCHA_TEST_DELAY_MS=100 npm run test:fast",
+    "test:retry": "npm run build && npm run lint && npm run check && (npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast)",
+    "test:integration": "cd ./integration/js && npm run test && npm run upload-logs-to-s3"
+  },
+  "devDependencies": {
+    "@fluffy-spoon/substitute": "^1.89.0",
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/dom-mediacapture-record": "^1.0.1",
+    "@types/mocha": "^5.2.6",
+    "@types/sinon": "^7.0.12",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "cross-env": "^6.0.3",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-simple-import-sort": "^4.0.0",
+    "fs-extra": "^8.1.0",
+    "mocha": "^6.1.4",
+    "nyc": "^14.0.0",
+    "prettier": "^1.17.1",
+    "sinon": "^7.3.2",
+    "spawn-wrap": "^1.4.3",
+    "ts-node": "^8.1.0",
+    "typedoc": "^0.15.0",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "detect-browser": "^4.7.0",
+    "protobufjs": "~6.8.8",
+    "resize-observer": "^1.0.0"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/amazon-chime-sdk-js"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/**/*.d.ts",
+      "src/screensharefacade/DefaultScreenShareFacade.ts",
+      "src/screenshareviewfacade/DefaultScreenShareViewFacade.ts",
+      "src/activespeakerdetector/DefaultActiveSpeakerDetector.ts",
+      "src/activespeakerpolicy/DefaultActiveSpeakerPolicy.ts",
+      "src/devicecontroller/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html",
+      "cobertura"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "report-dir": "./coverage",
+    "all": true,
+    "check-coverage": true,
+    "branches": 100,
+    "lines": 100,
+    "functions": 100,
+    "statements": 100
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 100
+  }
+}
