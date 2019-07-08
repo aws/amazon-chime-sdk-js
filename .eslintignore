@@ -1,0 +1,15 @@
+build
+coverage
+demos/aws-sdk
+demos/electron/*
+demos/browser/*
+demos/serverless/*
+doc
+index.ts
+integration
+node_modules
+rust
+screensignalingprotocol
+signalingprotocol
+!demos/browser/app/*/*.ts
+!demos/browser/server.js
