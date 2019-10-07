@@ -1,0 +1,56 @@
+#!/bin/bash -i
+
+function start_demo_meeting {
+    cd ~/build/aws/amazon-chime-sdk-js/demos/browser
+    uuid=$(uuidgen)
+    mkdir -p logs
+    npm run start &> logs/$uuid.log &
+    echo "Starting the demo"
+}
+
+function did_server_start {
+    if ! lsof -i:$1 > /dev/null
+    then
+        echo 0
+    else
+        echo 1
+    fi
+}
+
+function wait_for_demo_to_start {
+    echo "Waiting for the demo to start"
+    threshold=40
+    started=0
+    retry_count=1
+    while [ $started -eq 0 ] && [ $retry_count -lt $threshold ]
+    do
+      started=$(did_server_start $1)
+      sleep 3
+      retry_count=$(($retry_count+1))
+    done
+
+    if [ $retry_count -eq $threshold ]
+    then
+     echo "meeting demo not started"
+     exit
+    fi
+}
+
+curr=`pwd`
+start_demo_meeting
+wait_for_demo_to_start 8080
+cd $curr
+cd ../
+. ~/.bashrc
+
+r audio_test.config.json
+r video_test.config.json
+r meeting_end_test.config.json
+r app_quit_audio_test.config.json
+r app_quit_video_test.config.json
+r meeting_leave_audio_test.config.json
+r meeting_leave_video_test.config.json
+r screen_sharing_test.config.json
+r screen_viewing_test.config.json
+
+./js/script/failure-check

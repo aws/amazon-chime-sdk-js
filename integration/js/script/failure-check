@@ -1,0 +1,69 @@
+#!/usr/bin/env ruby
+require "json"
+
+failure_reasons = {}
+
+def failure_reason(failed_step)
+  if failed_step["attachments"] != nil
+    puts "\s\sFailure reason: "
+    failed_step["attachments"].each do |attachment|
+      File.open("./kite-allure-reports/#{attachment["source"]}") do |f|
+        f.each_line do |line|
+          puts "\s\s\s#{line}"
+        end
+      end
+    end
+  end
+end
+
+def get_run_configuration(run_name)
+  clients = run_name.split(/[\s]/)[0].split("-")
+  i = 1
+  clients.each do |client|
+    c = client.split("_")
+    puts "\sClient #{i} : #{get_os(c[0])} #{get_browser(c[1])} #{c[2]}"
+    i+=1
+  end
+end
+
+def get_os(os_prefix)
+  case os_prefix
+  when "MAC"
+    "MAC"
+  when "WIN"
+    "WINDOWS"
+  end
+end
+
+def get_browser(browser_prefix)
+  case browser_prefix
+  when "ch"
+    "Chrome"
+  when "fi"
+    "Firefox"
+  end
+end
+
+def explain_failure(failed_run)
+  puts "Run configuration:"
+  get_run_configuration(failed_run["name"])
+  puts "Failure details:"
+  failed_run["steps"].each do |step|
+    if (step["status"] == "FAILED")
+      puts "\s#{step["name"]}"
+      failure_reason(step)
+    end
+  end
+  puts "========================================="
+end
+
+puts "\nGenerating failure report\n"
+puts "========================================="
+resultFiles = Dir["./kite-allure-reports/*result.json"]
+resultFiles.each do |resultFile|
+  file = File.read(resultFile)
+  result = JSON.parse(file)
+  if (result["status"]) == "FAILED"
+    explain_failure(result)
+  end
+end

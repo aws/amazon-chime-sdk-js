@@ -1,0 +1,69 @@
+#!/usr/bin/env ruby
+
+require 'aws-sdk-s3'
+require 'optparse'
+
+$s3_bucket_name = "amazon-chime-sdk-js-integration-test-travis-logs"
+$tmp_folder_path = "./integration-test-results"
+
+def get_result_for_run(run_id, destination_folder)
+  system("aws s3 sync s3://#{$s3_bucket_name}/#{run_id}/test_result #{destination_folder} > /dev/null")
+end
+
+def get_all_results(destination_folder)
+  s3 = Aws::S3::Client.new()
+  s3.list_objects_v2({bucket: $s3_bucket_name, delimiter: "/"}).common_prefixes.each do |o|
+    get_result_for_run(o.prefix.tr('/', ''), destination_folder)
+  end
+end
+
+def show_all_results
+  destination_folder = "#{$tmp_folder_path}/all"
+  puts "Downloading results for all the builds"
+  get_all_results(destination_folder)
+  system("allure serve #{destination_folder}")
+end
+
+def show_result_for_run(run_id)
+  puts "Downloading results for build #{run_id.split("-")[0]}"
+  destination_folder = "#{$tmp_folder_path}/#{run_id}"
+  get_result_for_run(run_id, destination_folder)
+  system("allure serve #{destination_folder}")
+end
+
+def install_allure
+  o = `npm list -g | grep allure-commandline`
+  if o == ""
+    puts "installing allure framework"
+    `npm install -g allure-commandline`
+  end
+end
+
+def global_parser
+  global = OptionParser.new do |opts|
+    opts.banner = "Usage: get-integration-test-results <subcommand>"
+    opts.separator ""
+    opts.separator <<HELP
+subcommands are:
+ --all          :     Shows the results for all the builds
+ --id [ID]      :     Shows the results for single build corresponding to the ID provided
+
+HELP
+   end
+
+   puts global.help()
+
+end
+
+install_allure
+sub_command = ARGV.shift
+case sub_command
+when "--all"
+  show_all_results
+when "--id"
+  id = ARGV.shift
+  abort "Please provide a run id (check travis logs to get the run id)" if id == nil || id == ""
+  show_result_for_run id
+when "--help"
+  global_parser
+end

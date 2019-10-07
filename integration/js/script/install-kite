@@ -1,0 +1,18 @@
+#!/bin/bash
+set -o xtrace
+
+cd ~/build
+
+mkdir GitHub
+cd GitHub
+git clone https://github.com/webrtc/KITE.git
+cd KITE
+
+chmod -R +x scripts/linux
+yes | ./scripts/linux/installMaven.sh
+
+chmod +x configureLinux.sh
+yes n | ./configureLinux.sh
+
+cd KITE-AppRTC-Test
+../scripts/linux/path/c all > /dev/null
