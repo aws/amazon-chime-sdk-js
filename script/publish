@@ -1,0 +1,77 @@
+#!/usr/bin/env ruby
+require 'json'
+
+puts
+puts "Warning: are you sure to reset the HEAD to origin/master?"
+puts
+puts "Current staged and local changes will be lost!"
+puts
+puts "Type 'yes' to continue"
+x = STDIN.gets
+exit(1) unless x.strip == 'yes'
+puts
+
+def verbose command
+  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
+end
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+
+package = JSON.parse(File.read('package.json'))
+original_version = package['version']
+version = original_version.split('.').map{ |x| x.to_i }
+
+if ARGV.include?('--bump-minor')
+  version[1] += 1
+  version[2] = 0
+elsif ARGV.include?('--bump-major')
+  version[0] += 1
+  version[1] = 0
+  version[2] = 0
+else
+  version[2] += 1
+end
+
+version_string = version.join('.')
+package['version'] = version_string
+version_file = 'src/versioning/Versioning.ts'
+tag = "amazon-chime-sdk-js@#{version_string}"
+
+puts
+puts "Warning: you are bumping the version"
+puts
+puts "From: #{original_version}"
+puts "To:   #{version_string}"
+puts
+puts "And creating the following tag:"
+puts tag
+puts
+puts "Type 'yes' to continue"
+x = STDIN.gets
+exit(1) unless x.strip == 'yes'
+puts
+
+verbose('git fetch origin')
+verbose('git reset --hard origin/master')
+verbose('git clean -ffxd .')
+
+File.write('package.json', JSON.pretty_generate(package) + "\n")
+File.write(version_file, File.read(version_file).gsub(/return '[.0-9]+';/, "return '#{version_string}';"))
+
+verbose('npm run test')
+verbose('npm pack --dry-run')
+
+puts
+puts "Do you want to upload these files?"
+puts
+puts "Type 'yes' to continue"
+x = STDIN.gets
+exit(1) unless x.strip == 'yes'
+puts
+
+verbose('git add -A')
+verbose("git commit -m 'Publish #{tag}'")
+verbose("git tag -d #{tag} || true")
+verbose("git tag #{tag}")
+verbose("git push origin")
+verbose("git push origin -f #{tag}")
