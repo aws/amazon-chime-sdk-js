@@ -1,0 +1,30 @@
+{
+  "`": 1,
+  "name": "meeting_leave_audio_test.config.json %ts",
+  "grids": [
+  ],
+  "tests": [
+    {
+      "name": "Meeting Leave Audio Test %ts",
+      "description": "Meeting Leave Audio Test ",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "MeetingLeaveAudioTest.js",
+      "payload": {
+        "url": "http://localhost:8080/"
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "firefox",
+      "version": "70",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "77",
+      "platform": "MAC"
+    }
+  ]
+}

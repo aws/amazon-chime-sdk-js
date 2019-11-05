@@ -1,0 +1,30 @@
+{
+  "`": 1,
+  "name": "meeting_end_test.config.json %ts",
+  "grids": [
+  ],
+  "tests": [
+    {
+      "name": "Meeting End Test %ts",
+      "description": "Meeting End Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "MeetingEndTest.js",
+      "payload": {
+        "url": "http://localhost:8080/"
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "firefox",
+      "version": "70",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "77",
+      "platform": "MAC"
+    }
+  ]
+}
