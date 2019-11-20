@@ -4,6 +4,7 @@
 import Backoff from './Backoff';
 import BackoffFactory from './BackoffFactory';
 import FullJitterBackoff from './FullJitterBackoff';
+import FullJitterLimitedBackoff from './FullJitterLimitedBackoff';
 
 export default class FullJitterBackoffFactory implements BackoffFactory {
   constructor(
@@ -14,5 +15,14 @@ export default class FullJitterBackoffFactory implements BackoffFactory {
 
   create(): Backoff {
     return new FullJitterBackoff(this.fixedWaitMs, this.shortBackoffMs, this.longBackoffMs);
+  }
+
+  createWithLimit(limit: number): Backoff {
+    return new FullJitterLimitedBackoff(
+      this.fixedWaitMs,
+      this.shortBackoffMs,
+      this.longBackoffMs,
+      limit
+    );
   }
 }

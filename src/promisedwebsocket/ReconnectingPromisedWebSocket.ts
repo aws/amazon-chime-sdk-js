@@ -44,13 +44,17 @@ export default class ReconnectingPromisedWebSocket implements PromisedWebSocket 
 
       this.webSocket.addEventListener('close', (event: CloseEvent) => {
         if (ReconnectingPromisedWebSocket.normalClosureCodes.indexOf(event.code) <= -1) {
-          const timeout = this.backoff.nextBackoffAmountMs();
-          this.timeoutScheduler = new TimeoutScheduler(timeout);
-          this.timeoutScheduler.start(() => {
-            this.timeoutScheduler.stop();
-            this.open(timeoutMs).then(() => {});
-          });
-          this.dispatchEvent(new CustomEvent('reconnect'));
+          try {
+            const timeout = this.backoff.nextBackoffAmountMs();
+            this.timeoutScheduler = new TimeoutScheduler(timeout);
+            this.timeoutScheduler.start(() => {
+              this.timeoutScheduler.stop();
+              this.open(timeoutMs).then(() => {});
+            });
+            this.dispatchEvent(new CustomEvent('reconnect'));
+          } catch (e) {
+            this.dispatchEvent(event);
+          }
         } else {
           this.dispatchEvent(event);
         }

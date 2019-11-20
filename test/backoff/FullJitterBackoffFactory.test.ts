@@ -5,6 +5,7 @@ import * as chai from 'chai';
 
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
 import FullJitterBackoffFactory from '../../src/backoff/FullJitterBackoffFactory';
+import FullJitterLimitedBackoff from '../../src/backoff/FullJitterLimitedBackoff';
 
 describe('FullJitterBackoffFactory', () => {
   const fixed = 1000;
@@ -15,6 +16,13 @@ describe('FullJitterBackoffFactory', () => {
     it('is created', () => {
       const subject = new FullJitterBackoffFactory(fixed, short, long);
       chai.expect(subject.create()).to.be.instanceOf(FullJitterBackoff);
+    });
+  });
+
+  describe('createWithLimit', () => {
+    it('is created', () => {
+      const subject = new FullJitterBackoffFactory(fixed, short, long);
+      chai.expect(subject.createWithLimit(10)).to.be.instanceOf(FullJitterLimitedBackoff);
     });
   });
 });

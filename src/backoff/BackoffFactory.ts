@@ -9,4 +9,10 @@ export default interface BackoffFactory {
    * @returns {Backoff}
    */
   create(): Backoff;
+
+  /**
+   * Limited factory method
+   * @returns {Backoff}
+   */
+  createWithLimit(limit: number): Backoff;
 }

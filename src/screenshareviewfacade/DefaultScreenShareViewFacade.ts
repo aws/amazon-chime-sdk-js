@@ -6,6 +6,7 @@ import DefaultDOMWebSocketFactory from '../domwebsocket/DefaultDOMWebSocketFacto
 import DefaultDragObserver from '../dragobserver/DefaultDragObserver';
 import DragEvent from '../dragobserver/DragEvent';
 import Logger from '../logger/Logger';
+import Maybe from '../maybe/Maybe';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import DefaultPromisedWebSocketFactory from '../promisedwebsocket/DefaultPromisedWebSocketFactory';
 import ReconnectingPromisedWebSocketFactory from '../promisedwebsocket/ReconnectingPromisedWebSocketFactory';
@@ -24,7 +25,8 @@ export default class DefaultScreenShareViewFacade implements ScreenShareViewFaca
   constructor(private configuration: MeetingSessionConfiguration, private logger: Logger) {
     const reconnectingWSFactory = new ReconnectingPromisedWebSocketFactory(
       new DefaultPromisedWebSocketFactory(new DefaultDOMWebSocketFactory()),
-      new FullJitterBackoffFactory(1000, 100, 300)
+      new FullJitterBackoffFactory(1000, 100, 300),
+      Maybe.of(configuration.screenSharingSessionOptions.reconnectRetryLimit).getOrElse(5)
     );
     this.screenViewing = new DefaultScreenViewing(
       new DefaultScreenViewingComponentContext(

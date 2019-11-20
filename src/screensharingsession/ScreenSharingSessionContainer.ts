@@ -86,7 +86,8 @@ export default class ScreenSharingSessionContainer {
   private reconnectingPromisedWebSocketFactory(): PromisedWebSocketFactory {
     return new ReconnectingPromisedWebSocketFactory(
       this.promisedWebSocketFactory(),
-      this.backOffFactory()
+      this.backOffFactory(),
+      Maybe.of(this.options.reconnectRetryLimit).getOrElse(5)
     );
   }
 

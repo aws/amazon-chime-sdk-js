@@ -15,7 +15,8 @@ describe('ReconnectingPromisedWebSocketFactory', () => {
       const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();
       const subject = new ReconnectingPromisedWebSocketFactory(
         webSocketFactory,
-        Substitute.for<BackoffFactory>()
+        Substitute.for<BackoffFactory>(),
+        5
       );
       chai.expect(subject.create('ws://foo')).to.be.instanceOf(ReconnectingPromisedWebSocket);
     });
