@@ -9,7 +9,8 @@ import ReconnectingPromisedWebSocket from './ReconnectingPromisedWebSocket';
 export default class ReconnectingPromisedWebSocketFactory implements PromisedWebSocketFactory {
   constructor(
     private promisedWebSocketFactory: PromisedWebSocketFactory,
-    private backoffFactory: BackoffFactory
+    private backoffFactory: BackoffFactory,
+    private reconnectRetryLimit: number
   ) {}
 
   create(
@@ -22,7 +23,7 @@ export default class ReconnectingPromisedWebSocketFactory implements PromisedWeb
       protocols,
       binaryType,
       this.promisedWebSocketFactory,
-      this.backoffFactory.create()
+      this.backoffFactory.createWithLimit(this.reconnectRetryLimit)
     );
   }
 }

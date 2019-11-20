@@ -140,6 +140,39 @@ describe('ReconnectingPromisedWebSocket', () => {
           delete GlobalAny.CustomEvent;
         });
 
+        describe('with retry limit', () => {
+          it('is closed', (done: Mocha.Done) => {
+            const backoff = {
+              ...Substitute.for<Backoff>(),
+              nextBackoffAmountMs(): number {
+                throw new Error('retry limit exceeded');
+              },
+              reset(): void {
+                return;
+              },
+            };
+            const webSocket = new PromisedWebSocketMock();
+            const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();
+            const subject = new ReconnectingPromisedWebSocket(
+              url,
+              protocols,
+              binaryType,
+              webSocketFactory,
+              backoff
+            );
+            webSocketFactory.create(url, protocols, binaryType).returns(webSocket);
+            subject.addEventListener('close', () => {
+              done();
+            });
+            subject.open(timeoutMs).then(() => {
+              const event = Substitute.for<CloseEvent>();
+              event.type.returns('close');
+              event.code.returns(1001);
+              webSocket.dispatchEvent(event);
+            });
+          });
+        });
+
         it('notifies reconnect', (done: Mocha.Done) => {
           const webSocket = new PromisedWebSocketMock();
           const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();

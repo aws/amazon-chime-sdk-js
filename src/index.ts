@@ -98,6 +98,7 @@ import DragType from './dragobserver/DragType';
 import FinishGatheringICECandidatesTask from './task/FinishGatheringICECandidatesTask';
 import FullJitterBackoff from './backoff/FullJitterBackoff';
 import FullJitterBackoffFactory from './backoff/FullJitterBackoffFactory';
+import FullJitterLimitedBackoff from './backoff/FullJitterLimitedBackoff';
 import GlobalMetricReport from './clientmetricreport/GlobalMetricReport';
 import InitializeDefaultJPEGDecoderControllerTask from './task/InitializeDefaultJPEGDecoderControllerTask';
 import IntervalScheduler from './scheduler/IntervalScheduler';
@@ -373,6 +374,7 @@ export {
   FinishGatheringICECandidatesTask,
   FullJitterBackoff,
   FullJitterBackoffFactory,
+  FullJitterLimitedBackoff,
   GlobalMetricReport,
   InitializeDefaultJPEGDecoderControllerTask,
   IntervalScheduler,
