@@ -3,10 +3,10 @@ node_js:
 - 12
 git:
   depth: false
-# install:
-#   - ./integration/js/script/install-kite
-#  - pip install --user awscli
-script: script/prevent-multiple-pr-commits && npm run test:retry # && npm run test:integration
+install:
+ - ./integration/js/script/install-kite
+ - pip install --user awscli
+script: script/prevent-multiple-pr-commits && npm run test:retry && npm run test:integration
 addons:
   sauce_connect:
     username: "chimesdk"
