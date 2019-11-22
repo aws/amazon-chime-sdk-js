@@ -13,6 +13,16 @@ import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
+// @ts-ignore
+const mockMediaStream: MediaStream = {
+  getTracks: (): MediaStreamTrack[] => {
+    // @ts-ignore
+    const track: MediaStreamTrack = {};
+    return [track];
+  },
+  removeTrack: () => {},
+};
+
 class InvokingDevicePixelRatioMonitor implements DevicePixelRatioMonitor {
   private observerQueue: Set<DevicePixelRatioObserver>;
 
@@ -74,12 +84,10 @@ describe('DefaultVideoTile', () => {
       const videoElement = videoElementFactory.create();
       tile.bindVideoElement(videoElement);
 
-      // @ts-ignore
-      const mediaStream: MediaStream = { fake: 'stream' };
-      tile.bindVideoStream('attendee', true, mediaStream, 1, 1, 1);
+      tile.bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
 
       expect(tile.state().tileId).to.equal(tileId);
-      expect(tile.state().boundVideoElement.srcObject).to.equal(mediaStream);
+      expect(tile.state().boundVideoElement.srcObject).to.equal(mockMediaStream);
 
       tile.destroy();
       expect(tile.state().tileId).to.equal(null);
@@ -121,7 +129,11 @@ describe('DefaultVideoTile', () => {
       const boundAttendeeId = 'attendee';
       const localTile = true;
       // @ts-ignore
-      const boundVideoStream: MediaStream = { fake: 'stream' };
+      const boundVideoStream: MediaStream = {
+        getTracks: (): MediaStreamTrack[] => {
+          return [];
+        },
+      };
       const videoStreamContentWidth = 1;
       const videoStreamContentHeight = 1;
       const streamId = 1;
@@ -147,8 +159,7 @@ describe('DefaultVideoTile', () => {
 
     it('unbinds a video stream', () => {
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
-      // @ts-ignore
-      tile.bindVideoStream('attendee', true, { fake: 'stream' }, 1, 1, 1);
+      tile.bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
       tile.bindVideoStream(null, true, null, null, null, null);
 
       expect(tile.state().boundAttendeeId).to.equal(null);
@@ -167,18 +178,20 @@ describe('DefaultVideoTile', () => {
       const videoElement = videoElementFactory.create();
       tile.bindVideoElement(videoElement);
 
-      // @ts-ignore
-      const mediaStream: MediaStream = { fake: 'stream' };
-      tile.bindVideoStream('attendee', true, mediaStream, 1, 1, 1);
-      expect(videoElement.srcObject).to.equal(mediaStream);
+      tile.bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
+      expect(videoElement.srcObject).to.equal(mockMediaStream);
 
-      tile.bindVideoStream('attendee', true, mediaStream, 2, 2, 1);
-      expect(videoElement.srcObject).to.equal(mediaStream);
+      tile.bindVideoStream('attendee', true, mockMediaStream, 2, 2, 1);
+      expect(videoElement.srcObject).to.equal(mockMediaStream);
 
       // @ts-ignore
-      const mediaStream2: MediaStream = { fake: 'stream' };
-      tile.bindVideoStream('attendee', true, mediaStream2, 2, 2, 1);
-      expect(videoElement.srcObject).to.equal(mediaStream2);
+      const mockMediaStream2: MediaStream = {
+        getTracks: (): MediaStreamTrack[] => {
+          return [];
+        },
+      };
+      tile.bindVideoStream('attendee', true, mockMediaStream2, 2, 2, 1);
+      expect(videoElement.srcObject).to.equal(mockMediaStream2);
     });
   });
 
@@ -191,8 +204,7 @@ describe('DefaultVideoTile', () => {
       const setAttributeSpy = sinon.spy(videoElement, 'setAttribute');
 
       tile.bindVideoElement(videoElement);
-      // @ts-ignore
-      tile.bindVideoStream('attendee', false, { fake: 'stream' }, 1, 1, 1);
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1);
 
       expect(tile.state().boundVideoElement).to.equal(videoElement);
       expect(tile.state().videoElementCSSWidthPixels).to.equal(videoElement.clientWidth);
@@ -241,8 +253,7 @@ describe('DefaultVideoTile', () => {
       const setAttributeSpy = sinon.spy(videoElement, 'setAttribute');
 
       tile.bindVideoElement(videoElement);
-      // @ts-ignore
-      tile.bindVideoStream('attendee', false, { fake: 'stream' }, 1, 1, 1);
+      tile.bindVideoStream('attendee', false, mockMediaStream, 1, 1, 1);
 
       expect(removeAttributeSpy.calledWith('controls')).to.be.true;
       expect(setAttributeSpy.callCount).to.equal(0);
@@ -256,8 +267,7 @@ describe('DefaultVideoTile', () => {
       // @ts-ignore
       videoElement.disableRemotePlayback = false;
       tile.bindVideoElement(videoElement);
-      // @ts-ignore
-      tile.bindVideoStream('attendee', true, { fake: 'stream' }, 1, 1, 1);
+      tile.bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
       // @ts-ignore
       expect(videoElement.disablePictureInPicture).to.be.true;
       // @ts-ignore
@@ -366,8 +376,7 @@ describe('DefaultVideoTile', () => {
 
       const videoElement = videoElementFactory.create();
       tile.bindVideoElement(videoElement);
-      // @ts-ignore
-      tile.bindVideoStream('attendee', true, { fake: 'stream' }, 1, 1, 1);
+      tile.bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
 
       const image = tile.capture();
       expect(image.width).to.equal(videoElement.videoWidth);
@@ -384,8 +393,7 @@ describe('DefaultVideoTile', () => {
       delete videoElement.videoHeight;
 
       tile.bindVideoElement(videoElement);
-      // @ts-ignore
-      tile.bindVideoStream('attendee', true, { fake: 'stream' }, 1, 1, 1);
+      tile.bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
 
       const image = tile.capture();
       expect(image.width).to.equal(videoElement.width);

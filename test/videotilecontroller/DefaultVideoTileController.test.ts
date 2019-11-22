@@ -12,6 +12,13 @@ import VideoTileState from '../../src/videotile/VideoTileState';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
+// @ts-ignore
+const mockMediaStream: MediaStream = {
+  getTracks: (): MediaStreamTrack[] => {
+    return [];
+  },
+};
+
 describe('DefaultVideoTileController', () => {
   const assert: Chai.AssertStatic = chai.assert;
   const expect: Chai.ExpectStatic = chai.expect;
@@ -154,7 +161,7 @@ describe('DefaultVideoTileController', () => {
         tileController
           .getLocalVideoTile()
           // @ts-ignore
-          .bindVideoStream('attendee', true, { fake: 'stream' }, 1, 1, 1);
+          .bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
       });
     });
 
@@ -383,7 +390,7 @@ describe('DefaultVideoTileController', () => {
         tileController
           .getLocalVideoTile()
           // @ts-ignore
-          .bindVideoStream('attendee', true, { fake: 'stream' }, 1, 1, 1);
+          .bindVideoStream('attendee', true, mockMediaStream, 1, 1, 1);
       });
     });
   });
