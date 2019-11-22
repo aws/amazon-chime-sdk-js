@@ -803,6 +803,10 @@ export default class DOMMockBuilder {
     GlobalAny.ImageData = class MockImageData {
       constructor(public data: Uint8ClampedArray, public width: number, public height: number) {}
     };
+
+    GlobalAny.requestAnimationFrame = function mockRequestAnimationFrame(callback: () => void) {
+      setTimeout(callback);
+    };
   }
 
   cleanup(): void {
@@ -825,5 +829,6 @@ export default class DOMMockBuilder {
     delete GlobalAny.MediaQueryList;
     delete GlobalAny.matchMedia;
     delete GlobalAny.document;
+    delete GlobalAny.requestAnimationFrame;
   }
 }

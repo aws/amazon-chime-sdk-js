@@ -32,19 +32,36 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     if (!videoElement.hasAttribute('muted')) {
       videoElement.setAttribute('muted', 'true');
     }
+
     if (videoElement.srcObject !== videoStream) {
       videoElement.srcObject = videoStream;
     }
   }
 
   static disconnectVideoStreamFromVideoElement(videoElement: HTMLVideoElement | null): void {
-    if (!videoElement) {
+    if (!videoElement || !videoElement.srcObject) {
       return;
     }
-    videoElement.srcObject = null;
+
+    videoElement.pause();
     videoElement.style.transform = '';
+
     DefaultVideoTile.setVideoElementFlag(videoElement, 'disablePictureInPicture', false);
     DefaultVideoTile.setVideoElementFlag(videoElement, 'disableRemotePlayback', false);
+
+    // We must remove all the tracks from the MediaStream before
+    // clearing the `srcObject` to prevent Safari from crashing.
+    const mediaStream = videoElement.srcObject as MediaStream;
+    const tracks = mediaStream.getTracks();
+    for (const track of tracks) {
+      mediaStream.removeTrack(track);
+    }
+
+    // Need to wait one frame before clearing `srcObject` to
+    // prevent Safari from crashing.
+    requestAnimationFrame(() => {
+      videoElement.srcObject = null;
+    });
   }
 
   constructor(
