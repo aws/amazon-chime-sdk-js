@@ -20,6 +20,13 @@ io.on('connection', function (socket) {
   let testName = "";
   console.log('Connected');
 
+  socket.on('test_start', () => {
+    console.log("Starting test");
+    socketAttendeeMap = {};
+    attendeeId = "";
+    testPassed = true;
+  });
+
   socket.on('test_name', name => {
     testName = name;
   });
@@ -30,8 +37,6 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     console.log('user disconnected');
-    metricValue = testPassed ? 1 : 0;
-    emitMetric(testName, capabilities, 'E2E', metricValue);
   });
 
   socket.on('test finished', id => {

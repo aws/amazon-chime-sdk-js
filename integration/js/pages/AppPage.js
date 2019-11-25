@@ -291,6 +291,7 @@ class AppPage {
       await checkToneFor(50, 440);
       callback(successfulToneChecks / totalToneChecks);
     });
+    console.log(`Audio check success rate: ${res * 100}% expected: ${expectedState === "AUDIO_ON" ? 100 : 0}%`);
     if (expectedState === "AUDIO_ON") {
       if (res >= 0.75) {
         return true

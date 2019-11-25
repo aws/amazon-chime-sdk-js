@@ -1,15 +1,15 @@
 {
   "`": 1,
-  "name": "meeting_end_test.config.json %ts",
+  "name": "app_quit_screen_share_test.config.json %ts",
   "grids": [
   ],
   "tests": [
     {
-      "name": "Meeting End Test %ts",
-      "description": "Meeting End Test",
+      "name": "App Quit Screen Share Test %ts",
+      "description": "App Quit Screen Share Test ",
       "tupleSize": 1,
       "noOfThreads": 1,
-      "testImpl": "MeetingEndTest.js",
+      "testImpl": "AppQuitScreenShareTest.js",
       "payload": {
         "url": "http://localhost:8080/",
         "retry": 1

@@ -70,6 +70,23 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value) 
     Namespace: `Canary/${namespace}`
   };
   await publishMetricToCloudWatch(paramsWithBrowserDimension);
+  var paramsWithOSDimension = {
+    MetricData: [
+      {
+        MetricName: metric_name,
+        Dimensions: [
+          {
+            Name: 'OS',
+            Value: getOS(capabilities)
+          },
+        ],
+        Unit: 'None',
+        Value: value
+      },
+    ],
+    Namespace: `Canary/${namespace}`
+  };
+  await publishMetricToCloudWatch(paramsWithOSDimension);
 };
 
 const publishMetricToCloudWatch = async (params) => {
