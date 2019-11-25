@@ -13,6 +13,7 @@ class SdkBaseTest extends KiteBaseTest {
     this.url = this.url + '?m=' + kiteConfig.uuid;
     this.testName = testName;
     this.capabilities["name"] = `${testName}-${process.env.TEST_TYPE}`;
+    this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
     if (this.numberOfParticipant > 1) {
       this.io.emit("test_name", testName);
       this.io.emit("test_capabilities", this.capabilities);
@@ -111,7 +112,7 @@ class SdkBaseTest extends KiteBaseTest {
     const session = await this.driver.getSession();
     session_id = session.getId();
     let retryCount = 0;
-    while (retryCount <= maxRetries) {
+    while (retryCount < maxRetries) {
       this.initializeState();
       if (retryCount !== 0) {
         console.log(`Retrying : ${retryCount}`);
@@ -136,11 +137,11 @@ class SdkBaseTest extends KiteBaseTest {
       retryCount++;
     }
 
-    try{
+    try {
       await this.printRunDetails(session_id);
-    }catch (e) {
+    } catch (e) {
       console.log(e);
-    }finally {
+    } finally {
       await this.driver.quit();
     }
   }
