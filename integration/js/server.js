@@ -8,10 +8,9 @@ let stepArray = [];
 let doneArray = [];
 let socketAttendeeMap = {};
 let capabilities = {};
-let testPassed = true;
 
 const port = process.argv[2];
-const numberOfParticipant = process.argv[3];
+const numberOfParticipant = parseInt(process.argv[3], 10);
 const interval = 1000;
 
 io.on('connection', function (socket) {
@@ -24,7 +23,6 @@ io.on('connection', function (socket) {
     console.log("Starting test");
     socketAttendeeMap = {};
     attendeeId = "";
-    testPassed = true;
   });
 
   socket.on('test_name', name => {
@@ -116,7 +114,6 @@ io.on('connection', function (socket) {
 
   socket.on("failed", subTest => {
     console.log(`${subTest} failed ${attendeeId}`);
-    testPassed = false;
     socket.broadcast.emit('failed');
   });
 
