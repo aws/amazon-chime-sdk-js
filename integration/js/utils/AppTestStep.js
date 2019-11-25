@@ -1,4 +1,4 @@
-const {TestStep} = require('kite-common');
+const {KiteTestError, TestStep, Status} = require('kite-common');
 const {emitMetric} = require('./CloudWatch');
 
 class AppTestStep extends TestStep {
@@ -14,15 +14,17 @@ class AppTestStep extends TestStep {
   }
 
   async step() {
-    if (this.test.failed) {
-      console.log("Skipping step: " + this.stepDescription());
+    if (this.test.remoteFailed || this.test.failedTest) {
+      console.log("Skipping: " + this.stepDescription());
       return;
     }
     try {
       await this.run();
     } catch (error) {
       this.failed();
-      throw error;
+      // Kite Error status is set to pass for retry logic to work
+      // If we set it to Failed or Broken or Skipped, the kite framework will skip all the steps in next retry
+      throw new KiteTestError(Status.PASSED, error.message);
     }
     this.emitCwMetric(1);
   }

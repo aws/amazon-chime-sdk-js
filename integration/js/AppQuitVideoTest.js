@@ -12,6 +12,7 @@ class AppQuitVideoTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
+    this.url = this.baseUrl + '?m=' + uuidv4();
     this.numberOfParticipant = 2;
     const test_attendee_id = uuidv4();
     const monitor_attendee_id = uuidv4();

@@ -17,7 +17,7 @@ class MeetingJoinFailedCheck extends AppTestStep {
   }
 
   metricName() {
-    return 'MeetingJoinFailedCheck'
+    return 'JoinEndedMeetingCheck'
   }
 
   async run() {

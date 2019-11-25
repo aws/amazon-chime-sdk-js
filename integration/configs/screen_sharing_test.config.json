@@ -11,7 +11,8 @@
       "noOfThreads": 1,
       "testImpl": "ScreenSharingTest.js",
       "payload": {
-        "url": "http://localhost:8080/"
+        "url": "http://localhost:8080/",
+        "retry": 1
       }
     }
   ],

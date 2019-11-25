@@ -48,8 +48,10 @@ r video_test.config.json
 r meeting_end_test.config.json
 r app_quit_audio_test.config.json
 r app_quit_video_test.config.json
+r app_quit_screen_share_test.config.json
 r meeting_leave_audio_test.config.json
 r meeting_leave_video_test.config.json
+r meeting_leave_screen_share_test.config.json
 r screen_sharing_test.config.json
 r screen_viewing_test.config.json
 

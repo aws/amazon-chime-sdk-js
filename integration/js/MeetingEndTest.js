@@ -17,6 +17,7 @@ class MeetingEndTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
+    this.url = this.baseUrl + '?m=' + uuidv4();
     this.page = new AppPage(this.driver);
     let attendee_id = uuidv4();
     await OpenAppStep.executeStep(this);
