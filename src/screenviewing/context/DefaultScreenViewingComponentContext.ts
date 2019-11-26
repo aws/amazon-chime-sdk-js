@@ -85,9 +85,11 @@ export default class DefaultScreenViewingComponentContext implements ScreenViewi
       providers
     );
     signalingSession.registerObserver({
-      streamDidStart(_screenMessageDetail: ScreenMessageDetail): void {},
+      streamDidStart(_screenMessageDetail: ScreenMessageDetail): void {
+        deltaRenderer.revealViewport();
+      },
       streamDidStop(_screenMessageDetail: ScreenMessageDetail): void {
-        deltaRenderer.close();
+        deltaRenderer.hideViewport();
       },
     });
 

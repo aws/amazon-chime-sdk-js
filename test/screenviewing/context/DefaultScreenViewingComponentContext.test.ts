@@ -66,7 +66,8 @@ describe('DefaultScreenViewingComponentContext', () => {
         {
           deltaRendererProvider: () => ({
             ...Substitute.for(),
-            close(): void {
+            hideViewport(): void {},
+            revealViewport(): void {
               done();
             },
           }),
