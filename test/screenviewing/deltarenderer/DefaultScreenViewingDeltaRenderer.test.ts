@@ -434,4 +434,47 @@ describe('DefaultScreenViewingDeltaRenderer', () => {
       deltaRenderer.zoomReset();
     });
   });
+
+  describe('hideViewport and revealViewport', () => {
+    it('hides and reveals the viewport', () => {
+      let style = {
+        display: 'none',
+      };
+
+      let canvas = {
+        style: style,
+      };
+
+      const document: SubstituteOf<Document> = Substitute.for();
+      document.createElement(Arg.any()).returns(canvas);
+      const window: SubstituteOf<Window> = Substitute.for();
+      window.document.returns(document);
+      // @ts-ignore
+      window.getComputedStyle(Arg.any()).returns(canvas.style);
+
+      const deltaRenderer: ScreenViewingDeltaRenderer = new DefaultScreenViewingDeltaRenderer(
+        controller,
+        logger,
+        window,
+        Substitute.for(),
+        Substitute.for()
+      );
+
+      // Test style doesn't change before setViewport
+      canvas.style.display = 'block';
+      deltaRenderer.hideViewport();
+      expect(style.display).to.equal('block');
+      style.display = 'none';
+      deltaRenderer.revealViewport();
+      expect(style.display.valueOf()).to.equal('none');
+
+      // Test style does change after setViewport
+      deltaRenderer.setViewport(Substitute.for());
+      canvas.style.display = 'block';
+      deltaRenderer.hideViewport();
+      expect(canvas.style.display).to.equal('none');
+      deltaRenderer.revealViewport();
+      expect(canvas.style.display).to.equal('block');
+    });
+  });
 });

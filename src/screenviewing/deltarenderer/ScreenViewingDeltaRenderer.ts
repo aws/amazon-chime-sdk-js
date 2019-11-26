@@ -27,6 +27,10 @@ export default interface ScreenViewingDeltaRenderer {
 
   setViewport(viewport: HTMLElement): void;
 
+  hideViewport(): void;
+
+  revealViewport(): void;
+
   changePresentationPolicy(policy: PresentationPolicy): void;
 
   close(): void;
