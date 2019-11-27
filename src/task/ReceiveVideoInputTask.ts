@@ -27,9 +27,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
     } else {
       this.context.videoDuplexMode = receiveEnabled ? SdkStreamServiceType.RX : 0;
     }
-    this.context.videoCaptureAndEncodeParameters = this.context.videoUplinkBandwidthPolicy
-      .chooseCaptureAndEncodeParameters()
-      .clone();
+    this.context.videoCaptureAndEncodeParameter = this.context.videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
 
     if (!this.context.videoTileController.hasStartedLocalVideoTile()) {
       this.context.logger.info('a video input is not enabled');

@@ -13,8 +13,8 @@ import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSession
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import ReceiveVideoInputTask from '../../src/task/ReceiveVideoInputTask';
+import DefaultVideoCaptureAndEncodeParameters from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
-import VideoCaptureAndEncodeParameters from '../../src/videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 interface MockMediaStreamBrokerConfigs {
@@ -63,7 +63,13 @@ describe('ReceiveVideoInputTask', () => {
     context.deviceController = context.audioVideoController.deviceController;
     context.videoTileController = context.audioVideoController.videoTileController;
     context.meetingSessionConfiguration = makeSessionConfiguration();
-    context.videoCaptureAndEncodeParameters = new VideoCaptureAndEncodeParameters(1, 1, 1, 1);
+    context.videoCaptureAndEncodeParameter = new DefaultVideoCaptureAndEncodeParameters(
+      1,
+      1,
+      1,
+      1,
+      false
+    );
     context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
   });
 

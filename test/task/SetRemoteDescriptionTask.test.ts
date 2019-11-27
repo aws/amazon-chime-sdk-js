@@ -9,8 +9,8 @@ import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBeha
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
 import SetRemoteDescriptionTask from '../../src/task/SetRemoteDescriptionTask';
 import Task from '../../src/task/Task';
+import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
-import VideoCaptureAndEncodeParameters from '../../src/videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import SDPMock from '../sdp/SDPMock';
@@ -51,7 +51,7 @@ describe('SetRemoteDescriptionTask', () => {
     context.peer = peer;
     context.sdpAnswer = SDPMock.VIDEO_HOST_AUDIO_ANSWER;
     context.turnCredentials = turnCredentials;
-    context.videoCaptureAndEncodeParameters = new VideoCaptureAndEncodeParameters();
+    context.videoCaptureAndEncodeParameter = new DefaultVideoAndCaptureParameter(0, 0, 0, 0, false);
     context.browserBehavior = new DefaultBrowserBehavior();
     // @ts-ignore
     task = new SetRemoteDescriptionTask(context);
