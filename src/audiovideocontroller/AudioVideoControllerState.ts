@@ -19,11 +19,11 @@ import SignalingClient from '../signalingclient/SignalingClient';
 import { SdkIndexFrame, SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import StatsCollector from '../statscollector/StatsCollector';
 import TransceiverController from '../transceivercontroller/TransceiverController';
+import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoTileController from '../videotilecontroller/VideoTileController';
-import VideoCaptureAndEncodeParameters from '../videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import VolumeIndicatorAdapter from '../volumeindicatoradapter/VolumeIndicatorAdapter';
 
@@ -87,7 +87,7 @@ export default class AudioVideoControllerState {
 
   localVideoSender: RTCRtpSender | null = null;
 
-  videoCaptureAndEncodeParameters: VideoCaptureAndEncodeParameters | null = null;
+  videoCaptureAndEncodeParameter: VideoCaptureAndEncodeParameter | null = null;
 
   videosToReceive: VideoStreamIdSet | null = null;
 

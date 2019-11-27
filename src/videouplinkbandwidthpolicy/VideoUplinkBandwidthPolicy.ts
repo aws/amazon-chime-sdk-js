@@ -1,8 +1,8 @@
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
-import VideoCaptureAndEncodeParameters from './VideoCaptureAndEncodeParameters';
 
 /** A VideoUplinkBandwidthPolicy makes decisions about uplink video
  * bandwidth usage and related camera capture parameters. */
@@ -23,7 +23,7 @@ export default interface VideoUplinkBandwidthPolicy {
    * Update the internal state with the capture and encode parameters
    * we expect to be used, and return the parameters.
    */
-  chooseCaptureAndEncodeParameters(): VideoCaptureAndEncodeParameters;
+  chooseCaptureAndEncodeParameters(): VideoCaptureAndEncodeParameter;
 
   /**
    * Gets the maximum encoding bitrate kbps after bandwidth constraints are applied.

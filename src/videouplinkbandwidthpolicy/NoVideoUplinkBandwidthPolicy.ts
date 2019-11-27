@@ -1,8 +1,9 @@
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
+import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
-import VideoCaptureAndEncodeParameters from '../videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 
 export default class NoVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
@@ -11,8 +12,8 @@ export default class NoVideoUplinkBandwidthPolicy implements VideoUplinkBandwidt
   wantsResubscribe(): boolean {
     return false;
   }
-  chooseCaptureAndEncodeParameters(): VideoCaptureAndEncodeParameters {
-    return new VideoCaptureAndEncodeParameters();
+  chooseCaptureAndEncodeParameters(): VideoCaptureAndEncodeParameter {
+    return new DefaultVideoCaptureAndEncodeParameter(0, 0, 0, 0, false);
   }
   maxBandwidthKbps(): number {
     return 0;

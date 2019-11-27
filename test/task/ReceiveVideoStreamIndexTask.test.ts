@@ -18,13 +18,13 @@ import {
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import ReceiveVideoStreamIndexTask from '../../src/task/ReceiveVideoStreamIndexTask';
+import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
-import VideoCaptureAndEncodeParameters from '../../src/videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -176,12 +176,13 @@ describe('ReceiveVideoStreamIndexTask', () => {
         wantsResubscribe(): boolean {
           return true;
         }
-        chooseCaptureAndEncodeParameters(): VideoCaptureAndEncodeParameters {
-          return new VideoCaptureAndEncodeParameters(
+        chooseCaptureAndEncodeParameters(): DefaultVideoCaptureAndEncodeParameter {
+          return new DefaultVideoCaptureAndEncodeParameter(
             captureWidth,
             captureHeight,
             captureFrameRate,
-            maxEncodeBitrateKbps
+            maxEncodeBitrateKbps,
+            false
           );
         }
       }
@@ -194,12 +195,13 @@ describe('ReceiveVideoStreamIndexTask', () => {
           new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
         );
         expect(
-          context.videoCaptureAndEncodeParameters.equal(
-            new VideoCaptureAndEncodeParameters(
+          context.videoCaptureAndEncodeParameter.equal(
+            new DefaultVideoCaptureAndEncodeParameter(
               captureWidth,
               captureHeight,
               captureFrameRate,
-              maxEncodeBitrateKbps
+              maxEncodeBitrateKbps,
+              false
             )
           )
         ).to.be.true;

@@ -56,6 +56,7 @@ import SetRemoteDescriptionTask from '../task/SetRemoteDescriptionTask';
 import SubscribeAndReceiveSubscribeAckTask from '../task/SubscribeAndReceiveSubscribeAckTask';
 import TimeoutTask from '../task/TimeoutTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
+import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
@@ -63,7 +64,6 @@ import DefaultVideoTileController from '../videotilecontroller/DefaultVideoTileC
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
-import VideoCaptureAndEncodeParameters from '../videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 import DefaultVolumeIndicatorAdapter from '../volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
@@ -222,7 +222,13 @@ export default class DefaultAudioVideoController implements AudioVideoController
       this.configuration.credentials.attendeeId
     );
     this.meetingSessionContext.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
-    this.meetingSessionContext.videoCaptureAndEncodeParameters = new VideoCaptureAndEncodeParameters();
+    this.meetingSessionContext.videoCaptureAndEncodeParameter = new DefaultVideoCaptureAndEncodeParameter(
+      0,
+      0,
+      0,
+      0,
+      false
+    );
     this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.statsCollector = new DefaultStatsCollector(this, this.logger);
@@ -308,7 +314,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
   private actionFinishConnecting(): void {
     this.meetingSessionContext.videoDuplexMode = SdkStreamServiceType.RX;
     this.enforceBandwidthLimitationForSender(
-      this.meetingSessionContext.videoCaptureAndEncodeParameters.maxEncodeBitrateKbps
+      this.meetingSessionContext.videoCaptureAndEncodeParameter.encodeBitrates()[0]
     );
     this.forEachObserver(observer => {
       Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
@@ -429,8 +435,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
   }
 
   private actionFinishUpdating(): void {
-    const maxBitrateKbps = this.meetingSessionContext.videoCaptureAndEncodeParameters
-      .maxEncodeBitrateKbps;
+    const maxBitrateKbps = this.meetingSessionContext.videoCaptureAndEncodeParameter.encodeBitrates()[0];
     this.enforceBandwidthLimitationForSender(maxBitrateKbps);
     this.logger.info('updated audio-video session');
   }

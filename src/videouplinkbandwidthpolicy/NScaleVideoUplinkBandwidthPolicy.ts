@@ -1,8 +1,8 @@
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
-import VideoCaptureAndEncodeParameters from './VideoCaptureAndEncodeParameters';
 import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 
 /** NScaleVideoUplinkBandwidthPolicy implements capture and encode
@@ -11,14 +11,14 @@ import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
  *  maxBandwidthKbps described below. */
 export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
   private numParticipants: number = 0;
-  private optimalParameters: VideoCaptureAndEncodeParameters;
-  private parametersInEffect: VideoCaptureAndEncodeParameters;
+  private optimalParameters: DefaultVideoAndEncodeParameter;
+  private parametersInEffect: DefaultVideoAndEncodeParameter;
   private idealMaxBandwidthKbps = 1400;
   private hasBandwidthPriority: boolean = false;
 
   constructor(private selfAttendeeId: string) {
-    this.optimalParameters = new VideoCaptureAndEncodeParameters();
-    this.parametersInEffect = new VideoCaptureAndEncodeParameters();
+    this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
+    this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
   }
 
   updateIndex(videoIndex: VideoStreamIndex): void {
@@ -26,21 +26,22 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     // the context here is VideoUplinkBandwidthPolicy
     this.numParticipants =
       videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) + 1;
-    const p = new VideoCaptureAndEncodeParameters();
-    p.captureWidth = this.captureWidth();
-    p.captureHeight = this.captureHeight();
-    p.captureFrameRate = this.captureFrameRate();
-    p.maxEncodeBitrateKbps = this.maxBandwidthKbps();
-    this.optimalParameters = p;
+    this.optimalParameters = new DefaultVideoAndEncodeParameter(
+      this.captureWidth(),
+      this.captureHeight(),
+      this.captureFrameRate(),
+      this.maxBandwidthKbps(),
+      false
+    );
   }
 
   wantsResubscribe(): boolean {
     return !this.parametersInEffect.equal(this.optimalParameters);
   }
 
-  chooseCaptureAndEncodeParameters(): VideoCaptureAndEncodeParameters {
+  chooseCaptureAndEncodeParameters(): DefaultVideoAndEncodeParameter {
     this.parametersInEffect = this.optimalParameters.clone();
-    return this.parametersInEffect;
+    return this.parametersInEffect.clone();
   }
 
   private captureWidth(): number {

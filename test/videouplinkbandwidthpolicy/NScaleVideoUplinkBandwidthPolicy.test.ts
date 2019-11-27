@@ -10,9 +10,9 @@ import {
   SdkStreamDescriptor,
   SdkStreamMediaType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
-import VideoCaptureAndEncodeParameters from '../../src/videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 
 describe('NScaleVideoUplinkBandwidthPolicy', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -28,41 +28,41 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
 
   describe('chooseCaptureAndEncodeParameters', () => {
     const expectedNumParticipantsToParameters = new Map([
-      [1, new VideoCaptureAndEncodeParameters(640, 360, 15, 600)],
-      [2, new VideoCaptureAndEncodeParameters(640, 360, 15, 600)],
-      [3, new VideoCaptureAndEncodeParameters(640, 360, 15, 400)],
-      [4, new VideoCaptureAndEncodeParameters(640, 360, 15, 400)],
-      [5, new VideoCaptureAndEncodeParameters(320, 180, 15, 320)],
-      [6, new VideoCaptureAndEncodeParameters(320, 180, 15, 274)],
-      [7, new VideoCaptureAndEncodeParameters(320, 180, 15, 242)],
-      [8, new VideoCaptureAndEncodeParameters(320, 180, 15, 218)],
-      [9, new VideoCaptureAndEncodeParameters(320, 180, 15, 199)],
-      [10, new VideoCaptureAndEncodeParameters(320, 180, 15, 184)],
-      [11, new VideoCaptureAndEncodeParameters(320, 180, 15, 172)],
-      [12, new VideoCaptureAndEncodeParameters(320, 180, 15, 162)],
-      [13, new VideoCaptureAndEncodeParameters(320, 180, 15, 153)],
-      [14, new VideoCaptureAndEncodeParameters(320, 180, 15, 146)],
-      [15, new VideoCaptureAndEncodeParameters(320, 180, 15, 139)],
-      [16, new VideoCaptureAndEncodeParameters(320, 180, 15, 134)],
+      [1, new DefaultVideoCaptureAndEncodeParameter(640, 360, 15, 600, false)],
+      [2, new DefaultVideoCaptureAndEncodeParameter(640, 360, 15, 600, false)],
+      [3, new DefaultVideoCaptureAndEncodeParameter(640, 360, 15, 400, false)],
+      [4, new DefaultVideoCaptureAndEncodeParameter(640, 360, 15, 400, false)],
+      [5, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 320, false)],
+      [6, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 274, false)],
+      [7, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 242, false)],
+      [8, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 218, false)],
+      [9, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 199, false)],
+      [10, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 184, false)],
+      [11, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 172, false)],
+      [12, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 162, false)],
+      [13, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 153, false)],
+      [14, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 146, false)],
+      [15, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 139, false)],
+      [16, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 134, false)],
     ]);
 
     const expectedNumParticipantsToParametersWithPriority = new Map([
-      [1, new VideoCaptureAndEncodeParameters(640, 360, 15, 600)],
-      [2, new VideoCaptureAndEncodeParameters(640, 360, 15, 600)],
-      [3, new VideoCaptureAndEncodeParameters(640, 360, 15, 600)],
-      [4, new VideoCaptureAndEncodeParameters(640, 360, 15, 600)],
-      [5, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [6, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [7, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [8, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [9, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [10, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [11, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [12, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [13, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [14, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [15, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
-      [16, new VideoCaptureAndEncodeParameters(320, 180, 15, 600)],
+      [1, new DefaultVideoCaptureAndEncodeParameter(640, 360, 15, 600, false)],
+      [2, new DefaultVideoCaptureAndEncodeParameter(640, 360, 15, 600, false)],
+      [3, new DefaultVideoCaptureAndEncodeParameter(640, 360, 15, 600, false)],
+      [4, new DefaultVideoCaptureAndEncodeParameter(640, 360, 15, 600, false)],
+      [5, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [6, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [7, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [8, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [9, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [10, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [11, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [12, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [13, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [14, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [15, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
+      [16, new DefaultVideoCaptureAndEncodeParameter(320, 180, 15, 600, false)],
     ]);
 
     it('returns the correct values when the self is present in the SdkIndexFrame', () => {
@@ -184,7 +184,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
     });
   });
 
-  describe('wantsRescubscribe', () => {
+  describe('wantsResubscribe', () => {
     it('returns true if optimal parameters have changed', () => {
       const index = new DefaultVideoStreamIndex(logger);
       // transition from 4 to 5 participants (note the +1 implicit participant for self)

@@ -73,6 +73,7 @@ import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSignalingSession from './screenviewing/signalingsession/DefaultSignalingSession';
 import DefaultStatsCollector from './statscollector/DefaultStatsCollector';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
+import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIdSet from './videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from './videostreamindex/DefaultVideoStreamIndex';
 import DefaultVideoTile from './videotile/DefaultVideoTile';
@@ -255,7 +256,7 @@ import TransceiverController from './transceivercontroller/TransceiverController
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import Versioning from './versioning/Versioning';
 import VideoAdaptiveSubscribePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveSubscribePolicy';
-import VideoCaptureAndEncodeParameters from './videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
+import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoLogEvent from './statscollector/VideoLogEvent';
@@ -349,6 +350,7 @@ export {
   DefaultSignalingSession,
   DefaultStatsCollector,
   DefaultTransceiverController,
+  DefaultVideoCaptureAndEncodeParameter,
   DefaultVideoStreamIdSet,
   DefaultVideoStreamIndex,
   DefaultVideoTile,
@@ -531,7 +533,7 @@ export {
   UnusableAudioWarningConnectionHealthPolicy,
   Versioning,
   VideoAdaptiveSubscribePolicy,
-  VideoCaptureAndEncodeParameters,
+  VideoCaptureAndEncodeParameter,
   VideoDownlinkBandwidthPolicy,
   VideoElementFactory,
   VideoLogEvent,

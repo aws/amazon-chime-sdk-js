@@ -49,9 +49,9 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
     let frameRate = 0;
     let maxEncodeBitrateKbps = 0;
-    if (this.context.videoCaptureAndEncodeParameters) {
-      frameRate = this.context.videoCaptureAndEncodeParameters.captureFrameRate;
-      maxEncodeBitrateKbps = this.context.videoCaptureAndEncodeParameters.maxEncodeBitrateKbps;
+    if (this.context.videoCaptureAndEncodeParameter) {
+      frameRate = this.context.videoCaptureAndEncodeParameter.captureFrameRate();
+      maxEncodeBitrateKbps = this.context.videoCaptureAndEncodeParameter.encodeBitrates()[0];
     }
 
     const isSendingStreams: boolean =

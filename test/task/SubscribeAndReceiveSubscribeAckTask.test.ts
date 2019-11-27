@@ -19,8 +19,8 @@ import {
   SdkSubscribeAckFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SubscribeAndReceiveSubscribeAckTask from '../../src/task/SubscribeAndReceiveSubscribeAckTask';
+import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
-import VideoCaptureAndEncodeParameters from '../../src/videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -77,8 +77,8 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth')
     );
     context.browserBehavior = new DefaultBrowserBehavior();
-    const captureAndEncodeParameters = new VideoCaptureAndEncodeParameters();
-    context.videoCaptureAndEncodeParameters = captureAndEncodeParameters;
+    const captureAndEncodeParameters = new DefaultVideoAndCaptureParameter(0, 0, 0, 0, false);
+    context.videoCaptureAndEncodeParameter = captureAndEncodeParameters;
     const videoStreamIndex = new DefaultVideoStreamIndex(context.logger);
     context.videoStreamIndex = videoStreamIndex;
     const frame = SdkSubscribeAckFrame.create();
@@ -157,8 +157,8 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     //   expect(settings).to.be.undefined;
     // });
 
-    it('can subscribe without videoCaptureAndEncodeParameters', async () => {
-      context.videoCaptureAndEncodeParameters = null;
+    it('can subscribe without videoCaptureAndEncodeParameter', async () => {
+      context.videoCaptureAndEncodeParameter = null;
 
       await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
       expect(context.signalingClient.ready()).to.equal(true);

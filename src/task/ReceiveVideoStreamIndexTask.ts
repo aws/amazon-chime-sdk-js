@@ -90,12 +90,10 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
     }
 
     this.context.videosToReceive = videoDownlinkBandwidthPolicy.chooseSubscriptions();
-    this.context.videoCaptureAndEncodeParameters = videoUplinkBandwidthPolicy
-      .chooseCaptureAndEncodeParameters()
-      .clone();
+    this.context.videoCaptureAndEncodeParameter = videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
     this.logger.info(
       `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}] captureParams=${JSON.stringify(
-        this.context.videoCaptureAndEncodeParameters
+        this.context.videoCaptureAndEncodeParameter
       )}`
     );
     this.context.audioVideoController.update();

@@ -10,9 +10,9 @@ import {
   SdkStreamDescriptor,
   SdkStreamMediaType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
-import VideoCaptureAndEncodeParameters from '../../src/videouplinkbandwidthpolicy/VideoCaptureAndEncodeParameters';
 
 describe('NoVideoUplinkBandwidthPolicy', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -27,10 +27,10 @@ describe('NoVideoUplinkBandwidthPolicy', () => {
 
   describe('chooseCaptureAndEncodeParameters', () => {
     const expectedNumParticipantsToParameters = new Map([
-      [1, new VideoCaptureAndEncodeParameters(640, 480, 15, 600)],
-      [2, new VideoCaptureAndEncodeParameters(640, 480, 15, 600)],
-      [3, new VideoCaptureAndEncodeParameters(640, 480, 15, 400)],
-      [4, new VideoCaptureAndEncodeParameters(640, 480, 15, 400)],
+      [1, new DefaultVideoCaptureAndEncodeParameter(640, 480, 15, 600, false)],
+      [2, new DefaultVideoCaptureAndEncodeParameter(640, 480, 15, 600, false)],
+      [3, new DefaultVideoCaptureAndEncodeParameter(640, 480, 15, 400, false)],
+      [4, new DefaultVideoCaptureAndEncodeParameter(640, 480, 15, 400, false)],
     ]);
 
     it('returns the initial value 0 although the self is present in the SdkIndexFrame', () => {
@@ -62,16 +62,21 @@ describe('NoVideoUplinkBandwidthPolicy', () => {
         index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
         policy.updateIndex(index);
         const params = policy.chooseCaptureAndEncodeParameters();
-        expect(params.captureWidth).to.equal(0);
-        expect(params.captureHeight).to.equal(0);
-        expect(params.captureFrameRate).to.equal(0);
-        expect(params.maxEncodeBitrateKbps).to.equal(0);
-        expect(policy.maxBandwidthKbps()).to.equal(0);
+        expect(params.captureWidth()).to.equal(0);
+        expect(params.captureHeight()).to.equal(0);
+        expect(params.captureFrameRate()).to.equal(0);
+        expect(params.encodeBitrates()[0]).to.equal(0);
       }
     });
   });
 
-  describe('wantsRescubscribe', () => {
+  describe('maxBandwidthKbps', () => {
+    it('returns 0', () => {
+      expect(policy.maxBandwidthKbps()).to.equal(0);
+    });
+  });
+
+  describe('wantsResubscribe', () => {
     it('returns false although optimal parameters have changed', () => {
       const index = new DefaultVideoStreamIndex(logger);
       // transition from 4 to 5 participants (note the +1 implicit participant for self)
