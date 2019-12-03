@@ -10,6 +10,7 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
+import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
 import Logger from '../../src/logger/Logger';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
@@ -133,7 +134,11 @@ describe('MonitorTask', () => {
       new DefaultWebSocketAdapter(context.logger),
       context.logger
     );
-    task = new MonitorTask(context, new ConnectionHealthData());
+    task = new MonitorTask(
+      context,
+      new ConnectionHealthPolicyConfiguration(),
+      new ConnectionHealthData()
+    );
   });
 
   afterEach(() => {
