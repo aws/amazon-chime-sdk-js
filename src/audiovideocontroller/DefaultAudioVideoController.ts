@@ -264,7 +264,11 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
     try {
       await new SerialGroupTask(this.logger, 'AudioVideoStart', [
-        new MonitorTask(this.meetingSessionContext, this.connectionHealthData),
+        new MonitorTask(
+          this.meetingSessionContext,
+          this.configuration.connectionHealthPolicyConfiguration,
+          this.connectionHealthData
+        ),
         new ReceiveAudioInputTask(this.meetingSessionContext),
         new TimeoutTask(
           this.logger,

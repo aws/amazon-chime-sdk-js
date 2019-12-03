@@ -7,6 +7,7 @@ import * as sinon from 'sinon';
 import DefaultAudioVideoController from '../../src/audiovideocontroller/DefaultAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import Backoff from '../../src/backoff/Backoff';
+import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
@@ -321,13 +322,13 @@ describe('DefaultAudioVideoController', () => {
       const spy = sinon.spy(audioVideoController, 'handleMeetingSessionStatus');
 
       audioVideoController.start();
-      expect(spy.called);
       await delay();
       configuration.connectionTimeoutMs = 15000;
       audioVideoController.handleMeetingSessionStatus(
         new MeetingSessionStatus(MeetingSessionStatusCode.Left)
       );
       await stop();
+      expect(spy.called).to.be.true;
     });
 
     it('does not call the observer if it has been removed', async () => {
@@ -864,6 +865,43 @@ describe('DefaultAudioVideoController', () => {
           expect(spy.callCount).to.equal(3);
           await stop();
         });
+      });
+    });
+
+    it('uses the custom connection health policy configuration if passed', done => {
+      // Set the missed pongs upper threshold to zero to force restarting the session.
+      const connectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
+      connectionHealthPolicyConfiguration.connectionWaitTimeMs = 0;
+      connectionHealthPolicyConfiguration.missedPongsUpperThreshold = 0;
+      configuration.connectionHealthPolicyConfiguration = connectionHealthPolicyConfiguration;
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      const reconnectSpy = sinon.spy(audioVideoController, 'reconnect');
+
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
+          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.OK);
+          done();
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      start();
+
+      // connectionHealthDidChange in MonitorTask is called for the first time
+      // after the stats collector receives metrics after 1000ms.
+      delay(1500).then(async () => {
+        expect(reconnectSpy.called).to.be.true;
+
+        // Finish the reconnect operation and stop this test.
+        webSocketAdapter.send(makeIndexFrame());
+        await finishUpdating();
+        await stop();
       });
     });
   });

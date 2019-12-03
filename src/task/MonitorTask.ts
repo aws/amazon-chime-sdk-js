@@ -35,20 +35,21 @@ export default class MonitorTask extends BaseTask
 
   constructor(
     private context: AudioVideoControllerState,
+    connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration,
     private initialConnectionHealthData: ConnectionHealthData
   ) {
     super(context.logger);
     this.reconnectionHealthPolicy = new ReconnectionHealthPolicy(
       context.logger,
-      new ConnectionHealthPolicyConfiguration(),
+      { ...connectionHealthPolicyConfiguration },
       this.initialConnectionHealthData.clone()
     );
     this.unusableAudioWarningHealthPolicy = new UnusableAudioWarningConnectionHealthPolicy(
-      new ConnectionHealthPolicyConfiguration(),
+      { ...connectionHealthPolicyConfiguration },
       this.initialConnectionHealthData.clone()
     );
     this.signalStrengthBarsHealthPolicy = new SignalStrengthBarsConnectionHealthPolicy(
-      new ConnectionHealthPolicyConfiguration(),
+      { ...connectionHealthPolicyConfiguration },
       this.initialConnectionHealthData.clone()
     );
   }

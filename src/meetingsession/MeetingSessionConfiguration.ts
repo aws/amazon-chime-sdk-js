@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ScreenSharingSessionOptions from '../screensharingsession/ScreenSharingSessionOptions';
 import MeetingSessionCredentials from './MeetingSessionCredentials';
 import MeetingSessionURLs from './MeetingSessionURLs';
@@ -12,17 +13,17 @@ import MeetingSessionURLs from './MeetingSessionURLs';
  */
 export default class MeetingSessionConfiguration {
   /**
-   * The id of the meeting the session is joining
+   * The id of the meeting the session is joining.
    */
   meetingId: string | null = null;
 
   /**
-   * The credentials used to authenticate the session
+   * The credentials used to authenticate the session.
    */
   credentials: MeetingSessionCredentials | null = null;
 
   /**
-   * The URLs the session uses to reach the meeting service
+   * The URLs the session uses to reach the meeting service.
    */
   urls: MeetingSessionURLs | null = null;
 
@@ -42,9 +43,15 @@ export default class MeetingSessionConfiguration {
   screenViewingTimeoutMs: number = 5000;
 
   /**
-   * Screen sharing session options
+   * Screen sharing session options.
    */
   screenSharingSessionOptions: ScreenSharingSessionOptions = {};
+
+  /**
+   * Configuration for connection health policies: reconnection, unusable audio warning connection,
+   * and signal strength bars connection.
+   */
+  connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
 
   /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
