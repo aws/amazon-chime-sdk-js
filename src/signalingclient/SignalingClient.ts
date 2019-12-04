@@ -73,9 +73,9 @@ export default interface SignalingClient {
   /**
    * Closes any existing connection.
    *
-   * After closing the connection, it delivers final events pertaining to the connection, and then
-   * services the connection request queue. If there is no connection to close, this function does
-   * nothing.
+   * Prior to closing, it delivers a WebSocketClosing event. Upon receipt of the final
+   * WebSocket close event, the connection request queue is serviced. If there is no connection
+   * to close, this function just services the connection request queue and returns.
    */
   closeConnection(): void;
 

@@ -24,4 +24,16 @@ export default class SignalingClientEvent {
   ) {
     this.timestampMs = Date.now();
   }
+
+  isConnectionTerminated(): boolean {
+    switch (this.type) {
+      case SignalingClientEventType.WebSocketFailed:
+      case SignalingClientEventType.WebSocketError:
+      case SignalingClientEventType.WebSocketClosing:
+      case SignalingClientEventType.WebSocketClosed:
+        return true;
+      default:
+        return false;
+    }
+  }
 }

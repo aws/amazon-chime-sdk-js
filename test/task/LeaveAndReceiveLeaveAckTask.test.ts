@@ -9,6 +9,8 @@ import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
+import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
+import SignalingClientEventType from '../../src/signalingclient/SignalingClientEventType';
 import { SdkLeaveAckFrame, SdkSignalFrame } from '../../src/signalingprotocol/SignalingProtocol.js';
 import LeaveAndReceiveLeaveAckTask from '../../src/task/LeaveAndReceiveLeaveAckTask';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -69,6 +71,63 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
       const task = new LeaveAndReceiveLeaveAckTask(context);
       leaveAckBuffer = makeLeaveAckFrame();
       new TimeoutScheduler(100).start(() => webSocketAdapter.send(leaveAckBuffer));
+      await task.run().then(() => {});
+    });
+
+    it('completes when the connection is closed while waiting for ack', async () => {
+      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      expect(context.signalingClient.ready()).to.be.true;
+
+      const task = new LeaveAndReceiveLeaveAckTask(context);
+      new TimeoutScheduler(50).start(() => webSocketAdapter.close());
+      await task.run().then(() => {});
+    });
+
+    it('completes when receiving closing event while waiting for ack', async () => {
+      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      expect(context.signalingClient.ready()).to.be.true;
+
+      const task = new LeaveAndReceiveLeaveAckTask(context);
+      new TimeoutScheduler(50).start(() => context.signalingClient.closeConnection());
+      await task.run().then(() => {});
+    });
+
+    it('completes when receiving error event while waiting for ack', async () => {
+      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      expect(context.signalingClient.ready()).to.be.true;
+
+      const task = new LeaveAndReceiveLeaveAckTask(context);
+      new TimeoutScheduler(50).start(() => {
+        behavior.webSocketSendSucceeds = false;
+        webSocketAdapter.send(new Uint8Array([0]));
+      });
+      await task.run().then(() => {});
+    });
+
+    it('completes when receiving failed event while waiting for ack', async () => {
+      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      expect(context.signalingClient.ready()).to.be.true;
+
+      const task = new LeaveAndReceiveLeaveAckTask(context);
+      new TimeoutScheduler(50).start(() => {
+        // @ts-ignore
+        context.signalingClient.sendEvent(
+          new SignalingClientEvent(
+            context.signalingClient,
+            SignalingClientEventType.WebSocketFailed,
+            null
+          )
+        );
+      });
+      await task.run().then(() => {});
+    });
+
+    it('completes when the connection is already closed', async () => {
+      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      expect(context.signalingClient.ready()).to.be.true;
+
+      context.signalingClient.closeConnection();
+      const task = new LeaveAndReceiveLeaveAckTask(context);
       await task.run().then(() => {});
     });
   });

@@ -119,6 +119,15 @@ describe('CleanStoppedSessionTask', () => {
       });
     });
 
+    it('does not close the connection if already closed', done => {
+      expect(context.signalingClient.ready()).to.equal(true);
+      context.signalingClient.closeConnection();
+      task.run().then(() => {
+        expect(context.signalingClient.ready()).to.equal(false);
+        done();
+      });
+    });
+
     it('sets audio and video input to null', done => {
       task.run().then(() => {
         expect(context.activeAudioInput).to.be.null;
@@ -222,6 +231,9 @@ describe('CleanStoppedSessionTask', () => {
 
     it('continues to clean up remaining audio-video state regardless of the close connection failure', done => {
       class TestSignalingClient extends DefaultSignalingClient {
+        ready(): boolean {
+          return true;
+        }
         closeConnection(): void {
           throw new Error();
         }
@@ -255,6 +267,9 @@ describe('CleanStoppedSessionTask', () => {
     it('should not close the WebSocket connection if the message is not the WebSocket closed event', done => {
       expect(context.signalingClient.ready()).to.equal(true);
       class TestSignalingClient extends DefaultSignalingClient {
+        ready(): boolean {
+          return true;
+        }
         closeConnection(): void {}
       }
       context.signalingClient = new TestSignalingClient(webSocketAdapter, context.logger);
