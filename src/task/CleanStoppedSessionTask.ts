@@ -26,9 +26,10 @@ export default class CleanStoppedSessionTask extends BaseTask {
 
   async run(): Promise<void> {
     try {
-      this.context.signalingClient.closeConnection();
-      await this.receiveWebSocketClosedEvent();
-      this.context.logger.info('got close event');
+      if (this.context.signalingClient.ready()) {
+        this.context.signalingClient.closeConnection();
+        await this.receiveWebSocketClosedEvent();
+      }
     } catch (error) {
       throw error;
     } finally {

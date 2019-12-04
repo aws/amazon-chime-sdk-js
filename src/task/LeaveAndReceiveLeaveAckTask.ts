@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import Logger from '../logger/Logger';
 import SignalingClient from '../signalingclient/SignalingClient';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
@@ -29,15 +30,17 @@ export default class LeaveAndReceiveLeaveAckTask extends BaseTask {
   }
 
   async run(): Promise<void> {
-    this.context.signalingClient.leave();
-    await this.receiveLeaveAck();
-    this.context.logger.info('got leave ack');
+    if (this.context.signalingClient.ready()) {
+      this.context.signalingClient.leave();
+      this.context.logger.info('sent leave');
+      await this.receiveLeaveAck();
+    }
   }
 
   private receiveLeaveAck(): Promise<void> {
     return new Promise((resolve, reject) => {
       class Interceptor implements SignalingClientObserver, TaskCanceler {
-        constructor(private signalingClient: SignalingClient) {}
+        constructor(private signalingClient: SignalingClient, private logger: Logger) {}
 
         cancel(): void {
           this.signalingClient.removeObserver(this);
@@ -47,17 +50,26 @@ export default class LeaveAndReceiveLeaveAckTask extends BaseTask {
         }
 
         handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.isConnectionTerminated()) {
+            this.signalingClient.removeObserver(this);
+            this.logger.info('LeaveAndReceiveLeaveAckTask connection terminated');
+            // don't treat this as an error
+            resolve();
+            return;
+          }
+
           if (
             event.type === SignalingClientEventType.ReceivedSignalFrame &&
             event.message.type === SdkSignalFrame.Type.LEAVE_ACK
           ) {
             this.signalingClient.removeObserver(this);
+            this.logger.info('got leave ack');
             resolve();
           }
         }
       }
 
-      const interceptor = new Interceptor(this.context.signalingClient);
+      const interceptor = new Interceptor(this.context.signalingClient, this.context.logger);
       this.taskCanceler = interceptor;
       this.context.signalingClient.registerObserver(interceptor);
     });
