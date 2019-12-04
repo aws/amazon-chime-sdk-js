@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+LAYER_NAME=video-help-desk-layer
+aws lambda list-layer-versions --layer-name $LAYER_NAME | grep LayerVersionArn && { echo 'Layer already created' ; exit 0; }
+rm -rf /tmp/nodejs
+mkdir -p /tmp/nodejs
+cd /tmp/nodejs
+npm init -y
+npm install uuid aws-sdk --save
+rm package-lock.json
+rm package.json
+cd /tmp
+zip -r layer.zip nodejs
+aws lambda publish-layer-version --zip-file fileb:///tmp/layer.zip --layer-name $LAYER_NAME --compatible-runtimes nodejs
