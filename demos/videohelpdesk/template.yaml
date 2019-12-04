@@ -1,0 +1,140 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Video Help Desk
+Globals:
+  Function:
+    Runtime: nodejs10.x
+    Timeout: 30
+    MemorySize: 128
+    Layers:
+      - !Join
+        - ':'
+        - - arn:aws:lambda
+          - !Ref AWS::Region
+          - !Ref AWS::AccountId
+          - layer
+          - video-help-desk-layer
+          - 1
+    Environment:
+      Variables:
+        TICKETS_TABLE_NAME: !Ref Tickets
+Resources:
+  ChimeMeetingsAccessPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: ChimeMeetingsAccess
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'chime:GetMeeting'
+              - 'chime:CreateMeeting'
+              - 'chime:DeleteMeeting'
+              - 'chime:CreateAttendee'
+              - 'chime:DeleteAttendee'
+            Resource: '*'
+      Roles:
+        - Ref: WebsiteLambdaRole
+        - Ref: HelpDeskLambdaRole
+        - Ref: CreateTicketLambdaRole
+        - Ref: GetTicketsLambdaRole
+        - Ref: GetTicketLambdaRole
+        - Ref: DeleteTicketLambdaRole
+  Tickets:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: TicketId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: TicketId
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: TTL
+        Enabled: true
+  WebsiteLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handlers.website
+      Runtime: nodejs10.x
+      CodeUri: dist/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+  HelpDeskLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handlers.helpDesk
+      Runtime: nodejs10.x
+      CodeUri: dist/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /helpdesk
+            Method: GET
+  CreateTicketLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handlers.createTicket
+      CodeUri: dist/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Tickets
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /tickets
+            Method: POST
+  GetTicketsLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handlers.getTickets
+      CodeUri: dist/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Tickets
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /tickets
+            Method: GET
+  GetTicketLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handlers.getTicket
+      CodeUri: dist/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Tickets
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /ticket
+            Method: GET
+  DeleteTicketLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handlers.deleteTicket
+      CodeUri: dist/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Tickets
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /ticket
+            Method: DELETE
+Outputs:
+  ApiURL:
+    Description: "API endpoint URL for Prod environment"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

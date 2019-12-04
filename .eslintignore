@@ -4,6 +4,7 @@ demos/aws-sdk
 demos/electron/*
 demos/browser/*
 demos/serverless/*
+demos/videohelpdesk/*
 doc
 index.ts
 integration
