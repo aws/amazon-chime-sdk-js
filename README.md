@@ -31,6 +31,9 @@ To build, test, and run demos from source you will need:
 
 ### Installing from NPM
 
+To add the Amazon Chime SDK for JavaScript into an existing application,
+install the package directly from npm:
+
 ```
 npm install amazon-chime-sdk-js --save
 ```
