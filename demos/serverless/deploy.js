@@ -7,23 +7,26 @@ let region = 'us-east-1';
 let bucket = ``;
 let stack = ``;
 let app = `meeting`;
+let useEventBridge = false;
 
 function usage() {
-  console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application]`);
-  console.log(`  -r, --region      Target region, default '${region}'`);
-  console.log(`  -b, --s3-bucket   S3 bucket for deployment, required`);
-  console.log(`  -s, --stack-name  CloudFormation stack name, required`);
-  console.log(`  -a, --application Browser application to deploy, default '${app}'`);
-  console.log(`  -h, --help        Show help and exit`);
+  console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
+  console.log(`  -r, --region       Target region, default '${region}'`);
+  console.log(`  -b, --s3-bucket    S3 bucket for deployment, required`);
+  console.log(`  -s, --stack-name   CloudFormation stack name, required`);
+  console.log(`  -a, --application  Browser application to deploy, default '${app}'`);
+  console.log(`  -e, --event-bridge Enable EventBridge integration, default is no`);
+  console.log(`  -h, --help         Show help and exit`);
 }
 
 function ensureBucket() {
-  const s3Api = spawnSync('aws', ['s3api', 'head-bucket', '--bucket', `${bucket}`, '--region', '${region}']);
+  const s3Api = spawnSync('aws', ['s3api', 'head-bucket', '--bucket', `${bucket}`, '--region', `${region}`]);
   if (s3Api.status !== 0) {
     console.log(`Creating S3 bucket ${bucket}`);
     const s3 = spawnSync('aws', ['s3', 'mb', `s3://${bucket}`, '--region', `${region}`]);
     if (s3.status !== 0) {
-      console.log(s3.stderr.toString());
+      console.log(`Failed to create bucket: ${JSON.stringify(s3)}`);
+      console.log((s3.stderr || s3.stdout).toString());
       process.exit(s3.status)
     }
   }
@@ -59,6 +62,9 @@ function parseArgs() {
       case '-a': case '--application':
         app = getArgOrExit(++i, args)
         break;
+      case '-e': case '--event-bridge':
+        useEventBridge = true;
+        break;
       default:
         console.log(`Invalid argument ${args[i]}`);
         usage();
@@ -75,7 +81,12 @@ function parseArgs() {
 
 function spawnOrFail(command, args, options) {
   const cmd = spawnSync(command, args, options);
+  if (cmd.error) {
+    console.log(`Command ${command} failed with ${cmd.error.code}`);
+    process.exit(255);
+  }
   if (cmd.status !== 0) {
+    console.log(JSON.stringify(cmd));
     console.log(cmd.stderr.toString());
     process.exit(cmd.status)
   }
@@ -98,7 +109,13 @@ function ensureApp() {
   spawnOrFail('npm', ['install', '--production'], {cwd: path.join(__dirname, '..', 'browser', 'node_modules', 'aws-sdk')});
 }
 
+function ensureTools() {
+  spawnOrFail('aws', ['--version']);
+  spawnOrFail('sam', ['--version']);
+}
+
 parseArgs();
+ensureTools();
 ensureApp();
 
 if (!fs.existsSync('build')) {
@@ -112,11 +129,13 @@ ensureBucket();
 spawnOrFail('cp', ['-Rp', path.join(__dirname, '..', 'browser', 'node_modules', 'aws-sdk'), 'src']);
 
 spawnOrFail('cp', [appHtml, 'src/index.html']);
-spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`, `--output-template-file`, `build/packaged.yaml`,
-                     '--region',  `${region}`]);
+spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
+                    `--output-template-file`, `build/packaged.yaml`,
+                    '--region',  `${region}`]);
 console.log('Deploying serverless application');
 spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--stack-name', `${stack}`,
-                     '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`]);
+                    '--parameter-overrides', `UseEventBridge=${useEventBridge}`,
+                    '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`]);
 console.log("Amazon Chime SDK Meeting Demo URL: ");
 spawnOrFail('aws', ['cloudformation', 'describe-stacks', '--stack-name', `${stack}`,
-                     '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`]);
+                    '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`]);
