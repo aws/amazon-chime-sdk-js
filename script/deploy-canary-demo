@@ -1,0 +1,8 @@
+#!/bin/bash -i
+
+repo_path=~/build/aws/amazon-chime-sdk-js
+cd $repo_path/demos/browser
+npm run build
+
+cd $repo_path/demos/serverless
+node deploy.js -b chime-sdk-demo-canary -s chime-sdk-demo-canary
