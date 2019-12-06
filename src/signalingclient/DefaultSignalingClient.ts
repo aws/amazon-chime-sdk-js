@@ -29,6 +29,7 @@ import SignalingClientSubscribe from './SignalingClientSubscribe';
 /**
  * [[DefaultSignalingClient]] implements the SignalingClient interface.
  */
+/** @internal */
 export default class DefaultSignalingClient implements SignalingClient {
   private static FRAME_TYPE_RTC: number = 0x5;
   private observerQueue: Set<SignalingClientObserver>;

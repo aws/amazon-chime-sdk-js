@@ -3,6 +3,7 @@
 
 import { detect } from 'detect-browser';
 
+/** @internal */
 export default class DefaultBrowserBehavior {
   private readonly browser = detect();
 

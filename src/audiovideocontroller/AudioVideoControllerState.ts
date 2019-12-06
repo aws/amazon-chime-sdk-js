@@ -30,6 +30,7 @@ import VolumeIndicatorAdapter from '../volumeindicatoradapter/VolumeIndicatorAda
 /**
  * [[AudioVideoControllerState]] includes the compute resources shared by [[Task]].
  */
+/** @internal */
 export default class AudioVideoControllerState {
   logger: Logger | null = null;
 

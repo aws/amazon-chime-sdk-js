@@ -4,6 +4,7 @@
 import Direction from './ClientMetricReportDirection';
 import MediaType from './ClientMetricReportMediaType';
 
+/** @internal */
 export default class StreamMetricReport {
   streamId: number;
   mediaType: MediaType;

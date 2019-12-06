@@ -4,6 +4,7 @@
 /*
  * [[SignalingClientConnectionRequest]] represents an connection request.
  */
+/** @internal */
 export default class SignalingClientConnectionRequest {
   /** Creates a request with the given URL, conference id, and session token.
    *

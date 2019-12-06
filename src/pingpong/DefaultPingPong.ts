@@ -20,6 +20,7 @@ import PingPong from './PingPong';
 /**
  * [[DefaultPingPong]] implements the PingPong and SignalingClientObserver interface.
  */
+/** @internal */
 export default class DefaultPingPong implements SignalingClientObserver, PingPong {
   private observerQueue: Set<PingPongObserver> = new Set<PingPongObserver>();
   intervalScheduler: IntervalScheduler;

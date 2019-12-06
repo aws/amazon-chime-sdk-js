@@ -5,6 +5,7 @@ import MediaRecording from './MediaRecording';
 import MediaRecordingEvent from './MediaRecordingEvent';
 import MediaRecordingOptions from './MediaRecordingOptions';
 
+/** @internal */
 export default class WebMMediaRecording implements MediaRecording {
   private static options: MediaRecorderOptions = {
     mimeType: 'video/webm; codecs=vp8',

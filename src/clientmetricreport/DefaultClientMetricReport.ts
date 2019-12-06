@@ -9,6 +9,7 @@ import MediaType from './ClientMetricReportMediaType';
 import GlobalMetricReport from './GlobalMetricReport';
 import StreamMetricReport from './StreamMetricReport';
 
+/** @internal */
 export default class DefaultClientMetricReport implements ClientMetricReport {
   globalMetricReport: GlobalMetricReport = new GlobalMetricReport();
   streamMetricReports: { [id: number]: StreamMetricReport } = {};

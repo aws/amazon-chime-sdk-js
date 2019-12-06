@@ -6,6 +6,7 @@ import MediaRecordingFactory from './MediaRecordingFactory';
 import MediaRecordingOptions from './MediaRecordingOptions';
 import WebMMediaRecording from './WebMMediaRecording';
 
+/** @internal */
 export default class WebMMediaRecordingFactory implements MediaRecordingFactory {
   constructor(private mediaRecordingOptions: MediaRecordingOptions = {}) {}
 

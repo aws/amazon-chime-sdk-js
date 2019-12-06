@@ -12,6 +12,7 @@ import ActiveSpeakerDetector from './ActiveSpeakerDetector';
 type DetectorCallback = (attendeeIds: string[]) => void;
 type DetectorHandler = (attendeeId: string, present: boolean) => void;
 
+/** @internal */
 export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetector {
   private static ACTIVITY_WAIT_INTERVAL_MS = 1000;
   private static ACTIVITY_UPDATE_INTERVAL_MS = 200;

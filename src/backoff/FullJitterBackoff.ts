@@ -9,6 +9,7 @@ import Backoff from './Backoff';
  * and also allows for specifying a fixed wait added to the full jitter backoff
  * (which can be zero).
  */
+/** @internal */
 export default class FullJitterBackoff implements Backoff {
   private currentRetry: number = 0;
 

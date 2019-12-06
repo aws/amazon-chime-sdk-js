@@ -5,6 +5,7 @@
  * [[PingPongObserver]] implements callbacks for when [[PingPong]] pongs are
  * received or missed.
  */
+/** @internal */
 export default interface PingPongObserver {
   /**
    * Called when a pong is received with the measured latency from the ping as

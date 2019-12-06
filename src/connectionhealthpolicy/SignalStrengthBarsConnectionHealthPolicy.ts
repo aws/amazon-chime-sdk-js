@@ -6,6 +6,7 @@ import ConnectionHealthData from './ConnectionHealthData';
 import ConnectionHealthPolicy from './ConnectionHealthPolicy';
 import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfiguration';
 
+/** @internal */
 export default class SignalStrengthBarsConnectionHealthPolicy extends BaseConnectionHealthPolicy
   implements ConnectionHealthPolicy {
   private static CONNECTION_UNHEALTHY_THRESHOLD: number;

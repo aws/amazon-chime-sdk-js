@@ -4,6 +4,7 @@
 /**
  * [[SignalingClientSubscribe]] contains settings for the Subscribe SignalFrame.
  */
+/** @internal */
 export default class SignalingClientSubscribe {
   /** Initializes a SignalingClientSubscribe with the given properties.
    *

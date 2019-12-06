@@ -6,6 +6,7 @@ import DefaultJPEGDecoderController from './controller/DefaultJPEGDecoderControl
 import JPEGDecoderController from './controller/JPEGDecoderController';
 import JPEGDecoderComponentFactory from './JPEGDecoderComponentFactory';
 
+/** @internal */
 export default class DefaultJPEGDecoderComponentFactory implements JPEGDecoderComponentFactory {
   constructor(private logger: Logger, private maxInputBytes: number) {}
 

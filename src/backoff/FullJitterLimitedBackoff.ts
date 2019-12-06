@@ -3,6 +3,7 @@
 
 import FullJitterBackoff from './FullJitterBackoff';
 
+/** @internal */
 export default class FullJitterLimitedBackoff extends FullJitterBackoff {
   private attempts = 0;
 

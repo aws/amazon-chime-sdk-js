@@ -13,6 +13,7 @@ import StatsCollector from '../statscollector/StatsCollector';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import ConnectionMonitor from './ConnectionMonitor';
 
+/** @internal */
 export default class SignalingAndMetricsConnectionMonitor
   implements ConnectionMonitor, PingPongObserver, AudioVideoObserver {
   private isActive = false;
