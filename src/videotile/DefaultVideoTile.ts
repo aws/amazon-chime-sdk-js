@@ -54,6 +54,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     const mediaStream = videoElement.srcObject as MediaStream;
     const tracks = mediaStream.getTracks();
     for (const track of tracks) {
+      track.stop();
       mediaStream.removeTrack(track);
     }
 

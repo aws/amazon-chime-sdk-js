@@ -114,6 +114,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       this.trace('startVideoPreviewForVideoInput', element.id);
       return;
     }
+
+    // TODO: implement MediaDestroyer to provide single release MediaStream function
     this.releaseMediaStream(element.srcObject as MediaStream);
     DefaultVideoTile.disconnectVideoStreamFromVideoElement(element);
     navigator.mediaDevices
@@ -126,6 +128,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
           `Unable to reacquire video stream for preview to element ${element.id}: ${error}`
         );
       });
+
     this.trace('startVideoPreviewForVideoInput', element.id);
   }
 
@@ -483,7 +486,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     if (restartVideo) {
       this.logger.info('restarting local video to switch to new device');
       this.boundAudioVideoController.restartLocalVideo(() => {
-        this.releaseMediaStream(oldStream);
+        // TODO: implement MediaStreamDestroyer
+        // tracks of oldStream should be stopped when video tile is disconnected from MediaStream
+        // otherwise, camera is still being accessed and we need to stop it here.
+        if (oldStream && oldStream.active) {
+          this.logger.warn('previous media stream is not stopped during restart video');
+          this.releaseMediaStream(oldStream);
+        }
       });
     } else if (kind === 'video') {
       this.releaseMediaStream(oldStream);
