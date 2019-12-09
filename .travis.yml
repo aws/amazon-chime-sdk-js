@@ -16,5 +16,6 @@ addons:
 deploy:
   provider: script
   script: script/deploy-canary-demo
+  skip_cleanup: true
   on:
     branch: master

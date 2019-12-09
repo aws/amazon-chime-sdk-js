@@ -1,4 +1,5 @@
-#!/bin/bash -i
+#!/bin/bash
+set -o xtrace
 
 repo_path=~/build/aws/amazon-chime-sdk-js
 cd $repo_path/demos/browser
