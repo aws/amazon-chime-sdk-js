@@ -411,8 +411,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   private areDeviceListsEqual(a: MediaDeviceInfo[], b: MediaDeviceInfo[]): boolean {
     return (
-      JSON.stringify(a.map(device => device.deviceId).sort()) ===
-      JSON.stringify(b.map(device => device.deviceId).sort())
+      JSON.stringify(a.map(device => JSON.stringify(device)).sort()) ===
+      JSON.stringify(b.map(device => JSON.stringify(device)).sort())
     );
   }
 
