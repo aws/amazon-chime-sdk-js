@@ -20,6 +20,27 @@ export default class ConnectionHealthData {
   private static isTimestampRecent(timestampMs: number, recentDurationMs: number): boolean {
     return Date.now() < timestampMs + recentDurationMs;
   }
+
+  setConnectionStartTime(): void {
+    this.connectionStartTimestampMs = Date.now();
+    this.lastGoodSignalTimestampMs = Date.now();
+  }
+
+  reset(): void {
+    this.connectionStartTimestampMs = 0;
+    this.consecutiveStatsWithNoPackets = 0;
+    this.lastPacketLossInboundTimestampMs = 0;
+    this.lastGoodSignalTimestampMs = 0;
+    this.lastWeakSignalTimestampMs = 0;
+    this.lastNoSignalTimestampMs = 0;
+    this.consecutiveMissedPongs = 0;
+    this.packetsReceivedInLastMinute = [];
+    this.fractionPacketsLostInboundInLastMinute = [];
+    this.audioSpeakerDelayMs = 0;
+    this.connectionStartTimestampMs = Date.now();
+    this.lastGoodSignalTimestampMs = Date.now();
+  }
+
   isConnectionStartRecent(recentDurationMs: number): boolean {
     return ConnectionHealthData.isTimestampRecent(
       this.connectionStartTimestampMs,
