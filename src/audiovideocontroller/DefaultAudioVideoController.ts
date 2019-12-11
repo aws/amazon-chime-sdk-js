@@ -122,6 +122,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
       this._audioMixController,
       this._deviceController
     );
+    this.meetingSessionContext.logger = this._logger;
   }
 
   get configuration(): MeetingSessionConfiguration {
@@ -191,6 +192,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
   }
 
   private async actionConnect(reconnecting: boolean): Promise<void> {
+    this.connectionHealthData.reset();
     this.meetingSessionContext = new AudioVideoControllerState();
     this.meetingSessionContext.logger = this.logger;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
@@ -296,7 +298,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
           this.configuration.connectionTimeoutMs
         ),
       ]).run();
-
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         this.actionFinishConnecting();
       });
@@ -313,6 +314,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
         }
       });
     }
+    this.connectionHealthData.setConnectionStartTime();
   }
 
   private actionFinishConnecting(): void {
@@ -359,7 +361,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
     } catch (error) {
       this.logger.info('fail to clean');
     }
-
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
         this.forEachObserver(observer => {
@@ -479,6 +480,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
       });
     }
 
+    this.connectionHealthData.reset();
     try {
       await new SerialGroupTask(this.logger, 'AudioVideoReconnect', [
         new TimeoutTask(
@@ -526,6 +528,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
         );
       });
     }
+    this.connectionHealthData.setConnectionStartTime();
   }
 
   private getMeetingStatusCode(error: Error): MeetingSessionStatusCode | null {
