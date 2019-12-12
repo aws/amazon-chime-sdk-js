@@ -3,6 +3,7 @@
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import Maybe from '../maybe/Maybe';
@@ -19,6 +20,7 @@ export default class SignalingAndMetricsConnectionMonitor
   private hasSeenValidPacketMetricsBefore = false;
   private lastAvailableSendBandwidthKbps: number = 0;
   private lastAvailableRecvBandwidthKbps: number = 0;
+  private browserBehavior: DefaultBrowserBehavior;
 
   constructor(
     private audioVideoController: AudioVideoController,
@@ -28,9 +30,11 @@ export default class SignalingAndMetricsConnectionMonitor
     private pingPong: PingPong,
     private statsCollector: StatsCollector
   ) {
+    this.browserBehavior = new DefaultBrowserBehavior();
     this.realtimeController.realtimeSubscribeToLocalSignalStrengthChange(
       (signalStrength: number) => {
-        if (this.isActive) {
+        const isSafariBackgrounded = this.browserBehavior.isSafari() && document.hidden;
+        if (this.isActive && !isSafariBackgrounded) {
           this.receiveSignalStrengthChange(signalStrength);
         }
       }
