@@ -1,5 +1,5 @@
 #!/bin/bash
-set -o xtrace
+set -euxo pipefail
 
 repo_path=~/build/aws/amazon-chime-sdk-js
 cd $repo_path/demos/browser
