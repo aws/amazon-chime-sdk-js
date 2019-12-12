@@ -4,7 +4,11 @@
 export default class DOMMediaRecorderMock implements EventTarget {
   private listeners = new Map<string, Set<EventListener>>();
 
-  constructor(readonly stream: MediaStream, _options?: MediaRecorderOptions) {}
+  constructor(readonly stream: MediaStream, _options?: MediaRecorderOptions) {
+    stream.addEventListener('dataavailable', (event: BlobEvent) => {
+      this.dispatchEvent(event);
+    });
+  }
 
   start(_timeSliceMs: number): void {}
 

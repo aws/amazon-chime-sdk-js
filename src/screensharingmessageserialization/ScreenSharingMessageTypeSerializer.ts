@@ -10,6 +10,7 @@ import ScreenSharingMessageTypeSerialization from './ScreenSharingMessageTypeSer
 export default class ScreenSharingMessageTypeSerializer
   implements ScreenSharingMessageTypeSerialization {
   private static readonly fromNumberMap = new Map<number, ScreenSharingMessageType>([
+    [0x02, ScreenSharingMessageType.KeyRequest],
     [0x03, ScreenSharingMessageType.StreamStart],
     [0x04, ScreenSharingMessageType.StreamEnd],
     [0x05, ScreenSharingMessageType.StreamStop],

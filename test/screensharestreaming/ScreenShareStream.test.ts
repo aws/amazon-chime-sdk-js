@@ -26,6 +26,15 @@ describe('ScreenShareStream', () => {
     GlobalAny.CustomEvent = undefined;
   });
 
+  describe('#key', () => {
+    it('is keyed', () => {
+      const mediaRecording = Substitute.for<MediaRecording>();
+      const subject = new ScreenShareStream(mediaRecording);
+      subject.key();
+      mediaRecording.received().key();
+    });
+  });
+
   describe('#start', () => {
     it('exists', () => {
       const recorder = Substitute.for<MediaRecording>();

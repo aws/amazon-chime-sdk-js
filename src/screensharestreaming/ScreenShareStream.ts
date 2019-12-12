@@ -14,6 +14,10 @@ export default class ScreenShareStream implements ScreenShareStreaming {
 
   constructor(private mediaRecording: MediaRecording) {}
 
+  key(): void {
+    return this.mediaRecording.key();
+  }
+
   start(timeSliceMs?: number): void {
     this.mediaRecording.addEventListener('dataavailable', (event: BlobEvent) => {
       this.onDataAvailable(event);

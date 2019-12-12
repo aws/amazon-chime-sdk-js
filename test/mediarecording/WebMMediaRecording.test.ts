@@ -1,7 +1,7 @@
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Substitute } from '@fluffy-spoon/substitute';
+import Substitute from '@fluffy-spoon/substitute';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
@@ -23,6 +23,22 @@ describe('WebMMediaRecording', () => {
   after(() => {
     GlobalAny.MediaRecorder = undefined;
     GlobalAny.CustomEvent = undefined;
+  });
+
+  describe('#key', () => {
+    describe('with start', () => {
+      it('is keyed', () => {
+        const subject = new WebMMediaRecording(Substitute.for<MediaStream>());
+        subject.start(1000);
+        subject.key();
+      });
+    });
+
+    describe('without start', () => {
+      it('is keyed', () => {
+        new WebMMediaRecording(Substitute.for<MediaStream>()).key();
+      });
+    });
   });
 
   describe('with MediaRecordingOptions', () => {
@@ -56,12 +72,25 @@ describe('WebMMediaRecording', () => {
   });
 
   describe('#stop', () => {
-    it('is fulfilled', (done: Mocha.Done) => {
-      const track = Substitute.for<MediaStreamTrack>();
-      const mediaStream = Substitute.for<MediaStream>();
-      const subject = new WebMMediaRecording(mediaStream);
-      mediaStream.getTracks().returns(Array.of(track));
-      chai.expect(subject.stop()).to.eventually.be.fulfilled.and.notify(done);
+    describe('without start', () => {
+      it('is rejected', (done: Mocha.Done) => {
+        const track = Substitute.for<MediaStreamTrack>();
+        const mediaStream = Substitute.for<MediaStream>();
+        const subject = new WebMMediaRecording(mediaStream);
+        mediaStream.getTracks().returns(Array.of(track));
+        chai.expect(subject.stop()).to.eventually.be.rejected.and.notify(done);
+      });
+    });
+
+    describe('with start', () => {
+      it('is rejected', (done: Mocha.Done) => {
+        const track = Substitute.for<MediaStreamTrack>();
+        const mediaStream = Substitute.for<MediaStream>();
+        const subject = new WebMMediaRecording(mediaStream);
+        subject.start();
+        mediaStream.getTracks().returns(Array.of(track));
+        chai.expect(subject.stop()).to.eventually.be.fulfilled.and.notify(done);
+      });
     });
   });
 
@@ -76,12 +105,25 @@ describe('WebMMediaRecording', () => {
   });
 
   describe('#removeEventListener', () => {
-    it('is delegated', () => {
-      const listener = (): void => {};
-      const type = 'event';
-      const mediaStream = Substitute.for<MediaStream>();
-      const subject = new WebMMediaRecording(mediaStream);
-      subject.removeEventListener(type, listener);
+    describe('with listener', () => {
+      it('is is successful', () => {
+        const listener = (): void => {};
+        const type = 'event';
+        const mediaStream = Substitute.for<MediaStream>();
+        const subject = new WebMMediaRecording(mediaStream);
+        subject.addEventListener(type, listener);
+        subject.removeEventListener(type, listener);
+      });
+    });
+
+    describe('without listener', () => {
+      it('is is successful', () => {
+        const listener = (): void => {};
+        const type = 'event';
+        const mediaStream = Substitute.for<MediaStream>();
+        const subject = new WebMMediaRecording(mediaStream);
+        subject.removeEventListener(type, listener);
+      });
     });
   });
 
@@ -91,6 +133,46 @@ describe('WebMMediaRecording', () => {
       const mediaStream = Substitute.for<MediaStream>();
       const subject = new WebMMediaRecording(mediaStream);
       subject.dispatchEvent(event);
+    });
+  });
+
+  describe('dataavailable', () => {
+    it('is dispatched', (done: Mocha.Done) => {
+      const event = Substitute.for<BlobEvent>();
+      const mediaStream: MediaStream = {
+        get listeners(): Map<string, Set<EventListener>> {
+          this._listeners = this._listeners || new Map<string, Set<EventListener>>();
+          return this._listeners;
+        },
+        ...Substitute.for<MediaStream>(),
+        addEventListener(type: string, listener: EventListener): void {
+          if (!this.listeners.get(type)) {
+            this.listeners.set(type, new Set<EventListener>());
+          }
+          this.listeners.get(type).add(listener);
+        },
+        dispatchEvent(event: Event): boolean {
+          if (this.listeners.get(event.type) !== undefined) {
+            this.listeners.get(event.type).forEach((listener: EventListener) => {
+              listener(event);
+            });
+          }
+          return event.defaultPrevented;
+        },
+        getTracks(): MediaStreamTrack[] {
+          return new Array<MediaStreamTrack>();
+        },
+        clone(): MediaStream {
+          return this;
+        },
+      };
+      const subject = new WebMMediaRecording(mediaStream);
+      subject.addEventListener('dataavailable', () => {
+        done();
+      });
+      subject.start();
+      event.type.returns('dataavailable');
+      mediaStream.dispatchEvent(event);
     });
   });
 
@@ -121,6 +203,7 @@ describe('WebMMediaRecording', () => {
       };
       const tracks = [mediaStreamTrack];
       event.type.returns('ended');
+      mediaStream.clone().returns(mediaStream);
       mediaStream.getTracks().returns(tracks);
       const subject = new WebMMediaRecording(mediaStream);
       subject.start();

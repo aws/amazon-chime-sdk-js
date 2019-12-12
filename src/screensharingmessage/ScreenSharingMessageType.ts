@@ -13,6 +13,7 @@ export enum ScreenSharingMessageType {
   StreamStop = 'StreamStop',
   WebM = 'WebM',
   PresenterSwitch = 'PresenterSwitch',
+  KeyRequest = 'KeyRequest',
 }
 
 export default ScreenSharingMessageType;
