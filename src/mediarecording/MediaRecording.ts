@@ -9,6 +9,11 @@ export default interface MediaRecording extends EventTarget {
   start(timeSliceMs?: number): void;
 
   /**
+   * Key the recording
+   */
+  key(): void;
+
+  /**
    * Stop the media recorder instance
    */
   stop(): Promise<void>;

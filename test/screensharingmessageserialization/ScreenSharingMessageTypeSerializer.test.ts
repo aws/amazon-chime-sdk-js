@@ -16,6 +16,7 @@ describe('ScreenSharingMessageTypeSerializer', () => {
   describe('#serialize', () => {
     const expected = [
       [ScreenSharingMessageType.UnknownType, 0x0],
+      [ScreenSharingMessageType.KeyRequest, 0x02],
       [ScreenSharingMessageType.StreamStart, 0x03],
       [ScreenSharingMessageType.StreamEnd, 0x04],
       [ScreenSharingMessageType.StreamStop, 0x05],
@@ -34,6 +35,7 @@ describe('ScreenSharingMessageTypeSerializer', () => {
   describe('#deserialize', () => {
     const expected = [
       [0x00, ScreenSharingMessageType.UnknownType],
+      [0x02, ScreenSharingMessageType.KeyRequest],
       [0x03, ScreenSharingMessageType.StreamStart],
       [0x04, ScreenSharingMessageType.StreamEnd],
       [0x05, ScreenSharingMessageType.StreamStop],

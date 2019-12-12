@@ -14,4 +14,9 @@ export default interface ScreenShareStreaming extends EventTarget {
    * @returns {Promise<void>}
    */
   stop(): Promise<void>;
+
+  /**
+   * Key the stream
+   */
+  key(): void;
 }

@@ -37,4 +37,6 @@ export default class ScreenShareStreamingMock implements ScreenShareStreaming {
   stop(): Promise<void> {
     return Promise.resolve();
   }
+
+  key(): void {}
 }

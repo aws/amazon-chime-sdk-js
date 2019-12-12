@@ -444,6 +444,50 @@ describe('DefaultScreenSharingSession', function() {
       });
     });
 
+    describe('with keyframe request', () => {
+      it('is dispatched', () => {
+        const stream = Substitute.for<ScreenShareStreaming>();
+        const screenSharingStreamFactory = Substitute.for<ScreenShareStreamingFactory>();
+        const mediaStreamBroker = Substitute.for<MediaStreamBroker>();
+        const messageSerialization = Substitute.for<ScreenSharingMessageSerialization>();
+        const message: ScreenSharingMessage = {
+          type: ScreenSharingMessageType.KeyRequest,
+          flags: [],
+          data: new Uint8Array([]),
+        };
+        const promisedWebSocket = new PromisedWebSocketMock();
+        const subject = new DefaultScreenSharingSession(
+          promisedWebSocket,
+          constraintsProvider,
+          timeSliceMs,
+          messageSerialization,
+          mediaStreamBroker,
+          screenSharingStreamFactory,
+          mediaRecordingFactory,
+          logging
+        );
+        stream.stop().returns(Promise.resolve());
+        screenSharingStreamFactory.create(Arg.any()).returns(stream);
+        messageSerialization.deserialize(Arg.any()).returns(message);
+        mediaStreamBroker
+          .acquireDisplayInputStream(Arg.any())
+          .returns(Promise.resolve(Substitute.for<MediaStream>()));
+        subject
+          .open(1000)
+          .then(() => {
+            return subject.start();
+          })
+          .then(() => {
+            const event = Substitute.for<MessageEvent>();
+            event.type.returns('message');
+            promisedWebSocket.dispatchEvent(event);
+          });
+        const event = Substitute.for<Event>();
+        event.type.returns('open');
+        promisedWebSocket.dispatchEvent(event);
+      });
+    });
+
     describe('with stream stop', () => {
       it('is dispatched', (done: Mocha.Done) => {
         const stream = Substitute.for<ScreenShareStreaming>();

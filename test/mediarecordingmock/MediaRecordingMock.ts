@@ -6,6 +6,8 @@ import MediaRecording from '../../src/mediarecording/MediaRecording';
 export default class MediaRecordingMock implements MediaRecording {
   private listeners = new Map<string, Set<EventListener>>();
 
+  key(): void {}
+
   start(_timeSliceMs: number): void {}
 
   stop(): Promise<void> {

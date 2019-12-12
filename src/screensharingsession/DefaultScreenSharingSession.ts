@@ -149,9 +149,16 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
         return this.didReceiveHeartbeatRequestMessage();
       case ScreenSharingMessageType.StreamStop:
         return this.didReceiveStreamStopMessage();
+      case ScreenSharingMessageType.KeyRequest:
+        return this.didReceiveKeyRequest();
       default:
         return this.didReceiveUnknownMessage();
     }
+  }
+
+  private didReceiveKeyRequest(): void {
+    this.logger.info('received key request message');
+    this.stream.key();
   }
 
   private didReceiveStreamStopMessage(): void {
