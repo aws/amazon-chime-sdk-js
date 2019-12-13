@@ -93,7 +93,7 @@ class TestSound {
 }
 
 export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver {
-  showActiveSpeakerScores = true;
+  showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
   meeting: string | null = null;
   name: string | null = null;
@@ -590,8 +590,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
         this.roster[attendeeId].active = false;
       }
       for (const attendeeId of attendeeIds) {
-        this.roster[attendeeId].active = true;
-        break; // only show the most active speaker
+        if (this.roster[attendeeId]) {
+          this.roster[attendeeId].active = true;
+          break; // only show the most active speaker
+        }
       }
       this.layoutVideoTiles();
     };
