@@ -9,27 +9,44 @@ import ScreenViewing from './ScreenViewing';
 import ScreenViewingSessionConnectionRequest from './session/ScreenViewingSessionConnectionRequest';
 
 export default class DefaultScreenViewing implements ScreenViewing {
+  private request?: ScreenViewingSessionConnectionRequest;
+
   constructor(private componentContext: ScreenViewingComponentContext) {}
 
+  /**
+   * Opens the screen signaling connection
+   * @param request
+   */
   open(request: ScreenViewingSessionConnectionRequest): Promise<void> {
+    this.request = request;
     return this.componentContext.jpegDecoderController
       .init()
       .then(() => this.componentContext.signalingSession.open(request))
-      .then(() => this.componentContext.viewingSession.openConnection(request))
       .then(() => {});
   }
 
-  async close(): Promise<void> {
-    await this.componentContext.signalingSession.close();
-    await this.componentContext.viewingSession.closeConnection();
+  /**
+   * Stops screen viewing and closes the screen signaling connection
+   */
+  close(): Promise<void> {
+    return this.stop().then(() => this.componentContext.signalingSession.close());
   }
 
-  start(canvasContainer: HTMLDivElement): void {
+  /**
+   * Initializes the viewport and opens the screen viewing data connection
+   * @param canvasContainer
+   */
+  start(canvasContainer: HTMLDivElement): Promise<void> {
     this.componentContext.viewer.start(canvasContainer);
+    return this.componentContext.viewingSession.openConnection(this.request).then(() => {});
   }
 
-  stop(): void {
+  /**
+   * Tears down the viewport and closes the screen viewing data connection
+   */
+  stop(): Promise<void> {
     this.componentContext.viewer.stop();
+    return this.componentContext.viewingSession.closeConnection();
   }
 
   presentScaleToFit(): void {

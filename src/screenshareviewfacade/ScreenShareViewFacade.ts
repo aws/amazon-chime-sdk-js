@@ -18,12 +18,12 @@ export default interface ScreenShareViewFacade {
    * Starts viewing the screen share within an HTML element. Note that an
    * HTMLCanvas will be placed inside of this element.
    */
-  start(element: HTMLDivElement): void;
+  start(element: HTMLDivElement): Promise<void>;
 
   /**
    * Stops viewing the screen share.
    */
-  stop(): void;
+  stop(): Promise<void>;
 
   /**
    * Changes the presentation policy to scale-to-fit

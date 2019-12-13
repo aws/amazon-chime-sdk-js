@@ -8,7 +8,7 @@ import DefaultJPEGDecoderController from '../../src/jpegdecoder/controller/Defau
 import ScreenViewingComponentContext from '../../src/screenviewing/context/ScreenViewingComponentContext';
 import DefaultScreenViewing from '../../src/screenviewing/DefaultScreenViewing';
 import ScreenObserver from '../../src/screenviewing/observer/ScreenObserver';
-import ScreenViewingSession from '../../src/screenviewing/session/ScreenViewingSession';
+import ScreenViewingSessionConnectionRequest from '../../src/screenviewing/session/ScreenViewingSessionConnectionRequest';
 import SignalingSession from '../../src/screenviewing/signalingsession/SignalingSession';
 
 describe('DefaultScreenViewing', () => {
@@ -22,9 +22,6 @@ describe('DefaultScreenViewing', () => {
       const signalingSession: SubstituteOf<SignalingSession> = Substitute.for();
       signalingSession.open(Arg.any()).returns(Promise.resolve());
 
-      const viewingSession: SubstituteOf<ScreenViewingSession> = Substitute.for();
-      viewingSession.openConnection(Arg.any()).returns(Promise.resolve(Substitute.for()));
-
       const context: SubstituteOf<ScreenViewingComponentContext> = Substitute.for();
       context.jpegDecoderController.returns(controller);
       assert.exists(new DefaultScreenViewing(context).open(Substitute.for()));
@@ -32,20 +29,23 @@ describe('DefaultScreenViewing', () => {
   });
 
   describe('close', () => {
-    it('calls viewer close', (done: MochaDone) => {
+    it('calls viewer close', () => {
       return new DefaultScreenViewing({
         ...Substitute.for(),
+        viewer: {
+          ...Substitute.for(),
+          stop(): void {},
+        },
         signalingSession: {
           ...Substitute.for(),
           close(): Promise<void> {
-            done();
-            return;
+            return Promise.resolve();
           },
         },
         viewingSession: {
           ...Substitute.for(),
           closeConnection(): Promise<void> {
-            return;
+            return Promise.resolve();
           },
         },
       }).close();
@@ -53,13 +53,17 @@ describe('DefaultScreenViewing', () => {
   });
 
   describe('start', () => {
-    it('calls viewer start', (done: MochaDone) => {
-      new DefaultScreenViewing({
+    it('calls viewer start', () => {
+      return new DefaultScreenViewing({
         ...Substitute.for(),
         viewer: {
           ...Substitute.for(),
-          start(_canvasContainer: HTMLDivElement): void {
-            done();
+          start(_canvasContainer: HTMLDivElement): void {},
+        },
+        viewingSession: {
+          ...Substitute.for(),
+          openConnection(_request: ScreenViewingSessionConnectionRequest): Promise<Event> {
+            return Promise.resolve(Substitute.for());
           },
         },
       }).start(Substitute.for());

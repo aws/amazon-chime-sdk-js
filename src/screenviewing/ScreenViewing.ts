@@ -19,12 +19,12 @@ export default interface ScreenViewing {
    * Starts the screen viewing given a div to create a canvas within
    * @param canvasContainer
    */
-  start(canvasContainer: HTMLDivElement): void;
+  start(canvasContainer: HTMLDivElement): Promise<void>;
 
   /**
    * Stops the screen viewing
    */
-  stop(): void;
+  stop(): Promise<void>;
 
   /**
    * Changes the presentation policy to scale-to-fit
