@@ -45,26 +45,26 @@ export default class DefaultScreenShareViewFacade implements ScreenShareViewFaca
     );
   }
 
-  async open(): Promise<void> {
+  open(): Promise<void> {
     const connectionRequest: ScreenViewingSessionConnectionRequest = new ScreenViewingSessionConnectionRequest(
       this.configuration.urls.screenViewingURL,
       this.configuration.urls.screenDataURL,
       this.configuration.credentials.joinToken,
       this.configuration.screenViewingTimeoutMs
     );
-    await this.screenViewing.open(connectionRequest);
+    return this.screenViewing.open(connectionRequest);
   }
 
-  async close(): Promise<void> {
-    await this.screenViewing.close();
+  close(): Promise<void> {
+    return this.screenViewing.close();
   }
 
-  start(element: HTMLDivElement): void {
+  start(element: HTMLDivElement): Promise<void> {
     return this.screenViewing.start(element);
   }
 
-  stop(): void {
-    this.screenViewing.stop();
+  stop(): Promise<void> {
+    return this.screenViewing.stop();
   }
 
   presentScaleToFit(): void {
