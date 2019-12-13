@@ -106,7 +106,6 @@ class AppPage {
   async getNumberOfParticipantsOnRoster() {
     const roster = await this.driver.findElement(elements.roster);
     const participantElements = await this.driver.findElements(elements.participants);
-    console.log(`Number of participants on roster: ${participantElements.length}`);
     return participantElements.length;
   }
 
@@ -168,11 +167,13 @@ class AppPage {
 
   async rosterCheck(numberOfParticipants) {
     let i = 0;
-    let timeout = 10;
+    let timeout = 3000;
+    let participantCountOnRoster = 1;
     while (i < timeout) {
       try {
-        const participantCountOnRoster = await this.getNumberOfParticipantsOnRoster();
+        participantCountOnRoster = await this.getNumberOfParticipantsOnRoster();
         if (participantCountOnRoster.toString() === numberOfParticipants) {
+          console.log(`Number of participants on roster: ${numberOfParticipants}`);
           return true;
         }
       } catch (err) {
@@ -180,6 +181,7 @@ class AppPage {
       await TestUtils.waitAround(10);
       i++;
     }
+    console.log(`Number of participants on roster: ${participantCountOnRoster}`);
     return false;
   }
 

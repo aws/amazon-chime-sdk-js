@@ -76,7 +76,6 @@ const getBrowserStackUrl = () => {
 };
 
 getWebDriverBrowserStack = async capabilities => {
-  console.log(getBrowserStackUrl());
   let cap = {};
   if (capabilities.browserName === 'chrome') {
     cap = getChromeCapabilities(capabilities);

@@ -22,6 +22,10 @@ class WaitForRemoteParticipantsToJoinMeeting extends AppWaitTestStep {
     return "all remote participants present"
   }
 
+  timeoutThresholdInMilliSeconds() {
+    return 60000
+  }
+
 }
 
 module.exports = WaitForRemoteParticipantsToJoinMeeting;
