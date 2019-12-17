@@ -27,7 +27,7 @@ class ScreenViewingCheck extends AppTestStep {
       let result = await this.page.checkScreenShare(this.expectedState);
       if (result !== this.expectedState) {
         this.testReporter.textAttachment(this.report, 'Shared screen', result, 'plain');
-        throw new KiteTestError(Status.FAILED, 'The shared screen ' + result);
+        throw new KiteTestError(Status.FAILED, 'Screen share test: ' + result);
       }
     } catch (error) {
       console.log(error);

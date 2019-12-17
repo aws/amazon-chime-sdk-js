@@ -3,10 +3,16 @@ node_js:
 - 12
 git:
   depth: false
+before_install:
+ - sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)" LNK POP
+ - test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+ - test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
+ - echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
 install:
- - ./integration/js/script/install-kite
  - pip install --user awscli
- - pip install --user aws-sam-cli
+ - brew tap aws/tap
+ - brew install aws-sam-cli
+ - ./integration/js/script/install-kite
 script: script/prevent-multiple-pr-commits && npm run test:retry && npm run test:integration
 addons:
   sauce_connect:

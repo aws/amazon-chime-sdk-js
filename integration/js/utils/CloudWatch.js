@@ -10,7 +10,7 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value) 
   if (process.env.CLOUD_WATCH_METRIC === undefined || process.env.CLOUD_WATCH_METRIC === "false") {
     return
   }
-  namespace = namespace.trim();
+  namespace = `${process.env.TEST_TYPE}/${namespace.trim()}`;
   metric_name = metric_name.trim();
   console.log(`Emitting metric: ${namespace}/${metric_name} : ${value}`);
   var params = {
@@ -39,7 +39,7 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value) 
         Value: value
       },
     ],
-    Namespace: `Canary/${namespace}`
+    Namespace: namespace
   };
   await publishMetricToCloudWatch(params);
   var paramsWithoutDimensions = {
@@ -50,7 +50,7 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value) 
         Value: value
       },
     ],
-    Namespace: `Canary/${namespace}`
+    Namespace: namespace
   };
   await publishMetricToCloudWatch(paramsWithoutDimensions);
   var paramsWithBrowserDimension = {
@@ -67,7 +67,7 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value) 
         Value: value
       },
     ],
-    Namespace: `Canary/${namespace}`
+    Namespace: namespace
   };
   await publishMetricToCloudWatch(paramsWithBrowserDimension);
   var paramsWithOSDimension = {
@@ -84,7 +84,7 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value) 
         Value: value
       },
     ],
-    Namespace: `Canary/${namespace}`
+    Namespace: namespace
   };
   await publishMetricToCloudWatch(paramsWithOSDimension);
 };
