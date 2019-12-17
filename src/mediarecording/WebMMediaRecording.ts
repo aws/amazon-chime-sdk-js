@@ -24,7 +24,8 @@ export default class WebMMediaRecording implements MediaRecording {
 
   key(): void {
     const delegate = this.delegate;
-    this.delegate = new MediaRecorder(this.mediaStream.clone(), this.options);
+    const mediaStream = delegate === null ? this.mediaStream : this.mediaStream.clone();
+    this.delegate = new MediaRecorder(mediaStream, this.options);
     this.delegate.addEventListener('dataavailable', (event: BlobEvent) => {
       this.dispatchEvent(event);
     });
@@ -40,6 +41,7 @@ export default class WebMMediaRecording implements MediaRecording {
       });
     });
     if (delegate !== null) {
+      delegate.stream.getTracks().forEach(stream => stream.stop());
       delegate.stop();
     }
     this.delegate.start(this.timeSliceMs);
