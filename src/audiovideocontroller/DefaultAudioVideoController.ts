@@ -403,6 +403,44 @@ export default class DefaultAudioVideoController implements AudioVideoController
     );
   }
 
+  async restartLocalAudio(callback: () => void): Promise<void> {
+    let audioStream: MediaStream | null = null;
+    try {
+      audioStream = await this.mediaStreamBroker.acquireAudioInputStream();
+    } catch (error) {
+      this.logger.info('could not acquire audio stream from mediaStreamBroker');
+    }
+    if (!audioStream || audioStream.getTracks().length < 1) {
+      return Promise.reject('could not acquire audio track');
+    }
+
+    this.connectionHealthData.reset();
+    this.connectionHealthData.setConnectionStartTime();
+
+    const audioTrack = audioStream.getTracks()[0];
+    if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
+      return Promise.reject('no active meeting and peer connection');
+    }
+    let replaceTrackSuccess = false;
+
+    if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
+      replaceTrackSuccess = await this.meetingSessionContext.transceiverController.replaceAudioTrack(
+        audioTrack
+      );
+    } else {
+      replaceTrackSuccess = await DefaultTransceiverController.replaceAudioTrackForSender(
+        this.meetingSessionContext.localAudioSender,
+        audioTrack
+      );
+    }
+    callback();
+    if (replaceTrackSuccess) {
+      return Promise.resolve();
+    } else {
+      return Promise.reject();
+    }
+  }
+
   private async actionUpdate(notify: boolean): Promise<void> {
     // TODO: do not block other updates while waiting for video input
     try {

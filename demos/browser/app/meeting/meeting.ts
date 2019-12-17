@@ -120,6 +120,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     'button-screen-view': false,
   };
 
+  // feature flags
+  enableWebAudio = false;
+
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).app = this;
@@ -456,8 +459,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   initializeMeetingSession(configuration: MeetingSessionConfiguration): void {
     const logger = new ConsoleLogger('SDK', LogLevel.INFO);
     const deviceController = new DefaultDeviceController(logger);
+    configuration.enableWebAudio = this.enableWebAudio;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
     this.audioVideo = this.meetingSession.audioVideo;
+
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
     this.populateAllDeviceLists();

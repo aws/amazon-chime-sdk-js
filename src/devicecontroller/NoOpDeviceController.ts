@@ -57,4 +57,6 @@ export default class NoOpDeviceController extends NoOpMediaStreamBroker
     _frameRate: number,
     _maxBandwidthKbps: number
   ): void {}
+
+  enableWebAudio(_flag: boolean): void {}
 }

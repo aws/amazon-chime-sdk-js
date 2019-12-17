@@ -36,6 +36,12 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   restartLocalVideo(callback: () => void): void;
 
   /**
+   * Restarts the local audio. This function assumes the peer connection is established and an active
+   * audio stream must be chosen in [[DeviceController]]
+   */
+  restartLocalAudio(callback: () => void): Promise<void>;
+
+  /**
    * Restarts the peer connection and/or the session.
    */
   reconnect(status: MeetingSessionStatus): boolean;

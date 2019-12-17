@@ -26,9 +26,15 @@ describe('NoOpDeviceController', () => {
     domMockBuilder.cleanup();
   });
 
-  describe('constructior', () => {
+  describe('constructor', () => {
     it('can be constructed', () => {
       expect(deviceController).to.exist;
+    });
+  });
+
+  describe('enableWebAudio', () => {
+    it('can be called', () => {
+      deviceController.enableWebAudio(true);
     });
   });
 

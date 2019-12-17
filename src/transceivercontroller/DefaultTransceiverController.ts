@@ -37,6 +37,18 @@ export default class DefaultTransceiverController implements TransceiverControll
     logger.info(`set video send bandwidth to ${bitrateKbps}kbps`);
   }
 
+  static async replaceAudioTrackForSender(
+    sender: RTCRtpSender,
+    track: MediaStreamTrack
+  ): Promise<boolean> {
+    if (!sender) {
+      return false;
+    }
+
+    await sender.replaceTrack(track);
+    return true;
+  }
+
   setVideoSendingBitrateKbps(bitrateKbps: number): void {
     // this won't set bandwidth limitation for video in Chrome
     if (!this.localCameraTransceiver || this.localCameraTransceiver.direction !== 'sendrecv') {
@@ -106,6 +118,15 @@ export default class DefaultTransceiverController implements TransceiverControll
 
   setAudioInput(track: MediaStreamTrack | null): void {
     this.setTransceiverInput(this.localAudioTransceiver, track);
+  }
+
+  async replaceAudioTrack(track: MediaStreamTrack): Promise<boolean> {
+    if (!this.localAudioTransceiver || this.localAudioTransceiver.direction !== 'sendrecv') {
+      this.logger.info(`audio transceiver direction is not set up or not activated`);
+      return false;
+    }
+    await this.localAudioTransceiver.sender.replaceTrack(track);
+    return true;
   }
 
   setVideoInput(track: MediaStreamTrack | null): void {
