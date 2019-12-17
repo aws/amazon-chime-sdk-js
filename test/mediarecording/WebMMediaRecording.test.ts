@@ -28,7 +28,10 @@ describe('WebMMediaRecording', () => {
   describe('#key', () => {
     describe('with start', () => {
       it('is keyed', () => {
-        const subject = new WebMMediaRecording(Substitute.for<MediaStream>());
+        const mediaStream = Substitute.for<MediaStream>();
+        mediaStream.getTracks().returns(Array.of(Substitute.for<MediaStreamTrack>()));
+        mediaStream.clone().returns(mediaStream);
+        const subject = new WebMMediaRecording(mediaStream);
         subject.start(1000);
         subject.key();
       });

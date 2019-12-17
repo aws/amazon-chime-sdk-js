@@ -26,6 +26,7 @@ import {
   TimeoutScheduler,
   VideoTileState,
 } from '../../../../src/index';
+import ScreenShareFacadeObserver from "../../../../src/screensharefacade/ScreenShareFacadeObserver";
 
 class DemoTileOrganizer {
   private static MAX_TILES = 16;
@@ -314,12 +315,27 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     });
 
     const buttonScreenShare = document.getElementById('button-screen-share');
-    buttonScreenShare.addEventListener('click', _e => {
+    buttonScreenShare.addEventListener('click', () => {
       new AsyncScheduler().start(async () => {
-        if (this.toggleButton('button-screen-share')) {
-          this.meetingSession.screenShare.start();
+        const button = 'button-screen-share';
+        if (this.buttonStates[button]) {
+          this.meetingSession.screenShare.stop().then(() => {
+            this.buttonStates[button] = false;
+            this.displayButtonStates();
+          });
         } else {
-          this.meetingSession.screenShare.stop();
+          const self = this;
+          const observer: ScreenShareFacadeObserver = {
+            didStopScreenSharing(): void {
+              self.buttonStates[button] = false;
+              self.displayButtonStates();
+            },
+          };
+          this.meetingSession.screenShare.registerObserver(observer);
+          this.meetingSession.screenShare.start().then(() => {
+            this.buttonStates[button] = true;
+            this.displayButtonStates();
+          });
         }
       });
     });
