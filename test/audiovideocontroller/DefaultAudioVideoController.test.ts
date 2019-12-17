@@ -547,7 +547,7 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionStarted).to.be.true;
     });
 
-    it('reconnects if the udpate fails with a task failed meeting status', async () => {
+    it('reconnects if the update fails with a task failed meeting status', async () => {
       let called = 0;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -645,6 +645,172 @@ describe('DefaultAudioVideoController', () => {
       expect(stopLocalVideoTileSpy.called).to.be.false;
       expect(startLocalVideoTileSpy.called).to.be.false;
       expect(called).to.be.true;
+    });
+  });
+
+  describe('restartLocalAudio', () => {
+    it('fails if device controller has no active audio stream', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+
+      let success = true;
+      try {
+        await audioVideoController.restartLocalAudio(() => {});
+      } catch (error) {
+        success = false;
+      }
+
+      expect(success).to.be.false;
+
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireAudioInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          return mediaStream;
+        }
+      }
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+      success = true;
+      try {
+        await audioVideoController.restartLocalAudio(() => {});
+      } catch (error) {
+        success = false;
+      }
+      expect(success).to.be.false;
+    });
+
+    it('fails if no peer connection is established', async () => {
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireAudioInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+      }
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+      let success = true;
+      try {
+        await audioVideoController.restartLocalAudio(() => {});
+      } catch (error) {
+        success = false;
+      }
+      expect(success).to.be.false;
+    });
+
+    it('replaces audio track for unified plan', async () => {
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireAudioInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+      }
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+
+      audioVideoController.deviceController.enableWebAudio(false);
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          // use this opportunity to verify that start is idempotent
+          audioVideoController.start();
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      let callbackExecuted = false;
+      await audioVideoController.restartLocalAudio(() => {
+        callbackExecuted = true;
+      });
+      expect(callbackExecuted).to.be.true;
+      await stop();
+    });
+
+    it('replaces audio track for Plan-B', async () => {
+      setUserAgent('Chrome/77.0.3865.75');
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireAudioInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+      }
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+      audioVideoController.deviceController.enableWebAudio(false);
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          // use this opportunity to verify that start is idempotent
+          audioVideoController.start();
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+      let callbackExecuted = false;
+      await audioVideoController.restartLocalAudio(() => {
+        callbackExecuted = true;
+      });
+      expect(callbackExecuted).to.be.true;
+
+      // @ts-ignore mutate the context state to trigger rejection
+      audioVideoController.meetingSessionContext.localAudioSender = null;
+      try {
+        await audioVideoController.restartLocalAudio(() => {});
+        throw Error();
+      } catch (error) {}
+      await stop();
     });
   });
 

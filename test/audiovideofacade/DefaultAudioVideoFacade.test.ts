@@ -457,10 +457,18 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(arg1));
     });
 
-    it('will call mixIntoAudioInput', () => {
+    it('will call mixIntoAudioInput if WebAudio feature is enabled', () => {
+      facade.enableWebAudio(true);
       const spy = sinon.spy(controller.deviceController, 'mixIntoAudioInput');
       const arg1 = new MediaStream();
       facade.mixIntoAudioInput(arg1);
+      assert(spy.calledOnceWith(arg1));
+    });
+
+    it('will call enableWebAudio', () => {
+      const spy = sinon.spy(controller.deviceController, 'enableWebAudio');
+      const arg1 = false;
+      facade.enableWebAudio(arg1);
       assert(spy.calledOnceWith(arg1));
     });
   });

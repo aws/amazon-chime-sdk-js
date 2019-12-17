@@ -40,6 +40,11 @@ export default interface TransceiverController {
   setAudioInput(track: MediaStreamTrack | null): void;
 
   /**
+   * Replaces [[MediaStreamTrack]] on audio transceiver of sendrecv direction.
+   */
+  replaceAudioTrack(track: MediaStreamTrack): Promise<boolean>;
+
+  /**
    * Sets the video track.
    */
   setVideoInput(track: MediaStreamTrack | null): void;

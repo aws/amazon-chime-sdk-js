@@ -39,6 +39,7 @@ export default class DefaultMeetingSession implements MeetingSession {
     this._configuration = configuration;
     this._logger = logger;
     this._deviceController = deviceController;
+    this._deviceController.enableWebAudio(configuration.enableWebAudio);
     this.audioVideoController = new DefaultAudioVideoController(
       this._configuration,
       this._logger,

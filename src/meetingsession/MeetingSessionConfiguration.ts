@@ -54,6 +54,11 @@ export default class MeetingSessionConfiguration {
   connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
 
   /**
+   * Feature flag to enable WebAudio processing
+   */
+  enableWebAudio: boolean = false;
+
+  /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
    * chime:CreateAttendee response. You can pass in either a JSON object containing the
    * responses, or a JSON object containing the information in the Meeting and Attendee

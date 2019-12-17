@@ -87,6 +87,8 @@ export default class AudioVideoControllerState {
 
   localVideoSender: RTCRtpSender | null = null;
 
+  localAudioSender: RTCRtpSender | null = null;
+
   videoCaptureAndEncodeParameter: VideoCaptureAndEncodeParameter | null = null;
 
   videosToReceive: VideoStreamIdSet | null = null;

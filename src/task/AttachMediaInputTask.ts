@@ -40,13 +40,13 @@ export default class AttachMediaInputTask extends BaseTask {
             // unclear why this does not deal with the case of removing
             // an existing track as we do in attachVideoInput
             // @ts-ignore
-            this.context.peer.addTrack(track, audioInput);
+            this.context.localAudioSender = this.context.peer.addTrack(track, audioInput);
           }
         });
       }
     } else {
       transceiverController.setAudioInput(null);
-      this.context.logger.info('no audio track');
+      this.context.logger.warn('no audio track');
     }
 
     const videoInput = this.context.activeVideoInput;

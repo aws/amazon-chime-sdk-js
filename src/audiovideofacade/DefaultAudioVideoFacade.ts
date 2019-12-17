@@ -351,6 +351,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     });
   }
 
+  enableWebAudio(flag: boolean): void {
+    this.deviceController.enableWebAudio(flag);
+    this.trace('enableWebAudio', flag);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private trace(name: string, input?: any, output?: any): void {
     let s = `API/DefaultAudioVideoFacade/${name}`;

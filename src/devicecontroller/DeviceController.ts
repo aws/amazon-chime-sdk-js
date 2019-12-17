@@ -130,4 +130,9 @@ export default interface DeviceController {
     frameRate: number,
     maxBandwidthKbps: number
   ): void;
+
+  /**
+   * Sets the flag in [[DeviceController]] on whether to enable WebAudio-based device management.
+   */
+  enableWebAudio(flag: boolean): void;
 }

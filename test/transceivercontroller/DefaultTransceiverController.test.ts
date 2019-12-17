@@ -413,4 +413,51 @@ describe('DefaultTransceiverController', () => {
       });
     });
   });
+
+  describe('replaceAudioTrack', () => {
+    it('returns false if transceiver is not set up or audio transceiver is not sending', async () => {
+      const newAudioTrack = new MediaStreamTrack();
+      let success = await tc.replaceAudioTrack(newAudioTrack);
+      expect(success).to.be.false;
+
+      // set up local transceivers
+      success = true;
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      success = await tc.replaceAudioTrack(newAudioTrack);
+      expect(success).to.be.false;
+
+      // set audio input to activate transceiver
+      tc.setAudioInput(newAudioTrack);
+
+      const newAudioTrack2 = new MediaStreamTrack();
+      success = await tc.replaceAudioTrack(newAudioTrack2);
+      expect(success).to.be.true;
+      const audioTransceiver = peer.getTransceivers()[0];
+      expect(audioTransceiver.sender.track).to.equal(newAudioTrack2);
+    });
+  });
+
+  describe('replaceAudioTrackForSender', () => {
+    it('returns false if input sender is null', async () => {
+      const audioTrack = new MediaStreamTrack();
+      const success = await DefaultTransceiverController.replaceAudioTrackForSender(
+        null,
+        audioTrack
+      );
+      expect(success).to.be.false;
+    });
+
+    it('returns true if audio track is replaced', async () => {
+      const sender = new RTCRtpSender();
+      const audioTrack = new MediaStreamTrack();
+      const success = await DefaultTransceiverController.replaceAudioTrackForSender(
+        sender,
+        audioTrack
+      );
+      expect(success).to.be.true;
+      expect(sender.track).to.equal(audioTrack);
+    });
+  });
 });
