@@ -327,20 +327,25 @@ class AppPage {
     let pixelData = [];
     let i = 0;
     let timeout = 10;
+    let success = 0;
     let pixelSum = await this.getScreenSharePixelSum();
     pixelData.push(pixelSum);
     while (i < timeout) {
-      let pixelDataLen = pixelData.length;
-      if (expectedState === "video" && pixelData[pixelDataLen - 1] - pixelData[pixelDataLen - 2] === 0) {
-        return pixelData[pixelDataLen - 2] == 0 ? 'blank' : 'still';
-      }
-      if (expectedState === "blank" && pixelSum !== 0) {
-        return 'video';
-      }
-      await TestUtils.waitAround(1000);
+      i++;
       pixelSum = await this.getScreenSharePixelSum();
       pixelData.push(pixelSum);
-      i++;
+      let pixelDataLen = pixelData.length;
+      if (expectedState === "video" && pixelData[pixelDataLen - 1] - pixelData[pixelDataLen - 2] !== 0) {
+        success++;
+      }
+      if (expectedState === "blank" && pixelData[pixelDataLen - 1] - pixelData[pixelDataLen - 2] === 0) {
+        success++;
+      }
+      await TestUtils.waitAround(1000);
+    }
+    console.log(success);
+    if (success === 0) {
+      return 'failed'
     }
     return expectedState
   }
