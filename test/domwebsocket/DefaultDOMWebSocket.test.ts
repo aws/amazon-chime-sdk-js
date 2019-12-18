@@ -15,6 +15,15 @@ describe('DefaultDOMWebSocket', () => {
     chai.should();
   });
 
+  describe('url', () => {
+    it('is delegated', () => {
+      const url = 'ws://localhost';
+      const webSocket = Substitute.for<WebSocket>();
+      webSocket.url.returns(url);
+      chai.expect(new DefaultDOMWebSocket(webSocket).url).to.eq(url);
+    });
+  });
+
   describe('onopen', () => {
     const subject = new DefaultDOMWebSocket(Substitute.for<WebSocket>());
 

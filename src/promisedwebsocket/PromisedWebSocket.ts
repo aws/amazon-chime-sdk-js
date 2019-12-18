@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export default interface PromisedWebSocket extends EventTarget {
+  readonly url: string;
+
   /**
    * Opens the connection
    * @param {number} timeoutMs

@@ -17,6 +17,14 @@ describe('DefaultPromisedWebSocket', () => {
     chai.use(chaiAsPromised);
   });
 
+  describe('url', () => {
+    it('is delegated', () => {
+      const webSocket = new DOMWebSocketMock();
+      const subject = new DefaultPromisedWebSocket(webSocket);
+      chai.expect(subject.url).to.eq(webSocket.url);
+    });
+  });
+
   describe('#open', () => {
     describe('without timeout', () => {
       it('is fulfilled', (done: Mocha.Done) => {

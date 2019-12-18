@@ -53,6 +53,8 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
       });
     });
 
+    this.logger.info(`opening screen sharing connection to ${this.webSocket.url}`);
+
     return this.webSocket.open(timeoutMs).then((event: Event) => {
       this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
         Maybe.of(observer.didOpen).map(f => f.bind(observer)(event));
