@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export default interface DOMWebSocket extends EventTarget {
+  readonly url: string;
   onopen: EventListener | null;
   onerror: EventListener | null;
   onclose: EventListener | null;

@@ -11,6 +11,10 @@ export default class DefaultPromisedWebSocket implements PromisedWebSocket {
 
   constructor(private webSocket: DOMWebSocket) {}
 
+  get url(): string {
+    return this.webSocket.url;
+  }
+
   open(timeoutMs: number): Promise<Event> {
     const promise = new Promise<Event>((resolve, reject) => {
       this.webSocket.onclose = (event: CloseEvent) => {

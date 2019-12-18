@@ -18,7 +18,7 @@ export default class ReconnectingPromisedWebSocket implements PromisedWebSocket 
   private webSocket: PromisedWebSocket | null = null;
 
   constructor(
-    private url: string,
+    readonly url: string,
     private protocols: string | string[],
     private binaryType: BinaryType,
     private webSocketFactory: PromisedWebSocketFactory,

@@ -9,6 +9,10 @@ import PromisedWebSocket from '../../src/promisedwebsocket/PromisedWebSocket';
 export default class PromisedWebSocketMock implements PromisedWebSocket {
   private callbacks = new Map<string, Set<EventListener>>();
 
+  get url(): string {
+    return 'ws://localhost';
+  }
+
   open(_timeoutMs: number): Promise<Event> {
     return Promise.resolve(Substitute.for<Event>());
   }

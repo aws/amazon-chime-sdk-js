@@ -131,6 +131,7 @@ export default class DefaultScreenViewingDeltaRenderer implements ScreenViewingD
         }
         context.putImageData(imageData, dx, dy);
         this.hasRendered[row][col] = true;
+        this.logger.debug(() => `rendered row=${row} col=${col}`);
       }
     }
   }

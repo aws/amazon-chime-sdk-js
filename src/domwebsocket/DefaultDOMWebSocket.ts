@@ -6,6 +6,10 @@ import DOMWebSocket from './DOMWebSocket';
 export default class DefaultDOMWebSocket implements DOMWebSocket {
   constructor(private webSocket: WebSocket) {}
 
+  get url(): string {
+    return this.webSocket.url;
+  }
+
   get onopen(): EventListener {
     return this.webSocket.onopen;
   }

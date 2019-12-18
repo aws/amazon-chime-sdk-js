@@ -5,6 +5,9 @@ import DOMWebSocket from '../../src/domwebsocket/DOMWebSocket';
 import Maybe from '../../src/maybe/Maybe';
 
 export default class DOMWebSocketMock implements DOMWebSocket {
+  get url(): string {
+    return 'ws://localhost';
+  }
   onerror: EventListener | null = null;
   onopen: EventListener | null = null;
   onmessage: EventListener | null = null;

@@ -53,6 +53,7 @@ describe('DefaultScreenSharingSession', function() {
         const event = Substitute.for<Event>();
         event.type.returns('open');
         promisedWebSocket.open(Arg.any()).returns(Promise.resolve(event));
+        promisedWebSocket.url.returns('');
         subject.open(1000).should.eventually.be.fulfilled.and.notify(done);
         promisedWebSocket.dispatchEvent(event);
       });
@@ -78,6 +79,7 @@ describe('DefaultScreenSharingSession', function() {
         },
       };
       promisedWebSocket.open(Arg.any()).returns(Promise.resolve(event));
+      promisedWebSocket.url.returns('');
       subject.registerObserver(observer);
       subject.open(1000).should.eventually.be.fulfilled;
     });
@@ -98,6 +100,7 @@ describe('DefaultScreenSharingSession', function() {
         const event = Substitute.for<Event>();
         event.type.returns('error');
         promisedWebSocket.open(Arg.any()).returns(Promise.reject(event));
+        promisedWebSocket.url.returns('');
         subject.open(1000).should.eventually.be.rejected.and.notify(done);
       });
     });
