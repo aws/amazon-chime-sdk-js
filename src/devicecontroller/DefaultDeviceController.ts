@@ -249,14 +249,15 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   static synthesizeAudioDevice(toneHz: number): Device {
     const audioContext = DefaultDeviceController.createAudioContext();
     const outputNode = audioContext.createMediaStreamDestination();
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.0;
+    gainNode.connect(outputNode);
     if (toneHz) {
-      const gainNode = audioContext.createGain();
       gainNode.gain.value = 0.1;
       const oscillatorNode = audioContext.createOscillator();
       oscillatorNode.frequency.value = toneHz;
       oscillatorNode.connect(gainNode);
       oscillatorNode.start();
-      gainNode.connect(outputNode);
     }
     outputNode.addEventListener('ended', () => {
       audioContext.close();
