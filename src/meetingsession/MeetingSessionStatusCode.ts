@@ -108,6 +108,11 @@ export enum MeetingSessionStatusCode {
    * A task failed for an unknown reason.
    */
   TaskFailed = 19,
+
+  /**
+   * Audio device has switched.
+   */
+  AudioDeviceSwitched = 20,
 }
 
 export default MeetingSessionStatusCode;

@@ -173,10 +173,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
           (document.getElementById('info-name') as HTMLSpanElement).innerHTML = this.name;
           this.switchToFlow('flow-devices');
           await this.openAudioInputFromSelection();
-          await this.openVideoInputFromSelection(
-            (document.getElementById('video-input') as HTMLSelectElement).value,
-            true
-          );
+          try {
+            await this.openVideoInputFromSelection(
+              (document.getElementById('video-input') as HTMLSelectElement).value,
+              true
+            );
+          } catch (err) {
+            this.log('no video input device selected');
+          }
           await this.openAudioOutputFromSelection();
           this.hideProgress('progress-authenticate');
         }
@@ -239,8 +243,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
 
     const videoInput = document.getElementById('video-input') as HTMLSelectElement;
     videoInput.addEventListener('change', async (_ev: Event) => {
-      this.log('Video input device is changed');
-      await this.openVideoInputFromSelection(videoInput.value, true);
+      this.log('video input device is changed');
+      try {
+        await this.openVideoInputFromSelection(videoInput.value, true);
+      } catch (err) {
+        this.log('no video input device selected');
+      }
     });
 
     const videoInputQuality = document.getElementById('video-input-quality') as HTMLSelectElement;
@@ -257,7 +265,11 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
           this.audioVideo.chooseVideoInputQuality(1280, 720, 15, 1400);
           break;
       }
-      await this.openVideoInputFromSelection(videoInput.value, true);
+      try {
+        await this.openVideoInputFromSelection(videoInput.value, true);
+      } catch (err) {
+        this.log('no video input device selected');
+      }
     });
 
     const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
@@ -305,8 +317,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     buttonVideo.addEventListener('click', _e => {
       new AsyncScheduler().start(async () => {
         if (this.toggleButton('button-camera') && this.canStartLocalVideo) {
-          await this.openVideoInputFromSelection(null, false);
-          this.audioVideo.startLocalVideoTile();
+          try {
+            await this.openVideoInputFromSelection(null, false);
+            this.audioVideo.startLocalVideoTile();
+          } catch (err) {
+            this.log('no video input device selected');
+          }
         } else {
           this.audioVideo.stopLocalVideoTile();
           this.hideTile(16);
@@ -397,8 +413,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     });
   }
 
-  toggleButton(button: string): boolean {
-    this.buttonStates[button] = !this.buttonStates[button];
+  toggleButton(button: string, state?: 'on' | 'off'): boolean {
+    if (state === 'on') {
+      this.buttonStates[button] = true;
+    } else if (state === 'off') {
+      this.buttonStates[button] = false;
+    } else {
+      this.buttonStates[button] = !this.buttonStates[button];
+    }
     this.displayButtonStates();
     return this.buttonStates[button];
   }
@@ -472,7 +494,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     }
   }
 
-  initializeMeetingSession(configuration: MeetingSessionConfiguration): void {
+  async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     const logger = new ConsoleLogger('SDK', LogLevel.INFO);
     const deviceController = new DefaultDeviceController(logger);
     configuration.enableWebAudio = this.enableWebAudio;
@@ -481,7 +503,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
 
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
-    this.populateAllDeviceLists();
+    await this.populateAllDeviceLists();
     this.setupMuteHandler();
     this.setupCanUnmuteHandler();
     this.setupSubscribeToAttendeeIdPresenceHandler();
@@ -814,10 +836,11 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       await this.audioVideo.listVideoInputDevices(),
       additionalDevices,
       async (name: string) => {
-        this.selectedVideoInput = name;
-        await this.audioVideo.chooseVideoInputDevice(
-          this.videoInputSelectionToDevice(this.selectedVideoInput)
-        );
+        try {
+          await this.openVideoInputFromSelection(name, false);
+        } catch (err) {
+          this.log('no video input device selected');
+        }
       }
     );
   }
@@ -908,9 +931,13 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       this.selectedVideoInput = selection;
     }
     this.log(`Switching to: ${this.selectedVideoInput}`);
-    await this.audioVideo.chooseVideoInputDevice(
-      this.videoInputSelectionToDevice(this.selectedVideoInput)
-    );
+    const device = this.videoInputSelectionToDevice(this.selectedVideoInput);
+    if (device === null) {
+      this.audioVideo.stopLocalVideoTile();
+      this.toggleButton('button-camera', 'off');
+      throw new Error('no video device selected');
+    }
+    await this.audioVideo.chooseVideoInputDevice(device);
     if (showPreview) {
       this.audioVideo.startVideoPreviewForVideoInput(document.getElementById(
         'video-preview'
@@ -922,7 +949,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     if (value === '440 Hz') {
       return DefaultDeviceController.synthesizeAudioDevice(440);
     } else if (value === 'None') {
-      return DefaultDeviceController.createEmptyAudioDevice();
+      return null;
     }
     return value;
   }
@@ -933,14 +960,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     } else if (value === 'SMPTE Color Bars') {
       return DefaultDeviceController.synthesizeVideoDevice('smpte');
     } else if (value === 'None') {
-      return DefaultDeviceController.createEmptyVideoDevice();
+      return null;
     }
     return value;
   }
 
   async authenticate(): Promise<void> {
     let joinInfo = (await this.joinMeeting()).JoinInfo;
-    this.initializeMeetingSession(
+    await this.initializeMeetingSession(
       new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee)
     );
     const url = new URL(window.location.href);
