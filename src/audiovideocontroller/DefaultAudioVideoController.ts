@@ -410,16 +410,16 @@ export default class DefaultAudioVideoController implements AudioVideoController
     } catch (error) {
       this.logger.info('could not acquire audio stream from mediaStreamBroker');
     }
-    if (!audioStream || audioStream.getTracks().length < 1) {
-      return Promise.reject('could not acquire audio track');
+    if (!audioStream || audioStream.getAudioTracks().length < 1) {
+      throw new Error('could not acquire audio track');
     }
 
     this.connectionHealthData.reset();
     this.connectionHealthData.setConnectionStartTime();
 
-    const audioTrack = audioStream.getTracks()[0];
+    const audioTrack = audioStream.getAudioTracks()[0];
     if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
-      return Promise.reject('no active meeting and peer connection');
+      throw new Error('no active meeting and peer connection');
     }
     let replaceTrackSuccess = false;
 
@@ -433,6 +433,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
         audioTrack
       );
     }
+    this.meetingSessionContext.activeAudioInput = audioStream;
     callback();
     if (replaceTrackSuccess) {
       return Promise.resolve();

@@ -22,7 +22,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private static defaultVideoMaxBandwidthKbps = 1400;
   private static defaultSampleRate = 48000;
   private static defaultSampleSize = 16;
-  private static defaultChannelCount = 2;
+  private static defaultChannelCount = 1;
   private deviceInfoCache: MediaDeviceInfo[] | null = null;
   private activeDevices: { [kind: string]: DeviceSelection | null } = { audio: null, video: null };
   private audioOutputDeviceId: string | null = null;
@@ -105,7 +105,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   createAnalyserNodeForAudioInput(): AnalyserNode | null {
     if (!this.activeDevices['audio']) {
-      this.logger.warn('cannot create analyser node since audio input device has not been chosen');
       return null;
     }
     const audioContext = DefaultDeviceController.createAudioContext();
@@ -249,11 +248,20 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   static synthesizeAudioDevice(toneHz: number): Device {
     const audioContext = DefaultDeviceController.createAudioContext();
     const outputNode = audioContext.createMediaStreamDestination();
-    const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0.0;
-    gainNode.connect(outputNode);
-    if (toneHz) {
+    if (!toneHz) {
+      const source = audioContext.createBufferSource();
+      source.buffer = audioContext.createBuffer(
+        1,
+        audioContext.sampleRate,
+        audioContext.sampleRate
+      );
+      source.loop = true;
+      source.connect(outputNode);
+      source.start();
+    } else {
+      const gainNode = audioContext.createGain();
       gainNode.gain.value = 0.1;
+      gainNode.connect(outputNode);
       const oscillatorNode = audioContext.createOscillator();
       oscillatorNode.frequency.value = toneHz;
       oscillatorNode.connect(gainNode);
@@ -444,12 +452,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     device: Device,
     fromAcquire: boolean
   ): Promise<DevicePermission> {
-    if (this.activeDevices[kind] && device === null) {
+    if (kind === 'video' && device === null && this.activeDevices[kind]) {
       this.releaseMediaStream(this.activeDevices[kind].stream);
       delete this.activeDevices[kind];
-      return;
     }
-    let proposedConstraints: MediaStreamConstraints = this.calculateMediaStreamConstraints(
+    let proposedConstraints: MediaStreamConstraints | null = this.calculateMediaStreamConstraints(
       kind,
       device
     );
@@ -472,7 +479,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     try {
       this.logger.info(`requesting new ${kind} device`);
       const stream = this.deviceAsMediaStream(device);
-      if (stream) {
+      if (kind === 'audio' && device === null) {
+        newDevice = new DeviceSelection();
+        newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
+        newDevice.constraints = null;
+      } else if (stream) {
         this.logger.info(`using media stream ${stream.id} for ${kind} device`);
         newDevice = new DeviceSelection();
         newDevice.stream = stream;
@@ -518,7 +529,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         try {
           await this.boundAudioVideoController.restartLocalAudio(() => {});
         } catch (error) {
-          this.logger.info(`replaced audio track fails due to ${error}`);
+          this.logger.info(`cannot replace audio track due to: ${error.message}`);
         }
       }
     }
@@ -537,14 +548,17 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.boundAudioVideoController.audioMixController.bindAudioDevice(deviceInfo);
   }
 
-  private calculateMediaStreamConstraints(kind: string, device: Device): MediaStreamConstraints {
+  private calculateMediaStreamConstraints(
+    kind: string,
+    device: Device
+  ): MediaStreamConstraints | null {
     let trackConstraints: MediaTrackConstraints = {};
     if (device === '') {
       device = null;
     }
     const stream = this.deviceAsMediaStream(device);
     if (device === null) {
-      trackConstraints = {};
+      return null;
     } else if (typeof device === 'string') {
       trackConstraints.deviceId = { exact: device };
     } else if (stream) {
@@ -567,6 +581,24 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     }
     if (kind === 'audio' && DefaultDeviceController.supportChannelCountConstraint()) {
       trackConstraints.channelCount = { ideal: DefaultDeviceController.defaultChannelCount };
+    }
+    if (kind === 'audio') {
+      // @ts-ignore
+      trackConstraints.echoCancellation = true;
+      // @ts-ignore
+      trackConstraints.googEchoCancellation = true;
+      // @ts-ignore
+      trackConstraints.googAutoGainControl = true;
+      // @ts-ignore
+      trackConstraints.googNoiseSuppression = true;
+      // @ts-ignore
+      trackConstraints.googHighpassFilter = true;
+      // @ts-ignore
+      trackConstraints.googNoiseSuppression2 = true;
+      // @ts-ignore
+      trackConstraints.googEchoCancellation2 = true;
+      // @ts-ignore
+      trackConstraints.googAutoGainControl2 = true;
     }
     return kind === 'audio' ? { audio: trackConstraints } : { video: trackConstraints };
   }
@@ -603,15 +635,20 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         return this.audioInputDestinationNode.stream;
       }
     }
+    let existingConstraints: MediaTrackConstraints | null = null;
     if (!this.activeDevices[kind]) {
-      this.logger.warn(`no ${kind} device chosen, attempting to get default device`);
+      if (kind === 'audio') {
+        this.logger.info(`no ${kind} device chosen, creating empty ${kind} device`);
+      } else {
+        this.logger.error(`no ${kind} device chosen, stopping local video tile`);
+        this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
+        throw new Error(`no ${kind} device chosen, stopping local video tile`);
+      }
     } else {
       this.logger.info(`checking whether existing ${kind} device can be reused`);
-    }
-    let existingConstraints: MediaTrackConstraints = {};
-    if (this.activeDevices[kind]) {
+      const active = this.activeDevices[kind];
       // @ts-ignore
-      existingConstraints = this.activeDevices[kind].constraints[kind];
+      existingConstraints = active.constraints ? active.constraints[kind] : null;
     }
     const result = await this.chooseInputDevice(kind, existingConstraints, true);
     if (
