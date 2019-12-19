@@ -93,8 +93,9 @@ function spawnOrFail(command, args, options) {
   console.log(cmd.stdout.toString());
 }
 
-const appHtml = `../browser/dist/${app}.html`;
+let appHtml;
 function ensureApp() {
+  appHtml = `../browser/dist/${app}.html`;
   console.log(`Verifying application ${app}`);
   if (!fs.existsSync(`../browser/app/${app}`)) {
     console.log(`Application ${app} does not exist. Did you specify correct name?`);
@@ -102,7 +103,13 @@ function ensureApp() {
   }
   if (!fs.existsSync(appHtml)) {
     console.log(`Application ${appHtml} does not exist. Rebuilding demo apps`);
-    spawnOrFail('npm', ['run', 'build'], {cwd: path.join(__dirname, '..', 'browser')});
+    spawnOrFail('npm', ['run', 'build'], {
+      cwd: path.join(__dirname, '..', 'browser'),
+      env: {
+        ...process.env,
+        'npm_config_app': app
+      }
+    });
   }
 
   // TODO: remove this once AWS Lambda Node.js runtime includes the Chime APIs

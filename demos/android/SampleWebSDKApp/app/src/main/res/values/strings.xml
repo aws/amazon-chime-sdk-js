@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Chime SDK Demo</string>
+    <string name="edit_meeting_id">Meeting ID</string>
+    <string name="edit_name">Your Name</string>
+    <string name="button_continue">Continue</string>
+    <string name="main_title">Join a meeting</string>
+    <string name="test_url"><!--SERVERLESS_BROWSER_DEMO_URL--></string>
+</resources>
