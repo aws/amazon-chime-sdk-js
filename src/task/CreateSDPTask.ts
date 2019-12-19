@@ -10,8 +10,15 @@ import BaseTask from './BaseTask';
 export default class CreateSDPTask extends BaseTask {
   protected taskName = 'CreateSDPTask';
 
+  private cancelPromise: (error: Error) => void;
+
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
+  }
+
+  cancel(): void {
+    const error = new Error(`canceling ${this.name()}`);
+    this.cancelPromise && this.cancelPromise(error);
   }
 
   sessionUsesAudio(): boolean {
@@ -35,7 +42,20 @@ export default class CreateSDPTask extends BaseTask {
       offerToReceiveVideo: this.sessionUsesVideo(),
     };
     this.logger.info(`offerOptions: ${JSON.stringify(offerOptions)}`);
-    this.context.sdpOfferInit = await this.context.peer.createOffer(offerOptions);
+
+    await new Promise<void>(async (resolve, reject) => {
+      this.cancelPromise = (error: Error) => {
+        reject(error);
+      };
+
+      try {
+        this.context.sdpOfferInit = await this.context.peer.createOffer(offerOptions);
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+
     this.context.logger.info(`created offer ${JSON.stringify(this.context.sdpOfferInit)}`);
   }
 }
