@@ -5,19 +5,23 @@ import * as chai from 'chai';
 
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import CreateSDPTask from '../../src/task/CreateSDPTask';
 import Task from '../../src/task/Task';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
+import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('CreateSDPTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   let context: AudioVideoControllerState;
-  let domMockBuilder: DOMMockBuilder | null = null;
+  let domMockBuilder: DOMMockBuilder;
+  let domMockBehavior: DOMMockBehavior;
   let task: Task;
 
   beforeEach(() => {
-    domMockBuilder = new DOMMockBuilder();
+    domMockBehavior = new DOMMockBehavior();
+    domMockBuilder = new DOMMockBuilder(domMockBehavior);
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.videoTileController = context.audioVideoController.videoTileController;
@@ -77,6 +81,31 @@ describe('CreateSDPTask', () => {
       const peer: RTCPeerConnection = new TestPeerConnectionMock();
       context.peer = peer;
       task.run().catch(() => done());
+    });
+  });
+
+  describe('cancel', () => {
+    it('cancels a task when the session is timed out', done => {
+      let called = false;
+
+      domMockBehavior.asyncWaitMs = 500;
+      new TimeoutScheduler(50).start(() => {
+        task.cancel();
+      });
+
+      task
+        .run()
+        .then(() => {
+          done(new Error('This line should not be reached.'));
+        })
+        .catch(() => {
+          called = true;
+        });
+
+      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 50).start(() => {
+        expect(called).to.be.true;
+        done();
+      });
     });
   });
 });
