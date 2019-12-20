@@ -233,7 +233,6 @@ import SessionStateControllerState from './sessionstatecontroller/SessionStateCo
 import SessionStateControllerTransitionResult from './sessionstatecontroller/SessionStateControllerTransitionResult';
 import SetLocalDescriptionTask from './task/SetLocalDescriptionTask';
 import SetRemoteDescriptionTask from './task/SetRemoteDescriptionTask';
-import SignalStrengthBarsConnectionHealthPolicy from './connectionhealthpolicy/SignalStrengthBarsConnectionHealthPolicy';
 import SignalingAndMetricsConnectionMonitor from './connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import SignalingClient from './signalingclient/SignalingClient';
 import SignalingClientConnectionRequest from './signalingclient/SignalingClientConnectionRequest';
@@ -510,7 +509,6 @@ export {
   SessionStateControllerTransitionResult,
   SetLocalDescriptionTask,
   SetRemoteDescriptionTask,
-  SignalStrengthBarsConnectionHealthPolicy,
   SignalingAndMetricsConnectionMonitor,
   SignalingClient,
   SignalingClientConnectionRequest,
