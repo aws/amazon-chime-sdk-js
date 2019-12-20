@@ -38,11 +38,15 @@ export default class DefaultScreenViewingSession implements ScreenViewingSession
     );
 
     this.webSocket.addEventListener('message', (event: MessageEvent) => {
-      Maybe.of(this.observer.didReceiveWebSocketMessage).map(f => f.bind(this.observer)(event));
+      Maybe.of(this.observer).map(observer => {
+        Maybe.of(observer.didReceiveWebSocketMessage).map(f => f.bind(this.observer)(event));
+      });
     });
 
     this.webSocket.addEventListener('close', (event: CloseEvent) => {
-      Maybe.of(this.observer.didCloseWebSocket).map(f => f.bind(this.observer)(event));
+      Maybe.of(this.observer).map(observer => {
+        Maybe.of(observer.didCloseWebSocket).map(f => f.bind(this.observer)(event));
+      });
     });
 
     return this.webSocket.open(request.timeoutMs);
