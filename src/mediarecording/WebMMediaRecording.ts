@@ -1,25 +1,29 @@
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Maybe from '../maybe/Maybe';
 import MediaRecording from './MediaRecording';
 import MediaRecordingEvent from './MediaRecordingEvent';
 import MediaRecordingOptions from './MediaRecordingOptions';
 
 export default class WebMMediaRecording implements MediaRecording {
-  static readonly options: MediaRecorderOptions = {
+  private static readonly browser = new DefaultBrowserBehavior();
+  private static readonly options: MediaRecorderOptions = {
     mimeType: 'video/webm; codecs=vp8',
   };
 
   private delegate: MediaRecorder | null = null;
   readonly options: MediaRecorderOptions;
-  readonly mediaStream: MediaStream;
   private timeSliceMs: number;
   private listeners = new Map<string, Set<EventListener>>();
 
-  constructor(mediaStream: MediaStream, options: MediaRecordingOptions = {}) {
+  constructor(
+    private mediaStream: MediaStream,
+    options: MediaRecordingOptions = {},
+    private browser: DefaultBrowserBehavior = WebMMediaRecording.browser
+  ) {
     this.options = { ...options, ...WebMMediaRecording.options };
-    this.mediaStream = mediaStream;
   }
 
   key(): void {
@@ -41,7 +45,9 @@ export default class WebMMediaRecording implements MediaRecording {
       });
     });
     if (delegate !== null) {
-      delegate.stream.getTracks().forEach(stream => stream.stop());
+      if (this.browser.isChrome()) {
+        delegate.stream.getTracks().forEach(stream => stream.stop());
+      }
       delegate.stop();
     }
     this.delegate.start(this.timeSliceMs);

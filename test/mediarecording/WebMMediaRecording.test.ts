@@ -5,6 +5,7 @@ import Substitute from '@fluffy-spoon/substitute';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import MediaRecordingOptions from '../../src/mediarecording/MediaRecordingOptions';
 import WebMMediaRecording from '../../src/mediarecording/WebMMediaRecording';
 import CustomEventMock from '../customeventmock/CustomEventMock';
@@ -40,6 +41,22 @@ describe('WebMMediaRecording', () => {
     describe('without start', () => {
       it('is keyed', () => {
         new WebMMediaRecording(Substitute.for<MediaStream>()).key();
+      });
+    });
+
+    describe('with Chrome', () => {
+      it('is keyed', () => {
+        const browser = Substitute.for<DefaultBrowserBehavior>();
+        const mediaStream = Substitute.for<MediaStream>();
+        const mediaTrack = Substitute.for<MediaStreamTrack>();
+        mediaTrack.stop().returns();
+        mediaStream.getTracks().returns(Array.of(mediaTrack));
+        mediaStream.clone().returns(mediaStream);
+        browser.isChrome().returns(true);
+        const subject = new WebMMediaRecording(mediaStream, {}, browser);
+        subject.key();
+        subject.key();
+        mediaTrack.received().stop();
       });
     });
   });
