@@ -14,11 +14,17 @@ export default class PromisedWebSocketMock implements PromisedWebSocket {
   }
 
   open(_timeoutMs: number): Promise<Event> {
-    return Promise.resolve(Substitute.for<Event>());
+    const event = Substitute.for<Event>();
+    event.type.returns('open');
+    this.dispatchEvent(event);
+    return Promise.resolve(event);
   }
 
   close(_timeoutMs: number): Promise<Event> {
-    return Promise.resolve(Substitute.for<CloseEvent>());
+    const event = Substitute.for<CloseEvent>();
+    event.type.returns('close');
+    this.dispatchEvent(event);
+    return Promise.resolve(event);
   }
 
   send(_data: string | ArrayBufferLike | Blob | ArrayBufferView): Promise<void> {

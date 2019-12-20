@@ -65,10 +65,12 @@ export default class ReconnectingPromisedWebSocket implements PromisedWebSocket 
         this.dispatchEvent(event);
       });
 
-      this.webSocket.open(timeoutMs).then((event: Event) => {
+      this.webSocket.addEventListener('open', (event: Event) => {
         this.didOpenWebSocket();
-        resolve(event);
+        this.dispatchEvent(event);
       });
+
+      return this.webSocket.open(timeoutMs).then(event => resolve(event));
     });
   }
 

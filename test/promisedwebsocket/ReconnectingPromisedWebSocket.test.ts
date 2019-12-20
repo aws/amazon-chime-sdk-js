@@ -36,6 +36,26 @@ describe('ReconnectingPromisedWebSocket', () => {
   });
 
   describe('#open', () => {
+    describe('with error', () => {
+      it('is rejected', (done: Mocha.Done) => {
+        const webSocket = {
+          ...Substitute.for<PromisedWebSocket>(),
+          open(_timeoutMs: number): Promise<Event> {
+            throw new Error();
+          },
+        };
+        const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();
+        const subject = new ReconnectingPromisedWebSocket(
+          url,
+          protocols,
+          binaryType,
+          webSocketFactory,
+          backoff
+        );
+        webSocketFactory.create(Arg.all()).returns(webSocket);
+        chai.expect(subject.open(timeoutMs)).to.eventually.be.rejected.and.notify(done);
+      });
+    });
     describe('without open', () => {
       it('is fulfilled', (done: Mocha.Done) => {
         const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();

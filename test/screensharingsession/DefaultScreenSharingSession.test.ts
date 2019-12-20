@@ -39,7 +39,7 @@ describe('DefaultScreenSharingSession', function() {
   describe('#open', () => {
     describe('with open', () => {
       it('is fulfilled', (done: Mocha.Done) => {
-        const promisedWebSocket = Substitute.for<PromisedWebSocket>();
+        const promisedWebSocket = new PromisedWebSocketMock();
         const subject = new DefaultScreenSharingSession(
           promisedWebSocket,
           constraintsProvider,
@@ -50,17 +50,12 @@ describe('DefaultScreenSharingSession', function() {
           mediaRecordingFactory,
           logging
         );
-        const event = Substitute.for<Event>();
-        event.type.returns('open');
-        promisedWebSocket.open(Arg.any()).returns(Promise.resolve(event));
-        promisedWebSocket.url.returns('');
         subject.open(1000).should.eventually.be.fulfilled.and.notify(done);
-        promisedWebSocket.dispatchEvent(event);
       });
     });
 
-    it('nofifies', (done: Mocha.Done) => {
-      const promisedWebSocket = Substitute.for<PromisedWebSocket>();
+    it('notifies', (done: Mocha.Done) => {
+      const promisedWebSocket = new PromisedWebSocketMock();
       const subject = new DefaultScreenSharingSession(
         promisedWebSocket,
         constraintsProvider,
@@ -71,15 +66,11 @@ describe('DefaultScreenSharingSession', function() {
         mediaRecordingFactory,
         logging
       );
-      const event = Substitute.for<Event>();
       const observer: ScreenSharingSessionObserver = {
-        didOpen(event: Event): void {
-          chai.expect(event).to.eq(event);
+        didOpen(_event: Event): void {
           done();
         },
       };
-      promisedWebSocket.open(Arg.any()).returns(Promise.resolve(event));
-      promisedWebSocket.url.returns('');
       subject.registerObserver(observer);
       subject.open(1000).should.eventually.be.fulfilled;
     });
