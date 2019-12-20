@@ -49,12 +49,6 @@ describe('ReconnectionHealthPolicy', () => {
     let health = reconnectionHealthPolicy.health();
     expect(health).to.equal(0);
   });
-  it('can simulate reconnect needed due to recent no signal', () => {
-    configuration.noSignalThresholdTimeMs = Infinity;
-    reconnectionHealthPolicy = new ReconnectionHealthPolicy(logger, configuration, data);
-    let health = reconnectionHealthPolicy.health();
-    expect(health).to.equal(0);
-  });
   it('can simulate reconnect needed due to recently missed pongs', () => {
     data.consecutiveMissedPongs = Infinity;
     reconnectionHealthPolicy = new ReconnectionHealthPolicy(logger, configuration, data);

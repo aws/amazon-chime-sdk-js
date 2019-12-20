@@ -6,7 +6,6 @@ import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ReconnectionHealthPolicy from '../connectionhealthpolicy/ReconnectionHealthPolicy';
-import SignalStrengthBarsConnectionHealthPolicy from '../connectionhealthpolicy/SignalStrengthBarsConnectionHealthPolicy';
 import UnusableAudioWarningConnectionHealthPolicy from '../connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import Maybe from '../maybe/Maybe';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
@@ -28,7 +27,6 @@ export default class MonitorTask extends BaseTask
 
   private reconnectionHealthPolicy: ReconnectionHealthPolicy;
   private unusableAudioWarningHealthPolicy: UnusableAudioWarningConnectionHealthPolicy;
-  private signalStrengthBarsHealthPolicy: SignalStrengthBarsConnectionHealthPolicy;
   private prevSignalStrength: number = 1;
 
   private static DEFAULT_TIMEOUT_FOR_START_SENDING_VIDEO_MS: number = 30000;
@@ -45,10 +43,6 @@ export default class MonitorTask extends BaseTask
       this.initialConnectionHealthData.clone()
     );
     this.unusableAudioWarningHealthPolicy = new UnusableAudioWarningConnectionHealthPolicy(
-      { ...connectionHealthPolicyConfiguration },
-      this.initialConnectionHealthData.clone()
-    );
-    this.signalStrengthBarsHealthPolicy = new SignalStrengthBarsConnectionHealthPolicy(
       { ...connectionHealthPolicyConfiguration },
       this.initialConnectionHealthData.clone()
     );
@@ -159,12 +153,6 @@ export default class MonitorTask extends BaseTask
           });
         }
       }
-    }
-
-    this.signalStrengthBarsHealthPolicy.update(connectionHealthData);
-    const signalStrengthBarsValue = this.signalStrengthBarsHealthPolicy.healthIfChanged();
-    if (signalStrengthBarsValue !== null) {
-      this.logger.info(`signal strength bars health is now: ${signalStrengthBarsValue}`);
     }
   }
 
