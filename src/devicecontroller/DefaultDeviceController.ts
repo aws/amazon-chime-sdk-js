@@ -455,10 +455,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     device: Device,
     fromAcquire: boolean
   ): Promise<DevicePermission> {
-    if (kind === 'video' && device === null && this.activeDevices[kind]) {
-      this.releaseMediaStream(this.activeDevices[kind].stream);
-      delete this.activeDevices[kind];
+    if (device === null && kind === 'video') {
+      if (this.activeDevices[kind]) {
+        this.releaseMediaStream(this.activeDevices[kind].stream);
+        delete this.activeDevices[kind];
+      }
+      return DevicePermission.PermissionGrantedByBrowser;
     }
+
     let proposedConstraints: MediaStreamConstraints | null = this.calculateMediaStreamConstraints(
       kind,
       device
@@ -480,7 +484,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     let startTimeMs = Date.now();
     let newDevice: DeviceSelection;
     try {
-      this.logger.info(`requesting new ${kind} device`);
+      this.logger.info(`requesting new ${kind} device with constraint ${proposedConstraints}`);
       const stream = this.deviceAsMediaStream(device);
       if (kind === 'audio' && device === null) {
         newDevice = new DeviceSelection();
