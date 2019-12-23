@@ -91,7 +91,6 @@ export default class SignalingAndMetricsConnectionMonitor
     const availableRecvBandwidth = metricReport.availableReceiveBandwidth;
 
     const audioSpeakerDelayMs = metricReport.audioSpeakerDelayMs;
-
     // firefox doesn't have aggregated bandwidth estimation for now.
     if (typeof availableSendBandwidth === 'number' && !isNaN(availableSendBandwidth)) {
       this.updateAvailableSendBandwidth(availableSendBandwidth / 1000);
