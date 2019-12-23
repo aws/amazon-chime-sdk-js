@@ -476,18 +476,23 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const metricReport = clientMetricReport.getObservableMetrics();
-    const availableSendBandwidth = metricReport.availableSendBandwidth;
-    const availableRecvBandwidth = metricReport.availableReceiveBandwidth;
-    if (typeof availableSendBandwidth === 'number' && !isNaN(availableSendBandwidth)) {
+    if (typeof metricReport.availableSendBandwidth === 'number' && !isNaN(metricReport.availableSendBandwidth)) {
       (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerHTML =
-        'Available Uplink Bandwidth: ' + String(availableSendBandwidth / 1000) + ' Kbps';
+        'Available Uplink Bandwidth: ' + String(metricReport.availableSendBandwidth / 1000) + ' Kbps';
+    } else if (typeof metricReport.availableOutgoingBitrate === 'number' && !isNaN(metricReport.availableOutgoingBitrate)) {
+      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerHTML =
+      'Available Uplink Bandwidth: ' + String(metricReport.availableOutgoingBitrate / 1000) + ' Kbps';
     } else {
       (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerHTML =
-        'Available Uplink Bandwidth: Unknown';
+      'Available Uplink Bandwidth: Unknown';
     }
-    if (typeof availableRecvBandwidth === 'number' && !isNaN(availableRecvBandwidth)) {
+
+    if (typeof metricReport.availableReceiveBandwidth === 'number' && !isNaN(metricReport.availableReceiveBandwidth)) {
       (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerHTML =
-        'Available Downlink Bandwidth: ' + String(availableRecvBandwidth / 1000) + ' Kbps';
+        'Available Downlink Bandwidth: ' + String(metricReport.availableReceiveBandwidth / 1000) + ' Kbps';
+    } else if (typeof metricReport.availableIncomingBitrate === 'number' && !isNaN(metricReport.availableIncomingBitrate)) {
+      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerHTML =
+      'Available Downlink Bandwidth: ' + String(metricReport.availableIncomingBitrate / 1000) + ' Kbps';
     } else {
       (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerHTML =
         'Available Downlink Bandwidth: Unknown';

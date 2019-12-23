@@ -63,7 +63,7 @@ describe('DefaultClientMetricReport', () => {
       expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
     });
 
-    it('returns the loss perecent', () => {
+    it('returns the loss percent', () => {
       const report = new GlobalMetricReport();
       report.currentMetrics['googDecodingNormal'] = 1;
       report.currentMetrics['googDecodingCTN'] = 2;
@@ -71,7 +71,7 @@ describe('DefaultClientMetricReport', () => {
       expect(clientMetricReport.decoderLossPercent(metricName)).to.equal((1 * 100) / 2);
     });
 
-    it('returns the loss perecent from the stream metric reports', () => {
+    it('returns the loss percent from the stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.currentMetrics['googDecodingNormal'] = 1;
@@ -100,7 +100,7 @@ describe('DefaultClientMetricReport', () => {
       expect(clientMetricReport.packetLossPercent(metricName)).to.equal(0);
     });
 
-    it('returns the loss perecent', () => {
+    it('returns the loss percent', () => {
       const report = new GlobalMetricReport();
       report.currentMetrics[metricName] = 10;
       report.currentMetrics['packetsLost'] = 5;
@@ -108,7 +108,7 @@ describe('DefaultClientMetricReport', () => {
       expect(clientMetricReport.packetLossPercent(metricName)).to.equal((5 * 100) / 15);
     });
 
-    it('returns the loss perecent from the stream metric reports', () => {
+    it('returns the loss percent from the stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
       report.currentMetrics[metricName] = 10;
@@ -334,7 +334,7 @@ describe('DefaultClientMetricReport', () => {
   describe('getObservableMetrics', () => {
     it('returns the observable metrics as a JS object', () => {
       const metrics = clientMetricReport.getObservableMetrics();
-      expect(Object.keys(metrics).length).to.equal(8);
+      expect(Object.keys(metrics).length).to.equal(10);
     });
   });
 

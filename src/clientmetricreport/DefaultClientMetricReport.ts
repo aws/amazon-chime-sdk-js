@@ -137,6 +137,9 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       transform: this.countPerSecond,
       type: SdkMetric.Type.SOCKET_DISCARDED_PPS,
     },
+
+    availableIncomingBitrate: { transform: this.identityValue },
+    availableOutgoingBitrate: { transform: this.identityValue },
   };
 
   readonly audioUpstreamMetricMap: {
@@ -353,6 +356,10 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
+
+    // new getStats() API
+    availableIncomingBitrate: { source: 'availableIncomingBitrate' },
+    availableOutgoingBitrate: { source: 'availableOutgoingBitrate' },
   };
 
   getObservableMetricValue(metricName: string): number {
