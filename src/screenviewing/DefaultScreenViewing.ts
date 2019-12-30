@@ -29,7 +29,11 @@ export default class DefaultScreenViewing implements ScreenViewing {
    * Stops screen viewing and closes the screen signaling connection
    */
   close(): Promise<void> {
-    return this.stop().then(() => this.componentContext.signalingSession.close());
+    return this.stop()
+      .catch(() => {})
+      .finally(() => {
+        return this.componentContext.signalingSession.close();
+      });
   }
 
   /**
