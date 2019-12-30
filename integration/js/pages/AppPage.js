@@ -69,8 +69,8 @@ class AppPage {
   }
 
   async leaveTheMeeting() {
-    let meetingEndButtom = await this.driver.findElement(elements.meetingEndButtom);
-    await meetingEndButtom.click();
+    let meetingLeaveButton = await this.driver.findElement(elements.meetingLeaveButton);
+    await meetingLeaveButton.click();
   }
 
   async clickScreenShareButton() {
