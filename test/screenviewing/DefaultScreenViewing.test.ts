@@ -29,6 +29,30 @@ describe('DefaultScreenViewing', () => {
   });
 
   describe('close', () => {
+    describe('with error', () => {
+      it('is closed', () => {
+        return new DefaultScreenViewing({
+          ...Substitute.for(),
+          viewer: {
+            ...Substitute.for(),
+            stop(): void {},
+          },
+          signalingSession: {
+            ...Substitute.for(),
+            close(): Promise<void> {
+              return Promise.resolve();
+            },
+          },
+          viewingSession: {
+            ...Substitute.for(),
+            closeConnection(): Promise<void> {
+              return Promise.reject(new Error('bummers'));
+            },
+          },
+        }).close();
+      });
+    });
+
     it('calls viewer close', () => {
       return new DefaultScreenViewing({
         ...Substitute.for(),
