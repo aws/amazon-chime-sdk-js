@@ -29,7 +29,7 @@ class AudioTest extends SdkBaseTest {
     await JoinMeetingStep.executeStep(this);
     await UserJoinedMeetingCheck.executeStep(this, attendee_id);
     await WaitForRemoteParticipantsToJoinMeeting.executeStep(this);
-    await RosterCheck.executeStep(this);
+    await RosterCheck.executeStep(this, 2);
 
     await PlayRandomToneStep.executeStep(this);
     // Wait for other participant to start audio

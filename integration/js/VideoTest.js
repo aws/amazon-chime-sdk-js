@@ -19,7 +19,7 @@ class VideoTest extends SdkBaseTest {
     await JoinMeetingStep.executeStep(this);
     await UserJoinedMeetingCheck.executeStep(this, attendee_id);
     await WaitForRemoteParticipantsToJoinMeeting.executeStep(this);
-    await RosterCheck.executeStep(this);
+    await RosterCheck.executeStep(this, 2);
     await ClickVideoButton.executeStep(this);
     await LocalVideoCheck.executeStep(this, 'VIDEO_ON');
     await WaitForRemoteParticipantsToTurnVideoOn.executeStep(this);
