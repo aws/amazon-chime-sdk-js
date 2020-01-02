@@ -8,6 +8,7 @@ exports.EndMeetingStep = require('./EndMeetingStep');
 exports.LeaveMeetingStep = require('./LeaveMeetingStep');
 exports.ClickScreenShareButton = require('./ClickScreenShareButton');
 exports.ClickScreenViewButton = require('./ClickScreenViewButton');
+exports.GetSipUriForCallStep = require('./GetSipUriForCallStep');
 
 
 exports.WaitForRemoteVideoCheckToComplete = require('./WaitForRemoteVideoCheckToComplete');

@@ -3,12 +3,13 @@ const demo = require('../pages/AppPage');
 const AppTestStep = require('../utils/AppTestStep');
 
 class RosterCheck extends AppTestStep {
-  constructor(kiteBaseTest, attendee_id) {
+  constructor(kiteBaseTest, numberOfParticipant) {
     super(kiteBaseTest);
+    this.numberOfParticipant = numberOfParticipant;
   }
 
-  static async executeStep(KiteBaseTest, attendee_id) {
-    const step = new RosterCheck(KiteBaseTest, attendee_id);
+  static async executeStep(KiteBaseTest, numberOfParticipant) {
+    const step = new RosterCheck(KiteBaseTest, numberOfParticipant);
     await step.execute(KiteBaseTest);
   }
 

@@ -3,6 +3,8 @@ const {TestUtils} = require('kite-common');
 
 const elements = {
   meetingIdInput: By.id('inputMeeting'),
+  sipMeetingIdInput: By.id('sip-inputMeeting'),
+  voiceConnectorIdInput: By.id('voiceConnectorId'),
   attendeeNameInput: By.id('inputName'),
   authenticateButton: By.id('authenticate'),
   localVideoBotton: By.id('button-camera'),
@@ -11,12 +13,16 @@ const elements = {
   meetingLeaveButton: By.id('button-meeting-leave'),
   screenShareButton: By.id('button-screen-share'),
   screenViewButton: By.id('button-screen-view'),
+  sipAuthenticateButton: By.id('button-sip-authenticate'),
   roster: By.id('roster'),
   participants: By.css('li'),
+  switchToSipFlow: By.id('to-sip-flow'),
 
   authenticationFlow: By.id('flow-authenticate'),
   deviceFlow: By.id('flow-devices'),
   meetingFlow: By.id('flow-meeting'),
+  sipAuthenticateFlow: By.id('flow-sip-authenticate'),
+  sipUriFlow: By.id('flow-sip-uri'),
 
   failedMeetingFlow: By.id('flow-failed-meeting'),
   microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
@@ -24,6 +30,7 @@ const elements = {
   microphoneButton: By.id('button-microphone'),
 
   meetingAudio: By.id('meeting-audio'),
+  sipUri: By.id('sip-uri'),
 };
 
 const SessionStatus = {
@@ -116,6 +123,33 @@ class AppPage {
     return SessionStatus.STARTED;
   }
 
+  async switchToSipCallFlow(){
+    let switchToSipFlow = await this.driver.findElement(elements.switchToSipFlow);
+    await switchToSipFlow.click();
+  }
+
+  async getSipUri(){
+    return await this.driver.findElement(elements.sipUri).getAttribute("value");
+  }
+
+  async authenticateSipCall(meetingId, voiceConnectorId){
+    let sipMeetingIdInput = await this.driver.findElement(elements.sipMeetingIdInput);
+    await sipMeetingIdInput.clear();
+    await sipMeetingIdInput.sendKeys(meetingId);
+
+    let voiceConnectorIdInput = await this.driver.findElement(elements.voiceConnectorIdInput);
+    await voiceConnectorIdInput.clear();
+    await voiceConnectorIdInput.sendKeys(voiceConnectorId);
+
+    let sipAuthenticateButton = await this.driver.findElement(elements.sipAuthenticateButton);
+    await sipAuthenticateButton.click();
+  }
+
+  async switchToSipCallFlow(){
+    let switchToSipFlow = await this.driver.findElement(elements.switchToSipFlow);
+    await switchToSipFlow.click();
+  }
+
   async waitForAuthentication() {
     let timeout = 10;
     let i = 0;
@@ -123,6 +157,21 @@ class AppPage {
     while (authenticating && i < timeout) {
       authenticating = await this.isAuthenticating();
       if (authenticating === false) {
+        return 'done'
+      }
+      i++;
+      await TestUtils.waitAround(1000);
+    }
+    return 'failed'
+  }
+
+  async waitForSipAuthentication() {
+    let timeout = 10;
+    let i = 0;
+    let authenticated = false;
+    while (!authenticated && i < timeout) {
+      authenticated = await this.isSipAuthenticated();
+      if (authenticated === true) {
         return 'done'
       }
       i++;
@@ -154,6 +203,10 @@ class AppPage {
     return await this.driver.findElement(elements.authenticationFlow).isDisplayed();
   }
 
+  async isSipAuthenticated() {
+    return await this.driver.findElement(elements.sipUriFlow).isDisplayed();
+  }
+
   async checkIfMeetingAuthenticated() {
     return await this.driver.findElement(elements.deviceFlow).isDisplayed();
   }
@@ -172,7 +225,7 @@ class AppPage {
     while (i < timeout) {
       try {
         const participantCountOnRoster = await this.getNumberOfParticipantsOnRoster();
-        if (participantCountOnRoster.toString() === numberOfParticipants) {
+        if (participantCountOnRoster === numberOfParticipants) {
           return true;
         }
       } catch (err) {
