@@ -40,6 +40,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
     });
 
     it('can detect Chrome', () => {
@@ -47,6 +48,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('chrome');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(78);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
     });
 
     it('can detect Edge Chromium', () => {
@@ -54,6 +56,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('edge-chromium');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(79);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
     });
 
     it('can detect Safari', () => {
@@ -61,6 +64,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
     });
 
     it('can handle an unknown user agent', () => {

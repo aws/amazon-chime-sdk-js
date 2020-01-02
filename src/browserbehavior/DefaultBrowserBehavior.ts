@@ -50,6 +50,14 @@ export default class DefaultBrowserBehavior {
     return this.isSafari();
   }
 
+  requiresBundlePolicy(): RTCBundlePolicy {
+    if (this.isSafari()) {
+      return 'max-bundle';
+    } else {
+      return 'balanced';
+    }
+  }
+
   requiresPromiseBasedWebRTCGetStats(): boolean {
     return this.isSafari() || this.isFirefox();
   }
