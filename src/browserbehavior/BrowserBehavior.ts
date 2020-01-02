@@ -45,4 +45,9 @@ export default interface BrowserBehavior {
    * returns true if detected browser requires promise-based WebRTC getStats API
    */
   requiresPromiseBasedWebRTCGetStats(): boolean;
+
+  /**
+   * returns bundle policy for each browser, only max-bundle for Safari now
+   */
+  requiresBundlePolicy(): RTCBundlePolicy;
 }
