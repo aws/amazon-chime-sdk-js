@@ -49,6 +49,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       ],
       iceTransportPolicy: 'relay',
     };
+    configuration.bundlePolicy = this.context.browserBehavior.requiresBundlePolicy();
     // @ts-ignore
     configuration.sdpSemantics = this.context.browserBehavior.requiresUnifiedPlan()
       ? 'unified-plan'
