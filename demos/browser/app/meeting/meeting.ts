@@ -113,6 +113,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   tileIndexToTileId: { [id: number]: number } = {};
   tileIdToTileIndex: { [id: number]: number } = {};
 
+  cameraDeviceIds: string[] = [];
+  microphoneDeviceIds: string[] = [];
+
   buttonStates: { [key: string]: boolean } = {
     'button-microphone': true,
     'button-camera': false,
@@ -318,7 +321,11 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       new AsyncScheduler().start(async () => {
         if (this.toggleButton('button-camera') && this.canStartLocalVideo) {
           try {
-            await this.openVideoInputFromSelection(null, false);
+            let camera: string = videoInput.value;
+            if (videoInput.value === 'None') {
+              camera = this.cameraDeviceIds.length ? this.cameraDeviceIds[0] : 'None';
+            }
+            await this.openVideoInputFromSelection(camera, false);
             this.audioVideo.startLocalVideoTile();
           } catch (err) {
             this.log('no video input device selected');
@@ -848,6 +855,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
         }
       }
     );
+    const cameras = await this.audioVideo.listVideoInputDevices();
+    this.cameraDeviceIds = cameras.map((deviceInfo) => {
+      return deviceInfo.deviceId;
+    });
   }
 
   async populateAudioOutputList(): Promise<void> {
@@ -938,6 +949,11 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     this.log(`Switching to: ${this.selectedVideoInput}`);
     const device = this.videoInputSelectionToDevice(this.selectedVideoInput);
     if (device === null) {
+      if (showPreview) {
+        this.audioVideo.stopVideoPreviewForVideoInput(document.getElementById(
+          'video-preview'
+        ) as HTMLVideoElement);
+      }
       this.audioVideo.stopLocalVideoTile();
       this.toggleButton('button-camera', 'off');
       throw new Error('no video device selected');

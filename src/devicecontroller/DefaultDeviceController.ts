@@ -144,6 +144,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       this.releaseMediaStream(stream);
       DefaultVideoTile.disconnectVideoStreamFromVideoElement(element);
     }
+    if (this.activeDevices['video']) {
+      this.releaseMediaStream(this.activeDevices['video'].stream);
+    }
     this.trace('stopVideoPreviewForVideoInput', element.id);
   }
 
