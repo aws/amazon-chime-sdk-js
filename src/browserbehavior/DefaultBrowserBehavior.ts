@@ -19,7 +19,7 @@ export default class DefaultBrowserBehavior {
   }
 
   isSafari(): boolean {
-    return this.browser.name === 'safari';
+    return this.browser.name === 'safari' || this.browser.name === 'ios';
   }
 
   isChrome(): boolean {
@@ -59,7 +59,7 @@ export default class DefaultBrowserBehavior {
   }
 
   requiresPromiseBasedWebRTCGetStats(): boolean {
-    return this.isSafari() || this.isFirefox();
+    return !this.isChrome();
   }
 
   isSupported(): boolean {
