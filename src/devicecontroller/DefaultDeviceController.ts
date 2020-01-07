@@ -497,6 +497,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         newDevice.constraints = proposedConstraints;
       } else {
         newDevice = await this.getDeviceFromBrowser(proposedConstraints);
+        newDevice.stream.getTracks()[0].addEventListener('ended', () => {
+          if (this.activeDevices[kind].stream === newDevice.stream) {
+            this.logger.warn(
+              `${kind} input device which was active is no longer available, resetting to null device`
+            );
+            this.chooseInputDevice(kind, null, false);
+          }
+        });
       }
     } catch (error) {
       this.logger.error(
