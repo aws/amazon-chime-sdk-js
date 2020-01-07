@@ -3,6 +3,7 @@
 
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
+import AsyncScheduler from '../scheduler/AsyncScheduler';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoTile from './VideoTile';
 import VideoTileState from './VideoTileState';
@@ -58,9 +59,9 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       mediaStream.removeTrack(track);
     }
 
-    // Need to wait one frame before clearing `srcObject` to
+    // Need to yield the message loop before clearing `srcObject` to
     // prevent Safari from crashing.
-    requestAnimationFrame(() => {
+    new AsyncScheduler().start(() => {
       videoElement.srcObject = null;
     });
   }
