@@ -14,7 +14,7 @@ import ScreenViewingSessionConnectionRequest from './ScreenViewingSessionConnect
  */
 export default class DefaultScreenViewingSession implements ScreenViewingSession {
   private static readonly DEFAULT_TIMEOUT: number = 1000;
-  private webSocket?: PromisedWebSocket;
+  private webSocket: PromisedWebSocket | null = null;
   private observer?: ScreenViewingSessionObserver;
 
   constructor(
@@ -47,6 +47,7 @@ export default class DefaultScreenViewingSession implements ScreenViewingSession
       Maybe.of(this.observer).map(observer => {
         Maybe.of(observer.didCloseWebSocket).map(f => f.bind(this.observer)(event));
       });
+      this.webSocket = null;
     });
 
     return this.webSocket.open(request.timeoutMs);
@@ -57,9 +58,9 @@ export default class DefaultScreenViewingSession implements ScreenViewingSession
     if (!this.webSocket) {
       return Promise.reject(new Error('No websocket to close'));
     }
-    return this.webSocket.close(DefaultScreenViewingSession.DEFAULT_TIMEOUT).then((): void => {
-      this.webSocket = null;
-    });
+    const webSocket = this.webSocket;
+    this.webSocket = null;
+    return webSocket.close(DefaultScreenViewingSession.DEFAULT_TIMEOUT).then(() => {});
   }
 
   send(data: Uint8Array): void {

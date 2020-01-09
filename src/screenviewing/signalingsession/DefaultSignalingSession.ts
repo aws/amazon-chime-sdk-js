@@ -53,11 +53,11 @@ export default class DefaultSignalingSession implements SignalingSession {
 
   close(): Promise<void> {
     if (!this.session) {
-      return;
+      return Promise.resolve();
     }
-    return this.session.close(this.DEFAULT_TIMEOUT_MS).then(() => {
-      this.session = null;
-    });
+    const session = this.session;
+    this.session = null;
+    return session.close(this.DEFAULT_TIMEOUT_MS).then(() => {});
   }
 
   registerObserver(observer: ScreenObserver): void {
