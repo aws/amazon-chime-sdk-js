@@ -10,6 +10,7 @@ import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MediaRecordingFactory from '../../src/mediarecording/MediaRecordingFactory';
 import MediaStreamBroker from '../../src/mediastreambroker/MediaStreamBroker';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import DefaultPromisedWebSocket from '../../src/promisedwebsocket/DefaultPromisedWebSocket';
 import PromisedWebSocket from '../../src/promisedwebsocket/PromisedWebSocket';
 import ScreenShareStreaming from '../../src/screensharestreaming/ScreenShareStreaming';
@@ -27,9 +28,11 @@ describe('DefaultScreenSharingSession', function() {
   const messageSerialization = Substitute.for<ScreenSharingMessageSerialization>();
   const logging = new NoOpLogger(LogLevel.DEBUG);
   const constraintsProvider = (): MediaStreamConstraints => ({});
+  const promisedWebSocket = Substitute.for<PromisedWebSocket>();
   const mediaStreamBroker = Substitute.for<MediaStreamBroker>();
   const screenSharingStreamFactory = Substitute.for<ScreenShareStreamingFactory>();
   const mediaRecordingFactory = Substitute.for<MediaRecordingFactory>();
+  const browserBehavior = Substitute.for<DefaultBrowserBehavior>();
 
   before(() => {
     chai.should();
@@ -346,6 +349,25 @@ describe('DefaultScreenSharingSession', function() {
         subject.start().then(() => {
           subject.start().should.eventually.be.rejected.and.notify(done);
         });
+      });
+    });
+
+    describe('with Safari', () => {
+      it('is rejected', (done: Mocha.Done) => {
+        browserBehavior.isSafari().returns(true);
+        const subject = new DefaultScreenSharingSession(
+          promisedWebSocket,
+          constraintsProvider,
+          timeSliceMs,
+          messageSerialization,
+          mediaStreamBroker,
+          screenSharingStreamFactory,
+          mediaRecordingFactory,
+          logging,
+          browserBehavior
+        );
+        subject.start().should.eventually.be.rejected.and.notify(done);
+        mediaStreamBroker.didNotReceive();
       });
     });
   });
