@@ -91,6 +91,24 @@ describe('ReconnectingPromisedWebSocket', () => {
   });
 
   describe('#close', () => {
+    describe('with timeout', () => {
+      it('is rejected', (done: Mocha.Done) => {
+        const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();
+        const subject = new ReconnectingPromisedWebSocket(
+          url,
+          protocols,
+          binaryType,
+          webSocketFactory,
+          backoff
+        );
+        const webSocket = new PromisedWebSocketMock(1000);
+        webSocketFactory.create(Arg.all()).returns(webSocket);
+        subject.open(100).then(() => {
+          chai.expect(subject.close(0)).to.eventually.be.rejected.and.notify(done);
+        });
+      });
+    });
+
     describe('without open', () => {
       it('is rejected', (done: Mocha.Done) => {
         const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();

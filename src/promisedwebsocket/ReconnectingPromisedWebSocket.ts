@@ -26,13 +26,13 @@ export default class ReconnectingPromisedWebSocket implements PromisedWebSocket 
   ) {}
 
   close(timeoutMs: number, code?: number, reason?: string): Promise<Event> {
-    return new Promise((resolve, reject) => {
-      if (this.webSocket === null) {
-        reject(new Error('closed'));
-      }
-      this.willCloseWebSocket();
-      this.webSocket.close(timeoutMs, code, reason).then(resolve);
-    });
+    if (this.webSocket === null) {
+      return Promise.reject(new Error('closed'));
+    }
+    this.willCloseWebSocket();
+    const webSocket = this.webSocket;
+    this.webSocket = null;
+    return webSocket.close(timeoutMs, code, reason);
   }
 
   open(timeoutMs: number): Promise<Event> {
