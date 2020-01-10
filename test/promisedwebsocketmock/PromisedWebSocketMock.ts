@@ -5,9 +5,12 @@ import { Substitute } from '@fluffy-spoon/substitute';
 
 import Maybe from '../../src/maybe/Maybe';
 import PromisedWebSocket from '../../src/promisedwebsocket/PromisedWebSocket';
+import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 
 export default class PromisedWebSocketMock implements PromisedWebSocket {
   private callbacks = new Map<string, Set<EventListener>>();
+
+  constructor(private closeDelay: number = 0) {}
 
   get url(): string {
     return 'ws://localhost';
@@ -20,11 +23,20 @@ export default class PromisedWebSocketMock implements PromisedWebSocket {
     return Promise.resolve(event);
   }
 
-  close(_timeoutMs: number): Promise<Event> {
+  close(timeoutMs: number): Promise<Event> {
     const event = Substitute.for<CloseEvent>();
     event.type.returns('close');
-    this.dispatchEvent(event);
-    return Promise.resolve(event);
+
+    if (this.closeDelay > 0) {
+      const promise = new Promise<CloseEvent>(resolve => {
+        setTimeout(() => {
+          resolve(event);
+        }, this.closeDelay);
+      });
+      return this.withTimeout(promise, timeoutMs);
+    } else {
+      return Promise.resolve(event);
+    }
   }
 
   send(_data: string | ArrayBufferLike | Blob | ArrayBufferView): Promise<void> {
@@ -47,5 +59,14 @@ export default class PromisedWebSocketMock implements PromisedWebSocket {
 
   removeEventListener(type: string, listener: EventListener): void {
     Maybe.of(this.callbacks.get(type)).map(f => f.delete(listener));
+  }
+
+  private withTimeout(promise: Promise<Event>, timeoutMs: number): Promise<Event> {
+    const timeout = new Promise<Event>((resolve, reject) => {
+      new TimeoutScheduler(timeoutMs).start(() => {
+        reject(new Error('Promise timed out after ' + timeoutMs + 'ms'));
+      });
+    });
+    return Promise.race([promise, timeout]);
   }
 }
