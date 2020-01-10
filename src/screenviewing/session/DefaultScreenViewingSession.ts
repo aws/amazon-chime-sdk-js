@@ -57,9 +57,9 @@ export default class DefaultScreenViewingSession implements ScreenViewingSession
     if (!this.webSocket) {
       return Promise.reject(new Error('No websocket to close'));
     }
-    return this.webSocket.close(DefaultScreenViewingSession.DEFAULT_TIMEOUT).then((): void => {
-      this.webSocket = null;
-    });
+    const webSocket = this.webSocket;
+    this.webSocket = null;
+    return webSocket.close(DefaultScreenViewingSession.DEFAULT_TIMEOUT).then(() => {});
   }
 
   send(data: Uint8Array): void {
