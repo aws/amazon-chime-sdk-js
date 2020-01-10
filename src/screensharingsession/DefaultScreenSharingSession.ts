@@ -3,6 +3,7 @@
 
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import MediaRecording from '../mediarecording/MediaRecording';
 import MediaRecordingFactory from '../mediarecording/MediaRecordingFactory';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
@@ -29,7 +30,8 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     private mediaStreamBroker: MediaStreamBroker,
     private screenShareStreamFactory: ScreenShareStreamFactory,
     private mediaRecordingFactory: MediaRecordingFactory,
-    private logger: Logger
+    private logger: Logger,
+    private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior()
   ) {}
 
   open(timeoutMs: number): Promise<Event> {
@@ -78,8 +80,12 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
   start(sourceId?: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.stream !== null) {
-        reject(new Error('started'));
+        return reject(new Error('started'));
       }
+      if (this.browserBehavior.isSafari()) {
+        return reject(new Error('Safari browser does not support screensharing'));
+      }
+
       return this.mediaStreamBroker
         .acquireDisplayInputStream(this.constraintsProvider(sourceId))
         .then((mediaStream: MediaStream) => {
@@ -117,7 +123,7 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
   stop(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.stream === null) {
-        reject(new Error('not started'));
+        return reject(new Error('not started'));
       }
       this.stream
         .stop()
