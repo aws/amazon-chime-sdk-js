@@ -361,7 +361,7 @@ describe('DefaultRealtimeController', () => {
   });
 
   describe('volume indicators', () => {
-    it('will send volume indicator callbacks to subscribers', () => {
+    it('will send volume indicator callbacks to subscribers and update state change callbacks', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       const sentAttendeeId = 'foo-attendee';
       const sentVolume = 0.5;
@@ -836,23 +836,16 @@ describe('DefaultRealtimeController', () => {
   describe('attendee ids', () => {
     it('will send attendee id change callbacks', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
-      let callbackIndex = 0;
+      let callBackPresence = false;
       const fooAttendee = 'foo-attendee';
       rt.realtimeSubscribeToAttendeeIdPresence((attendeeId: string, present: boolean) => {
-        if (callbackIndex === 0) {
-          expect(attendeeId).to.equal(fooAttendee);
-          expect(present).to.be.true;
-        } else if (callbackIndex === 1) {
-          expect(attendeeId).to.equal(fooAttendee);
-          expect(present).to.be.false;
-        }
-        callbackIndex += 1;
+        expect(attendeeId).to.equal(fooAttendee);
+        expect(present).to.equal(callBackPresence);
       });
-      expect(callbackIndex).to.equal(0);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null, false);
-      expect(callbackIndex).to.equal(1);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null, false);
-      expect(callbackIndex).to.equal(2);
+      callBackPresence = true;
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, callBackPresence, null, false);
+      callBackPresence = false;
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, callBackPresence, null, false);
     });
   });
 

@@ -172,6 +172,35 @@ describe('DefaultVolumeIndicatorAdapter', () => {
     });
   });
 
+  it('Sends frame beginning and end updates', () => {
+    let state = '';
+    const rt: RealtimeController = new DefaultRealtimeController();
+    const vi: VolumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
+      new NoOpLogger(),
+      rt,
+      minVolumeDecibels,
+      maxVolumeDecibels
+    );
+    let updateState = (currentState: 'startedUpdate' | 'stoppedUpdate'): void => {
+      state = currentState;
+    };
+    rt.realtimeSubscribeToUpdateStates(updateState);
+    rt.realtimeSubscribeToAttendeeIdPresence((_attendeeId: string, _present: boolean) => {
+      expect(state).to.equal('startedUpdate');
+    });
+    const streamInfo = SdkAudioStreamIdInfo.create();
+    const streamInfoFrame = SdkAudioStreamIdInfoFrame.create();
+    streamInfo.audioStreamId = 1;
+    streamInfo.attendeeId = fooAttendee;
+    streamInfoFrame.streams = [streamInfo];
+    vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoFrame);
+    expect(state).to.equal('stoppedUpdate');
+    state = '';
+    rt.realtimeUnsubscribeFromUpdateStates(updateState);
+    vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoFrame);
+    expect(state).to.equal('');
+  });
+
   describe('metadata frame', () => {
     it('sends volume updates when volume changes', () => {
       const streamInfo = SdkAudioStreamIdInfo.create();

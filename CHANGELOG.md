@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add an integration tests to check remote video when reconnecting
+- Add roster begin/end update events
 
 ### Changed
 - Switch demo DDB table to on demand
