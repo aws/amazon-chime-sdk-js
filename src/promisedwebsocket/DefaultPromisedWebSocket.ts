@@ -15,7 +15,7 @@ export default class DefaultPromisedWebSocket implements PromisedWebSocket {
     return this.webSocket.url;
   }
 
-  open(timeoutMs: number): Promise<Event> {
+  async open(timeoutMs: number): Promise<Event> {
     const promise = new Promise<Event>((resolve, reject) => {
       this.webSocket.onclose = (event: CloseEvent) => {
         this.dispatchEvent(event);
@@ -35,7 +35,7 @@ export default class DefaultPromisedWebSocket implements PromisedWebSocket {
     return this.withTimeout(promise, timeoutMs);
   }
 
-  close(timeoutMs: number, code?: number, reason?: string): Promise<Event> {
+  async close(timeoutMs: number, code?: number, reason?: string): Promise<Event> {
     const promise = new Promise<Event>((resolve, reject) => {
       this.webSocket.onclose = (event: CloseEvent) => {
         this.dispatchEvent(event);
@@ -82,7 +82,7 @@ export default class DefaultPromisedWebSocket implements PromisedWebSocket {
     Maybe.of(this.callbacks.get(type)).map(f => f.delete(listener));
   }
 
-  private withTimeout(promise: Promise<Event>, timeoutMs: number): Promise<Event> {
+  private async withTimeout(promise: Promise<Event>, timeoutMs: number): Promise<Event> {
     const timeout = new Promise<Event>((resolve, reject) => {
       new TimeoutScheduler(timeoutMs).start(() => {
         reject(new Error('Promise timed out after ' + timeoutMs + 'ms'));

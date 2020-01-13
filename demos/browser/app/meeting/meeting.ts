@@ -342,10 +342,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       new AsyncScheduler().start(async () => {
         const button = 'button-screen-share';
         if (this.buttonStates[button]) {
-          this.meetingSession.screenShare.stop().then(() => {
-            this.buttonStates[button] = false;
-            this.displayButtonStates();
-          });
+          this.meetingSession.screenShare.stop()
+            .catch(error => {
+              this.log(error);
+            })
+            .finally(() => {
+              this.buttonStates[button] = false;
+              this.displayButtonStates();
+            });
         } else {
           const self = this;
           const observer: ScreenShareFacadeObserver = {
@@ -358,6 +362,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
           this.meetingSession.screenShare.start().then(() => {
             this.buttonStates[button] = true;
             this.displayButtonStates();
+          }).catch(error => {
+            this.log(error);
           });
         }
       });
@@ -384,8 +390,11 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
           screenViewDiv.style.display = 'block';
           this.meetingSession.screenShareView.start(screenViewDiv);
         } else {
-          this.meetingSession.screenShareView.stop();
-          this.hideTile(17);
+          this.meetingSession.screenShareView.stop()
+            .catch(error => {
+              this.log(error);
+            })
+            .finally(() => this.hideTile(17));
         }
         this.layoutVideoTiles();
       });
@@ -530,6 +539,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   }
 
   async join(): Promise<void> {
+    window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
+      this.log(event.reason);
+    });
     await this.openAudioInputFromSelection();
     await this.openAudioOutputFromSelection();
     this.audioVideo.start();

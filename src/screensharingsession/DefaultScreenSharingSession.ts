@@ -56,6 +56,13 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
       });
     });
 
+    this.webSocket.addEventListener('reconnect_error', (event: CustomEvent<ErrorEvent>) => {
+      this.logger.warn('reconnect attempt failed');
+      this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
+        Maybe.of(observer.didFailReconnectAttempt).map(f => f.bind(observer)(event));
+      });
+    });
+
     this.webSocket.addEventListener('open', (event: Event) => {
       this.logger.warn('screen sharing connection opened');
       this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
@@ -98,8 +105,12 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
           stream.addEventListener(
             ScreenShareStreamingEvent.MessageEvent,
             (event: CustomEvent<ScreenSharingMessage>) => {
-              this.send(event.detail);
-              this.logger.debug(() => 'dispatched screen sharing stream message event');
+              try {
+                this.send(event.detail);
+                this.logger.debug(() => 'dispatched screen sharing stream message event');
+              } catch (error) {
+                this.logger.error(error);
+              }
             }
           );
           stream.addEventListener(ScreenShareStreamingEvent.EndedEvent, () => {
@@ -200,19 +211,29 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
       data: new Uint8Array([]),
     };
 
-    this.send(response);
-
-    this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
-      Maybe.of(observer.didSendHeartbeatResponse).map(f => f.bind(observer)());
-    });
+    try {
+      this.send(response);
+      this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
+        Maybe.of(observer.didSendHeartbeatResponse).map(f => f.bind(observer)());
+      });
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 
   private send(message: ScreenSharingMessage): ScreenSharingMessage {
-    this.webSocket.send(this.messageSerialization.serialize(message));
-    this.logger.debug(() => 'sent screen sharing message');
-    this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
-      Maybe.of(observer.didSendScreenSharingMessage).map(f => f.bind(observer)(message.type));
-    });
-    return message;
+    try {
+      this.webSocket.send(this.messageSerialization.serialize(message));
+      this.logger.debug(() => 'sent screen sharing message');
+      this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
+        Maybe.of(observer.didSendScreenSharingMessage).map(f => f.bind(observer)(message.type));
+      });
+      return message;
+    } catch (error) {
+      this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
+        Maybe.of(observer.didFailSend).map(f => f.bind(observer)(error));
+      });
+      throw error;
+    }
   }
 }
