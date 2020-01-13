@@ -14,4 +14,16 @@ export default interface ScreenSharingSessionObserver {
   didStopScreenSharing?(): void;
   didSendScreenSharingMessage?(type: ScreenSharingMessageType): void;
   willReconnect?(): void;
+
+  /**
+   * Send failure; consumer may respond to this callback by closing the session
+   * @param {Error} error
+   */
+  didFailSend?(error: Error): void;
+
+  /**
+   * Reconnect failure; informational
+   * @param {CustomEvent<ErrorEvent>} event
+   */
+  didFailReconnectAttempt?(event: CustomEvent<ErrorEvent>): void;
 }

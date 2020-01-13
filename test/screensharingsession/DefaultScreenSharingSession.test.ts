@@ -8,6 +8,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import DOMWebSocket from '../../src/domwebsocket/DOMWebSocket';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import Maybe from '../../src/maybe/Maybe';
 import MediaRecordingFactory from '../../src/mediarecording/MediaRecordingFactory';
 import MediaStreamBroker from '../../src/mediastreambroker/MediaStreamBroker';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -57,7 +58,7 @@ describe('DefaultScreenSharingSession', function() {
       });
     });
 
-    it('notifies', (done: Mocha.Done) => {
+    it('notxifies', (done: Mocha.Done) => {
       const promisedWebSocket = new PromisedWebSocketMock();
       const subject = new DefaultScreenSharingSession(
         promisedWebSocket,
@@ -275,6 +276,45 @@ describe('DefaultScreenSharingSession', function() {
   });
 
   describe('message callback', () => {
+    describe('with send error', () => {
+      it('is fulfilled', (done: Mocha.Done) => {
+        const promisedWebSocket = Substitute.for<PromisedWebSocket>();
+        const mediaStreamBroker = Substitute.for<MediaStreamBroker>();
+        const stream = new ScreenShareStreamingMock();
+        const screenSharingStreamFactory = Substitute.for<ScreenShareStreamingFactory>();
+        const subject = new DefaultScreenSharingSession(
+          promisedWebSocket,
+          constraintsProvider,
+          timeSliceMs,
+          messageSerialization,
+          mediaStreamBroker,
+          screenSharingStreamFactory,
+          mediaRecordingFactory,
+          logging
+        );
+        const error = new Error();
+        const observer: ScreenSharingSessionObserver = {
+          didFailSend(e: Error): void {
+            chai.expect(e).to.eq(error);
+            done();
+          },
+        };
+        promisedWebSocket.send(Arg.all()).mimicks(() => {
+          throw error;
+        });
+        mediaStreamBroker
+          .acquireDisplayInputStream(Arg.any())
+          .returns(Promise.resolve(Substitute.for<MediaStream>()));
+        screenSharingStreamFactory.create(Arg.any()).returns(stream);
+        subject.registerObserver(observer);
+        subject.start().then(() => {
+          const event = Substitute.for<CustomEvent>();
+          event.type.returns('message');
+          stream.dispatchEvent(event);
+        });
+      });
+    });
+
     it('is fulfilled', (done: Mocha.Done) => {
       const promisedWebSocket = Substitute.for<PromisedWebSocket>();
       const mediaStreamBroker = Substitute.for<MediaStreamBroker>();
@@ -555,6 +595,74 @@ describe('DefaultScreenSharingSession', function() {
     });
 
     describe('with heartbeat request', () => {
+      describe('with send error', () => {
+        it('is dispatched', (done: Mocha.Done) => {
+          const messageSerialization = Substitute.for<ScreenSharingMessageSerialization>();
+          const message: ScreenSharingMessage = {
+            type: ScreenSharingMessageType.HeartbeatRequestType,
+            flags: [],
+            data: new Uint8Array([]),
+          };
+          messageSerialization.deserialize(Arg.any()).returns(message);
+          const error = new Error();
+          const promisedWebSocket = {
+            ...Substitute.for<PromisedWebSocket>(),
+            get callbacks(): Map<string, EventListener> {
+              this._callbacks = this._callbacks || new Map<string, EventListener>();
+              return this._callbacks;
+            },
+            dispatchEvent(event: Event): boolean {
+              Maybe.of(this.callbacks.get(event.type)).map(listeners =>
+                listeners.forEach((listener: EventListener) => listener(event))
+              );
+              return event.defaultPrevented;
+            },
+            addEventListener(type: string, listener: EventListener): void {
+              Maybe.of(this.callbacks.get(type))
+                .defaulting(new Set<EventListener>())
+                .map(listeners => listeners.add(listener))
+                .map(listeners => this.callbacks.set(type, listeners));
+            },
+            removeEventListener(type: string, listener: EventListener): void {
+              Maybe.of(this.callbacks.get(type)).map(f => f.delete(listener));
+            },
+            open(_timeoutMs: number): Promise<Event> {
+              return Promise.resolve(Substitute.for<Event>());
+            },
+            send(_data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+              throw error;
+            },
+          };
+          const observer: ScreenSharingSessionObserver = {
+            didFailSend(e: Error): void {
+              chai.expect(e).to.eq(error);
+              done();
+            },
+          };
+          const subject = new DefaultScreenSharingSession(
+            promisedWebSocket,
+            constraintsProvider,
+            timeSliceMs,
+            messageSerialization,
+            mediaStreamBroker,
+            screenSharingStreamFactory,
+            mediaRecordingFactory,
+            logging
+          );
+          subject
+            .registerObserver(observer)
+            .open(1000)
+            .then(() => {
+              const event = Substitute.for<MessageEvent>();
+              event.type.returns('message');
+              promisedWebSocket.dispatchEvent(event);
+            });
+          const event = Substitute.for<Event>();
+          event.type.returns('open');
+          promisedWebSocket.dispatchEvent(event);
+        });
+      });
+
       it('is dispatched', (done: Mocha.Done) => {
         const messageSerialization = Substitute.for<ScreenSharingMessageSerialization>();
         const message: ScreenSharingMessage = {
@@ -654,6 +762,61 @@ describe('DefaultScreenSharingSession', function() {
     describe('without existing observer', () => {
       it('is ScreenSharingSession', () => {
         subject.deregisterObserver(observer).should.eql(subject);
+      });
+    });
+  });
+
+  describe('reconnect error', () => {
+    it('is dispatched', (done: Mocha.Done) => {
+      const observer: ScreenSharingSessionObserver = {
+        didFailReconnectAttempt(): void {
+          done();
+        },
+      };
+      const screenSharingStreamFactory = Substitute.for<ScreenShareStreamingFactory>();
+      const screenSharingStream = Substitute.for<ScreenShareStreaming>();
+      const promisedWebSocket = {
+        ...Substitute.for<PromisedWebSocket>(),
+        get callbacks(): Map<string, EventListener> {
+          this._callbacks = this._callbacks || new Map<string, EventListener>();
+          return this._callbacks;
+        },
+        dispatchEvent(event: Event): boolean {
+          Maybe.of(this.callbacks.get(event.type)).map(listeners =>
+            listeners.forEach((listener: EventListener) => listener(event))
+          );
+          return event.defaultPrevented;
+        },
+        addEventListener(type: string, listener: EventListener): void {
+          Maybe.of(this.callbacks.get(type))
+            .defaulting(new Set<EventListener>())
+            .map(listeners => listeners.add(listener))
+            .map(listeners => this.callbacks.set(type, listeners));
+        },
+        removeEventListener(type: string, listener: EventListener): void {
+          Maybe.of(this.callbacks.get(type)).map(f => f.delete(listener));
+        },
+        open(_timeoutMs: number): Promise<Event> {
+          return Promise.resolve(Substitute.for<Event>());
+        },
+      };
+      const mediaStreamBroker = Substitute.for<MediaStreamBroker>();
+      const subject = new DefaultScreenSharingSession(
+        promisedWebSocket,
+        constraintsProvider,
+        timeSliceMs,
+        messageSerialization,
+        mediaStreamBroker,
+        screenSharingStreamFactory,
+        mediaRecordingFactory,
+        logging
+      );
+      screenSharingStreamFactory.create(Arg.any()).returns(screenSharingStream);
+      subject.registerObserver(observer);
+      subject.open(100).then(() => {
+        const event = Substitute.for<CustomEvent>();
+        event.type.returns('reconnect_error');
+        promisedWebSocket.dispatchEvent(event);
       });
     });
   });

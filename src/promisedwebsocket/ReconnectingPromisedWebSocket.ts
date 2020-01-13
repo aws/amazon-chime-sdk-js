@@ -25,7 +25,7 @@ export default class ReconnectingPromisedWebSocket implements PromisedWebSocket 
     private backoff: Backoff
   ) {}
 
-  close(timeoutMs: number, code?: number, reason?: string): Promise<Event> {
+  async close(timeoutMs: number, code?: number, reason?: string): Promise<Event> {
     if (this.webSocket === null) {
       return Promise.reject(new Error('closed'));
     }
@@ -35,43 +35,46 @@ export default class ReconnectingPromisedWebSocket implements PromisedWebSocket 
     return webSocket.close(timeoutMs, code, reason);
   }
 
-  open(timeoutMs: number): Promise<Event> {
-    return new Promise((resolve, reject) => {
-      if (this.webSocket !== null) {
-        reject(new Error('opened'));
-      }
-      this.webSocket = this.webSocketFactory.create(this.url, this.protocols, this.binaryType);
+  async open(timeoutMs: number): Promise<Event> {
+    if (this.webSocket !== null) {
+      return Promise.reject(new Error('opened'));
+    }
 
-      this.webSocket.addEventListener('close', (event: CloseEvent) => {
-        if (ReconnectingPromisedWebSocket.normalClosureCodes.indexOf(event.code) <= -1) {
-          try {
-            const timeout = this.backoff.nextBackoffAmountMs();
-            this.timeoutScheduler = new TimeoutScheduler(timeout);
-            this.timeoutScheduler.start(() => {
-              this.timeoutScheduler.stop();
-              this.open(timeoutMs).then(() => {});
-            });
-            this.dispatchEvent(new CustomEvent('reconnect'));
-          } catch (e) {
-            this.dispatchEvent(event);
-          }
-        } else {
+    this.webSocket = this.webSocketFactory.create(this.url, this.protocols, this.binaryType);
+
+    this.webSocket.addEventListener('close', (event: CloseEvent) => {
+      if (ReconnectingPromisedWebSocket.normalClosureCodes.indexOf(event.code) <= -1) {
+        try {
+          const timeout = this.backoff.nextBackoffAmountMs();
+          this.timeoutScheduler = new TimeoutScheduler(timeout);
+          this.timeoutScheduler.start(() => {
+            this.timeoutScheduler.stop();
+            this.open(timeoutMs)
+              .catch((error: ErrorEvent) => {
+                this.dispatchEvent(new CustomEvent('reconnect_error', { detail: error }));
+              })
+              .then(() => {});
+          });
+          this.dispatchEvent(new CustomEvent('reconnect'));
+        } catch (e) {
           this.dispatchEvent(event);
         }
-        this.webSocket = null;
-      });
-
-      this.webSocket.addEventListener('message', (event: MessageEvent) => {
+      } else {
         this.dispatchEvent(event);
-      });
-
-      this.webSocket.addEventListener('open', (event: Event) => {
-        this.didOpenWebSocket();
-        this.dispatchEvent(event);
-      });
-
-      return this.webSocket.open(timeoutMs).then(event => resolve(event));
+      }
+      this.webSocket = null;
     });
+
+    this.webSocket.addEventListener('message', (event: MessageEvent) => {
+      this.dispatchEvent(event);
+    });
+
+    this.webSocket.addEventListener('open', (event: Event) => {
+      this.didOpenWebSocket();
+      this.dispatchEvent(event);
+    });
+
+    return this.webSocket.open(timeoutMs);
   }
 
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {

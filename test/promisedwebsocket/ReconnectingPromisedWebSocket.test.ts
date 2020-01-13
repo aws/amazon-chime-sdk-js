@@ -7,6 +7,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 
 import Backoff from '../../src/backoff/Backoff';
 import DOMWebSocket from '../../src/domwebsocket/DOMWebSocket';
+import Maybe from '../../src/maybe/Maybe';
 import DefaultPromisedWebSocket from '../../src/promisedwebsocket/DefaultPromisedWebSocket';
 import PromisedWebSocket from '../../src/promisedwebsocket/PromisedWebSocket';
 import PromisedWebSocketFactory from '../../src/promisedwebsocket/PromisedWebSocketFactory';
@@ -176,6 +177,62 @@ describe('ReconnectingPromisedWebSocket', () => {
 
         after(() => {
           delete GlobalAny.CustomEvent;
+        });
+
+        describe('with error', () => {
+          it('is notified', (done: Mocha.Done) => {
+            const backoff = {
+              ...Substitute.for<Backoff>(),
+              nextBackoffAmountMs(): number {
+                return 100;
+              },
+              reset(): void {
+                return;
+              },
+            };
+            const webSocket = {
+              ...Substitute.for<PromisedWebSocket>(),
+              get callbacks(): Map<string, EventListener> {
+                this._callbacks = this._callbacks || new Map<string, EventListener>();
+                return this._callbacks;
+              },
+              dispatchEvent(event: Event): boolean {
+                Maybe.of(this.callbacks.get(event.type)).map(listeners =>
+                  listeners.forEach((listener: EventListener) => listener(event))
+                );
+                return event.defaultPrevented;
+              },
+              addEventListener(type: string, listener: EventListener): void {
+                Maybe.of(this.callbacks.get(type))
+                  .defaulting(new Set<EventListener>())
+                  .map(listeners => listeners.add(listener))
+                  .map(listeners => this.callbacks.set(type, listeners));
+              },
+              removeEventListener(type: string, listener: EventListener): void {
+                Maybe.of(this.callbacks.get(type)).map(f => f.delete(listener));
+              },
+            };
+            const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();
+            webSocketFactory.create(Arg.all()).returns(webSocket);
+            const subject = new ReconnectingPromisedWebSocket(
+              url,
+              protocols,
+              binaryType,
+              webSocketFactory,
+              backoff
+            );
+
+            subject.addEventListener('reconnect_error', () => {
+              done();
+            });
+
+            subject.open(timeoutMs).catch(() => {
+              const event = Substitute.for<CloseEvent>();
+              event.type.returns('close');
+              event.code.returns(1001);
+              webSocket.dispatchEvent(event);
+            });
+          });
         });
 
         describe('with retry limit', () => {
