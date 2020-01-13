@@ -71,6 +71,29 @@ export default interface RealtimeController {
     ) => void
   ): void;
 
+  // Attendee/volume update begins and ends
+
+  /**
+   * Subscribes to beginnings and ends of updates for
+   * attendee presence or volume indicator changes.
+   */
+  realtimeSubscribeToUpdateStates(
+    callback: (state: 'startedUpdate' | 'stoppedUpdate') => void
+  ): void;
+
+  /**
+   * Unsubscribes to beginnings and ends of updates for
+   * attendee presence or volume indicator changes.
+   */
+  realtimeUnsubscribeFromUpdateStates(
+    callback: (state: 'startedUpdate' | 'stoppedUpdate') => void
+  ): void;
+
+  /**
+   * Updates the beginning or end of attendee id and volume indicator updates
+   */
+  realtimeUpdateStateChange(state: 'startedUpdate' | 'stoppedUpdate'): void;
+
   // Audio Input
 
   /**

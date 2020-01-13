@@ -261,6 +261,20 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(arg1));
     });
 
+    it('will call realtimeSubscribeToUpdateStates', () => {
+      const spy = sinon.spy(controller.realtimeController, 'realtimeSubscribeToUpdateStates');
+      const arg1 = (_state: 'startedUpdate' | 'stoppedUpdate'): void => {};
+      facade.realtimeSubscribeToUpdateStates(arg1);
+      assert(spy.calledOnceWith(arg1));
+    });
+
+    it('will call realtimeUnsubscribeFromUpdateStates', () => {
+      const spy = sinon.spy(controller.realtimeController, 'realtimeUnsubscribeFromUpdateStates');
+      const arg1 = (_state: 'startedUpdate' | 'stoppedUpdate'): void => {};
+      facade.realtimeUnsubscribeFromUpdateStates(arg1);
+      assert(spy.calledOnceWith(arg1));
+    });
+
     it('will call realtimeSetCanUnmuteLocalAudio', () => {
       const spy = sinon.spy(controller.realtimeController, 'realtimeSetCanUnmuteLocalAudio');
       const arg1 = false;

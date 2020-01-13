@@ -20,6 +20,12 @@ export default interface RealtimeControllerFacade {
       dropped?: boolean
     ) => void
   ): void;
+  realtimeSubscribeToUpdateStates(
+    callback: (state: 'startedUpdate' | 'stoppedUpdate') => void
+  ): void;
+  realtimeUnsubscribeFromUpdateStates(
+    callback: (state: 'startedUpdate' | 'stoppedUpdate') => void
+  ): void;
   realtimeSetCanUnmuteLocalAudio(canUnmute: boolean): void;
   realtimeSubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void;
   realtimeUnsubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void;
