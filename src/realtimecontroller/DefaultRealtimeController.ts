@@ -87,6 +87,35 @@ export default class DefaultRealtimeController implements RealtimeController {
     });
   }
 
+  // Beginning and end of attendee/volume updates
+
+  realtimeSubscribeToUpdateStates(
+    callback: (state: 'startedUpdate' | 'stoppedUpdate') => void
+  ): void {
+    this.wrap(() => {
+      this.state.updateStateChangeCallbacks.push(callback);
+    });
+  }
+
+  realtimeUnsubscribeFromUpdateStates(
+    callback: (state: 'startedUpdate' | 'stoppedUpdate') => void
+  ): void {
+    this.wrap(() => {
+      const index = this.state.updateStateChangeCallbacks.indexOf(callback);
+      if (index !== -1) {
+        this.state.updateStateChangeCallbacks.splice(index, 1);
+      }
+    });
+  }
+
+  realtimeUpdateStateChange(state: 'startedUpdate' | 'stoppedUpdate'): void {
+    this.wrap(() => {
+      for (const fn of this.state.updateStateChangeCallbacks) {
+        fn(state);
+      }
+    });
+  }
+
   // Audio Input
 
   realtimeSetLocalAudioInput(audioInput: MediaStream | null): void {

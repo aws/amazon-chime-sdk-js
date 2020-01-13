@@ -60,6 +60,11 @@ export default class RealtimeState {
   } = {};
 
   /**
+   * Stores callbacks to be called when the state of updates changes
+   */
+  updateStateChangeCallbacks: ((state: 'startedUpdate' | 'stoppedUpdate') => void)[] = [];
+
+  /**
    * Callbacks to listen for changes to local signal strength
    */
   localSignalStrengthChangeCallbacks: ((signalStrength: number) => void)[] = [];

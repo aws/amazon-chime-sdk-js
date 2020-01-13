@@ -25,6 +25,7 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
   ) {}
 
   sendRealtimeUpdatesForAudioStreamIdInfo(info: SdkAudioStreamIdInfoFrame): void {
+    this.realtimeController.realtimeUpdateStateChange('startedUpdate');
     for (const stream of info.streams) {
       const hasAttendeeId = !!stream.attendeeId;
       const hasMuted = stream.hasOwnProperty('muted');
@@ -43,6 +44,7 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
         this.realtimeController.realtimeSetAttendeeIdPresence(attendeeId, false);
       }
     }
+    this.realtimeController.realtimeUpdateStateChange('stoppedUpdate');
   }
 
   sendRealtimeUpdatesForAudioMetadata(metadata: SdkAudioMetadataFrame): void {

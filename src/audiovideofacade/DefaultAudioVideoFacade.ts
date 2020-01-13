@@ -162,6 +162,20 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('realtimeUnsubscribeToAttendeeIdPresence');
   }
 
+  realtimeSubscribeToUpdateStates(
+    callback: (state: 'startedUpdate' | 'stoppedUpdate') => void
+  ): void {
+    this.realtimeController.realtimeSubscribeToUpdateStates(callback);
+    this.trace('realtimeSubscribeToUpdateStates');
+  }
+
+  realtimeUnsubscribeFromUpdateStates(
+    callback: (state: 'startedUpdate' | 'stoppedUpdate') => void
+  ): void {
+    this.realtimeController.realtimeUnsubscribeFromUpdateStates(callback);
+    this.trace('realtimeUnsubscribeFromUpdateStates');
+  }
+
   realtimeSetCanUnmuteLocalAudio(canUnmute: boolean): void {
     this.realtimeController.realtimeSetCanUnmuteLocalAudio(canUnmute);
     this.trace('realtimeSetCanUnmuteLocalAudio', canUnmute);

@@ -360,7 +360,7 @@ describe('DefaultRealtimeController', () => {
   });
 
   describe('volume indicators', () => {
-    it('will send volume indicator callbacks to subscribers', () => {
+    it('will send volume indicator callbacks to subscribers and update state change callbacks', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       const sentAttendeeId = 'foo-attendee';
       const sentVolume = 0.5;
@@ -783,23 +783,16 @@ describe('DefaultRealtimeController', () => {
   describe('attendee ids', () => {
     it('will send attendee id change callbacks', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
-      let callbackIndex = 0;
+      let callBackPresence = false;
       const fooAttendee = 'foo-attendee';
       rt.realtimeSubscribeToAttendeeIdPresence((attendeeId: string, present: boolean) => {
-        if (callbackIndex === 0) {
-          expect(attendeeId).to.equal(fooAttendee);
-          expect(present).to.be.true;
-        } else if (callbackIndex === 1) {
-          expect(attendeeId).to.equal(fooAttendee);
-          expect(present).to.be.false;
-        }
-        callbackIndex += 1;
+        expect(attendeeId).to.equal(fooAttendee);
+        expect(present).to.equal(callBackPresence);
       });
-      expect(callbackIndex).to.equal(0);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true);
-      expect(callbackIndex).to.equal(1);
+      callBackPresence = true;
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, callBackPresence);
+      callBackPresence = false;
       rt.realtimeSetAttendeeIdPresence(fooAttendee, false);
-      expect(callbackIndex).to.equal(2);
     });
   });
 
@@ -843,7 +836,7 @@ describe('DefaultRealtimeController', () => {
       rt.realtimeSubscribeToLocalSignalStrengthChange(LocalSignalStrengthChangeCallback);
       rt.realtimeSubscribeToFatalError(fatalErrorCallback);
 
-      // attempt to trigger a fake error after unsubscribing to fatal errors
+      // Attempt to trigger a fake error after unsubscribing to fatal errors
       rt.realtimeUnsubscribeToFatalError(fatalErrorCallback);
       rt.realtimeSetAttendeeIdPresence('unused', true);
       expect(fatalErrorCallbackRemoved).to.be.true;
