@@ -22,7 +22,12 @@ export default class DefaultScreenViewingMessageHandler implements ScreenViewing
   handleEchoRequest(dataView: DataView): void {
     this.logger.info('DefaultScreenViewingMessageHandler: Handling echo request message');
     dataView.setUint8(0, ScreenViewingPacketType.ECHO_RESPONSE);
-    this.client.send(new Uint8Array(dataView.buffer));
+    try {
+      this.client.send(new Uint8Array(dataView.buffer));
+    } catch (e) {
+      this.logger.warn('DefaultScreenViewingMessageHandler: Error sending echo response');
+      this.logger.warn(e);
+    }
   }
 
   handleSetup(dataView: DataView): void {

@@ -66,6 +66,22 @@ describe('DefaultScreenViewingMessageHandler', () => {
         new NoOpLogger(LogLevel.DEBUG)
       ).handleEchoRequest(new DataView(data.buffer));
     });
+
+    it('send error does not bubble out', () => {
+      const data: Uint8Array = Uint8Array.of(0x04, ...dataTail);
+      new DefaultScreenViewingMessageHandler(
+        {
+          ...noOpScreenViewingSession,
+          send(_data: Uint8Array): Promise<void> {
+            throw new Error('send error');
+          },
+        },
+        noOpDeltaRenderer,
+        noOpDeltaSource,
+        noOpViewer,
+        new NoOpLogger(LogLevel.DEBUG)
+      ).handleEchoRequest(new DataView(data.buffer));
+    });
   });
 
   describe('handleSetup', () => {
