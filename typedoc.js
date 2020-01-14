@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module.exports = {
-  out: './doc/api/',
+  out: './docs',
   readme: 'README.md',
   includes: './src',
   exclude: [

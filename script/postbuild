@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+uncommitted_files = `git status -s`.strip
+
+if uncommitted_files.length == 0
+  puts "OK: no uncommitted files"
+else
+  STDERR.puts "Error: there are uncommitted changes:\n #{uncommitted_files}"
+  exit 1
+end

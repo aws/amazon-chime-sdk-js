@@ -96,10 +96,11 @@ after running `npm run test`.
 To generate JavaScript API reference documentation run:
 
 ```
+npm run build
 npm run doc
 ```
 
-Then open `doc/api/index.html` in your browser.
+Then open `docs/index.html` in your browser.
 
 ## Reporting a suspected vulnerability
 

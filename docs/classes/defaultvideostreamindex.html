@@ -1,0 +1,777 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>DefaultVideoStreamIndex | amazon-chime-sdk-js</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a>
+				</li>
+			</ul>
+			<h1>Class DefaultVideoStreamIndex</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p><a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a> implements <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a> to facilitate video stream subscription
+						and includes query functions for stream id and attendee id.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">DefaultVideoStreamIndex</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/videostreamindex.html" class="tsd-signature-type">VideoStreamIndex</a></li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="defaultvideostreamindex.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#currentindex" class="tsd-kind-icon">current<wbr>Index</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#currentsubscribeack" class="tsd-kind-icon">current<wbr>Subscribe<wbr>Ack</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#ssrctostreammap" class="tsd-kind-icon">ssrc<wbr>ToStream<wbr>Map</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#streamtoattendeemap" class="tsd-kind-icon">stream<wbr>ToAttendee<wbr>Map</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#tracktostreammap" class="tsd-kind-icon">track<wbr>ToStream<wbr>Map</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#allstreams" class="tsd-kind-icon">all<wbr>Streams</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#allvideosendingattendeesexcludingself" class="tsd-kind-icon">all<wbr>Video<wbr>Sending<wbr>Attendees<wbr>Excluding<wbr>Self</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#attendeeidfortrack" class="tsd-kind-icon">attendee<wbr>IdFor<wbr>Track</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#buildattendeetosortedstreamdescriptormapexcludingself" class="tsd-kind-icon">build<wbr>Attendee<wbr>ToSorted<wbr>Stream<wbr>Descriptor<wbr>Map<wbr>Excluding<wbr>Self</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#buildssrctostreammap" class="tsd-kind-icon">buildSSRCTo<wbr>Stream<wbr>Map</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#buildstreamtoattendeemap" class="tsd-kind-icon">build<wbr>Stream<wbr>ToAttendee<wbr>Map</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#buildtracktostreammap" class="tsd-kind-icon">build<wbr>Track<wbr>ToStream<wbr>Map</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#highestqualitystreamfromeachgroupexcludingself" class="tsd-kind-icon">highest<wbr>Quality<wbr>Stream<wbr>From<wbr>Each<wbr>Group<wbr>Excluding<wbr>Self</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#integrateindexframe" class="tsd-kind-icon">integrate<wbr>Index<wbr>Frame</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#integratesubscribeackframe" class="tsd-kind-icon">integrate<wbr>Subscribe<wbr>Ack<wbr>Frame</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#numberofvideopublishingparticipantsexcludingself" class="tsd-kind-icon">number<wbr>OfVideo<wbr>Publishing<wbr>Participants<wbr>Excluding<wbr>Self</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#streamidforssrc" class="tsd-kind-icon">stream<wbr>IdForSSRC</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#streamidfortrack" class="tsd-kind-icon">stream<wbr>IdFor<wbr>Track</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#streamselectionunderbandwidthconstraint" class="tsd-kind-icon">stream<wbr>Selection<wbr>Under<wbr>Bandwidth<wbr>Constraint</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#streamspausedatsource" class="tsd-kind-icon">streams<wbr>Paused<wbr>AtSource</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#tryselecthighbitrateforattendees" class="tsd-kind-icon">try<wbr>Select<wbr>High<wbr>Bitrate<wbr>For<wbr>Attendees</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Video<wbr>Stream<wbr>Index<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultvideostreamindex.html" class="tsd-signature-type">DefaultVideoStreamIndex</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L23">src/videostreamindex/DefaultVideoStreamIndex.ts:23</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="defaultvideostreamindex.html" class="tsd-signature-type">DefaultVideoStreamIndex</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="currentindex" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> current<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">current<wbr>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SdkIndexFrame</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L19">src/videostreamindex/DefaultVideoStreamIndex.ts:19</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="currentsubscribeack" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> current<wbr>Subscribe<wbr>Ack</h3>
+					<div class="tsd-signature tsd-kind-icon">current<wbr>Subscribe<wbr>Ack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SdkSubscribeAckFrame</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L20">src/videostreamindex/DefaultVideoStreamIndex.ts:20</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="logger" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> logger</h3>
+					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L25">src/videostreamindex/DefaultVideoStreamIndex.ts:25</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="ssrctostreammap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> ssrc<wbr>ToStream<wbr>Map</h3>
+					<div class="tsd-signature tsd-kind-icon">ssrc<wbr>ToStream<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L23">src/videostreamindex/DefaultVideoStreamIndex.ts:23</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="streamtoattendeemap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> stream<wbr>ToAttendee<wbr>Map</h3>
+					<div class="tsd-signature tsd-kind-icon">stream<wbr>ToAttendee<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L22">src/videostreamindex/DefaultVideoStreamIndex.ts:22</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="tracktostreammap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> track<wbr>ToStream<wbr>Map</h3>
+					<div class="tsd-signature tsd-kind-icon">track<wbr>ToStream<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L21">src/videostreamindex/DefaultVideoStreamIndex.ts:21</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="allstreams" class="tsd-anchor"></a>
+					<h3>all<wbr>Streams</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">all<wbr>Streams<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#allstreams">allStreams</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L38">src/videostreamindex/DefaultVideoStreamIndex.ts:38</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="allvideosendingattendeesexcludingself" class="tsd-anchor"></a>
+					<h3>all<wbr>Video<wbr>Sending<wbr>Attendees<wbr>Excluding<wbr>Self</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">all<wbr>Video<wbr>Sending<wbr>Attendees<wbr>Excluding<wbr>Self<span class="tsd-signature-symbol">(</span>selfAttendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#allvideosendingattendeesexcludingself">allVideoSendingAttendeesExcludingSelf</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L48">src/videostreamindex/DefaultVideoStreamIndex.ts:48</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>selfAttendeeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="attendeeidfortrack" class="tsd-anchor"></a>
+					<h3>attendee<wbr>IdFor<wbr>Track</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">attendee<wbr>IdFor<wbr>Track<span class="tsd-signature-symbol">(</span>trackId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#attendeeidfortrack">attendeeIdForTrack</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L147">src/videostreamindex/DefaultVideoStreamIndex.ts:147</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>trackId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="buildattendeetosortedstreamdescriptormapexcludingself" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> build<wbr>Attendee<wbr>ToSorted<wbr>Stream<wbr>Descriptor<wbr>Map<wbr>Excluding<wbr>Self</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">build<wbr>Attendee<wbr>ToSorted<wbr>Stream<wbr>Descriptor<wbr>Map<wbr>Excluding<wbr>Self<span class="tsd-signature-symbol">(</span>selfAttendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ISdkStreamDescriptor</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L262">src/videostreamindex/DefaultVideoStreamIndex.ts:262</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>selfAttendeeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ISdkStreamDescriptor</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="buildssrctostreammap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> buildSSRCTo<wbr>Stream<wbr>Map</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">buildSSRCTo<wbr>Stream<wbr>Map<span class="tsd-signature-symbol">(</span>subscribeAck<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SdkSubscribeAckFrame</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L213">src/videostreamindex/DefaultVideoStreamIndex.ts:213</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>subscribeAck: <span class="tsd-signature-type">SdkSubscribeAckFrame</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="buildstreamtoattendeemap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> build<wbr>Stream<wbr>ToAttendee<wbr>Map</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">build<wbr>Stream<wbr>ToAttendee<wbr>Map<span class="tsd-signature-symbol">(</span>indexFrame<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SdkIndexFrame</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L224">src/videostreamindex/DefaultVideoStreamIndex.ts:224</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>indexFrame: <span class="tsd-signature-type">SdkIndexFrame</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="buildtracktostreammap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> build<wbr>Track<wbr>ToStream<wbr>Map</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">build<wbr>Track<wbr>ToStream<wbr>Map<span class="tsd-signature-symbol">(</span>subscribeAck<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SdkSubscribeAckFrame</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L202">src/videostreamindex/DefaultVideoStreamIndex.ts:202</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>subscribeAck: <span class="tsd-signature-type">SdkSubscribeAckFrame</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="highestqualitystreamfromeachgroupexcludingself" class="tsd-anchor"></a>
+					<h3>highest<wbr>Quality<wbr>Stream<wbr>From<wbr>Each<wbr>Group<wbr>Excluding<wbr>Self</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">highest<wbr>Quality<wbr>Stream<wbr>From<wbr>Each<wbr>Group<wbr>Excluding<wbr>Self<span class="tsd-signature-symbol">(</span>selfAttendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#highestqualitystreamfromeachgroupexcludingself">highestQualityStreamFromEachGroupExcludingSelf</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L121">src/videostreamindex/DefaultVideoStreamIndex.ts:121</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>selfAttendeeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="integrateindexframe" class="tsd-anchor"></a>
+					<h3>integrate<wbr>Index<wbr>Frame</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">integrate<wbr>Index<wbr>Frame<span class="tsd-signature-symbol">(</span>indexFrame<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SdkIndexFrame</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integrateindexframe">integrateIndexFrame</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L27">src/videostreamindex/DefaultVideoStreamIndex.ts:27</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>indexFrame: <span class="tsd-signature-type">SdkIndexFrame</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="integratesubscribeackframe" class="tsd-anchor"></a>
+					<h3>integrate<wbr>Subscribe<wbr>Ack<wbr>Frame</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">integrate<wbr>Subscribe<wbr>Ack<wbr>Frame<span class="tsd-signature-symbol">(</span>subscribeAck<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SdkSubscribeAckFrame</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integratesubscribeackframe">integrateSubscribeAckFrame</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L33">src/videostreamindex/DefaultVideoStreamIndex.ts:33</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>subscribeAck: <span class="tsd-signature-type">SdkSubscribeAckFrame</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="numberofvideopublishingparticipantsexcludingself" class="tsd-anchor"></a>
+					<h3>number<wbr>OfVideo<wbr>Publishing<wbr>Participants<wbr>Excluding<wbr>Self</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">number<wbr>OfVideo<wbr>Publishing<wbr>Participants<wbr>Excluding<wbr>Self<span class="tsd-signature-symbol">(</span>selfAttendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#numberofvideopublishingparticipantsexcludingself">numberOfVideoPublishingParticipantsExcludingSelf</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L143">src/videostreamindex/DefaultVideoStreamIndex.ts:143</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>selfAttendeeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="streamidforssrc" class="tsd-anchor"></a>
+					<h3>stream<wbr>IdForSSRC</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">stream<wbr>IdForSSRC<span class="tsd-signature-symbol">(</span>ssrcId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#streamidforssrc">streamIdForSSRC</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L181">src/videostreamindex/DefaultVideoStreamIndex.ts:181</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ssrcId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="streamidfortrack" class="tsd-anchor"></a>
+					<h3>stream<wbr>IdFor<wbr>Track</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">stream<wbr>IdFor<wbr>Track<span class="tsd-signature-symbol">(</span>trackId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#streamidfortrack">streamIdForTrack</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L170">src/videostreamindex/DefaultVideoStreamIndex.ts:170</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>trackId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="streamselectionunderbandwidthconstraint" class="tsd-anchor"></a>
+					<h3>stream<wbr>Selection<wbr>Under<wbr>Bandwidth<wbr>Constraint</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">stream<wbr>Selection<wbr>Under<wbr>Bandwidth<wbr>Constraint<span class="tsd-signature-symbol">(</span>selfAttendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, largeTileAttendeeIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, smallTileAttendeeIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, bandwidthKbps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#streamselectionunderbandwidthconstraint">streamSelectionUnderBandwidthConstraint</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L66">src/videostreamindex/DefaultVideoStreamIndex.ts:66</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>selfAttendeeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>largeTileAttendeeIds: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>smallTileAttendeeIds: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>bandwidthKbps: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="streamspausedatsource" class="tsd-anchor"></a>
+					<h3>streams<wbr>Paused<wbr>AtSource</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">streams<wbr>Paused<wbr>AtSource<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#streamspausedatsource">streamsPausedAtSource</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L192">src/videostreamindex/DefaultVideoStreamIndex.ts:192</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="tryselecthighbitrateforattendees" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> try<wbr>Select<wbr>High<wbr>Bitrate<wbr>For<wbr>Attendees</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">try<wbr>Select<wbr>High<wbr>Bitrate<wbr>For<wbr>Attendees<span class="tsd-signature-symbol">(</span>attendeeToStreamDescriptorMap<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ISdkStreamDescriptor</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span>, highAttendees<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, currentUsage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, bandwidthKbps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, currentSelectionRef<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ISdkStreamDescriptor</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L232">src/videostreamindex/DefaultVideoStreamIndex.ts:232</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attendeeToStreamDescriptorMap: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ISdkStreamDescriptor</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>highAttendees: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>currentUsage: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>bandwidthKbps: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>currentSelectionRef: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ISdkStreamDescriptor</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="defaultvideostreamindex.html" class="tsd-kind-icon">Default<wbr>Video<wbr>Stream<wbr>Index</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#currentindex" class="tsd-kind-icon">current<wbr>Index</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#currentsubscribeack" class="tsd-kind-icon">current<wbr>Subscribe<wbr>Ack</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#logger" class="tsd-kind-icon">logger</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#ssrctostreammap" class="tsd-kind-icon">ssrc<wbr>ToStream<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#streamtoattendeemap" class="tsd-kind-icon">stream<wbr>ToAttendee<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#tracktostreammap" class="tsd-kind-icon">track<wbr>ToStream<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#allstreams" class="tsd-kind-icon">all<wbr>Streams</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#allvideosendingattendeesexcludingself" class="tsd-kind-icon">all<wbr>Video<wbr>Sending<wbr>Attendees<wbr>Excluding<wbr>Self</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#attendeeidfortrack" class="tsd-kind-icon">attendee<wbr>IdFor<wbr>Track</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#buildattendeetosortedstreamdescriptormapexcludingself" class="tsd-kind-icon">build<wbr>Attendee<wbr>ToSorted<wbr>Stream<wbr>Descriptor<wbr>Map<wbr>Excluding<wbr>Self</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#buildssrctostreammap" class="tsd-kind-icon">buildSSRCTo<wbr>Stream<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#buildstreamtoattendeemap" class="tsd-kind-icon">build<wbr>Stream<wbr>ToAttendee<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#buildtracktostreammap" class="tsd-kind-icon">build<wbr>Track<wbr>ToStream<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#highestqualitystreamfromeachgroupexcludingself" class="tsd-kind-icon">highest<wbr>Quality<wbr>Stream<wbr>From<wbr>Each<wbr>Group<wbr>Excluding<wbr>Self</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#integrateindexframe" class="tsd-kind-icon">integrate<wbr>Index<wbr>Frame</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#integratesubscribeackframe" class="tsd-kind-icon">integrate<wbr>Subscribe<wbr>Ack<wbr>Frame</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#numberofvideopublishingparticipantsexcludingself" class="tsd-kind-icon">number<wbr>OfVideo<wbr>Publishing<wbr>Participants<wbr>Excluding<wbr>Self</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#streamidforssrc" class="tsd-kind-icon">stream<wbr>IdForSSRC</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#streamidfortrack" class="tsd-kind-icon">stream<wbr>IdFor<wbr>Track</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#streamselectionunderbandwidthconstraint" class="tsd-kind-icon">stream<wbr>Selection<wbr>Under<wbr>Bandwidth<wbr>Constraint</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#streamspausedatsource" class="tsd-kind-icon">streams<wbr>Paused<wbr>AtSource</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideostreamindex.html#tryselecthighbitrateforattendees" class="tsd-kind-icon">try<wbr>Select<wbr>High<wbr>Bitrate<wbr>For<wbr>Attendees</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
