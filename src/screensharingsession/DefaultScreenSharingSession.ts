@@ -1,9 +1,9 @@
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
-import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import MediaRecording from '../mediarecording/MediaRecording';
 import MediaRecordingFactory from '../mediarecording/MediaRecordingFactory';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';

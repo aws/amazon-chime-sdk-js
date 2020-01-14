@@ -74,7 +74,10 @@ export default class ReconnectingPromisedWebSocket implements PromisedWebSocket 
       this.dispatchEvent(event);
     });
 
-    return this.webSocket.open(timeoutMs);
+    return this.webSocket.open(timeoutMs).catch(error => {
+      this.webSocket = null;
+      throw error;
+    });
   }
 
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {

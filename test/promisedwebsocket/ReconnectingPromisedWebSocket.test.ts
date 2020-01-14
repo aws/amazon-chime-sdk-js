@@ -39,10 +39,21 @@ describe('ReconnectingPromisedWebSocket', () => {
   describe('#open', () => {
     describe('with error', () => {
       it('is rejected', (done: Mocha.Done) => {
+        const error = new Error('error');
         const webSocket = {
           ...Substitute.for<PromisedWebSocket>(),
-          open(_timeoutMs: number): Promise<Event> {
-            throw new Error();
+          get callbacks(): Map<string, EventListener> {
+            this._callbacks = this._callbacks || new Map<string, EventListener>();
+            return this._callbacks;
+          },
+          addEventListener(type: string, listener: EventListener): void {
+            Maybe.of(this.callbacks.get(type))
+              .defaulting(new Set<EventListener>())
+              .map(listeners => listeners.add(listener))
+              .map(listeners => this.callbacks.set(type, listeners));
+          },
+          async open(_timeoutMs: number): Promise<Event> {
+            throw error;
           },
         };
         const webSocketFactory = Substitute.for<PromisedWebSocketFactory>();
@@ -54,7 +65,10 @@ describe('ReconnectingPromisedWebSocket', () => {
           backoff
         );
         webSocketFactory.create(Arg.all()).returns(webSocket);
-        chai.expect(subject.open(timeoutMs)).to.eventually.be.rejected.and.notify(done);
+        subject.open(timeoutMs).catch(e => {
+          chai.expect(e).to.eq(error);
+          done();
+        });
       });
     });
     describe('without open', () => {

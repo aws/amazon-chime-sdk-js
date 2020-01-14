@@ -5,13 +5,13 @@ import { Arg, Substitute } from '@fluffy-spoon/substitute';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import DOMWebSocket from '../../src/domwebsocket/DOMWebSocket';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import Maybe from '../../src/maybe/Maybe';
 import MediaRecordingFactory from '../../src/mediarecording/MediaRecordingFactory';
 import MediaStreamBroker from '../../src/mediastreambroker/MediaStreamBroker';
-import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import DefaultPromisedWebSocket from '../../src/promisedwebsocket/DefaultPromisedWebSocket';
 import PromisedWebSocket from '../../src/promisedwebsocket/PromisedWebSocket';
 import ScreenShareStreaming from '../../src/screensharestreaming/ScreenShareStreaming';
