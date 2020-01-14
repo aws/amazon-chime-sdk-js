@@ -13,7 +13,7 @@ install:
  - brew tap aws/tap
  - brew install aws-sam-cli
  - ./integration/js/script/install-kite
-script: script/prevent-multiple-pr-commits && npm run test:retry && npm run test:integration
+script: npm run build:release && npm run test:integration
 addons:
   sauce_connect:
     username: "chimesdk"

@@ -5,7 +5,7 @@ demos/electron/*
 demos/browser/*
 demos/serverless/*
 demos/videohelpdesk/*
-doc
+docs
 index.ts
 integration
 node_modules
