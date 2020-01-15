@@ -20,6 +20,10 @@ class JoinMeetingStep extends AppTestStep {
     return 'JoinMeetingStep'
   }
 
+  emitMetricToCommonNamespace() {
+    return true
+  }
+
   async run() {
     await this.page.joinMeeting();
     let joinState = await this.page.waitToJoinTheMeeting();

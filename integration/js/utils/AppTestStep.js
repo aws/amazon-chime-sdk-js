@@ -36,6 +36,10 @@ class AppTestStep extends TestStep {
   async run() {
   }
 
+  emitMetricToCommonNamespace() {
+    return false
+  }
+
   failed() {
     this.test.failedTest = true;
     this.emitCwMetric(0);
@@ -48,6 +52,9 @@ class AppTestStep extends TestStep {
   emitCwMetric(value) {
     if (this.metricName() === "") {
       return;
+    }
+    if (this.emitMetricToCommonNamespace()) {
+      emitMetric("Common", this.test.capabilities, this.metricName(), value);
     }
     emitMetric(this.test.testName, this.test.capabilities, this.metricName(), value);
   }

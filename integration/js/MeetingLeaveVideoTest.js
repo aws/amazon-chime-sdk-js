@@ -1,5 +1,5 @@
 const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, ClickVideoButton, LeaveMeetingStep} = require('./steps');
-const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteVideoCheck, UserAuthenticationCheck} = require('./checks');
+const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteVideoCheck, UserAuthenticationCheck, RosterCheck} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
@@ -22,6 +22,9 @@ class MeetingLeaveVideoTest extends SdkBaseTest {
 
     await test_window.runCommands(async () => await this.addUserToMeeting(test_attendee_id));
     await monitor_window.runCommands(async () => await this.addUserToMeeting(monitor_attendee_id));
+
+    await test_window.runCommands(async () => await RosterCheck.executeStep(this, 2));
+    await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, 2));
 
     await test_window.runCommands(async () => await ClickVideoButton.executeStep(this));
     await monitor_window.runCommands(async () => await RemoteVideoCheck.executeStep(this, 'VIDEO_ON'));

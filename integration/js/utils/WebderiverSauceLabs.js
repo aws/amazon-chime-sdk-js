@@ -81,7 +81,6 @@ const getSauceLabsUrl = () => {
 };
 
 getWebDriverSauceLabs = async capabilities => {
-  console.log(getSauceLabsUrl());
   let cap = {};
   if (capabilities.browserName === 'chrome') {
     cap = getChromeCapabilities(capabilities);

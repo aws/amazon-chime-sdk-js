@@ -21,6 +21,10 @@ class RosterCheck extends AppTestStep {
     return 'RosterCheck'
   }
 
+  emitMetricToCommonNamespace() {
+    return true
+  }
+
   async run() {
     const rosterCheckPassed = await this.page.rosterCheck(this.numberOfParticipant);
     if (!rosterCheckPassed) {

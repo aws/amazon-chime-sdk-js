@@ -12,8 +12,8 @@ class AppWaitTestStep extends AppTestStep {
   waitCompleteMessage() {
   }
 
-  timeoutThreshold() {
-    return 20000
+  timeoutThresholdInMilliSeconds() {
+    return 30000
   }
 
   onThresholdBreach() {
@@ -22,13 +22,14 @@ class AppWaitTestStep extends AppTestStep {
 
   async run() {
     let i = 0;
-    while (i < this.timeoutThreshold()) {
+    let waitTime = 100;
+    while (i < this.timeoutThresholdInMilliSeconds() / waitTime) {
       i++;
       if (this.waitCompleteCondition()) {
         console.log(this.waitCompleteMessage());
         return;
       }
-      await TestUtils.waitAround(1);
+      await TestUtils.waitAround(waitTime);
     }
     this.onThresholdBreach();
   }

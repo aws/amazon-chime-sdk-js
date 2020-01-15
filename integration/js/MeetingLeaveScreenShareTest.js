@@ -1,5 +1,5 @@
 const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, LeaveMeetingStep, ClickScreenShareButton, ClickScreenViewButton} = require('./steps');
-const {UserJoinedMeetingCheck, UserAuthenticationCheck, ScreenViewingCheck} = require('./checks');
+const {UserJoinedMeetingCheck, UserAuthenticationCheck, ScreenViewingCheck, RosterCheck} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
@@ -22,6 +22,9 @@ class MeetingLeaveScreenShareTest extends SdkBaseTest {
 
     await test_window.runCommands(async () => await this.addUserToMeeting(test_attendee_id));
     await monitor_window.runCommands(async () => await this.addUserToMeeting(monitor_attendee_id));
+
+    await test_window.runCommands(async () => await RosterCheck.executeStep(this, 2));
+    await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, 2));
 
     // turn on screen sharing on test client
     await test_window.runCommands(async () => await ClickScreenShareButton.executeStep(this, "ON"));
