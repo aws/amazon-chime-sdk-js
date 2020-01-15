@@ -14,8 +14,7 @@ import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollecto
 import AttachMediaInputTask from '../../src/task/AttachMediaInputTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
-import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
-import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -55,13 +54,11 @@ describe('AttachMediaInputTask', () => {
     const audioTrack = new MediaStreamTrack('attach-media-input-task-audio-track-id', 'audio');
     // @ts-ignore
     const videoTrack = new MediaStreamTrack('attach-media-input-task-video-track-id', 'video');
+    context.videoSubscribeContext = new DefaultVideoSubscribeContext();
     context.activeAudioInput = new MediaStream();
     context.activeAudioInput.addTrack(audioTrack);
     context.activeVideoInput = new MediaStream();
     context.activeVideoInput.addTrack(videoTrack);
-    context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
-    context.videosToReceive = new DefaultVideoStreamIdSet();
-    context.videoSubscriptions = [];
     context.statsCollector = new DefaultStatsCollector(context.audioVideoController, logger);
     context.browserBehavior = new DefaultBrowserBehavior();
     task = new AttachMediaInputTask(context);

@@ -42,7 +42,8 @@ export default class SetRemoteDescriptionTask extends BaseTask {
       // provide a video m-line when there are no videos available under Plan B,
       // thus we need to synthesize a video m-line by copying the one from the offer.
       this.logger.info('checking for no videos (plan-b)');
-      if (this.context.videosToReceive.empty() && this.context.peer.remoteDescription) {
+      const videosToReceive = this.context.videoSubscribeContext.videosToReceive();
+      if (videosToReceive.empty() && this.context.peer.remoteDescription) {
         this.logger.info('have no videos and have remote description (plan-b)');
         const sdpInactiveVideoOffer = this.context.peer.localDescription.sdp;
         const sdpInactiveVideoAnswer = sdp;

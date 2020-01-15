@@ -12,6 +12,7 @@ import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import RealtimeController from '../realtimecontroller/RealtimeController';
+import VideoSubscribeContext from '../videosubscribecontext/VideoSubscribeContext';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 
 /**
@@ -27,7 +28,7 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   /**
    * Updates the peer connection when video tiles have changed.
    */
-  update(): boolean;
+  update(videoSubscribeContext: VideoSubscribeContext): boolean;
 
   /**
    * Restarts the local video device. The callback is called when the device

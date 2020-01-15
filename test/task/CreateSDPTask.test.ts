@@ -8,7 +8,6 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import CreateSDPTask from '../../src/task/CreateSDPTask';
 import Task from '../../src/task/Task';
-import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -26,7 +25,6 @@ describe('CreateSDPTask', () => {
     context.audioVideoController = new NoOpAudioVideoController();
     context.videoTileController = context.audioVideoController.videoTileController;
     context.logger = context.audioVideoController.logger;
-    context.videosToReceive = new DefaultVideoStreamIdSet();
     const peer: RTCPeerConnection = new RTCPeerConnection();
     context.peer = peer;
     task = new CreateSDPTask(context);

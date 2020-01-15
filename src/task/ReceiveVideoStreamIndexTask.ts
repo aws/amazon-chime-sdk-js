@@ -16,6 +16,9 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
+import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
+import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import DefaultVideoSubscribeContext from '../videosubscribecontext/DefaultVideoSubscribeContext';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import BaseTask from './BaseTask';
 
@@ -57,24 +60,26 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
     if (!indexFrame) {
       return;
     }
-    const {
-      videoStreamIndex,
+    const { videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy } = this.context;
+
+    const nextVideoStreamIndex = new DefaultVideoStreamIndex(this.context.logger);
+    nextVideoStreamIndex.integrateIndexFrame(indexFrame);
+    videoDownlinkBandwidthPolicy.updateIndex(nextVideoStreamIndex);
+    videoUplinkBandwidthPolicy.updateIndex(nextVideoStreamIndex);
+
+    this.resubscribe(
       videoDownlinkBandwidthPolicy,
       videoUplinkBandwidthPolicy,
-    } = this.context;
-
-    videoStreamIndex.integrateIndexFrame(indexFrame);
-    videoDownlinkBandwidthPolicy.updateIndex(videoStreamIndex);
-    videoUplinkBandwidthPolicy.updateIndex(videoStreamIndex);
-
-    this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy);
+      nextVideoStreamIndex
+    );
     this.updateVideoAvailability(indexFrame);
-    this.handleIndexVideosPausedAtSource();
+    this.handleIndexVideosPausedAtSource(nextVideoStreamIndex.streamsPausedAtSource());
   }
 
   private resubscribe(
     videoDownlinkBandwidthPolicy: VideoDownlinkBandwidthPolicy,
-    videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy
+    videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy,
+    newVideoStreamIndex: VideoStreamIndex
   ): void {
     const resubscribeForDownlink: boolean = videoDownlinkBandwidthPolicy.wantsResubscribe();
     const resubscribeForUplink: boolean =
@@ -89,24 +94,31 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
       return;
     }
 
-    this.context.videosToReceive = videoDownlinkBandwidthPolicy.chooseSubscriptions();
+    const nextVideosToReceive = videoDownlinkBandwidthPolicy.chooseSubscriptions();
+    this.context.nextVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    this.context.nextVideoSubscribeContext.updateVideoStreamIndex(newVideoStreamIndex);
+    this.context.nextVideoSubscribeContext.updateVideosToReceive(nextVideosToReceive);
+    this.context.nextVideoSubscribeContext.updateVideoPausedSet(
+      newVideoStreamIndex.streamsPausedAtSource()
+    );
     this.context.videoCaptureAndEncodeParameter = videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
     this.logger.info(
-      `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}] captureParams=${JSON.stringify(
-        this.context.videoCaptureAndEncodeParameter
-      )}`
+      `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; nextVideosToReceive=[${this.context.nextVideoSubscribeContext
+        .videosToReceive()
+        .array()}] captureParams=${JSON.stringify(this.context.videoCaptureAndEncodeParameter)};
+              videoPausedSet=${this.context.nextVideoSubscribeContext.videosPausedSet().array()}`
     );
-    this.context.audioVideoController.update();
+    this.context.audioVideoController.update(this.context.nextVideoSubscribeContext);
   }
 
   private updateVideoAvailability(indexFrame: SdkIndexFrame): void {
-    if (!this.context.videosToReceive) {
-      this.logger.error('videosToReceive must be set in the meeting context.');
+    if (!this.context.nextVideoSubscribeContext) {
+      this.logger.info('no video subscriptions, so no availability change');
       return;
     }
-
+    const nextVideosToReceive = this.context.nextVideoSubscribeContext.videosToReceive();
     const videoAvailability = new MeetingSessionVideoAvailability();
-    videoAvailability.remoteVideoAvailable = !this.context.videosToReceive.empty();
+    videoAvailability.remoteVideoAvailable = !nextVideosToReceive.empty();
     videoAvailability.canStartLocalVideo = !indexFrame.atCapacity;
     if (
       !this.context.lastKnownVideoAvailability ||
@@ -121,8 +133,7 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
     }
   }
 
-  private handleIndexVideosPausedAtSource(): void {
-    const streamsPausedAtSource: VideoStreamIdSet = this.context.videoStreamIndex.streamsPausedAtSource();
+  private handleIndexVideosPausedAtSource(streamsPausedAtSource: VideoStreamIdSet): void {
     for (const tile of this.context.videoTileController.getAllVideoTiles()) {
       const tileState = tile.state();
       if (streamsPausedAtSource.contain(tileState.streamId)) {

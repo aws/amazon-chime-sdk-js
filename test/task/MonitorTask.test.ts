@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { DefaultVideoSubscribeContext } from '../../src';
 import AudioVideoController from '../../src/audiovideocontroller/AudioVideoController';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -116,7 +117,6 @@ describe('MonitorTask', () => {
       logger
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
-    context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
     context.statsCollector = new DefaultStatsCollector(context.audioVideoController, logger);
     context.reconnectController = new DefaultReconnectController(
       RECONNECT_TIMEOUT_MS,
@@ -276,6 +276,7 @@ describe('MonitorTask', () => {
           return new DefaultVideoStreamIdSet([1, 2, 3]);
         }
       }
+      context.videoSubscribeContext = new DefaultVideoSubscribeContext();
       context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
       task.videoReceiveBandwidthDidChange(10, 20);
       expect(spy.called).to.be.true;

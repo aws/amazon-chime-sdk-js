@@ -63,7 +63,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.meetingSessionConfiguration.urls.audioHostURL,
       this.context.realtimeController.realtimeIsLocalAudioMuted(),
       false,
-      this.context.videoSubscriptions,
+      this.context.videoSubscribeContext.videoSubscriptions(),
       isSendingStreams,
       frameRate,
       maxEncodeBitrateKbps,
@@ -76,7 +76,12 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     const subscribeAckFrame = await this.receiveSubscribeAck();
     this.context.logger.info(`got subscribe ack: ${JSON.stringify(subscribeAckFrame)}`);
     this.context.sdpAnswer = subscribeAckFrame.sdpAnswer;
-    this.context.videoStreamIndex.integrateSubscribeAckFrame(subscribeAckFrame);
+
+    if (this.context.videoSubscribeContext.videoStreamIndexRef()) {
+      this.context.videoSubscribeContext
+        .videoStreamIndexRef()
+        .integrateSubscribeAckFrame(subscribeAckFrame);
+    }
   }
 
   private receiveSubscribeAck(): Promise<SdkSubscribeAckFrame> {

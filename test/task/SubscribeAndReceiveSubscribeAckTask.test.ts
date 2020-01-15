@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import { DefaultVideoStreamIndex, DefaultVideoSubscribeContext, NoOpLogger } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -20,7 +21,6 @@ import {
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SubscribeAndReceiveSubscribeAckTask from '../../src/task/SubscribeAndReceiveSubscribeAckTask';
 import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
-import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -79,8 +79,10 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     context.browserBehavior = new DefaultBrowserBehavior();
     const captureAndEncodeParameters = new DefaultVideoAndCaptureParameter(0, 0, 0, 0, false);
     context.videoCaptureAndEncodeParameter = captureAndEncodeParameters;
-    const videoStreamIndex = new DefaultVideoStreamIndex(context.logger);
-    context.videoStreamIndex = videoStreamIndex;
+    context.videoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.videoSubscribeContext.updateVideoStreamIndex(
+      new DefaultVideoStreamIndex(new NoOpLogger())
+    );
     const frame = SdkSubscribeAckFrame.create();
     frame.sdpAnswer = sdpAnswer;
 

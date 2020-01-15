@@ -46,7 +46,7 @@ export default class DefaultVideoTileController implements VideoTileController {
   startLocalVideoTile(): number {
     const tile = this.findOrCreateLocalVideoTile();
     this.currentLocalTile.stateRef().localTileStarted = true;
-    this.audioVideoController.update();
+    this.audioVideoController.update(null);
     return tile.id();
   }
 
@@ -63,7 +63,7 @@ export default class DefaultVideoTileController implements VideoTileController {
       null,
       null
     );
-    this.audioVideoController.update();
+    this.audioVideoController.update(null);
   }
 
   hasStartedLocalVideoTile(): boolean {

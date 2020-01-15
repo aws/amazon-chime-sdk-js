@@ -570,7 +570,7 @@ describe('DefaultAudioVideoController', () => {
 
       await start();
       configuration.connectionTimeoutMs = 100;
-      audioVideoController.update();
+      audioVideoController.update(null);
       configuration.connectionTimeoutMs = 15000;
       // At this point, the update operation failed, performing the Reconnect action.
       // Finish the reconnect operation by sending required frames and events.

@@ -58,8 +58,8 @@ import TimeoutTask from '../task/TimeoutTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
-import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
-import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../videosubscribecontext/DefaultVideoSubscribeContext';
+import VideoSubscribeContext from '../videosubscribecontext/VideoSubscribeContext';
 import DefaultVideoTileController from '../videotilecontroller/DefaultVideoTileController';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
@@ -216,7 +216,8 @@ export default class DefaultAudioVideoController implements AudioVideoController
       DefaultAudioVideoController.MAX_VOLUME_DECIBELS
     );
     this.meetingSessionContext.videoTileController = this._videoTileController;
-    this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
+
+    this.meetingSessionContext.videoSubscribeContext = new DefaultVideoSubscribeContext();
     this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
       this.configuration.credentials.attendeeId
     );
@@ -231,8 +232,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
       0,
       false
     );
-    this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
-    this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.statsCollector = new DefaultStatsCollector(this, this.logger);
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
@@ -370,8 +369,18 @@ export default class DefaultAudioVideoController implements AudioVideoController
     });
   }
 
-  update(): boolean {
+  update(videoSubscribeContext: VideoSubscribeContext | null): boolean {
+    let nextVideoSubscribeContext: VideoSubscribeContext;
+    if (!videoSubscribeContext) {
+      nextVideoSubscribeContext = this.meetingSessionContext.videoSubscribeContext
+        ? this.meetingSessionContext.videoSubscribeContext.clone()
+        : new DefaultVideoSubscribeContext();
+    } else {
+      nextVideoSubscribeContext = videoSubscribeContext.clone();
+    }
+
     const result = this.sessionStateController.perform(SessionStateControllerAction.Update, () => {
+      this.meetingSessionContext.videoSubscribeContext = nextVideoSubscribeContext;
       this.actionUpdate(true);
     });
     return (

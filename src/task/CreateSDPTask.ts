@@ -28,7 +28,9 @@ export default class CreateSDPTask extends BaseTask {
   sessionUsesVideo(): boolean {
     const enabled = true;
     const sending = this.context.videoTileController.hasStartedLocalVideoTile();
-    const receiving = !!this.context.videosToReceive && !this.context.videosToReceive.empty();
+    const receiving =
+      !!this.context.videoSubscribeContext &&
+      this.context.videoSubscribeContext.wantsReceiveVideo();
     const usesVideo = enabled && (sending || receiving);
     this.context.logger.info(
       `uses video: ${usesVideo} (enabled: ${enabled}, sending: ${sending}, receiving: ${receiving})`

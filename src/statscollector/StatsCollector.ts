@@ -1,12 +1,11 @@
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import MeetingSessionLifecycleEvent from '../meetingsession/MeetingSessionLifecycleEvent';
 import MeetingSessionLifecycleEventCondition from '../meetingsession/MeetingSessionLifecycleEventCondition';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
-import SignalingClient from '../signalingclient/SignalingClient';
-import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import AudioLogEvent from './AudioLogEvent';
 import VideoLogEvent from './VideoLogEvent';
 
@@ -18,8 +17,7 @@ export default interface StatsCollector {
    * Starts collecting statistics.
    */
   start(
-    signalingClient: SignalingClient,
-    videoStreamIndex: VideoStreamIndex,
+    meetingSessionContext: AudioVideoControllerState,
     clientMetricReport?: ClientMetricReport
   ): boolean;
 

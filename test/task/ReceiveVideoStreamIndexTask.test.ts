@@ -22,6 +22,7 @@ import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandenco
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
@@ -72,12 +73,12 @@ describe('ReceiveVideoStreamIndexTask', () => {
       context.audioVideoController,
       logger
     );
-    context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
+
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
     context.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
-    context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
-
+    context.videoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.videoSubscribeContext.updateVideoStreamIndex(new DefaultVideoStreamIndex(logger));
     task = new ReceiveVideoStreamIndexTask(context);
 
     request = new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth');
@@ -112,37 +113,16 @@ describe('ReceiveVideoStreamIndexTask', () => {
         await new Promise(resolve =>
           new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
         );
-        expect(videoDownlinkBandwidthPolicySpy.calledWith(context.videoStreamIndex)).to.be.true;
-        expect(videoUplinkBandwidthPolicySpy.calledWith(context.videoStreamIndex)).to.be.true;
+        expect(videoDownlinkBandwidthPolicySpy.called).to.be.true;
+        expect(videoUplinkBandwidthPolicySpy.called).to.be.true;
         done();
       });
-
       task.run();
     });
-    //    it('does not update the index frame of the video stream index if policies do not exist in the context', done => {
-    //      context.videoDownlinkBandwidthPolicy = null;
-    //      context.videoUplinkBandwidthPolicy = null;
-    //
-    //      const videoStreamIndexSpy: sinon.SinonSpy = sinon.spy(
-    //        context.videoStreamIndex,
-    //        'integrateIndexFrame'
-    //      );
-    //
-    //      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
-    //        webSocketAdapter.send(createIndexSignalBuffer());
-    //        await new Promise(resolve =>
-    //          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-    //        );
-    //        expect(videoStreamIndexSpy.called).to.be.false;
-    //        done();
-    //      });
-    //
-    //      task.run();
-    //    });
   });
 
   describe('resubscribe', () => {
-    it('attemps to resubscribe if video downlink bandwidth policy wants to resubscribe', done => {
+    it('attempts to resubscribe if video downlink bandwidth policy wants to resubscribe', done => {
       const ids: number[] = [1, 2, 3];
       class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
         wantsResubscribe(): boolean {
@@ -159,14 +139,18 @@ describe('ReceiveVideoStreamIndexTask', () => {
         await new Promise(resolve =>
           new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
         );
-        expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(ids))).to.be.true;
+        expect(
+          context.nextVideoSubscribeContext
+            .videosToReceive()
+            .equal(new DefaultVideoStreamIdSet(ids))
+        ).to.be.true;
         done();
       });
 
       task.run();
     });
 
-    it('attemps to resubscribe if video uplink bandwidth policy wants to resubscribe', done => {
+    it('attempts to resubscribe if video uplink bandwidth policy wants to resubscribe', done => {
       const captureWidth = 400;
       const captureHeight = 300;
       const captureFrameRate = 30;
@@ -214,6 +198,11 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
   describe('updateVideoAvailability', () => {
     it('updates video availability', done => {
+      class TestVideoDownlinkPolicy extends NoVideoDownlinkBandwidthPolicy {
+        wantsResubscribe(): boolean {
+          return true;
+        }
+      }
       class TestAudioVideoObserver implements AudioVideoObserver {
         videoAvailabilityDidChange(availability: MeetingSessionVideoAvailability): void {
           const videoAvailability = new MeetingSessionVideoAvailability();
@@ -223,6 +212,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
           done();
         }
       }
+      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkPolicy();
       context.audioVideoController.addObserver(new TestAudioVideoObserver());
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
@@ -267,22 +257,43 @@ describe('ReceiveVideoStreamIndexTask', () => {
       task.run();
     });
 
-    describe('no udpate', () => {
-      it('does not update video availability if videosToReceive does not exist in the context', () => {
-        context.videosToReceive = null;
+    describe('no update', () => {
+      it('does not update video availability if no uplink or downlink resubscription change', async () => {
+        class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
+          wantsResubscribe(): boolean {
+            return false;
+          }
+        }
+        class TestAudioVideoObserver implements AudioVideoObserver {
+          videoAvailabilityDidChange(_availability: MeetingSessionVideoAvailability): void {
+            assert.fail();
+          }
+        }
+
+        context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+        context.audioVideoController.addObserver(new TestAudioVideoObserver());
+
+        new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+          webSocketAdapter.send(createIndexSignalBuffer(true));
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+        });
+
+        task.run();
       });
 
-      it('does not update video availability if new video availability equals last known video availability', () => {
+      it('does not update video availability if new video availability equals last known video availability', done => {
+        class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
+          wantsResubscribe(): boolean {
+            return true;
+          }
+        }
         const videoAvailability = new MeetingSessionVideoAvailability();
         videoAvailability.remoteVideoAvailable = false;
         videoAvailability.canStartLocalVideo = true;
         context.lastKnownVideoAvailability = videoAvailability;
-      });
-
-      // it('does not update video availability if session does not exist', () => {
-      // });
-
-      afterEach(done => {
+        context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
         class TestAudioVideoObserver implements AudioVideoObserver {
           videoAvailabilityDidChange(_availability: MeetingSessionVideoAvailability): void {
             assert.fail();
@@ -379,7 +390,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
   describe('cancel', () => {
     it('can cancel using the context', done => {
       const videoStreamIndexSpy: sinon.SinonSpy = sinon.spy(
-        context.videoStreamIndex,
+        context.videoSubscribeContext.videoStreamIndexRef(),
         'integrateIndexFrame'
       );
 

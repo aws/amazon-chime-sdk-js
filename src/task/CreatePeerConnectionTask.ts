@@ -109,7 +109,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       stream = new MediaStream([track]);
       trackId = track.id;
     }
-    const attendeeId = this.context.videoStreamIndex.attendeeIdForTrack(trackId);
+    const attendeeId = this.context.videoSubscribeContext
+      .videoStreamIndexRef()
+      .attendeeIdForTrack(trackId);
 
     // TODO: in case a previous tile with the same attendee id hasn't been cleaned up
     // we do it here to avoid showing a duplicate tile. We should try to understand
@@ -122,7 +124,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     }
 
     const tile = this.context.videoTileController.addVideoTile();
-    let streamId: number | null = this.context.videoStreamIndex.streamIdForTrack(trackId);
+    let streamId:
+      | number
+      | null = this.context.videoSubscribeContext.videoStreamIndexRef().streamIdForTrack(trackId);
     if (typeof streamId === 'undefined') {
       this.logger.warn(`stream not found for tile=${tile.id()} track=${trackId}`);
       streamId = null;
@@ -196,7 +200,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     );
 
     if (tileState.streamId) {
-      this.context.videosPaused.remove(tileState.streamId);
+      this.context.videoSubscribeContext.videosPausedSetRef().remove(tileState.streamId);
     } else {
       this.logger.warn(`no stream found for tile=${tileState.tileId}`);
     }

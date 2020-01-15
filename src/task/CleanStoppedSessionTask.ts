@@ -7,6 +7,7 @@ import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import TaskCanceler from '../taskcanceler/TaskCanceler';
+import DefaultVideoSubscribeContext from '../videosubscribecontext/DefaultVideoSubscribeContext';
 import BaseTask from './BaseTask';
 
 export default class CleanStoppedSessionTask extends BaseTask {
@@ -53,7 +54,7 @@ export default class CleanStoppedSessionTask extends BaseTask {
       this.context.iceCandidateHandler = null;
       this.context.iceCandidates = [];
       this.context.turnCredentials = null;
-      this.context.videoSubscriptions = null;
+      this.context.videoSubscribeContext = new DefaultVideoSubscribeContext();
       this.context.transceiverController.reset();
       this.context.mediaStreamBroker.releaseMediaStream(this.context.activeAudioInput);
       this.context.activeAudioInput = null;

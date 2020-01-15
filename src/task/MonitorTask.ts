@@ -68,7 +68,7 @@ export default class MonitorTask extends BaseTask
     );
 
     this.context.connectionMonitor.start();
-    this.context.statsCollector.start(this.context.signalingClient, this.context.videoStreamIndex);
+    this.context.statsCollector.start(this.context);
     this.context.signalingClient.registerObserver(this);
   }
 
@@ -117,11 +117,13 @@ export default class MonitorTask extends BaseTask
 
       const resubscribeForDownlink = this.context.videoDownlinkBandwidthPolicy.wantsResubscribe();
       if (resubscribeForDownlink) {
-        this.context.videosToReceive = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+        const videosToReceive = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
         this.logger.info(
-          `trigger resubscribe for down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}]`
+          `trigger resubscribe for down=${resubscribeForDownlink}; videosToReceive=[${videosToReceive.array()}]`
         );
-        this.context.audioVideoController.update();
+        this.context.nextVideoSubscribeContext = this.context.videoSubscribeContext.clone();
+        this.context.nextVideoSubscribeContext.updateVideosToReceive(videosToReceive);
+        this.context.audioVideoController.update(this.context.nextVideoSubscribeContext);
       }
     }
   }

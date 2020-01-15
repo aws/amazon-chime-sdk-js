@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
+import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
@@ -15,7 +16,6 @@ import MeetingSessionLifecycleEvent from '../meetingsession/MeetingSessionLifecy
 import MeetingSessionLifecycleEventCondition from '../meetingsession/MeetingSessionLifecycleEventCondition';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
-import SignalingClient from '../signalingclient/SignalingClient';
 import {
   SdkClientMetricFrame,
   SdkMetric,
@@ -38,10 +38,10 @@ export default class DefaultStatsCollector implements StatsCollector {
   private static readonly CLIENT_TYPE = 'amazon-chime-sdk-js';
 
   private intervalScheduler: IntervalScheduler | null = null;
-  private signalingClient: SignalingClient;
-  private videoStreamIndex: VideoStreamIndex;
   private clientMetricReport: DefaultClientMetricReport;
   private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
+  private context: AudioVideoControllerState;
+
   constructor(
     private audioVideoController: AudioVideoController,
     private logger: Logger,
@@ -174,16 +174,14 @@ export default class DefaultStatsCollector implements StatsCollector {
    */
 
   start(
-    signalingClient: SignalingClient,
-    videoStreamIndex: VideoStreamIndex,
+    meetingSessionContext: AudioVideoControllerState,
     clientMetricReport?: DefaultClientMetricReport
   ): boolean {
     if (this.intervalScheduler) {
       return false;
     }
     this.logger.info('Starting DefaultStatsCollector');
-    this.signalingClient = signalingClient;
-    this.videoStreamIndex = videoStreamIndex;
+    this.context = meetingSessionContext;
     if (clientMetricReport) {
       this.clientMetricReport = clientMetricReport;
     } else {
@@ -213,7 +211,9 @@ export default class DefaultStatsCollector implements StatsCollector {
     const metricReport = isStream
       ? this.clientMetricReport.streamMetricReports[Number(rawMetricReport.ssrc)]
       : this.clientMetricReport.globalMetricReport;
-
+    if (metricReport === undefined || !metricReport) {
+      return;
+    }
     let metricMap: {
       [id: string]: {
         transform?: (metricName?: string, ssrc?: number) => number;
@@ -248,14 +248,21 @@ export default class DefaultStatsCollector implements StatsCollector {
           const streamMetricReport = new StreamMetricReport();
           streamMetricReport.mediaType = this.getMediaType(rawMetricReport);
           streamMetricReport.direction = this.getDirectionType(rawMetricReport);
-          if (!this.videoStreamIndex.allStreams().empty()) {
-            streamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
-              Number(rawMetricReport.ssrc)
-            );
+
+          let videoStreamIndex: VideoStreamIndex;
+          if (this.context.videoSubscribeContext) {
+            videoStreamIndex = this.context.videoSubscribeContext.videoStreamIndexRef();
           }
-          this.clientMetricReport.streamMetricReports[
-            Number(rawMetricReport.ssrc)
-          ] = streamMetricReport;
+          if (videoStreamIndex) {
+            if (!videoStreamIndex.allStreams().empty()) {
+              streamMetricReport.streamId = videoStreamIndex.streamIdForSSRC(
+                Number(rawMetricReport.ssrc)
+              );
+            }
+            this.clientMetricReport.streamMetricReports[
+              Number(rawMetricReport.ssrc)
+            ] = streamMetricReport;
+          }
         }
         this.clientMetricReport.currentSsrcs[Number(rawMetricReport.ssrc)] = 1;
       }
@@ -333,7 +340,7 @@ export default class DefaultStatsCollector implements StatsCollector {
   }
 
   private sendClientMetricProtobuf(clientMetricFrame: SdkClientMetricFrame): void {
-    this.signalingClient.sendClientMetrics(clientMetricFrame);
+    this.context.signalingClient.sendClientMetrics(clientMetricFrame);
   }
 
   /**
@@ -395,7 +402,11 @@ export default class DefaultStatsCollector implements StatsCollector {
       this.getDirectionType(rawMetricReport) === Direction.DOWNSTREAM &&
       this.getMediaType(rawMetricReport) === MediaType.VIDEO
     ) {
-      validSsrc = this.videoStreamIndex.streamIdForSSRC(Number(rawMetricReport.ssrc)) > 0;
+      const videoStreamIndex = this.context.videoSubscribeContext.videoStreamIndexRef();
+      if (!videoStreamIndex) {
+        return false;
+      }
+      validSsrc = videoStreamIndex.streamIdForSSRC(Number(rawMetricReport.ssrc)) > 0;
     }
     return validSsrc;
   }
