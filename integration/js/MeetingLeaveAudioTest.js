@@ -1,5 +1,5 @@
 const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, PlayRandomToneStep, LeaveMeetingStep} = require('./steps');
-const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteAudioCheck, UserAuthenticationCheck} = require('./checks');
+const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteAudioCheck, UserAuthenticationCheck, RosterCheck} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
@@ -22,6 +22,9 @@ class MeetingLeaveAudioTest extends SdkBaseTest {
 
     await test_window.runCommands(async () => await this.addUserToMeeting(test_attendee_id));
     await monitor_window.runCommands(async () => await this.addUserToMeeting(monitor_attendee_id));
+
+    await test_window.runCommands(async () => await RosterCheck.executeStep(this, 2));
+    await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, 2));
 
     await test_window.runCommands(async () => await PlayRandomToneStep.executeStep(this));
     await monitor_window.runCommands(async () => await RemoteAudioCheck.executeStep(this, 'AUDIO_ON'));
