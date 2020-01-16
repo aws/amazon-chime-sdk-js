@@ -77,7 +77,7 @@ const putAttendee = async(title, attendeeId, name) => {
   }).promise();
 }
 
-function getNotificaionsConfig() {
+function getNotificationsConfig() {
   if (provideQueueArn) {
     return  {
       SqsQueueArn: sqsQueueArn,
@@ -87,6 +87,45 @@ function getNotificaionsConfig() {
 }
 
 // ===== Join or create meeting ===================================
+exports.createMeeting = async(event, context, callback) => {
+  var response = {
+    "statusCode": 200,
+    "headers": {},
+    "body": '',
+    "isBase64Encoded": false
+  };
+
+  if (!event.queryStringParameters.title) {
+    response["statusCode"] = 400;
+    response["body"] = "Must provide title";
+    callback(null, response);
+    return;
+  }
+  const title = event.queryStringParameters.title;
+  const region = event.queryStringParameters.region || 'us-east-1';
+  let meetingInfo = await getMeeting(title);
+  if (!meetingInfo) {
+    const request = {
+      ClientRequestToken: uuid(),
+      MediaRegion: region,
+      NotificationsConfiguration: getNotificationsConfig(),
+    };
+    console.info('Creating new meeting: ' + JSON.stringify(request));
+    meetingInfo = await chime.createMeeting(request).promise();
+    await putMeeting(title, meetingInfo);
+  }
+
+  const joinInfo = {
+    JoinInfo: {
+      Title: title,
+      Meeting: meetingInfo.Meeting,
+    },
+  };
+
+  response.body = JSON.stringify(joinInfo, '', 2);
+  callback(null, response);
+};
+
 exports.join = async(event, context, callback) => {
   var response = {
     "statusCode": 200,
@@ -109,7 +148,7 @@ exports.join = async(event, context, callback) => {
     const request = {
       ClientRequestToken: uuid(),
       MediaRegion: region,
-      NotificationsConfiguration: getNotificaionsConfig(),
+      NotificationsConfiguration: getNotificationsConfig(),
     };
     console.info('Creating new meeting: ' + JSON.stringify(request));
     meetingInfo = await chime.createMeeting(request).promise();

@@ -1,4 +1,4 @@
-const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, PlayRandomToneStep, ClickMicrophoneButton, WaitForRemoteParticipantsToTurnAudioOff, WaitForRemoteParticipantsToTurnAudioOn, WaitForRemoteParticipantsToJoinMeeting, WaitForRemoteAudioCheckToComplete} = require('./steps');
+const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, PlayRandomToneStep, ClickMicrophoneButton, WaitForRemoteParticipantsToTurnAudioOff, WaitForRemoteParticipantsToTurnAudioOn, WaitForRemoteParticipantsToJoinMeeting, WaitForRemoteAudioCheckToComplete, WaitForMeetingToBeCreated} = require('./steps');
 const {UserJoinedMeetingCheck, UserAuthenticationCheck, RemoteAudioCheck, RosterCheck} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
@@ -21,13 +21,13 @@ class AudioTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
+    await WaitForMeetingToBeCreated.executeStep(this);
     this.page = new AppPage(this.driver);
-    let attendee_id = uuidv4();
     await OpenAppStep.executeStep(this);
-    await AuthenticateUserStep.executeStep(this, attendee_id);
+    await AuthenticateUserStep.executeStep(this, this.attendeeId);
     await UserAuthenticationCheck.executeStep(this);
     await JoinMeetingStep.executeStep(this);
-    await UserJoinedMeetingCheck.executeStep(this, attendee_id);
+    await UserJoinedMeetingCheck.executeStep(this, this.attendeeId);
     await WaitForRemoteParticipantsToJoinMeeting.executeStep(this);
     await RosterCheck.executeStep(this, 2);
 

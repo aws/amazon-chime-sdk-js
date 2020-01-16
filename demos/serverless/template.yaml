@@ -43,6 +43,7 @@ Resources:
         - Ref: ChimeSdkJoinLambdaRole
         - Ref: ChimeSdkAttendeeLambdaRole
         - Ref: ChimeSdkEndLambdaRole
+        - Ref: ChimeSdkCreateMeetingLambdaRole
   Meetings:
     Type: 'AWS::DynamoDB::Table'
     Properties:
@@ -96,6 +97,23 @@ Resources:
           Properties:
             Path: /
             Method: GET
+  ChimeSdkCreateMeetingLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handlers.createMeeting
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Environment:
+        Variables:
+          USE_EVENT_BRIDGE: !Ref UseEventBridge
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /meeting
+            Method: POST
   ChimeSdkJoinLambda:
     Type: 'AWS::Serverless::Function'
     Properties:

@@ -83,6 +83,32 @@ const server = require(protocol).createServer(options, async (request, response)
       response.write(JSON.stringify(attendeeInfo), 'utf8');
       response.end();
       log(JSON.stringify(attendeeInfo, null, 2));
+    } else if (request.method === 'POST' && request.url.startsWith('/meeting?')) {
+      const query = url.parse(request.url, true).query;
+      const title = query.title;
+      if (!meetingCache[title]) {
+        meetingCache[title] = await chime
+          .createMeeting({
+            ClientRequestToken: uuid(),
+            // NotificationsConfiguration: {
+            //   SqsQueueArn: 'Paste your arn here',
+            //   SnsTopicArn: 'Paste your arn here'
+            // }
+          })
+          .promise();
+        attendeeCache[title] = {};
+      }
+      const joinInfo = {
+        JoinInfo: {
+          Title: title,
+          Meeting: meetingCache[title].Meeting,
+        },
+      };
+      response.statusCode = 201;
+      response.setHeader('Content-Type', 'application/json');
+      response.write(JSON.stringify(joinInfo), 'utf8');
+      response.end();
+      log(JSON.stringify(joinInfo, null, 2));
     } else if (request.method === 'POST' && request.url.startsWith('/end?')) {
       const query = url.parse(request.url, true).query;
       const title = query.title;
