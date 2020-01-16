@@ -2,16 +2,50 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const {emitMetric} = require('./utils/CloudWatch');
-
+const axios = require('axios').default;
 
 let stepArray = [];
 let doneArray = [];
-let socketAttendeeMap = {};
+let socketAttendeeMap = undefined;
 let capabilities = {};
+let attendeeJoined = new Set([]);
+let meetingMap = {};
 
 const port = process.argv[2];
 const numberOfParticipant = parseInt(process.argv[3], 10);
 const interval = 1000;
+let createMeetingPromise = undefined;
+
+createMeeting = async (createMeetingUrl) => {
+  if (meetingMap[createMeetingUrl]) {
+    const message = meetingMap[createMeetingUrl] === "created" ? "Meeting already created" : "Meeting creation in progress";
+    console.log(message);
+    try {
+      await createMeetingPromise;
+    } catch (error) {
+      console.log(`Unable to create meeting, server error: ${error}`);
+    }
+    return;
+  }
+  meetingMap[createMeetingUrl] = "creating";
+  let i = 0;
+  let retryAttempts = 3;
+  while (i < retryAttempts) {
+    i++;
+    try {
+      console.log(`Creating meeting with title: ${createMeetingUrl}`);
+      createMeetingPromise = axios.post(createMeetingUrl);
+      const response = await createMeetingPromise;
+      const data = await response.data;
+      meetingMap[createMeetingUrl] = "created";
+      console.log("Meeting created");
+      console.log(`Chime meeting id : ${data.JoinInfo.Meeting.MeetingId}`);
+      return data;
+    } catch (error) {
+      console.log(`Unable to create meeting, server error: ${error}`);
+    }
+  }
+};
 
 io.on('connection', function (socket) {
 
@@ -19,10 +53,15 @@ io.on('connection', function (socket) {
   let testName = "";
   console.log('Connected');
 
-  socket.on('test_start', () => {
-    console.log("Starting test");
-    socketAttendeeMap = {};
-    attendeeId = "";
+  socket.on('setup_test', async (createMeetingUrl, id) => {
+    console.log(`Setting up test for attendee: ${id}`);
+    if (socketAttendeeMap === undefined) {
+      socketAttendeeMap = {};
+    }
+    attendeeId = id;
+    socketAttendeeMap[id] = socket;
+    await createMeeting(createMeetingUrl);
+    socket.emit('meeting_created');
   });
 
   socket.on('test_name', name => {
@@ -47,12 +86,8 @@ io.on('connection', function (socket) {
 
   socket.on('attendee_joined', id => {
     console.log("Meeting joined by: " + id);
-    attendeeId = id;
-    socketAttendeeMap[id] = socket;
-    let count = 0;
-    for (var key in socketAttendeeMap) {
-      count++;
-    }
+    attendeeJoined.add(id);
+    let count = attendeeJoined.size;
     for (var key in socketAttendeeMap) {
       socketAttendeeMap[key].emit('participant_count', count);
     }

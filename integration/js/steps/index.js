@@ -18,4 +18,5 @@ exports.WaitForRemoteParticipantsToTurnVideoOff = require('./WaitForRemotePartic
 exports.WaitForRemoteParticipantsToTurnAudioOn = require('./WaitForRemoteParticipantsToTurnAudioOn');
 exports.WaitForRemoteParticipantsToTurnAudioOff = require('./WaitForRemoteParticipantsToTurnAudioOff');
 exports.WaitForRemoteParticipantsToJoinMeeting = require('./WaitForRemoteParticipantsToJoinMeeting');
+exports.WaitForMeetingToBeCreated = require('./WaitForMeetingToBeCreated');
 

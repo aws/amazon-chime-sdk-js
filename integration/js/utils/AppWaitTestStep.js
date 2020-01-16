@@ -26,7 +26,9 @@ class AppWaitTestStep extends AppTestStep {
     while (i < this.timeoutThresholdInMilliSeconds() / waitTime) {
       i++;
       if (this.waitCompleteCondition()) {
-        console.log(this.waitCompleteMessage());
+        if (this.waitCompleteMessage()){
+          console.log(this.waitCompleteMessage());
+        }
         return;
       }
       await TestUtils.waitAround(waitTime);

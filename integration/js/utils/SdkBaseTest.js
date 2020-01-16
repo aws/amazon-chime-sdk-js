@@ -5,16 +5,19 @@ const {getWebDriverBrowserStack} = require('./WebdriverBrowserStack');
 const {getBuildId, getRunDetails} = require('./BrowserStackLogs');
 const {emitMetric} = require('./CloudWatch');
 const {putTestResults} = require('./SauceLabsApis');
+const uuidv4 = require('uuid/v4');
 
 class SdkBaseTest extends KiteBaseTest {
   constructor(name, kiteConfig, testName) {
     super(name, kiteConfig);
     this.baseUrl = this.url;
     this.url = this.url + '?m=' + kiteConfig.uuid;
+    this.meetingTitle = kiteConfig.uuid;
     this.testName = testName;
     this.capabilities["name"] = `${testName}-${process.env.TEST_TYPE}`;
     this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
     if (this.numberOfParticipant > 1) {
+      this.attendeeId = uuidv4();
       this.io.emit("test_name", testName);
       this.io.emit("test_capabilities", this.capabilities);
       this.io.on("remote_video_on", (id) => {
@@ -53,6 +56,9 @@ class SdkBaseTest extends KiteBaseTest {
         console.log("Number of participants on the meeting: " + count);
         this.numRemoteJoined = count;
       });
+      this.io.on("meeting_created", () => {
+        this.meetingCreated = true;
+      });
     }
   }
 
@@ -66,8 +72,10 @@ class SdkBaseTest extends KiteBaseTest {
     this.numRemoteAudioOff = 1;
     this.remoteFailed = false;
     this.numRemoteJoined = 0;
+    this.meetingCreated = false;
     if (this.io !== undefined) {
-      this.io.emit("test_start");
+      const createMeetingUrl = `${this.baseUrl}meeting?title=${this.meetingTitle}`;
+      this.io.emit("setup_test", createMeetingUrl, this.attendeeId);
     }
   }
 
