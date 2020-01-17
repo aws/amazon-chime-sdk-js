@@ -108,4 +108,4 @@ If you discover a potential security issue in this project we ask that you notif
 [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/).
 Please do **not** create a public GitHub issue.
 
-**Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.**
+**Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.**

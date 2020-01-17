@@ -4,6 +4,9 @@
 const fs = require('fs');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const exec = require('child_process').execSync;
+
 let exitCode = 0;
 
 let walk = function(dir) {
@@ -30,13 +33,6 @@ let failed = function(file, reason, description) {
     console.error(description);
   }
   exitCode = 1;
-};
-
-let warned = function(file, reason, description) {
-  console.error('Failed:', file, reason);
-  if (description) {
-    console.error(description);
-  }
 };
 
 let components = function() {
@@ -66,6 +62,40 @@ let allFiles = function() {
     file => file.endsWith('.ts') || file.endsWith('.js')
   );
   return srcFiles.concat(testFiles).concat(demosFiles);
+};
+
+let execute = function(command) {
+  return exec(command);
+};
+
+let joinYears = function(years) {
+  let prevYear = null;
+  let rangeEnd = null;
+  let out = '';
+  for (const year of years) {
+    if (parseInt(prevYear) + 1 === parseInt(year)) {
+      rangeEnd = year;
+    } else {
+      if (rangeEnd) {
+        out += `-${rangeEnd}`;
+        rangeEnd = null;
+      }
+      if (out !== '') {
+        out += ', ';
+      }
+      out += year;
+    }
+    prevYear = year;
+  }
+  if (rangeEnd) {
+    out += `-${rangeEnd}`;
+    rangeEnd = null;
+  }
+  return out;
+};
+
+let unique = function(value, index, self) {
+  return self.indexOf(value) === index;
 };
 
 tests().forEach(file => {
@@ -179,32 +209,32 @@ components().forEach(component => {
   });
 });
 
-let foundYear = false;
-const currentYear = new Date().getFullYear().toString();
-const existingYears = ['2019'];
-
-for (const pastYear of existingYears) {
-  if (pastYear === currentYear) {
-    foundYear = true;
-    break;
-  }
-}
-
-if (!foundYear) {
-  warned(
-    `Please update the copyright to contain the current year ${new Date().getFullYear().toString()}`
-  );
-}
-
-const copyright = `// Copyright ${existingYears.join(
-  ', '
-)} Amazon.com, Inc. or its affiliates. All Rights Reserved.`;
 const spdx = '// SPDX-License-Identifier: Apache-2.0';
+
+let allYears = [];
 
 allFiles().forEach(file => {
   if (file.endsWith('.d.ts') || file.includes('.DS_Store')) {
     return;
   }
+  let yearsForFileInGitHistory = [];
+  const stdout = execute(`git log --pretty=format:'%ad' --date=short '${file}'`);
+
+  const dates = [];
+  for (const line of stdout
+    .toString()
+    .trim()
+    .split('\n')) {
+    const year = line.replace(/[-].*/, '');
+    dates.push(year);
+    allYears.push(year);
+  }
+
+  yearsForFileInGitHistory = dates.sort().filter(unique);
+
+  const copyright = `// Copyright ${joinYears(
+    yearsForFileInGitHistory
+  )} Amazon.com, Inc. or its affiliates. All Rights Reserved.`;
   const fileLines = fs
     .readFileSync(file)
     .toString()
@@ -241,5 +271,21 @@ allFiles().forEach(file => {
     }
   }
 });
+
+const readmeCopyright = `\n**Copyright ${joinYears(
+  allYears.sort().filter(unique)
+)} Amazon.com, Inc. or its affiliates. All Rights Reserved.**\n`;
+
+if (
+  !fs
+    .readFileSync('README.md')
+    .toString()
+    .endsWith(readmeCopyright)
+) {
+  failed(
+    'README.md',
+    `Ensure that README.md ends with the following copyright: ${readmeCopyright}`
+  );
+}
 
 process.exit(exitCode);
