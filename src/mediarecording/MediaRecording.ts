@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 export default interface MediaRecording extends EventTarget {
@@ -17,4 +17,19 @@ export default interface MediaRecording extends EventTarget {
    * Stop the media recorder instance
    */
   stop(): Promise<void>;
+
+  /**
+   * Pause the media recorder instance
+   */
+  pause(): Promise<void>;
+
+  /**
+   * Unpause the media recorder instance
+   */
+  unpause(): Promise<void>;
+
+  /**
+   * Get current state of media recording
+   */
+  recordingState: RecordingState;
 }

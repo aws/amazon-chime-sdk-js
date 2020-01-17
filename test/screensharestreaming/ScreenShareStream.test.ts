@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { Substitute } from '@fluffy-spoon/substitute';
@@ -179,6 +179,30 @@ describe('ScreenShareStream', () => {
         done();
       });
       mediaRecording.dispatchEvent(event);
+    });
+  });
+
+  describe('pause', () => {
+    it('dispatches event', (done: Mocha.Done) => {
+      const recorder = Substitute.for<MediaRecording>();
+      const subject = new ScreenShareStream(recorder);
+      recorder.pause().returns(Promise.resolve());
+      subject.addEventListener('message', () => {
+        done();
+      });
+      chai.expect(subject.pause()).to.eventually.be.fulfilled;
+    });
+  });
+
+  describe('unpause', () => {
+    it('dispatches event', (done: Mocha.Done) => {
+      const recorder = Substitute.for<MediaRecording>();
+      const subject = new ScreenShareStream(recorder);
+      recorder.unpause().returns(Promise.resolve());
+      subject.addEventListener('message', () => {
+        done();
+      });
+      chai.expect(subject.unpause()).to.eventually.be.fulfilled;
     });
   });
 });

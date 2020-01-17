@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /**
@@ -11,6 +11,8 @@ export enum ScreenSharingMessageType {
   StreamStart = 'StreamStart',
   StreamEnd = 'StreamEnd',
   StreamStop = 'StreamStop',
+  StreamPause = 'StreamPause',
+  StreamUnpause = 'StreamUnpause',
   WebM = 'WebM',
   PresenterSwitch = 'PresenterSwitch',
   KeyRequest = 'KeyRequest',

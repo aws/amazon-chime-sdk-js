@@ -122,6 +122,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     'button-speaker': true,
     'button-screen-share': false,
     'button-screen-view': false,
+    'button-pause-screen-share': false,
   };
 
   // feature flags
@@ -340,26 +341,55 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     const buttonScreenShare = document.getElementById('button-screen-share');
     buttonScreenShare.addEventListener('click', () => {
       new AsyncScheduler().start(async () => {
-        const button = 'button-screen-share';
-        if (this.buttonStates[button]) {
+        const button1 = 'button-screen-share';
+        const button2 = 'button-pause-screen-share';
+        if (this.buttonStates[button1]) {
           this.meetingSession.screenShare.stop()
             .catch(error => {
               this.log(error);
             })
             .finally(() => {
-              this.buttonStates[button] = false;
+              this.buttonStates[button1] = false;
+              this.buttonStates[button2] = false;
               this.displayButtonStates();
             });
         } else {
           const self = this;
           const observer: ScreenShareFacadeObserver = {
             didStopScreenSharing(): void {
-              self.buttonStates[button] = false;
+              self.buttonStates[button1] = false;
+              self.buttonStates[button2] = false;
               self.displayButtonStates();
             },
           };
           this.meetingSession.screenShare.registerObserver(observer);
           this.meetingSession.screenShare.start().then(() => {
+            this.buttonStates[button1] = true;
+            this.displayButtonStates();
+          });
+        }
+      });
+    });
+
+    const buttonPauseScreenShare = document.getElementById('button-pause-screen-share');
+    buttonPauseScreenShare.addEventListener('click', () => {
+      new AsyncScheduler().start(async () => {
+        const button = 'button-pause-screen-share';
+        if (this.buttonStates[button]) {
+          this.meetingSession.screenShare.unpause().then(() => {
+            this.buttonStates[button] = false;
+            this.displayButtonStates();
+          });
+        } else {
+          const self = this;
+          const observer: ScreenShareFacadeObserver = {
+            didUnpauseScreenSharing(): void {
+              self.buttonStates[button] = false;
+              self.displayButtonStates();
+            },
+          };
+          this.meetingSession.screenShare.registerObserver(observer);
+          this.meetingSession.screenShare.pause().then(() => {
             this.buttonStates[button] = true;
             this.displayButtonStates();
           }).catch(error => {

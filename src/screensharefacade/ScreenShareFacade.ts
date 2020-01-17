@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ScreenShareFacadeObserver from './ScreenShareFacadeObserver';
@@ -23,6 +23,16 @@ export default interface ScreenShareFacade {
    * Stops screen sharing.
    */
   stop(): Promise<void>;
+
+  /**
+   * Pauses screen sharing
+   */
+  pause(): Promise<void>;
+
+  /**
+   * Unpause screen sharing
+   */
+  unpause(): Promise<void>;
 
   /**
    * Register the provided observer

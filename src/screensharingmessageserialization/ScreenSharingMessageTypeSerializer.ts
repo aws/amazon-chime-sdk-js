@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ScreenSharingMessageType from '../screensharingmessage/ScreenSharingMessageType';
@@ -18,6 +18,8 @@ export default class ScreenSharingMessageTypeSerializer
     [0x07, ScreenSharingMessageType.HeartbeatResponseType],
     [0x0d, ScreenSharingMessageType.WebM],
     [0x10, ScreenSharingMessageType.PresenterSwitch],
+    [0x15, ScreenSharingMessageType.StreamPause],
+    [0x16, ScreenSharingMessageType.StreamUnpause],
   ]);
 
   private static readonly fromTypeMap = new Map<ScreenSharingMessageType, number>(

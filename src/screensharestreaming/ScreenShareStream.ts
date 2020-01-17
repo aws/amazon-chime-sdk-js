@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import MediaRecording from '../mediarecording/MediaRecording';
@@ -42,6 +42,28 @@ export default class ScreenShareStream implements ScreenShareStreaming {
     return this.mediaRecording.stop().then(() => {
       const message: ScreenSharingMessage = {
         type: ScreenSharingMessageType.StreamEnd,
+        flags: [ScreenSharingMessageFlag.Local],
+        data: new Uint8Array([]),
+      };
+      this.dispatchEvent(this.newMessageEvent(message));
+    });
+  }
+
+  pause(): Promise<void> {
+    return this.mediaRecording.pause().then(() => {
+      const message: ScreenSharingMessage = {
+        type: ScreenSharingMessageType.StreamPause,
+        flags: [ScreenSharingMessageFlag.Local],
+        data: new Uint8Array([]),
+      };
+      this.dispatchEvent(this.newMessageEvent(message));
+    });
+  }
+
+  unpause(): Promise<void> {
+    return this.mediaRecording.unpause().then(() => {
+      const message: ScreenSharingMessage = {
+        type: ScreenSharingMessageType.StreamUnpause,
         flags: [ScreenSharingMessageFlag.Local],
         data: new Uint8Array([]),
       };

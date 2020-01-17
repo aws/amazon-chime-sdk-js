@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
@@ -27,6 +27,9 @@ export default class WebMMediaRecording implements MediaRecording {
   }
 
   key(): void {
+    if (this.delegate && this.delegate.state === 'paused') {
+      return;
+    }
     const delegate = this.delegate;
     const mediaStream = delegate === null ? this.mediaStream : this.mediaStream.clone();
     this.delegate = new MediaRecorder(mediaStream, this.options);
@@ -72,6 +75,33 @@ export default class WebMMediaRecording implements MediaRecording {
       });
       this.delegate.stop();
     });
+  }
+
+  pause(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.delegate === null) {
+        reject(new Error('not started'));
+      }
+      // this event should fire after any data is de-queued
+      this.delegate.addEventListener('pause', () => {
+        resolve();
+      });
+      this.delegate.pause();
+    });
+  }
+
+  unpause(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.delegate === null) {
+        reject(new Error('not started'));
+      }
+      resolve();
+      this.delegate.resume();
+    });
+  }
+
+  get recordingState(): RecordingState {
+    return this.delegate.state;
   }
 
   addEventListener(type: string, listener: EventListener): void {

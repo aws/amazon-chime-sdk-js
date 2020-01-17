@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import MediaRecording from '../../src/mediarecording/MediaRecording';
@@ -12,6 +12,18 @@ export default class MediaRecordingMock implements MediaRecording {
 
   stop(): Promise<void> {
     return Promise.resolve();
+  }
+
+  pause(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  unpause(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  get recordingState(): RecordingState {
+    return 'inactive';
   }
 
   addEventListener(type: string, listener: EventListener): void {

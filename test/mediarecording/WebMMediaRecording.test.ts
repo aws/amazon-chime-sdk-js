@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Substitute from '@fluffy-spoon/substitute';
@@ -231,6 +231,54 @@ describe('WebMMediaRecording', () => {
         done();
       });
       mediaStreamTrack.dispatchEvent(event);
+    });
+  });
+
+  describe('paused', () => {
+    describe('without start', () => {
+      it('is rejected', () => {
+        const mediaStream = Substitute.for<MediaStream>();
+        const subject = new WebMMediaRecording(mediaStream);
+        chai.expect(subject.pause()).to.be.rejectedWith('not started');
+      });
+    });
+
+    describe('with start', () => {
+      it('pauses and does not rekey while paused', (done: Mocha.Done) => {
+        const mediaStream = Substitute.for<MediaStream>();
+        mediaStream.getTracks().returns(Array.of(Substitute.for<MediaStreamTrack>()));
+        mediaStream.clone().returns(mediaStream);
+        const subject = new WebMMediaRecording(mediaStream);
+        subject.start(0);
+        chai.expect(subject.pause()).to.eventually.be.fulfilled;
+        subject.key();
+        chai.expect(subject.recordingState).to.equal('paused');
+        done();
+      });
+    });
+  });
+
+  describe('unpaused', () => {
+    describe('without start', () => {
+      it('is rejected', (done: Mocha.Done) => {
+        const mediaStream = Substitute.for<MediaStream>();
+        const subject = new WebMMediaRecording(mediaStream);
+        chai
+          .expect(subject.unpause())
+          .to.be.rejectedWith('not started')
+          .and.notify(done);
+      });
+    });
+
+    describe('with start', () => {
+      it('succeeds', (done: Mocha.Done) => {
+        const mediaStream = Substitute.for<MediaStream>();
+        mediaStream.getTracks().returns(Array.of(Substitute.for<MediaStreamTrack>()));
+        mediaStream.clone().returns(mediaStream);
+        const subject = new WebMMediaRecording(mediaStream);
+        subject.start(0);
+        chai.expect(subject.unpause()).to.eventually.be.fulfilled.and.notify(done);
+      });
     });
   });
 });

@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { Substitute } from '@fluffy-spoon/substitute';
@@ -39,4 +39,12 @@ export default class ScreenShareStreamingMock implements ScreenShareStreaming {
   }
 
   key(): void {}
+
+  pause(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  unpause(): Promise<void> {
+    return Promise.resolve();
+  }
 }

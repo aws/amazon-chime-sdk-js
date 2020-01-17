@@ -85,6 +85,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didfailreconnectattempt" class="tsd-kind-icon">did<wbr>Fail<wbr>Reconnect<wbr>Attempt</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didfailsend" class="tsd-kind-icon">did<wbr>Fail<wbr>Send</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didopen" class="tsd-kind-icon">did<wbr>Open</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didpausescreensharing" class="tsd-kind-icon">did<wbr>Pause<wbr>Screen<wbr>Sharing</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didreceiveheartbeatrequest" class="tsd-kind-icon">did<wbr>Receive<wbr>Heartbeat<wbr>Request</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didreceivestreamstopmessage" class="tsd-kind-icon">did<wbr>Receive<wbr>Stream<wbr>Stop<wbr>Message</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didreceiveunknownmessage" class="tsd-kind-icon">did<wbr>Receive<wbr>Unknown<wbr>Message</a></li>
@@ -92,6 +93,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didsendscreensharingmessage" class="tsd-kind-icon">did<wbr>Send<wbr>Screen<wbr>Sharing<wbr>Message</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didstartscreensharing" class="tsd-kind-icon">did<wbr>Start<wbr>Screen<wbr>Sharing</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didstopscreensharing" class="tsd-kind-icon">did<wbr>Stop<wbr>Screen<wbr>Sharing</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#didunpausescreensharing" class="tsd-kind-icon">did<wbr>Unpause<wbr>Screen<wbr>Sharing</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="screensharingsessionobserver.html#willreconnect" class="tsd-kind-icon">will<wbr>Reconnect</a></li>
 							</ul>
 						</section>
@@ -133,7 +135,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L28">src/screensharingsession/ScreenSharingSessionObserver.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L30">src/screensharingsession/ScreenSharingSessionObserver.ts:30</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -163,7 +165,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L22">src/screensharingsession/ScreenSharingSessionObserver.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L24">src/screensharingsession/ScreenSharingSessionObserver.ts:24</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -202,6 +204,23 @@
 									<h5>event: <span class="tsd-signature-type">Event</span></h5>
 								</li>
 							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="didpausescreensharing" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> did<wbr>Pause<wbr>Screen<wbr>Sharing</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">did<wbr>Pause<wbr>Screen<wbr>Sharing<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L15">src/screensharingsession/ScreenSharingSessionObserver.ts:15</a></li>
+								</ul>
+							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -284,7 +303,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L15">src/screensharingsession/ScreenSharingSessionObserver.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L17">src/screensharingsession/ScreenSharingSessionObserver.ts:17</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -332,6 +351,23 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="didunpausescreensharing" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> did<wbr>Unpause<wbr>Screen<wbr>Sharing</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">did<wbr>Unpause<wbr>Screen<wbr>Sharing<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L16">src/screensharingsession/ScreenSharingSessionObserver.ts:16</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="willreconnect" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> will<wbr>Reconnect</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -341,7 +377,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L16">src/screensharingsession/ScreenSharingSessionObserver.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/ScreenSharingSessionObserver.ts#L18">src/screensharingsession/ScreenSharingSessionObserver.ts:18</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -378,6 +414,9 @@
 								<a href="screensharingsessionobserver.html#didopen" class="tsd-kind-icon">did<wbr>Open</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="screensharingsessionobserver.html#didpausescreensharing" class="tsd-kind-icon">did<wbr>Pause<wbr>Screen<wbr>Sharing</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="screensharingsessionobserver.html#didreceiveheartbeatrequest" class="tsd-kind-icon">did<wbr>Receive<wbr>Heartbeat<wbr>Request</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
@@ -397,6 +436,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="screensharingsessionobserver.html#didstopscreensharing" class="tsd-kind-icon">did<wbr>Stop<wbr>Screen<wbr>Sharing</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="screensharingsessionobserver.html#didunpausescreensharing" class="tsd-kind-icon">did<wbr>Unpause<wbr>Screen<wbr>Sharing</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="screensharingsessionobserver.html#willreconnect" class="tsd-kind-icon">will<wbr>Reconnect</a>
