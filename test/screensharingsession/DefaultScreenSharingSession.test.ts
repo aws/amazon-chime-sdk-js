@@ -880,4 +880,57 @@ describe('DefaultScreenSharingSession', function() {
       });
     });
   });
+
+  describe('pause and unpause', () => {
+    describe('with start', () => {
+      it('is fulfilled', (done: Mocha.Done) => {
+        const observer = Substitute.for<ScreenSharingSessionObserver>();
+        const promisedWebSocket = Substitute.for<PromisedWebSocket>();
+        const mediaStreamBroker = Substitute.for<MediaStreamBroker>();
+        const stream = new ScreenShareStreamingMock();
+        const screenSharingStreamFactory = Substitute.for<ScreenShareStreamingFactory>();
+        const subject = new DefaultScreenSharingSession(
+          promisedWebSocket,
+          constraintsProvider,
+          timeSliceMs,
+          messageSerialization,
+          mediaStreamBroker,
+          screenSharingStreamFactory,
+          mediaRecordingFactory,
+          logging
+        ).registerObserver(observer);
+        screenSharingStreamFactory.create(Arg.any()).returns(stream);
+        mediaStreamBroker
+          .acquireDisplayInputStream(Arg.any())
+          .returns(Promise.resolve(Substitute.for<MediaStream>()));
+        subject.start().then(() => {
+          subject.pause().should.eventually.be.fulfilled.and.notify(() => {
+            observer.received().didPauseScreenSharing();
+          });
+          subject.unpause().should.eventually.be.fulfilled.and.notify(() => {
+            observer.received().didUnpauseScreenSharing();
+            done();
+          });
+        });
+      });
+    });
+
+    describe('without start', () => {
+      it('is rejected', (done: Mocha.Done) => {
+        const promisedWebSocket = new DefaultPromisedWebSocket(Substitute.for<DOMWebSocket>());
+        const subject = new DefaultScreenSharingSession(
+          promisedWebSocket,
+          constraintsProvider,
+          timeSliceMs,
+          messageSerialization,
+          mediaStreamBroker,
+          screenSharingStreamFactory,
+          mediaRecordingFactory,
+          logging
+        );
+        subject.pause().should.eventually.be.rejected;
+        subject.unpause().should.eventually.be.rejected.and.notify(done);
+      });
+    });
+  });
 });

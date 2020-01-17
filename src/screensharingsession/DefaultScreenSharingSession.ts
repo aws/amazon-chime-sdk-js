@@ -153,6 +153,36 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     });
   }
 
+  pause(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.stream === null) {
+        return reject(new Error('not started'));
+      }
+      this.stream.pause().then(() => {
+        this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
+          Maybe.of(observer.didPauseScreenSharing).map(f => f.bind(observer)());
+        });
+      });
+      this.logger.info('screen sharing stream paused');
+      resolve();
+    });
+  }
+
+  unpause(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.stream === null) {
+        return reject(new Error('not started'));
+      }
+      this.stream.unpause().then(() => {
+        this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
+          Maybe.of(observer.didUnpauseScreenSharing).map(f => f.bind(observer)());
+        });
+      });
+      this.logger.info('screen sharing stream unpaused');
+      resolve();
+    });
+  }
+
   registerObserver(observer: ScreenSharingSessionObserver): ScreenSharingSession {
     this.observerQueue.add(observer);
     return this;

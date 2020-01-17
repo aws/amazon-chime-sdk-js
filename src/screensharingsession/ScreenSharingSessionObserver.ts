@@ -12,6 +12,8 @@ export default interface ScreenSharingSessionObserver {
   didReceiveStreamStopMessage?(): void;
   didStartScreenSharing?(): void;
   didStopScreenSharing?(): void;
+  didPauseScreenSharing?(): void;
+  didUnpauseScreenSharing?(): void;
   didSendScreenSharingMessage?(type: ScreenSharingMessageType): void;
   willReconnect?(): void;
 

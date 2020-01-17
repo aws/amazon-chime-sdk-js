@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -67,6 +67,26 @@ export default class DefaultScreenShareFacade implements ScreenShareFacade {
         return this.screenSharingSession.stop();
       },
       'DefaultScreenShareFacadeStop'
+    ).run();
+  }
+
+  async pause(): Promise<void> {
+    await new RunnableTask<void>(
+      this.logger,
+      (): Promise<void> => {
+        return this.screenSharingSession.pause();
+      },
+      'DefaultScreenShareFacadePause'
+    ).run();
+  }
+
+  async unpause(): Promise<void> {
+    await new RunnableTask<void>(
+      this.logger,
+      (): Promise<void> => {
+        return this.screenSharingSession.unpause();
+      },
+      'DefaultScreenShareFacadeUnpause'
     ).run();
   }
 

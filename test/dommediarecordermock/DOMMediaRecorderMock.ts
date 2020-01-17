@@ -1,8 +1,10 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 export default class DOMMediaRecorderMock implements EventTarget {
   private listeners = new Map<string, Set<EventListener>>();
+  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+  public state: RecordingState = 'inactive';
 
   constructor(readonly stream: MediaStream, _options?: MediaRecorderOptions) {
     stream.addEventListener('dataavailable', (event: BlobEvent) => {
@@ -10,10 +12,23 @@ export default class DOMMediaRecorderMock implements EventTarget {
     });
   }
 
-  start(_timeSliceMs: number): void {}
+  start(_timeSliceMs: number): void {
+    this.state = 'recording';
+  }
 
   stop(): void {
+    this.state = 'inactive';
     this.dispatchEvent(new CustomEvent('stop'));
+  }
+
+  pause(): void {
+    this.state = this.state === 'recording' ? 'paused' : this.state;
+    this.dispatchEvent(new CustomEvent('pause'));
+  }
+
+  resume(): void {
+    this.state = this.state === 'paused' ? 'recording' : this.state;
+    this.dispatchEvent(new CustomEvent('unpause'));
   }
 
   addEventListener(type: string, listener: EventListener): void {
