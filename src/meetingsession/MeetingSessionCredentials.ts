@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /**
@@ -15,4 +15,14 @@ export default class MeetingSessionCredentials {
    * If set, the session will be authenticated with a join token.
    */
   joinToken: string | null;
+
+  /**
+   * Overrides JSON serialization so that join token is redacted.
+   */
+  toJSON(): { [id: string]: string } {
+    return {
+      attendeeId: this.attendeeId,
+      joinToken: this.joinToken === null ? null : '<redacted>',
+    };
+  }
 }
