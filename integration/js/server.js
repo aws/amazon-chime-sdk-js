@@ -91,6 +91,9 @@ io.on('connection', function (socket) {
     for (var key in socketAttendeeMap) {
       socketAttendeeMap[key].emit('participant_count', count);
     }
+    if (attendeeJoined.size === numberOfParticipant) {
+      attendeeJoined = new Set([]);
+    }
   });
 
   socket.on("local_video_on", () => {
