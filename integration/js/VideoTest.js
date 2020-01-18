@@ -1,4 +1,4 @@
-const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, ClickVideoButton, WaitForRemoteVideoCheckToComplete, WaitForRemoteParticipantsToTurnVideoOff, WaitForRemoteParticipantsToTurnVideoOn, WaitForRemoteParticipantsToJoinMeeting} = require('./steps');
+const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, ClickVideoButton, WaitForRemoteVideoCheckToComplete, WaitForRemoteParticipantsToTurnVideoOff, WaitForRemoteParticipantsToTurnVideoOn, WaitForRemoteParticipantsToJoinMeeting, WaitForMeetingToBeCreated} = require('./steps');
 const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteVideoCheck, UserAuthenticationCheck, RosterCheck} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
@@ -11,13 +11,13 @@ class VideoTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
+    await WaitForMeetingToBeCreated.executeStep(this);
     this.page = new AppPage(this.driver);
-    let attendee_id = uuidv4();
     await OpenAppStep.executeStep(this);
-    await AuthenticateUserStep.executeStep(this, attendee_id);
+    await AuthenticateUserStep.executeStep(this, this.attendeeId);
     await UserAuthenticationCheck.executeStep(this);
     await JoinMeetingStep.executeStep(this);
-    await UserJoinedMeetingCheck.executeStep(this, attendee_id);
+    await UserJoinedMeetingCheck.executeStep(this, this.attendeeId);
     await WaitForRemoteParticipantsToJoinMeeting.executeStep(this);
     await RosterCheck.executeStep(this, 2);
     await ClickVideoButton.executeStep(this);

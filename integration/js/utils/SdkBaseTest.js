@@ -135,7 +135,7 @@ class SdkBaseTest extends KiteBaseTest {
         const metricValue = this.failedTest || this.remoteFailed ? 0 : 1;
         await emitMetric(this.testName, this.capabilities, 'E2E', metricValue);
         if (this.seleniumGridProvide() === "saucelabs") {
-          await putTestResults(session_id, !this.failedTest)
+          await putTestResults(session_id, !this.failedTest && !this.remoteFailed)
         }
       }
       // Retry if the local or remote test failed
