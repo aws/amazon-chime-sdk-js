@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -138,8 +138,15 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       type: SdkMetric.Type.SOCKET_DISCARDED_PPS,
     },
 
-    availableIncomingBitrate: { transform: this.identityValue },
-    availableOutgoingBitrate: { transform: this.identityValue },
+    availableIncomingBitrate: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_AVAILABLE_RECEIVE_BANDWIDTH,
+    },
+    availableOutgoingBitrate: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_AVAILABLE_SEND_BANDWIDTH,
+    },
+    currentRoundTripTime: { transform: this.identityValue, type: SdkMetric.Type.STUN_RTT_MS },
   };
 
   readonly audioUpstreamMetricMap: {
