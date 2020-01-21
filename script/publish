@@ -58,7 +58,12 @@ verbose('git clean -ffxd .')
 File.write('package.json', JSON.pretty_generate(package) + "\n")
 File.write(version_file, File.read(version_file).gsub(/return '[.0-9]+';/, "return '#{version_string}';"))
 
-verbose('npm run test')
+verbose('git add -A')
+verbose("git commit -m 'Publish #{tag}'")
+verbose("git tag -d #{tag} || true")
+verbose("git tag #{tag}")
+
+verbose('npm run build:release')
 verbose('npm pack --dry-run')
 
 puts
@@ -69,9 +74,5 @@ x = STDIN.gets
 exit(1) unless x.strip == 'yes'
 puts
 
-verbose('git add -A')
-verbose("git commit -m 'Publish #{tag}'")
-verbose("git tag -d #{tag} || true")
-verbose("git tag #{tag}")
 verbose("git push origin")
 verbose("git push origin -f #{tag}")
