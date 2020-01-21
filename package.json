@@ -16,7 +16,6 @@
     "build": "npm install && node script/barrelize.js && tsc && npm run copy",
     "prebuild:release": "script/prebuild",
     "build:release": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
-    "postbuild:release": "script/postbuild",
     "predoc": "rm -rf docs",
     "doc": "node node_modules/typedoc/bin/typedoc --options typedoc.js",
     "postdoc": "node script/update-typedoc-link.js",

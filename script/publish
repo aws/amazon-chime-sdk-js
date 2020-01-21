@@ -58,7 +58,7 @@ verbose('git clean -ffxd .')
 File.write('package.json', JSON.pretty_generate(package) + "\n")
 File.write(version_file, File.read(version_file).gsub(/return '[.0-9]+';/, "return '#{version_string}';"))
 
-verbose('npm run test')
+verbose('npm run build:release')
 verbose('npm pack --dry-run')
 
 puts
