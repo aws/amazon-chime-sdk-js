@@ -272,20 +272,19 @@ allFiles().forEach(file => {
   }
 });
 
-const readmeCopyright = `\n**Copyright ${joinYears(
+const footerCopyright = `\nCopyright ${joinYears(
   allYears.sort().filter(unique)
-)} Amazon.com, Inc. or its affiliates. All Rights Reserved.**\n`;
+)} Amazon.com, Inc. or its affiliates. All Rights Reserved.\n`;
 
-if (
-  !fs
-    .readFileSync('README.md')
-    .toString()
-    .endsWith(readmeCopyright)
-) {
-  failed(
-    'README.md',
-    `Ensure that README.md ends with the following copyright: ${readmeCopyright}`
-  );
+for (const file of ['README.md', 'NOTICE']) {
+  if (
+    !fs
+      .readFileSync(file)
+      .toString()
+      .endsWith(footerCopyright)
+  ) {
+    failed(file, `Ensure that ${file} ends with the following copyright: ${footerCopyright}`);
+  }
 }
 
 process.exit(exitCode);
