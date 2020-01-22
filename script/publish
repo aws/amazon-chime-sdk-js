@@ -21,15 +21,26 @@ package = JSON.parse(File.read('package.json'))
 original_version = package['version']
 version = original_version.split('.').map{ |x| x.to_i }
 
-if ARGV.include?('--bump-minor')
+puts "Choose one of the following bumping version options:"
+puts "1. Patch"
+puts "2. Minor"
+puts "3. Major"
+x = STDIN.gets.strip
+exit(1) unless ["1", "2", "3"].include?(x)
+puts
+
+case x
+when "1"
+  version[2] += 1
+when "2"
   version[1] += 1
   version[2] = 0
-elsif ARGV.include?('--bump-major')
+when "3"
   version[0] += 1
   version[1] = 0
   version[2] = 0
 else
-  version[2] += 1
+  exit(1)
 end
 
 version_string = version.join('.')

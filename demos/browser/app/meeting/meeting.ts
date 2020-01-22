@@ -23,10 +23,10 @@ import {
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
   ScreenMessageDetail,
+  ScreenShareFacadeObserver,
   TimeoutScheduler,
   VideoTileState,
 } from '../../../../src/index';
-import ScreenShareFacadeObserver from "../../../../src/screensharefacade/ScreenShareFacadeObserver";
 
 class DemoTileOrganizer {
   private static MAX_TILES = 16;
