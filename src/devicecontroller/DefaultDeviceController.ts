@@ -255,9 +255,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       const source = audioContext.createBufferSource();
       source.buffer = audioContext.createBuffer(
         1,
-        audioContext.sampleRate,
+        audioContext.sampleRate * 5,
         audioContext.sampleRate
       );
+      // Some browsers will not play audio out the MediaStreamDestination
+      // unless there is actually audio to play, so we add a small amount of
+      // noise here to ensure that audio is played out.
+      source.buffer.getChannelData(0)[0] = 0.0003;
       source.loop = true;
       source.connect(outputNode);
       source.start();
