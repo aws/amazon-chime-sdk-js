@@ -7,6 +7,11 @@ if commits.size == 0
   puts "OK: branch is equal with #{base}"
 elsif commits.size == 1
   puts "OK: branch contains one commit on top of #{base}"
+  commit_files = `git diff-tree --no-commit-id --name-only -r #{commits[0]}`.strip.split("\n")
+  unless commit_files.include?('CHANGELOG.md')
+    STDERR.puts "Error: Does not contain CHANGELOG.md in the commit #{commits[0]}"
+    exit 1
+  end
 elsif commits.size == 2 && `git diff #{commits[0]} #{commits[1]}`.strip == ''
   puts "OK: branch contains empty merge commit followed by one commit on top of #{base}"
 else
