@@ -7,6 +7,7 @@ export default interface ScreenSharingSessionObserver {
   didOpen?(event: Event): void;
   didClose?(event: CloseEvent): void;
   didReceiveHeartbeatRequest?(): void;
+  didReceiveHeartbeatResponse?(): void;
   didSendHeartbeatResponse?(): void;
   didReceiveUnknownMessage?(): void;
   didReceiveStreamStopMessage?(): void;

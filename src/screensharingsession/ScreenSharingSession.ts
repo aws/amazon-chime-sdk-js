@@ -19,7 +19,7 @@ export default interface ScreenSharingSession {
   /**
    * Start screen sharing
    */
-  start(sourceId?: string): Promise<void>;
+  start(sourceId?: string, timeoutMs?: number): Promise<void>;
 
   /**
    * Stop screen sharing
