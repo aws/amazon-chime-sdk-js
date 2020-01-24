@@ -27,11 +27,6 @@ export default interface BrowserBehavior {
   requiresUnifiedPlan(): boolean;
 
   /**
-   * Returns true if detected browser requires ice connection gathering bypass on completion
-   */
-  requiresIceCandidateCompletionBypass(): boolean;
-
-  /**
    * Returns true if detected browser requires ice connection gathering timeout workaround
    */
   requiresIceCandidateGatheringTimeoutWorkaround(): boolean;

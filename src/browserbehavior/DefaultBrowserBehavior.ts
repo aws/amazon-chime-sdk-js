@@ -38,10 +38,6 @@ export default class DefaultBrowserBehavior {
     return this.isSafari() || this.isFirefox();
   }
 
-  requiresIceCandidateCompletionBypass(): boolean {
-    return true;
-  }
-
   requiresIceCandidateGatheringTimeoutWorkaround(): boolean {
     return this.isChrome();
   }
@@ -64,7 +60,7 @@ export default class DefaultBrowserBehavior {
 
   isSupported(): boolean {
     if (this.isSafari()) {
-      return false;
+      return this.majorVersion() >= 13;
     } else if (this.isChrome()) {
       return this.majorVersion() >= 78;
     } else if (this.isFirefox()) {

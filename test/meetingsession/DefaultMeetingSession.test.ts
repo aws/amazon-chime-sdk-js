@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -12,8 +12,7 @@ import DOMMockBuilder from '../dommock/DOMMockBuilder';
 describe('DefaultMeetingSession', () => {
   const expect: Chai.ExpectStatic = chai.expect;
 
-  const SAFARI_USERAGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15';
+  const OPERA_USERAGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -40,7 +39,7 @@ describe('DefaultMeetingSession', () => {
 
     it('can be constructed with an unsupported browser', () => {
       const mockBuilder = new DOMMockBuilder();
-      setUserAgent(SAFARI_USERAGENT);
+      setUserAgent(OPERA_USERAGENT);
       const session = new DefaultMeetingSession(
         new NoOpAudioVideoController().configuration,
         new NoOpLogger(),

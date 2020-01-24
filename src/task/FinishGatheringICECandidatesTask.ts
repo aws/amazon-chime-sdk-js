@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -63,19 +63,14 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       return;
     }
 
-    // On video recvonly cases, Safari unified plan has multiple
-    // m=video section connection line of IP 0.0.0.0 which fails previous check
-    // We observe this task time out when there are more than 4 video attendees
-    // The timeout is observed on a duplicate negotiation, which is tracked in #240.
-    // FinishGatheringICECandidatesTask is just a "wait" on "at least one ice candidate"
-    // or "complete" icegatheringstate before we can establish connection.
-    // The "gathering" is completely handled by browsers
-    // TODO: clean up the logic after addressing #240. And deeper investigation on Unified Plan
+    // To bypass waiting for events, it is required that "icegatheringstate" to be complete and sdp to have candidate
     if (
-      this.context.browserBehavior.requiresIceCandidateCompletionBypass() &&
-      this.context.peer.iceGatheringState === 'complete'
+      this.context.peer.iceGatheringState === 'complete' &&
+      new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidates()
     ) {
-      this.context.logger.info('safari ice gathering state is complete; bypass gathering');
+      this.context.logger.info(
+        'ice gathering state is complete and candidates are in SDP; bypass gathering'
+      );
       return;
     }
 
@@ -91,11 +86,14 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
             this.context.peer.iceGatheringState
           }`
         );
-
+        // Ice candidate arrives, do not need to wait anymore.
+        // https://webrtcglossary.com/trickle-ice/
         if (event.candidate) {
           if (DefaultSDP.isRTPCandidate(event.candidate.candidate)) {
             this.context.iceCandidates.push(event.candidate);
           }
+
+          // Could there be a case the candidate is not written to SDP ?
           if (this.context.turnCredentials && this.context.iceCandidates.length >= 1) {
             this.context.logger.info('gathered at least one relay candidate');
             this.removeEventListener();
@@ -104,12 +102,15 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
           }
         }
 
-        // TODO: re-evaluate ice negotiation task
+        // Ice candidate gathering is complete, additional barrier to make sure sdp contain an ice candidate.
+        // TODO: Could there be a race where iceGatheringState is flipped after this task is run ? This could only be handled if ice state is monitored persistently.
         if (this.context.peer.iceGatheringState === 'complete') {
-          // if (this.context.peer.iceGatheringState === 'complete') {
           this.context.logger.info('done gathering ice candidates');
           this.removeEventListener();
-          if (this.context.iceCandidates.length === 0) {
+          if (
+            !new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidates() ||
+            this.context.iceCandidates.length === 0
+          ) {
             reject(new Error('no ice candidates were gathered'));
           } else {
             resolve();
@@ -117,7 +118,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
         }
       };
 
-      // TODO: register listener before SetLocalDescription to avoid race
+      // SDK does not catch candidate itself and send to sever. Rather, WebRTC handles candidate events and writes candidate to SDP.
       this.context.peer.addEventListener('icecandidate', this.context.iceCandidateHandler);
       this.startTimestampMs = Date.now();
     });

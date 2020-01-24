@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -28,7 +28,6 @@ export default class MonitorTask extends BaseTask
   private reconnectionHealthPolicy: ReconnectionHealthPolicy;
   private unusableAudioWarningHealthPolicy: UnusableAudioWarningConnectionHealthPolicy;
   private prevSignalStrength: number = 1;
-
   private static DEFAULT_TIMEOUT_FOR_START_SENDING_VIDEO_MS: number = 30000;
 
   constructor(

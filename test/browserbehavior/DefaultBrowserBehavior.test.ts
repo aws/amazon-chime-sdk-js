@@ -15,6 +15,8 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
   const SAFARI_USERAGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
+  const SAFARI12_USERAGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15';
   const CHROMIUM_EDGE_USERAGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3729.48 Safari/537.36 Edg/79.1.96.24';
   const OPERA_USERAGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
@@ -62,8 +64,14 @@ describe('DefaultBrowserBehavior', () => {
     it('can detect Safari', () => {
       setUserAgent(SAFARI_USERAGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
-      expect(new DefaultBrowserBehavior().isSupported()).to.eq(false);
+      expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+
+      setUserAgent(SAFARI12_USERAGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('safari');
+      expect(new DefaultBrowserBehavior().isSupported()).to.eq(false);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
     });
 
