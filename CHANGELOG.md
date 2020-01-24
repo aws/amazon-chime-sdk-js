@@ -19,8 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support additional media regions
 - Add video help desk tutorial
 - Enable integration tests for travis builds
- 
+
 ### Changed
+- Enforce SDP to have candidates for FinishGatheringICECandidateTask to resolve
+- Add event listeners on peer connection to log state change
 - Add client metrics for Safari
 - Add SIP integration test
 - Block screensharing start if the browser is Safari
@@ -36,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Limit WebSocket reconnect attempts
 
 ### Removed
+- Remove SDP class withPlanBSimulcast method
 - Remove noSignalStatusReceived from ReconnectionHealthPolicy and remove SignalStrengthBarsConnectionHealthPolicy.
 
 ### Fixed

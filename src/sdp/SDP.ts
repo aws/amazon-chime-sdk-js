@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import SDPCandidateType from './SDPCandidateType';
@@ -51,11 +51,6 @@ export default interface SDP {
    * Inserts a bandwidth limitation attribute to answer SDP for setRemoteDescription and limiting client outbound maximum bitrate
    */
   withBandwidthRestriction(maxBitrateKbps: number, isUnifiedPlan: boolean): SDP;
-
-  /**
-   * Adds multiple ssrcs and ssrc-group attribute for enabling simulcast
-   */
-  withPlanBSimulcast(videoSimulcastLayerCount: number): SDP;
 
   /**
    * Munges Unified-Plan SDP from different browsers to conform to one format

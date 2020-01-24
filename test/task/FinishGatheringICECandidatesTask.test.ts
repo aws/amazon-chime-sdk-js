@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -114,18 +114,32 @@ describe('FinishGatheringICECandidatesTask', () => {
       new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
     });
 
-    it('can be run and succeed with multiple events and rtp candidate', done => {
+    it('can be run and succeed with previous gathered candidate and SDP which has candidate attributes', done => {
       const peer = context.peer;
-      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
-      testICEEvent = makeICEEvent(null);
+      setLocalDescription(peer, SDPMock.SAFARI_AV_SENDING);
+      testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
       context.iceCandidates.push(testICEEvent.candidate);
       task.run().then(() => {
         const candidates = context.iceCandidates;
         expect(candidates.length).to.be.equal(1);
         done();
       });
-      new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
-      new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
+
+      new TimeoutScheduler(100).start(() => {
+        // @ts-ignore
+        peer.iceGatheringState = 'complete';
+        peer.dispatchEvent(makeICEEvent(null));
+      });
+    });
+
+    it('can bypass ice gathering if state is complete and SDP has candidates', done => {
+      const peer = context.peer;
+      setLocalDescription(peer, SDPMock.SAFARI_AV_SENDING);
+      // @ts-ignore
+      peer.iceGatheringState = 'complete';
+      task.run().then(() => {
+        done();
+      });
     });
 
     it('can be run and succeed when the SDP has candidates for all m-lines', done => {
@@ -140,7 +154,7 @@ describe('FinishGatheringICECandidatesTask', () => {
       });
     });
 
-    it('can be run and succeed in Safari when iceGatheringState is already comlete', done => {
+    it('can be run and succeed when iceGatheringState is already complete and SDP has candidates', done => {
       setUserAgent(
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'
       );
@@ -150,9 +164,84 @@ describe('FinishGatheringICECandidatesTask', () => {
       peer.iceGatheringState = 'complete';
 
       setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
       task.run().then(() => {
+        const candidates = context.iceCandidates;
+        expect(candidates.length).to.be.equal(1);
         done();
       });
+      new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
+    });
+
+    it('can be run and succeed when iceGatheringState is already complete and SDP has candidates', done => {
+      setUserAgent(
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'
+      );
+      context.browserBehavior = new DefaultBrowserBehavior();
+      const peer = context.peer;
+      // @ts-ignore
+      peer.iceGatheringState = 'complete';
+
+      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
+      task.run().then(() => {
+        const candidates = context.iceCandidates;
+        expect(candidates.length).to.be.equal(1);
+        done();
+      });
+      new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
+    });
+
+    it('throws error if ice event is fired without candidate, state is complete and SDP have candidates but no candidates are gathered', done => {
+      const peer = context.peer;
+      setLocalDescription(peer, SDPMock.SAFARI_AV_SENDING);
+
+      task
+        .run()
+        .then(() => {})
+        .catch(() => {
+          done();
+        });
+
+      new TimeoutScheduler(100).start(() => {
+        // @ts-ignore
+        peer.iceGatheringState = 'complete';
+        peer.dispatchEvent(makeICEEvent(null));
+      });
+    });
+
+    it('throws error when there is no candidate on SDP upon event firing and gathering is complete', done => {
+      const peer = context.peer;
+      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      testICEEvent = makeICEEvent(null);
+      task
+        .run()
+        .then(() => {})
+        .catch(() => {
+          done();
+        });
+
+      new TimeoutScheduler(100).start(() => {
+        // @ts-ignore
+        peer.iceGatheringState = 'complete';
+        peer.dispatchEvent(testICEEvent);
+      });
+    });
+
+    it('throws error when there is no candidate on SDP and gathering is complete even if ice candidates are gathered before', done => {
+      const peer = context.peer;
+      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      testICEEvent = makeICEEvent(null);
+      context.iceCandidates.push(testICEEvent.candidate);
+      // @ts-ignore
+      peer.iceGatheringState = 'complete';
+      task
+        .run()
+        .then(() => {})
+        .catch(() => {
+          done();
+        });
+      new AsyncScheduler().start(() => peer.dispatchEvent(testICEEvent));
     });
 
     it('throws error with ice-candidate events but no RTP-type candidate', done => {

@@ -35,6 +35,31 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     }
   }
 
+  private addPeerConnectionEventLogger(): void {
+    const peer = this.context.peer;
+    peer.addEventListener('connectionstatechange', () => {
+      this.context.logger.info(`peer connection state changed: ${peer.connectionState}`);
+    });
+    peer.addEventListener('negotiationneeded', () => {
+      this.context.logger.info('peer connection negotiation is needed');
+    });
+    peer.addEventListener('icegatheringstatechange', () => {
+      this.context.logger.info(
+        `peer connection ice gathering state changed: ${peer.iceGatheringState}`
+      );
+    });
+    peer.addEventListener('icecandidate', (event: RTCPeerConnectionIceEvent) => {
+      this.context.logger.info(
+        `peer connection ice candidate: ${event.candidate ? event.candidate.candidate : '(null)'}`
+      );
+    });
+    peer.addEventListener('iceconnectionstatechange', () => {
+      this.context.logger.info(
+        `peer connection ice connection state changed: ${peer.iceConnectionState}`
+      );
+    });
+  }
+
   async run(): Promise<void> {
     this.context.removableObservers.push(this);
 
@@ -62,6 +87,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     } else {
       this.context.logger.info('creating new peer connection');
       this.context.peer = new RTCPeerConnection(configuration);
+      this.addPeerConnectionEventLogger();
     }
 
     this.removeTrackAddedEventListener = () => {

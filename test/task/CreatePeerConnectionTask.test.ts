@@ -41,6 +41,19 @@ describe('CreatePeerConnectionTask', () => {
   let domMockBuilder: DOMMockBuilder | null = null;
   let task: Task;
 
+  function makeICEEvent(candidateStr: string | null): RTCPeerConnectionIceEvent {
+    let iceCandidate: RTCIceCandidate = null;
+    if (candidateStr) {
+      // @ts-ignore
+      iceCandidate = { candidate: candidateStr };
+    }
+    const iceEventInit: RTCPeerConnectionIceEventInit = {
+      candidate: iceCandidate,
+      url: 'test-foo-url',
+    };
+    return new RTCPeerConnectionIceEvent('icecandidate', iceEventInit);
+  }
+
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -105,6 +118,31 @@ describe('CreatePeerConnectionTask', () => {
         expect(context.peer).to.deep.equal(peer);
         done();
       });
+    });
+
+    it('could log peer connection events', done => {
+      task.run().then(() => {
+        context.peer.dispatchEvent(makeICEEvent(null));
+        context.peer.dispatchEvent(makeICEEvent('a=candidate something'));
+        context.peer.dispatchEvent(new Event('iceconnectionstatechange'));
+        context.peer.dispatchEvent(new Event('icegatheringstatechange'));
+        context.peer.dispatchEvent(new Event('negotiationneeded'));
+        context.peer.dispatchEvent(new Event('connectionstatechange'));
+        done();
+      });
+    });
+
+    it('do not log events if peer is null', done => {
+      task.run().then(() => {});
+
+      context.peer.dispatchEvent(makeICEEvent(null));
+      context.peer.dispatchEvent(makeICEEvent('a=candidate something'));
+      context.peer.dispatchEvent(new Event('iceconnectionstatechange'));
+      context.peer.dispatchEvent(new Event('icegatheringstatechange'));
+      context.peer.dispatchEvent(new Event('negotiationneeded'));
+      context.peer.dispatchEvent(new Event('connectionstatechange'));
+      context.peer = null;
+      done();
     });
   });
 
