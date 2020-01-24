@@ -8,6 +8,7 @@ import MediaRecording from '../mediarecording/MediaRecording';
 import MediaRecordingFactory from '../mediarecording/MediaRecordingFactory';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import PromisedWebSocket from '../promisedwebsocket/PromisedWebSocket';
+import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 import ScreenShareStreamFactory from '../screensharestreaming/ScreenShareStreamFactory';
 import ScreenShareStreaming from '../screensharestreaming/ScreenShareStreaming';
 import ScreenShareStreamingEvent from '../screensharestreaming/ScreenShareStreamingEvent';
@@ -32,9 +33,7 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     private mediaRecordingFactory: MediaRecordingFactory,
     private logger: Logger,
     private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior()
-  ) {}
-
-  open(timeoutMs: number): Promise<Event> {
+  ) {
     this.webSocket.addEventListener('message', (event: MessageEvent) => {
       this.didReceiveMessageEvent(event);
       this.logger.debug(() => 'dispatched message event');
@@ -69,9 +68,10 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
         Maybe.of(observer.didOpen).map(f => f.bind(observer)(event));
       });
     });
+  }
 
+  open(timeoutMs: number): Promise<Event> {
     this.logger.info(`opening screen sharing connection to ${this.webSocket.url}`);
-
     return this.webSocket.open(timeoutMs);
   }
 
@@ -84,7 +84,11 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     });
   }
 
-  start(sourceId?: string): Promise<void> {
+  async start(sourceId?: string, timeoutMs?: number | null): Promise<void> {
+    /* istanbul ignore if */
+    if (timeoutMs === null || timeoutMs === undefined) {
+      timeoutMs = 3000;
+    }
     return new Promise((resolve, reject) => {
       if (this.stream !== null) {
         return reject(new Error('started'));
@@ -95,6 +99,21 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
 
       return this.mediaStreamBroker
         .acquireDisplayInputStream(this.constraintsProvider(sourceId))
+        .then((mediaStream: MediaStream) => {
+          /* istanbul ignore if */
+          if (timeoutMs !== 0) {
+            return this.ping(timeoutMs)
+              .then(() => {
+                return mediaStream;
+              })
+              .catch(error => {
+                mediaStream.getTracks().forEach(track => track.stop());
+                throw error;
+              });
+          } else {
+            return mediaStream;
+          }
+        })
         .then((mediaStream: MediaStream) => {
           return this.mediaRecordingFactory.create(mediaStream);
         })
@@ -183,6 +202,32 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     });
   }
 
+  /* istanbul ignore next */
+  async ping(timeoutMs: number): Promise<void> {
+    const self = this;
+    const promise = new Promise<void>(resolve => {
+      const observer: ScreenSharingSessionObserver = {
+        didReceiveHeartbeatResponse(): void {
+          self.deregisterObserver(this);
+          resolve();
+        },
+      };
+      const request: ScreenSharingMessage = {
+        type: ScreenSharingMessageType.HeartbeatRequestType,
+        flags: [ScreenSharingMessageFlag.Local],
+        data: new Uint8Array([]),
+      };
+      this.registerObserver(observer);
+      this.send(request);
+    });
+    const timeout = new Promise<void>((resolve, reject) => {
+      new TimeoutScheduler(timeoutMs).start(() => {
+        reject(new Error('ping timed out after ' + timeoutMs + 'ms'));
+      });
+    });
+    return Promise.race([promise, timeout]);
+  }
+
   registerObserver(observer: ScreenSharingSessionObserver): ScreenSharingSession {
     this.observerQueue.add(observer);
     return this;
@@ -197,6 +242,8 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     this.logger.debug(() => `didReceiveMessageEvent: ${new Uint8Array(event.data)}`);
     const message = this.messageSerialization.deserialize(new Uint8Array(event.data));
     switch (message.type) {
+      case ScreenSharingMessageType.HeartbeatResponseType:
+        return this.didReceiveHeartbeatResponseMessage();
       case ScreenSharingMessageType.HeartbeatRequestType:
         return this.didReceiveHeartbeatRequestMessage();
       case ScreenSharingMessageType.StreamStop:
@@ -206,6 +253,13 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
       default:
         return this.didReceiveUnknownMessage();
     }
+  }
+
+  private didReceiveHeartbeatResponseMessage(): void {
+    this.logger.info('received heartbeat response message');
+    this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
+      Maybe.of(observer.didReceiveHeartbeatResponse).map(f => f.bind(observer)());
+    });
   }
 
   private didReceiveKeyRequest(): void {

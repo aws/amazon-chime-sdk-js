@@ -307,7 +307,7 @@ describe('DefaultScreenSharingSession', function() {
           .returns(Promise.resolve(Substitute.for<MediaStream>()));
         screenSharingStreamFactory.create(Arg.any()).returns(stream);
         subject.registerObserver(observer);
-        subject.start().then(() => {
+        subject.start(null, 0).then(() => {
           const event = Substitute.for<CustomEvent>();
           event.type.returns('message');
           stream.dispatchEvent(event);
@@ -334,7 +334,7 @@ describe('DefaultScreenSharingSession', function() {
         .acquireDisplayInputStream(Arg.any())
         .returns(Promise.resolve(Substitute.for<MediaStream>()));
       screenSharingStreamFactory.create(Arg.any()).returns(stream);
-      subject.start().then(() => {
+      subject.start(null, 0).then(() => {
         const event = Substitute.for<CustomEvent>();
         event.type.returns('message');
         stream.dispatchEvent(event);
@@ -362,7 +362,7 @@ describe('DefaultScreenSharingSession', function() {
         mediaStreamBroker
           .acquireDisplayInputStream(Arg.any())
           .returns(Promise.resolve(Substitute.for<MediaStream>()));
-        subject.start().should.eventually.be.fulfilled.and.notify(() => {
+        subject.start(null, 0).should.eventually.be.fulfilled.and.notify(() => {
           observer.received().didStartScreenSharing();
           done();
         });
@@ -386,8 +386,8 @@ describe('DefaultScreenSharingSession', function() {
         mediaStreamBroker
           .acquireDisplayInputStream(Arg.any())
           .returns(Promise.resolve(Substitute.for<MediaStream>()));
-        subject.start().then(() => {
-          subject.start().should.eventually.be.rejected.and.notify(done);
+        subject.start(null, 0).then(() => {
+          subject.start(null, 0).should.eventually.be.rejected.and.notify(done);
         });
       });
     });
@@ -406,7 +406,7 @@ describe('DefaultScreenSharingSession', function() {
           logging,
           browserBehavior
         );
-        subject.start().should.eventually.be.rejected.and.notify(done);
+        subject.start(null, 0).should.eventually.be.rejected.and.notify(done);
         mediaStreamBroker.didNotReceive();
       });
     });
@@ -434,7 +434,7 @@ describe('DefaultScreenSharingSession', function() {
         mediaStreamBroker
           .acquireDisplayInputStream(Arg.any())
           .returns(Promise.resolve(Substitute.for<MediaStream>()));
-        subject.start().then(() => {
+        subject.start(null, 0).then(() => {
           subject.stop().should.eventually.be.fulfilled.and.notify(() => {
             observer.received().didStopScreenSharing();
             done();
@@ -531,7 +531,53 @@ describe('DefaultScreenSharingSession', function() {
         subject
           .open(1000)
           .then(() => {
-            return subject.start();
+            return subject.start(null, 0);
+          })
+          .then(() => {
+            const event = Substitute.for<MessageEvent>();
+            event.type.returns('message');
+            promisedWebSocket.dispatchEvent(event);
+          });
+        const event = Substitute.for<Event>();
+        event.type.returns('open');
+        promisedWebSocket.dispatchEvent(event);
+      });
+    });
+
+    describe('with heartbeat response', () => {
+      it('is dispatched', (done: Mocha.Done) => {
+        const mediaStreamBroker = Substitute.for<MediaStreamBroker>();
+        const messageSerialization = Substitute.for<ScreenSharingMessageSerialization>();
+        const message: ScreenSharingMessage = {
+          type: ScreenSharingMessageType.HeartbeatResponseType,
+          flags: [],
+          data: new Uint8Array([]),
+        };
+        const observer: ScreenSharingSessionObserver = {
+          didReceiveHeartbeatResponse(): void {
+            done();
+          },
+        };
+        const promisedWebSocket = new PromisedWebSocketMock();
+        const subject = new DefaultScreenSharingSession(
+          promisedWebSocket,
+          constraintsProvider,
+          timeSliceMs,
+          messageSerialization,
+          mediaStreamBroker,
+          screenSharingStreamFactory,
+          mediaRecordingFactory,
+          logging
+        );
+        messageSerialization.deserialize(Arg.any()).returns(message);
+        mediaStreamBroker
+          .acquireDisplayInputStream(Arg.any())
+          .returns(Promise.resolve(Substitute.for<MediaStream>()));
+        subject
+          .registerObserver(observer)
+          .open(1000)
+          .then(() => {
+            return subject.start(null, 0);
           })
           .then(() => {
             const event = Substitute.for<MessageEvent>();
@@ -581,7 +627,7 @@ describe('DefaultScreenSharingSession', function() {
           .registerObserver(observer)
           .open(1000)
           .then(() => {
-            return subject.start();
+            return subject.start(null, 0);
           })
           .then(() => {
             const event = Substitute.for<MessageEvent>();
@@ -873,7 +919,7 @@ describe('DefaultScreenSharingSession', function() {
         .acquireDisplayInputStream(Arg.any())
         .returns(Promise.resolve(Substitute.for<MediaStream>()));
       subject.registerObserver(observer);
-      subject.start().then(() => {
+      subject.start(null, 0).then(() => {
         const event = Substitute.for<Event>();
         event.type.returns('ended');
         screenSharingStream.dispatchEvent(event);
@@ -903,7 +949,7 @@ describe('DefaultScreenSharingSession', function() {
         mediaStreamBroker
           .acquireDisplayInputStream(Arg.any())
           .returns(Promise.resolve(Substitute.for<MediaStream>()));
-        subject.start().then(() => {
+        subject.start(null, 0).then(() => {
           subject.pause().should.eventually.be.fulfilled.and.notify(() => {
             observer.received().didPauseScreenSharing();
           });

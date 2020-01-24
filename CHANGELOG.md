@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support additional media regions
 - Add video help desk tutorial
 - Enable integration tests for travis builds
+- Add ping/pong to screen sharing start code path to ensure socket is viable
 
 ### Changed
 - Enforce SDP to have candidates for FinishGatheringICECandidateTask to resolve
