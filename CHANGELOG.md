@@ -71,5 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixing integration test timeout and test sync between runs browsers
 - Safari crashes when remote video tiles are added or toggled
 - Fix unhandled Promise rejection in DefaultScreenSharingSession#start
+- Fix canary deployment script
 
 ## [1.0.0] - 2019-11-20
+ 
