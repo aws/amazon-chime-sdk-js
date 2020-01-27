@@ -6,6 +6,7 @@ const {getBuildId, getRunDetails} = require('./BrowserStackLogs');
 const {emitMetric} = require('./CloudWatch');
 const {putTestResults} = require('./SauceLabsApis');
 const uuidv4 = require('uuid/v4');
+const fs = require('fs');
 
 class SdkBaseTest extends KiteBaseTest {
   constructor(name, kiteConfig, testName) {
@@ -113,6 +114,16 @@ class SdkBaseTest extends KiteBaseTest {
     }
   }
 
+  writeCompletionTimeTo(filePath) {
+    try {
+      const epochTimeInSeconds = Math.round(new Date().getTime() / 1000);
+      fs.writeFileSync(`${filePath}/last_run_timestamp`, epochTimeInSeconds);
+      console.log(`Wrote canary completion timestamp : ${epochTimeInSeconds}`);
+    } catch (e) {
+      console.log(`Failed to write last completed canary timestamp to a file : ${e}`)
+    }
+  }
+
   async testScript() {
     const maxRetries = this.payload.retry === undefined || this.payload.retry < 1 ? 5 : this.payload.retry;
     let session_id = '';
@@ -137,6 +148,9 @@ class SdkBaseTest extends KiteBaseTest {
         if (this.seleniumGridProvide() === "saucelabs") {
           await putTestResults(session_id, !this.failedTest && !this.remoteFailed)
         }
+      }
+      if (this.payload.canaryLogPath !== undefined) {
+        this.writeCompletionTimeTo(this.payload.canaryLogPath)
       }
       // Retry if the local or remote test failed
       if (!this.failedTest && !this.remoteFailed) {
