@@ -93,8 +93,8 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
       if (this.stream !== null) {
         return reject(new Error('started'));
       }
-      if (this.browserBehavior.isSafari()) {
-        return reject(new Error('Safari browser does not support screensharing'));
+      if (this.browserBehavior.screenShareUnsupported()) {
+        return reject(new Error('This browser does not support screen sharing'));
       }
 
       return this.mediaStreamBroker

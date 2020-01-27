@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /* eslint-disable @typescript-eslint/camelcase */
@@ -360,7 +360,7 @@ export default class DefaultStatsCollector implements StatsCollector {
    */
   isValidChromeRawMetric(rawMetricReport: RawMetricReport): boolean {
     return (
-      this.browserBehavior.isChrome() &&
+      this.browserBehavior.hasChromiumWebRTC() &&
       (rawMetricReport.type === 'ssrc' ||
         rawMetricReport.type === 'VideoBwe' ||
         (rawMetricReport.type === 'googCandidatePair' &&
@@ -375,7 +375,7 @@ export default class DefaultStatsCollector implements StatsCollector {
       rawMetricReport.type === 'outbound-rtp' ||
       (rawMetricReport.type === 'candidate-pair' && rawMetricReport.state === 'succeeded');
 
-    if (this.browserBehavior.isFirefox()) {
+    if (this.browserBehavior.hasFirefoxWebRTC()) {
       if (
         this.compareMajorVersion(DefaultStatsCollector.FIREFOX_UPDATED_GET_STATS_VERSION) === -1
       ) {

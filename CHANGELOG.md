@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Add browser support for Safari and Opera
 - Add CHANGELOG.md
 - Allow for pausing screen sharing
 - Add GitHub page with API documentation

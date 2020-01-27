@@ -394,7 +394,7 @@ describe('DefaultScreenSharingSession', function() {
 
     describe('with Safari', () => {
       it('is rejected', (done: Mocha.Done) => {
-        browserBehavior.isSafari().returns(true);
+        browserBehavior.screenShareUnsupported().returns(true);
         const subject = new DefaultScreenSharingSession(
           promisedWebSocket,
           constraintsProvider,
