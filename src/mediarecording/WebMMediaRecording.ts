@@ -48,7 +48,7 @@ export default class WebMMediaRecording implements MediaRecording {
       });
     });
     if (delegate !== null) {
-      if (this.browser.isChrome()) {
+      if (this.browser.hasChromiumWebRTC()) {
         delegate.stream.getTracks().forEach(stream => stream.stop());
       }
       delegate.stop();

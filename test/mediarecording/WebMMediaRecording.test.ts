@@ -52,7 +52,7 @@ describe('WebMMediaRecording', () => {
         mediaTrack.stop().returns();
         mediaStream.getTracks().returns(Array.of(mediaTrack));
         mediaStream.clone().returns(mediaStream);
-        browser.isChrome().returns(true);
+        browser.screenShareSendsOnlyKeyframes().returns(false);
         const subject = new WebMMediaRecording(mediaStream, {}, browser);
         subject.key();
         subject.key();

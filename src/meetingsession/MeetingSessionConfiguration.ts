@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
@@ -127,7 +127,7 @@ export default class MeetingSessionConfiguration {
       this.credentials.attendeeId = createAttendeeResponse.AttendeeId;
       this.credentials.joinToken = createAttendeeResponse.JoinToken;
     }
-    if (new DefaultBrowserBehavior().isFirefox()) {
+    if (new DefaultBrowserBehavior().screenShareSendsOnlyKeyframes()) {
       this.screenSharingSessionOptions = { bitRate: 384000 };
     }
   }

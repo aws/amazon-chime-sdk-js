@@ -6,43 +6,69 @@ export default interface BrowserBehavior {
    * Returns the version string of the detected browser
    */
   version(): string;
-  /**
-   * Returns true if detected browser is Safari
-   */
-  isSafari(): boolean;
 
   /**
-   * Returns true if detected browser is Chrome
+   * Returns the major version of the detected browser
    */
-  isChrome(): boolean;
+  majorVersion(): number;
 
   /**
-   * Returns true if detected browser is Firefox
+   * Returns the browser name
    */
-  isFirefox(): boolean;
+  name(): string;
 
   /**
-   * Returns true if detected browser requires the use of Unified Plan implementation
+   * Returns whether the browser has a Chromium WebRTC implementation
+   */
+  hasChromiumWebRTC(): boolean;
+
+  /**
+   * Returns whether the browser has a Firefox WebRTC implementation
+   */
+  hasFirefoxWebRTC(): boolean;
+
+  /**
+   * Returns whether screen share implementation can only send keyframes
+   */
+  screenShareSendsOnlyKeyframes(): boolean;
+
+  /**
+   * Returns whether the browser requires the use of Unified Plan implementation
    */
   requiresUnifiedPlan(): boolean;
 
   /**
-   * Returns true if detected browser requires ice connection gathering timeout workaround
+   * Returns whether the browser requires an ICE connection gathering timeout workaround
    */
   requiresIceCandidateGatheringTimeoutWorkaround(): boolean;
 
   /**
-   * Returns true if detected browser requires munging of unified plan sdp
+   * Returns whether the browser requires munging of Unified Plan SDP
    */
   requiresUnifiedPlanMunging(): boolean;
 
   /**
-   * returns true if detected browser requires promise-based WebRTC getStats API
+   * Returns the bundle policy for the browser
+   */
+  requiresBundlePolicy(): RTCBundlePolicy;
+
+  /**
+   * Returns whether the browser uses a promise-based WebRTC getStats API
    */
   requiresPromiseBasedWebRTCGetStats(): boolean;
 
   /**
-   * returns bundle policy for each browser, only max-bundle for Safari now
+   * Returns whether screen share is unsupported by the browser
    */
-  requiresBundlePolicy(): RTCBundlePolicy;
+  screenShareUnsupported(): boolean;
+
+  /**
+   * Returns whether the browser is supported
+   */
+  isSupported(): boolean;
+
+  /**
+   * Returns the browser support string
+   */
+  supportString(): string;
 }

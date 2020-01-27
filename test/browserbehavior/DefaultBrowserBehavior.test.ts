@@ -17,6 +17,8 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
   const SAFARI12_USERAGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15';
+  const SAFARI11_USERAGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Safari/605.1.15';
   const CHROMIUM_EDGE_USERAGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3729.48 Safari/537.36 Edg/79.1.96.24';
   const OPERA_USERAGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
@@ -41,6 +43,7 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(FIREFOX_USERAGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
     });
@@ -49,6 +52,7 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(CHROME_USERAGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('chrome');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(78);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
     });
@@ -57,6 +61,7 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(CHROMIUM_EDGE_USERAGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('edge-chromium');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(79);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
     });
@@ -65,13 +70,22 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(SAFARI_USERAGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
 
       setUserAgent(SAFARI12_USERAGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
-      expect(new DefaultBrowserBehavior().isSupported()).to.eq(false);
+      expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+
+      setUserAgent(SAFARI11_USERAGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('safari');
+      expect(new DefaultBrowserBehavior().isSupported()).to.eq(false);
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(11);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
     });
 
