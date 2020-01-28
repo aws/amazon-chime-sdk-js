@@ -4,7 +4,6 @@
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
-import MediaRecording from '../mediarecording/MediaRecording';
 import MediaRecordingFactory from '../mediarecording/MediaRecordingFactory';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import PromisedWebSocket from '../promisedwebsocket/PromisedWebSocket';
@@ -84,68 +83,53 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     });
   }
 
-  async start(sourceId?: string, timeoutMs?: number | null): Promise<void> {
-    /* istanbul ignore if */
+  async start(sourceId?: string, timeoutMs?: number): Promise<void> {
+    /* istanbul ignore next */
     if (timeoutMs === null || timeoutMs === undefined) {
       timeoutMs = 3000;
     }
     if (this.stream !== null) {
-      return Promise.reject(new Error('started'));
+      throw new Error('started');
     }
-
     if (this.browserBehavior.screenShareUnsupported()) {
-      return Promise.reject(new Error('Safari browser does not support screensharing'));
+      throw new Error('Safari browser does not support screen sharing');
     }
 
-    return this.mediaStreamBroker
-      .acquireDisplayInputStream(this.constraintsProvider(sourceId))
-      .then((mediaStream: MediaStream) => {
-        /* istanbul ignore if */
-        if (timeoutMs !== 0) {
-          return this.ping(timeoutMs)
-            .then(() => {
-              return mediaStream;
-            })
-            .catch(error => {
-              mediaStream.getTracks().forEach(track => track.stop());
-              throw error;
-            });
-        } else {
-          return mediaStream;
+    const input = await this.mediaStreamBroker.acquireDisplayInputStream(
+      this.constraintsProvider(sourceId)
+    );
+
+    if (timeoutMs > 0) {
+      await this.ping(timeoutMs);
+    }
+
+    const stream = this.screenShareStreamFactory.create(this.mediaRecordingFactory.create(input));
+
+    stream.addEventListener(
+      ScreenShareStreamingEvent.MessageEvent,
+      (event: CustomEvent<ScreenSharingMessage>) => {
+        try {
+          this.send(event.detail);
+          this.logger.debug(() => 'dispatched screen sharing stream message event');
+        } catch (error) {
+          this.logger.error(error);
         }
-      })
-      .then((mediaStream: MediaStream) => {
-        return this.mediaRecordingFactory.create(mediaStream);
-      })
-      .then((mediaRecording: MediaRecording) => {
-        return this.screenShareStreamFactory.create(mediaRecording);
-      })
-      .then((stream: ScreenShareStreaming) => {
-        stream.addEventListener(
-          ScreenShareStreamingEvent.MessageEvent,
-          (event: CustomEvent<ScreenSharingMessage>) => {
-            try {
-              this.send(event.detail);
-              this.logger.debug(() => 'dispatched screen sharing stream message event');
-            } catch (error) {
-              this.logger.error(error);
-            }
-          }
-        );
-        stream.addEventListener(ScreenShareStreamingEvent.EndedEvent, () => {
-          this.logger.info('stream ended');
-          this.stop().then(() => {});
-        });
-        (this.stream = stream).start(this.timeSliceMs);
-      })
-      .then(() => {
-        this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
-          Maybe.of(observer.didStartScreenSharing).map(f => f.bind(observer)());
-        });
-      })
-      .then(() => {
-        this.logger.info('screen sharing stream started');
-      });
+      }
+    );
+
+    stream.addEventListener(ScreenShareStreamingEvent.EndedEvent, () => {
+      this.logger.info('stream ended');
+      this.stop().then(() => {});
+    });
+
+    stream.start(this.timeSliceMs);
+    this.stream = stream;
+
+    this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
+      Maybe.of(observer.didStartScreenSharing).map(f => f.bind(observer)());
+    });
+
+    this.logger.info('screen sharing stream started');
   }
 
   stop(): Promise<void> {
