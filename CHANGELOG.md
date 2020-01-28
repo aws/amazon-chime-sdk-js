@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update README.md to clarify when to use npm install
 - Adding app quit and meeting leave integration tests and retry for all other tests
 - Limit WebSocket reconnect attempts
+- Refactored default screen sharing session start to fix state corruption bug
 
 ### Removed
 - Remove SDP class withPlanBSimulcast method

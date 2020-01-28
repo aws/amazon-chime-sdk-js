@@ -367,6 +367,30 @@ describe('DefaultScreenSharingSession', function() {
           done();
         });
       });
+
+      describe('with timeout', () => {
+        it('is rejected', (done: Mocha.Done) => {
+          const observer = Substitute.for<ScreenSharingSessionObserver>();
+          const promisedWebSocket = Substitute.for<PromisedWebSocket>();
+          const mediaStreamBroker = Substitute.for<MediaStreamBroker>();
+          const subject = new DefaultScreenSharingSession(
+            promisedWebSocket,
+            constraintsProvider,
+            timeSliceMs,
+            messageSerialization,
+            mediaStreamBroker,
+            screenSharingStreamFactory,
+            mediaRecordingFactory,
+            logging
+          ).registerObserver(observer);
+          mediaStreamBroker
+            .acquireDisplayInputStream(Arg.any())
+            .returns(Promise.resolve(Substitute.for<MediaStream>()));
+          subject.start(null, 1).should.eventually.be.rejected.and.notify(() => {
+            done();
+          });
+        });
+      });
     });
 
     describe('with started', () => {
