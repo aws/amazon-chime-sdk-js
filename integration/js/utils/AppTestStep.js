@@ -2,20 +2,24 @@ const {KiteTestError, TestStep, Status} = require('kite-common');
 const {emitMetric} = require('./CloudWatch');
 
 class AppTestStep extends TestStep {
-  constructor(kiteBaseTest) {
+  constructor(kiteBaseTest, sessionInfo) {
     super();
+    // this information is common for a test
     this.test = kiteBaseTest;
     this.url = kiteBaseTest.url;
-    this.driver = kiteBaseTest.driver;
     this.timeout = kiteBaseTest.timeout;
     this.numberOfParticipant = kiteBaseTest.numberOfParticipant;
-    this.page = kiteBaseTest.page;
     this.testReporter = kiteBaseTest.reporter;
+
+    // this is different if we have multiple sessions
+    this.logger = sessionInfo.logger;
+    this.page = sessionInfo.page;
+    this.driver = sessionInfo.driver;
   }
 
   async step() {
     if (this.test.remoteFailed || this.test.failedTest) {
-      console.log("Skipping: " + this.stepDescription());
+      this.logger("Skipping: " + this.stepDescription());
       return;
     }
     try {

@@ -1,12 +1,12 @@
 const AppTestStep = require('../utils/AppTestStep');
 
 class LeaveMeetingStep extends AppTestStep {
-  constructor(kiteBaseTest) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo) {
+    super(kiteBaseTest, sessionInfo);
   }
 
-  static async executeStep(KiteBaseTest) {
-    const step = new LeaveMeetingStep(KiteBaseTest);
+  static async executeStep(KiteBaseTest, sessionInfo) {
+    const step = new LeaveMeetingStep(KiteBaseTest, sessionInfo);
     await step.execute(KiteBaseTest);
   }
 

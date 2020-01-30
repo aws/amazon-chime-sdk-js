@@ -2,13 +2,13 @@ const {KiteTestError, Status} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class PlayRandomToneStep extends AppTestStep {
-  constructor(kiteBaseTest, attendee_id) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, attendee_id) {
+    super(kiteBaseTest, sessionInfo);
     this.attendee_id = attendee_id;
   }
 
-  static async executeStep(KiteBaseTest) {
-    const step = new PlayRandomToneStep(KiteBaseTest);
+  static async executeStep(KiteBaseTest, sessionInfo) {
+    const step = new PlayRandomToneStep(KiteBaseTest, sessionInfo);
     await step.execute(KiteBaseTest);
   }
 

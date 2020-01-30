@@ -1,23 +1,23 @@
 const AppTestStep = require('../utils/AppTestStep');
 
-class OpenAppStep extends AppTestStep {
+class CloseAppStep extends AppTestStep {
   constructor(kiteBaseTest, sessionInfo) {
     super(kiteBaseTest, sessionInfo);
   }
 
   static async executeStep(KiteBaseTest, sessionInfo) {
-    const step = new OpenAppStep(KiteBaseTest, sessionInfo);
+    const step = new CloseAppStep(KiteBaseTest, sessionInfo);
     await step.execute(KiteBaseTest);
   }
 
   stepDescription() {
-    return 'Open app';
+    return 'Close app';
   }
 
   async run() {
-    this.logger(`Opening : ${this.url}`);
-    await this.page.open(this);
+    this.logger(`Closing : ${this.url}`);
+    await this.page.close(this);
   }
 }
 
-module.exports = OpenAppStep;
+module.exports = CloseAppStep;

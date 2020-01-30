@@ -2,14 +2,14 @@ const {KiteTestError, Status, TestUtils} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class ScreenViewingCheck extends AppTestStep {
-  constructor(kiteBaseTest, testType, metricName) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, testType, metricName) {
+    super(kiteBaseTest, sessionInfo);
     this.expectedState = testType === 'SCREEN_SHARING_ON' ? 'video' : 'blank';
     this.metric = metricName;
   }
 
-  static async executeStep(KiteBaseTest, testType, metricName) {
-    const step = new ScreenViewingCheck(KiteBaseTest, testType, metricName);
+  static async executeStep(KiteBaseTest, sessionInfo, testType, metricName) {
+    const step = new ScreenViewingCheck(KiteBaseTest, sessionInfo, testType, metricName);
     await step.execute(KiteBaseTest);
   }
 
@@ -30,7 +30,7 @@ class ScreenViewingCheck extends AppTestStep {
         throw new KiteTestError(Status.FAILED, 'Screen share test: ' + result);
       }
     } catch (error) {
-      console.log(error);
+      this.logger(error);
       if (error instanceof KiteTestError) {
         throw error;
       } else {

@@ -2,13 +2,13 @@ const {KiteTestError, Status} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class GetSipUriForCallStep extends AppTestStep {
-  constructor(kiteBaseTest, meetingId) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, meetingId) {
+    super(kiteBaseTest, sessionInfo);
     this.meetingId = meetingId;
   }
 
-  static async executeStep(KiteBaseTest, meetingId) {
-    const step = new GetSipUriForCallStep(KiteBaseTest, meetingId);
+  static async executeStep(KiteBaseTest, sessionInfo, meetingId) {
+    const step = new GetSipUriForCallStep(KiteBaseTest, sessionInfo, meetingId);
     await step.execute(KiteBaseTest);
   }
 

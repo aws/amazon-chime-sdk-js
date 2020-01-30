@@ -1,10 +1,8 @@
 const {KiteBaseTest} = require('../node_modules/kite-common');
 const {AppPage} = require('../pages/AppPage');
-const {getWebDriverSauceLabs} = require('./WebderiverSauceLabs');
-const {getWebDriverBrowserStack} = require('./WebdriverBrowserStack');
-const {getBuildId, getRunDetails} = require('./BrowserStackLogs');
+const {SaucelabsSession} = require('./WebderiverSauceLabs');
+const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {emitMetric} = require('./CloudWatch');
-const {putTestResults} = require('./SauceLabsApis');
 const uuidv4 = require('uuid/v4');
 
 class SdkBaseTest extends KiteBaseTest {
@@ -79,46 +77,34 @@ class SdkBaseTest extends KiteBaseTest {
     }
   }
 
-  seleniumGridProvide() {
-    return process.env.SELENIUM_GRID_PROVIDER
-  }
-
-  async getWebDriver(capabilities) {
-    if (this.seleniumGridProvide() === "browserstack") {
-      return await getWebDriverBrowserStack(capabilities);
+  async createSeleniumSession(capabilities) {
+    if (process.env.SELENIUM_GRID_PROVIDER === "browserstack") {
+      return await BrowserStackSession.createSession(capabilities);
     } else {
-      return await getWebDriverSauceLabs(capabilities);
+      return await SaucelabsSession.createSession(capabilities);
     }
   }
 
-  async printRunDetails(session_id) {
-    if (this.seleniumGridProvide() === "browserstack") {
-      const build_id = await getBuildId();
-      console.log(JSON.stringify({
-        build_details: {
-          build_id,
-          session_id
-        }
-      }));
-      const run_details = await getRunDetails(session_id);
-      console.log("Browserstack run details :");
-      console.log(JSON.stringify(run_details))
-    } else {
-      console.log("Saucelabs run details :");
-      console.log(JSON.stringify({
-        run_details: {
-          session_id
-        }
-      }));
+  numberOfSessions(browser) {
+    if (this.payload.seleniumSessions && this.payload.seleniumSessions[browser]){
+      return this.payload.seleniumSessions[browser]
     }
+    return 1;
+    // return this.payload.seleniumSessions === undefined || this.payload.seleniumSessions < 1 ? 1 : this.payload.seleniumSessions;
   }
 
   async testScript() {
     const maxRetries = this.payload.retry === undefined || this.payload.retry < 1 ? 5 : this.payload.retry;
-    let session_id = '';
-    this.driver = await this.getWebDriver(this.capabilities);
-    const session = await this.driver.getSession();
-    session_id = session.getId();
+    const numberOfSeleniumSessions = this.numberOfSessions(this.capabilities.browserName);
+
+    console.log(`Provisioning ${numberOfSeleniumSessions} sessions on ${process.env.SELENIUM_GRID_PROVIDER}`);
+    this.seleniumSessions = [];
+    for (let i = 0; i < numberOfSeleniumSessions; i++) {
+      const session = await this.createSeleniumSession(this.capabilities);
+      await session.init();
+      this.seleniumSessions.push(session)
+    }
+
     let retryCount = 0;
     while (retryCount < maxRetries) {
       this.initializeState();
@@ -126,16 +112,15 @@ class SdkBaseTest extends KiteBaseTest {
         console.log(`Retrying : ${retryCount}`);
       }
       try {
-        console.log("Running test on: " + this.seleniumGridProvide());
-        this.page = new AppPage(this.driver);
+        console.log("Running test on: " + process.env.SELENIUM_GRID_PROVIDER);
         await this.runIntegrationTest();
       } catch (e) {
         console.log(e);
       } finally {
         const metricValue = this.failedTest || this.remoteFailed ? 0 : 1;
         await emitMetric(this.testName, this.capabilities, 'E2E', metricValue);
-        if (this.seleniumGridProvide() === "saucelabs") {
-          await putTestResults(session_id, !this.failedTest && !this.remoteFailed)
+        for (let i = 0; i < this.seleniumSessions.length; i++) {
+          await this.seleniumSessions[i].updateTestResults(!this.failedTest && !this.remoteFailed)
         }
       }
       // Retry if the local or remote test failed
@@ -146,11 +131,15 @@ class SdkBaseTest extends KiteBaseTest {
     }
 
     try {
-      await this.printRunDetails(session_id);
+      for (let i = 0; i < this.seleniumSessions.length; i++) {
+        await this.seleniumSessions[i].printRunDetails(!this.failedTest && !this.remoteFailed)
+      }
     } catch (e) {
       console.log(e);
     } finally {
-      await this.driver.quit();
+      for (let i = 0; i < this.seleniumSessions.length; i++) {
+        await this.seleniumSessions[i].quit();
+      }
     }
   }
 

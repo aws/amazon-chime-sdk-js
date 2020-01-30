@@ -3,13 +3,13 @@ const demo = require('../pages/AppPage');
 const AppTestStep = require('../utils/AppTestStep');
 
 class UserJoinedMeetingCheck extends AppTestStep {
-  constructor(kiteBaseTest, attendee_id) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, attendee_id) {
+    super(kiteBaseTest, sessionInfo);
     this.attendeeId = attendee_id;
   }
 
-  static async executeStep(KiteBaseTest, attendee_id) {
-    const step = new UserJoinedMeetingCheck(KiteBaseTest, attendee_id);
+  static async executeStep(KiteBaseTest, sessionInfo, attendee_id) {
+    const step = new UserJoinedMeetingCheck(KiteBaseTest, sessionInfo, attendee_id);
     await step.execute(KiteBaseTest);
   }
 

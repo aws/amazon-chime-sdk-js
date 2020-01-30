@@ -1,13 +1,13 @@
 const AppTestStep = require('../utils/AppTestStep');
 
 class ClickScreenShareButton extends AppTestStep {
-  constructor(kiteBaseTest, testType) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, testType) {
+    super(kiteBaseTest, sessionInfo);
     this.testType = testType;
   }
 
-  static async executeStep(KiteBaseTest, testType) {
-    const step = new ClickScreenShareButton(KiteBaseTest, testType);
+  static async executeStep(KiteBaseTest, sessionInfo, testType) {
+    const step = new ClickScreenShareButton(KiteBaseTest, sessionInfo, testType);
     await step.execute(KiteBaseTest);
   }
 

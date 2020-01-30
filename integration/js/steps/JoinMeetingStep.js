@@ -3,12 +3,12 @@ const uuidv4 = require('uuid/v4');
 const AppTestStep = require('../utils/AppTestStep');
 
 class JoinMeetingStep extends AppTestStep {
-  constructor(kiteBaseTest) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo) {
+    super(kiteBaseTest, sessionInfo);
   }
 
-  static async executeStep(KiteBaseTest) {
-    const step = new JoinMeetingStep(KiteBaseTest);
+  static async executeStep(KiteBaseTest, sessionInfo) {
+    const step = new JoinMeetingStep(KiteBaseTest, sessionInfo);
     await step.execute(KiteBaseTest);
   }
 

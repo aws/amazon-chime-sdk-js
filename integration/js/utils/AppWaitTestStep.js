@@ -2,8 +2,8 @@ const {KiteTestError, Status, TestUtils} = require('kite-common');
 const AppTestStep = require('./AppTestStep');
 
 class AppWaitTestStep extends AppTestStep {
-  constructor(kiteBaseTest) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo) {
+    super(kiteBaseTest, sessionInfo);
   }
 
   waitCompleteCondition() {
@@ -17,7 +17,7 @@ class AppWaitTestStep extends AppTestStep {
   }
 
   onThresholdBreach() {
-    console.log("Timout " + this.stepDescription());
+    this.logger("Timout " + this.stepDescription());
   }
 
   async run() {
@@ -27,7 +27,7 @@ class AppWaitTestStep extends AppTestStep {
       i++;
       if (this.waitCompleteCondition()) {
         if (this.waitCompleteMessage()){
-          console.log(this.waitCompleteMessage());
+          this.logger(this.waitCompleteMessage());
         }
         return;
       }

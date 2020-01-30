@@ -12,7 +12,10 @@
       "testImpl": "AppQuitAudioTest.js",
       "payload": {
         "url": "http://localhost:8080/",
-        "retry": 1
+        "retry": 1,
+        "seleniumSessions": {
+          "safari": 2
+        }
       }
     }
   ],

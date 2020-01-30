@@ -1,13 +1,13 @@
 const AppTestStep = require('../utils/AppTestStep');
 
 class ClickMicrophoneButton extends AppTestStep {
-  constructor(kiteBaseTest, testType) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, testType) {
+    super(kiteBaseTest, sessionInfo);
     this.testType = testType;
   }
 
-  static async executeStep(KiteBaseTest, testType) {
-    const step = new ClickMicrophoneButton(KiteBaseTest, testType);
+  static async executeStep(KiteBaseTest, sessionInfo, testType) {
+    const step = new ClickMicrophoneButton(KiteBaseTest, sessionInfo, testType);
     await step.execute(KiteBaseTest);
   }
 

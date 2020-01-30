@@ -1,4 +1,5 @@
 const {Builder} = require('selenium-webdriver');
+const {getBuildId, getRunDetails} = require('./BrowserStackLogs');
 
 const getOS = capabilities => {
   switch (capabilities.platform) {
@@ -88,6 +89,57 @@ getWebDriverBrowserStack = async capabilities => {
     .build();
 };
 
-module.exports.getWebDriverBrowserStack = getWebDriverBrowserStack;
+
+class BrowserStackSession {
+  static async createSession(capabilities) {
+    let cap = {};
+    if (capabilities.browserName === 'chrome') {
+      cap = getChromeCapabilities(capabilities);
+    } else {
+      cap = getFirefoxCapabilities(capabilities);
+    }
+    return await new Builder()
+      .usingServer(getBrowserStackUrl())
+      .withCapabilities(cap)
+      .build();
+    return new BrowserStackSession(driver);
+  }
+
+  constructor(inDriver) {
+    this.driver = inDriver;
+  }
+
+  async getSessionId() {
+    if (this.sessionId === undefined) {
+      const session = await this.driver.getSession();
+      this.sessionId = session.getId();
+    }
+    return this.sessionId
+  }
+
+  async updateTestResults(passed) {
+    // todo: we are not using browserstack currently so this is not implemented
+  };
+
+  async printRunDetails() {
+    const sessionId = await this.getSessionId();
+    const buildId = await getBuildId();
+    console.log(JSON.stringify({
+      build_details: {
+        buildId,
+        sessionId
+      }
+    }));
+    const run_details = await getRunDetails(session_id);
+    console.log("Browserstack run details :");
+    console.log(JSON.stringify(run_details))
+  }
+
+  async quit() {
+    await this.driver.quit();
+  }
+}
+
+module.exports.BrowserStackSession = BrowserStackSession;
 module.exports.getOS = getOS;
 module.exports.getOSVersion = getOSVersion;
