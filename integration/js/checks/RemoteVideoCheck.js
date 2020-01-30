@@ -2,13 +2,13 @@ const {TestStep, KiteTestError, Status, TestUtils} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class RemoteVideoCheck extends AppTestStep {
-  constructor(kiteBaseTest, testType) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, testType) {
+    super(kiteBaseTest, sessionInfo);
     this.testType = testType;
   }
 
-  static async executeStep(KiteBaseTest, testType) {
-    const step = new RemoteVideoCheck(KiteBaseTest, testType);
+  static async executeStep(KiteBaseTest, sessionInfo, testType) {
+    const step = new RemoteVideoCheck(KiteBaseTest, sessionInfo, testType);
     await step.execute(KiteBaseTest);
   }
 
@@ -41,7 +41,7 @@ class RemoteVideoCheck extends AppTestStep {
         throw new KiteTestError(Status.FAILED, 'Some remote videos are : ' + result);
       }
     } catch (error) {
-      console.log(error);
+      this.logger(error);
       if (error instanceof KiteTestError) {
         throw error;
       } else {

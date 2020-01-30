@@ -19,22 +19,22 @@ class ScreenSharingTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    this.page = new AppPage(this.driver);
+    const session = this.seleniumSessions[0];
     let attendee_id = uuidv4();
-    await OpenAppStep.executeStep(this);
-    await AuthenticateUserStep.executeStep(this, attendee_id);
-    await UserAuthenticationCheck.executeStep(this);
-    await JoinMeetingStep.executeStep(this);
-    await UserJoinedMeetingCheck.executeStep(this, attendee_id);
+    await OpenAppStep.executeStep(this, session);
+    await AuthenticateUserStep.executeStep(this, session, attendee_id);
+    await UserAuthenticationCheck.executeStep(this, session);
+    await JoinMeetingStep.executeStep(this, session);
+    await UserJoinedMeetingCheck.executeStep(this, session, attendee_id);
 
-    await ClickScreenShareButton.executeStep(this, "ON");
-    await ClickScreenViewButton.executeStep(this, "ON");
-    await ScreenViewingCheck.executeStep(this, 'SCREEN_SHARING_ON', "ScreenSharingViewingEnabledCheck");
+    await ClickScreenShareButton.executeStep(this, session, "ON");
+    await ClickScreenViewButton.executeStep(this, session, "ON");
+    await ScreenViewingCheck.executeStep(this, session, 'SCREEN_SHARING_ON', "ScreenSharingViewingEnabledCheck");
 
-    await ClickScreenShareButton.executeStep(this, "OFF");
-    await ScreenViewingCheck.executeStep(this, 'SCREEN_SHARING_OFF', "ScreenSharingDisabledCheck");
-    await ClickScreenShareButton.executeStep(this, "ON");
-    await ScreenViewingCheck.executeStep(this, 'SCREEN_SHARING_ON', "ScreenSharingEnabledAfterDisablingCheck");
+    await ClickScreenShareButton.executeStep(this, session, "OFF");
+    await ScreenViewingCheck.executeStep(this, session, 'SCREEN_SHARING_OFF', "ScreenSharingDisabledCheck");
+    await ClickScreenShareButton.executeStep(this, session, "ON");
+    await ScreenViewingCheck.executeStep(this, session, 'SCREEN_SHARING_ON', "ScreenSharingEnabledAfterDisablingCheck");
 
     await this.waitAllSteps();
   }

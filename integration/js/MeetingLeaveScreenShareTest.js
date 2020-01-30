@@ -14,38 +14,40 @@ class MeetingLeaveScreenShareTest extends SdkBaseTest {
   async runIntegrationTest() {
     this.url = this.baseUrl + '?m=' + uuidv4();
     this.numberOfParticipant = 2;
+    const session = this.seleniumSessions[0];
+
     const test_attendee_id = uuidv4();
     const monitor_attendee_id = uuidv4();
 
-    const test_window = await Window.existing(this.driver, "TEST");
-    const monitor_window = await Window.openNew(this.driver, "MONITOR");
+    const test_window = await Window.existing(session.driver, "TEST");
+    const monitor_window = await Window.openNew(session.driver, "MONITOR");
 
-    await test_window.runCommands(async () => await this.addUserToMeeting(test_attendee_id));
-    await monitor_window.runCommands(async () => await this.addUserToMeeting(monitor_attendee_id));
+    await test_window.runCommands(async () => await this.addUserToMeeting(test_attendee_id, session));
+    await monitor_window.runCommands(async () => await this.addUserToMeeting(monitor_attendee_id, session));
 
-    await test_window.runCommands(async () => await RosterCheck.executeStep(this, 2));
-    await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, 2));
+    await test_window.runCommands(async () => await RosterCheck.executeStep(this, session, 2));
+    await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, session, 2));
 
     // turn on screen sharing on test client
-    await test_window.runCommands(async () => await ClickScreenShareButton.executeStep(this, "ON"));
+    await test_window.runCommands(async () => await ClickScreenShareButton.executeStep(this, session, "ON"));
     // turn on screen viewing on monitor client
-    await monitor_window.runCommands(async () => await ClickScreenViewButton.executeStep(this, "ON"));
+    await monitor_window.runCommands(async () => await ClickScreenViewButton.executeStep(this, session, "ON"));
     // Check if monitor is able to see the shared screen
-    await monitor_window.runCommands(async () => await ScreenViewingCheck.executeStep(this, 'SCREEN_SHARING_ON', "ScreenShareEnabledCheck"));
+    await monitor_window.runCommands(async () => await ScreenViewingCheck.executeStep(this, session, 'SCREEN_SHARING_ON', "ScreenShareEnabledCheck"));
     // test client leaves the meeting
-    await test_window.runCommands(async () => await LeaveMeetingStep.executeStep(this));
+    await test_window.runCommands(async () => await LeaveMeetingStep.executeStep(this, session));
     // Check if monitor is able to see the shared screen
-    await monitor_window.runCommands(async () => await ScreenViewingCheck.executeStep(this, 'SCREEN_SHARING_OFF', "ScreenShareDisabledCheck"));
+    await monitor_window.runCommands(async () => await ScreenViewingCheck.executeStep(this, session, 'SCREEN_SHARING_OFF', "ScreenShareDisabledCheck"));
 
     await this.waitAllSteps();
   }
 
-  async addUserToMeeting(attendee_id) {
-    await OpenAppStep.executeStep(this);
-    await AuthenticateUserStep.executeStep(this, attendee_id);
-    await UserAuthenticationCheck.executeStep(this);
-    await JoinMeetingStep.executeStep(this);
-    await UserJoinedMeetingCheck.executeStep(this, attendee_id);
+  async addUserToMeeting(attendee_id, session) {
+    await OpenAppStep.executeStep(this, session);
+    await AuthenticateUserStep.executeStep(this, session, attendee_id);
+    await UserAuthenticationCheck.executeStep(this, session);
+    await JoinMeetingStep.executeStep(this, session);
+    await UserJoinedMeetingCheck.executeStep(this, session, attendee_id);
   }
 }
 

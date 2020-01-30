@@ -1,5 +1,5 @@
 const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, EndMeetingStep} = require('./steps');
-const {UserJoinedMeetingCheck, UserAuthenticationCheck, RemoteAudioCheck, MeetingJoinFailedCheck} = require('./checks');
+const {UserJoinedMeetingCheck, UserAuthenticationCheck, RosterCheck, MeetingJoinFailedCheck} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
@@ -18,18 +18,18 @@ class MeetingEndTest extends SdkBaseTest {
 
   async runIntegrationTest() {
     this.url = this.baseUrl + '?m=' + uuidv4();
-    this.page = new AppPage(this.driver);
+    const session = this.seleniumSessions[0];
     let attendee_id = uuidv4();
-    await OpenAppStep.executeStep(this);
-    await AuthenticateUserStep.executeStep(this, attendee_id);
-    await UserAuthenticationCheck.executeStep(this);
-    await JoinMeetingStep.executeStep(this);
-    await UserJoinedMeetingCheck.executeStep(this, attendee_id);
-    await EndMeetingStep.executeStep(this);
-
-    await OpenAppStep.executeStep(this);
-    await AuthenticateUserStep.executeStep(this, attendee_id);
-    await MeetingJoinFailedCheck.executeStep(this);
+    await OpenAppStep.executeStep(this, session);
+    await AuthenticateUserStep.executeStep(this, session, attendee_id);
+    await UserAuthenticationCheck.executeStep(this, session);
+    await JoinMeetingStep.executeStep(this, session);
+    await UserJoinedMeetingCheck.executeStep(this, session, attendee_id);
+    await RosterCheck.executeStep(this, session, 1);
+    await EndMeetingStep.executeStep(this, session);
+    await OpenAppStep.executeStep(this, session);
+    await AuthenticateUserStep.executeStep(this, session, attendee_id);
+    await MeetingJoinFailedCheck.executeStep(this, session);
 
     await this.waitAllSteps();
   }

@@ -3,12 +3,12 @@ const demo = require('../pages/AppPage');
 const AppTestStep = require('../utils/AppTestStep');
 
 class MeetingJoinFailedCheck extends AppTestStep {
-  constructor(kiteBaseTest, attendee_id) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, attendee_id) {
+    super(kiteBaseTest, sessionInfo);
   }
 
-  static async executeStep(KiteBaseTest, attendee_id) {
-    const step = new MeetingJoinFailedCheck(KiteBaseTest, attendee_id);
+  static async executeStep(KiteBaseTest, sessionInfo, attendee_id) {
+    const step = new MeetingJoinFailedCheck(KiteBaseTest, sessionInfo, attendee_id);
     await step.execute(KiteBaseTest);
   }
 

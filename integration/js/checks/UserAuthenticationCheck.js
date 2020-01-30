@@ -2,12 +2,12 @@ const { KiteTestError, Status } = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class UserAuthenticationCheck extends AppTestStep {
-  constructor(kiteBaseTest) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo) {
+    super(kiteBaseTest, sessionInfo);
   }
 
-  static async executeStep(KiteBaseTest) {
-    const step = new UserAuthenticationCheck(KiteBaseTest);
+  static async executeStep(KiteBaseTest, sessionInfo) {
+    const step = new UserAuthenticationCheck(KiteBaseTest, sessionInfo);
     await step.execute(KiteBaseTest);
   }
 

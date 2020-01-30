@@ -21,37 +21,32 @@ class AudioTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    await WaitForMeetingToBeCreated.executeStep(this);
-    this.page = new AppPage(this.driver);
-    await OpenAppStep.executeStep(this);
-    await AuthenticateUserStep.executeStep(this, this.attendeeId);
-    await UserAuthenticationCheck.executeStep(this);
-    await JoinMeetingStep.executeStep(this);
-    await UserJoinedMeetingCheck.executeStep(this, this.attendeeId);
-    await WaitForRemoteParticipantsToJoinMeeting.executeStep(this);
-    await RosterCheck.executeStep(this, 2);
+    const session = this.seleniumSessions[0];
 
-    await PlayRandomToneStep.executeStep(this);
+    await WaitForMeetingToBeCreated.executeStep(this, session);
+    await OpenAppStep.executeStep(this, session);
+    await AuthenticateUserStep.executeStep(this, session, this.attendeeId);
+    await UserAuthenticationCheck.executeStep(this, session);
+    await JoinMeetingStep.executeStep(this, session);
+    await UserJoinedMeetingCheck.executeStep(this, session, this.attendeeId);
+    await WaitForRemoteParticipantsToJoinMeeting.executeStep(this, session);
+    await RosterCheck.executeStep(this, session, 2);
+
+    await PlayRandomToneStep.executeStep(this, session);
     // Wait for other participant to start audio
-    await WaitForRemoteParticipantsToTurnAudioOn.executeStep(this);
+    await WaitForRemoteParticipantsToTurnAudioOn.executeStep(this, session);
     // test audio
-    await RemoteAudioCheck.executeStep(this, "AUDIO_ON");
+    await RemoteAudioCheck.executeStep(this, session, "AUDIO_ON");
     // wait for other participant to finish audio check to finish
-    await WaitForRemoteAudioCheckToComplete.executeStep(this);
+    await WaitForRemoteAudioCheckToComplete.executeStep(this, session);
     // mute
-    await ClickMicrophoneButton.executeStep(this, 'OFF');
+    await ClickMicrophoneButton.executeStep(this, session, 'OFF');
     // wait for other participant to mute
-    await WaitForRemoteParticipantsToTurnAudioOff.executeStep(this);
+    await WaitForRemoteParticipantsToTurnAudioOff.executeStep(this, session);
     // Test Mute
-    await RemoteAudioCheck.executeStep(this, "AUDIO_OFF");
+    await RemoteAudioCheck.executeStep(this, session, "AUDIO_OFF");
     // wait for other participant to finish audio check to finish
-    await WaitForRemoteAudioCheckToComplete.executeStep(this);
-    // un-mute
-    await ClickMicrophoneButton.executeStep(this, 'ON');
-    // wait for other participant to mute
-    await WaitForRemoteParticipantsToTurnAudioOn.executeStep(this);
-    // Test Unmute
-    await RemoteAudioCheck.executeStep(this, "AUDIO_ON");
+    await WaitForRemoteAudioCheckToComplete.executeStep(this, session);
 
     await this.waitAllSteps();
   }

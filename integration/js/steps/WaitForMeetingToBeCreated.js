@@ -2,12 +2,12 @@ const {KiteTestError, Status, TestUtils} = require('kite-common');
 const AppWaitTestStep = require('../utils/AppWaitTestStep');
 
 class WaitForMeetingToBeCreated extends AppWaitTestStep {
-  constructor(kiteBaseTest) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo) {
+    super(kiteBaseTest, sessionInfo);
   }
 
-  static async executeStep(KiteBaseTest) {
-    const step = new WaitForMeetingToBeCreated(KiteBaseTest);
+  static async executeStep(KiteBaseTest, sessionInfo) {
+    const step = new WaitForMeetingToBeCreated(KiteBaseTest, sessionInfo);
     await step.execute(KiteBaseTest);
   }
 
@@ -20,7 +20,7 @@ class WaitForMeetingToBeCreated extends AppWaitTestStep {
   }
 
   waitCompleteMessage() {
-    console.log("Meeting created");
+    this.logger("Meeting created");
   }
 }
 

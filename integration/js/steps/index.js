@@ -1,5 +1,6 @@
 exports.JoinMeetingStep = require('./JoinMeetingStep');
 exports.OpenAppStep = require('./OpenAppStep');
+exports.CloseAppStep = require('./CloseAppStep');
 exports.ClickVideoButton = require('./ClickVideoButton');
 exports.AuthenticateUserStep = require('./AuthenticateUserStep');
 exports.PlayRandomToneStep = require('./PlayRandomToneStep');

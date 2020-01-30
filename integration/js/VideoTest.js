@@ -11,24 +11,24 @@ class VideoTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    await WaitForMeetingToBeCreated.executeStep(this);
-    this.page = new AppPage(this.driver);
-    await OpenAppStep.executeStep(this);
-    await AuthenticateUserStep.executeStep(this, this.attendeeId);
-    await UserAuthenticationCheck.executeStep(this);
-    await JoinMeetingStep.executeStep(this);
-    await UserJoinedMeetingCheck.executeStep(this, this.attendeeId);
-    await WaitForRemoteParticipantsToJoinMeeting.executeStep(this);
-    await RosterCheck.executeStep(this, 2);
-    await ClickVideoButton.executeStep(this);
-    await LocalVideoCheck.executeStep(this, 'VIDEO_ON');
-    await WaitForRemoteParticipantsToTurnVideoOn.executeStep(this);
-    await RemoteVideoCheck.executeStep(this, 'VIDEO_ON');
-    await WaitForRemoteVideoCheckToComplete.executeStep(this);
-    await ClickVideoButton.executeStep(this);
-    await LocalVideoCheck.executeStep(this, 'VIDEO_OFF');
-    await WaitForRemoteParticipantsToTurnVideoOff.executeStep(this);
-    await RemoteVideoCheck.executeStep(this, 'VIDEO_OFF');
+    const session = this.seleniumSessions[0];
+    await WaitForMeetingToBeCreated.executeStep(this, session);
+    await OpenAppStep.executeStep(this, session);
+    await AuthenticateUserStep.executeStep(this, session, this.attendeeId);
+    await UserAuthenticationCheck.executeStep(this, session);
+    await JoinMeetingStep.executeStep(this, session);
+    await UserJoinedMeetingCheck.executeStep(this, session, this.attendeeId);
+    await WaitForRemoteParticipantsToJoinMeeting.executeStep(this, session);
+    await RosterCheck.executeStep(this, session, 2);
+    await ClickVideoButton.executeStep(this, session);
+    await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON');
+    await WaitForRemoteParticipantsToTurnVideoOn.executeStep(this, session);
+    await RemoteVideoCheck.executeStep(this, session, 'VIDEO_ON');
+    await WaitForRemoteVideoCheckToComplete.executeStep(this, session);
+    await ClickVideoButton.executeStep(this, session);
+    await LocalVideoCheck.executeStep(this, session, 'VIDEO_OFF');
+    await WaitForRemoteParticipantsToTurnVideoOff.executeStep(this, session);
+    await RemoteVideoCheck.executeStep(this, session, 'VIDEO_OFF');
     await this.waitAllSteps();
   }
 }

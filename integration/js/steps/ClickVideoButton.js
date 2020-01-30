@@ -1,12 +1,12 @@
 const AppTestStep = require('../utils/AppTestStep');
 
 class ClickVideoButton extends AppTestStep {
-  constructor(kiteBaseTest) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo) {
+    super(kiteBaseTest, sessionInfo);
   }
 
-  static async executeStep(KiteBaseTest) {
-    const step = new ClickVideoButton(KiteBaseTest);
+  static async executeStep(KiteBaseTest, sessionInfo) {
+    const step = new ClickVideoButton(KiteBaseTest, sessionInfo);
     await step.execute(KiteBaseTest);
   }
 

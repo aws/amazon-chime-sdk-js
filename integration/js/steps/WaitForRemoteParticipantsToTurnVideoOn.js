@@ -2,12 +2,12 @@ const {KiteTestError, Status, TestUtils} = require('kite-common');
 const AppWaitTestStep = require('../utils/AppWaitTestStep');
 
 class WaitForRemoteParticipantsToTurnVideoOn extends AppWaitTestStep {
-  constructor(kiteBaseTest) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo) {
+    super(kiteBaseTest, sessionInfo);
   }
 
-  static async executeStep(KiteBaseTest) {
-    const step = new WaitForRemoteParticipantsToTurnVideoOn(KiteBaseTest);
+  static async executeStep(KiteBaseTest, sessionInfo) {
+    const step = new WaitForRemoteParticipantsToTurnVideoOn(KiteBaseTest, sessionInfo);
     await step.execute(KiteBaseTest);
   }
 

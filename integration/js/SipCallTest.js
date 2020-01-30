@@ -16,28 +16,28 @@ class SipCallTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
+    const session = this.seleniumSessions[0];
     const meetingId = uuidv4();
     this.url = this.baseUrl + '?m=' + meetingId;
-    this.page = new AppPage(this.driver);
     let attendee_id = uuidv4();
-    const test_window = await Window.openNew(this.driver, "SipCall");
+    const test_window = await Window.openNew(session.driver, "SipCall");
     await test_window.runCommands(async () => {
-      await OpenAppStep.executeStep(this);
-      await AuthenticateUserStep.executeStep(this, attendee_id);
-      await UserAuthenticationCheck.executeStep(this);
-      await JoinMeetingStep.executeStep(this);
-      await UserJoinedMeetingCheck.executeStep(this, attendee_id);
+      await OpenAppStep.executeStep(this, session);
+      await AuthenticateUserStep.executeStep(this, session, attendee_id);
+      await UserAuthenticationCheck.executeStep(this, session);
+      await JoinMeetingStep.executeStep(this, session);
+      await UserJoinedMeetingCheck.executeStep(this, session, attendee_id);
     });
 
-    const sip_call_window = await Window.openNew(this.driver, "SipCall");
-    await sip_call_window.runCommands(async () => await OpenAppStep.executeStep(this));
-    await sip_call_window.runCommands(async () => await GetSipUriForCallStep.executeStep(this, meetingId));
+    const sip_call_window = await Window.openNew(session.driver, "SipCall");
+    await sip_call_window.runCommands(async () => await OpenAppStep.executeStep(this, session));
+    await sip_call_window.runCommands(async () => await GetSipUriForCallStep.executeStep(this, session, meetingId));
 
-    const sipCallClient = new SipCallClient(this.payload.sipTestAssetPath, this.payload.resultPath);
-    const sipCall = sipCallClient.call(this.payload.voiceConnectorId, this.sipUri);
+    const sipCallClient = new SipCallClient(this, session.payload.sipTestAssetPath, this.payload.resultPath);
+    const sipCall = sipCallClient.call(this, session.payload.voiceConnectorId, this.sipUri);
 
-    await test_window.runCommands(async () => await await RosterCheck.executeStep(this, 2));
-    await test_window.runCommands(async () => await RemoteAudioCheck.executeStep(this, 'AUDIO_ON'));
+    await test_window.runCommands(async () => await await RosterCheck.executeStep(this, session, 2));
+    await test_window.runCommands(async () => await RemoteAudioCheck.executeStep(this, session, 'AUDIO_ON'));
 
     sipCallClient.end(sipCall);
 

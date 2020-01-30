@@ -2,13 +2,13 @@ const {KiteTestError, Status} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class LocalVideoCheck extends AppTestStep {
-  constructor(kiteBaseTest, testType) {
-    super(kiteBaseTest);
+  constructor(kiteBaseTest, sessionInfo, testType) {
+    super(kiteBaseTest, sessionInfo);
     this.expectedState = testType === 'VIDEO_ON' ? 'video' : 'blank';
   }
 
-  static async executeStep(KiteBaseTest, testType) {
-    const step = new LocalVideoCheck(KiteBaseTest, testType);
+  static async executeStep(KiteBaseTest, sessionInfo, testType) {
+    const step = new LocalVideoCheck(KiteBaseTest, sessionInfo, testType);
     await step.execute(KiteBaseTest);
   }
 
@@ -28,7 +28,7 @@ class LocalVideoCheck extends AppTestStep {
         throw new KiteTestError(Status.FAILED, 'The video sent is ' + result);
       }
     } catch (error) {
-      console.log(error);
+      this.logger(error);
       if (error instanceof KiteTestError) {
         throw error;
       } else {
