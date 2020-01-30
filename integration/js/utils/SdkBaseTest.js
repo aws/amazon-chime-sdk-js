@@ -4,6 +4,7 @@ const {SaucelabsSession} = require('./WebderiverSauceLabs');
 const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {emitMetric} = require('./CloudWatch');
 const uuidv4 = require('uuid/v4');
+const fs = require('fs');
 
 class SdkBaseTest extends KiteBaseTest {
   constructor(name, kiteConfig, testName) {
@@ -93,6 +94,16 @@ class SdkBaseTest extends KiteBaseTest {
     // return this.payload.seleniumSessions === undefined || this.payload.seleniumSessions < 1 ? 1 : this.payload.seleniumSessions;
   }
 
+  writeCompletionTimeTo(filePath) {
+    try {
+      const epochTimeInSeconds = Math.round(new Date().getTime() / 1000);
+      fs.writeFileSync(`${filePath}/last_run_timestamp`, epochTimeInSeconds);
+      console.log(`Wrote canary completion timestamp : ${epochTimeInSeconds}`);
+    } catch (e) {
+      console.log(`Failed to write last completed canary timestamp to a file : ${e}`)
+    }
+  }
+
   async testScript() {
     const maxRetries = this.payload.retry === undefined || this.payload.retry < 1 ? 5 : this.payload.retry;
     const numberOfSeleniumSessions = this.numberOfSessions(this.capabilities.browserName);
@@ -122,6 +133,9 @@ class SdkBaseTest extends KiteBaseTest {
         for (let i = 0; i < this.seleniumSessions.length; i++) {
           await this.seleniumSessions[i].updateTestResults(!this.failedTest && !this.remoteFailed)
         }
+      }
+      if (this.payload.canaryLogPath !== undefined) {
+        this.writeCompletionTimeTo(this.payload.canaryLogPath)
       }
       // Retry if the local or remote test failed
       if (!this.failedTest && !this.remoteFailed) {
