@@ -87,5 +87,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safari crashes when remote video tiles are added or toggled
 - Fix unhandled Promise rejection in DefaultScreenSharingSession#start
 - Fix canary deployment script
+- Fix sip call integration test
 
 ## [1.0.0] - 2019-11-20
