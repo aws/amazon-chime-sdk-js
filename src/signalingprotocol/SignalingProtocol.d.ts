@@ -205,6 +205,7 @@ export namespace SdkSignalFrame {
         RESUME = 8,
         LEAVE = 9,
         LEAVE_ACK = 10,
+        BITRATES = 13,
         AUDIO_CONTROL = 16,
         AUDIO_METADATA = 17,
         AUDIO_STREAM_ID_INFO = 18,

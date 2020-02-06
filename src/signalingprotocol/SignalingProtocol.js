@@ -393,6 +393,7 @@ $root.SdkSignalFrame = (function() {
         case 8:
         case 9:
         case 10:
+        case 13:
         case 16:
         case 17:
         case 18:
@@ -541,6 +542,10 @@ $root.SdkSignalFrame = (function() {
         case "LEAVE_ACK":
         case 10:
             message.type = 10;
+            break;
+        case "BITRATES":
+        case 13:
+            message.type = 13;
             break;
         case "AUDIO_CONTROL":
         case 16:
@@ -753,6 +758,7 @@ $root.SdkSignalFrame = (function() {
      * @property {number} RESUME=8 RESUME value
      * @property {number} LEAVE=9 LEAVE value
      * @property {number} LEAVE_ACK=10 LEAVE_ACK value
+     * @property {number} BITRATES=13 BITRATES value
      * @property {number} AUDIO_CONTROL=16 AUDIO_CONTROL value
      * @property {number} AUDIO_METADATA=17 AUDIO_METADATA value
      * @property {number} AUDIO_STREAM_ID_INFO=18 AUDIO_STREAM_ID_INFO value
@@ -771,6 +777,7 @@ $root.SdkSignalFrame = (function() {
         values[valuesById[8] = "RESUME"] = 8;
         values[valuesById[9] = "LEAVE"] = 9;
         values[valuesById[10] = "LEAVE_ACK"] = 10;
+        values[valuesById[13] = "BITRATES"] = 13;
         values[valuesById[16] = "AUDIO_CONTROL"] = 16;
         values[valuesById[17] = "AUDIO_METADATA"] = 17;
         values[valuesById[18] = "AUDIO_STREAM_ID_INFO"] = 18;
