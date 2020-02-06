@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -19,11 +19,9 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
   protected taskName = 'JoinAndReceiveIndexTask';
   private taskCanceler: TaskCanceler | null = null;
   private maxVideos = 16;
-  private sendBitrates: boolean;
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
-    this.sendBitrates = context.browserBehavior.requiresUnifiedPlan();
   }
 
   cancel(): void {
@@ -59,7 +57,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       const interceptor = new IndexFrameInterceptor(this.context.signalingClient);
       this.context.signalingClient.registerObserver(interceptor);
       this.taskCanceler = interceptor;
-      this.context.signalingClient.join(new SignalingClientJoin(this.maxVideos, this.sendBitrates));
+      this.context.signalingClient.join(new SignalingClientJoin(this.maxVideos, true));
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);
     this.context.indexFrame = indexFrame;

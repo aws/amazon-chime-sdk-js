@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add BITRATES in SdkSignalFrame Type and regenerate corresponding JS and TS protocol files.
+
 ### Changed
 - Automatically patch a version for each commit
 - Allow to specify manual version in publish script
@@ -86,4 +89,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix canary deployment script
 
 ## [1.0.0] - 2019-11-20
- 
