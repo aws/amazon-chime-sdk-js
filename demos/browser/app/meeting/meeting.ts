@@ -25,6 +25,7 @@ import {
   ScreenMessageDetail,
   ScreenShareFacadeObserver,
   TimeoutScheduler,
+  Versioning,
   VideoTileState,
 } from '../../../../src/index';
 
@@ -132,6 +133,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).app = this;
     this.switchToFlow('flow-authenticate');
+    (document.getElementById('sdk-version') as HTMLSpanElement).innerHTML =
+      "amazon-chime-sdk-js@" + Versioning.sdkVersion;
     this.initEventListeners();
     this.initParameters();
   }
