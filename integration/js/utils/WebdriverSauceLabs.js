@@ -91,9 +91,7 @@ const getSauceLabsConfig = (capabilities) => {
     extendedDebugging: true,
     capturePerformance: true,
     crmuxdriverVersion: 'beta',
-    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
-    commandTimeout: 600,
-    idleTimeout: 1000
+    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
   }
 };
 

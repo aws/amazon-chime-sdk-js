@@ -1,6 +1,6 @@
 const {KiteBaseTest} = require('../node_modules/kite-common');
 const {AppPage} = require('../pages/AppPage');
-const {SaucelabsSession} = require('./WebderiverSauceLabs');
+const {SaucelabsSession} = require('./WebdriverSauceLabs');
 const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {emitMetric} = require('./CloudWatch');
 const uuidv4 = require('uuid/v4');
@@ -13,7 +13,7 @@ class SdkBaseTest extends KiteBaseTest {
     this.url = this.url + '?m=' + kiteConfig.uuid;
     this.meetingTitle = kiteConfig.uuid;
     this.testName = testName;
-    this.capabilities["name"] = `${testName}-${process.env.TEST_TYPE}`;
+    this.capabilities["name"] = process.env.STAGE !== undefined ? `${testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${testName}-${process.env.TEST_TYPE}`;
     this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
     if (this.numberOfParticipant > 1) {
       this.attendeeId = uuidv4();
