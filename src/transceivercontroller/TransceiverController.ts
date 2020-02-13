@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
@@ -37,7 +37,7 @@ export default interface TransceiverController {
   /**
    * Sets the audio track.
    */
-  setAudioInput(track: MediaStreamTrack | null): void;
+  setAudioInput(track: MediaStreamTrack | null): Promise<void>;
 
   /**
    * Replaces [[MediaStreamTrack]] on audio transceiver of sendrecv direction.
@@ -47,7 +47,7 @@ export default interface TransceiverController {
   /**
    * Sets the video track.
    */
-  setVideoInput(track: MediaStreamTrack | null): void;
+  setVideoInput(track: MediaStreamTrack | null): Promise<void>;
 
   /**
    * Updates video transceivers.
@@ -61,4 +61,14 @@ export default interface TransceiverController {
    * Sets video sending bitrate in Kilo-bit-per-second
    */
   setVideoSendingBitrateKbps(bitrateKbps: number): void;
+
+  /**
+   * Returns the [[RTCRtpTransceiver]] for audio
+   */
+  localAudioTransceiver(): RTCRtpTransceiver;
+
+  /**
+   * Returns the [[RTCRtpTransceiver]] for local camera
+   */
+  localVideoTransceiver(): RTCRtpTransceiver;
 }

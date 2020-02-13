@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import BrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
@@ -9,8 +9,8 @@ import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import TransceiverController from './TransceiverController';
 
 export default class DefaultTransceiverController implements TransceiverController {
-  private localCameraTransceiver: RTCRtpTransceiver | null = null;
-  private localAudioTransceiver: RTCRtpTransceiver | null = null;
+  private _localCameraTransceiver: RTCRtpTransceiver | null = null;
+  private _localAudioTransceiver: RTCRtpTransceiver | null = null;
   private videoSubscriptions: number[] = [];
   private defaultMediaStream: MediaStream | null = null;
   private peer: RTCPeerConnection | null = null;
@@ -18,11 +18,11 @@ export default class DefaultTransceiverController implements TransceiverControll
 
   constructor(private logger: Logger) {}
 
-  static setVideoSendingBitrateKbpsForSender(
+  static async setVideoSendingBitrateKbpsForSender(
     sender: RTCRtpSender,
     bitrateKbps: number,
     logger: Logger
-  ): void {
+  ): Promise<void> {
     if (!sender || bitrateKbps <= 0) {
       return;
     }
@@ -33,7 +33,7 @@ export default class DefaultTransceiverController implements TransceiverControll
     for (const encodeParam of param.encodings) {
       encodeParam.maxBitrate = bitrateKbps * 1000;
     }
-    sender.setParameters(param);
+    await sender.setParameters(param);
     logger.info(`set video send bandwidth to ${bitrateKbps}kbps`);
   }
 
@@ -49,13 +49,20 @@ export default class DefaultTransceiverController implements TransceiverControll
     return true;
   }
 
-  setVideoSendingBitrateKbps(bitrateKbps: number): void {
+  localAudioTransceiver(): RTCRtpTransceiver {
+    return this._localAudioTransceiver;
+  }
+  localVideoTransceiver(): RTCRtpTransceiver {
+    return this._localCameraTransceiver;
+  }
+
+  async setVideoSendingBitrateKbps(bitrateKbps: number): Promise<void> {
     // this won't set bandwidth limitation for video in Chrome
-    if (!this.localCameraTransceiver || this.localCameraTransceiver.direction !== 'sendrecv') {
+    if (!this._localCameraTransceiver || this._localCameraTransceiver.direction !== 'sendrecv') {
       return;
     }
-    const sender: RTCRtpSender = this.localCameraTransceiver.sender;
-    DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
+    const sender: RTCRtpSender = this._localCameraTransceiver.sender;
+    await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
       sender,
       bitrateKbps,
       this.logger
@@ -67,8 +74,8 @@ export default class DefaultTransceiverController implements TransceiverControll
   }
 
   reset(): void {
-    this.localCameraTransceiver = null;
-    this.localAudioTransceiver = null;
+    this._localCameraTransceiver = null;
+    this._localAudioTransceiver = null;
     this.videoSubscriptions = [];
     this.defaultMediaStream = null;
     this.peer = null;
@@ -83,12 +90,12 @@ export default class DefaultTransceiverController implements TransceiverControll
   }
 
   trackIsVideoInput(track: MediaStreamTrack): boolean {
-    if (!this.localCameraTransceiver) {
+    if (!this._localCameraTransceiver) {
       return false;
     }
     return (
-      track === this.localCameraTransceiver.sender.track ||
-      track === this.localCameraTransceiver.receiver.track
+      track === this._localCameraTransceiver.sender.track ||
+      track === this._localCameraTransceiver.receiver.track
     );
   }
 
@@ -101,36 +108,38 @@ export default class DefaultTransceiverController implements TransceiverControll
       this.defaultMediaStream = new MediaStream();
     }
 
-    if (!this.localAudioTransceiver) {
-      this.localAudioTransceiver = this.peer.addTransceiver('audio', {
+    if (!this._localAudioTransceiver) {
+      this._localAudioTransceiver = this.peer.addTransceiver('audio', {
         direction: 'inactive',
         streams: [this.defaultMediaStream],
       });
     }
 
-    if (!this.localCameraTransceiver) {
-      this.localCameraTransceiver = this.peer.addTransceiver('video', {
+    if (!this._localCameraTransceiver) {
+      this._localCameraTransceiver = this.peer.addTransceiver('video', {
         direction: 'inactive',
         streams: [this.defaultMediaStream],
       });
     }
-  }
-
-  setAudioInput(track: MediaStreamTrack | null): void {
-    this.setTransceiverInput(this.localAudioTransceiver, track);
   }
 
   async replaceAudioTrack(track: MediaStreamTrack): Promise<boolean> {
-    if (!this.localAudioTransceiver || this.localAudioTransceiver.direction !== 'sendrecv') {
+    if (!this._localAudioTransceiver || this._localAudioTransceiver.direction !== 'sendrecv') {
       this.logger.info(`audio transceiver direction is not set up or not activated`);
       return false;
     }
-    await this.localAudioTransceiver.sender.replaceTrack(track);
+    await this._localAudioTransceiver.sender.replaceTrack(track);
     return true;
   }
 
-  setVideoInput(track: MediaStreamTrack | null): void {
-    this.setTransceiverInput(this.localCameraTransceiver, track);
+  async setAudioInput(track: MediaStreamTrack | null): Promise<void> {
+    await this.setTransceiverInput(this._localAudioTransceiver, track);
+    return;
+  }
+
+  async setVideoInput(track: MediaStreamTrack | null): Promise<void> {
+    await this.setTransceiverInput(this._localCameraTransceiver, track);
+    return;
   }
 
   updateVideoTransceivers(
@@ -163,7 +172,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   ): void {
     // disable transceivers which are no longer going to subscribe
     for (const transceiver of transceivers) {
-      if (transceiver === this.localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
+      if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
         continue;
       }
       // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
@@ -196,7 +205,7 @@ export default class DefaultTransceiverController implements TransceiverControll
     // Always occupies position 0 (whether active or not).
     let n = 1;
     for (const transceiver of transceivers) {
-      if (transceiver === this.localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
+      if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
         continue;
       }
       if (transceiver.direction === 'inactive') {
@@ -247,10 +256,10 @@ export default class DefaultTransceiverController implements TransceiverControll
     return msg;
   }
 
-  private setTransceiverInput(
+  private async setTransceiverInput(
     transceiver: RTCRtpTransceiver | null,
     track: MediaStreamTrack
-  ): void {
+  ): Promise<void> {
     if (!transceiver) {
       return;
     }
@@ -261,6 +270,6 @@ export default class DefaultTransceiverController implements TransceiverControll
       transceiver.direction = 'inactive';
     }
 
-    transceiver.sender.replaceTrack(track);
+    await transceiver.sender.replaceTrack(track);
   }
 }

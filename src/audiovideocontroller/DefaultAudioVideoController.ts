@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetector';
@@ -579,11 +579,13 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
   }
 
-  private enforceBandwidthLimitationForSender(maxBitrateKbps: number): void {
+  private async enforceBandwidthLimitationForSender(maxBitrateKbps: number): Promise<void> {
     if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
-      this.meetingSessionContext.transceiverController.setVideoSendingBitrateKbps(maxBitrateKbps);
+      await this.meetingSessionContext.transceiverController.setVideoSendingBitrateKbps(
+        maxBitrateKbps
+      );
     } else {
-      DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
+      await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
         this.meetingSessionContext.localVideoSender,
         maxBitrateKbps,
         this.meetingSessionContext.logger
@@ -633,7 +635,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
   }
 
-  handleHasBandwidthPriority(hasBandwidthPriority: boolean): void {
+  async handleHasBandwidthPriority(hasBandwidthPriority: boolean): Promise<void> {
     if (this.meetingSessionContext && this.meetingSessionContext.videoUplinkBandwidthPolicy) {
       this.logger.info(`video send has bandwidth priority: ${hasBandwidthPriority}`);
       const oldMaxBandwidth = this.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps();
@@ -645,7 +647,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
         this.logger.info(
           `video send bandwidth max has changed from ${oldMaxBandwidth} kbps to ${newMaxBandwidth} kbps`
         );
-        this.enforceBandwidthLimitationForSender(newMaxBandwidth);
+        await this.enforceBandwidthLimitationForSender(newMaxBandwidth);
       }
     }
   }

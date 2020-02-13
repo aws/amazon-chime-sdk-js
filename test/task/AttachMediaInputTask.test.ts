@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -9,7 +9,6 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
 import AttachMediaInputTask from '../../src/task/AttachMediaInputTask';
 import Task from '../../src/task/Task';
@@ -85,20 +84,11 @@ describe('AttachMediaInputTask', () => {
     it('attaches audio track', done => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
-        let audioTransceiver: RTCRtpTransceiver;
-        for (let i = 0; i < transceivers.length; i++) {
-          if (
-            transceivers[i].sender.track.kind === 'audio' &&
-            transceivers[i].direction === 'sendrecv'
-          ) {
-            audioTransceiver = transceivers[i];
-          }
-        }
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-          expect(audioTransceiver.direction).to.equal('sendrecv');
-          expect(audioTransceiver.sender.track).to.equal(context.activeAudioInput.getTracks()[0]);
-          done();
-        });
+        expect(transceivers.length).to.equal(2);
+        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        expect(audioTransceiver.direction).to.equal('sendrecv');
+        expect(audioTransceiver.sender.track).to.equal(context.activeAudioInput.getTracks()[0]);
+        done();
       });
     });
 
@@ -106,39 +96,22 @@ describe('AttachMediaInputTask', () => {
       context.activeAudioInput = new MediaStream();
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
-        let audioTransceiver: RTCRtpTransceiver;
-        for (let i = 0; i < transceivers.length; i++) {
-          if (
-            transceivers[i].sender.track.kind === 'audio' &&
-            transceivers[i].direction === 'inactive'
-          ) {
-            audioTransceiver = transceivers[i];
-          }
-        }
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-          expect(audioTransceiver.sender.track).to.equal(null);
-          done();
-        });
+        expect(transceivers.length).to.equal(2);
+        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        expect(audioTransceiver.direction).to.equal('inactive');
+        expect(audioTransceiver.sender.track).to.equal(null);
+        done();
       });
     });
 
     it('attaches video track', done => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
-        let videoTransceiver: RTCRtpTransceiver;
-        for (let i = 0; i < transceivers.length; i++) {
-          if (
-            transceivers[i].sender.track.kind === 'video' &&
-            transceivers[i].direction === 'sendrecv'
-          ) {
-            videoTransceiver = transceivers[i];
-          }
-        }
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-          expect(videoTransceiver.direction).to.equal('sendrecv');
-          expect(videoTransceiver.sender.track).to.equal(context.activeVideoInput.getTracks()[0]);
-          done();
-        });
+        expect(transceivers.length).to.equal(2);
+        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        expect(videoTransceiver.direction).to.equal('sendrecv');
+        expect(videoTransceiver.sender.track).to.equal(context.activeVideoInput.getTracks()[0]);
+        done();
       });
     });
 
@@ -146,36 +119,23 @@ describe('AttachMediaInputTask', () => {
       context.activeVideoInput = new MediaStream();
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
-        let videoTransceiver: RTCRtpTransceiver;
-        for (let i = 0; i < transceivers.length; i++) {
-          if (transceivers[i].sender.track.kind === 'video') {
-            videoTransceiver = transceivers[i];
-          }
-        }
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-          expect(videoTransceiver.sender.track).to.equal(null);
-          done();
-        });
+        expect(transceivers.length).to.equal(2);
+        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        expect(videoTransceiver.direction).to.equal('inactive');
+        expect(videoTransceiver.sender.track).to.equal(null);
+        done();
       });
     });
 
-    it('can remove audio input if audio input is null ', done => {
+    it('can remove audio input if audio input is null', done => {
       context.activeAudioInput = null;
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
-        let audioTransceiver: RTCRtpTransceiver;
-        for (let i = 0; i < transceivers.length; i++) {
-          if (
-            transceivers[i].sender.track.kind === 'audio' &&
-            transceivers[i].direction === 'inactive'
-          ) {
-            audioTransceiver = transceivers[i];
-          }
-        }
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-          expect(audioTransceiver.sender.track).to.equal(null);
-          done();
-        });
+        expect(transceivers.length).to.equal(2);
+        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        expect(audioTransceiver.direction).to.equal('inactive');
+        expect(audioTransceiver.sender.track).to.equal(null);
+        done();
       });
     });
 
@@ -183,16 +143,11 @@ describe('AttachMediaInputTask', () => {
       context.activeVideoInput = null;
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
-        let videoTransceiver: RTCRtpTransceiver;
-        for (let i = 0; i < transceivers.length; i++) {
-          if (transceivers[i].sender.track.kind === 'video') {
-            videoTransceiver = transceivers[i];
-          }
-        }
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-          expect(videoTransceiver.sender.track).to.equal(null);
-          done();
-        });
+        expect(transceivers.length).to.equal(2);
+        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        expect(videoTransceiver.direction).to.equal('inactive');
+        expect(videoTransceiver.sender.track).to.equal(null);
+        done();
       });
     });
 

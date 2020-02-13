@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -26,7 +26,7 @@ export default class AttachMediaInputTask extends BaseTask {
       const audioTracks = audioInput.getTracks();
       if (this.context.browserBehavior.requiresUnifiedPlan()) {
         this.context.logger.info('attaching audio track to peer connection (unified-plan)');
-        transceiverController.setAudioInput(audioTracks.length ? audioTracks[0] : null);
+        await transceiverController.setAudioInput(audioTracks.length ? audioTracks[0] : null);
       } else {
         this.context.logger.info('attaching audio track to peer connection (plan-b)');
         // @ts-ignore
@@ -45,7 +45,7 @@ export default class AttachMediaInputTask extends BaseTask {
         });
       }
     } else {
-      transceiverController.setAudioInput(null);
+      await transceiverController.setAudioInput(null);
       this.context.logger.warn('no audio track');
     }
 
@@ -55,7 +55,7 @@ export default class AttachMediaInputTask extends BaseTask {
       const videoTrack: MediaStreamTrack | null = videoTracks.length ? videoTracks[0] : null;
       if (this.context.browserBehavior.requiresUnifiedPlan()) {
         this.context.logger.info('attaching video track to peer connection (unified-plan)');
-        transceiverController.setVideoInput(videoTrack);
+        await transceiverController.setVideoInput(videoTrack);
       } else {
         this.context.logger.info('attaching video track to peer connection (plan-b)');
         // @ts-ignore
@@ -82,7 +82,7 @@ export default class AttachMediaInputTask extends BaseTask {
         this.context.videoInputAttachedTimestampMs = Date.now();
       }
     } else {
-      transceiverController.setVideoInput(null);
+      await transceiverController.setVideoInput(null);
       this.context.logger.info('no video track');
       if (this.context.localVideoSender) {
         this.context.logger.info('removing track from peer');
