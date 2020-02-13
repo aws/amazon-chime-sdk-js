@@ -9,7 +9,6 @@ import {
   AudioVideoFacade,
   AudioVideoObserver,
   ClientMetricReport,
-  ConsoleLogger,
   DefaultActiveSpeakerPolicy,
   DefaultAudioMixController,
   DefaultDeviceController,
@@ -28,6 +27,8 @@ import {
   Versioning,
   VideoTileState,
 } from '../../../../src/index';
+
+import CloudWatchLogger from './CloudWatchLogger';
 
 class DemoTileOrganizer {
   private static MAX_TILES = 16;
@@ -549,7 +550,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
-    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    const logger = new CloudWatchLogger('SDK', LogLevel.INFO, configuration.meetingId, configuration.credentials.attendeeId );
+    logger.publishToCloudWatch(DemoMeetingApp.BASE_URL);
     const deviceController = new DefaultDeviceController(logger);
     configuration.enableWebAudio = this.enableWebAudio;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
