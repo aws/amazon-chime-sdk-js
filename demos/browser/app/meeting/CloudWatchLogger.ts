@@ -79,6 +79,5 @@ export default class CloudWatchLogger extends ConsoleLogger {
       };
       this.logCapture.push(JSON.stringify(logJSON));
       this.logSequenceNumber += 1;
-
     }
 }
