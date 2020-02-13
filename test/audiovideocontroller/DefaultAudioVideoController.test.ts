@@ -949,7 +949,7 @@ describe('DefaultAudioVideoController', () => {
       );
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
-          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.OK);
+          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
           done();
         }
       }
@@ -986,7 +986,7 @@ describe('DefaultAudioVideoController', () => {
       );
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
-          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.OK);
+          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
           done();
         }
       }
@@ -1022,7 +1022,7 @@ describe('DefaultAudioVideoController', () => {
       );
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
-          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.OK);
+          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
           done();
         }
       }
@@ -1058,7 +1058,7 @@ describe('DefaultAudioVideoController', () => {
 
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
-          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.OK);
+          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
           done();
         }
       }
