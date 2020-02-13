@@ -24,18 +24,15 @@ export default class CloudWatchLogger extends ConsoleLogger {
   }
 
   async publishToCloudWatch(base_url: string) {
-    var _this = this;
-
-    setInterval(async function () {
-
-      if (_this.lock == true || _this.logCapture.length == 0 )
+    setInterval(async() => {
+      if (this.lock == true || this.logCapture.length == 0 )
         return
-      _this.lock = true;
-      var batch = _this.logCapture.slice(0, CloudWatchLogger.batchSizes);
+      this.lock = true;
+      var batch = this.logCapture.slice(0, CloudWatchLogger.batchSizes);
       var bodyString = JSON.stringify({
-        "meetingId" : _this.meetingId,
-        "attendeeId" : _this.attendeeId,
-        "appName" : _this.name,
+        "meetingId" : this.meetingId,
+        "attendeeId" : this.attendeeId,
+        "appName" : this.name,
         "logs": batch
       });
       const response = await fetch(
@@ -46,9 +43,9 @@ export default class CloudWatchLogger extends ConsoleLogger {
       );
       if (response.status == 200){
         // delete elements upto current_size(logCapture) from the array logCapture
-        _this.logCapture = _this.logCapture.slice(batch.length);
+        this.logCapture = this.logCapture.slice(batch.length);
       }
-      _this.lock = false;
+      this.lock = false;
     }, 5000);
   }
 
