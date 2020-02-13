@@ -44,6 +44,19 @@ Resources:
         - Ref: ChimeSdkAttendeeLambdaRole
         - Ref: ChimeSdkEndLambdaRole
         - Ref: ChimeSdkCreateMeetingLambdaRole
+  CloudWatchAccessPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CloudWatchAccess
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:*'
+            Resource: '*'
+      Roles:
+        - Ref: ChimeSdkBrowserLogsLambdaRole
   Meetings:
     Type: 'AWS::DynamoDB::Table'
     Properties:
@@ -164,7 +177,7 @@ Resources:
             Path: /attendee
             Method: GET
   ChimeSQSQueueLambda:
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
     Properties:
       Handler: notification_handlers.sqs_handler
       CodeUri: src/
@@ -175,7 +188,7 @@ Resources:
             Queue: !GetAtt MeetingNotificationsQueue.Arn
             BatchSize: 10
   ChimeEventBridgeLambda:
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
     Condition: ShouldUseEventBridge
     Properties:
       Handler: notification_handlers.event_bridge_handler
@@ -189,8 +202,19 @@ Resources:
                 - aws.chime
               detail-type:
                 - "Chime Meeting State Change"
+  ChimeSdkBrowserLogsLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handlers.logs
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /logs
+            Method: POST
   ChimeNotificationsQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
+    Type: 'AWS::SQS::QueuePolicy'
     Properties:
       PolicyDocument:
         Version: "2012-10-17"
