@@ -95,6 +95,8 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#localaudiotransceiver" class="tsd-kind-icon">local<wbr>Audio<wbr>Transceiver</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#localvideotransceiver" class="tsd-kind-icon">local<wbr>Video<wbr>Transceiver</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#replaceaudiotrack" class="tsd-kind-icon">replace<wbr>Audio<wbr>Track</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#reset" class="tsd-kind-icon">reset</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#setaudioinput" class="tsd-kind-icon">set<wbr>Audio<wbr>Input</a></li>
@@ -112,6 +114,50 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="localaudiotransceiver" class="tsd-anchor"></a>
+					<h3>local<wbr>Audio<wbr>Transceiver</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">local<wbr>Audio<wbr>Transceiver<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCRtpTransceiver</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/TransceiverController.ts#L68">src/transceivercontroller/TransceiverController.ts:68</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the [[RTCRtpTransceiver]] for audio</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RTCRtpTransceiver</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="localvideotransceiver" class="tsd-anchor"></a>
+					<h3>local<wbr>Video<wbr>Transceiver</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">local<wbr>Video<wbr>Transceiver<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCRtpTransceiver</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/TransceiverController.ts#L73">src/transceivercontroller/TransceiverController.ts:73</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the [[RTCRtpTransceiver]] for local camera</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RTCRtpTransceiver</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="replaceaudiotrack" class="tsd-anchor"></a>
 					<h3>replace<wbr>Audio<wbr>Track</h3>
@@ -166,7 +212,7 @@
 					<a name="setaudioinput" class="tsd-anchor"></a>
 					<h3>set<wbr>Audio<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span>track<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamTrack</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span>track<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamTrack</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -186,7 +232,7 @@
 									<h5>track: <span class="tsd-signature-type">MediaStreamTrack</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -222,7 +268,7 @@
 					<a name="setvideoinput" class="tsd-anchor"></a>
 					<h3>set<wbr>Video<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Video<wbr>Input<span class="tsd-signature-symbol">(</span>track<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamTrack</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Video<wbr>Input<span class="tsd-signature-symbol">(</span>track<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamTrack</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -242,7 +288,7 @@
 									<h5>track: <span class="tsd-signature-type">MediaStreamTrack</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -394,6 +440,12 @@
 					<li class="current tsd-kind-interface">
 						<a href="transceivercontroller.html" class="tsd-kind-icon">Transceiver<wbr>Controller</a>
 						<ul>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="transceivercontroller.html#localaudiotransceiver" class="tsd-kind-icon">local<wbr>Audio<wbr>Transceiver</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="transceivercontroller.html#localvideotransceiver" class="tsd-kind-icon">local<wbr>Video<wbr>Transceiver</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="transceivercontroller.html#replaceaudiotrack" class="tsd-kind-icon">replace<wbr>Audio<wbr>Track</a>
 							</li>

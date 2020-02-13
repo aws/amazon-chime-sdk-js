@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -151,7 +151,7 @@ describe('DefaultAudioVideoController', () => {
     return new RTCPeerConnectionIceEvent('icecandidate', iceEventInit);
   }
 
-  async function finishUpdating(): Promise<void> {
+  async function sendICEEventAndSubscribeAckFrame(): Promise<void> {
     await delay();
     // @ts-ignore
     audioVideoController.rtcPeerConnection.dispatchEvent(makeICEEvent(rtpCandidateMock));
@@ -165,7 +165,8 @@ describe('DefaultAudioVideoController', () => {
     audioVideoController.start();
     await delay();
     webSocketAdapter.send(makeIndexFrame());
-    await finishUpdating();
+    await delay(300);
+    await sendICEEventAndSubscribeAckFrame();
   }
 
   async function stop(): Promise<void> {
@@ -181,7 +182,8 @@ describe('DefaultAudioVideoController', () => {
     audioVideoController.reconnect(new MeetingSessionStatus(MeetingSessionStatusCode.OK));
     await delay();
     webSocketAdapter.send(makeIndexFrame());
-    await finishUpdating();
+    await delay(300);
+    await sendICEEventAndSubscribeAckFrame();
   }
 
   beforeEach(() => {
@@ -282,7 +284,7 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore mutate the policy state to trigger bandwidth reduction
       audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.numParticipants = 4;
       audioVideoController.handleHasBandwidthPriority(false);
-      await finishUpdating();
+      await sendICEEventAndSubscribeAckFrame();
       await delay();
       await stop();
     });
@@ -512,9 +514,9 @@ describe('DefaultAudioVideoController', () => {
       await start();
       const tileId = audioVideoController.videoTileController.startLocalVideoTile();
       expect(tileId).to.equal(1);
-      await finishUpdating();
+      await sendICEEventAndSubscribeAckFrame();
       audioVideoController.videoTileController.stopLocalVideoTile();
-      await finishUpdating();
+      await sendICEEventAndSubscribeAckFrame();
       await stop();
       expect(sessionStarted).to.be.true;
     });
@@ -540,9 +542,9 @@ describe('DefaultAudioVideoController', () => {
       await start();
       const tileId = audioVideoController.videoTileController.startLocalVideoTile();
       expect(tileId).to.equal(1);
-      await finishUpdating();
+      await sendICEEventAndSubscribeAckFrame();
       audioVideoController.videoTileController.stopLocalVideoTile();
-      await finishUpdating();
+      await sendICEEventAndSubscribeAckFrame();
       await stop();
       expect(sessionStarted).to.be.true;
     });
@@ -574,12 +576,13 @@ describe('DefaultAudioVideoController', () => {
       configuration.connectionTimeoutMs = 15000;
       // At this point, the update operation failed, performing the Reconnect action.
       // Finish the reconnect operation by sending required frames and events.
-      await delay(500);
+      await delay(200);
       webSocketAdapter.send(makeIndexFrame());
-      await finishUpdating();
+      await delay(200);
+      await sendICEEventAndSubscribeAckFrame();
       await stop();
       expect(called).to.equal(2);
-    });
+    }).timeout(4000);
   });
 
   describe('restartLocalVideo', () => {
@@ -602,20 +605,20 @@ describe('DefaultAudioVideoController', () => {
       );
       await start();
       audioVideoController.videoTileController.startLocalVideoTile();
-      await finishUpdating();
+      await sendICEEventAndSubscribeAckFrame();
       audioVideoController.restartLocalVideo(() => {
         called = true;
       });
       // restartLocalVideo() triggers 4 updates.
-      await finishUpdating();
-      await finishUpdating();
-      await finishUpdating();
-      await finishUpdating();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
       await stop();
       expect(stopLocalVideoTileSpy.called).to.be.true;
       expect(startLocalVideoTileSpy.called).to.be.true;
       expect(called).to.be.true;
-    });
+    }).timeout(5000);
 
     it('can defer restartLocalVideo and performs a single update operation when the local video is turned off', async () => {
       let called = false;
@@ -640,7 +643,7 @@ describe('DefaultAudioVideoController', () => {
         called = true;
       });
       await start();
-      await finishUpdating();
+      await sendICEEventAndSubscribeAckFrame();
       await stop();
       expect(stopLocalVideoTileSpy.called).to.be.false;
       expect(startLocalVideoTileSpy.called).to.be.false;
@@ -865,7 +868,7 @@ describe('DefaultAudioVideoController', () => {
         'audioVideoDidStart',
         'audioVideoDidStop',
       ]);
-    });
+    }).timeout(5000);
 
     it('does not reconnect if canceled', async () => {
       let called = 0;
@@ -927,7 +930,7 @@ describe('DefaultAudioVideoController', () => {
       expect(startCalled).to.equal(expected);
       // 0 (reconnect) + 1 (stop)
       expect(stopCalled).to.equal(1);
-    });
+    }).timeout(4000);
 
     // FinishGatheringICECandidatesTask does not throw the ICEGatheringTimeoutWorkaround error if
     // the session connection timeout is less than 5000ms.
@@ -966,7 +969,7 @@ describe('DefaultAudioVideoController', () => {
         // At this point, the start operation failed so attempted to connect the session again.
         // Finish the start operation by sending required frames and events.
         webSocketAdapter.send(makeIndexFrame());
-        await finishUpdating();
+        await sendICEEventAndSubscribeAckFrame();
         // Finally, stop this test.
         await stop();
       });
@@ -1000,8 +1003,11 @@ describe('DefaultAudioVideoController', () => {
 
       delay(configuration.connectionTimeoutMs + 100).then(async () => {
         // Finish the start operation and stop this test.
+        await delay(300);
         webSocketAdapter.send(makeIndexFrame());
-        await finishUpdating();
+        await delay(300);
+        await sendICEEventAndSubscribeAckFrame();
+        await delay(300);
         await stop();
       });
     });
@@ -1066,10 +1072,11 @@ describe('DefaultAudioVideoController', () => {
 
         // Finish the reconnect operation and stop this test.
         webSocketAdapter.send(makeIndexFrame());
-        await finishUpdating();
+        await delay(200);
+        await sendICEEventAndSubscribeAckFrame();
         await stop();
       });
-    });
+    }).timeout(5000);
   });
 
   describe('getters', () => {

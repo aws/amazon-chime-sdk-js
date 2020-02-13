@@ -3,7 +3,9 @@
 
 import { detect } from 'detect-browser';
 
-export default class DefaultBrowserBehavior {
+import BrowserBehavior from './BrowserBehavior';
+
+export default class DefaultBrowserBehavior implements BrowserBehavior {
   private readonly browser = detect();
 
   private browserSupport: { [id: string]: number } = {
