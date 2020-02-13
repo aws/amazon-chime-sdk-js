@@ -330,7 +330,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
   stop(): void {
     this.sessionStateController.perform(SessionStateControllerAction.Disconnect, () => {
-      this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.OK), false);
+      this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.Left), false);
     });
   }
 
