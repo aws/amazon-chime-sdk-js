@@ -651,4 +651,16 @@ export default class DefaultAudioVideoController implements AudioVideoController
       }
     }
   }
+
+  pauseReceivingStream(streamId: number): void {
+    if (!!this.meetingSessionContext && this.meetingSessionContext.signalingClient) {
+      this.meetingSessionContext.signalingClient.pause([streamId]);
+    }
+  }
+
+  resumeReceivingStream(streamId: number): void {
+    if (!!this.meetingSessionContext && this.meetingSessionContext.signalingClient) {
+      this.meetingSessionContext.signalingClient.resume([streamId]);
+    }
+  }
 }

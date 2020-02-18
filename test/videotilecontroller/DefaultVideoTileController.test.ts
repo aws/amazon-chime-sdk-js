@@ -1,7 +1,8 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -185,9 +186,13 @@ describe('DefaultVideoTileController', () => {
 
   describe('pauseVideoTile', () => {
     it('pauses a tile', () => {
+      const spy = sinon.spy(audioVideoController, 'pauseReceivingStream');
       const tileId = tileController.addVideoTile().id();
       tileController.pauseVideoTile(tileId);
+      expect(spy.callCount).to.equal(1);
       expect(tileController.getVideoTile(tileId).state().paused).to.equal(true);
+      tileController.pauseVideoTile(tileId);
+      expect(spy.callCount).to.equal(1);
     });
 
     it('does not throw an error when a tile does not exist', () => {
@@ -197,10 +202,14 @@ describe('DefaultVideoTileController', () => {
 
   describe('unpauseVideoTile', () => {
     it('unpauses a tile', () => {
+      const spy = sinon.spy(audioVideoController, 'resumeReceivingStream');
       const tileId = tileController.addVideoTile().id();
       tileController.pauseVideoTile(tileId);
       tileController.unpauseVideoTile(tileId);
+      expect(spy.callCount).to.equal(1);
       expect(!tileController.getVideoTile(tileId).state().paused).to.equal(true);
+      tileController.unpauseVideoTile(tileId);
+      expect(spy.callCount).to.equal(1);
     });
 
     it('does not throw an error when a tile does not exist', () => {

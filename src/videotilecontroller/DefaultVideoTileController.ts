@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
@@ -18,6 +18,7 @@ export default class DefaultVideoTileController implements VideoTileController {
   private nextTileId: number = 1;
   private currentLocalTile: VideoTile | null = null;
   private devicePixelRatioMonitor: DevicePixelRatioMonitor;
+  private currentPausedTilesByIds: Set<number> = new Set<number>();
 
   constructor(
     private tileFactory: VideoTileFactory,
@@ -83,6 +84,10 @@ export default class DefaultVideoTileController implements VideoTileController {
   pauseVideoTile(tileId: number): void {
     const tile = this.getVideoTile(tileId);
     if (tile) {
+      if (!this.currentPausedTilesByIds.has(tileId)) {
+        this.audioVideoController.pauseReceivingStream(tile.stateRef().streamId);
+        this.currentPausedTilesByIds.add(tileId);
+      }
       tile.pause();
     }
   }
@@ -90,6 +95,10 @@ export default class DefaultVideoTileController implements VideoTileController {
   unpauseVideoTile(tileId: number): void {
     const tile = this.getVideoTile(tileId);
     if (tile) {
+      if (this.currentPausedTilesByIds.has(tileId)) {
+        this.audioVideoController.resumeReceivingStream(tile.stateRef().streamId);
+        this.currentPausedTilesByIds.delete(tileId);
+      }
       tile.unpause();
     }
   }

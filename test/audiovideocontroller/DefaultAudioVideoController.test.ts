@@ -1153,4 +1153,67 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.called).to.be.false;
     });
   });
+
+  describe('pauseReceivingStream', () => {
+    it('is no-op if meeting is not started', () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      audioVideoController.pauseReceivingStream(0);
+    });
+
+    it('sends pause frame through signaling client', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      await start();
+
+      // @ts-ignore
+      const spy = sinon.spy(audioVideoController.meetingSessionContext.signalingClient, 'pause');
+      audioVideoController.pauseReceivingStream(1);
+
+      await stop();
+      expect(spy.callCount).to.equal(1);
+    });
+  });
+
+  describe('resumeReceivingStream', () => {
+    it('is no-op if meeting is not started', () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      audioVideoController.resumeReceivingStream(0);
+    });
+
+    it('sends resume frame through signaling client', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      await start();
+      // @ts-ignore
+      const spy = sinon.spy(audioVideoController.meetingSessionContext.signalingClient, 'resume');
+
+      audioVideoController.resumeReceivingStream(0);
+
+      await stop();
+
+      expect(spy.callCount).to.equal(1);
+    });
+  });
 });

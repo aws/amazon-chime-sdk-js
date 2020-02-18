@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to specify manual version in publish script
 
 ### Fixed
+- Fix pause and resume video functionality
 - Fix DefaultTransceiverController async function signature
 - Make DefaultBrowserBehavior implement BrowserBehavior interface
 - Fix publish script to use npm version

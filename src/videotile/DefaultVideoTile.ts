@@ -39,31 +39,42 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     }
   }
 
-  static disconnectVideoStreamFromVideoElement(videoElement: HTMLVideoElement | null): void {
-    if (!videoElement || !videoElement.srcObject) {
+  static disconnectVideoStreamFromVideoElement(
+    videoElement: HTMLVideoElement | null,
+    dueToPause: boolean
+  ): void {
+    if (!videoElement) {
       return;
     }
 
-    videoElement.pause();
-    videoElement.style.transform = '';
-
-    DefaultVideoTile.setVideoElementFlag(videoElement, 'disablePictureInPicture', false);
-    DefaultVideoTile.setVideoElementFlag(videoElement, 'disableRemotePlayback', false);
-
-    // We must remove all the tracks from the MediaStream before
-    // clearing the `srcObject` to prevent Safari from crashing.
-    const mediaStream = videoElement.srcObject as MediaStream;
-    const tracks = mediaStream.getTracks();
-    for (const track of tracks) {
-      track.stop();
-      mediaStream.removeTrack(track);
-    }
-
-    // Need to yield the message loop before clearing `srcObject` to
-    // prevent Safari from crashing.
-    new AsyncScheduler().start(() => {
+    if (dueToPause) {
       videoElement.srcObject = null;
-    });
+      videoElement.style.transform = '';
+    } else {
+      if (!videoElement.srcObject) {
+        return;
+      }
+      videoElement.pause();
+      videoElement.style.transform = '';
+
+      DefaultVideoTile.setVideoElementFlag(videoElement, 'disablePictureInPicture', false);
+      DefaultVideoTile.setVideoElementFlag(videoElement, 'disableRemotePlayback', false);
+
+      // We must remove all the tracks from the MediaStream before
+      // clearing the `srcObject` to prevent Safari from crashing.
+      const mediaStream = videoElement.srcObject as MediaStream;
+      const tracks = mediaStream.getTracks();
+      for (const track of tracks) {
+        track.stop();
+        mediaStream.removeTrack(track);
+      }
+
+      // Need to yield the message loop before clearing `srcObject` to
+      // prevent Safari from crashing.
+      new AsyncScheduler().start(() => {
+        videoElement.srcObject = null;
+      });
+    }
   }
 
   constructor(
@@ -79,7 +90,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
 
   destroy(): void {
     this.devicePixelRatioMonitor.removeObserver(this);
-    DefaultVideoTile.disconnectVideoStreamFromVideoElement(this.tileState.boundVideoElement);
+    DefaultVideoTile.disconnectVideoStreamFromVideoElement(this.tileState.boundVideoElement, false);
     this.tileState = new VideoTileState();
   }
 
@@ -247,7 +258,10 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
         this.tileState.localTile
       );
     } else {
-      DefaultVideoTile.disconnectVideoStreamFromVideoElement(this.tileState.boundVideoElement);
+      DefaultVideoTile.disconnectVideoStreamFromVideoElement(
+        this.tileState.boundVideoElement,
+        this.tileState.paused
+      );
     }
   }
 
