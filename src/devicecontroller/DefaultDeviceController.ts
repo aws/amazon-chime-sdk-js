@@ -123,7 +123,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
     // TODO: implement MediaDestroyer to provide single release MediaStream function
     this.releaseMediaStream(element.srcObject as MediaStream);
-    DefaultVideoTile.disconnectVideoStreamFromVideoElement(element);
+    DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
     navigator.mediaDevices
       .getUserMedia(this.activeDevices['video'].constraints)
       .then(previewStream => {
@@ -142,7 +142,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     const stream: MediaStream = element.srcObject as MediaStream;
     if (stream) {
       this.releaseMediaStream(stream);
-      DefaultVideoTile.disconnectVideoStreamFromVideoElement(element);
+      DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
     }
     if (this.activeDevices['video']) {
       this.releaseMediaStream(this.activeDevices['video'].stream);

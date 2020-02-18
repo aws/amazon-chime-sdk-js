@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -265,10 +265,14 @@ describe('DefaultVideoTile', () => {
     it('pauses', () => {
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       expect(tileControllerSpy.callCount).to.equal(1);
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+
+      expect(tileControllerSpy.callCount).to.equal(2);
 
       tile.pause();
       expect(tile.state().paused).to.equal(true);
-      expect(tileControllerSpy.callCount).to.equal(2);
+      expect(tileControllerSpy.callCount).to.equal(3);
     });
 
     it("cannot pause a tile if it's already paused", () => {

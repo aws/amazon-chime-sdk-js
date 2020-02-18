@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetector';
@@ -55,6 +55,16 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
    * Sets the max bandwidth for video publishing
    */
   setVideoMaxBandwidthKbps(maxBandwidthKbps: number): void;
+
+  /**
+   * Pauses receiving stream on peer connection by streamId
+   */
+  pauseReceivingStream(streamId: number): void;
+
+  /**
+   * Resumes receiving stream on peer connection by streamId
+   */
+  resumeReceivingStream(streamId: number): void;
 
   /**
    * Returns the session configuration for this audio-video controller.

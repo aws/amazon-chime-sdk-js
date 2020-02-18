@@ -32,6 +32,7 @@ import {
 class DemoTileOrganizer {
   private static MAX_TILES = 16;
   private tiles: { [id: number]: number } = {};
+  public tileStates: {[id: number]: boolean } = {};
 
   acquireTileIndex(tileId: number): number {
     for (let index = 0; index < DemoTileOrganizer.MAX_TILES; index++) {
@@ -1072,6 +1073,22 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
+
+    const pauseButtonElement = document.getElementById(`video-pause-${tileIndex}`) as HTMLButtonElement;
+    const resumeButtonElement = document.getElementById(`video-resume-${tileIndex}`) as HTMLButtonElement;
+
+    pauseButtonElement.addEventListener('click', () => {
+        if (!tileState.paused) {
+          this.audioVideo.pauseVideoTile(tileState.tileId);
+        }
+    });
+
+    resumeButtonElement.addEventListener('click', () => {
+      if (tileState.paused) {
+        this.audioVideo.unpauseVideoTile(tileState.tileId);
+      }
+    });
+
     this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
@@ -1257,6 +1274,39 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     nameplate.style.textShadow = '0px 0px 5px black';
     nameplate.style.letterSpacing = '0.1em';
     nameplate.style.fontSize = `${nameplateSize - 6}px`;
+
+    let button = document.getElementById(`video-pause-${tileIndex}`) as HTMLButtonElement;
+
+    button.style.position = 'absolute';
+    button.style.display = 'inline-block';
+    button.style.right = '0px';
+    // button.style.top = `${h - nameplateSize - nameplatePadding}px`;
+    button.style.height = `${nameplateSize}px`;
+    // button.style.width = `${w}px`;
+    button.style.margin = '0';
+    button.style.padding = '0';
+    button.style.paddingLeft = `${nameplatePadding}px`;
+    button.style.color = '#fff';
+    button.style.backgroundColor = 'rgba(0,0,0,0)';
+    button.style.textShadow = '0px 0px 5px black';
+    button.style.letterSpacing = '0.1em';
+    button.style.fontSize = `${nameplateSize - 6}px`;
+
+    button = document.getElementById(`video-resume-${tileIndex}`) as HTMLButtonElement;
+
+    button.style.position = 'absolute';
+    button.style.left = '0px';
+    button.style.top = '0px';
+    button.style.height = `${nameplateSize}px`;
+    // button.style.width = `${w}px`;
+    button.style.margin = '0';
+    button.style.padding = '0';
+    button.style.paddingLeft = `${nameplatePadding}px`;
+    button.style.color = '#fff';
+    button.style.backgroundColor = 'rgba(0,0,0,0)';
+    button.style.textShadow = '0px 0px 5px black';
+    button.style.letterSpacing = '0.1em';
+    button.style.fontSize = `${nameplateSize - 6}px`;
   }
 
   layoutVideoTilesGrid(visibleTileIndices: number[]): void {
