@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add stage to saucelabs session name for integration tests
 - Fix audio-video session stop to return Left status code
 - Fix crash in demo app when click on screen share view
+- Fix integration test completion time writer
 
 ## [1.1.0] - 2020-02-04
 
