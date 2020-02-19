@@ -10,6 +10,7 @@ const meetingsTableName = process.env.MEETINGS_TABLE_NAME;
 const attendeesTableName = process.env.ATTENDEES_TABLE_NAME;
 const sqsQueueArn = process.env.SQS_QUEUE_ARN;
 const provideQueueArn = process.env.USE_EVENT_BRIDGE === 'false';
+const logGroupName = process.env.BROWSER_LOG_GROUP_NAME;
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -207,4 +208,56 @@ exports.end = async(event, context, callback) => {
     MeetingId: meetingInfo.Meeting.MeetingId,
   }).promise();
   callback(null, response);
+};
+
+exports.logs = async (event, context) => {
+  var sequenceToken = "";
+  var response = {
+    "statusCode": 200,
+    "headers": {},
+    "body": '',
+    "isBase64Encoded": false
+  };
+  try {
+    var body = JSON.parse(event.body);
+    if (!body.logs || !body.meetingId || !body.attendeeId || !body.appName) {
+      response.body = "Empty Parameters Received";
+      return response;
+    }
+    const logStreamName = "ChimeSDKMeeting_" + body.meetingId.toString();
+    var cloudWatchClient = new AWS.CloudWatchLogs({
+      apiVersion: '2014-03-28'
+    });
+    var putLogEventsInput = {
+      "logGroupName": logGroupName,
+      "logStreamName": logStreamName
+    };
+    var describeLogStreamsParams = {
+      "logGroupName": logGroupName,
+      "logStreamNamePrefix": logStreamName
+    };
+    var describeLogStreamsResponse = await cloudWatchClient.describeLogStreams(describeLogStreamsParams).promise();
+    var logStreamsArr = describeLogStreamsResponse.logStreams;
+    var currentLogStream = logStreamsArr.find(logStreamJSON => logStreamJSON.logStreamName === logStreamName);
+    if (!currentLogStream) {
+      var res = await cloudWatchClient.createLogStream(putLogEventsInput).promise();
+    } else {
+      putLogEventsInput["sequenceToken"] = currentLogStream.uploadSequenceToken;
+    }
+    var logEvents = [];
+    for (let i = 0; i < body.logs.length; i++) {
+      var log = JSON.parse(body.logs[i]);
+      var message = `${log.logSequenceNumber} AttendeeID: ${body.attendeeId} [${log.logLevelType}] ${log.logMessage} ${log.timestamp}`;
+      logEvents.push({
+        "message": message,
+        "timestamp": log.timestamp
+      });
+    }
+    putLogEventsInput["logEvents"] = logEvents;
+    var res = await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
+  } catch (ex) {
+    response.statusCode = 500;
+    response.body = ex;
+  }
+  return response;
 };

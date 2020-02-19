@@ -59,7 +59,7 @@ export default class ConsoleLogger implements Logger {
     return this.level;
   }
 
-  private log(type: LogLevel, msg: string): void {
+  protected log(type: LogLevel, msg: string): void {
     if (type < this.level) {
       return;
     }

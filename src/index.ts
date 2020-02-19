@@ -146,6 +146,7 @@ import None from './maybe/None';
 import OpenScreenSignalingSessionTask from './task/OpenScreenSignalingSessionTask';
 import OpenScreenViewingConnectionTask from './task/OpenScreenViewingConnectionTask';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
+import POSTRequestLogger from './logger/POSTRequestLogger';
 import ParallelGroupTask from './task/ParallelGroupTask';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
@@ -422,6 +423,7 @@ export {
   OpenScreenSignalingSessionTask,
   OpenScreenViewingConnectionTask,
   OpenSignalingConnectionTask,
+  POSTRequestLogger,
   ParallelGroupTask,
   PingPong,
   PingPongObserver,

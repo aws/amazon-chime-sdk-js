@@ -16,3 +16,4 @@ integration/js/temp
 integration/kite-allure-reports
 integration/logs
 node_modules
+*.iml
