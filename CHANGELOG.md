@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add BITRATES in SdkSignalFrame Type and regenerate corresponding JS and TS protocol files.
+- Add mechanism to capture browser logs on CloudWatch
 
 ### Changed
 - Show SDK version in the demo meeting app
