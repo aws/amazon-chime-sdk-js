@@ -76,7 +76,7 @@ export default class DefaultSDP implements SDP {
   }
 
   hasCandidatesForAllMLines(): boolean {
-    const isAnyCLineUsingLocalHost = this.sdp.indexOf('\r\nc=IN IP4 0.0.0.0\r\n') > -1;
+    const isAnyCLineUsingLocalHost = this.sdp.indexOf('c=IN IP4 0.0.0.0') > -1;
     const mLinesHaveCandidates = !isAnyCLineUsingLocalHost;
     return mLinesHaveCandidates;
   }

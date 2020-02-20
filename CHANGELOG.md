@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to specify manual version in publish script
 
 ### Fixed
+- Remove line endings in the keyword when searching for connection attributes in SDP
 - Fix pause and resume video functionality
 - Fix DefaultTransceiverController async function signature
 - Make DefaultBrowserBehavior implement BrowserBehavior interface
