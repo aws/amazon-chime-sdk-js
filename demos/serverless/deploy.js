@@ -93,16 +93,19 @@ function spawnOrFail(command, args, options) {
   console.log(cmd.stdout.toString());
 }
 
-const appHtml = `../browser/dist/${app}.html`;
-function ensureApp() {
-  console.log(`Verifying application ${app}`);
-  if (!fs.existsSync(`../browser/app/${app}`)) {
-    console.log(`Application ${app} does not exist. Did you specify correct name?`);
+function appHtml(appName) {
+  return `../browser/dist/${appName}.html`
+}
+
+function ensureApp(appName) {
+  console.log(`Verifying application ${appName}`);
+  if (!fs.existsSync(`../browser/app/${appName}`)) {
+    console.log(`Application ${appName} does not exist. Did you specify correct name?`);
     process.exit(1);
   }
-  if (!fs.existsSync(appHtml)) {
-    console.log(`Application ${appHtml} does not exist. Rebuilding demo apps`);
-    spawnOrFail('npm', ['run', 'build'], {cwd: path.join(__dirname, '..', 'browser')});
+  if (!fs.existsSync(appHtml(appName))) {
+    console.log(`Application ${appHtml(appName)} does not exist. Rebuilding demo apps`);
+    spawnOrFail('npm', ['run', 'build', `--app=${appName}`], {cwd: path.join(__dirname, '..', 'browser')});
   }
 
   // TODO: remove this once AWS Lambda Node.js runtime includes the Chime APIs
@@ -116,7 +119,10 @@ function ensureTools() {
 
 parseArgs();
 ensureTools();
-ensureApp();
+ensureApp(app);
+if (app === 'meeting') {
+  ensureApp('meetingV2');
+}
 
 if (!fs.existsSync('build')) {
   fs.mkdirSync('build');
@@ -128,7 +134,12 @@ ensureBucket();
   // TODO: remove this once AWS Lambda Node.js runtime includes the Chime APIs
 spawnOrFail('cp', ['-Rp', path.join(__dirname, '..', 'browser', 'node_modules', 'aws-sdk'), 'src']);
 
-spawnOrFail('cp', [appHtml, 'src/index.html']);
+spawnOrFail('cp', [appHtml(app), 'src/index.html']);
+
+if (app === 'meeting') {
+  spawnOrFail('cp', [appHtml('meetingV2'), 'src/indexV2.html']);
+}
+
 spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,
                     '--region',  `${region}`]);
