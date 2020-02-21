@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix publish script to use npm version
 - Add stage to saucelabs session name for integration tests
 - Fix audio-video session stop to return Left status code
+- Fix crash in demo app when click on screen share view
 
 ## [1.1.0] - 2020-02-04
 
