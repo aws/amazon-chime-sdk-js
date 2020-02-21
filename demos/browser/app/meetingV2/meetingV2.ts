@@ -108,7 +108,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   sipURI: string | null = null;
   region: string | null = null;
   static readonly DID: string = '+17035550122';
-  static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/')].join('');
+  static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/').replace('/v2', '')].join('');
   static testVideo: string = 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
   meetingSession: MeetingSession | null = null;
   audioVideo: AudioVideoFacade | null = null;

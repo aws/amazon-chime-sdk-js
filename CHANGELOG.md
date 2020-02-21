@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Show SDK version in the demo meeting app
 - Automatically patch a version for each commit
 - Allow to specify manual version in publish script
+- Automatically deploy meetingV2 to serverless demo
 
 ### Fixed
 - Remove line endings in the keyword when searching for connection attributes in SDP

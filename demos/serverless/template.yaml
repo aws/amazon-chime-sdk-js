@@ -97,6 +97,18 @@ Resources:
           Properties:
             Path: /
             Method: GET
+  ChimeSdkIndexV2Lambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handlerV2
+      Runtime: nodejs10.x
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /v2/
+            Method: GET
   ChimeSdkCreateMeetingLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
