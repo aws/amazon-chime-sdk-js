@@ -6,16 +6,12 @@ import DefaultActiveSpeakerDetector from '../activespeakerdetector/DefaultActive
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import DefaultAudioMixController from '../audiomixcontroller/DefaultAudioMixController';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
-import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
-import DefaultAudioVideoFacade from '../audiovideofacade/DefaultAudioVideoFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
-import DeviceController from '../devicecontroller/DeviceController';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
-import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
@@ -69,14 +65,13 @@ import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
 
 export default class DefaultAudioVideoController implements AudioVideoController {
-  private _facade: AudioVideoFacade;
   private _logger: Logger;
   private _configuration: MeetingSessionConfiguration;
   private _webSocketAdapter: WebSocketAdapter;
   private _realtimeController: RealtimeController;
   private _activeSpeakerDetector: ActiveSpeakerDetector;
   private _videoTileController: VideoTileController;
-  private _deviceController: DeviceControllerBasedMediaStreamBroker;
+  private _mediaStreamBroker: MediaStreamBroker;
   private _reconnectController: ReconnectController;
   private _audioMixController: AudioMixController;
 
@@ -93,7 +88,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     configuration: MeetingSessionConfiguration,
     logger: Logger,
     webSocketAdapter: WebSocketAdapter,
-    deviceController: DeviceControllerBasedMediaStreamBroker,
+    mediaStreamBroker: MediaStreamBroker,
     reconnectController: ReconnectController
   ) {
     this._logger = logger;
@@ -107,7 +102,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
       configuration.credentials.attendeeId,
       this.handleHasBandwidthPriority.bind(this)
     );
-    this._deviceController = deviceController;
+    this._mediaStreamBroker = mediaStreamBroker;
     this._reconnectController = reconnectController;
     this._videoTileController = new DefaultVideoTileController(
       new DefaultVideoTileFactory(),
@@ -115,13 +110,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
       this._logger
     );
     this._audioMixController = new DefaultAudioMixController();
-    this._facade = new DefaultAudioVideoFacade(
-      this,
-      this._videoTileController,
-      this._realtimeController,
-      this._audioMixController,
-      this._deviceController
-    );
     this.meetingSessionContext.logger = this._logger;
   }
 
@@ -145,10 +133,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
     return this._audioMixController;
   }
 
-  get facade(): AudioVideoFacade {
-    return this._facade;
-  }
-
   get logger(): Logger {
     return this._logger;
   }
@@ -158,11 +142,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
   }
 
   get mediaStreamBroker(): MediaStreamBroker {
-    return this._deviceController;
-  }
-
-  get deviceController(): DeviceController {
-    return this._deviceController;
+    return this._mediaStreamBroker;
   }
 
   addObserver(observer: AudioVideoObserver): void {
@@ -201,8 +181,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
       this._webSocketAdapter,
       this.logger
     );
-    this.meetingSessionContext.mediaStreamBroker = this._deviceController;
-    this.meetingSessionContext.deviceController = this._deviceController;
+    this.meetingSessionContext.mediaStreamBroker = this._mediaStreamBroker;
     this.meetingSessionContext.realtimeController = this._realtimeController;
     this.meetingSessionContext.audioMixController = this._audioMixController;
     this.meetingSessionContext.audioVideoController = this;
@@ -265,7 +244,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
 
     try {
-      await new SerialGroupTask(this.logger, 'AudioVideoStart', [
+      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStart'), [
         new MonitorTask(
           this.meetingSessionContext,
           this.configuration.connectionHealthPolicyConfiguration,
@@ -339,7 +318,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     reconnecting: boolean
   ): Promise<void> {
     try {
-      await new SerialGroupTask(this.logger, 'AudioVideoStop', [
+      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStop'), [
         new TimeoutTask(
           this.logger,
           new LeaveAndReceiveLeaveAckTask(this.meetingSessionContext),
@@ -351,7 +330,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
 
     try {
-      await new SerialGroupTask(this.logger, 'AudioVideoClean', [
+      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), [
         new TimeoutTask(
           this.logger,
           new CleanStoppedSessionTask(this.meetingSessionContext),
@@ -445,7 +424,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
   private async actionUpdate(notify: boolean): Promise<void> {
     // TODO: do not block other updates while waiting for video input
     try {
-      await new SerialGroupTask(this.logger, 'AudioVideoUpdate', [
+      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoUpdate'), [
         new ReceiveVideoInputTask(this.meetingSessionContext),
         new TimeoutTask(
           this.logger,
@@ -521,7 +500,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
     this.connectionHealthData.reset();
     try {
-      await new SerialGroupTask(this.logger, 'AudioVideoReconnect', [
+      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoReconnect'), [
         new TimeoutTask(
           this.logger,
           new SerialGroupTask(this.logger, 'Media', [
@@ -568,6 +547,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
       });
     }
     this.connectionHealthData.setConnectionStartTime();
+  }
+
+  private wrapTaskName(taskName: string): string {
+    return `${taskName}/${this.configuration.meetingId}/${this.configuration.credentials.attendeeId}`;
   }
 
   private getMeetingStatusCode(error: Error): MeetingSessionStatusCode | null {

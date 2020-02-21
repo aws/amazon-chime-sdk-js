@@ -1,7 +1,8 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import MeetingSessionTURNCredentials from '../meetingsession/MeetingSessionTURNCredentials';
 import Versioning from '../versioning/Versioning';
 import BaseTask from './BaseTask';
@@ -37,7 +38,8 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
       credentials: 'omit',
       headers: {
         'Content-Type': 'application/json',
-        'X-Chime-Auth-Token': '_aws_wt_session=' + this.joinToken,
+        'X-Chime-Auth-Token':
+          '_aws_wt_session=' + this.joinToken.replace(ContentShareConstants.Modality, ''),
       },
       redirect: 'follow',
       referrer: 'no-referrer',

@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { Substitute } from '@fluffy-spoon/substitute';
@@ -10,7 +10,9 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
 import DefaultAudioVideoFacade from '../../src/audiovideofacade/DefaultAudioVideoFacade';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
+import ContentShareController from '../../src/contentsharecontroller/ContentShareController';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
+import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultAudioVideoFacade', () => {
@@ -19,20 +21,37 @@ describe('DefaultAudioVideoFacade', () => {
   let domMockBuilder: DOMMockBuilder;
   let controller: NoOpAudioVideoController;
   let facade: AudioVideoFacade;
+  let deviceController: NoOpDeviceController;
+  let contentShareController: ContentShareController;
 
   class NoOpObserver implements AudioVideoObserver {
     audioVideoDidStart(): void {}
   }
 
+  class NoOpContentShareController implements ContentShareController {
+    async startContentShare(_stream: MediaStream): Promise<void> {}
+
+    async startContentShareFromScreenCapture(_sourceId?: string): Promise<void> {}
+
+    pauseContentShare(): void {}
+
+    unpauseContentShare(): void {}
+
+    stopContentShare(): void {}
+  }
+
   beforeEach(() => {
     domMockBuilder = new DOMMockBuilder();
     controller = new NoOpAudioVideoController();
+    deviceController = new NoOpDeviceController();
+    contentShareController = new NoOpContentShareController();
     facade = new DefaultAudioVideoFacade(
       controller,
       controller.videoTileController,
       controller.realtimeController,
       controller.audioMixController,
-      controller.deviceController
+      deviceController,
+      contentShareController
     );
   });
 
@@ -364,39 +383,39 @@ describe('DefaultAudioVideoFacade', () => {
     });
 
     it('will call listAudioInputDevices', () => {
-      const spy = sinon.spy(controller.deviceController, 'listAudioInputDevices');
+      const spy = sinon.spy(deviceController, 'listAudioInputDevices');
       facade.listAudioInputDevices();
       assert(spy.calledOnceWith());
     });
 
     it('will call listVideoInputDevices', () => {
-      const spy = sinon.spy(controller.deviceController, 'listVideoInputDevices');
+      const spy = sinon.spy(deviceController, 'listVideoInputDevices');
       facade.listVideoInputDevices();
       assert(spy.calledOnceWith());
     });
 
     it('will call listAudioOutputDevices', () => {
-      const spy = sinon.spy(controller.deviceController, 'listAudioOutputDevices');
+      const spy = sinon.spy(deviceController, 'listAudioOutputDevices');
       facade.listAudioOutputDevices();
       assert(spy.calledOnceWith());
     });
 
     it('will call chooseAudioInputDevice', () => {
-      const spy = sinon.spy(controller.deviceController, 'chooseAudioInputDevice');
+      const spy = sinon.spy(deviceController, 'chooseAudioInputDevice');
       const arg1 = '';
       facade.chooseAudioInputDevice(arg1);
       assert(spy.calledOnceWith(arg1));
     });
 
     it('will call chooseVideoInputDevice', () => {
-      const spy = sinon.spy(controller.deviceController, 'chooseVideoInputDevice');
+      const spy = sinon.spy(deviceController, 'chooseVideoInputDevice');
       const arg1 = '';
       facade.chooseVideoInputDevice(arg1);
       assert(spy.calledOnceWith(arg1));
     });
 
     it('will call chooseVideoInputQuality', () => {
-      const spy = sinon.spy(controller.deviceController, 'chooseVideoInputQuality');
+      const spy = sinon.spy(deviceController, 'chooseVideoInputQuality');
       const arg1 = 1;
       const arg2 = 2;
       const arg3 = 3;
@@ -406,7 +425,7 @@ describe('DefaultAudioVideoFacade', () => {
     });
 
     it('will call chooseAudioOutputDevice', () => {
-      const spy = sinon.spy(controller.deviceController, 'chooseAudioOutputDevice');
+      const spy = sinon.spy(deviceController, 'chooseAudioOutputDevice');
       const arg1 = '';
       facade.chooseAudioOutputDevice(arg1);
       assert(spy.calledOnceWith(arg1));
@@ -414,7 +433,7 @@ describe('DefaultAudioVideoFacade', () => {
 
     it('will call addDeviceChangeObserver', () => {
       class MockDeviceChangeObserver implements DeviceChangeObserver {}
-      const spy = sinon.spy(controller.deviceController, 'addDeviceChangeObserver');
+      const spy = sinon.spy(deviceController, 'addDeviceChangeObserver');
       const arg1 = new MockDeviceChangeObserver();
       facade.addDeviceChangeObserver(arg1);
       assert(spy.calledOnceWith(arg1));
@@ -422,34 +441,34 @@ describe('DefaultAudioVideoFacade', () => {
 
     it('will call removeDeviceChangeObserver', () => {
       class MockDeviceChangeObserver implements DeviceChangeObserver {}
-      const spy = sinon.spy(controller.deviceController, 'removeDeviceChangeObserver');
+      const spy = sinon.spy(deviceController, 'removeDeviceChangeObserver');
       const arg1 = new MockDeviceChangeObserver();
       facade.removeDeviceChangeObserver(arg1);
       assert(spy.calledOnceWith(arg1));
     });
 
     it('will call createAnalyserNodeForAudioInput', () => {
-      const spy = sinon.spy(controller.deviceController, 'createAnalyserNodeForAudioInput');
+      const spy = sinon.spy(deviceController, 'createAnalyserNodeForAudioInput');
       facade.createAnalyserNodeForAudioInput();
       assert(spy.called);
     });
 
     it('will call startVideoPreviewForVideoInput', () => {
-      const spy = sinon.spy(controller.deviceController, 'startVideoPreviewForVideoInput');
+      const spy = sinon.spy(deviceController, 'startVideoPreviewForVideoInput');
       const arg1 = Substitute.for<HTMLVideoElement>();
       facade.startVideoPreviewForVideoInput(arg1);
       assert(spy.calledOnceWith(arg1));
     });
 
     it('will call stopVideoPreviewForVideoInput', () => {
-      const spy = sinon.spy(controller.deviceController, 'stopVideoPreviewForVideoInput');
+      const spy = sinon.spy(deviceController, 'stopVideoPreviewForVideoInput');
       const arg1 = Substitute.for<HTMLVideoElement>();
       facade.stopVideoPreviewForVideoInput(arg1);
       assert(spy.calledOnceWith(arg1));
     });
 
     it('will call setDeviceLabelTrigger', () => {
-      const spy = sinon.spy(controller.deviceController, 'setDeviceLabelTrigger');
+      const spy = sinon.spy(deviceController, 'setDeviceLabelTrigger');
       const arg1 = async (): Promise<MediaStream> => {
         return null;
       };
@@ -459,17 +478,48 @@ describe('DefaultAudioVideoFacade', () => {
 
     it('will call mixIntoAudioInput if WebAudio feature is enabled', () => {
       facade.enableWebAudio(true);
-      const spy = sinon.spy(controller.deviceController, 'mixIntoAudioInput');
+      const spy = sinon.spy(deviceController, 'mixIntoAudioInput');
       const arg1 = new MediaStream();
       facade.mixIntoAudioInput(arg1);
       assert(spy.calledOnceWith(arg1));
     });
 
     it('will call enableWebAudio', () => {
-      const spy = sinon.spy(controller.deviceController, 'enableWebAudio');
+      const spy = sinon.spy(deviceController, 'enableWebAudio');
       const arg1 = false;
       facade.enableWebAudio(arg1);
       assert(spy.calledOnceWith(arg1));
+    });
+
+    it('will call startContentShare', () => {
+      const spy = sinon.spy(contentShareController, 'startContentShare');
+      const mediaStream = new MediaStream();
+      facade.startContentShare(mediaStream);
+      spy.calledOnceWith(mediaStream);
+    });
+
+    it('will call startContentShareFromScreenCapture', () => {
+      const spy = sinon.spy(contentShareController, 'startContentShareFromScreenCapture');
+      facade.startContentShareFromScreenCapture();
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('pauseContentShare', () => {
+      const spy = sinon.spy(contentShareController, 'pauseContentShare');
+      facade.pauseContentShare();
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('unpauseContentShare', () => {
+      const spy = sinon.spy(contentShareController, 'unpauseContentShare');
+      facade.unpauseContentShare();
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('stopContentShare', () => {
+      const spy = sinon.spy(contentShareController, 'stopContentShare');
+      facade.stopContentShare();
+      expect(spy.calledOnce).to.be.true;
     });
   });
 });

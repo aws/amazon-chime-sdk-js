@@ -27,6 +27,9 @@ import ConnectionHealthPolicy from './connectionhealthpolicy/ConnectionHealthPol
 import ConnectionHealthPolicyConfiguration from './connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ConnectionMonitor from './connectionmonitor/ConnectionMonitor';
 import ConsoleLogger from './logger/ConsoleLogger';
+import ContentShareConstants from './contentsharecontroller/ContentShareConstants';
+import ContentShareController from './contentsharecontroller/ContentShareController';
+import ContentShareMediaStreamBroker from './contentsharecontroller/ContentShareMediaStreamBroker';
 import CreatePeerConnectionTask from './task/CreatePeerConnectionTask';
 import CreateSDPTask from './task/CreateSDPTask';
 import DOMWebSocket from './domwebsocket/DOMWebSocket';
@@ -38,6 +41,7 @@ import DefaultAudioVideoController from './audiovideocontroller/DefaultAudioVide
 import DefaultAudioVideoFacade from './audiovideofacade/DefaultAudioVideoFacade';
 import DefaultBrowserBehavior from './browserbehavior/DefaultBrowserBehavior';
 import DefaultClientMetricReport from './clientmetricreport/DefaultClientMetricReport';
+import DefaultContentShareController from './contentsharecontroller/DefaultContentShareController';
 import DefaultDOMWebSocket from './domwebsocket/DefaultDOMWebSocket';
 import DefaultDOMWebSocketFactory from './domwebsocket/DefaultDOMWebSocketFactory';
 import DefaultDeviceController from './devicecontroller/DefaultDeviceController';
@@ -47,6 +51,7 @@ import DefaultJPEGDecoderComponentFactory from './jpegdecoder/DefaultJPEGDecoder
 import DefaultJPEGDecoderController from './jpegdecoder/controller/DefaultJPEGDecoderController';
 import DefaultJPEGDecoderInstance from './jpegdecoder/instance/DefaultJPEGDecoderInstance';
 import DefaultMeetingSession from './meetingsession/DefaultMeetingSession';
+import DefaultModality from './modality/DefaultModality';
 import DefaultPingPong from './pingpong/DefaultPingPong';
 import DefaultPresentation from './presentation/DefaultPresentation';
 import DefaultPromisedWebSocket from './promisedwebsocket/DefaultPromisedWebSocket';
@@ -131,6 +136,7 @@ import MeetingSessionStatusCode from './meetingsession/MeetingSessionStatusCode'
 import MeetingSessionTURNCredentials from './meetingsession/MeetingSessionTURNCredentials';
 import MeetingSessionURLs from './meetingsession/MeetingSessionURLs';
 import MeetingSessionVideoAvailability from './meetingsession/MeetingSessionVideoAvailability';
+import Modality from './modality/Modality';
 import MonitorTask from './task/MonitorTask';
 import NScaleVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import NoOpAudioVideoController from './audiovideocontroller/NoOpAudioVideoController';
@@ -303,6 +309,9 @@ export {
   ConnectionHealthPolicyConfiguration,
   ConnectionMonitor,
   ConsoleLogger,
+  ContentShareConstants,
+  ContentShareController,
+  ContentShareMediaStreamBroker,
   CreatePeerConnectionTask,
   CreateSDPTask,
   DOMWebSocket,
@@ -314,6 +323,7 @@ export {
   DefaultAudioVideoFacade,
   DefaultBrowserBehavior,
   DefaultClientMetricReport,
+  DefaultContentShareController,
   DefaultDOMWebSocket,
   DefaultDOMWebSocketFactory,
   DefaultDeviceController,
@@ -323,6 +333,7 @@ export {
   DefaultJPEGDecoderController,
   DefaultJPEGDecoderInstance,
   DefaultMeetingSession,
+  DefaultModality,
   DefaultPingPong,
   DefaultPresentation,
   DefaultPromisedWebSocket,
@@ -407,6 +418,7 @@ export {
   MeetingSessionTURNCredentials,
   MeetingSessionURLs,
   MeetingSessionVideoAvailability,
+  Modality,
   MonitorTask,
   NScaleVideoUplinkBandwidthPolicy,
   NoOpAudioVideoController,

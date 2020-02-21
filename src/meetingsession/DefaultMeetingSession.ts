@@ -1,11 +1,15 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import DefaultAudioVideoController from '../audiovideocontroller/DefaultAudioVideoController';
 import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
+import DefaultAudioVideoFacade from '../audiovideofacade/DefaultAudioVideoFacade';
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import ContentShareController from '../contentsharecontroller/ContentShareController';
+import ContentShareMediaStreamBroker from '../contentsharecontroller/ContentShareMediaStreamBroker';
+import DefaultContentShareController from '../contentsharecontroller/DefaultContentShareController';
 import DeviceController from '../devicecontroller/DeviceController';
 import Logger from '../logger/Logger';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
@@ -22,9 +26,11 @@ export default class DefaultMeetingSession implements MeetingSession {
   private _configuration: MeetingSessionConfiguration;
   private _logger: Logger;
   private audioVideoController: AudioVideoController;
+  private contentShareController: ContentShareController;
   private _deviceController: DeviceController;
   private screenShareFacade: ScreenShareFacade;
   private screenShareViewFacade: ScreenShareViewFacade;
+  private audioVideoFacade: AudioVideoFacade;
 
   private static RECONNECT_TIMEOUT_MS = 120 * 1000;
   private static RECONNECT_FIXED_WAIT_MS = 0;
@@ -64,6 +70,34 @@ export default class DefaultMeetingSession implements MeetingSession {
       this._configuration,
       this._logger
     );
+    const contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(this._logger);
+    this.contentShareController = new DefaultContentShareController(
+      contentShareMediaStreamBroker,
+      new DefaultAudioVideoController(
+        DefaultContentShareController.createContentShareMeetingSessionConfigure(
+          this._configuration
+        ),
+        this._logger,
+        new DefaultWebSocketAdapter(this._logger),
+        contentShareMediaStreamBroker,
+        new DefaultReconnectController(
+          DefaultMeetingSession.RECONNECT_TIMEOUT_MS,
+          new FullJitterBackoff(
+            DefaultMeetingSession.RECONNECT_FIXED_WAIT_MS,
+            DefaultMeetingSession.RECONNECT_SHORT_BACKOFF_MS,
+            DefaultMeetingSession.RECONNECT_LONG_BACKOFF_MS
+          )
+        )
+      )
+    );
+    this.audioVideoFacade = new DefaultAudioVideoFacade(
+      this.audioVideoController,
+      this.audioVideoController.videoTileController,
+      this.audioVideoController.realtimeController,
+      this.audioVideoController.audioMixController,
+      this._deviceController,
+      this.contentShareController
+    );
     this.checkBrowserSupport();
   }
 
@@ -76,7 +110,11 @@ export default class DefaultMeetingSession implements MeetingSession {
   }
 
   get audioVideo(): AudioVideoFacade {
-    return this.audioVideoController.facade;
+    return this.audioVideoFacade;
+  }
+
+  get contentShare(): ContentShareController {
+    return this.contentShareController;
   }
 
   get screenShare(): ScreenShareFacade {

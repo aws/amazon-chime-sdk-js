@@ -1,11 +1,10 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import ConnectionMonitor from '../connectionmonitor/ConnectionMonitor';
-import DeviceController from '../devicecontroller/DeviceController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -50,8 +49,6 @@ export default class AudioVideoControllerState {
   videoTileController: VideoTileController | null = null;
 
   mediaStreamBroker: MediaStreamBroker | null = null;
-
-  deviceController: DeviceController | null = null;
 
   audioMixController: AudioMixController | null = null;
 

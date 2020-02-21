@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import FullJitterBackoffFactory from '../backoff/FullJitterBackoffFactory';
@@ -60,6 +60,12 @@ export default class DefaultScreenShareViewFacade implements ScreenShareViewFaca
   }
 
   start(element: HTMLDivElement): Promise<void> {
+    this.logger.warn(
+      'ScreenShareViewFacade has been deprecated and will be removed ' +
+        'beginning with version 2.0.0. Instead use the ' +
+        'startContentShareFromScreenCapture() and stopContentShare() methods ' +
+        'on the AudioVideoFacade.'
+    );
     return this.screenViewing.start(element);
   }
 

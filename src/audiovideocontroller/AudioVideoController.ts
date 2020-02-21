@@ -4,9 +4,7 @@
 import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetector';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioVideoControllerFacade from '../audiovideocontroller/AudioVideoControllerFacade';
-import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
-import DeviceController from '../devicecontroller/DeviceController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -87,11 +85,6 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   readonly videoTileController: VideoTileController;
 
   /**
-   * Returns the [[AudioVideoFacade]] for this audio-video controller.
-   */
-  readonly facade: AudioVideoFacade;
-
-  /**
    * Returns the [[Logger]] for this audio-video controller.
    */
   readonly logger: Logger;
@@ -101,11 +94,6 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
    * one.
    */
   readonly rtcPeerConnection: RTCPeerConnection | null;
-
-  /**
-   * Returns the [[DeviceController]] for this audio-video controller.
-   */
-  readonly deviceController: DeviceController;
 
   /**
    * Returns the [[MediaStreamBroker]] for this audio-video controller.

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MeetingSession | amazon-chime-sdk-js</title>
+	<title>Modality | amazon-chime-sdk-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="meetingsession.html">MeetingSession</a>
+					<a href="modality.html">Modality</a>
 				</li>
 			</ul>
-			<h1>Interface MeetingSession</h1>
+			<h1>Interface Modality</h1>
 		</div>
 	</div>
 </header>
@@ -70,14 +70,14 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">MeetingSession</span>
+						<span class="target">Modality</span>
 					</li>
 				</ul>
 			</section>
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/defaultmeetingsession.html" class="tsd-signature-type">DefaultMeetingSession</a></li>
+					<li><a href="../classes/defaultmodality.html" class="tsd-signature-type">DefaultModality</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -85,91 +85,141 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="meetingsession.html#audiovideo" class="tsd-kind-icon">audio<wbr>Video</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="meetingsession.html#configuration" class="tsd-kind-icon">configuration</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="meetingsession.html#contentshare" class="tsd-kind-icon">content<wbr>Share</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="meetingsession.html#devicecontroller" class="tsd-kind-icon">device<wbr>Controller</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="meetingsession.html#logger" class="tsd-kind-icon">logger</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="meetingsession.html#screenshare" class="tsd-kind-icon">screen<wbr>Share</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="meetingsession.html#screenshareview" class="tsd-kind-icon">screen<wbr>Share<wbr>View</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="modality.html#base" class="tsd-kind-icon">base</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="modality.html#hasmodality" class="tsd-kind-icon">has<wbr>Modality</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="modality.html#id" class="tsd-kind-icon">id</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="modality.html#modality-1" class="tsd-kind-icon">modality</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="modality.html#withmodality" class="tsd-kind-icon">with<wbr>Modality</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="audiovideo" class="tsd-anchor"></a>
-					<h3>audio<wbr>Video</h3>
-					<div class="tsd-signature tsd-kind-icon">audio<wbr>Video<span class="tsd-signature-symbol">:</span> <a href="audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L15">src/meetingsession/MeetingSession.ts:15</a></li>
-						</ul>
-					</aside>
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="base" class="tsd-anchor"></a>
+					<h3>base</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">base<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/modality/Modality.ts#L17">src/modality/Modality.ts:17</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The base of the Id</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="configuration" class="tsd-anchor"></a>
-					<h3>configuration</h3>
-					<div class="tsd-signature tsd-kind-icon">configuration<span class="tsd-signature-symbol">:</span> <a href="../classes/meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L13">src/meetingsession/MeetingSession.ts:13</a></li>
-						</ul>
-					</aside>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="hasmodality" class="tsd-anchor"></a>
+					<h3>has<wbr>Modality</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Modality<span class="tsd-signature-symbol">(</span>modality<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/modality/Modality.ts#L27">src/modality/Modality.ts:27</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Check whether the current Id contains the input modality</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>modality: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="contentshare" class="tsd-anchor"></a>
-					<h3>content<wbr>Share</h3>
-					<div class="tsd-signature tsd-kind-icon">content<wbr>Share<span class="tsd-signature-symbol">:</span> <a href="contentsharecontroller.html" class="tsd-signature-type">ContentShareController</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L16">src/meetingsession/MeetingSession.ts:16</a></li>
-						</ul>
-					</aside>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="id" class="tsd-anchor"></a>
+					<h3>id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/modality/Modality.ts#L12">src/modality/Modality.ts:12</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The participant Id</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="devicecontroller" class="tsd-anchor"></a>
-					<h3>device<wbr>Controller</h3>
-					<div class="tsd-signature tsd-kind-icon">device<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="devicecontroller.html" class="tsd-signature-type">DeviceController</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L19">src/meetingsession/MeetingSession.ts:19</a></li>
-						</ul>
-					</aside>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="modality-1" class="tsd-anchor"></a>
+					<h3>modality</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">modality<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/modality/Modality.ts#L22">src/modality/Modality.ts:22</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The modality of the Id</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="logger" class="tsd-anchor"></a>
-					<h3>logger</h3>
-					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logger.html" class="tsd-signature-type">Logger</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L14">src/meetingsession/MeetingSession.ts:14</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="screenshare" class="tsd-anchor"></a>
-					<h3>screen<wbr>Share</h3>
-					<div class="tsd-signature tsd-kind-icon">screen<wbr>Share<span class="tsd-signature-symbol">:</span> <a href="screensharefacade.html" class="tsd-signature-type">ScreenShareFacade</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L17">src/meetingsession/MeetingSession.ts:17</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="screenshareview" class="tsd-anchor"></a>
-					<h3>screen<wbr>Share<wbr>View</h3>
-					<div class="tsd-signature tsd-kind-icon">screen<wbr>Share<wbr>View<span class="tsd-signature-symbol">:</span> <a href="screenshareviewfacade.html" class="tsd-signature-type">ScreenShareViewFacade</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L18">src/meetingsession/MeetingSession.ts:18</a></li>
-						</ul>
-					</aside>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="withmodality" class="tsd-anchor"></a>
+					<h3>with<wbr>Modality</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">with<wbr>Modality<span class="tsd-signature-symbol">(</span>modality<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="modality.html" class="tsd-signature-type">Modality</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/modality/Modality.ts#L32">src/modality/Modality.ts:32</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a new Id using the base of the current Id and the input modality</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>modality: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="modality.html" class="tsd-signature-type">Modality</a></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -186,28 +236,22 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="meetingsession.html" class="tsd-kind-icon">Meeting<wbr>Session</a>
+						<a href="modality.html" class="tsd-kind-icon">Modality</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="meetingsession.html#audiovideo" class="tsd-kind-icon">audio<wbr>Video</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="modality.html#base" class="tsd-kind-icon">base</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="meetingsession.html#configuration" class="tsd-kind-icon">configuration</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="modality.html#hasmodality" class="tsd-kind-icon">has<wbr>Modality</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="meetingsession.html#contentshare" class="tsd-kind-icon">content<wbr>Share</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="modality.html#id" class="tsd-kind-icon">id</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="meetingsession.html#devicecontroller" class="tsd-kind-icon">device<wbr>Controller</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="modality.html#modality-1" class="tsd-kind-icon">modality</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="meetingsession.html#logger" class="tsd-kind-icon">logger</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="meetingsession.html#screenshare" class="tsd-kind-icon">screen<wbr>Share</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="meetingsession.html#screenshareview" class="tsd-kind-icon">screen<wbr>Share<wbr>View</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="modality.html#withmodality" class="tsd-kind-icon">with<wbr>Modality</a>
 							</li>
 						</ul>
 					</li>

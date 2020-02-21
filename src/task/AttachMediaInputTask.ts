@@ -23,7 +23,7 @@ export default class AttachMediaInputTask extends BaseTask {
     const audioInput = this.context.activeAudioInput;
 
     if (audioInput) {
-      const audioTracks = audioInput.getTracks();
+      const audioTracks = audioInput.getAudioTracks();
       if (this.context.browserBehavior.requiresUnifiedPlan()) {
         this.context.logger.info('attaching audio track to peer connection (unified-plan)');
         await transceiverController.setAudioInput(audioTracks.length ? audioTracks[0] : null);
@@ -31,7 +31,7 @@ export default class AttachMediaInputTask extends BaseTask {
         this.context.logger.info('attaching audio track to peer connection (plan-b)');
         // @ts-ignore
         const senders = this.context.peer.getSenders();
-        audioInput.getTracks().forEach((track: MediaStreamTrack) => {
+        audioInput.getAudioTracks().forEach((track: MediaStreamTrack) => {
           if (
             !senders.find((sender: RTCRtpSender) => {
               return sender.track.id === track.id;
@@ -51,7 +51,7 @@ export default class AttachMediaInputTask extends BaseTask {
 
     const videoInput = this.context.activeVideoInput;
     if (videoInput) {
-      const videoTracks = videoInput.getTracks();
+      const videoTracks = videoInput.getVideoTracks();
       const videoTrack: MediaStreamTrack | null = videoTracks.length ? videoTracks[0] : null;
       if (this.context.browserBehavior.requiresUnifiedPlan()) {
         this.context.logger.info('attaching video track to peer connection (unified-plan)');

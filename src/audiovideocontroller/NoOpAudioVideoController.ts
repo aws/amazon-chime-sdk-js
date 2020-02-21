@@ -1,9 +1,9 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
-import NoOpDeviceController from '../devicecontroller/NoOpDeviceController';
 import NoOpDebugLogger from '../logger/NoOpDebugLogger';
+import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../meetingsession/MeetingSessionCredentials';
 import MeetingSessionURLs from '../meetingsession/MeetingSessionURLs';
@@ -29,7 +29,7 @@ export default class NoOpAudioVideoController extends DefaultAudioVideoControlle
       configuration ? configuration : emptyConfiguration,
       new NoOpDebugLogger(),
       new DefaultWebSocketAdapter(new NoOpDebugLogger()),
-      new NoOpDeviceController(),
+      new NoOpMediaStreamBroker(),
       new DefaultReconnectController(0, new FullJitterBackoff(0, 0, 0))
     );
   }

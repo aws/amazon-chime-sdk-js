@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MediaStreamBroker | amazon-chime-sdk-js</title>
+	<title>ContentShareController | amazon-chime-sdk-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,34 +56,24 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="mediastreambroker.html">MediaStreamBroker</a>
+					<a href="contentsharecontroller.html">ContentShareController</a>
 				</li>
 			</ul>
-			<h1>Interface MediaStreamBroker</h1>
+			<h1>Interface ContentShareController</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Media controllers acquire media streams from the <a href="mediastreambroker.html">MediaStreamBroker</a>, which
-							fulfills the requests either through direct getUserMedia requests or a
-							higher-level intermediary such as a <a href="devicecontroller.html">DeviceController</a>. When a media
-						controller no longer needs a media stream it calls <a href="mediastreambroker.html#releasemediastream">releaseMediaStream</a>.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">MediaStreamBroker</span>
+						<span class="target">ContentShareController</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<a href="devicecontrollerbasedmediastreambroker.html" class="tsd-signature-type">DeviceControllerBasedMediaStreamBroker</a>
+								<a href="audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a>
 							</li>
 						</ul>
 					</li>
@@ -92,9 +82,7 @@
 			<section class="tsd-panel">
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/contentsharemediastreambroker.html" class="tsd-signature-type">ContentShareMediaStreamBroker</a></li>
-					<li><a href="../classes/noopdevicecontroller.html" class="tsd-signature-type">NoOpDeviceController</a></li>
-					<li><a href="../classes/noopmediastreambroker.html" class="tsd-signature-type">NoOpMediaStreamBroker</a></li>
+					<li><a href="../classes/defaultcontentsharecontroller.html" class="tsd-signature-type">DefaultContentShareController</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -104,11 +92,11 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="mediastreambroker.html#acquireaudioinputstream" class="tsd-kind-icon">acquire<wbr>Audio<wbr>Input<wbr>Stream</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="mediastreambroker.html#acquiredisplayinputstream" class="tsd-kind-icon">acquire<wbr>Display<wbr>Input<wbr>Stream</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="mediastreambroker.html#acquirevideoinputstream" class="tsd-kind-icon">acquire<wbr>Video<wbr>Input<wbr>Stream</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="mediastreambroker.html#bindtoaudiovideocontroller" class="tsd-kind-icon">bind<wbr>ToAudio<wbr>Video<wbr>Controller</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="mediastreambroker.html#releasemediastream" class="tsd-kind-icon">release<wbr>Media<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontroller.html#pausecontentshare" class="tsd-kind-icon">pause<wbr>Content<wbr>Share</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontroller.html#startcontentshare" class="tsd-kind-icon">start<wbr>Content<wbr>Share</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontroller.html#startcontentsharefromscreencapture" class="tsd-kind-icon">start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontroller.html#stopcontentshare" class="tsd-kind-icon">stop<wbr>Content<wbr>Share</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="contentsharecontroller.html#unpausecontentshare" class="tsd-kind-icon">unpause<wbr>Content<wbr>Share</a></li>
 							</ul>
 						</section>
 					</div>
@@ -117,133 +105,123 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="acquireaudioinputstream" class="tsd-anchor"></a>
-					<h3>acquire<wbr>Audio<wbr>Input<wbr>Stream</h3>
+					<a name="pausecontentshare" class="tsd-anchor"></a>
+					<h3>pause<wbr>Content<wbr>Share</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">acquire<wbr>Audio<wbr>Input<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">pause<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/mediastreambroker/MediaStreamBroker.ts#L17">src/mediastreambroker/MediaStreamBroker.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L18">src/contentsharecontroller/ContentShareController.ts:18</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Called when the session needs to attach an audio input to the peer
-									connection.</p>
+									<p>Pause content sharing</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="acquiredisplayinputstream" class="tsd-anchor"></a>
-					<h3>acquire<wbr>Display<wbr>Input<wbr>Stream</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">acquire<wbr>Display<wbr>Input<wbr>Stream<span class="tsd-signature-symbol">(</span>streamConstraints<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamConstraints</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/mediastreambroker/MediaStreamBroker.ts#L28">src/mediastreambroker/MediaStreamBroker.ts:28</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Called when the session needs to acquire a display input device for screen sharing.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>streamConstraints: <span class="tsd-signature-type">MediaStreamConstraints</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="acquirevideoinputstream" class="tsd-anchor"></a>
-					<h3>acquire<wbr>Video<wbr>Input<wbr>Stream</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">acquire<wbr>Video<wbr>Input<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/mediastreambroker/MediaStreamBroker.ts#L23">src/mediastreambroker/MediaStreamBroker.ts:23</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Called when the session needs to attach a video input to the peer
-									connection.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="bindtoaudiovideocontroller" class="tsd-anchor"></a>
-					<h3>bind<wbr>ToAudio<wbr>Video<wbr>Controller</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">bind<wbr>ToAudio<wbr>Video<wbr>Controller<span class="tsd-signature-symbol">(</span>audioVideoController<span class="tsd-signature-symbol">: </span><a href="audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/mediastreambroker/MediaStreamBroker.ts#L40">src/mediastreambroker/MediaStreamBroker.ts:40</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Binds the media stream broker to the audio video controller. This is called
-									automatically by the meeting session constructor.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>audioVideoController: <a href="audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></h5>
-								</li>
-							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="releasemediastream" class="tsd-anchor"></a>
-					<h3>release<wbr>Media<wbr>Stream</h3>
+					<a name="startcontentshare" class="tsd-anchor"></a>
+					<h3>start<wbr>Content<wbr>Share</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">release<wbr>Media<wbr>Stream<span class="tsd-signature-symbol">(</span>mediaStreamToRelease<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/mediastreambroker/MediaStreamBroker.ts#L34">src/mediastreambroker/MediaStreamBroker.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L8">src/contentsharecontroller/ContentShareController.ts:8</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Called when a media stream is no longer being used and can be cleaned up
-									or cached for later used.</p>
+									<p>Start content sharing</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>mediaStreamToRelease: <span class="tsd-signature-type">MediaStream</span></h5>
+									<h5>stream: <span class="tsd-signature-type">MediaStream</span></h5>
 								</li>
 							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="startcontentsharefromscreencapture" class="tsd-anchor"></a>
+					<h3>start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture<span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L13">src/contentsharecontroller/ContentShareController.ts:13</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Start screen sharing</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> sourceId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="stopcontentshare" class="tsd-anchor"></a>
+					<h3>stop<wbr>Content<wbr>Share</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L28">src/contentsharecontroller/ContentShareController.ts:28</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stop content sharing</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="unpausecontentshare" class="tsd-anchor"></a>
+					<h3>unpause<wbr>Content<wbr>Share</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">unpause<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L23">src/contentsharecontroller/ContentShareController.ts:23</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unpause content sharing</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -263,22 +241,22 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="mediastreambroker.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker</a>
+						<a href="contentsharecontroller.html" class="tsd-kind-icon">Content<wbr>Share<wbr>Controller</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="mediastreambroker.html#acquireaudioinputstream" class="tsd-kind-icon">acquire<wbr>Audio<wbr>Input<wbr>Stream</a>
+								<a href="contentsharecontroller.html#pausecontentshare" class="tsd-kind-icon">pause<wbr>Content<wbr>Share</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="mediastreambroker.html#acquiredisplayinputstream" class="tsd-kind-icon">acquire<wbr>Display<wbr>Input<wbr>Stream</a>
+								<a href="contentsharecontroller.html#startcontentshare" class="tsd-kind-icon">start<wbr>Content<wbr>Share</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="mediastreambroker.html#acquirevideoinputstream" class="tsd-kind-icon">acquire<wbr>Video<wbr>Input<wbr>Stream</a>
+								<a href="contentsharecontroller.html#startcontentsharefromscreencapture" class="tsd-kind-icon">start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="mediastreambroker.html#bindtoaudiovideocontroller" class="tsd-kind-icon">bind<wbr>ToAudio<wbr>Video<wbr>Controller</a>
+								<a href="contentsharecontroller.html#stopcontentshare" class="tsd-kind-icon">stop<wbr>Content<wbr>Share</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="mediastreambroker.html#releasemediastream" class="tsd-kind-icon">release<wbr>Media<wbr>Stream</a>
+								<a href="contentsharecontroller.html#unpausecontentshare" class="tsd-kind-icon">unpause<wbr>Content<wbr>Share</a>
 							</li>
 						</ul>
 					</li>

@@ -143,6 +143,36 @@ describe('DefaultVideoTile', () => {
       expect(tile.state().videoStreamContentWidth).to.equal(videoStreamContentWidth);
       expect(tile.state().videoStreamContentHeight).to.equal(videoStreamContentHeight);
       expect(tile.state().streamId).to.equal(streamId);
+      expect(tile.state().isContent).to.be.false;
+
+      expect(tileControllerSpy.called).to.be.true;
+    });
+
+    it('binds a content video stream', () => {
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+
+      const boundAttendeeId = 'attendee#content';
+      const localTile = true;
+      const videoStreamContentWidth = 1;
+      const videoStreamContentHeight = 1;
+      const streamId = 1;
+
+      tile.bindVideoStream(
+        boundAttendeeId,
+        localTile,
+        mockVideoStream,
+        videoStreamContentWidth,
+        videoStreamContentHeight,
+        streamId
+      );
+
+      expect(tile.state().boundAttendeeId).to.equal(boundAttendeeId);
+      expect(tile.state().localTile).to.equal(localTile);
+      expect(tile.state().boundVideoStream).to.equal(mockVideoStream);
+      expect(tile.state().videoStreamContentWidth).to.equal(videoStreamContentWidth);
+      expect(tile.state().videoStreamContentHeight).to.equal(videoStreamContentHeight);
+      expect(tile.state().streamId).to.equal(streamId);
+      expect(tile.state().isContent).to.be.true;
 
       expect(tileControllerSpy.called).to.be.true;
     });
@@ -158,6 +188,7 @@ describe('DefaultVideoTile', () => {
       expect(tile.state().videoStreamContentWidth).to.equal(null);
       expect(tile.state().videoStreamContentHeight).to.equal(null);
       expect(tile.state().streamId).to.equal(null);
+      expect(tile.state().isContent).to.be.false;
 
       expect(tileControllerSpy.called).to.be.true;
     });

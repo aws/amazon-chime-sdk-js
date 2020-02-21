@@ -97,6 +97,8 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingsession.html#_devicecontroller" class="tsd-kind-icon">_device<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingsession.html#_logger" class="tsd-kind-icon">_logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingsession.html#audiovideocontroller" class="tsd-kind-icon">audio<wbr>Video<wbr>Controller</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingsession.html#audiovideofacade" class="tsd-kind-icon">audio<wbr>Video<wbr>Facade</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingsession.html#contentsharecontroller" class="tsd-kind-icon">content<wbr>Share<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingsession.html#screensharefacade" class="tsd-kind-icon">screen<wbr>Share<wbr>Facade</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingsession.html#screenshareviewfacade" class="tsd-kind-icon">screen<wbr>Share<wbr>View<wbr>Facade</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="defaultmeetingsession.html#reconnect_fixed_wait_ms" class="tsd-kind-icon">RECONNECT_<wbr>FIXED_<wbr>WAIT_<wbr>MS</a></li>
@@ -110,6 +112,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#audiovideo" class="tsd-kind-icon">audio<wbr>Video</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#configuration" class="tsd-kind-icon">configuration</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#contentshare" class="tsd-kind-icon">content<wbr>Share</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#devicecontroller" class="tsd-kind-icon">device<wbr>Controller</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#screenshare" class="tsd-kind-icon">screen<wbr>Share</a></li>
@@ -137,7 +140,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L32">src/meetingsession/DefaultMeetingSession.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L38">src/meetingsession/DefaultMeetingSession.ts:38</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -165,7 +168,7 @@
 					<div class="tsd-signature tsd-kind-icon">_configuration<span class="tsd-signature-symbol">:</span> <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L22">src/meetingsession/DefaultMeetingSession.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L26">src/meetingsession/DefaultMeetingSession.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -175,7 +178,7 @@
 					<div class="tsd-signature tsd-kind-icon">_device<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/devicecontroller.html" class="tsd-signature-type">DeviceController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L25">src/meetingsession/DefaultMeetingSession.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L30">src/meetingsession/DefaultMeetingSession.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -185,7 +188,7 @@
 					<div class="tsd-signature tsd-kind-icon">_logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L23">src/meetingsession/DefaultMeetingSession.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L27">src/meetingsession/DefaultMeetingSession.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -195,7 +198,27 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Video<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L24">src/meetingsession/DefaultMeetingSession.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L28">src/meetingsession/DefaultMeetingSession.ts:28</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="audiovideofacade" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> audio<wbr>Video<wbr>Facade</h3>
+					<div class="tsd-signature tsd-kind-icon">audio<wbr>Video<wbr>Facade<span class="tsd-signature-symbol">:</span> <a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L33">src/meetingsession/DefaultMeetingSession.ts:33</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="contentsharecontroller" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> content<wbr>Share<wbr>Controller</h3>
+					<div class="tsd-signature tsd-kind-icon">content<wbr>Share<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/contentsharecontroller.html" class="tsd-signature-type">ContentShareController</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L29">src/meetingsession/DefaultMeetingSession.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -205,7 +228,7 @@
 					<div class="tsd-signature tsd-kind-icon">screen<wbr>Share<wbr>Facade<span class="tsd-signature-symbol">:</span> <a href="../interfaces/screensharefacade.html" class="tsd-signature-type">ScreenShareFacade</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L26">src/meetingsession/DefaultMeetingSession.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L31">src/meetingsession/DefaultMeetingSession.ts:31</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -215,7 +238,7 @@
 					<div class="tsd-signature tsd-kind-icon">screen<wbr>Share<wbr>View<wbr>Facade<span class="tsd-signature-symbol">:</span> <a href="../interfaces/screenshareviewfacade.html" class="tsd-signature-type">ScreenShareViewFacade</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L27">src/meetingsession/DefaultMeetingSession.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L32">src/meetingsession/DefaultMeetingSession.ts:32</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -225,7 +248,7 @@
 					<div class="tsd-signature tsd-kind-icon">RECONNECT_<wbr>FIXED_<wbr>WAIT_<wbr>MS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L30">src/meetingsession/DefaultMeetingSession.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L36">src/meetingsession/DefaultMeetingSession.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -235,7 +258,7 @@
 					<div class="tsd-signature tsd-kind-icon">RECONNECT_<wbr>LONG_<wbr>BACKOFF_<wbr>MS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;5 * 1000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L32">src/meetingsession/DefaultMeetingSession.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L38">src/meetingsession/DefaultMeetingSession.ts:38</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -245,7 +268,7 @@
 					<div class="tsd-signature tsd-kind-icon">RECONNECT_<wbr>SHORT_<wbr>BACKOFF_<wbr>MS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1 * 1000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L31">src/meetingsession/DefaultMeetingSession.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L37">src/meetingsession/DefaultMeetingSession.ts:37</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -255,7 +278,7 @@
 					<div class="tsd-signature tsd-kind-icon">RECONNECT_<wbr>TIMEOUT_<wbr>MS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;120 * 1000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L29">src/meetingsession/DefaultMeetingSession.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L35">src/meetingsession/DefaultMeetingSession.ts:35</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -272,7 +295,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L78">src/meetingsession/DefaultMeetingSession.ts:78</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L112">src/meetingsession/DefaultMeetingSession.ts:112</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></h4>
@@ -289,10 +312,27 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L70">src/meetingsession/DefaultMeetingSession.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L104">src/meetingsession/DefaultMeetingSession.ts:104</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="contentshare" class="tsd-anchor"></a>
+					<h3>content<wbr>Share</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> contentShare<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/contentsharecontroller.html" class="tsd-signature-type">ContentShareController</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L116">src/meetingsession/DefaultMeetingSession.ts:116</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/contentsharecontroller.html" class="tsd-signature-type">ContentShareController</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -306,7 +346,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L90">src/meetingsession/DefaultMeetingSession.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L128">src/meetingsession/DefaultMeetingSession.ts:128</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/devicecontroller.html" class="tsd-signature-type">DeviceController</a></h4>
@@ -323,7 +363,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L74">src/meetingsession/DefaultMeetingSession.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L108">src/meetingsession/DefaultMeetingSession.ts:108</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h4>
@@ -340,7 +380,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L82">src/meetingsession/DefaultMeetingSession.ts:82</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L120">src/meetingsession/DefaultMeetingSession.ts:120</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/screensharefacade.html" class="tsd-signature-type">ScreenShareFacade</a></h4>
@@ -357,7 +397,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L86">src/meetingsession/DefaultMeetingSession.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L124">src/meetingsession/DefaultMeetingSession.ts:124</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/screenshareviewfacade.html" class="tsd-signature-type">ScreenShareViewFacade</a></h4>
@@ -377,7 +417,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L94">src/meetingsession/DefaultMeetingSession.ts:94</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/DefaultMeetingSession.ts#L132">src/meetingsession/DefaultMeetingSession.ts:132</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -417,6 +457,12 @@
 								<a href="defaultmeetingsession.html#audiovideocontroller" class="tsd-kind-icon">audio<wbr>Video<wbr>Controller</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultmeetingsession.html#audiovideofacade" class="tsd-kind-icon">audio<wbr>Video<wbr>Facade</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultmeetingsession.html#contentsharecontroller" class="tsd-kind-icon">content<wbr>Share<wbr>Controller</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultmeetingsession.html#screensharefacade" class="tsd-kind-icon">screen<wbr>Share<wbr>Facade</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
@@ -439,6 +485,9 @@
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="defaultmeetingsession.html#configuration" class="tsd-kind-icon">configuration</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="defaultmeetingsession.html#contentshare" class="tsd-kind-icon">content<wbr>Share</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="defaultmeetingsession.html#devicecontroller" class="tsd-kind-icon">device<wbr>Controller</a>

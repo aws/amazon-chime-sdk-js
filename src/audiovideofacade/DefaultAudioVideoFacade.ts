@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
@@ -6,6 +6,7 @@ import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import ContentShareController from '../contentsharecontroller/ContentShareController';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Device from '../devicecontroller/Device';
 import DeviceController from '../devicecontroller/DeviceController';
@@ -20,7 +21,8 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     private videoTileController: VideoTileController,
     private realtimeController: RealtimeController,
     private audioMixController: AudioMixController,
-    private deviceController: DeviceController
+    private deviceController: DeviceController,
+    private contentShareController: ContentShareController
   ) {}
 
   addObserver(observer: AudioVideoObserver): void {
@@ -356,9 +358,38 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('enableWebAudio', flag);
   }
 
+  startContentShare(stream: MediaStream): Promise<void> {
+    const result = this.contentShareController.startContentShare(stream);
+    this.trace('startContentShare');
+    return result;
+  }
+
+  startContentShareFromScreenCapture(sourceId?: string): Promise<void> {
+    const result = this.contentShareController.startContentShareFromScreenCapture(sourceId);
+    this.trace('startContentShareFromScreenCapture');
+    return result;
+  }
+
+  pauseContentShare(): void {
+    this.contentShareController.pauseContentShare();
+    this.trace('pauseContentShare');
+  }
+
+  unpauseContentShare(): void {
+    this.contentShareController.unpauseContentShare();
+    this.trace('unpauseContentShare');
+  }
+
+  stopContentShare(): void {
+    this.contentShareController.stopContentShare();
+    this.trace('stopContentShare');
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private trace(name: string, input?: any, output?: any): void {
-    let s = `API/DefaultAudioVideoFacade/${name}`;
+    const meetingId = this.audioVideoController.configuration.meetingId;
+    const attendeeId = this.audioVideoController.configuration.credentials.attendeeId;
+    let s = `API/DefaultAudioVideoFacade/${meetingId}/${attendeeId}/${name}`;
     if (typeof input !== 'undefined') {
       s += ` ${JSON.stringify(input)}`;
     }
