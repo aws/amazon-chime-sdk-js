@@ -34,6 +34,7 @@ describe('DefaultMeetingSession', () => {
       expect(session.screenShare).to.exist;
       expect(session.screenShareView).to.exist;
       expect(session.deviceController).to.exist;
+      expect(session.contentShare).to.exist;
       mockBuilder.cleanup();
     });
 

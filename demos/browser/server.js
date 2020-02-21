@@ -15,7 +15,15 @@ let protocol = 'http';
 let options = {};
 
 const chime = new AWS.Chime({ region: 'us-east-1' });
-chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com/console');
+const alternateEndpoint = process.env.ENDPOINT;
+if (alternateEndpoint) {
+  console.log('Using endpoint: ' + alternateEndpoint);
+  chime.createMeeting({ ClientRequestToken: uuid() }, () => {});
+  AWS.NodeHttpClient.sslAgent.options.rejectUnauthorized = false;
+  chime.endpoint = new AWS.Endpoint(alternateEndpoint);
+} else {
+  chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com/console');
+}
 
 const meetingCache = {};
 const attendeeCache = {};

@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /**
@@ -8,6 +8,7 @@ export default class VideoTileState {
   tileId: number | null = null;
   localTile: boolean = false;
   localTileStarted: boolean = false;
+  isContent: boolean = false;
   active: boolean = false;
   paused: boolean = false;
   poorConnection: boolean = false;
@@ -28,6 +29,7 @@ export default class VideoTileState {
     const cloned = new VideoTileState();
     cloned.tileId = this.tileId;
     cloned.localTile = this.localTile;
+    cloned.isContent = this.isContent;
     cloned.active = this.active;
     cloned.paused = this.paused;
     cloned.poorConnection = this.poorConnection;

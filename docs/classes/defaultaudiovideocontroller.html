@@ -101,9 +101,8 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_activespeakerdetector" class="tsd-kind-icon">_active<wbr>Speaker<wbr>Detector</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_audiomixcontroller" class="tsd-kind-icon">_audio<wbr>Mix<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_configuration" class="tsd-kind-icon">_configuration</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_devicecontroller" class="tsd-kind-icon">_device<wbr>Controller</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_facade" class="tsd-kind-icon">_facade</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_logger" class="tsd-kind-icon">_logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_mediastreambroker" class="tsd-kind-icon">_media<wbr>Stream<wbr>Broker</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_realtimecontroller" class="tsd-kind-icon">_realtime<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_reconnectcontroller" class="tsd-kind-icon">_reconnect<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#_videotilecontroller" class="tsd-kind-icon">_video<wbr>Tile<wbr>Controller</a></li>
@@ -123,8 +122,6 @@
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#activespeakerdetector" class="tsd-kind-icon">active<wbr>Speaker<wbr>Detector</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#audiomixcontroller" class="tsd-kind-icon">audio<wbr>Mix<wbr>Controller</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#configuration" class="tsd-kind-icon">configuration</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#devicecontroller" class="tsd-kind-icon">device<wbr>Controller</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#facade" class="tsd-kind-icon">facade</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#mediastreambroker" class="tsd-kind-icon">media<wbr>Stream<wbr>Broker</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#realtimecontroller" class="tsd-kind-icon">realtime<wbr>Controller</a></li>
@@ -157,6 +154,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#start" class="tsd-kind-icon">start</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#stop" class="tsd-kind-icon">stop</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultaudiovideocontroller.html#update" class="tsd-kind-icon">update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultaudiovideocontroller.html#wraptaskname" class="tsd-kind-icon">wrap<wbr>Task<wbr>Name</a></li>
 							</ul>
 						</section>
 					</div>
@@ -168,13 +166,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Audio<wbr>Video<wbr>Controller<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, webSocketAdapter<span class="tsd-signature-symbol">: </span><a href="../interfaces/websocketadapter.html" class="tsd-signature-type">WebSocketAdapter</a>, deviceController<span class="tsd-signature-symbol">: </span><a href="../interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-signature-type">DeviceControllerBasedMediaStreamBroker</a>, reconnectController<span class="tsd-signature-symbol">: </span><a href="../interfaces/reconnectcontroller.html" class="tsd-signature-type">ReconnectController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultaudiovideocontroller.html" class="tsd-signature-type">DefaultAudioVideoController</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Audio<wbr>Video<wbr>Controller<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, webSocketAdapter<span class="tsd-signature-symbol">: </span><a href="../interfaces/websocketadapter.html" class="tsd-signature-type">WebSocketAdapter</a>, mediaStreamBroker<span class="tsd-signature-symbol">: </span><a href="../interfaces/mediastreambroker.html" class="tsd-signature-type">MediaStreamBroker</a>, reconnectController<span class="tsd-signature-symbol">: </span><a href="../interfaces/reconnectcontroller.html" class="tsd-signature-type">ReconnectController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultaudiovideocontroller.html" class="tsd-signature-type">DefaultAudioVideoController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L90">src/audiovideocontroller/DefaultAudioVideoController.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L85">src/audiovideocontroller/DefaultAudioVideoController.ts:85</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -189,7 +187,7 @@
 									<h5>webSocketAdapter: <a href="../interfaces/websocketadapter.html" class="tsd-signature-type">WebSocketAdapter</a></h5>
 								</li>
 								<li>
-									<h5>deviceController: <a href="../interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-signature-type">DeviceControllerBasedMediaStreamBroker</a></h5>
+									<h5>mediaStreamBroker: <a href="../interfaces/mediastreambroker.html" class="tsd-signature-type">MediaStreamBroker</a></h5>
 								</li>
 								<li>
 									<h5>reconnectController: <a href="../interfaces/reconnectcontroller.html" class="tsd-signature-type">ReconnectController</a></h5>
@@ -208,7 +206,7 @@
 					<div class="tsd-signature tsd-kind-icon">_active<wbr>Speaker<wbr>Detector<span class="tsd-signature-symbol">:</span> <a href="../interfaces/activespeakerdetector.html" class="tsd-signature-type">ActiveSpeakerDetector</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L77">src/audiovideocontroller/DefaultAudioVideoController.ts:77</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L72">src/audiovideocontroller/DefaultAudioVideoController.ts:72</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -218,7 +216,7 @@
 					<div class="tsd-signature tsd-kind-icon">_audio<wbr>Mix<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/audiomixcontroller.html" class="tsd-signature-type">AudioMixController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L81">src/audiovideocontroller/DefaultAudioVideoController.ts:81</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L76">src/audiovideocontroller/DefaultAudioVideoController.ts:76</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -228,27 +226,7 @@
 					<div class="tsd-signature tsd-kind-icon">_configuration<span class="tsd-signature-symbol">:</span> <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L74">src/audiovideocontroller/DefaultAudioVideoController.ts:74</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="_devicecontroller" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _device<wbr>Controller</h3>
-					<div class="tsd-signature tsd-kind-icon">_device<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-signature-type">DeviceControllerBasedMediaStreamBroker</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L79">src/audiovideocontroller/DefaultAudioVideoController.ts:79</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="_facade" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _facade</h3>
-					<div class="tsd-signature tsd-kind-icon">_facade<span class="tsd-signature-symbol">:</span> <a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L72">src/audiovideocontroller/DefaultAudioVideoController.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L69">src/audiovideocontroller/DefaultAudioVideoController.ts:69</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -258,7 +236,17 @@
 					<div class="tsd-signature tsd-kind-icon">_logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L73">src/audiovideocontroller/DefaultAudioVideoController.ts:73</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L68">src/audiovideocontroller/DefaultAudioVideoController.ts:68</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_mediastreambroker" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _media<wbr>Stream<wbr>Broker</h3>
+					<div class="tsd-signature tsd-kind-icon">_media<wbr>Stream<wbr>Broker<span class="tsd-signature-symbol">:</span> <a href="../interfaces/mediastreambroker.html" class="tsd-signature-type">MediaStreamBroker</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L74">src/audiovideocontroller/DefaultAudioVideoController.ts:74</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -268,7 +256,7 @@
 					<div class="tsd-signature tsd-kind-icon">_realtime<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/realtimecontroller.html" class="tsd-signature-type">RealtimeController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L76">src/audiovideocontroller/DefaultAudioVideoController.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L71">src/audiovideocontroller/DefaultAudioVideoController.ts:71</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -278,7 +266,7 @@
 					<div class="tsd-signature tsd-kind-icon">_reconnect<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/reconnectcontroller.html" class="tsd-signature-type">ReconnectController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L80">src/audiovideocontroller/DefaultAudioVideoController.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L75">src/audiovideocontroller/DefaultAudioVideoController.ts:75</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -288,7 +276,7 @@
 					<div class="tsd-signature tsd-kind-icon">_video<wbr>Tile<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L78">src/audiovideocontroller/DefaultAudioVideoController.ts:78</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L73">src/audiovideocontroller/DefaultAudioVideoController.ts:73</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -298,7 +286,7 @@
 					<div class="tsd-signature tsd-kind-icon">_web<wbr>Socket<wbr>Adapter<span class="tsd-signature-symbol">:</span> <a href="../interfaces/websocketadapter.html" class="tsd-signature-type">WebSocketAdapter</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L75">src/audiovideocontroller/DefaultAudioVideoController.ts:75</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L70">src/audiovideocontroller/DefaultAudioVideoController.ts:70</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -308,7 +296,7 @@
 					<div class="tsd-signature tsd-kind-icon">connection<wbr>Health<wbr>Data<span class="tsd-signature-symbol">:</span> <a href="connectionhealthdata.html" class="tsd-signature-type">ConnectionHealthData</a><span class="tsd-signature-symbol"> =&nbsp;new ConnectionHealthData()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L83">src/audiovideocontroller/DefaultAudioVideoController.ts:83</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L78">src/audiovideocontroller/DefaultAudioVideoController.ts:78</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -318,7 +306,7 @@
 					<div class="tsd-signature tsd-kind-icon">meeting<wbr>Session<wbr>Context<span class="tsd-signature-symbol">:</span> <a href="audiovideocontrollerstate.html" class="tsd-signature-type">AudioVideoControllerState</a><span class="tsd-signature-symbol"> =&nbsp;new AudioVideoControllerState()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L85">src/audiovideocontroller/DefaultAudioVideoController.ts:85</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L80">src/audiovideocontroller/DefaultAudioVideoController.ts:80</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -328,7 +316,7 @@
 					<div class="tsd-signature tsd-kind-icon">observer<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/audiovideoobserver.html" class="tsd-signature-type">AudioVideoObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new Set&lt;AudioVideoObserver&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L84">src/audiovideocontroller/DefaultAudioVideoController.ts:84</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L79">src/audiovideocontroller/DefaultAudioVideoController.ts:79</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -338,7 +326,7 @@
 					<div class="tsd-signature tsd-kind-icon">session<wbr>State<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/sessionstatecontroller.html" class="tsd-signature-type">SessionStateController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L86">src/audiovideocontroller/DefaultAudioVideoController.ts:86</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L81">src/audiovideocontroller/DefaultAudioVideoController.ts:81</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -348,7 +336,7 @@
 					<div class="tsd-signature tsd-kind-icon">MAX_<wbr>VOLUME_<wbr>DECIBELS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;-14</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L89">src/audiovideocontroller/DefaultAudioVideoController.ts:89</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L84">src/audiovideocontroller/DefaultAudioVideoController.ts:84</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -358,7 +346,7 @@
 					<div class="tsd-signature tsd-kind-icon">MIN_<wbr>VOLUME_<wbr>DECIBELS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;-42</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L88">src/audiovideocontroller/DefaultAudioVideoController.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L83">src/audiovideocontroller/DefaultAudioVideoController.ts:83</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -368,7 +356,7 @@
 					<div class="tsd-signature tsd-kind-icon">PING_<wbr>PONG_<wbr>INTERVAL_<wbr>MS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;10000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L90">src/audiovideocontroller/DefaultAudioVideoController.ts:90</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L85">src/audiovideocontroller/DefaultAudioVideoController.ts:85</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -385,7 +373,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L136">src/audiovideocontroller/DefaultAudioVideoController.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L124">src/audiovideocontroller/DefaultAudioVideoController.ts:124</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/activespeakerdetector.html" class="tsd-signature-type">ActiveSpeakerDetector</a></h4>
@@ -402,7 +390,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L144">src/audiovideocontroller/DefaultAudioVideoController.ts:144</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L132">src/audiovideocontroller/DefaultAudioVideoController.ts:132</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/audiomixcontroller.html" class="tsd-signature-type">AudioMixController</a></h4>
@@ -419,44 +407,10 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L128">src/audiovideocontroller/DefaultAudioVideoController.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L116">src/audiovideocontroller/DefaultAudioVideoController.ts:116</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="devicecontroller" class="tsd-anchor"></a>
-					<h3>device<wbr>Controller</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> deviceController<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/devicecontroller.html" class="tsd-signature-type">DeviceController</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L164">src/audiovideocontroller/DefaultAudioVideoController.ts:164</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/devicecontroller.html" class="tsd-signature-type">DeviceController</a></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="facade" class="tsd-anchor"></a>
-					<h3>facade</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> facade<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L148">src/audiovideocontroller/DefaultAudioVideoController.ts:148</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -470,7 +424,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L152">src/audiovideocontroller/DefaultAudioVideoController.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L136">src/audiovideocontroller/DefaultAudioVideoController.ts:136</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h4>
@@ -487,7 +441,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L160">src/audiovideocontroller/DefaultAudioVideoController.ts:160</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L144">src/audiovideocontroller/DefaultAudioVideoController.ts:144</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/mediastreambroker.html" class="tsd-signature-type">MediaStreamBroker</a></h4>
@@ -504,7 +458,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L132">src/audiovideocontroller/DefaultAudioVideoController.ts:132</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L120">src/audiovideocontroller/DefaultAudioVideoController.ts:120</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/realtimecontroller.html" class="tsd-signature-type">RealtimeController</a></h4>
@@ -521,7 +475,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L156">src/audiovideocontroller/DefaultAudioVideoController.ts:156</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L140">src/audiovideocontroller/DefaultAudioVideoController.ts:140</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RTCPeerConnection</span>
@@ -541,7 +495,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L140">src/audiovideocontroller/DefaultAudioVideoController.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L128">src/audiovideocontroller/DefaultAudioVideoController.ts:128</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a></h4>
@@ -561,7 +515,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L194">src/audiovideocontroller/DefaultAudioVideoController.ts:194</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L174">src/audiovideocontroller/DefaultAudioVideoController.ts:174</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -584,7 +538,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L337">src/audiovideocontroller/DefaultAudioVideoController.ts:337</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L316">src/audiovideocontroller/DefaultAudioVideoController.ts:316</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -610,7 +564,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L320">src/audiovideocontroller/DefaultAudioVideoController.ts:320</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L299">src/audiovideocontroller/DefaultAudioVideoController.ts:299</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -627,7 +581,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L481">src/audiovideocontroller/DefaultAudioVideoController.ts:481</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L460">src/audiovideocontroller/DefaultAudioVideoController.ts:460</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -644,7 +598,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L514">src/audiovideocontroller/DefaultAudioVideoController.ts:514</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L493">src/audiovideocontroller/DefaultAudioVideoController.ts:493</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -661,7 +615,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L445">src/audiovideocontroller/DefaultAudioVideoController.ts:445</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L424">src/audiovideocontroller/DefaultAudioVideoController.ts:424</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -685,7 +639,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#addobserver">addObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L168">src/audiovideocontroller/DefaultAudioVideoController.ts:168</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L148">src/audiovideocontroller/DefaultAudioVideoController.ts:148</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -708,7 +662,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L582">src/audiovideocontroller/DefaultAudioVideoController.ts:582</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L565">src/audiovideocontroller/DefaultAudioVideoController.ts:565</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -731,7 +685,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L178">src/audiovideocontroller/DefaultAudioVideoController.ts:178</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L158">src/audiovideocontroller/DefaultAudioVideoController.ts:158</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -772,7 +726,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L573">src/audiovideocontroller/DefaultAudioVideoController.ts:573</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L556">src/audiovideocontroller/DefaultAudioVideoController.ts:556</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -798,7 +752,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L638">src/audiovideocontroller/DefaultAudioVideoController.ts:638</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L621">src/audiovideocontroller/DefaultAudioVideoController.ts:621</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -822,7 +776,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#handlemeetingsessionstatus">handleMeetingSessionStatus</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L596">src/audiovideocontroller/DefaultAudioVideoController.ts:596</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L579">src/audiovideocontroller/DefaultAudioVideoController.ts:579</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -846,7 +800,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#pausereceivingstream">pauseReceivingStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L655">src/audiovideocontroller/DefaultAudioVideoController.ts:655</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L638">src/audiovideocontroller/DefaultAudioVideoController.ts:638</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -870,7 +824,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#reconnect">reconnect</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L487">src/audiovideocontroller/DefaultAudioVideoController.ts:487</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L466">src/audiovideocontroller/DefaultAudioVideoController.ts:466</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -894,7 +848,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L173">src/audiovideocontroller/DefaultAudioVideoController.ts:173</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L153">src/audiovideocontroller/DefaultAudioVideoController.ts:153</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -917,7 +871,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L406">src/audiovideocontroller/DefaultAudioVideoController.ts:406</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L385">src/audiovideocontroller/DefaultAudioVideoController.ts:385</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -952,7 +906,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L383">src/audiovideocontroller/DefaultAudioVideoController.ts:383</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L362">src/audiovideocontroller/DefaultAudioVideoController.ts:362</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -988,7 +942,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#resumereceivingstream">resumeReceivingStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L661">src/audiovideocontroller/DefaultAudioVideoController.ts:661</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L644">src/audiovideocontroller/DefaultAudioVideoController.ts:644</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1012,7 +966,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#setvideomaxbandwidthkbps">setVideoMaxBandwidthKbps</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L629">src/audiovideocontroller/DefaultAudioVideoController.ts:629</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L612">src/audiovideocontroller/DefaultAudioVideoController.ts:612</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1036,7 +990,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#start">start</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L188">src/audiovideocontroller/DefaultAudioVideoController.ts:188</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L168">src/audiovideocontroller/DefaultAudioVideoController.ts:168</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1054,7 +1008,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#stop">stop</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L331">src/audiovideocontroller/DefaultAudioVideoController.ts:331</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L310">src/audiovideocontroller/DefaultAudioVideoController.ts:310</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1072,10 +1026,33 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiovideocontroller.html">AudioVideoController</a>.<a href="../interfaces/audiovideocontroller.html#update">update</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L373">src/audiovideocontroller/DefaultAudioVideoController.ts:373</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L352">src/audiovideocontroller/DefaultAudioVideoController.ts:352</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="wraptaskname" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> wrap<wbr>Task<wbr>Name</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">wrap<wbr>Task<wbr>Name<span class="tsd-signature-symbol">(</span>taskName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/DefaultAudioVideoController.ts#L552">src/audiovideocontroller/DefaultAudioVideoController.ts:552</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>taskName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1109,13 +1086,10 @@
 								<a href="defaultaudiovideocontroller.html#_configuration" class="tsd-kind-icon">_configuration</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="defaultaudiovideocontroller.html#_devicecontroller" class="tsd-kind-icon">_device<wbr>Controller</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="defaultaudiovideocontroller.html#_facade" class="tsd-kind-icon">_facade</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultaudiovideocontroller.html#_logger" class="tsd-kind-icon">_logger</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultaudiovideocontroller.html#_mediastreambroker" class="tsd-kind-icon">_media<wbr>Stream<wbr>Broker</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultaudiovideocontroller.html#_realtimecontroller" class="tsd-kind-icon">_realtime<wbr>Controller</a>
@@ -1158,12 +1132,6 @@
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="defaultaudiovideocontroller.html#configuration" class="tsd-kind-icon">configuration</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="defaultaudiovideocontroller.html#devicecontroller" class="tsd-kind-icon">device<wbr>Controller</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="defaultaudiovideocontroller.html#facade" class="tsd-kind-icon">facade</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="defaultaudiovideocontroller.html#logger" class="tsd-kind-icon">logger</a>
@@ -1245,6 +1213,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultaudiovideocontroller.html#update" class="tsd-kind-icon">update</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultaudiovideocontroller.html#wraptaskname" class="tsd-kind-icon">wrap<wbr>Task<wbr>Name</a>
 							</li>
 						</ul>
 					</li>

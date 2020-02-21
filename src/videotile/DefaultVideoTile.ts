@@ -3,6 +3,7 @@
 
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
+import DefaultModality from '../modality/DefaultModality';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoTile from './VideoTile';
@@ -122,6 +123,9 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     let tileUpdated = false;
     if (this.tileState.boundAttendeeId !== attendeeId) {
       this.tileState.boundAttendeeId = attendeeId;
+      if (new DefaultModality(attendeeId).hasModality(DefaultModality.MODALITY_CONTENT)) {
+        this.tileState.isContent = true;
+      }
       tileUpdated = true;
     }
     if (this.tileState.localTile !== localTile) {

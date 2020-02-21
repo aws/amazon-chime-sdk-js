@@ -1,13 +1,10 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
-import Device from '../../src/devicecontroller/Device';
-import DevicePermission from '../../src/devicecontroller/DevicePermission';
-import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
@@ -60,7 +57,6 @@ describe('ReceiveVideoInputTask', () => {
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
-    context.deviceController = context.audioVideoController.deviceController;
     context.videoTileController = context.audioVideoController.videoTileController;
     context.meetingSessionConfiguration = makeSessionConfiguration();
     context.videoCaptureAndEncodeParameter = new DefaultVideoCaptureAndEncodeParameters(
@@ -113,23 +109,16 @@ describe('ReceiveVideoInputTask', () => {
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: false,
       });
-      context.deviceController = new NoOpDeviceController();
       const task = new ReceiveVideoInputTask(context);
       await task.run();
       expect(context.activeVideoInput).to.be.null;
     });
 
     it('will fail gracefully if a video input is not available from device', async () => {
-      class MockDeviceController extends NoOpDeviceController {
-        chooseVideoInputDevice(_device: Device): Promise<DevicePermission> {
-          return Promise.resolve(DevicePermission.PermissionGrantedByUser);
-        }
-      }
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: false,
       });
-      context.deviceController = new MockDeviceController();
       const task = new ReceiveVideoInputTask(context);
       await task.run();
       expect(context.activeVideoInput).to.be.null;
