@@ -58,9 +58,17 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       this.logAndThrow(`session does not have peer connection; bypass ice gathering`);
     }
 
-    if (new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidatesForAllMLines()) {
-      this.context.logger.info('ice gathering already complete; bypass gathering');
-      return;
+    if (this.context.browserBehavior.requiresCheckForSdpConnectionAttributes()) {
+      if (new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidatesForAllMLines()) {
+        this.context.logger.info(
+          `ice gathering already complete; bypass gathering, current local description ${this.context.peer.localDescription.sdp}`
+        );
+        return;
+      }
+    } else {
+      this.context.logger.info(
+        `iOS device does not require checking for connection attributes in SDP, current local description ${this.context.peer.localDescription.sdp}`
+      );
     }
 
     // To bypass waiting for events, it is required that "icegatheringstate" to be complete and sdp to have candidate

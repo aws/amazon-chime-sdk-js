@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new ContentShareController APIs
 
 ### Changed
+- Do not bypass ice gathering based on sdp connection attributes for Safari on iOS
 - Show SDK version in the demo meeting app
 - Automatically patch a version for each commit
 - Allow to specify manual version in publish script

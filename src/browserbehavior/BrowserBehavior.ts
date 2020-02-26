@@ -58,6 +58,11 @@ export default interface BrowserBehavior {
   requiresPromiseBasedWebRTCGetStats(): boolean;
 
   /**
+   * Returns whether it is needed to check connection attributes in SDP
+   */
+  requiresCheckForSdpConnectionAttributes(): boolean;
+
+  /**
    * Returns whether screen share is unsupported by the browser
    */
   screenShareUnsupported(): boolean;
