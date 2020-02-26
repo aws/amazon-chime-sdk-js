@@ -187,4 +187,21 @@ describe('DefaultSDP', () => {
       expect(newSdp.includes('o=mozilla-chrome')).to.be.true;
     });
   });
+
+  describe('hasCandidatesForAllMLines', () => {
+    it('returns true if sdp does not have dummy ip in connection attributes', () => {
+      const checkResult = new DefaultSDP(
+        SDPMock.CHROME_UNIFIED_PLAN_AUDIO_ONLY_WITH_VIDEO_CHECK_IN
+      ).hasCandidatesForAllMLines();
+      expect(checkResult).to.be.true;
+    });
+
+    it('returns false if sdp does have dummy ip in connection attributes', () => {
+      let checkResult = new DefaultSDP(SDPMock.IOS_SAFARI_REAL_SDP).hasCandidatesForAllMLines();
+      expect(checkResult).to.be.false;
+
+      checkResult = new DefaultSDP(SDPMock.IOS_SAFARI_REAL_SDP).hasCandidates();
+      expect(checkResult).to.be.false;
+    });
+  });
 });

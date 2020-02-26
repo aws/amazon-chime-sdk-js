@@ -63,6 +63,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return this.isSafari() || this.isFirefox();
   }
 
+  requiresCheckForSdpConnectionAttributes(): boolean {
+    return !this.isIOSSafari();
+  }
+
   requiresIceCandidateGatheringTimeoutWorkaround(): boolean {
     return this.hasChromiumWebRTC();
   }
@@ -104,6 +108,9 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   // These helpers should be kept private to encourage
   // feature detection instead of browser detection.
+  private isIOSSafari(): boolean {
+    return this.browser.name === 'ios';
+  }
 
   private isSafari(): boolean {
     return this.browser.name === 'safari' || this.browser.name === 'ios';
