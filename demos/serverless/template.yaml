@@ -19,7 +19,7 @@ Globals:
         MEETINGS_TABLE_NAME: !Ref Meetings
         ATTENDEES_TABLE_NAME: !Ref Attendees
         SQS_QUEUE_ARN: !GetAtt MeetingNotificationsQueue.Arn
-        BROWSER_LOG_GROUP_NAME: BrowserLogs
+        BROWSER_LOG_GROUP_NAME: !Ref ChimeBrowserLogs
 Resources:
   ChimeMeetingsAccessPolicy:
     Type: AWS::IAM::Policy
@@ -232,6 +232,8 @@ Resources:
             Resource: !GetAtt MeetingNotificationsQueue.Arn
       Queues:
         - Ref: MeetingNotificationsQueue
+  ChimeBrowserLogs:
+    Type: AWS::Logs::LogGroup
 Outputs:
   ApiURL:
     Description: "API endpoint URL for Prod environment"

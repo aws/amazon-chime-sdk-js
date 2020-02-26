@@ -210,8 +210,20 @@ exports.end = async(event, context, callback) => {
   callback(null, response);
 };
 
+async function ensureLogStream(cloudWatchClient, logStreamName) {
+  var describeLogStreamsParams = {
+    "logGroupName": logGroupName,
+    "logStreamNamePrefix": logStreamName
+  };
+  var response = await cloudWatchClient.describeLogStreams(describeLogStreamsParams).promise();
+  var foundStream = response.logStreams.find(s => s.logStreamName === logStreamName);
+  if (foundStream) {
+    return foundStream.uploadSequenceToken;
+  }
+  return null;
+}
+
 exports.logs = async (event, context) => {
-  var sequenceToken = "";
   var response = {
     "statusCode": 200,
     "headers": {},
@@ -222,27 +234,20 @@ exports.logs = async (event, context) => {
     var body = JSON.parse(event.body);
     if (!body.logs || !body.meetingId || !body.attendeeId || !body.appName) {
       response.body = "Empty Parameters Received";
+      response.statusCode = 400;
       return response;
     }
     const logStreamName = "ChimeSDKMeeting_" + body.meetingId.toString();
     var cloudWatchClient = new AWS.CloudWatchLogs({
       apiVersion: '2014-03-28'
     });
+    var uploadSequence = await ensureLogStream(cloudWatchClient, logStreamName);
     var putLogEventsInput = {
       "logGroupName": logGroupName,
       "logStreamName": logStreamName
     };
-    var describeLogStreamsParams = {
-      "logGroupName": logGroupName,
-      "logStreamNamePrefix": logStreamName
-    };
-    var describeLogStreamsResponse = await cloudWatchClient.describeLogStreams(describeLogStreamsParams).promise();
-    var logStreamsArr = describeLogStreamsResponse.logStreams;
-    var currentLogStream = logStreamsArr.find(logStreamJSON => logStreamJSON.logStreamName === logStreamName);
-    if (!currentLogStream) {
-      var res = await cloudWatchClient.createLogStream(putLogEventsInput).promise();
-    } else {
-      putLogEventsInput["sequenceToken"] = currentLogStream.uploadSequenceToken;
+    if (uploadSequence) {
+      putLogEventsInput["sequenceToken"] = uploadSequence;
     }
     var logEvents = [];
     for (let i = 0; i < body.logs.length; i++) {
