@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -17,8 +17,8 @@
     "prebuild:release": "script/prebuild",
     "build:release": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
     "postbuild:release": "script/postbuild",
-    "predoc": "rm -rf docs",
-    "doc": "node node_modules/typedoc/bin/typedoc --options typedoc.js",
+    "predoc": "rm -rf docs && node script/build-guides.js",
+    "doc": "node node_modules/typedoc/bin/typedoc --options typedoc.json",
     "postdoc": "node script/update-typedoc-link.js",
     "test": "npm run test:fast",
     "test:fast": "cross-env TS_NODE_CACHE=false nyc mocha -rv ts-node/register \"test/**/*.test.ts\"",

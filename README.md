@@ -22,6 +22,10 @@ To get started, see the following resources:
 * [Amazon Chime SDK API Reference](http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
 * [JavaScript Client SDK Documentation](https://aws.github.io/amazon-chime-sdk-js)
 
+And review the following guides:
+
+* [Getting Started](https://aws.github.io/amazon-chime-sdk-js/modules/gettingstarted.html)
+
 ### Prerequisites
 
 To build, test, and run demos from source you will need:

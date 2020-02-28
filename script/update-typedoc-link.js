@@ -31,3 +31,13 @@ walk('docs')
       });
     });
   });
+
+fs.readFile('docs/assets/js/search.js', 'utf8', (err, data) => {
+  if (err) return console.error(err);
+
+  let result = data.replace(/["][,]["]/g, '",\n"');
+  result = result.replace(/[}][,][{]/g, '},\n{');
+  fs.writeFile('docs/assets/js/search.js', result, 'utf8', err => {
+    if (err) return console.error(err);
+  });
+});
