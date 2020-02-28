@@ -44,8 +44,6 @@ jobs:
       script: npm run test:integration-screen-share
     #Deploy
     - stage: deploy
-      before_install: skip
-      install: skip
       script: skip
       addons: skip
       deploy:
