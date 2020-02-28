@@ -24,7 +24,12 @@
     "test:fast": "cross-env TS_NODE_CACHE=false nyc mocha -rv ts-node/register \"test/**/*.test.ts\"",
     "test:slow": "cross-env MOCHA_TEST_DELAY_MS=100 npm run test:fast",
     "test:retry": "(npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast)",
-    "test:integration": "cd ./integration/js && npm run test && npm run upload-logs-to-s3"
+    "test:integration": "cd ./integration/js && npm run test && npm run upload-logs-to-s3",
+    "test:integration-audio": "cd ./integration/js && npm run test -- audio && npm run upload-logs-to-s3",
+    "test:integration-video": "cd ./integration/js && npm run test -- video && npm run upload-logs-to-s3",
+    "test:integration-meeting-quit": "cd ./integration/js && npm run test -- meeting_quit && npm run upload-logs-to-s3",
+    "test:integration-app-quit": "cd ./integration/js && npm run test -- app_quit && npm run upload-logs-to-s3",
+    "test:integration-screen-share": "cd ./integration/js && npm run test -- screen_share && npm run upload-logs-to-s3"
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.89.0",

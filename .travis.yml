@@ -13,16 +13,44 @@ install:
  - brew tap aws/tap
  - brew install aws-sam-cli
  - ./integration/js/script/install-kite
-script: npm run build:release && npm run test:integration
 addons:
-  sauce_connect:
-    username: "chimesdk"
-    no_ssl_bump_domains: all
-  jwt:
-    secure: "Fs/jNys/0BYYFRLlHBWYWulAE4ydGp80f3eS1oewfUc6vYBo2+SGWyvchaattMn/5CoVdgIsrwj0A4OGXB2FJfkgiCENZ9LE+XVG1JWJIKPIe88VYrILVqsnPay9lTR7myVUUoDdtHDa+pO4h22BeEaIeJQGhmX5m8lVkjYdtVk76f0aW9SoN9sKNLQVARROvkqebMmFlzYuvbFkvmDohrz+alnAfrP/FFPdE9qN8ERm8G00qsOxLq3uxhJHadbKqG2aSOrhY+cyMJAXoDjojPVsWn1/0OUE4NXut6HLQXZJnq5m1Dw5U2DUOi4M/wcdaiWM6YM64HMPo4UchffSX4Tx8zdXfzhjnUjRYaHx3GMP2PK9HzFmnrOCuHsItly1/CaxlqOXnwEp4+YXGmdL7UR4HBxWcdJBDugPyfobIfusbC4aIVSoXrdt5HB2kPMmOdvRCnUJOFVHBVk3RMLQxhK5rFU3KlMsE3t4mOodY6kKkP9dihyuL3UyhCb/0g35cXBkJHTy16vYMWsx4rT4STmI0O+bGGPcNWpPvNUecDcxA0aVDrJTfpqzIGn9TPvhp7r2pV6nahu/mikjMSV6sYrtA66Vgsw+ddPgjXQPhPrREQrp6WOM9Ui16eRUPTTCS6pEU7N66TJN6dM08J1B5uFqWhIWdeOHkAwp/s5NhA0="
-deploy:
-  provider: script
-  script: script/deploy-canary-demo
-  skip_cleanup: true
-  on:
-    branch: master
+ sauce_connect:
+   username: "chimesdk"
+   no_ssl_bump_domains: all
+ jwt:
+   secure: "Fs/jNys/0BYYFRLlHBWYWulAE4ydGp80f3eS1oewfUc6vYBo2+SGWyvchaattMn/5CoVdgIsrwj0A4OGXB2FJfkgiCENZ9LE+XVG1JWJIKPIe88VYrILVqsnPay9lTR7myVUUoDdtHDa+pO4h22BeEaIeJQGhmX5m8lVkjYdtVk76f0aW9SoN9sKNLQVARROvkqebMmFlzYuvbFkvmDohrz+alnAfrP/FFPdE9qN8ERm8G00qsOxLq3uxhJHadbKqG2aSOrhY+cyMJAXoDjojPVsWn1/0OUE4NXut6HLQXZJnq5m1Dw5U2DUOi4M/wcdaiWM6YM64HMPo4UchffSX4Tx8zdXfzhjnUjRYaHx3GMP2PK9HzFmnrOCuHsItly1/CaxlqOXnwEp4+YXGmdL7UR4HBxWcdJBDugPyfobIfusbC4aIVSoXrdt5HB2kPMmOdvRCnUJOFVHBVk3RMLQxhK5rFU3KlMsE3t4mOodY6kKkP9dihyuL3UyhCb/0g35cXBkJHTy16vYMWsx4rT4STmI0O+bGGPcNWpPvNUecDcxA0aVDrJTfpqzIGn9TPvhp7r2pV6nahu/mikjMSV6sYrtA66Vgsw+ddPgjXQPhPrREQrp6WOM9Ui16eRUPTTCS6pEU7N66TJN6dM08J1B5uFqWhIWdeOHkAwp/s5NhA0="
+jobs:
+  include:
+    #Build and unit tests
+    - stage: build
+      before_install: skip
+      install: skip
+      script: npm run build:release
+      addons: skip
+    #Integ test audio
+    - stage: integ_audio
+      script: npm run test:integration-audio
+    #Integ test video
+    - stage: integ_video
+      script: npm run test:integration-video
+    #Integ test meeting leave & end
+    - stage: integ_meeting_quit
+      script: npm run test:integration-meeting-quit
+    #Integ test app quit
+    - stage: integ_app_quit
+      script: npm run test:integration-app-quit
+    #Integ test screen share
+    - stage: integ_screen_share
+      script: npm run test:integration-screen-share
+    #Deploy
+    - stage: deploy
+      before_install: skip
+      install: skip
+      script: skip
+      addons: skip
+      deploy:
+        provider: script
+        script: script/deploy-canary-demo
+        skip_cleanup: true
+        on:
+          branch: master
