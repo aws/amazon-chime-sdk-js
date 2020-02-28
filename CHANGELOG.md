@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add BITRATES in SdkSignalFrame Type and regenerate corresponding JS and TS protocol files.
 - Add new ContentShareController APIs
+- Getting Started guide
+- Doc guide generator
 
 ### Changed
 - Do not bypass ice gathering based on sdp connection attributes for Safari on iOS

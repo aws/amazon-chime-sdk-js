@@ -6,6 +6,7 @@ demos/browser/*
 demos/serverless/*
 demos/videohelpdesk/*
 docs
+guides
 index.ts
 integration
 node_modules

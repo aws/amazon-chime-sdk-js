@@ -12,6 +12,7 @@
     "declaration": true
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "./guides/docs.ts"
   ]
 }
