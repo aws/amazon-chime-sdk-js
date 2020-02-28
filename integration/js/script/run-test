@@ -43,16 +43,41 @@ cd $curr
 cd ../
 . ~/.bashrc
 
-r audio_test.config.json
-r video_test.config.json
-r meeting_end_test.config.json
-r app_quit_audio_test.config.json
-r app_quit_video_test.config.json
-r app_quit_screen_share_test.config.json
-r meeting_leave_audio_test.config.json
-r meeting_leave_video_test.config.json
-r meeting_leave_screen_share_test.config.json
-r screen_sharing_test.config.json
-r screen_viewing_test.config.json
+case $1 in
+   audio)
+      r audio_test.config.json
+      ;;
+   video)
+      r video_test.config.json
+      ;;
+   meeting_quit)
+      r meeting_leave_audio_test.config.json
+      r meeting_leave_video_test.config.json
+      r meeting_leave_screen_share_test.config.json
+      r meeting_end_test.config.json
+      ;;
+   app_quit)
+      r app_quit_audio_test.config.json
+      r app_quit_video_test.config.json
+      r app_quit_screen_share_test.config.json
+      ;;
+   screen_share)
+      r screen_sharing_test.config.json
+      r screen_viewing_test.config.json
+      ;;
+   *)
+      r audio_test.config.json
+      r video_test.config.json
+      r meeting_end_test.config.json
+      r app_quit_audio_test.config.json
+      r app_quit_video_test.config.json
+      r app_quit_screen_share_test.config.json
+      r meeting_leave_audio_test.config.json
+      r meeting_leave_video_test.config.json
+      r meeting_leave_screen_share_test.config.json
+      r screen_sharing_test.config.json
+      r screen_viewing_test.config.json
+      ;;
+esac
 
 ./js/script/failure-check
