@@ -1,7 +1,5 @@
-const {KiteBaseTest} = require('../node_modules/kite-common');
-const {AppPage} = require('../pages/AppPage');
+const {KiteBaseTest, TestUtils} = require('../node_modules/kite-common');
 const {SaucelabsSession} = require('./WebdriverSauceLabs');
-const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {emitMetric} = require('./CloudWatch');
 const uuidv4 = require('uuid/v4');
 const fs = require('fs');
@@ -13,12 +11,17 @@ class SdkBaseTest extends KiteBaseTest {
     this.url = this.url + '?m=' + kiteConfig.uuid;
     this.meetingTitle = kiteConfig.uuid;
     this.testName = testName;
+    this.testReady = false;
     this.capabilities["name"] = process.env.STAGE !== undefined ? `${testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${testName}-${process.env.TEST_TYPE}`;
+    this.seleniumSessions = [];
     this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
     if (this.numberOfParticipant > 1) {
       this.attendeeId = uuidv4();
       this.io.emit("test_name", testName);
       this.io.emit("test_capabilities", this.capabilities);
+      this.io.on('all_clients_ready', isReady => {
+        this.testReady = !!isReady;
+      });
       this.io.on("remote_video_on", (id) => {
         console.log(`[${id}] turned on video`);
         this.numVideoRemoteOn += 1;
@@ -79,11 +82,19 @@ class SdkBaseTest extends KiteBaseTest {
   }
 
   async createSeleniumSession(capabilities) {
-    if (process.env.SELENIUM_GRID_PROVIDER === "browserstack") {
-      return await BrowserStackSession.createSession(capabilities);
-    } else {
-      return await SaucelabsSession.createSession(capabilities);
+    const invalidSessionIdRegEx = new RegExp(/^new_request:/);
+    for (let i =0; i< 3; i++) {
+      const session = await SaucelabsSession.createSession(capabilities);
+      const sessionId = await session.getSessionId();
+      if (invalidSessionIdRegEx.test(sessionId)) {
+        console.log(`Invalid Saucelabs session id : ${sessionId}. Retrying: ${i+1}`);
+        await new Promise(r => setTimeout(r, 1000));
+      } else {
+        console.log(`Successfully create a Saucelabs session: ${sessionId}`);
+        return session;
+      }
     }
+    throw new Error('Failed to create Selenium session');
   }
 
   numberOfSessions(browser) {
@@ -109,15 +120,37 @@ class SdkBaseTest extends KiteBaseTest {
     const numberOfSeleniumSessions = this.numberOfSessions(this.capabilities.browserName);
 
     console.log(`Provisioning ${numberOfSeleniumSessions} sessions on ${process.env.SELENIUM_GRID_PROVIDER}`);
-    this.seleniumSessions = [];
     for (let i = 0; i < numberOfSeleniumSessions; i++) {
-      const session = await this.createSeleniumSession(this.capabilities);
-      await session.init();
-      this.seleniumSessions.push(session)
+      try {
+        const session = await this.createSeleniumSession(this.capabilities);
+        await session.init();
+        this.seleniumSessions.push(session)
+      } catch (e) {
+        console.log('Failed to initialize');
+        console.log(e);
+        await emitMetric(this.testName, this.capabilities, 'E2E', 0);
+        await this.updateSeleniumTestResult(false);
+        await this.quitSeleniumSessions();
+        return;
+      }
     }
 
     let retryCount = 0;
     while (retryCount < maxRetries) {
+      //Wait for other to be ready
+      if (this.numberOfParticipant > 1) {
+        this.io.emit('test_ready', true);
+        await this.waitForTestReady();
+        if (!this.testReady) {
+          this.io.emit('test_ready', false);
+          await emitMetric(this.testName, this.capabilities, 'E2E', 0);
+          await this.updateSeleniumTestResult(false);
+          await this.quitSeleniumSessions();
+          console.log('[OTHER_PARTICIPANT] failed to be ready');
+          return;
+        }
+      }
+
       this.initializeState();
       if (retryCount !== 0) {
         console.log(`Retrying : ${retryCount}`);
@@ -130,9 +163,7 @@ class SdkBaseTest extends KiteBaseTest {
       } finally {
         const metricValue = this.failedTest || this.remoteFailed ? 0 : 1;
         await emitMetric(this.testName, this.capabilities, 'E2E', metricValue);
-        for (let i = 0; i < this.seleniumSessions.length; i++) {
-          await this.seleniumSessions[i].updateTestResults(!this.failedTest && !this.remoteFailed)
-        }
+        await this.updateSeleniumTestResult(!this.failedTest && !this.remoteFailed);
       }
       if (this.payload.canaryLogPath !== undefined) {
         this.writeCompletionTimeTo(this.payload.canaryLogPath)
@@ -151,13 +182,37 @@ class SdkBaseTest extends KiteBaseTest {
     } catch (e) {
       console.log(e);
     } finally {
-      for (let i = 0; i < this.seleniumSessions.length; i++) {
-        await this.seleniumSessions[i].quit();
-      }
+      await this.quitSeleniumSessions();
     }
   }
 
   async runIntegrationTest() {
+  }
+
+  async waitForTestReady() {
+    const maxWaitTime = 5*60*1000 //5 min
+    const interval = 100;
+    let waitTime = 0;
+    while (waitTime < maxWaitTime) {
+      if (this.testReady) {
+        return;
+      }
+      console.log(`Waiting for others: ${waitTime}`);
+      waitTime += interval;
+      await TestUtils.waitAround(interval);
+    }
+  }
+
+  async updateSeleniumTestResult(testResult) {
+    for (let i = 0; i < this.seleniumSessions.length; i++) {
+      await this.seleniumSessions[i].updateTestResults(testResult);
+    }
+  }
+
+  async quitSeleniumSessions() {
+    for (let i = 0; i < this.seleniumSessions.length; i++) {
+      await this.seleniumSessions[i].quit();
+    }
   }
 }
 
