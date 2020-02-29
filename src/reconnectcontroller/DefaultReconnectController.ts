@@ -4,13 +4,18 @@
 import BackoffPolicy from '../backoff/Backoff';
 import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 import ReconnectController from './ReconnectController';
+import PingPong from '../pingpong/PingPong';
+import PingPongObserver from '../pingpongobserver/PingPongObserver';
 
-export default class DefaultReconnectController implements ReconnectController {
+export default class DefaultReconnectController implements ReconnectController, PingPongObserver {
   private shouldReconnect: boolean = true;
   private onlyRestartPeerConnection: boolean = false;
   private firstConnectionAttempted: boolean = false;
+  private canReceivePongs: boolean = false;
   private firstConnectionAttemptTimestamp: number = 0;
+  private lastConnectionAttemptTimestamp: number = 0;
   private _isFirstConnection: boolean = true;
+  private pingPong: PingPong;
   private backoffTimer: TimeoutScheduler | null = null;
   private backoffCancel: () => void = null;
 
@@ -25,12 +30,31 @@ export default class DefaultReconnectController implements ReconnectController {
     return Date.now() - this.firstConnectionAttemptTimestamp;
   }
 
+  private timeSinceLastActiveMs(): number{
+    if (!this.canReceivePongs) {
+        return 0;
+    }
+    return Date.now() - this.lastConnectionAttemptTimestamp;
+  }
+
   private hasPastReconnectDeadline(): boolean {
-    return this.timeSpentReconnectingMs() >= this.reconnectTimeoutMs;
+    const hasSpentTooMuchTimeReconnecting = this.timeSpentReconnectingMs() >= this.reconnectTimeoutMs;
+    const hasBeenTooLongSinceConnected = this.timeSinceLastActiveMs() >= this.reconnectTimeoutMs;
+    return hasSpentTooMuchTimeReconnecting || hasBeenTooLongSinceConnected;
+  }
+
+  didReceivePong(latencyMs: number, clockSkewMs: number): void {
+    this.lastConnectionAttemptTimestamp = Date.now();
+    this.canReceivePongs = true;
   }
 
   reset(): void {
     this.cancel();
+    if (this.firstConnectionAttempted || this.canReceivePongs){
+       this.pingPong.removeObserver(this);
+       this.pingPong.stop();
+       this.canReceivePongs = false;
+    }
     this.shouldReconnect = true;
     this.onlyRestartPeerConnection = false;
     this.firstConnectionAttempted = false;
@@ -38,11 +62,14 @@ export default class DefaultReconnectController implements ReconnectController {
     this.backoffPolicy.reset();
   }
 
-  startedConnectionAttempt(isFirstConnection: boolean): void {
+  startedConnectionAttempt(isFirstConnection: boolean, pingPong: PingPong): void {
     this._isFirstConnection = isFirstConnection;
     if (!this.firstConnectionAttempted) {
       this.firstConnectionAttempted = true;
       this.firstConnectionAttemptTimestamp = Date.now();
+      this.pingPong = pingPong;
+      this.pingPong.addObserver(this);
+      this.pingPong.start();
     }
   }
 

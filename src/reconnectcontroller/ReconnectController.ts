@@ -1,6 +1,7 @@
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import PingPong from '../pingpong/PingPong';
 /**
  * [[ReconnectController]] describes the status about the meeting session connection and makes decisions
  * based on the controller implementation.
@@ -16,7 +17,7 @@ export default interface ReconnectController {
    * can be set.
    * @param{boolean} isFirstConnection whether this is the first attempt to connect for this session
    */
-  startedConnectionAttempt(isFirstConnection: boolean): void;
+  startedConnectionAttempt(isFirstConnection: boolean, pingPong: PingPong): void;
 
   /**
    * Indicates whether a connection attempt is already in progress.
