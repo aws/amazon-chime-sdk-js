@@ -5365,6 +5365,7 @@ $root.SdkAudioStreamIdInfo = (function() {
      * @property {number|null} [audioStreamId] SdkAudioStreamIdInfo audioStreamId
      * @property {string|null} [attendeeId] SdkAudioStreamIdInfo attendeeId
      * @property {boolean|null} [muted] SdkAudioStreamIdInfo muted
+     * @property {string|null} [externalUserId] SdkAudioStreamIdInfo externalUserId
      */
 
     /**
@@ -5407,6 +5408,14 @@ $root.SdkAudioStreamIdInfo = (function() {
     SdkAudioStreamIdInfo.prototype.muted = false;
 
     /**
+     * SdkAudioStreamIdInfo externalUserId.
+     * @member {string} externalUserId
+     * @memberof SdkAudioStreamIdInfo
+     * @instance
+     */
+    SdkAudioStreamIdInfo.prototype.externalUserId = "";
+
+    /**
      * Creates a new SdkAudioStreamIdInfo instance using the specified properties.
      * @function create
      * @memberof SdkAudioStreamIdInfo
@@ -5436,6 +5445,8 @@ $root.SdkAudioStreamIdInfo = (function() {
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.attendeeId);
         if (message.muted != null && message.hasOwnProperty("muted"))
             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.muted);
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            writer.uint32(/* id 4, wireType 2 =*/34).string(message.externalUserId);
         return writer;
     };
 
@@ -5478,6 +5489,9 @@ $root.SdkAudioStreamIdInfo = (function() {
                 break;
             case 3:
                 message.muted = reader.bool();
+                break;
+            case 4:
+                message.externalUserId = reader.string();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -5523,6 +5537,9 @@ $root.SdkAudioStreamIdInfo = (function() {
         if (message.muted != null && message.hasOwnProperty("muted"))
             if (typeof message.muted !== "boolean")
                 return "muted: boolean expected";
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            if (!$util.isString(message.externalUserId))
+                return "externalUserId: string expected";
         return null;
     };
 
@@ -5544,6 +5561,8 @@ $root.SdkAudioStreamIdInfo = (function() {
             message.attendeeId = String(object.attendeeId);
         if (object.muted != null)
             message.muted = Boolean(object.muted);
+        if (object.externalUserId != null)
+            message.externalUserId = String(object.externalUserId);
         return message;
     };
 
@@ -5564,6 +5583,7 @@ $root.SdkAudioStreamIdInfo = (function() {
             object.audioStreamId = 0;
             object.attendeeId = "";
             object.muted = false;
+            object.externalUserId = "";
         }
         if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
             object.audioStreamId = message.audioStreamId;
@@ -5571,6 +5591,8 @@ $root.SdkAudioStreamIdInfo = (function() {
             object.attendeeId = message.attendeeId;
         if (message.muted != null && message.hasOwnProperty("muted"))
             object.muted = message.muted;
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            object.externalUserId = message.externalUserId;
         return object;
     };
 

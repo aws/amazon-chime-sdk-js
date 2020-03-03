@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -366,6 +366,7 @@ describe('DefaultRealtimeController', () => {
       const sentVolume = 0.5;
       const sentMuted = false;
       const sentSignalStrength = 1;
+      const sentExternalUserId = 'foo-external';
       let callbackFired = false;
       rt.realtimeSubscribeToVolumeIndicator(
         sentAttendeeId,
@@ -373,16 +374,24 @@ describe('DefaultRealtimeController', () => {
           attendeeId: string,
           volume: number | null,
           muted: boolean | null,
-          signalStrength: number | null
+          signalStrength: number | null,
+          externalUserId: string | null
         ) => {
           callbackFired = true;
           expect(attendeeId).to.equal(sentAttendeeId);
           expect(volume).to.equal(sentVolume);
           expect(muted).to.equal(sentMuted);
           expect(signalStrength).to.equal(sentSignalStrength);
+          expect(externalUserId).to.equal(sentExternalUserId);
         }
       );
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeUpdateVolumeIndicator(
+        sentAttendeeId,
+        sentVolume,
+        sentMuted,
+        sentSignalStrength,
+        sentExternalUserId
+      );
       expect(callbackFired).to.be.true;
     });
 
@@ -424,7 +433,13 @@ describe('DefaultRealtimeController', () => {
           expect(signalStrength).to.equal(sentSignalStrength);
         }
       );
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeUpdateVolumeIndicator(
+        sentAttendeeId,
+        sentVolume,
+        sentMuted,
+        sentSignalStrength,
+        null
+      );
       expect(callbackFired).to.be.true;
       expect(callbackFired2).to.be.true;
     });
@@ -451,14 +466,21 @@ describe('DefaultRealtimeController', () => {
           expect(signalStrength).to.equal(sentSignalStrength);
         }
       );
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeUpdateVolumeIndicator(
+        sentAttendeeId,
+        sentVolume,
+        sentMuted,
+        sentSignalStrength,
+        null
+      );
       expect(callbackFired).to.be.true;
       callbackFired = false;
       rt.realtimeUpdateVolumeIndicator(
         'an-unsubscribed-attendee',
         sentVolume,
         sentMuted,
-        sentSignalStrength
+        sentSignalStrength,
+        null
       );
       expect(callbackFired).to.be.false;
       callbackFired = false;
@@ -473,7 +495,13 @@ describe('DefaultRealtimeController', () => {
       const sentMuted = false;
       const sentSignalStrength = 1;
       let callbackFired = false;
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeUpdateVolumeIndicator(
+        sentAttendeeId,
+        sentVolume,
+        sentMuted,
+        sentSignalStrength,
+        null
+      );
       rt.realtimeSubscribeToVolumeIndicator(
         sentAttendeeId,
         (
@@ -499,7 +527,13 @@ describe('DefaultRealtimeController', () => {
       const sentMuted = false;
       const sentSignalStrength = 1;
       let callbackFired = false;
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeUpdateVolumeIndicator(
+        sentAttendeeId,
+        sentVolume,
+        sentMuted,
+        sentSignalStrength,
+        null
+      );
       rt.realtimeSubscribeToVolumeIndicator(
         sentAttendeeId,
         (
@@ -526,7 +560,13 @@ describe('DefaultRealtimeController', () => {
       const sentMuted = false;
       const sentSignalStrength = 1;
       let callbackFired = false;
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeUpdateVolumeIndicator(
+        sentAttendeeId,
+        sentVolume,
+        sentMuted,
+        sentSignalStrength,
+        null
+      );
       rt.realtimeSubscribeToVolumeIndicator(
         sentAttendeeId,
         (
@@ -544,7 +584,13 @@ describe('DefaultRealtimeController', () => {
       );
       expect(callbackFired).to.be.true;
       callbackFired = false;
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeUpdateVolumeIndicator(
+        sentAttendeeId,
+        sentVolume,
+        sentMuted,
+        sentSignalStrength,
+        null
+      );
       expect(callbackFired).to.be.false;
     });
 
@@ -571,7 +617,13 @@ describe('DefaultRealtimeController', () => {
         }
       );
       expect(callbackFired).to.be.false;
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, sentVolume, sentMuted, sentSignalStrength);
+      rt.realtimeUpdateVolumeIndicator(
+        sentAttendeeId,
+        sentVolume,
+        sentMuted,
+        sentSignalStrength,
+        null
+      );
       expect(callbackFired).to.be.true;
     });
 
@@ -612,15 +664,15 @@ describe('DefaultRealtimeController', () => {
           callbackIndex += 1;
         }
       );
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, true, null);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, true, null, null);
       expect(callbackIndex).to.equal(1);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, 1.0, false, null);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, 1.0, false, null, null);
       expect(callbackIndex).to.equal(2);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, true, null);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, true, null, null);
       expect(callbackIndex).to.equal(3);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, false, null);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, false, null, null);
       expect(callbackIndex).to.equal(4);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, null);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, null, null);
       expect(callbackIndex).to.equal(4);
     });
 
@@ -644,7 +696,7 @@ describe('DefaultRealtimeController', () => {
         }
       );
       expect(callbackIndex).to.equal(0);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, 0.0, null, null);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, 0.0, null, null, null);
       expect(callbackIndex).to.equal(1);
     });
 
@@ -652,7 +704,7 @@ describe('DefaultRealtimeController', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       const sentAttendeeId = 'foo-attendee';
       let callbackFired = false;
-      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
       rt.realtimeSetLocalAudioInput(getPseudoMediaStream());
       rt.realtimeSubscribeToVolumeIndicator(
         sentAttendeeId,
@@ -677,7 +729,7 @@ describe('DefaultRealtimeController', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       const sentAttendeeId = 'foo-attendee';
       let callbackFired = false;
-      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
       rt.realtimeSetLocalAudioInput(getPseudoMediaStream());
       rt.realtimeMuteLocalAudio();
       rt.realtimeSubscribeToVolumeIndicator(
@@ -703,7 +755,7 @@ describe('DefaultRealtimeController', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       const sentAttendeeId = 'foo-attendee';
       let callbackFired = false;
-      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
       rt.realtimeSubscribeToVolumeIndicator(
         sentAttendeeId,
         (
@@ -723,7 +775,7 @@ describe('DefaultRealtimeController', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       const sentAttendeeId = 'foo-attendee';
       let callbackFired = false;
-      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
       rt.realtimeMuteLocalAudio();
       rt.realtimeSubscribeToVolumeIndicator(
         sentAttendeeId,
@@ -754,12 +806,12 @@ describe('DefaultRealtimeController', () => {
         callbackIndex += 1;
       });
       const sentAttendeeId = 'foo-attendee';
-      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0);
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0, null);
       expect(callbackIndex).to.equal(1);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0.5);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0.5, null);
       expect(callbackIndex).to.equal(2);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 1);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 1, null);
       expect(callbackIndex).to.equal(3);
     });
 
@@ -767,8 +819,8 @@ describe('DefaultRealtimeController', () => {
       let callbackIndex = 0;
       const rt: RealtimeController = new DefaultRealtimeController();
       const sentAttendeeId = 'foo-attendee';
-      rt.realtimeSetLocalAttendeeId(sentAttendeeId);
-      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0);
+      rt.realtimeSetLocalAttendeeId(sentAttendeeId, null);
+      rt.realtimeUpdateVolumeIndicator(sentAttendeeId, null, null, 0, null);
       expect(callbackIndex).to.equal(0);
       rt.realtimeSubscribeToLocalSignalStrengthChange((signalStrength: number) => {
         if (callbackIndex === 0) {
@@ -796,9 +848,9 @@ describe('DefaultRealtimeController', () => {
         callbackIndex += 1;
       });
       expect(callbackIndex).to.equal(0);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null);
       expect(callbackIndex).to.equal(1);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, false);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null);
       expect(callbackIndex).to.equal(2);
     });
   });
@@ -845,7 +897,7 @@ describe('DefaultRealtimeController', () => {
 
       // attempt to trigger a fake error after unsubscribing to fatal errors
       rt.realtimeUnsubscribeToFatalError(fatalErrorCallback);
-      rt.realtimeSetAttendeeIdPresence('unused', true);
+      rt.realtimeSetAttendeeIdPresence('unused', true, null);
       expect(fatalErrorCallbackRemoved).to.be.true;
 
       // unsubscribe from other callbacks
@@ -857,11 +909,11 @@ describe('DefaultRealtimeController', () => {
       rt.realtimeUnsubscribeToLocalSignalStrengthChange(LocalSignalStrengthChangeCallback);
 
       // attempt to trigger callbacks
-      rt.realtimeSetAttendeeIdPresence('unused', true);
+      rt.realtimeSetAttendeeIdPresence('unused', true, null);
       rt.realtimeSetCanUnmuteLocalAudio(false);
       rt.realtimeMuteLocalAudio();
       // also triggers local signal strength callbacks
-      rt.realtimeUpdateVolumeIndicator('fakeAttendeeId', 0.5, null, 1);
+      rt.realtimeUpdateVolumeIndicator('fakeAttendeeId', 0.5, null, 1, null);
       expect(callbacksRemoved).to.be.true;
     });
   });

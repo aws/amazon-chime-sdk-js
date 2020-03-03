@@ -89,10 +89,12 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#attendeeidchangescallbacks" class="tsd-kind-icon">attendee<wbr>IdChanges<wbr>Callbacks</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#attendeeidtoexternaluserid" class="tsd-kind-icon">attendee<wbr>IdTo<wbr>External<wbr>User<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#audioinput" class="tsd-kind-icon">audio<wbr>Input</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#canunmute" class="tsd-kind-icon">can<wbr>Unmute</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#fatalerrorcallbacks" class="tsd-kind-icon">fatal<wbr>Error<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#localattendeeid" class="tsd-kind-icon">local<wbr>Attendee<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#localexternaluserid" class="tsd-kind-icon">local<wbr>External<wbr>User<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#localsignalstrengthchangecallbacks" class="tsd-kind-icon">local<wbr>Signal<wbr>Strength<wbr>Change<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#muteandunmutelocalaudiocallbacks" class="tsd-kind-icon">mute<wbr>And<wbr>Unmute<wbr>Local<wbr>Audio<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#muted" class="tsd-kind-icon">muted</a></li>
@@ -112,7 +114,7 @@
 					<div class="tsd-signature tsd-kind-icon">attendee<wbr>IdChanges<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L18">src/realtimecontroller/RealtimeState.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L23">src/realtimecontroller/RealtimeState.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -122,12 +124,35 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="attendeeidtoexternaluserid" class="tsd-anchor"></a>
+					<h3>attendee<wbr>IdTo<wbr>External<wbr>User<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">attendee<wbr>IdTo<wbr>External<wbr>User<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L62">src/realtimecontroller/RealtimeState.ts:62</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Stores attendee id to external user id mappings</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>attendeeId: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="audioinput" class="tsd-anchor"></a>
 					<h3>audio<wbr>Input</h3>
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Input<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L43">src/realtimecontroller/RealtimeState.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L52">src/realtimecontroller/RealtimeState.ts:52</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -142,7 +167,7 @@
 					<div class="tsd-signature tsd-kind-icon">can<wbr>Unmute<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L23">src/realtimecontroller/RealtimeState.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L32">src/realtimecontroller/RealtimeState.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -157,7 +182,7 @@
 					<div class="tsd-signature tsd-kind-icon">fatal<wbr>Error<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L70">src/realtimecontroller/RealtimeState.ts:70</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L85">src/realtimecontroller/RealtimeState.ts:85</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -182,12 +207,27 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="localexternaluserid" class="tsd-anchor"></a>
+					<h3>local<wbr>External<wbr>User<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">local<wbr>External<wbr>User<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L18">src/realtimecontroller/RealtimeState.ts:18</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Stores the external user id of the current user</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="localsignalstrengthchangecallbacks" class="tsd-anchor"></a>
 					<h3>local<wbr>Signal<wbr>Strength<wbr>Change<wbr>Callbacks</h3>
 					<div class="tsd-signature tsd-kind-icon">local<wbr>Signal<wbr>Strength<wbr>Change<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L65">src/realtimecontroller/RealtimeState.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L80">src/realtimecontroller/RealtimeState.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -202,7 +242,7 @@
 					<div class="tsd-signature tsd-kind-icon">mute<wbr>And<wbr>Unmute<wbr>Local<wbr>Audio<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L38">src/realtimecontroller/RealtimeState.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L47">src/realtimecontroller/RealtimeState.ts:47</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -217,7 +257,7 @@
 					<div class="tsd-signature tsd-kind-icon">muted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L33">src/realtimecontroller/RealtimeState.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L42">src/realtimecontroller/RealtimeState.ts:42</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -232,7 +272,7 @@
 					<div class="tsd-signature tsd-kind-icon">set<wbr>Can<wbr>Unmute<wbr>Local<wbr>Audio<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L28">src/realtimecontroller/RealtimeState.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L37">src/realtimecontroller/RealtimeState.ts:37</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -247,7 +287,7 @@
 					<div class="tsd-signature tsd-kind-icon">volume<wbr>Indicator<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L53">src/realtimecontroller/RealtimeState.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L67">src/realtimecontroller/RealtimeState.ts:67</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -270,7 +310,7 @@
 					<div class="tsd-signature tsd-kind-icon">volume<wbr>Indicator<wbr>State<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L48">src/realtimecontroller/RealtimeState.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L57">src/realtimecontroller/RealtimeState.ts:57</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -308,6 +348,9 @@
 								<a href="realtimestate.html#attendeeidchangescallbacks" class="tsd-kind-icon">attendee<wbr>IdChanges<wbr>Callbacks</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="realtimestate.html#attendeeidtoexternaluserid" class="tsd-kind-icon">attendee<wbr>IdTo<wbr>External<wbr>User<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="realtimestate.html#audioinput" class="tsd-kind-icon">audio<wbr>Input</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -318,6 +361,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="realtimestate.html#localattendeeid" class="tsd-kind-icon">local<wbr>Attendee<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="realtimestate.html#localexternaluserid" class="tsd-kind-icon">local<wbr>External<wbr>User<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="realtimestate.html#localsignalstrengthchangecallbacks" class="tsd-kind-icon">local<wbr>Signal<wbr>Strength<wbr>Change<wbr>Callbacks</a>

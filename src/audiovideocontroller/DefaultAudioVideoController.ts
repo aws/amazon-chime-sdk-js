@@ -96,7 +96,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this._configuration = configuration;
     this._webSocketAdapter = webSocketAdapter;
     this._realtimeController = new DefaultRealtimeController();
-    this._realtimeController.realtimeSetLocalAttendeeId(configuration.credentials.attendeeId);
+    this._realtimeController.realtimeSetLocalAttendeeId(
+      configuration.credentials.attendeeId,
+      configuration.credentials.externalUserId
+    );
     this._activeSpeakerDetector = new DefaultActiveSpeakerDetector(
       this._realtimeController,
       configuration.credentials.attendeeId,

@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -20,6 +20,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
   let expect: Chai.ExpectStatic;
   let domMockBuilder: DOMMockBuilder;
   const fooAttendee = 'foo-attendee';
+  const fooExternal = 'foo-external';
   const minVolumeDecibels = -42;
   const maxVolumeDecibels = -14;
 
@@ -51,6 +52,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       const streamInfoFrame = SdkAudioStreamIdInfoFrame.create();
       streamInfo.audioStreamId = 1;
       streamInfo.attendeeId = fooAttendee;
+      streamInfo.externalUserId = fooExternal;
       streamInfoFrame.streams = [streamInfo];
       const rt: RealtimeController = new DefaultRealtimeController();
       let volumeUpdate = 0;
@@ -60,33 +62,40 @@ describe('DefaultVolumeIndicatorAdapter', () => {
           attendeeId: string,
           volume: number | null,
           muted: boolean | null,
-          signalStrength: number | null
+          signalStrength: number | null,
+          externalUserId: string | null
         ) => {
           if (volumeUpdate === 0) {
             expect(attendeeId).to.equal(fooAttendee);
             expect(volume).to.be.null;
             expect(muted).to.be.false;
             expect(signalStrength).to.be.null;
+            expect(externalUserId).to.equal(fooExternal);
           } else if (volumeUpdate === 1) {
             expect(attendeeId).to.equal(fooAttendee);
             expect(volume).to.equal(0);
             expect(muted).to.be.true;
             expect(signalStrength).to.be.null;
+            expect(externalUserId).to.equal(fooExternal);
           }
           volumeUpdate += 1;
         }
       );
       let attendeeIdUpdate = 0;
-      rt.realtimeSubscribeToAttendeeIdPresence((attendeeId: string, present: boolean) => {
-        if (attendeeIdUpdate === 0) {
-          expect(attendeeId).to.equal(fooAttendee);
-          expect(present).to.be.true;
-        } else if (attendeeIdUpdate === 1) {
-          expect(attendeeId).to.equal(fooAttendee);
-          expect(present).to.be.false;
+      rt.realtimeSubscribeToAttendeeIdPresence(
+        (attendeeId: string, present: boolean, externalUserId: string) => {
+          if (attendeeIdUpdate === 0) {
+            expect(attendeeId).to.equal(fooAttendee);
+            expect(present).to.be.true;
+            expect(externalUserId).to.equal(fooExternal);
+          } else if (attendeeIdUpdate === 1) {
+            expect(attendeeId).to.equal(fooAttendee);
+            expect(present).to.be.false;
+            expect(externalUserId).to.equal(fooExternal);
+          }
+          attendeeIdUpdate += 1;
         }
-        attendeeIdUpdate += 1;
-      });
+      );
       const vi: VolumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
         new NoOpLogger(),
         rt,

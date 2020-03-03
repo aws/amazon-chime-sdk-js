@@ -9,12 +9,17 @@ export default class MeetingSessionCredentials {
   /**
    * The attendee id for these credentials.
    */
-  attendeeId: string | null;
+  attendeeId: string | null = null;
+
+  /**
+   * The external user id associated with the attendee.
+   */
+  externalUserId: string | null = null;
 
   /**
    * If set, the session will be authenticated with a join token.
    */
-  joinToken: string | null;
+  joinToken: string | null = null;
 
   /**
    * Overrides JSON serialization so that join token is redacted.

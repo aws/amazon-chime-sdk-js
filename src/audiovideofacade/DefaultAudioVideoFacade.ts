@@ -151,14 +151,14 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
   }
 
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
   ): void {
     this.realtimeController.realtimeSubscribeToAttendeeIdPresence(callback);
     this.trace('realtimeSubscribeToAttendeeIdPresence');
   }
 
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
   ): void {
     this.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(callback);
     this.trace('realtimeUnsubscribeToAttendeeIdPresence');
@@ -216,7 +216,8 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
       attendeeId: string,
       volume: number | null,
       muted: boolean | null,
-      signalStrength: number | null
+      signalStrength: number | null,
+      externalUserId?: string | null
     ) => void
   ): void {
     this.realtimeController.realtimeSubscribeToVolumeIndicator(attendeeId, callback);
