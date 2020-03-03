@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -40,15 +40,15 @@ describe('DefaultActiveSpeakerDetector', () => {
         callbackFired = true;
       };
       detector.subscribe(policy, callback);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
       expect(callbackFired).to.be.true;
       callbackFired = false;
-      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee, 0, false, 1);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee, 0, false, 1, null);
       expect(callbackFired).to.be.false;
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, false);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null);
       expect(callbackFired).to.be.true;
       detector.unsubscribe(callback);
     });
@@ -64,12 +64,12 @@ describe('DefaultActiveSpeakerDetector', () => {
         expect(attendeeIds[0] === fooAttendee2);
       };
       detector.subscribe(policy, callback);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee1, true);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee2, true);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee1, 10, false, 1);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee1, 20, false, 1);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee2, 10, false, 1);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee2, 90, false, 1);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee1, true, null);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee2, true, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee1, 10, false, 1, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee1, 20, false, 1, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee2, 10, false, 1, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee2, 90, false, 1, null);
       detector.unsubscribe(callback);
     });
   });
@@ -86,9 +86,9 @@ describe('DefaultActiveSpeakerDetector', () => {
       };
       detector.subscribe(policy, callback);
       detector.unsubscribe(callback);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1);
-      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
+      rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
       expect(callbackFired).to.be.false;
     });
   });

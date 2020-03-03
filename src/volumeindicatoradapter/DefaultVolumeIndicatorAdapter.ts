@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -12,6 +12,7 @@ import VolumeIndicatorAdapter from './VolumeIndicatorAdapter';
 
 export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAdapter {
   private streamIdToAttendeeId: { [key: number]: string } = {};
+  private streamIdToExternalUserId: { [key: number]: string } = {};
   private warnedAboutMissingStreamIdMapping: { [key: number]: boolean } = {};
   static MAX_SIGNAL_STRENGTH_LEVELS: number = 2;
   static IMPLICIT_VOLUME: number = 0;
@@ -27,20 +28,36 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
   sendRealtimeUpdatesForAudioStreamIdInfo(info: SdkAudioStreamIdInfoFrame): void {
     for (const stream of info.streams) {
       const hasAttendeeId = !!stream.attendeeId;
+      const hasExternalUserId = !!stream.externalUserId;
       const hasMuted = stream.hasOwnProperty('muted');
       if (hasAttendeeId) {
         this.streamIdToAttendeeId[stream.audioStreamId] = stream.attendeeId;
-        this.realtimeController.realtimeSetAttendeeIdPresence(stream.attendeeId, true);
+        const externalUserId = hasExternalUserId ? stream.externalUserId : null;
+        this.streamIdToExternalUserId[stream.audioStreamId] = externalUserId;
+        this.realtimeController.realtimeSetAttendeeIdPresence(
+          stream.attendeeId,
+          true,
+          externalUserId
+        );
       }
       if (hasMuted) {
         const attendeeId = this.streamIdToAttendeeId[stream.audioStreamId];
-        this.realtimeController.realtimeUpdateVolumeIndicator(attendeeId, null, stream.muted, null);
+        const externalUserId = this.streamIdToExternalUserId[stream.audioStreamId];
+        this.realtimeController.realtimeUpdateVolumeIndicator(
+          attendeeId,
+          null,
+          stream.muted,
+          null,
+          externalUserId
+        );
       }
       if (!hasAttendeeId && !hasMuted) {
         const attendeeId = this.streamIdToAttendeeId[stream.audioStreamId];
+        const externalUserId = this.streamIdToExternalUserId[stream.audioStreamId];
         delete this.streamIdToAttendeeId[stream.audioStreamId];
+        delete this.streamIdToExternalUserId[stream.audioStreamId];
         delete this.warnedAboutMissingStreamIdMapping[stream.audioStreamId];
-        this.realtimeController.realtimeSetAttendeeIdPresence(attendeeId, false);
+        this.realtimeController.realtimeSetAttendeeIdPresence(attendeeId, false, externalUserId);
       }
     }
   }
@@ -93,6 +110,7 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
   ): void {
     for (const streamId in this.streamIdToAttendeeId) {
       const attendeeId = this.streamIdToAttendeeId[streamId];
+      const externalUserId = this.streamIdToExternalUserId[streamId];
       let volumeUpdate: number | null = null;
       let signalStrengthUpdate: number | null = null;
       if (volumes !== null) {
@@ -114,7 +132,8 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
           attendeeId,
           volumeUpdate,
           null,
-          signalStrengthUpdate
+          signalStrengthUpdate,
+          externalUserId
         );
       }
     }

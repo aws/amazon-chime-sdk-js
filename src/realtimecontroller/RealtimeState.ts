@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import RealtimeVolumeIndicator from './RealtimeVolumeIndicator';
@@ -13,9 +13,18 @@ export default class RealtimeState {
   localAttendeeId: string | null = null;
 
   /**
+   * Stores the external user id of the current user
+   */
+  localExternalUserId: string | null = null;
+
+  /**
    * Callbacks to listen for attendee id changes
    */
-  attendeeIdChangesCallbacks: ((attendeeId: string, present: boolean) => void)[] = [];
+  attendeeIdChangesCallbacks: ((
+    attendeeId: string,
+    present: boolean,
+    externalUserId?: string | null
+  ) => void)[] = [];
 
   /**
    * Stores whether the user can transition from muted to unmuted
@@ -48,6 +57,11 @@ export default class RealtimeState {
   volumeIndicatorState: { [key: string]: RealtimeVolumeIndicator } = {};
 
   /**
+   * Stores attendee id to external user id mappings
+   */
+  attendeeIdToExternalUserId: { [attendeeId: string]: string } = {};
+
+  /**
    * Stores per-attendee id callbacks called when volume indicators change
    */
   volumeIndicatorCallbacks: {
@@ -55,7 +69,8 @@ export default class RealtimeState {
       attendeeId: string,
       volume: number | null,
       muted: boolean | null,
-      signalStrength: number | null
+      signalStrength: number | null,
+      externalUserId?: string | null
     ) => void)[];
   } = {};
 

@@ -2147,6 +2147,9 @@ export interface ISdkAudioStreamIdInfo {
 
     /** SdkAudioStreamIdInfo muted */
     muted?: (boolean|null);
+
+    /** SdkAudioStreamIdInfo externalUserId */
+    externalUserId?: (string|null);
 }
 
 /** Represents a SdkAudioStreamIdInfo. */
@@ -2166,6 +2169,9 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
 
     /** SdkAudioStreamIdInfo muted. */
     public muted: boolean;
+
+    /** SdkAudioStreamIdInfo externalUserId. */
+    public externalUserId: string;
 
     /**
      * Creates a new SdkAudioStreamIdInfo instance using the specified properties.

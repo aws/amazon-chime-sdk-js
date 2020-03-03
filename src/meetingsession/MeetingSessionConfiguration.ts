@@ -125,6 +125,7 @@ export default class MeetingSessionConfiguration {
       }
       this.credentials = new MeetingSessionCredentials();
       this.credentials.attendeeId = createAttendeeResponse.AttendeeId;
+      this.credentials.externalUserId = createAttendeeResponse.ExternalUserId;
       this.credentials.joinToken = createAttendeeResponse.JoinToken;
     }
     if (new DefaultBrowserBehavior().screenShareSendsOnlyKeyframes()) {

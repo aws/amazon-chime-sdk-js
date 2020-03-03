@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /**
@@ -31,27 +31,31 @@ export default interface RealtimeController {
    * mute state with local state when there is an active audio input.
    * @hidden
    */
-  realtimeSetLocalAttendeeId(attendeeId: string): void;
+  realtimeSetLocalAttendeeId(attendeeId: string, externalUserId: string | null): void;
 
   /**
    * Updates the presence of an attendee id.
    * @hidden
    */
-  realtimeSetAttendeeIdPresence(attendeeId: string, present: boolean): void;
+  realtimeSetAttendeeIdPresence(
+    attendeeId: string,
+    present: boolean,
+    externalUserId: string | null
+  ): void;
 
   /**
    * Subscribes to changes in attendee ids in order to discover attendee ids to
    * subscribe and unsubscribe to for volume indicator updates.
    */
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
   ): void;
 
   /**
    * Unsubscribes to changes in attendee ids
    */
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
   ): void;
 
   // Audio Input
@@ -132,7 +136,8 @@ export default interface RealtimeController {
       attendeeId: string,
       volume: number | null,
       muted: boolean | null,
-      signalStrength: number | null
+      signalStrength: number | null,
+      externalUserId?: string | null
     ) => void
   ): void;
 
@@ -154,7 +159,8 @@ export default interface RealtimeController {
     attendeeId: string,
     volume: number | null,
     muted: boolean | null,
-    signalStrength: number | null
+    signalStrength: number | null,
+    externalUserId: string | null
   ): void;
 
   /**

@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import RealtimeController from './RealtimeController';
@@ -54,22 +54,30 @@ export default class DefaultRealtimeController implements RealtimeController {
 
   private state: RealtimeState = new RealtimeState();
 
-  realtimeSetLocalAttendeeId(attendeeId: string): void {
+  realtimeSetLocalAttendeeId(attendeeId: string, externalUserId: string): void {
     this.wrap(() => {
       this.state.localAttendeeId = attendeeId;
+      this.state.localExternalUserId = externalUserId;
     });
   }
 
-  realtimeSetAttendeeIdPresence(attendeeId: string, present: boolean): void {
+  realtimeSetAttendeeIdPresence(
+    attendeeId: string,
+    present: boolean,
+    externalUserId: string | null
+  ): void {
     this.wrap(() => {
+      if (present) {
+        this.state.attendeeIdToExternalUserId[attendeeId] = externalUserId;
+      }
       for (const fn of this.state.attendeeIdChangesCallbacks) {
-        fn(attendeeId, present);
+        fn(attendeeId, present, externalUserId);
       }
     });
   }
 
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
   ): void {
     this.wrap(() => {
       this.state.attendeeIdChangesCallbacks.push(callback);
@@ -77,7 +85,7 @@ export default class DefaultRealtimeController implements RealtimeController {
   }
 
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
   ): void {
     this.wrap(() => {
       const index = this.state.attendeeIdChangesCallbacks.indexOf(callback);
@@ -144,7 +152,13 @@ export default class DefaultRealtimeController implements RealtimeController {
       }
       this.setAudioInputEnabled(false);
       this.state.muted = true;
-      this.realtimeUpdateVolumeIndicator(this.state.localAttendeeId, null, null, null);
+      this.realtimeUpdateVolumeIndicator(
+        this.state.localAttendeeId,
+        null,
+        null,
+        null,
+        this.state.localExternalUserId
+      );
       for (const fn of this.state.muteAndUnmuteLocalAudioCallbacks) {
         fn(true);
       }
@@ -164,7 +178,13 @@ export default class DefaultRealtimeController implements RealtimeController {
       }
       this.setAudioInputEnabled(true);
       this.state.muted = false;
-      this.realtimeUpdateVolumeIndicator(this.state.localAttendeeId, null, null, null);
+      this.realtimeUpdateVolumeIndicator(
+        this.state.localAttendeeId,
+        null,
+        null,
+        null,
+        this.state.localExternalUserId
+      );
       for (const fn of this.state.muteAndUnmuteLocalAudioCallbacks) {
         fn(false);
       }
@@ -204,7 +224,8 @@ export default class DefaultRealtimeController implements RealtimeController {
       attendeeId: string,
       volume: number | null,
       muted: boolean | null,
-      signalStrength: number | null
+      signalStrength: number | null,
+      externalUserId?: string | null
     ) => void
   ): void {
     this.wrap(() => {
@@ -212,7 +233,13 @@ export default class DefaultRealtimeController implements RealtimeController {
         this.state.volumeIndicatorCallbacks[attendeeId] = [];
       }
       this.state.volumeIndicatorCallbacks[attendeeId].push(callback);
-      this.sendVolumeIndicatorChange(attendeeId, true, true, true);
+      this.sendVolumeIndicatorChange(
+        attendeeId,
+        true,
+        true,
+        true,
+        this.state.attendeeIdToExternalUserId[attendeeId]
+      );
     });
   }
 
@@ -226,7 +253,8 @@ export default class DefaultRealtimeController implements RealtimeController {
     attendeeId: string,
     volume: number | null,
     muted: boolean | null,
-    signalStrength: number | null
+    signalStrength: number | null,
+    externalUserId: string | null
   ): void {
     this.wrap(() => {
       muted = this.applyLocalMuteOverride(attendeeId, muted);
@@ -264,7 +292,8 @@ export default class DefaultRealtimeController implements RealtimeController {
         attendeeId,
         volumeUpdated,
         mutedUpdated,
-        signalStrengthUpdated
+        signalStrengthUpdated,
+        externalUserId
       );
     });
   }
@@ -338,7 +367,8 @@ export default class DefaultRealtimeController implements RealtimeController {
     attendeeId: string,
     volumeUpdated: boolean,
     mutedUpdated: boolean,
-    signalStrengthUpdated: boolean
+    signalStrengthUpdated: boolean,
+    externalUserId: string
   ): void {
     this.sendLocalSignalStrengthChange(attendeeId, signalStrengthUpdated);
     if (!this.state.volumeIndicatorCallbacks.hasOwnProperty(attendeeId)) {
@@ -359,7 +389,13 @@ export default class DefaultRealtimeController implements RealtimeController {
       return;
     }
     for (const fn of this.state.volumeIndicatorCallbacks[attendeeId]) {
-      fn(attendeeId, updateState.volume, updateState.muted, updateState.signalStrength);
+      fn(
+        attendeeId,
+        updateState.volume,
+        updateState.muted,
+        updateState.signalStrength,
+        externalUserId
+      );
     }
   }
 

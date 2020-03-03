@@ -167,6 +167,7 @@ message SdkAudioStreamIdInfo {
     optional uint32 audio_stream_id = 1;
     optional string attendee_id = 2;
     optional bool muted = 3;
+    optional string external_user_id = 4;
 }
 
 enum SdkPingPongType {

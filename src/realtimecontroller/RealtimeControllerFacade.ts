@@ -1,12 +1,12 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 export default interface RealtimeControllerFacade {
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
   ): void;
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
   ): void;
   realtimeSetCanUnmuteLocalAudio(canUnmute: boolean): void;
   realtimeSubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void;
@@ -23,7 +23,8 @@ export default interface RealtimeControllerFacade {
       attendeeId: string,
       volume: number | null,
       muted: boolean | null,
-      signalStrength: number | null
+      signalStrength: number | null,
+      externalUserId?: string | null
     ) => void
   ): void;
   realtimeUnsubscribeFromVolumeIndicator(attendeeId: string): void;
