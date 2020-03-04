@@ -15,7 +15,7 @@ const port = process.argv[2];
 const numberOfParticipant = parseInt(process.argv[3], 10);
 const interval = 1000;
 let createMeetingPromise = undefined;
-let numberAttendeeReady = 0;
+let attendeeReadyMap = new Map();
 
 createMeeting = async (createMeetingUrl) => {
   if (meetingMap[createMeetingUrl]) {
@@ -55,11 +55,14 @@ io.on('connection', function (socket) {
   console.log('Connected');
 
   socket.on('test_ready', isReady  => {
-    if (isReady) {
-      numberAttendeeReady += 1;
-    } else {
-      numberAttendeeReady -= 1;
-    }
+    attendeeReadyMap.set(socket, !!isReady);
+
+    let numberAttendeeReady = 0;
+    attendeeReadyMap.forEach(function(value, socket) {
+      if (value === true) {
+        numberAttendeeReady += 1;
+      }
+    });
     if (numberAttendeeReady === numberOfParticipant) {
       console.log(`All clients are ready`);
       io.sockets.emit('all_clients_ready', true);
