@@ -190,7 +190,7 @@ class SdkBaseTest extends KiteBaseTest {
   }
 
   async waitForTestReady() {
-    const maxWaitTime = 5*60*1000 //5 min
+    const maxWaitTime = 60*1000 //1 min since SauceLabs timeout after 90s
     const interval = 100;
     let waitTime = 0;
     while (waitTime < maxWaitTime) {
