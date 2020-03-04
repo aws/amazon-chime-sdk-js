@@ -70,7 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored default screen sharing session start to fix state corruption bug
 - Update Travis script to separate unit and integration tests into different jobs.
 - Validate session Id and disable extendedDebugging flag for SauceLabs
-- Fixing infinite loop when retrying in audio and video integ tests 
+- Fixing infinite loop when retrying in audio and video integ tests
+- Make sure both participants in audio and video tests reach finish state before retrying
 
 ### Removed
 - Remove SDP class withPlanBSimulcast method
