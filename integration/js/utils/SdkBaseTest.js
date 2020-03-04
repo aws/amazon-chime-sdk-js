@@ -12,6 +12,7 @@ class SdkBaseTest extends KiteBaseTest {
     this.meetingTitle = kiteConfig.uuid;
     this.testName = testName;
     this.testReady = false;
+    this.testFinish = false;
     this.capabilities["name"] = process.env.STAGE !== undefined ? `${testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${testName}-${process.env.TEST_TYPE}`;
     this.seleniumSessions = [];
     this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
@@ -60,6 +61,9 @@ class SdkBaseTest extends KiteBaseTest {
       });
       this.io.on("meeting_created", () => {
         this.meetingCreated = true;
+      });
+      this.io.on("finished", () => {
+        this.testFinish = true;
       });
     }
   }
@@ -150,7 +154,7 @@ class SdkBaseTest extends KiteBaseTest {
           return;
         }
       }
-
+      this.testFinish = false;
       this.initializeState();
       if (retryCount !== 0) {
         console.log(`Retrying : ${retryCount}`);
@@ -170,6 +174,12 @@ class SdkBaseTest extends KiteBaseTest {
       }
       // Retry if the local or remote test failed
       if (!this.failedTest && !this.remoteFailed) {
+        break;
+      }
+      // If the other participant did not reach finish state then dont retry
+      if (this.numberOfParticipant > 1 && !this.testFinish) {
+        console.log('[OTHER_PARTICIPANT] timed out')
+        this.io.emit('test_ready', false);
         break;
       }
       retryCount++;
