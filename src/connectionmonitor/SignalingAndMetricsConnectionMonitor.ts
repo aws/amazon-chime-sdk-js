@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
@@ -87,8 +87,10 @@ export default class SignalingAndMetricsConnectionMonitor
     const videoUpstreamPacketPerSecond = metricReport.videoPacketSentPerSecond;
     const videoUpstreamBitrate = metricReport.videoUpstreamBitrate;
 
-    const availableSendBandwidth = metricReport.availableSendBandwidth;
-    const availableRecvBandwidth = metricReport.availableReceiveBandwidth;
+    const availableSendBandwidth =
+      metricReport.availableSendBandwidth || metricReport.availableOutgoingBitrate;
+    const availableRecvBandwidth =
+      metricReport.availableReceiveBandwidth || metricReport.availableIncomingBitrate;
 
     const audioSpeakerDelayMs = metricReport.audioSpeakerDelayMs;
     // firefox doesn't have aggregated bandwidth estimation for now.
