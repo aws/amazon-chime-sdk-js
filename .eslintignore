@@ -5,6 +5,7 @@ demos/electron/*
 demos/browser/*
 demos/serverless/*
 demos/videohelpdesk/*
+demos/components/*
 docs
 guides
 index.ts

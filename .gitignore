@@ -7,6 +7,8 @@ build
 coverage
 demos/browser/logs/
 demos/browser/package-lock.json
+demos/components/node_modules
+demos/components/package-lock.json
 dist
 doc
 integration-test-results/

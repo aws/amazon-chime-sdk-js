@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new ContentShareController APIs
 - Getting Started guide
 - Doc guide generator
+- Add basic component library setup
 
 ### Changed
 - Do not bypass ice gathering based on sdp connection attributes for Safari on iOS
