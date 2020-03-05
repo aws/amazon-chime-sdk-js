@@ -1,0 +1,245 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Amazon Chime SDK Device Demo
+Parameters:
+  UseEventBridge:
+    Description: Use EventBridge to process server side notifications
+    Default: false
+    Type: String
+    AllowedValues: [true, false]
+Conditions:
+  ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
+Globals:
+  Function:
+    Runtime: nodejs10.x
+    Timeout: 30
+    MemorySize: 128
+    Environment:
+      Variables:
+        MEETINGS_TABLE_NAME: !Ref Meetings
+        ATTENDEES_TABLE_NAME: !Ref Attendees
+        SQS_QUEUE_ARN: !GetAtt MeetingNotificationsQueue.Arn
+        BROWSER_LOG_GROUP_NAME: !Ref ChimeBrowserLogs
+Resources:
+  ChimeMeetingsAccessPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ChimeMeetingsAccess
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'chime:CreateMeeting'
+              - 'chime:DeleteMeeting'
+              - 'chime:GetMeeting'
+              - 'chime:ListMeetings'
+              - 'chime:BatchCreateAttendee'
+              - 'chime:CreateAttendee'
+              - 'chime:DeleteAttendee'
+              - 'chime:GetAttendee'
+              - 'chime:ListAttendees'
+            Resource: '*'
+      Roles:
+        - Ref: ChimeSdkJoinLambdaRole
+        - Ref: ChimeSdkAttendeeLambdaRole
+        - Ref: ChimeSdkEndLambdaRole
+        - Ref: ChimeSdkCreateMeetingLambdaRole
+  CloudWatchAccessPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CloudWatchAccess
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+              - 'logs:DescribeLogStreams'
+            Resource: '*'
+      Roles:
+        - Ref: ChimeSdkBrowserLogsLambdaRole
+  Meetings:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "Title"
+          AttributeType: "S"
+        - AttributeName: "Passcode"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "Title"
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      GlobalSecondaryIndexes:
+        - IndexName: "Passcode"
+          KeySchema:
+            - AttributeName: "Passcode"
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+      TimeToLiveSpecification:
+        AttributeName: "TTL"
+        Enabled: true
+  Attendees:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "AttendeeId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "AttendeeId"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+  MeetingNotificationsQueue:
+    Type: AWS::SQS::Queue
+  ChimeSdkIndexLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs10.x
+      CodeUri: src/
+      Events:
+        RootApi:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+        ProxyApi:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+  ChimeSdkCreateMeetingLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.createMeeting
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Environment:
+        Variables:
+          USE_EVENT_BRIDGE: !Ref UseEventBridge
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /meeting
+            Method: POST
+  ChimeSdkJoinLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.join
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Attendees
+      Environment:
+        Variables:
+          USE_EVENT_BRIDGE: !Ref UseEventBridge
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /join
+            Method: POST
+  ChimeSdkEndLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.end
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /end
+            Method: POST
+  ChimeSdkAttendeeLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.attendee
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Attendees
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /attendee
+            Method: GET
+  ChimeSQSQueueLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: notification_handlers.sqs_handler
+      CodeUri: src/
+      Events:
+        MeetingNotificaionsEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MeetingNotificationsQueue.Arn
+            BatchSize: 10
+  ChimeEventBridgeLambda:
+    Type: AWS::Serverless::Function
+    Condition: ShouldUseEventBridge
+    Properties:
+      Handler: notification_handlers.event_bridge_handler
+      CodeUri: src/
+      Events:
+        ChimeEventBridgeEvent:
+          Type: CloudWatchEvent
+          Properties:
+            Pattern:
+              source:
+                - aws.chime
+              detail-type:
+                - "Chime Meeting State Change"
+  ChimeSdkBrowserLogsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.logs
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /logs
+            Method: POST
+  ChimeNotificationsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - sqs:SendMessage
+              - sqs:GetQueueUrl
+            Principal:
+              Service:
+                - chime.amazonaws.com
+            Resource: !GetAtt MeetingNotificationsQueue.Arn
+      Queues:
+        - Ref: MeetingNotificationsQueue
+  ChimeBrowserLogs:
+    Type: AWS::Logs::LogGroup
+Outputs:
+  ApiURL:
+    Description: "API endpoint URL for Prod environment"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

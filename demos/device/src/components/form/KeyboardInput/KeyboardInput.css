@@ -1,0 +1,41 @@
+.KeyboardInput {
+  position: relative;
+  margin: 0 0 2rem;
+}
+
+.KeyboardInput:last-of-type {
+  margin: 0;
+}
+
+.KeyboardInput input {
+  min-width: 20rem;
+  padding: .7rem 0;
+  font-size: 1.7rem;
+  border: .2rem solid #515659;
+  border-radius: .3rem;
+  padding: 1.6rem 1rem .8rem;
+}
+
+.KeyboardInput input:focus,
+.KeyboardInput input:active,
+.KeyboardInput--active input {
+  border-color: blue;
+  outline: none;
+}
+
+.KeyboardInput__label {
+  position: absolute;
+  top: 31%;
+  left: 1.2rem;
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  transition: transform 170ms ease;
+  pointer-events: none;
+}
+
+.KeyboardInput--active .KeyboardInput__label,
+.KeyboardInput:focus-within .KeyboardInput__label {
+  transform: translate(-14%, -75%) scale(.8);
+  color: blue;
+}

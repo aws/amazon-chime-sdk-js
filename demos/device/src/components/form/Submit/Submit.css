@@ -1,0 +1,16 @@
+.Submit {
+  display: block;
+  padding: .8rem 2.4rem;
+  margin: 0 auto;
+  border: .2rem solid #515659;
+  border-radius: .3rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background-color: transparent;
+}
+
+.Submit:focus,
+.Submit:active {
+  border-color: blue;
+  color: blue;
+}

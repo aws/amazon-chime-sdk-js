@@ -1,0 +1,23 @@
+.MeetingControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: auto;
+}
+
+.MeetingControls .Button {
+  margin: 0 2rem;
+}
+
+.MeetingControls .Button {
+  margin: 0 2rem;
+}
+
+.MeetingControls .Button:first-of-type {
+  margin: 0;
+}
+
+.MeetingControls .Button:last-of-type {
+  margin: 0;
+}

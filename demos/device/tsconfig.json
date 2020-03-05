@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "rootDirs": ["src"],
+    "downlevelIteration": true,
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "jsx": "react",
+    "types": ["react"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "experimentalDecorators": true,
+    "declaration": true,
+    "removeComments": true,
+    "noUnusedLocals": false,
+    "outDir": "build",
+    "target": "es5",
+    "lib": ["es6", "dom"],
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "suppressImplicitAnyIndexErrors": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "build",
+  ]
+}
