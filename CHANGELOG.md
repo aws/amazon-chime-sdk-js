@@ -72,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Validate session Id and disable extendedDebugging flag for SauceLabs
 - Fixing infinite loop when retrying in audio and video integ tests
 - Make sure both participants in audio and video tests reach finish state before retrying
+- Trigger videoSendBandwidthDidChange and videoReceiveBandwidthDidChange for Safari
 
 ### Removed
 - Remove SDP class withPlanBSimulcast method
