@@ -7,6 +7,7 @@ demos/serverless/*
 demos/videohelpdesk/*
 demos/components/*
 demos/react/*
+demos/device/*
 docs
 guides
 index.ts

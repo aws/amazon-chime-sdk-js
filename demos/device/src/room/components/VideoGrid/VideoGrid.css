@@ -1,0 +1,25 @@
+/* Todo - Basic grid so 2-4 videos can join demo */
+
+.VideoGrid {
+  display: grid;
+  height: 80vh;
+  padding: 2rem;
+}
+
+.VideoTile {
+  margin: 0 auto;
+}
+
+.VideoTile--local {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 35rem;
+}
+
+#shared-content-view {
+  height: 40vh;
+  padding: 2rem;
+  resize: both;
+  display: none;
+}

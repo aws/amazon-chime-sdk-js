@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add additional callback in AudioVideoObserver to indicate video downlink pressure
 - Add meeting demo parameter for recording user
 - Add a script demo to bundle Chime SDK into a single JS file
+- Add device demo
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM

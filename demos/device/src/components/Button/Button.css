@@ -1,0 +1,37 @@
+.Button {
+  position: relative;
+  height: 15rem;
+  width: 15rem;
+  border-radius: 100%;
+  border: .3rem solid #515659;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.Button:active,
+.Button:focus {
+  outline: none
+}
+
+.Button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 100%;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  box-shadow: 0 1.2rem 1.4rem 0 rgba(0, 0, 0, .3);
+}
+
+.Button:active::after {
+  opacity: 1;
+}
+
+.Button--active {
+  border-color: blue;
+  color: blue;
+}
