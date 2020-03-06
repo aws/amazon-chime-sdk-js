@@ -91,7 +91,15 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
 
   destroy(): void {
     this.devicePixelRatioMonitor.removeObserver(this);
-    DefaultVideoTile.disconnectVideoStreamFromVideoElement(this.tileState.boundVideoElement, false);
+    if (
+      this.tileState.boundVideoElement &&
+      this.tileState.boundVideoElement.srcObject === this.tileState.boundVideoStream
+    ) {
+      DefaultVideoTile.disconnectVideoStreamFromVideoElement(
+        this.tileState.boundVideoElement,
+        false
+      );
+    }
     this.tileState = new VideoTileState();
   }
 
