@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix audio-video session stop to return Left status code
 - Fix crash in demo app when click on screen share view
 - Fix integration test completion time writer
+- - Fix ping pong restart issue after reconnect
 
 ## [1.1.0] - 2020-02-04
 

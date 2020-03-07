@@ -10,6 +10,7 @@ import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionTURNCredentials from '../meetingsession/MeetingSessionTURNCredentials';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
+import PingPong from '../pingpong/PingPong';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import RemovableObserver from '../removableobserver/RemovableObserver';
@@ -30,6 +31,8 @@ import VolumeIndicatorAdapter from '../volumeindicatoradapter/VolumeIndicatorAda
  * [[AudioVideoControllerState]] includes the compute resources shared by [[Task]].
  */
 export default class AudioVideoControllerState {
+  pingPong: PingPong | null = null;
+
   logger: Logger | null = null;
 
   browserBehavior: BrowserBehavior | null = null;

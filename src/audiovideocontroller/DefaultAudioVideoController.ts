@@ -63,6 +63,7 @@ import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NSca
 import DefaultVolumeIndicatorAdapter from '../volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
+//import WebSocketReadyState from "../websocketadapter/WebSocketReadyState";
 
 export default class DefaultAudioVideoController implements AudioVideoController {
   private _logger: Logger;
@@ -74,7 +75,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
   private _mediaStreamBroker: MediaStreamBroker;
   private _reconnectController: ReconnectController;
   private _audioMixController: AudioMixController;
-
   private connectionHealthData = new ConnectionHealthData();
   private observerQueue: Set<AudioVideoObserver> = new Set<AudioVideoObserver>();
   private meetingSessionContext = new AudioVideoControllerState();
@@ -82,7 +82,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
   private static MIN_VOLUME_DECIBELS = -42;
   private static MAX_VOLUME_DECIBELS = -14;
-  private static PING_PONG_INTERVAL_MS = 10000;
+  private static PING_PONG_INTERVAL_MS = 5000;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -216,16 +216,18 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.statsCollector = new DefaultStatsCollector(this, this.logger);
+    this.meetingSessionContext.pingPong = new DefaultPingPong(
+      this.meetingSessionContext.signalingClient,
+      DefaultAudioVideoController.PING_PONG_INTERVAL_MS,
+      this.logger
+    );
+    this.meetingSessionContext.pingPong.start();
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
       this._realtimeController,
       this._videoTileController,
       this.connectionHealthData,
-      new DefaultPingPong(
-        this.meetingSessionContext.signalingClient,
-        DefaultAudioVideoController.PING_PONG_INTERVAL_MS,
-        this.logger
-      ),
+      this.meetingSessionContext.pingPong,
       this.meetingSessionContext.statsCollector
     );
     this.meetingSessionContext.reconnectController = this._reconnectController;
@@ -537,6 +539,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         this.actionFinishConnecting();
+        this.meetingSessionContext.pingPong.start();
       });
     } catch (error) {
       // To perform the "Reconnect" action again, the session should be in the "Connected" state.
