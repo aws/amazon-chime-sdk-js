@@ -33,6 +33,11 @@ export default class DefaultContentShareController implements ContentShareContro
       return;
     }
     this.mediaStreamBroker.mediaStream = stream;
+    for (let i = 0; i < this.mediaStreamBroker.mediaStream.getTracks().length; i++) {
+      this.mediaStreamBroker.mediaStream.getTracks()[i].addEventListener('ended', () => {
+        this.stopContentShare();
+      });
+    }
     this.audioVideo.start();
     if (this.mediaStreamBroker.mediaStream.getVideoTracks().length > 0) {
       this.audioVideo.videoTileController.startLocalVideoTile();
