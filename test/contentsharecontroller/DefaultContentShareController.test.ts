@@ -149,6 +149,16 @@ describe('DefaultContentShareController', () => {
       expect(mediaStreamBrokerSpy.calledOnce).to.be.true;
     });
 
+    it('stopContentShare is called if stream ended', () => {
+      const contentShareControllerSpy = sinon.spy(contentShareController, 'stopContentShare');
+      // @ts-ignore
+      const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
+      mediaStream.addTrack(mediaVideoTrack);
+      contentShareController.startContentShare(mediaStream);
+      mediaVideoTrack.stop();
+      expect(contentShareControllerSpy.calledOnce).to.be.true;
+    });
+
     it('pauseContentShare', () => {
       const mediaStreamBrokerSpy = sinon.spy(contentShareMediaStreamBroker, 'toggleMediaStream');
       contentShareController.pauseContentShare();

@@ -155,6 +155,7 @@ export default class DOMMockBuilder {
 
     GlobalAny.MediaStreamTrack = class MockMediaStreamTrack {
       private listeners: { [type: string]: MockListener[] } = {};
+      private readyState: string = 'live';
 
       readonly id: string;
       readonly kind: string = '';
@@ -167,13 +168,16 @@ export default class DOMMockBuilder {
       }
 
       stop(): void {
-        if (this.listeners.hasOwnProperty('ended')) {
-          this.listeners.ended.forEach((listener: MockListener) =>
-            listener({
-              ...Substitute.for(),
-              type: 'ended',
-            })
-          );
+        if (this.readyState === 'live') {
+          this.readyState = 'ended';
+          if (this.listeners.hasOwnProperty('ended')) {
+            this.listeners.ended.forEach((listener: MockListener) =>
+              listener({
+                ...Substitute.for(),
+                type: 'ended',
+              })
+            );
+          }
         }
       }
 
