@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix crash in demo app when click on screen share view
 - Fix integration test completion time writer
 - Fix the ping pong reconnection issue
+- Fix example code in the getting started guide
 
 ## [1.1.0] - 2020-02-04
 
