@@ -7,6 +7,7 @@ import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ContentShareController from '../contentsharecontroller/ContentShareController';
+import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Device from '../devicecontroller/Device';
 import DeviceController from '../devicecontroller/DeviceController';
@@ -384,6 +385,16 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
   stopContentShare(): void {
     this.contentShareController.stopContentShare();
     this.trace('stopContentShare');
+  }
+
+  addContentShareObserver(observer: ContentShareObserver): void {
+    this.contentShareController.addContentShareObserver(observer);
+    this.trace('addContentShareObserver');
+  }
+
+  removeContentShareObserver(observer: ContentShareObserver): void {
+    this.contentShareController.removeContentShareObserver(observer);
+    this.trace('removeContentShareObserver');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

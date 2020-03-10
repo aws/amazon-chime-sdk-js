@@ -80,12 +80,17 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     };
   }
 
-  toggleMediaStream(enable: boolean): void {
+  toggleMediaStream(enable: boolean): boolean {
+    let changed = false;
     if (this.mediaStream) {
       for (let i = 0; i < this.mediaStream.getTracks().length; i++) {
-        this.mediaStream.getTracks()[i].enabled = enable;
+        if (this.mediaStream.getTracks()[i].enabled !== enable) {
+          this.mediaStream.getTracks()[i].enabled = enable;
+          changed = true;
+        }
       }
     }
+    return changed;
   }
 
   cleanup(): void {

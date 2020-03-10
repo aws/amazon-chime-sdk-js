@@ -10,19 +10,25 @@ import ContentShareConstants from '../../src/contentsharecontroller/ContentShare
 import ContentShareController from '../../src/contentsharecontroller/ContentShareController';
 import ContentShareMediaStreamBroker from '../../src/contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../../src/contentsharecontroller/DefaultContentShareController';
+import ContentShareObserver from '../../src/contentshareobserver/ContentShareObserver';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import Maybe from '../../src/maybe/Maybe';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
+import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
+import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
+import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultContentShareController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
 
-  const behavior = new DOMMockBehavior();
+  const domMockBehavior = new DOMMockBehavior();
   let contentShareController: ContentShareController;
   let contentShareMediaStreamBroker: ContentShareMediaStreamBroker;
+  let contentShareObserver: NoOpContentShareObserver;
   let audioVideoController: AudioVideoController;
   let mediaStream: MediaStream;
   let domMockBuilder: DOMMockBuilder;
@@ -56,6 +62,36 @@ describe('DefaultContentShareController', () => {
     }
   }
 
+  class NoOpContentShareObserver implements ContentShareObserver {
+    contentShareDidStart(): void {}
+
+    contentShareDidStop(): void {}
+
+    contentShareDidPause(): void {}
+
+    contentShareDidUnpause(): void {}
+  }
+
+  class TestAudioVideoController extends NoOpAudioVideoController {
+    start(): void {
+      this.forEachObserver(observer => {
+        Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
+      });
+    }
+
+    stop(): void {
+      this.forEachObserver(observer => {
+        Maybe.of(observer.audioVideoDidStop).map(f =>
+          f.bind(observer)(new MeetingSessionStatus(MeetingSessionStatusCode.Left))
+        );
+      });
+    }
+  }
+
+  async function delay(timeoutMs: number = domMockBehavior.asyncWaitMs * 5): Promise<void> {
+    await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
+  }
+
   it('content share meeting session configure', () => {
     const meetingSessionConfigure = makeSessionConfiguration();
     const contentShareMeetingSessionConfigure = DefaultContentShareController.createContentShareMeetingSessionConfigure(
@@ -75,15 +111,18 @@ describe('DefaultContentShareController', () => {
 
   describe('content share APIs', () => {
     beforeEach(() => {
-      domMockBuilder = new DOMMockBuilder(behavior);
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
       contentShareMediaStreamBroker = new ContentShareMediaStreamBrokerMock(new NoOpLogger());
-      audioVideoController = new NoOpAudioVideoController();
+      audioVideoController = new TestAudioVideoController();
       contentShareController = new DefaultContentShareController(
         contentShareMediaStreamBroker,
         audioVideoController
       );
       mediaStream = new MediaStream();
+
+      contentShareObserver = new NoOpContentShareObserver();
+      contentShareController.addContentShareObserver(contentShareObserver);
     });
 
     afterEach(() => {
@@ -91,6 +130,7 @@ describe('DefaultContentShareController', () => {
         domMockBuilder.cleanup();
         domMockBuilder = null;
       }
+      contentShareController.removeContentShareObserver(contentShareObserver);
     });
 
     it('can be constructed', () => {
@@ -105,9 +145,12 @@ describe('DefaultContentShareController', () => {
         audioVideoController.videoTileController,
         'startLocalVideoTile'
       );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
       expect(videoTileSpy.calledOnce).to.be.true;
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
     it('startContentShare without video track', async () => {
@@ -116,9 +159,12 @@ describe('DefaultContentShareController', () => {
         audioVideoController.videoTileController,
         'startLocalVideoTile'
       );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
       expect(audioVideoSpy.calledOnce).to.be.true;
       expect(videoTileSpy.notCalled).to.be.true;
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
     it('startContentShare with null stream', async () => {
@@ -127,9 +173,12 @@ describe('DefaultContentShareController', () => {
         audioVideoController.videoTileController,
         'startLocalVideoTile'
       );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(null);
       expect(audioVideoSpy.notCalled).to.be.true;
       expect(videoTileSpy.notCalled).to.be.true;
+      await delay();
+      expect(contentShareObserverSpy.notCalled).to.be.true;
     });
 
     it('startContentShareFromScreenCapture', async () => {
@@ -137,38 +186,104 @@ describe('DefaultContentShareController', () => {
         contentShareMediaStreamBroker,
         'acquireScreenCaptureDisplayInputStream'
       );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShareFromScreenCapture();
       expect(mediaStreamBrokerSpy.calledOnce).to.be.true;
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
-    it('stopContentShare', () => {
+    it('stopContentShare', async () => {
       const audioVideoSpy = sinon.spy(audioVideoController, 'stop');
       const mediaStreamBrokerSpy = sinon.spy(contentShareMediaStreamBroker, 'cleanup');
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStop');
       contentShareController.stopContentShare();
       expect(audioVideoSpy.calledOnce).to.be.true;
       expect(mediaStreamBrokerSpy.calledOnce).to.be.true;
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
-    it('stopContentShare is called if stream ended', () => {
+    it('stopContentShare is called if stream ended', async () => {
       const contentShareControllerSpy = sinon.spy(contentShareController, 'stopContentShare');
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStop');
       // @ts-ignore
       const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
       mediaStream.addTrack(mediaVideoTrack);
       contentShareController.startContentShare(mediaStream);
       mediaVideoTrack.stop();
       expect(contentShareControllerSpy.calledOnce).to.be.true;
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
-    it('pauseContentShare', () => {
+    it('pauseContentShare and trigger pause event', async () => {
       const mediaStreamBrokerSpy = sinon.spy(contentShareMediaStreamBroker, 'toggleMediaStream');
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidPause');
+      // @ts-ignore
+      const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
+      mediaVideoTrack.enabled = true;
+      mediaStream.addTrack(mediaVideoTrack);
+      contentShareMediaStreamBroker.mediaStream = mediaStream;
       contentShareController.pauseContentShare();
       mediaStreamBrokerSpy.calledOnceWith(true);
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
     });
 
-    it('unpauseContentShare', () => {
+    it('do not trigger pause event if the track is already paused', async () => {
       const mediaStreamBrokerSpy = sinon.spy(contentShareMediaStreamBroker, 'toggleMediaStream');
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidPause');
+      // @ts-ignore
+      const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
+      mediaVideoTrack.enabled = false;
+      mediaStream.addTrack(mediaVideoTrack);
+      contentShareMediaStreamBroker.mediaStream = mediaStream;
+      contentShareController.pauseContentShare();
+      mediaStreamBrokerSpy.calledOnceWith(true);
+      await delay();
+      expect(contentShareObserverSpy.notCalled).to.be.true;
+    });
+
+    it('unpauseContentShare', async () => {
+      const mediaStreamBrokerSpy = sinon.spy(contentShareMediaStreamBroker, 'toggleMediaStream');
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidUnpause');
+      // @ts-ignore
+      const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
+      mediaVideoTrack.enabled = false;
+      mediaStream.addTrack(mediaVideoTrack);
+      contentShareMediaStreamBroker.mediaStream = mediaStream;
       contentShareController.unpauseContentShare();
       mediaStreamBrokerSpy.calledOnceWith(false);
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
+    });
+
+    it('do not trigger pause event if the track is already enabled', async () => {
+      const mediaStreamBrokerSpy = sinon.spy(contentShareMediaStreamBroker, 'toggleMediaStream');
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidUnpause');
+      // @ts-ignore
+      const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
+      mediaVideoTrack.enabled = true;
+      mediaStream.addTrack(mediaVideoTrack);
+      contentShareMediaStreamBroker.mediaStream = mediaStream;
+      contentShareController.unpauseContentShare();
+      mediaStreamBrokerSpy.calledOnceWith(false);
+      await delay();
+      expect(contentShareObserverSpy.notCalled).to.be.true;
+    });
+
+    it('does not call the observer if it has been removed', async () => {
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidPause');
+      // @ts-ignore
+      const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
+      mediaVideoTrack.enabled = true;
+      mediaStream.addTrack(mediaVideoTrack);
+      contentShareMediaStreamBroker.mediaStream = mediaStream;
+      contentShareController.pauseContentShare();
+      contentShareController.removeContentShareObserver(contentShareObserver);
+      await delay();
+      expect(contentShareObserverSpy.notCalled).to.be.true;
     });
   });
 });

@@ -29,7 +29,9 @@ import ConnectionMonitor from './connectionmonitor/ConnectionMonitor';
 import ConsoleLogger from './logger/ConsoleLogger';
 import ContentShareConstants from './contentsharecontroller/ContentShareConstants';
 import ContentShareController from './contentsharecontroller/ContentShareController';
+import ContentShareControllerFacade from './contentsharecontroller/ContentShareControllerFacade';
 import ContentShareMediaStreamBroker from './contentsharecontroller/ContentShareMediaStreamBroker';
+import ContentShareObserver from './contentshareobserver/ContentShareObserver';
 import CreatePeerConnectionTask from './task/CreatePeerConnectionTask';
 import CreateSDPTask from './task/CreateSDPTask';
 import DOMWebSocket from './domwebsocket/DOMWebSocket';
@@ -313,7 +315,9 @@ export {
   ConsoleLogger,
   ContentShareConstants,
   ContentShareController,
+  ContentShareControllerFacade,
   ContentShareMediaStreamBroker,
+  ContentShareObserver,
   CreatePeerConnectionTask,
   CreateSDPTask,
   DOMWebSocket,

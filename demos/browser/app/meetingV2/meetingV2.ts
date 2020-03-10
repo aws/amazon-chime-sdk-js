@@ -10,6 +10,7 @@ import {
   AudioVideoObserver,
   ClientMetricReport,
   ConsoleLogger,
+  ContentShareObserver,
   DefaultActiveSpeakerPolicy,
   DefaultAudioMixController,
   DefaultDeviceController,
@@ -29,7 +30,7 @@ import {
 } from '../../../../src/index';
 
 class DemoTileOrganizer {
-  private static MAX_TILES = 16;
+  private static MAX_TILES = 17;
   private tiles: { [id: number]: number } = {};
   public tileStates: {[id: number]: boolean } = {};
 
@@ -99,7 +100,7 @@ export enum ContentShareType {
   VideoFile,
 };
 
-export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver {
+export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver {
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
   meeting: string | null = null;
@@ -518,6 +519,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     this.setupCanUnmuteHandler();
     this.setupSubscribeToAttendeeIdPresenceHandler();
     this.audioVideo.addObserver(this);
+    this.audioVideo.addContentShareObserver(this);
     this.initContentShareDropDownItems();
   }
 
@@ -1380,6 +1382,27 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
 
   videoSendDidBecomeUnavailable(): void {
     this.log('sending video is not available');
+  }
+
+  contentShareDidStart(): void {
+    this.log('content share started.');
+  }
+
+  contentShareDidStop(): void {
+    this.log('content share stopped.');
+    if (this.isButtonOn('button-content-share')) {
+      this.buttonStates['button-content-share'] = false;
+      this.buttonStates['button-pause-content-share'] = false;
+      this.displayButtonStates();
+    }
+  }
+
+  contentShareDidPause(): void {
+    this.log('content share paused.');
+  }
+
+  contentShareDidUnpause(): void {
+    this.log(`content share unpaused.`);
   }
 }
 

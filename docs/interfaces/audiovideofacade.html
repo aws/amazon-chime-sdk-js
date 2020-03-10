@@ -88,7 +88,7 @@
 						<a href="devicecontroller.html" class="tsd-signature-type">DeviceController</a>
 					</li>
 					<li>
-						<a href="contentsharecontroller.html" class="tsd-signature-type">ContentShareController</a>
+						<a href="contentsharecontrollerfacade.html" class="tsd-signature-type">ContentShareControllerFacade</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">AudioVideoFacade</span>
@@ -110,6 +110,7 @@
 						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#addcontentshareobserver" class="tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#adddevicechangeobserver" class="tsd-kind-icon">add<wbr>Device<wbr>Change<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#addvideotile" class="tsd-kind-icon">add<wbr>Video<wbr>Tile</a></li>
@@ -151,6 +152,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#realtimeunsubscribetomuteandunmutelocalaudio" class="tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>ToMute<wbr>And<wbr>Unmute<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#realtimeunsubscribetosetcanunmutelocalaudio" class="tsd-kind-icon">realtime<wbr>Unsubscribe<wbr>ToSet<wbr>Can<wbr>Unmute<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#removeallvideotiles" class="tsd-kind-icon">remove<wbr>All<wbr>Video<wbr>Tiles</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#removecontentshareobserver" class="tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#removedevicechangeobserver" class="tsd-kind-icon">remove<wbr>Device<wbr>Change<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#removelocalvideotile" class="tsd-kind-icon">remove<wbr>Local<wbr>Video<wbr>Tile</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideofacade.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
@@ -179,6 +181,35 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a name="addcontentshareobserver" class="tsd-anchor"></a>
+					<h3>add<wbr>Content<wbr>Share<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#addcontentshareobserver">addContentShareObserver</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareControllerFacade.ts#L35">src/contentsharecontroller/ContentShareControllerFacade.ts:35</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Add an observer</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 					<a name="adddevicechangeobserver" class="tsd-anchor"></a>
 					<h3>add<wbr>Device<wbr>Change<wbr>Observer</h3>
@@ -727,9 +758,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="contentsharecontroller.html">ContentShareController</a>.<a href="contentsharecontroller.html#pausecontentshare">pauseContentShare</a></p>
+								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#pausecontentshare">pauseContentShare</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L18">src/contentsharecontroller/ContentShareController.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareControllerFacade.ts#L20">src/contentsharecontroller/ContentShareControllerFacade.ts:20</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1393,6 +1424,35 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a name="removecontentshareobserver" class="tsd-anchor"></a>
+					<h3>remove<wbr>Content<wbr>Share<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#removecontentshareobserver">removeContentShareObserver</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareControllerFacade.ts#L40">src/contentsharecontroller/ContentShareControllerFacade.ts:40</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Remove an observer</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 					<a name="removedevicechangeobserver" class="tsd-anchor"></a>
 					<h3>remove<wbr>Device<wbr>Change<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
@@ -1581,9 +1641,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="contentsharecontroller.html">ContentShareController</a>.<a href="contentsharecontroller.html#startcontentshare">startContentShare</a></p>
+								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#startcontentshare">startContentShare</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L8">src/contentsharecontroller/ContentShareController.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareControllerFacade.ts#L10">src/contentsharecontroller/ContentShareControllerFacade.ts:10</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1610,9 +1670,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="contentsharecontroller.html">ContentShareController</a>.<a href="contentsharecontroller.html#startcontentsharefromscreencapture">startContentShareFromScreenCapture</a></p>
+								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#startcontentsharefromscreencapture">startContentShareFromScreenCapture</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L13">src/contentsharecontroller/ContentShareController.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareControllerFacade.ts#L15">src/contentsharecontroller/ContentShareControllerFacade.ts:15</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1708,9 +1768,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="contentsharecontroller.html">ContentShareController</a>.<a href="contentsharecontroller.html#stopcontentshare">stopContentShare</a></p>
+								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#stopcontentshare">stopContentShare</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L28">src/contentsharecontroller/ContentShareController.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareControllerFacade.ts#L30">src/contentsharecontroller/ContentShareControllerFacade.ts:30</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1895,9 +1955,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="contentsharecontroller.html">ContentShareController</a>.<a href="contentsharecontroller.html#unpausecontentshare">unpauseContentShare</a></p>
+								<p>Inherited from <a href="contentsharecontrollerfacade.html">ContentShareControllerFacade</a>.<a href="contentsharecontrollerfacade.html#unpausecontentshare">unpauseContentShare</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareController.ts#L23">src/contentsharecontroller/ContentShareController.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/ContentShareControllerFacade.ts#L25">src/contentsharecontroller/ContentShareControllerFacade.ts:25</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1992,6 +2052,9 @@
 					<li class="current tsd-kind-interface">
 						<a href="audiovideofacade.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Facade</a>
 						<ul>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+								<a href="audiovideofacade.html#addcontentshareobserver" class="tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="audiovideofacade.html#adddevicechangeobserver" class="tsd-kind-icon">add<wbr>Device<wbr>Change<wbr>Observer</a>
 							</li>
@@ -2114,6 +2177,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="audiovideofacade.html#removeallvideotiles" class="tsd-kind-icon">remove<wbr>All<wbr>Video<wbr>Tiles</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+								<a href="audiovideofacade.html#removecontentshareobserver" class="tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="audiovideofacade.html#removedevicechangeobserver" class="tsd-kind-icon">remove<wbr>Device<wbr>Change<wbr>Observer</a>
