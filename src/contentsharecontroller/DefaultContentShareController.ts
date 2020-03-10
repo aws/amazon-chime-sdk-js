@@ -2,13 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
+import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
+import Maybe from '../maybe/Maybe';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../meetingsession/MeetingSessionCredentials';
+import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
+import AsyncScheduler from '../scheduler/AsyncScheduler';
 import ContentShareConstants from './ContentShareConstants';
 import ContentShareController from './ContentShareController';
 import ContentShareMediaStreamBroker from './ContentShareMediaStreamBroker';
 
-export default class DefaultContentShareController implements ContentShareController {
+export default class DefaultContentShareController
+  implements ContentShareController, AudioVideoObserver {
   static createContentShareMeetingSessionConfigure(
     configuration: MeetingSessionConfiguration
   ): MeetingSessionConfiguration {
@@ -23,10 +29,14 @@ export default class DefaultContentShareController implements ContentShareContro
     return contentShareConfiguration;
   }
 
+  private observerQueue: Set<ContentShareObserver> = new Set<ContentShareObserver>();
+
   constructor(
     private mediaStreamBroker: ContentShareMediaStreamBroker,
     private audioVideo: AudioVideoController
-  ) {}
+  ) {
+    this.audioVideo.addObserver(this);
+  }
 
   async startContentShare(stream: MediaStream): Promise<void> {
     if (!stream) {
@@ -52,15 +62,53 @@ export default class DefaultContentShareController implements ContentShareContro
   }
 
   pauseContentShare(): void {
-    this.mediaStreamBroker.toggleMediaStream(false);
+    if (this.mediaStreamBroker.toggleMediaStream(false)) {
+      this.forEachContentShareObserver(observer => {
+        Maybe.of(observer.contentShareDidPause).map(f => f.bind(observer)());
+      });
+    }
   }
 
   unpauseContentShare(): void {
-    this.mediaStreamBroker.toggleMediaStream(true);
+    if (this.mediaStreamBroker.toggleMediaStream(true)) {
+      this.forEachContentShareObserver(observer => {
+        Maybe.of(observer.contentShareDidUnpause).map(f => f.bind(observer)());
+      });
+    }
   }
 
   stopContentShare(): void {
     this.audioVideo.stop();
     this.mediaStreamBroker.cleanup();
+  }
+
+  addContentShareObserver(observer: ContentShareObserver): void {
+    this.observerQueue.add(observer);
+  }
+
+  removeContentShareObserver(observer: ContentShareObserver): void {
+    this.observerQueue.delete(observer);
+  }
+
+  forEachContentShareObserver(observerFunc: (observer: ContentShareObserver) => void): void {
+    for (const observer of this.observerQueue) {
+      new AsyncScheduler().start(() => {
+        if (this.observerQueue.has(observer)) {
+          observerFunc(observer);
+        }
+      });
+    }
+  }
+
+  audioVideoDidStart(): void {
+    this.forEachContentShareObserver(observer => {
+      Maybe.of(observer.contentShareDidStart).map(f => f.bind(observer)());
+    });
+  }
+
+  audioVideoDidStop(_sessionStatus: MeetingSessionStatus): void {
+    this.forEachContentShareObserver(observer => {
+      Maybe.of(observer.contentShareDidStop).map(f => f.bind(observer)());
+    });
   }
 }

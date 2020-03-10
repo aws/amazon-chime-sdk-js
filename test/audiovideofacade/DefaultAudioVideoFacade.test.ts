@@ -11,6 +11,7 @@ import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
 import DefaultAudioVideoFacade from '../../src/audiovideofacade/DefaultAudioVideoFacade';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import ContentShareController from '../../src/contentsharecontroller/ContentShareController';
+import ContentShareObserver from '../../src/contentshareobserver/ContentShareObserver';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -38,6 +39,16 @@ describe('DefaultAudioVideoFacade', () => {
     unpauseContentShare(): void {}
 
     stopContentShare(): void {}
+
+    addContentShareObserver(_observer: ContentShareObserver): void {}
+
+    removeContentShareObserver(_observer: ContentShareObserver): void {}
+
+    forEachContentShareObserver(_observerFunc: (observer: ContentShareObserver) => void): void {}
+  }
+
+  class NoOpContentShareObserver implements ContentShareObserver {
+    contentShareDidStop(): void {}
   }
 
   beforeEach(() => {
@@ -520,6 +531,20 @@ describe('DefaultAudioVideoFacade', () => {
       const spy = sinon.spy(contentShareController, 'stopContentShare');
       facade.stopContentShare();
       expect(spy.calledOnce).to.be.true;
+    });
+
+    it('addContentShareObserver', () => {
+      const spy = sinon.spy(contentShareController, 'addContentShareObserver');
+      const observer = new NoOpContentShareObserver();
+      facade.addContentShareObserver(observer);
+      expect(spy.withArgs(observer).calledOnce).to.be.true;
+    });
+
+    it('removeContentShareObserver', () => {
+      const spy = sinon.spy(contentShareController, 'removeContentShareObserver');
+      const observer = new NoOpContentShareObserver();
+      facade.removeContentShareObserver(observer);
+      expect(spy.withArgs(observer).calledOnce).to.be.true;
     });
   });
 });
