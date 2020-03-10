@@ -121,7 +121,9 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultpingpong.html#pong" class="tsd-kind-icon">pong</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultpingpong.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultpingpong.html#start" class="tsd-kind-icon">start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultpingpong.html#startpinginterval" class="tsd-kind-icon">start<wbr>Ping<wbr>Interval</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultpingpong.html#stop" class="tsd-kind-icon">stop</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultpingpong.html#stoppinginterval" class="tsd-kind-icon">stop<wbr>Ping<wbr>Interval</a></li>
 							</ul>
 						</section>
 					</div>
@@ -320,7 +322,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/signalingclientobserver.html">SignalingClientObserver</a>.<a href="../interfaces/signalingclientobserver.html#handlesignalingclientevent">handleSignalingClientEvent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L104">src/pingpong/DefaultPingPong.ts:104</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L112">src/pingpong/DefaultPingPong.ts:112</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -343,7 +345,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L77">src/pingpong/DefaultPingPong.ts:77</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L85">src/pingpong/DefaultPingPong.ts:85</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -360,7 +362,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L97">src/pingpong/DefaultPingPong.ts:97</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L105">src/pingpong/DefaultPingPong.ts:105</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -415,6 +417,23 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="startpinginterval" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> start<wbr>Ping<wbr>Interval</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Ping<wbr>Interval<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L72">src/pingpong/DefaultPingPong.ts:72</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="stop" class="tsd-anchor"></a>
 					<h3>stop</h3>
@@ -426,7 +445,24 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/pingpong.html">PingPong</a>.<a href="../interfaces/pingpong.html#stop">stop</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L70">src/pingpong/DefaultPingPong.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L67">src/pingpong/DefaultPingPong.ts:67</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="stoppinginterval" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> stop<wbr>Ping<wbr>Interval</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>Ping<wbr>Interval<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/pingpong/DefaultPingPong.ts#L79">src/pingpong/DefaultPingPong.ts:79</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -498,8 +534,14 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultpingpong.html#start" class="tsd-kind-icon">start</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultpingpong.html#startpinginterval" class="tsd-kind-icon">start<wbr>Ping<wbr>Interval</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultpingpong.html#stop" class="tsd-kind-icon">stop</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultpingpong.html#stoppinginterval" class="tsd-kind-icon">stop<wbr>Ping<wbr>Interval</a>
 							</li>
 						</ul>
 					</li>
