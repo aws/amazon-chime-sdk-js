@@ -63,12 +63,13 @@ import {
   ConsoleLogger,
   DefaultDeviceController,
   DefaultMeetingSession,
+  LogLevel,
   MeetingSessionConfiguration,
 } from 'amazon-chime-sdk-js';
 const logger = new ConsoleLogger('ChimeMeetingLogs', LogLevel.INFO);
 const deviceController = new DefaultDeviceController(logger);
 const configuration = new MeetingSessionConfiguration(meeting, attendee);
-const meetingSession = new MeetingSession(configuration, logger, deviceController);
+const meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
 ```
 
 The meeting session as an audio-video API interface `meetingSession.audioVideo` with most of the control surface you will use for managing the meeting session. See [here](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html) for a list of methods you can use. Now select an audio device. In this example, you will select the first device, which usually represents the system default.

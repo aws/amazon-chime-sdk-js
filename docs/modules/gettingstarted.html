@@ -124,12 +124,13 @@
   ConsoleLogger,
   DefaultDeviceController,
   DefaultMeetingSession,
+  LogLevel,
   MeetingSessionConfiguration,
 } <span class="hljs-keyword">from</span> <span class="hljs-string">'amazon-chime-sdk-js'</span>;
 <span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">'ChimeMeetingLogs'</span>, LogLevel.INFO);
 <span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
 <span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meeting, attendee);
-<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> MeetingSession(configuration, logger, deviceController);</code></pre>
+<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);</code></pre>
 					<p>The meeting session as an audio-video API interface <code>meetingSession.audioVideo</code> with most of the control surface you will use for managing the meeting session. See <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html">here</a> for a list of methods you can use. Now select an audio device. In this example, you will select the first device, which usually represents the system default.</p>
 					<pre><code class="language-javascript"><span class="hljs-keyword">try</span> {
   <span class="hljs-keyword">const</span> audioInputs = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listAudioInputDevices();
