@@ -113,16 +113,25 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#hascandidatesforallmlines" class="tsd-kind-icon">has<wbr>Candidates<wbr>For<wbr>AllMLines</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#hasvideo" class="tsd-kind-icon">has<wbr>Video</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#lines" class="tsd-kind-icon">lines</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#ssrcforvideosendingsection" class="tsd-kind-icon">ssrc<wbr>For<wbr>Video<wbr>Sending<wbr>Section</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#videosendsectionhasdifferentssrc" class="tsd-kind-icon">video<wbr>Send<wbr>Section<wbr>Has<wbr>DifferentSSRC</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#withbandwidthrestriction" class="tsd-kind-icon">with<wbr>Bandwidth<wbr>Restriction</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#withbundleaudiovideo" class="tsd-kind-icon">with<wbr>Bundle<wbr>Audio<wbr>Video</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#withplanbsimulcast" class="tsd-kind-icon">with<wbr>PlanBSimulcast</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#withunifiedplanformat" class="tsd-kind-icon">with<wbr>Unified<wbr>Plan<wbr>Format</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#withoutcandidatetype" class="tsd-kind-icon">without<wbr>Candidate<wbr>Type</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsdp.html#withoutserverreflexivecandidates" class="tsd-kind-icon">without<wbr>Server<wbr>Reflexive<wbr>Candidates</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#candidatetype" class="tsd-kind-icon">candidate<wbr>Type</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#candidatetypefromstring" class="tsd-kind-icon">candidate<wbr>Type<wbr>From<wbr>String</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#extractssrcfromattributeline" class="tsd-kind-icon">extractSSRCFrom<wbr>Attribute<wbr>Line</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#extractssrcsfromfidgroupline" class="tsd-kind-icon">extractSSRCs<wbr>FromFIDGroup<wbr>Line</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#findactivecamerasection" class="tsd-kind-icon">find<wbr>Active<wbr>Camera<wbr>Section</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#isrtpcandidate" class="tsd-kind-icon">isRTPCandidate</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#linestosdp" class="tsd-kind-icon">lines<wbr>ToSDP</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#matchprefix" class="tsd-kind-icon">match<wbr>Prefix</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#parsessrcmedia" class="tsd-kind-icon">parseSSRCMedia</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#splitlines" class="tsd-kind-icon">split<wbr>Lines</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultsdp.html#splitsections" class="tsd-kind-icon">split<wbr>Sections</a></li>
 							</ul>
 						</section>
 					</div>
@@ -208,7 +217,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#copyvideo">copyVideo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L98">src/sdp/DefaultSDP.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L163">src/sdp/DefaultSDP.ts:163</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -232,7 +241,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#hascandidates">hasCandidates</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L70">src/sdp/DefaultSDP.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L135">src/sdp/DefaultSDP.ts:135</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -250,7 +259,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#hascandidatesforallmlines">hasCandidatesForAllMLines</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L78">src/sdp/DefaultSDP.ts:78</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L143">src/sdp/DefaultSDP.ts:143</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -267,7 +276,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L66">src/sdp/DefaultSDP.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L131">src/sdp/DefaultSDP.ts:131</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -285,10 +294,52 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#lines">lines</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L62">src/sdp/DefaultSDP.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L127">src/sdp/DefaultSDP.ts:127</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="ssrcforvideosendingsection" class="tsd-anchor"></a>
+					<h3>ssrc<wbr>For<wbr>Video<wbr>Sending<wbr>Section</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">ssrc<wbr>For<wbr>Video<wbr>Sending<wbr>Section<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#ssrcforvideosendingsection">ssrcForVideoSendingSection</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L281">src/sdp/DefaultSDP.ts:281</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="videosendsectionhasdifferentssrc" class="tsd-anchor"></a>
+					<h3>video<wbr>Send<wbr>Section<wbr>Has<wbr>DifferentSSRC</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">video<wbr>Send<wbr>Section<wbr>Has<wbr>DifferentSSRC<span class="tsd-signature-symbol">(</span>prevSdp<span class="tsd-signature-symbol">: </span><a href="../interfaces/sdp.html" class="tsd-signature-type">SDP</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#videosendsectionhasdifferentssrc">videoSendSectionHasDifferentSSRC</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L305">src/sdp/DefaultSDP.ts:305</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prevSdp: <a href="../interfaces/sdp.html" class="tsd-signature-type">SDP</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -303,7 +354,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#withbandwidthrestriction">withBandwidthRestriction</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L125">src/sdp/DefaultSDP.ts:125</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L190">src/sdp/DefaultSDP.ts:190</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -330,9 +381,32 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#withbundleaudiovideo">withBundleAudioVideo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L84">src/sdp/DefaultSDP.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L149">src/sdp/DefaultSDP.ts:149</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="defaultsdp.html" class="tsd-signature-type">DefaultSDP</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="withplanbsimulcast" class="tsd-anchor"></a>
+					<h3>with<wbr>PlanBSimulcast</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">with<wbr>PlanBSimulcast<span class="tsd-signature-symbol">(</span>videoSimulcastLayerCount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultsdp.html" class="tsd-signature-type">DefaultSDP</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L218">src/sdp/DefaultSDP.ts:218</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>videoSimulcastLayerCount: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="defaultsdp.html" class="tsd-signature-type">DefaultSDP</a></h4>
 						</li>
 					</ul>
@@ -348,7 +422,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#withunifiedplanformat">withUnifiedPlanFormat</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L142">src/sdp/DefaultSDP.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L207">src/sdp/DefaultSDP.ts:207</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="defaultsdp.html" class="tsd-signature-type">DefaultSDP</a></h4>
@@ -366,7 +440,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#withoutcandidatetype">withoutCandidateType</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L115">src/sdp/DefaultSDP.ts:115</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L180">src/sdp/DefaultSDP.ts:180</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -390,7 +464,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sdp.html">SDP</a>.<a href="../interfaces/sdp.html#withoutserverreflexivecandidates">withoutServerReflexiveCandidates</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L121">src/sdp/DefaultSDP.ts:121</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L186">src/sdp/DefaultSDP.ts:186</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="defaultsdp.html" class="tsd-signature-type">DefaultSDP</a></h4>
@@ -450,6 +524,75 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="extractssrcfromattributeline" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> extractSSRCFrom<wbr>Attribute<wbr>Line</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">extractSSRCFrom<wbr>Attribute<wbr>Line<span class="tsd-signature-symbol">(</span>ssrcMediaAttributeLine<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L113">src/sdp/DefaultSDP.ts:113</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ssrcMediaAttributeLine: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="extractssrcsfromfidgroupline" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> extractSSRCs<wbr>FromFIDGroup<wbr>Line</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">extractSSRCs<wbr>FromFIDGroup<wbr>Line<span class="tsd-signature-symbol">(</span>figGroupLine<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L107">src/sdp/DefaultSDP.ts:107</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>figGroupLine: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="findactivecamerasection" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> find<wbr>Active<wbr>Camera<wbr>Section</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Active<wbr>Camera<wbr>Section<span class="tsd-signature-symbol">(</span>sections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L70">src/sdp/DefaultSDP.ts:70</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sections: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="isrtpcandidate" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> isRTPCandidate</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -496,6 +639,55 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="matchprefix" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> match<wbr>Prefix</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">match<wbr>Prefix<span class="tsd-signature-symbol">(</span>blob<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, prefix<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L121">src/sdp/DefaultSDP.ts:121</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>blob: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>prefix: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="parsessrcmedia" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> parseSSRCMedia</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">parseSSRCMedia<span class="tsd-signature-symbol">(</span>ssrcMediaAttributeLine<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L89">src/sdp/DefaultSDP.ts:89</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ssrcMediaAttributeLine: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="splitlines" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> split<wbr>Lines</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -512,6 +704,29 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>blob: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="splitsections" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> split<wbr>Sections</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">split<wbr>Sections<span class="tsd-signature-symbol">(</span>sdp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/DefaultSDP.ts#L62">src/sdp/DefaultSDP.ts:62</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sdp: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
@@ -563,10 +778,19 @@
 								<a href="defaultsdp.html#lines" class="tsd-kind-icon">lines</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultsdp.html#ssrcforvideosendingsection" class="tsd-kind-icon">ssrc<wbr>For<wbr>Video<wbr>Sending<wbr>Section</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultsdp.html#videosendsectionhasdifferentssrc" class="tsd-kind-icon">video<wbr>Send<wbr>Section<wbr>Has<wbr>DifferentSSRC</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultsdp.html#withbandwidthrestriction" class="tsd-kind-icon">with<wbr>Bandwidth<wbr>Restriction</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultsdp.html#withbundleaudiovideo" class="tsd-kind-icon">with<wbr>Bundle<wbr>Audio<wbr>Video</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultsdp.html#withplanbsimulcast" class="tsd-kind-icon">with<wbr>PlanBSimulcast</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultsdp.html#withunifiedplanformat" class="tsd-kind-icon">with<wbr>Unified<wbr>Plan<wbr>Format</a>
@@ -584,13 +808,31 @@
 								<a href="defaultsdp.html#candidatetypefromstring" class="tsd-kind-icon">candidate<wbr>Type<wbr>From<wbr>String</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultsdp.html#extractssrcfromattributeline" class="tsd-kind-icon">extractSSRCFrom<wbr>Attribute<wbr>Line</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultsdp.html#extractssrcsfromfidgroupline" class="tsd-kind-icon">extractSSRCs<wbr>FromFIDGroup<wbr>Line</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultsdp.html#findactivecamerasection" class="tsd-kind-icon">find<wbr>Active<wbr>Camera<wbr>Section</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="defaultsdp.html#isrtpcandidate" class="tsd-kind-icon">isRTPCandidate</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="defaultsdp.html#linestosdp" class="tsd-kind-icon">lines<wbr>ToSDP</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultsdp.html#matchprefix" class="tsd-kind-icon">match<wbr>Prefix</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultsdp.html#parsessrcmedia" class="tsd-kind-icon">parseSSRCMedia</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="defaultsdp.html#splitlines" class="tsd-kind-icon">split<wbr>Lines</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultsdp.html#splitsections" class="tsd-kind-icon">split<wbr>Sections</a>
 							</li>
 						</ul>
 					</li>

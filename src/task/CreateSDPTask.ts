@@ -1,7 +1,9 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
+import DefaultSDP from '../sdp/DefaultSDP';
 import BaseTask from './BaseTask';
 
 /*
@@ -41,7 +43,7 @@ export default class CreateSDPTask extends BaseTask {
       offerToReceiveAudio: this.sessionUsesAudio(),
       offerToReceiveVideo: this.sessionUsesVideo(),
     };
-    this.logger.info(`offerOptions: ${JSON.stringify(offerOptions)}`);
+    this.logger.info(`peer connection offerOptions: ${JSON.stringify(offerOptions)}`);
 
     await new Promise<void>(async (resolve, reject) => {
       this.cancelPromise = (error: Error) => {
@@ -50,12 +52,29 @@ export default class CreateSDPTask extends BaseTask {
 
       try {
         this.context.sdpOfferInit = await this.context.peer.createOffer(offerOptions);
+        this.context.logger.info(
+          `peer connection created offer ${JSON.stringify(this.context.sdpOfferInit)}`
+        );
+
+        if (this.context.previousSdpOffer) {
+          if (
+            new DefaultSDP(this.context.sdpOfferInit.sdp).videoSendSectionHasDifferentSSRC(
+              this.context.previousSdpOffer
+            )
+          ) {
+            const error = new Error(
+              `canceling ${this.name()} due to the meeting status code: ${
+                MeetingSessionStatusCode.IncompatibleSDP
+              }`
+            );
+            this.context.previousSdpOffer = null;
+            reject(error);
+          }
+        }
         resolve();
       } catch (error) {
         reject(error);
       }
     });
-
-    this.context.logger.info(`created offer ${JSON.stringify(this.context.sdpOfferInit)}`);
   }
 }

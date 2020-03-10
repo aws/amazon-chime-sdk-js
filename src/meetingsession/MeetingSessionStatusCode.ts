@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 export enum MeetingSessionStatusCode {
@@ -113,6 +113,11 @@ export enum MeetingSessionStatusCode {
    * Audio device has switched.
    */
   AudioDeviceSwitched = 20,
+
+  /**
+   * Session update produces incompatible SDP.
+   */
+  IncompatibleSDP = 21,
 }
 
 export default MeetingSessionStatusCode;

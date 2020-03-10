@@ -56,4 +56,14 @@ export default interface SDP {
    * Munges Unified-Plan SDP from different browsers to conform to one format
    */
   withUnifiedPlanFormat(): SDP;
+
+  /**
+   * Extracts the ssrc for the sendrecv video media section in SDP
+   */
+  ssrcForVideoSendingSection(): string;
+
+  /**
+   * Returns whether the sendrecv video sections if exist have two different SSRCs in SDPs
+   */
+  videoSendSectionHasDifferentSSRC(previousSdp: SDP): boolean;
 }

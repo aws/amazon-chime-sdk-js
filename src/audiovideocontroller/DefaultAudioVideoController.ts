@@ -442,7 +442,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
           this.configuration.connectionTimeoutMs
         ),
       ]).run();
-
       if (notify) {
         this.sessionStateController.perform(SessionStateControllerAction.FinishUpdating, () => {
           this.actionFinishUpdating();
@@ -450,12 +449,13 @@ export default class DefaultAudioVideoController implements AudioVideoController
       }
     } catch (error) {
       this.sessionStateController.perform(SessionStateControllerAction.FinishUpdating, () => {
-        this.logger.info('failed to update audio-video session');
-        this.handleMeetingSessionStatus(
-          new MeetingSessionStatus(
-            this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
-          )
+        const status = new MeetingSessionStatus(
+          this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
         );
+        if (status.statusCode() !== MeetingSessionStatusCode.IncompatibleSDP) {
+          this.logger.info('failed to update audio-video session');
+        }
+        this.handleMeetingSessionStatus(status);
       });
     }
   }
@@ -585,6 +585,12 @@ export default class DefaultAudioVideoController implements AudioVideoController
       if (this.meetingSessionContext.statsCollector) {
         this.meetingSessionContext.statsCollector.logMeetingSessionStatus(status);
       }
+    }
+    if (status.statusCode() === MeetingSessionStatusCode.IncompatibleSDP) {
+      this.restartLocalVideo(() => {
+        this.logger.info('handled incompatible SDP by attempting to restart video');
+      });
+      return true;
     }
     if (status.statusCode() === MeetingSessionStatusCode.VideoCallSwitchToViewOnly) {
       this._videoTileController.removeLocalVideoTile();

@@ -14,6 +14,7 @@ import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import RemovableObserver from '../removableobserver/RemovableObserver';
 import ScreenSharingSession from '../screensharingsession/ScreenSharingSession';
+import SDP from '../sdp/SDP';
 import SignalingClient from '../signalingclient/SignalingClient';
 import { SdkIndexFrame, SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import StatsCollector from '../statscollector/StatsCollector';
@@ -39,6 +40,8 @@ export default class AudioVideoControllerState {
   meetingSessionConfiguration: MeetingSessionConfiguration | null = null;
 
   peer: RTCPeerConnection | null = null;
+
+  previousSdpOffer: SDP | null = null;
 
   sdpOfferInit: RTCSessionDescriptionInit | null = null;
 

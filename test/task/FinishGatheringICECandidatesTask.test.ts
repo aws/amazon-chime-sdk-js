@@ -14,6 +14,7 @@ import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import FinishGatheringICECandidatesTask from '../../src/task/FinishGatheringICECandidatesTask';
 import Task from '../../src/task/Task';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import SafariSDPMock from '../sdp/SafariSDPMock';
 import SDPMock from '../sdp/SDPMock';
 
 describe('FinishGatheringICECandidatesTask', () => {
@@ -201,7 +202,7 @@ describe('FinishGatheringICECandidatesTask', () => {
       // @ts-ignore
       peer.iceGatheringState = 'complete';
 
-      setLocalDescription(peer, SDPMock.IOS_SAFARI_REAL_SDP);
+      setLocalDescription(peer, SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
       testICEEvent = makeICEEvent(SDPMock.RTP_CANDIDATE);
       task.run().then(() => {
         const candidates = context.iceCandidates;

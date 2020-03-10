@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -57,6 +57,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     const isSendingStreams: boolean =
       this.context.videoDuplexMode === SdkStreamServiceType.TX ||
       this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX;
+    this.context.previousSdpOffer = new DefaultSDP(localSdp);
     const subscribe = new SignalingClientSubscribe(
       this.context.meetingSessionConfiguration.credentials.attendeeId,
       localSdp,
