@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -60,16 +60,24 @@ export default class DefaultPingPong implements SignalingClientObserver, PingPon
     this.stop();
     this.signalingClient.registerObserver(this);
     if (this.signalingClient.ready()) {
-      this.intervalScheduler.start(() => {
-        this.ping();
-      });
-      this.ping();
+      this.startPingInterval();
     }
   }
 
   stop(): void {
-    this.intervalScheduler.stop();
+    this.stopPingInterval();
     this.signalingClient.removeObserver(this);
+  }
+
+  private startPingInterval(): void {
+    this.intervalScheduler.start(() => {
+      this.ping();
+    });
+    this.ping();
+  }
+
+  private stopPingInterval(): void {
+    this.intervalScheduler.stop();
     this.pingId = 0;
     this.consecutivePongsUnaccountedFor = 0;
   }
@@ -104,19 +112,14 @@ export default class DefaultPingPong implements SignalingClientObserver, PingPon
   handleSignalingClientEvent(event: SignalingClientEvent): void {
     switch (event.type) {
       case SignalingClientEventType.WebSocketOpen:
-        if (!this.intervalScheduler.timer) {
-          this.intervalScheduler.start(() => {
-            this.ping();
-          });
-          this.ping();
-        }
+        this.startPingInterval();
         break;
       case SignalingClientEventType.WebSocketFailed:
       case SignalingClientEventType.WebSocketError:
       case SignalingClientEventType.WebSocketClosing:
       case SignalingClientEventType.WebSocketClosed:
         this.logger.warn(`stopped pinging (${SignalingClientEventType[event.type]})`);
-        this.stop();
+        this.stopPingInterval();
         break;
       case SignalingClientEventType.ReceivedSignalFrame:
         if (event.message.type !== SdkSignalFrame.Type.PING_PONG) {

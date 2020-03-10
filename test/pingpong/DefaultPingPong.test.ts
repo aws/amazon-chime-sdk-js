@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -127,28 +127,6 @@ describe('DefaultPingPong', () => {
       });
     });
 
-    it('can prevent the WebSocketOpen event from starting if ping-pong has already been started', done => {
-      class TestSignalingClient extends DefaultSignalingClient {
-        ready(): boolean {
-          return true;
-        }
-      }
-
-      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
-      const signalingClient = new TestSignalingClient(webSocketAdapter, logger);
-      const intervalMs = 100;
-      const pingPong = new DefaultPingPong(signalingClient, intervalMs, logger);
-      pingPong.start();
-      pingPong.handleSignalingClientEvent(
-        new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketOpen, null)
-      );
-      new TimeoutScheduler(intervalMs * 2.5).start(() => {
-        expect(pingPong.pingId).to.equal(3);
-        pingPong.stop();
-        done();
-      });
-    });
-
     it('can add and remove observers', () => {
       class TestObserver implements PingPongObserver {
         didMissPongs?(_consecutiveMissed: number): void {}
@@ -162,6 +140,35 @@ describe('DefaultPingPong', () => {
         Maybe.of(observer.didMissPongs).map(f => f.bind(observer)());
       });
       pingPong.removeObserver(observer);
+    });
+
+    it('can stop pinging when the WebSocket is closed and restart when connected', async () => {
+      class TestSignalingClient extends DefaultSignalingClient {
+        ready(): boolean {
+          return false;
+        }
+      }
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const signalingClient = new TestSignalingClient(webSocketAdapter, logger);
+      const intervalMs = 100;
+      const pingPong = new DefaultPingPong(signalingClient, intervalMs, logger);
+      pingPong.start();
+      pingPong.handleSignalingClientEvent(
+        new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketOpen, null)
+      );
+      await new Promise(resolve => new TimeoutScheduler(intervalMs * 2.5).start(resolve));
+      expect(pingPong.pingId).to.equal(3);
+      pingPong.handleSignalingClientEvent(
+        new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketClosed, null)
+      );
+      await new Promise(resolve => new TimeoutScheduler(intervalMs * 2.5).start(resolve));
+      expect(pingPong.pingId).to.equal(0);
+      pingPong.handleSignalingClientEvent(
+        new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketOpen, null)
+      );
+      await new Promise(resolve => new TimeoutScheduler(intervalMs * 2.5).start(resolve));
+      expect(pingPong.pingId).to.equal(3);
+      pingPong.stop();
     });
   });
 
