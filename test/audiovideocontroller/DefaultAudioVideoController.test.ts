@@ -29,6 +29,7 @@ import {
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import ChromeSDPMock from '../sdp/ChromeSDPMock';
 
 describe('DefaultAudioVideoController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -549,6 +550,46 @@ describe('DefaultAudioVideoController', () => {
       await stop();
       expect(sessionStarted).to.be.true;
     });
+
+    it('restart local video if CreateSDP fails with IncompatibleSDP error', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      let sessionStarted = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          // use this opportunity to verify that start is idempotent
+          audioVideoController.start();
+          sessionStarted = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      await start();
+      domMockBehavior.rtcPeerConnectionUseCustomOffer = true;
+      domMockBehavior.rtcPeerConnectionCustomOffer =
+        ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV;
+      const tileId = audioVideoController.videoTileController.startLocalVideoTile();
+      expect(tileId).to.equal(1);
+      await sendICEEventAndSubscribeAckFrame();
+
+      await delay(200);
+      domMockBehavior.rtcPeerConnectionCustomOffer =
+        ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV_2;
+      audioVideoController.update();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
+      await delay(500);
+      await stop();
+      expect(sessionStarted).to.be.true;
+      await delay(500);
+    }).timeout(5000);
 
     it('reconnects if the update fails with a task failed meeting status', async () => {
       let called = 0;
@@ -1121,6 +1162,33 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.called).to.be.true;
       expect(called).to.be.true;
       await stop();
+    });
+
+    it('handles IncompatibleSDP', async () => {
+      let called = 0;
+      const spy = sinon.spy(audioVideoController, 'restartLocalVideo');
+      class TestObserver implements AudioVideoObserver {
+        videoSendDidBecomeUnavailable(): void {
+          throw Error();
+        }
+        audioVideoDidStop(): void {
+          called = called + 1;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      await start();
+      audioVideoController.handleMeetingSessionStatus(
+        new MeetingSessionStatus(MeetingSessionStatusCode.IncompatibleSDP)
+      );
+      await delay();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
+      await sendICEEventAndSubscribeAckFrame();
+      expect(spy.called).to.be.true;
+      expect(called).to.equal(0);
+      await stop();
+      expect(called).to.equal(1);
     });
 
     it('does not reconnect for the terminal status or the unknown status', async () => {

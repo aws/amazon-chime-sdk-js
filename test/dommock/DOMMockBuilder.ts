@@ -4,6 +4,7 @@
 import { Substitute } from '@fluffy-spoon/substitute';
 
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import SafariSDPMock from '../sdp/SafariSDPMock';
 import DOMMockBehavior from './DOMMockBehavior';
 
 // eslint-disable-next-line
@@ -441,21 +442,21 @@ export default class DOMMockBuilder {
       }
 
       createOffer(options?: RTCOfferOptions): Promise<RTCSessionDescriptionInit> {
-        let sdpString: string[] = ['sdp-offer'];
-        if (options) {
-          if (options.offerToReceiveAudio) {
-            sdpString.push('audio');
+        let sdpString: string;
+        if (mockBehavior.rtcPeerConnectionUseCustomOffer) {
+          sdpString = mockBehavior.rtcPeerConnectionCustomOffer;
+        } else {
+          if (options) {
+            if (options.offerToReceiveVideo) {
+              sdpString = SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING_RECEIVING;
+            } else {
+              sdpString = SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE;
+            }
           }
-          if (options.offerToReceiveVideo) {
-            sdpString.push('video');
-          }
-        }
-        if (mockBehavior.rtcPeerConnectionCreateOfferIncludesLocalHost) {
-          sdpString.push('\r\nc=IN IP4 0.0.0.0\r\n');
         }
         return new Promise<RTCSessionDescriptionInit>((resolve, _reject) => {
           asyncWait(() => {
-            resolve({ type: 'offer', sdp: sdpString.join('-') });
+            resolve({ type: 'offer', sdp: sdpString });
           });
         });
       }

@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -20,5 +20,6 @@ export default class CleanRestartedSessionTask extends BaseTask {
     this.context.peer = null;
     this.context.iceCandidateHandler = null;
     this.context.iceCandidates = [];
+    this.context.previousSdpOffer = null;
   }
 }

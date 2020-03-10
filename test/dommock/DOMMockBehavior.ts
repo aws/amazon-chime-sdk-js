@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 export default class DOMMockBehavior {
@@ -45,6 +45,10 @@ export default class DOMMockBehavior {
   rtcPeerConnectionGetStatsReport: { [name: string]: any } = {};
   rtcPeerConnectionCreateOfferIncludesLocalHost: boolean = false;
 
+  rtcPeerConnectionCreateOfferWithSendingSsrcChange: boolean = false;
+
+  rtcPeerConnectionUseCustomOffer: boolean = false;
+  rtcPeerConnectionCustomOffer: string = 'sdp-offer';
   browserName: string = 'firefox';
   fetchSucceeds: boolean = true;
 }

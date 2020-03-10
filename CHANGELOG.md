@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic component library setup
 
 ### Changed
+- Stop content share if the media stream end
+- Trap video sending SSRC change in two consecutive negotiation
 - Do not bypass ice gathering based on sdp connection attributes for Safari on iOS
 - Show SDK version in the demo meeting app
 - Automatically patch a version for each commit
@@ -75,7 +77,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make sure both participants in audio and video tests reach finish state before retrying
 - Trigger videoSendBandwidthDidChange and videoReceiveBandwidthDidChange for Safari
 - Do not disconnect video element with different srcObj when destroying video tile
-- Stop content share if the media stream end
 
 ### Removed
 - Remove SDP class withPlanBSimulcast method

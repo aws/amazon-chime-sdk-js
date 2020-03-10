@@ -81,7 +81,6 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       );
       return;
     }
-
     await new Promise<void>((resolve, reject) => {
       this.cancelPromise = (error: Error) => {
         this.removeEventListener();

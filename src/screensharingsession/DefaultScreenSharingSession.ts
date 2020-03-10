@@ -39,7 +39,7 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     });
 
     this.webSocket.addEventListener('close', (event: CloseEvent) => {
-      this.logger.warn('screen sharing connection closed');
+      this.logger.info('screen sharing connection closed');
       this.stop().catch(() => {});
       this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
         Maybe.of(observer.didClose).map(f => f.bind(observer)(event));
@@ -47,7 +47,7 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     });
 
     this.webSocket.addEventListener('reconnect', (event: Event) => {
-      this.logger.warn('screen sharing connection reconnecting');
+      this.logger.info('screen sharing connection reconnecting');
       this.stop().catch(() => {});
       this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
         Maybe.of(observer.willReconnect).map(f => f.bind(observer)(event));
@@ -55,14 +55,14 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     });
 
     this.webSocket.addEventListener('reconnect_error', (event: CustomEvent<ErrorEvent>) => {
-      this.logger.warn('reconnect attempt failed');
+      this.logger.info('reconnect attempt failed');
       this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
         Maybe.of(observer.didFailReconnectAttempt).map(f => f.bind(observer)(event));
       });
     });
 
     this.webSocket.addEventListener('open', (event: Event) => {
-      this.logger.warn('screen sharing connection opened');
+      this.logger.info('screen sharing connection opened');
       this.observerQueue.forEach((observer: ScreenSharingSessionObserver) => {
         Maybe.of(observer.didOpen).map(f => f.bind(observer)(event));
       });
