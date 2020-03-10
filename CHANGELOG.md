@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Getting Started guide
 - Doc guide generator
 - Add basic component library setup
+- Add injectable session URL rewrite function to support proxies
 
 ### Changed
 - Stop content share if the media stream end
@@ -22,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automatically patch a version for each commit
 - Allow to specify manual version in publish script
 - Automatically deploy meetingV2 to serverless demo
-- Realtime controller now exposes external user ID in places where attendee ID is present
+- Expose external user ID in places where attendee ID is present in RealtimeController
 
 ### Fixed
 - Remove line endings in the keyword when searching for connection attributes in SDP

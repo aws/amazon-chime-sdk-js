@@ -66,7 +66,9 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
     this.context.turnCredentials = new MeetingSessionTURNCredentials();
     this.context.turnCredentials.password = responseBodyJson.password;
     this.context.turnCredentials.ttl = responseBodyJson.ttl;
-    this.context.turnCredentials.uris = responseBodyJson.uris;
+    this.context.turnCredentials.uris = responseBodyJson.uris.map((uri: string): string => {
+      return this.context.meetingSessionConfiguration.urls.urlRewriter(uri);
+    });
     this.context.turnCredentials.username = responseBodyJson.username;
   }
 }
