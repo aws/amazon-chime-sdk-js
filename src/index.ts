@@ -117,6 +117,7 @@ import JPEGDecoderModule from './jpegdecoder/webassembly/JPEGDecoderModule';
 import JoinAndReceiveIndexTask from './task/JoinAndReceiveIndexTask';
 import LeaveAndReceiveLeaveAckTask from './task/LeaveAndReceiveLeaveAckTask';
 import ListenForVolumeIndicatorsTask from './task/ListenForVolumeIndicatorsTask';
+import Log from './logger/Log';
 import LogLevel from './logger/LogLevel';
 import Logger from './logger/Logger';
 import Maybe from './maybe/Maybe';
@@ -131,6 +132,7 @@ import MeetingSessionConfiguration from './meetingsession/MeetingSessionConfigur
 import MeetingSessionCredentials from './meetingsession/MeetingSessionCredentials';
 import MeetingSessionLifecycleEvent from './meetingsession/MeetingSessionLifecycleEvent';
 import MeetingSessionLifecycleEventCondition from './meetingsession/MeetingSessionLifecycleEventCondition';
+import MeetingSessionPOSTLogger from './logger/MeetingSessionPOSTLogger';
 import MeetingSessionStatus from './meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from './meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from './meetingsession/MeetingSessionTURNCredentials';
@@ -399,6 +401,7 @@ export {
   JoinAndReceiveIndexTask,
   LeaveAndReceiveLeaveAckTask,
   ListenForVolumeIndicatorsTask,
+  Log,
   LogLevel,
   Logger,
   Maybe,
@@ -413,6 +416,7 @@ export {
   MeetingSessionCredentials,
   MeetingSessionLifecycleEvent,
   MeetingSessionLifecycleEventCondition,
+  MeetingSessionPOSTLogger,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionTURNCredentials,
