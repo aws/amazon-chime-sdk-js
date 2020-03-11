@@ -1,7 +1,8 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import BackoffPolicy from '../backoff/Backoff';
+import IdleMonitor from '../idlemonitor/DefaultIdleMonitor';
 import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 import ReconnectController from './ReconnectController';
 
@@ -13,6 +14,7 @@ export default class DefaultReconnectController implements ReconnectController {
   private _isFirstConnection: boolean = true;
   private backoffTimer: TimeoutScheduler | null = null;
   private backoffCancel: () => void = null;
+  private idleMonitor: IdleMonitor;
 
   constructor(private reconnectTimeoutMs: number, private backoffPolicy: BackoffPolicy) {
     this.reset();
@@ -26,7 +28,9 @@ export default class DefaultReconnectController implements ReconnectController {
   }
 
   private hasPastReconnectDeadline(): boolean {
-    return this.timeSpentReconnectingMs() >= this.reconnectTimeoutMs;
+    const hasSpentTooMuchTimeReconnecting =
+      this.timeSpentReconnectingMs() >= this.reconnectTimeoutMs;
+    return hasSpentTooMuchTimeReconnecting || this.idleMonitor.isIdle();
   }
 
   reset(): void {
@@ -38,8 +42,9 @@ export default class DefaultReconnectController implements ReconnectController {
     this.backoffPolicy.reset();
   }
 
-  startedConnectionAttempt(isFirstConnection: boolean): void {
+  startedConnectionAttempt(isFirstConnection: boolean, idleMonitor: IdleMonitor): void {
     this._isFirstConnection = isFirstConnection;
+    this.idleMonitor = idleMonitor;
     if (!this.firstConnectionAttempted) {
       this.firstConnectionAttempted = true;
       this.firstConnectionAttemptTimestamp = Date.now();

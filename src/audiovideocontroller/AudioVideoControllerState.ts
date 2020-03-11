@@ -5,6 +5,7 @@ import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import ConnectionMonitor from '../connectionmonitor/ConnectionMonitor';
+import IdleMonitor from '../idlemonitor/DefaultIdleMonitor';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -31,6 +32,8 @@ import VolumeIndicatorAdapter from '../volumeindicatoradapter/VolumeIndicatorAda
  * [[AudioVideoControllerState]] includes the compute resources shared by [[Task]].
  */
 export default class AudioVideoControllerState {
+  idleMonitor: IdleMonitor | null = null;
+
   logger: Logger | null = null;
 
   browserBehavior: BrowserBehavior | null = null;

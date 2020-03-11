@@ -1,5 +1,7 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import IdleMonitor from '../idlemonitor/DefaultIdleMonitor';
 
 /**
  * [[ReconnectController]] describes the status about the meeting session connection and makes decisions
@@ -16,7 +18,7 @@ export default interface ReconnectController {
    * can be set.
    * @param{boolean} isFirstConnection whether this is the first attempt to connect for this session
    */
-  startedConnectionAttempt(isFirstConnection: boolean): void;
+  startedConnectionAttempt(isFirstConnection: boolean, idelMonitor: IdleMonitor): void;
 
   /**
    * Indicates whether a connection attempt is already in progress.

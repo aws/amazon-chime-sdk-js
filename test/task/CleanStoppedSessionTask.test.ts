@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -9,8 +9,11 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
+import IdleMonitor from '../../src/idlemonitor/DefaultIdleMonitor';
 import Logger from '../../src/logger/Logger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
+import PingPong from '../../src/pingpong/PingPong';
+import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
@@ -42,6 +45,13 @@ describe('CleanStoppedSessionTask', () => {
   let signalingClient: SignalingClient;
   let request: SignalingClientConnectionRequest;
 
+  class TestPingPong implements PingPong {
+    addObserver(_observer: PingPongObserver): void {}
+    removeObserver(_observer: PingPongObserver): void {}
+    forEachObserver(_observerFunc: (_observer: PingPongObserver) => void): void {}
+    start(): void {}
+    stop(): void {}
+  }
   class TestStatsCollector extends DefaultStatsCollector {
     constructor(audioVideoController: AudioVideoController, logger: Logger) {
       super(audioVideoController, logger);
@@ -73,6 +83,8 @@ describe('CleanStoppedSessionTask', () => {
       context.audioVideoController,
       context.logger
     );
+    const maxIdleTimeout = 50;
+    context.idleMonitor = new IdleMonitor(new TestPingPong(), maxIdleTimeout);
 
     // @ts-ignore
     const audioTrack = new MediaStreamTrack('attach-media-input-task-audio-track-id', 'audio');
@@ -198,12 +210,14 @@ describe('CleanStoppedSessionTask', () => {
       });
     });
 
-    it('stops the stats collector the connection monitor', done => {
+    it('stops the stats collector the connection monitor the idle monitor', done => {
       const statsCollectorSpy = sinon.spy(context.statsCollector, 'stop');
       const connectionMonitorSpy = sinon.spy(context.connectionMonitor, 'stop');
+      const idleMonitorSpy = sinon.spy(context.idleMonitor, 'removeIdleMonitorObserver');
       task.run().then(() => {
         expect(statsCollectorSpy.called).to.be.true;
         expect(connectionMonitorSpy.called).to.be.true;
+        expect(idleMonitorSpy.called).to.be.true;
         done();
       });
     });
