@@ -51,4 +51,5 @@ export default class DOMMockBehavior {
   rtcPeerConnectionCustomOffer: string = 'sdp-offer';
   browserName: string = 'firefox';
   fetchSucceeds: boolean = true;
+  responseSuccess: boolean = true;
 }
