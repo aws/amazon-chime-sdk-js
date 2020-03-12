@@ -127,6 +127,9 @@ const server = require(protocol).createServer(options, async (request, response)
         .promise();
       response.statusCode = 200;
       response.end();
+    } else if (request.method === 'POST' && request.url.startsWith('/logs')) {
+      console.log('Writing logs to cloudwatch');
+      response.end('Writing logs to cloudwatch');
     } else {
       response.statusCode = 404;
       response.setHeader('Content-Type', 'text/plain');
