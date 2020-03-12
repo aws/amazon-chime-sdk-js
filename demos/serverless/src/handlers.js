@@ -206,7 +206,7 @@ async function ensureLogStream(cloudWatchClient, logStreamName) {
     return foundStream.uploadSequenceToken;
   }
   return null;
-};
+}
 
 exports.logs = async (event, context) => {
   var response = {
@@ -249,19 +249,4 @@ exports.logs = async (event, context) => {
     var res = await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
   }
   return response;
-};
-
-exports.end = async(event, context, callback) => {
-  var response = {
-    "statusCode": 200,
-    "headers": {},
-    "body": '',
-    "isBase64Encoded": false
-  };
-  const title = event.queryStringParameters.title;
-  let meetingInfo = await getMeeting(title);
-  await chime.deleteMeeting({
-    MeetingId: meetingInfo.Meeting.MeetingId,
-  }).promise();
-  callback(null, response);
 };
