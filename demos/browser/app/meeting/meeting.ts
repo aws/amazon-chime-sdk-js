@@ -28,7 +28,6 @@ import {
   Versioning,
   VideoTileState,
 } from '../../../../src/index';
-import MeetingSessionPOSTLogger from "../../../../src/logger/MeetingSessionPOSTLogger";
 
 class DemoTileOrganizer {
   private static MAX_TILES = 16;
@@ -551,12 +550,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
-    let logger :MeetingSessionPOSTLogger | ConsoleLogger = null;
-    if (!(DemoMeetingApp.BASE_URL.includes('localhost') || DemoMeetingApp.BASE_URL.includes("127.0.0.1"))) {
-      logger = new MeetingSessionPOSTLogger('SDK', configuration, 85, 1150, `${DemoMeetingApp.BASE_URL}logs`, LogLevel.INFO);
-    } else {
-      logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
-    }
+    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
     const deviceController = new DefaultDeviceController(logger);
     configuration.enableWebAudio = this.enableWebAudio;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
