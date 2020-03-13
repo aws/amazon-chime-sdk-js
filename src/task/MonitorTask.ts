@@ -126,6 +126,12 @@ export default class MonitorTask extends BaseTask
   }
 
   connectionHealthDidChange(connectionHealthData: ConnectionHealthData): void {
+    if (connectionHealthData.consecutiveMissedPongs === 0) {
+      if (this.context.reconnectController) {
+        this.context.reconnectController.setLastActiveTimestampMs(Date.now());
+      }
+    }
+
     this.reconnectionHealthPolicy.update(connectionHealthData);
     const reconnectionValue = this.reconnectionHealthPolicy.healthIfChanged();
     if (reconnectionValue !== null) {

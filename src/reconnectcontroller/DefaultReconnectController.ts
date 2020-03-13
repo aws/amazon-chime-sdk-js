@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import BackoffPolicy from '../backoff/Backoff';
@@ -9,7 +9,8 @@ export default class DefaultReconnectController implements ReconnectController {
   private shouldReconnect: boolean = true;
   private onlyRestartPeerConnection: boolean = false;
   private firstConnectionAttempted: boolean = false;
-  private firstConnectionAttemptTimestamp: number = 0;
+  private firstConnectionAttemptTimestampMs: number = 0;
+  private lastActiveTimestampMs: number = Infinity;
   private _isFirstConnection: boolean = true;
   private backoffTimer: TimeoutScheduler | null = null;
   private backoffCancel: () => void = null;
@@ -22,10 +23,14 @@ export default class DefaultReconnectController implements ReconnectController {
     if (!this.firstConnectionAttempted) {
       return 0;
     }
-    return Date.now() - this.firstConnectionAttemptTimestamp;
+    return Date.now() - this.firstConnectionAttemptTimestampMs;
   }
 
   private hasPastReconnectDeadline(): boolean {
+    if (Date.now() - this.lastActiveTimestampMs >= this.reconnectTimeoutMs) {
+      return true;
+    }
+
     return this.timeSpentReconnectingMs() >= this.reconnectTimeoutMs;
   }
 
@@ -34,7 +39,8 @@ export default class DefaultReconnectController implements ReconnectController {
     this.shouldReconnect = true;
     this.onlyRestartPeerConnection = false;
     this.firstConnectionAttempted = false;
-    this.firstConnectionAttemptTimestamp = 0;
+    this.firstConnectionAttemptTimestampMs = 0;
+    this.lastActiveTimestampMs = Infinity;
     this.backoffPolicy.reset();
   }
 
@@ -42,7 +48,7 @@ export default class DefaultReconnectController implements ReconnectController {
     this._isFirstConnection = isFirstConnection;
     if (!this.firstConnectionAttempted) {
       this.firstConnectionAttempted = true;
-      this.firstConnectionAttemptTimestamp = Date.now();
+      this.firstConnectionAttemptTimestampMs = Date.now();
     }
   }
 
@@ -92,5 +98,9 @@ export default class DefaultReconnectController implements ReconnectController {
 
   clone(): DefaultReconnectController {
     return new DefaultReconnectController(this.reconnectTimeoutMs, this.backoffPolicy);
+  }
+
+  setLastActiveTimestampMs(timestampMs: number): void {
+    this.lastActiveTimestampMs = timestampMs;
   }
 }

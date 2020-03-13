@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -101,6 +101,18 @@ describe('DefaultReconnectController', () => {
       new TimeoutScheduler(2 * timeout).start(() => {});
       controller.startedConnectionAttempt(false);
       expect(controller.isFirstConnection()).to.equal(false);
+    });
+
+    it('does not retry if it has been inactive for a while', () => {
+      const controller = defaultController();
+      controller.setLastActiveTimestampMs(Date.now() - timeout * 2);
+      expect(
+        controller.retryWithBackoff(
+          () => {},
+          () => {}
+        )
+      ).to.equal(false);
+      controller.cancel();
     });
   });
 });

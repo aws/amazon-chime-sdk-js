@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -283,6 +283,23 @@ describe('MonitorTask', () => {
   });
 
   describe('connectionHealthDidChange', () => {
+    it('does not set the last active timestamp of the reconnect controller if it misses any pong', () => {
+      const spy = sinon.spy(context.reconnectController, 'setLastActiveTimestampMs');
+      const connectionHealthData = new ConnectionHealthData();
+      connectionHealthData.consecutiveMissedPongs = 1;
+      task.connectionHealthDidChange(connectionHealthData);
+      expect(spy.called).to.be.false;
+    });
+
+    it('cannot set the last active timestamp of the reconnect controller if not existed', () => {
+      const spy = sinon.spy(context.reconnectController, 'setLastActiveTimestampMs');
+      const connectionHealthData = new ConnectionHealthData();
+      connectionHealthData.consecutiveMissedPongs = 0;
+      context.reconnectController = null;
+      task.connectionHealthDidChange(connectionHealthData);
+      expect(spy.called).to.be.false;
+    });
+
     it('updates the reconnection health policy', () => {
       class TestConnectionHealthData extends ConnectionHealthData {
         isConnectionStartRecent(_recentDurationMs: number): boolean {

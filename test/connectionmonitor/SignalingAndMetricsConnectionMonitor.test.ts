@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -163,7 +163,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   });
 
   it('can receive a pong', () => {
-    connectionMonitor.didReceivePong(0, 0);
+    connectionMonitor.didReceivePong(0, 0, 0);
     expect(consecutiveMissedPongsCalled).to.equal(true);
   });
 
@@ -174,7 +174,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
       }
     }
     audioVideoController.addObserver(new TestObserver());
-    connectionMonitor.didReceivePong(0, 0);
+    connectionMonitor.didReceivePong(0, 0, 0);
   });
 
   it('can miss a pong', () => {

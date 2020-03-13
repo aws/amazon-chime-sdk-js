@@ -62,7 +62,7 @@ export default class SignalingAndMetricsConnectionMonitor
     this.updateConnectionHealth();
   }
 
-  didReceivePong(latencyMs: number, clockSkewMs: number): void {
+  didReceivePong(_id: number, latencyMs: number, clockSkewMs: number): void {
     this.connectionHealthData.setConsecutiveMissedPongs(0);
     this.statsCollector.logLatency('ping_pong', latencyMs);
     this.statsCollector.logLatency('ping_pong_clock_skew', clockSkewMs);
