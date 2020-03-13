@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /**
@@ -63,4 +63,9 @@ export default interface ReconnectController {
    * Clones the controller.
    */
   clone(): ReconnectController;
+
+  /**
+   * Sets the last active external timestamp in milliseconds.
+   */
+  setLastActiveTimestampMs(timestampMs: number): void;
 }
