@@ -23,24 +23,30 @@ jobs:
   include:
     #Build and unit tests
     - stage: build
+      if: (type = pull_request) OR (type = push AND branch != master)
       before_install: skip
       install: skip
       script: npm run build:release
       addons: skip
     #Integ test audio
     - stage: integ_audio
+      if: (type = pull_request) OR (type = push AND branch != master)
       script: npm run test:integration-audio
     #Integ test video
     - stage: integ_video
+      if: (type = pull_request) OR (type = push AND branch != master)
       script: npm run test:integration-video
     #Integ test meeting leave & end
     - stage: integ_meeting_quit
+      if: (type = pull_request) OR (type = push AND branch != master)
       script: npm run test:integration-meeting-quit
     #Integ test app quit
     - stage: integ_app_quit
+      if: (type = pull_request) OR (type = push AND branch != master)
       script: npm run test:integration-app-quit
     #Integ test screen share
     - stage: integ_screen_share
+      if: (type = pull_request) OR (type = push AND branch != master)
       script: npm run test:integration-screen-share
     #Deploy
     - stage: deploy
