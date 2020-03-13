@@ -15,7 +15,7 @@ function usage() {
   console.log(`  -b, --s3-bucket    S3 bucket for deployment, required`);
   console.log(`  -s, --stack-name   CloudFormation stack name, required`);
   console.log(`  -a, --application  Browser application to deploy, default '${app}'`);
-  console.log(`  -e, --event-bridge Enable EventBridge integration, default is no`);
+  console.log(`  -e, --event-bridge Enable EventBridge integration, default is no integration`);
   console.log(`  -h, --help         Show help and exit`);
 }
 
@@ -85,12 +85,12 @@ function spawnOrFail(command, args, options) {
     console.log(`Command ${command} failed with ${cmd.error.code}`);
     process.exit(255);
   }
+  console.log(cmd.output.toString());
   if (cmd.status !== 0) {
-    console.log(JSON.stringify(cmd));
+    console.log(`Command ${command} failed with exit code ${cmd.status} signal ${cmd.signal}`);
     console.log(cmd.stderr.toString());
     process.exit(cmd.status)
   }
-  console.log(cmd.stdout.toString());
 }
 
 function appHtml(appName) {
