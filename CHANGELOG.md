@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to specify manual version in publish script
 - Automatically deploy meetingV2 to serverless demo
 - Expose external user ID in places where attendee ID is present in RealtimeController
+- Improve error output in the deploy script
 
 ### Fixed
 - Remove line endings in the keyword when searching for connection attributes in SDP
