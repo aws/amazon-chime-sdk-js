@@ -24,7 +24,7 @@ const getFirefoxCapabilities = (capabilities) => {
   return {
     platformName: getPlatformName(capabilities),
     browserName: 'Firefox',
-    browser_version: capabilities.version,
+    browserVersion: capabilities.version,
     resolution: '1920x1080',
     'moz:firefoxOptions': {
       args: [
@@ -88,7 +88,7 @@ const getSauceLabsConfig = (capabilities) => {
     name: capabilities.name,
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
-    extendedDebugging: false,
+    extendedDebugging: true,
     capturePerformance: true,
     crmuxdriverVersion: 'beta',
     tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
