@@ -10,6 +10,7 @@ const meetingsTableName = process.env.MEETINGS_TABLE_NAME;
 const attendeesTableName = process.env.ATTENDEES_TABLE_NAME;
 const sqsQueueArn = process.env.SQS_QUEUE_ARN;
 const provideQueueArn = process.env.USE_EVENT_BRIDGE === 'false';
+const logGroupName = process.env.BROWSER_LOG_GROUP_NAME;
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -207,4 +208,65 @@ exports.end = async(event, context, callback) => {
     MeetingId: meetingInfo.Meeting.MeetingId,
   }).promise();
   callback(null, response);
+};
+
+async function ensureLogStream(cloudWatchClient, logStreamName) {
+  var describeLogStreamsParams = {
+    "logGroupName": logGroupName,
+    "logStreamNamePrefix": logStreamName
+  };
+  var response = await cloudWatchClient.describeLogStreams(describeLogStreamsParams).promise();
+  var foundStream = response.logStreams.find(s => s.logStreamName === logStreamName);
+  if (foundStream) {
+    return foundStream.uploadSequenceToken;
+  }
+  var putLogEventsInput = {
+    "logGroupName": logGroupName,
+    "logStreamName": logStreamName
+  };
+  await cloudWatchClient.createLogStream(putLogEventsInput).promise();
+  return null;
+}
+
+exports.logs = async (event, context) => {
+  var response = {
+    "statusCode": 200,
+    "headers": {},
+    "body": '',
+    "isBase64Encoded": false
+  };
+  {
+    var body = JSON.parse(event.body);
+    if (!body.logs || !body.meetingId || !body.attendeeId || !body.appName) {
+      response.body = "Empty Parameters Received";
+      response.statusCode = 400;
+      return response;
+    }
+    const logStreamName = "ChimeSDKMeeting_" + body.meetingId.toString();
+    var cloudWatchClient = new AWS.CloudWatchLogs({
+      apiVersion: '2014-03-28'
+    });
+    var putLogEventsInput = {
+      "logGroupName": logGroupName,
+      "logStreamName": logStreamName
+    };
+    var uploadSequence = await ensureLogStream(cloudWatchClient, logStreamName);
+    if (uploadSequence) {
+      putLogEventsInput["sequenceToken"] = uploadSequence;
+    }
+    var logEvents = [];
+    if (body.logs.length > 0) {
+      for (let i = 0; i < body.logs.length; i++) {
+        var log = body.logs[i];
+        var message = `${log.sequenceNumber} AttendeeID: ${body.attendeeId} [${log.logLevel}] ${log.message} ${log.timestampMs}`;
+        logEvents.push({
+          "message": message,
+          "timestamp": log.timestampMs
+        });
+      }
+      putLogEventsInput["logEvents"] = logEvents;
+      await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
+    }
+  }
+  return response;
 };

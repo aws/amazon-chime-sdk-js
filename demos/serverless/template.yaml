@@ -19,6 +19,7 @@ Globals:
         MEETINGS_TABLE_NAME: !Ref Meetings
         ATTENDEES_TABLE_NAME: !Ref Attendees
         SQS_QUEUE_ARN: !GetAtt MeetingNotificationsQueue.Arn
+        BROWSER_LOG_GROUP_NAME: !Ref ChimeBrowserLogs
 Resources:
   ChimeMeetingsAccessPolicy:
     Type: AWS::IAM::Policy
@@ -44,8 +45,23 @@ Resources:
         - Ref: ChimeSdkAttendeeLambdaRole
         - Ref: ChimeSdkEndLambdaRole
         - Ref: ChimeSdkCreateMeetingLambdaRole
+  CloudWatchAccessPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CloudWatchAccess
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+              - 'logs:DescribeLogStreams'
+            Resource: '*'
+      Roles:
+        - Ref: ChimeSdkBrowserLogsLambdaRole
   Meetings:
-    Type: 'AWS::DynamoDB::Table'
+    Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
         - AttributeName: "Title"
@@ -72,7 +88,7 @@ Resources:
         AttributeName: "TTL"
         Enabled: true
   Attendees:
-    Type: 'AWS::DynamoDB::Table'
+    Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
         - AttributeName: "AttendeeId"
@@ -110,7 +126,7 @@ Resources:
             Path: /v2/
             Method: GET
   ChimeSdkCreateMeetingLambda:
-    Type: 'AWS::Serverless::Function'
+    Type: AWS::Serverless::Function
     Properties:
       Handler: handlers.createMeeting
       CodeUri: src/
@@ -127,7 +143,7 @@ Resources:
             Path: /meeting
             Method: POST
   ChimeSdkJoinLambda:
-    Type: 'AWS::Serverless::Function'
+    Type: AWS::Serverless::Function
     Properties:
       Handler: handlers.join
       CodeUri: src/
@@ -146,7 +162,7 @@ Resources:
             Path: /join
             Method: POST
   ChimeSdkEndLambda:
-    Type: 'AWS::Serverless::Function'
+    Type: AWS::Serverless::Function
     Properties:
       Handler: handlers.end
       CodeUri: src/
@@ -160,7 +176,7 @@ Resources:
             Path: /end
             Method: POST
   ChimeSdkAttendeeLambda:
-    Type: 'AWS::Serverless::Function'
+    Type: AWS::Serverless::Function
     Properties:
       Handler: handlers.attendee
       CodeUri: src/
@@ -201,6 +217,17 @@ Resources:
                 - aws.chime
               detail-type:
                 - "Chime Meeting State Change"
+  ChimeSdkBrowserLogsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.logs
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /logs
+            Method: POST
   ChimeNotificationsQueuePolicy:
     Type: AWS::SQS::QueuePolicy
     Properties:
@@ -217,6 +244,8 @@ Resources:
             Resource: !GetAtt MeetingNotificationsQueue.Arn
       Queues:
         - Ref: MeetingNotificationsQueue
+  ChimeBrowserLogs:
+    Type: AWS::Logs::LogGroup
 Outputs:
   ApiURL:
     Description: "API endpoint URL for Prod environment"
