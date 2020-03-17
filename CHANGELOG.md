@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic component library setup
 - Add injectable session URL rewrite function to support proxies
 - Add POSTLogger for meeting sessions
+- Integrate POSTLogger into the demo app
 
 ### Changed
 - Add observer event for content sharing
