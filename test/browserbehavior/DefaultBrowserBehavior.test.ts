@@ -45,7 +45,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
-      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
     });
 
     it('can detect Chrome', () => {

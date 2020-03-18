@@ -550,7 +550,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
-    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    const logger = new ConsoleLogger('SDK', LogLevel.INFO);
     const deviceController = new DefaultDeviceController(logger);
     configuration.enableWebAudio = this.enableWebAudio;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);

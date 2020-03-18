@@ -76,7 +76,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresBundlePolicy(): RTCBundlePolicy {
-    if (this.isSafari()) {
+    if (this.isSafari() || this.isFirefox()) {
       return 'max-bundle';
     } else {
       return 'balanced';
