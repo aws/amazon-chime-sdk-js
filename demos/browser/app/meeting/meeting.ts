@@ -17,8 +17,10 @@ import {
   Device,
   DeviceChangeObserver,
   LogLevel,
+  Logger,
   MeetingSession,
   MeetingSessionConfiguration,
+  MeetingSessionPOSTLogger,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
@@ -96,6 +98,11 @@ class TestSound {
 }
 
 export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver {
+  static readonly DID: string = '+17035550122';
+  static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/')].join('');
+  static readonly LOGGER_BATCH_SIZE: number = 85;
+  static readonly LOGGER_INTERVAL_MS: number = 1150;
+
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
   meeting: string | null = null;
@@ -103,9 +110,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   voiceConnectorId: string | null = null;
   sipURI: string | null = null;
   region: string | null = null;
-  static readonly DID: string = '+17035550122';
-  static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/')].join('');
-
   meetingSession: MeetingSession | null = null;
   audioVideo: AudioVideoFacade | null = null;
   tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
@@ -550,7 +554,19 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
-    const logger = new ConsoleLogger('SDK', LogLevel.INFO);
+    let logger: Logger;
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      logger = new ConsoleLogger('SDK', LogLevel.INFO);
+    } else {
+      logger = new MeetingSessionPOSTLogger(
+        'SDK', 
+        configuration, 
+        DemoMeetingApp.LOGGER_BATCH_SIZE, 
+        DemoMeetingApp.LOGGER_INTERVAL_MS,
+        `${DemoMeetingApp.BASE_URL}logs`,
+        LogLevel.INFO
+      );
+    }
     const deviceController = new DefaultDeviceController(logger);
     configuration.enableWebAudio = this.enableWebAudio;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
