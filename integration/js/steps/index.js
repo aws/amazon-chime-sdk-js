@@ -9,6 +9,8 @@ exports.EndMeetingStep = require('./EndMeetingStep');
 exports.LeaveMeetingStep = require('./LeaveMeetingStep');
 exports.ClickScreenShareButton = require('./ClickScreenShareButton');
 exports.ClickScreenViewButton = require('./ClickScreenViewButton');
+exports.ClickContentShareButton = require('./ClickContentShareButton');
+exports.ClickContentSharePauseButton = require('./ClickContentSharePauseButton');
 exports.GetSipUriForCallStep = require('./GetSipUriForCallStep');
 
 
@@ -20,4 +22,3 @@ exports.WaitForRemoteParticipantsToTurnAudioOn = require('./WaitForRemotePartici
 exports.WaitForRemoteParticipantsToTurnAudioOff = require('./WaitForRemoteParticipantsToTurnAudioOff');
 exports.WaitForRemoteParticipantsToJoinMeeting = require('./WaitForRemoteParticipantsToJoinMeeting');
 exports.WaitForMeetingToBeCreated = require('./WaitForMeetingToBeCreated');
-
