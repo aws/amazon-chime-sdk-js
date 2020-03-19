@@ -50,6 +50,7 @@ jobs:
       script: npm run test:integration-screen-share
     #Integ test content share
     - stage: integ_content_share
+      if: (type = pull_request) OR (type = push AND branch != master)
       script: npm run test:integration-content-share
     #Deploy
     - stage: deploy

@@ -85,12 +85,14 @@ function spawnOrFail(command, args, options) {
     console.log(`Command ${command} failed with ${cmd.error.code}`);
     process.exit(255);
   }
-  console.log(cmd.output.toString());
+  const output=cmd.output.toString();
+  console.log(output);
   if (cmd.status !== 0) {
     console.log(`Command ${command} failed with exit code ${cmd.status} signal ${cmd.signal}`);
     console.log(cmd.stderr.toString());
     process.exit(cmd.status)
   }
+  return output;
 }
 
 function appHtml(appName) {
@@ -148,5 +150,8 @@ spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--sta
                     '--parameter-overrides', `UseEventBridge=${useEventBridge}`,
                     '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`]);
 console.log("Amazon Chime SDK Meeting Demo URL: ");
-spawnOrFail('aws', ['cloudformation', 'describe-stacks', '--stack-name', `${stack}`,
+const output=spawnOrFail('aws', ['cloudformation', 'describe-stacks', '--stack-name', `${stack}`,
                     '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`]);
+if (app === 'meeting') {
+  console.log(output.replace(/Prod/, 'Prod/v2'));
+}
