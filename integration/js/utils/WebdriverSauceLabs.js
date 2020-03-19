@@ -88,7 +88,7 @@ const getSauceLabsConfig = (capabilities) => {
     name: capabilities.name,
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
-    extendedDebugging: true,
+    extendedDebugging: false,
     capturePerformance: true,
     crmuxdriverVersion: 'beta',
     tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER

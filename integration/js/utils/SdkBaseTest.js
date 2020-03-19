@@ -8,7 +8,11 @@ class SdkBaseTest extends KiteBaseTest {
   constructor(name, kiteConfig, testName) {
     super(name, kiteConfig);
     this.baseUrl = this.url;
-    this.url = this.url + '?m=' + kiteConfig.uuid;
+    if (testName === 'ContentShareOnlyAllowTwoTest') {
+      this.url = this.url + '?max-content-share=true' + '&m=' + kiteConfig.uuid;
+    } else {
+      this.url = this.url + '?m=' + kiteConfig.uuid;
+    }
     this.meetingTitle = kiteConfig.uuid;
     this.testName = testName;
     this.testReady = false;
