@@ -40,6 +40,9 @@ elsif commits.size == 1
   puts "Increasing patch version from #{base_version} to #{new_version}"
   File.write(version_file, File.read(version_file).gsub(/return '[.0-9]+';/, "return '#{new_version}';"))
 
+  #Pull in npm audit fixes automatically
+  verbose('npm audit fix --force')
+
   verbose("git add #{version_file}")
   verbose("git add package.json")
   verbose("git add package-lock.json")
