@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /* eslint-disable */
-var HtmlWebpackInlineSourcePlugin = require ('html-webpack-inline-source-plugin');
+var webpack = require('webpack');
+var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 /* eslint-enable */
 
@@ -18,6 +19,9 @@ module.exports = env => {
         inject: 'head',
       }),
       new HtmlWebpackInlineSourcePlugin(),
+      new webpack.EnvironmentPlugin({
+        IS_LOCAL: process.env.npm_config_is_local === 'true' ? 'true' : 'false'
+      })
     ],
     entry: [`./app/${app}/${app}.ts`],
     resolve: {
