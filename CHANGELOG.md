@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integrate POSTLogger into the demo app
 - Add content share integration test
 - Enable POSTLogger for the serverless demo app
+- Add max-content-share query parameter to allow 2 content share at the same time
+- Add an integration test that checks only 2 content share are allowed
 
 ### Changed
 - Add observer event for content sharing
@@ -68,7 +70,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ping/pong to screen sharing start code path to ensure socket is viable
 - Enable integration tests for safari 12
 - Write timestamp for latest canary completion time
-- Add max-content-share query parameter to allow 2 content share at the same time
 
 ### Changed
 - Enforce SDP to have candidates for FinishGatheringICECandidateTask to resolve
