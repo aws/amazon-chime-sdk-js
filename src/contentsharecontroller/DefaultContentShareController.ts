@@ -107,6 +107,9 @@ export default class DefaultContentShareController
   }
 
   audioVideoDidStop(_sessionStatus: MeetingSessionStatus): void {
+    //If the content attendee got dropped or could not connect, stopContentShare will not be called
+    //So make sure to clean up the media stream.
+    this.mediaStreamBroker.cleanup();
     this.forEachContentShareObserver(observer => {
       Maybe.of(observer.contentShareDidStop).map(f => f.bind(observer)());
     });
