@@ -654,7 +654,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
               name += " «Content»";
               const selfAttendeeId = this.meetingSession.configuration.credentials.attendeeId;
               //If someone else share content, stop the current content share
-              if (selfAttendeeId !== baseAttendeeId && this.isButtonOn('button-content-share')) {
+              if (!this.allowMaxContentShare() && selfAttendeeId !== baseAttendeeId && this.isButtonOn('button-content-share')) {
                 this.contentShareStop();
               }
             }
@@ -1387,6 +1387,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       const y = Math.floor(i / columns) * h; // + (height / 2 - totalHeight / 2);
       this.updateTilePlacement(visibleTileIndices[i], x, y, w, h);
     }
+  }
+
+  allowMaxContentShare(): boolean {
+    const allowed = (new URL(window.location.href).searchParams.get('max-content-share')) === 'true';
+    if (allowed) {
+      return true;
+    }
+    return false;
   }
 
   connectionDidBecomePoor(): void {
