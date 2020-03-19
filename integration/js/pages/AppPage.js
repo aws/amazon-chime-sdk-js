@@ -13,6 +13,8 @@ const elements = {
   meetingLeaveButton: By.id('button-meeting-leave'),
   screenShareButton: By.id('button-screen-share'),
   screenViewButton: By.id('button-screen-view'),
+  contentShareButton: By.id('button-content-share'),
+  contentSharePauseButton: By.id('button-pause-content-share'),
   sipAuthenticateButton: By.id('button-sip-authenticate'),
   roster: By.id('roster'),
   participants: By.css('li'),
@@ -93,6 +95,16 @@ class AppPage {
   async clickScreenViewButton() {
     let screenViewButton = await this.driver.findElement(elements.screenViewButton);
     await screenViewButton.click();
+  }
+
+  async clickContentShareButton() {
+    const contentShareButton = await this.driver.findElement(elements.contentShareButton);
+    await contentShareButton.click();
+  }
+
+  async clickContentSharePauseButton() {
+    const contentSharePauseButton = await this.driver.findElement(elements.contentSharePauseButton);
+    await contentSharePauseButton.click();
   }
 
   async clickCameraButton() {
