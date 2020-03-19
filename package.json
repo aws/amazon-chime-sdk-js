@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "1.1.25",
+  "version": "1.1.26",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -51,10 +51,10 @@
     "eslint-plugin-simple-import-sort": "^4.0.0",
     "fs-extra": "^8.1.0",
     "mocha": "^6.1.4",
-    "nyc": "^14.0.0",
+    "nyc": "^15.0.0",
     "prettier": "^1.17.1",
     "sinon": "^7.3.2",
-    "spawn-wrap": "^1.4.3",
+    "spawn-wrap": "^2.0.0",
     "ts-node": "^8.1.0",
     "typedoc": "^0.15.0",
     "typescript": "^3.4.5"

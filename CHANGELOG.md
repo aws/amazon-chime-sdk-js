@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix the ping pong reconnection issue
 - Fix example code in the getting started guide
 - Fix browser versions for integration tests
+- Fix present npm audit issues and automatically fix during build when possible
 
 ## [1.1.0] - 2020-02-04
 
