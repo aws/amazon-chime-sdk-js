@@ -25,28 +25,31 @@ elsif commits.size == 1
     STDERR.puts "Error: Does not contain CHANGELOG.md in the commit #{commits[0]}"
     exit 1
   end
-  version_file = 'src/versioning/Versioning.ts'
 
-  #Reset to the base version
-  base_version = JSON.parse(`git show #{`cat .base-branch`.strip}:package.json`)['version']
-  package_json = JSON.parse(File.read('package.json'))
-  package_json['version'] = base_version
-  File.write('package.json', JSON.pretty_generate(package_json))
+  unless ARGV.include?('--publish')
+    version_file = 'src/versioning/Versioning.ts'
 
-  #Increase to new version
-  verbose("npm version patch --no-git-tag-version")
-  package_json = JSON.parse(File.read('package.json'))
-  new_version = package_json['version']
-  puts "Increasing patch version from #{base_version} to #{new_version}"
-  File.write(version_file, File.read(version_file).gsub(/return '[.0-9]+';/, "return '#{new_version}';"))
+    #Reset to the base version
+    base_version = JSON.parse(`git show #{`cat .base-branch`.strip}:package.json`)['version']
+    package_json = JSON.parse(File.read('package.json'))
+    package_json['version'] = base_version
+    File.write('package.json', JSON.pretty_generate(package_json))
 
-  #Pull in npm audit fixes automatically
-  verbose('npm audit fix --force')
+    #Increase to new version
+    verbose("npm version patch --no-git-tag-version")
+    package_json = JSON.parse(File.read('package.json'))
+    new_version = package_json['version']
+    puts "Increasing patch version from #{base_version} to #{new_version}"
+    File.write(version_file, File.read(version_file).gsub(/return '[.0-9]+';/, "return '#{new_version}';"))
 
-  verbose("git add #{version_file}")
-  verbose("git add package.json")
-  verbose("git add package-lock.json")
-  verbose("git commit --amend --no-edit")
+    #Pull in npm audit fixes automatically
+    verbose('npm audit fix --force')
+
+    verbose("git add #{version_file}")
+    verbose("git add package.json")
+    verbose("git add package-lock.json")
+    verbose("git commit --amend --no-edit")
+  end
 elsif commits.size == 2 && `git diff #{commits[0]} #{commits[1]}`.strip == ''
   puts "OK: branch contains empty merge commit followed by one commit on top of #{base}"
 else
