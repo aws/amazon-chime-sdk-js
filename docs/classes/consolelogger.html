@@ -66,26 +66,6 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>ConsoleLogger writes logs with console</p>
-					</div>
-					<pre><code class="language-typescript">  <span class="hljs-comment">// working with the ConsoleLogger</span>
-  <span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">'demo'</span>); <span class="hljs-comment">//default level is LogLevel.WARN</span>
-  logger.info(<span class="hljs-string">'info'</span>);
-  logger.debug(<span class="hljs-string">'debug'</span>);
-  logger.warn(<span class="hljs-string">'warn'</span>);
-  logger.error(<span class="hljs-string">'error'</span>);
-
-  <span class="hljs-comment">// setting logging levels</span>
-  <span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">'demo'</span>, LogLevel.INFO)
-  logger.debug(debugFunc()); <span class="hljs-comment">// this will not show up</span>
-  logger.setLogLevel(LogLevel.DEBUG)
-  logger.debug(debugFunc()); <span class="hljs-comment">// this will show up</span>
-</code></pre>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
