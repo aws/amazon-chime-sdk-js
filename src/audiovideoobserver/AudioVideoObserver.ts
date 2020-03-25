@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
@@ -25,16 +25,6 @@ export default interface AudioVideoObserver {
    * provided in the status.
    */
   audioVideoDidStop?(sessionStatus: MeetingSessionStatus): void;
-
-  /**
-   * Called when the client's audio is muted.
-   */
-  remoteDidMuteAudio?(): void;
-
-  /**
-   * Called when the client's audio is unmuted.
-   */
-  remoteDidUnmuteAudio?(): void;
 
   /**
    * Called whenever a tile has been created or updated.

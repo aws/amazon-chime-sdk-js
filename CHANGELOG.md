@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
 
+### Removed
+
+- Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver
+
 ## [1.2.1] - 2020-03-20
 
 ### Added
