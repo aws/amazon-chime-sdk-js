@@ -137,15 +137,6 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/Task.ts#L21">src/task/Task.ts:21</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Attempts to cancel the task. The task may still succeed if it is unable to
-										be canceled. If the task is canceled, then its <a href="task.html#run">run</a> function will reject
-										the promise. If <a href="task.html#cancel">cancel</a> is called before <a href="task.html#run">run</a>, then <a href="task.html#run">run</a>
-										must immediately reject the returned promise. If <a href="task.html#cancel">cancel</a> is called
-									after <a href="task.html#run">run</a>, then nothing happens.</p>
-								</div>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -163,11 +154,6 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/Task.ts#L12">src/task/Task.ts:12</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Describes the task for the purpose of logging.</p>
-								</div>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
@@ -185,14 +171,6 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/Task.ts#L29">src/task/Task.ts:29</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Runs the unit of work until it either succeeds and fulfills the promise or
-										fails and rejects the promise. Where possible it should listen for the
-										cancellation signal, stop working, and reject the promise. If run is called
-									more than once, it should immediately reject the promise.</p>
-								</div>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -210,11 +188,6 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/Task.ts#L34">src/task/Task.ts:34</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Sets the parent of this task for the purpose of logging.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
