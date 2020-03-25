@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
+import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
@@ -11,13 +12,11 @@ export default interface AudioVideoObserver {
   /**
    * Called when the session is connecting or reconnecting.
    */
-
   audioVideoDidStartConnecting?(reconnecting: boolean): void;
 
   /**
    * Called when the session has started.
    */
-
   audioVideoDidStart?(): void;
 
   /**
@@ -57,6 +56,19 @@ export default interface AudioVideoObserver {
    * Called when available video receiving bandwidth changed to trigger video subscription if needed.
    */
   videoReceiveBandwidthDidChange?(newBandwidthKbps: number, oldBandwidthKbps: number): void;
+
+  /**
+   * Called when total downlink video bandwidth estimation is less than required video bitrates.
+   */
+  estimatedDownlinkBandwidthLessThanRequired?(
+    estimatedBandwidth: number,
+    requiredBandwidth: number
+  ): void;
+
+  /**
+   * Called when one or more remote video streams do not meet expected average bitrate
+   */
+  videoNotReceivingEnoughData?(receivingDataMap: ClientVideoStreamReceivingReport[]): void;
 
   /**
    * Called when the media stats are available.

@@ -22,6 +22,7 @@ import CleanStoppedSessionTask from './task/CleanStoppedSessionTask';
 import ClientMetricReport from './clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from './clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from './clientmetricreport/ClientMetricReportMediaType';
+import ClientVideoStreamReceivingReport from './clientmetricreport/ClientVideoStreamReceivingReport';
 import ConnectionHealthData from './connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicy from './connectionhealthpolicy/ConnectionHealthPolicy';
 import ConnectionHealthPolicyConfiguration from './connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
@@ -308,6 +309,7 @@ export {
   ClientMetricReport,
   ClientMetricReportDirection,
   ClientMetricReportMediaType,
+  ClientVideoStreamReceivingReport,
   ConnectionHealthData,
   ConnectionHealthPolicy,
   ConnectionHealthPolicyConfiguration,

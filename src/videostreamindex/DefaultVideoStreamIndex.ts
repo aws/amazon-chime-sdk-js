@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -162,6 +162,22 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       this.logger.info(
         `track ${trackId} (stream ${streamId}) does not correspond to a known attendee`
       );
+      return '';
+    }
+    return attendeeId;
+  }
+
+  attendeeIdForStreamId(streamId: number): string {
+    if (!this.streamToAttendeeMap) {
+      if (this.currentIndex) {
+        this.streamToAttendeeMap = this.buildStreamToAttendeeMap(this.currentIndex);
+      } else {
+        return '';
+      }
+    }
+    const attendeeId: string = this.streamToAttendeeMap.get(streamId);
+    if (!attendeeId) {
+      this.logger.info(`stream ${streamId}) does not correspond to a known attendee`);
       return '';
     }
     return attendeeId;

@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -707,6 +707,56 @@ describe('DefaultVideoStreamIndex', () => {
         })
       );
       expect(index.attendeeIdForTrack('85e9')).to.equal('');
+    });
+  });
+
+  describe('attendeeIdForStreamId', () => {
+    const indexFrame = new SdkIndexFrame({
+      sources: [
+        new SdkStreamDescriptor({
+          streamId: 1,
+          groupId: 1,
+          maxBitrateKbps: 100,
+          attendeeId: '688c',
+          mediaType: SdkStreamMediaType.VIDEO,
+        }),
+        new SdkStreamDescriptor({
+          streamId: 2,
+          groupId: 1,
+          maxBitrateKbps: 200,
+          attendeeId: '4d82',
+          mediaType: SdkStreamMediaType.VIDEO,
+        }),
+        new SdkStreamDescriptor({
+          streamId: 4,
+          groupId: 399,
+          maxBitrateKbps: 800,
+          attendeeId: 'a0ff',
+          mediaType: SdkStreamMediaType.VIDEO,
+        }),
+      ],
+    });
+    const subackFrame = new SdkSubscribeAckFrame({
+      tracks: [
+        new SdkTrackMapping({ streamId: 2, trackLabel: 'b18b9db2' }),
+        new SdkTrackMapping({ streamId: 4, trackLabel: '4107' }),
+        new SdkTrackMapping({ streamId: 9, trackLabel: '4d82' }),
+      ],
+    });
+
+    it('resolves a stream id to an attendee id', () => {
+      expect(index.attendeeIdForStreamId(1)).to.equal('');
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(subackFrame);
+      expect(index.attendeeIdForStreamId(1)).to.equal('688c');
+      expect(index.attendeeIdForStreamId(2)).to.equal('4d82');
+    });
+
+    it('returns empty string if stream id could not be resolved', () => {
+      expect(index.attendeeIdForStreamId(1)).to.equal('');
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(subackFrame);
+      expect(index.attendeeIdForStreamId(3)).to.equal('');
     });
   });
 
