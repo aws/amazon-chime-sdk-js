@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add guide for content sharing
+
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
 
