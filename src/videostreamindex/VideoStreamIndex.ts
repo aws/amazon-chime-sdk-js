@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { SdkIndexFrame, SdkSubscribeAckFrame } from '../signalingprotocol/SignalingProtocol.js';
@@ -29,7 +29,7 @@ export default interface VideoStreamIndex {
   allVideoSendingAttendeesExcludingSelf(selfAttendeeId: string): Set<string>;
 
   /**
-   * Return a selection set of streams for subscription based on self attendee id, size infomation of tiles, bandwidth limitation
+   * Return a selection set of streams for subscription based on self attendee id, size information of tiles, bandwidth limitation
    */
   streamSelectionUnderBandwidthConstraint(
     selfAttendeeId: string,
@@ -52,6 +52,11 @@ export default interface VideoStreamIndex {
    * Returns attendee id for a track id
    */
   attendeeIdForTrack(trackId: string): string;
+
+  /**
+   * Returns attendee id for a stream id
+   */
+  attendeeIdForStreamId(streamId: number): string;
 
   /**
    * Returns a stream id for a track id

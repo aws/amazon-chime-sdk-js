@@ -9,6 +9,12 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
+import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
+import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
+import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
+import ClientVideoStreamReceivingReport from '../../src/clientmetricreport/ClientVideoStreamReceivingReport';
+import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
+import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
@@ -23,6 +29,8 @@ import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent
 import SignalingClientEventType from '../../src/signalingclient/SignalingClientEventType';
 import {
   SdkAudioStatusFrame,
+  SdkBitrate,
+  SdkBitrateFrame,
   SdkErrorFrame,
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
@@ -32,14 +40,35 @@ import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import MonitorTask from '../../src/task/MonitorTask';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
+import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
+function createSignalingEventForBitrateFrame(logger: Logger): SignalingClientEvent {
+  const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+  const message = SdkSignalFrame.create();
+  message.bitrates = SdkBitrateFrame.create();
+  const bitrate = SdkBitrate.create();
+  bitrate.sourceStreamId = 1;
+  bitrate.avgBitrateBps = 1400 * 1000;
+  message.bitrates.bitrates.push(bitrate);
+  const bitrate2 = SdkBitrate.create();
+  bitrate2.sourceStreamId = 3;
+  bitrate2.avgBitrateBps = 60 * 1000;
+  message.bitrates.bitrates.push(bitrate2);
+  return new SignalingClientEvent(
+    new DefaultSignalingClient(webSocketAdapter, logger),
+    SignalingClientEventType.ReceivedSignalFrame,
+    message
+  );
+}
+
 describe('MonitorTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
+  const assert: Chai.AssertStatic = chai.assert;
   const behavior = new DOMMockBehavior();
   const logger = new NoOpDebugLogger();
 
@@ -199,6 +228,149 @@ describe('MonitorTask', () => {
       });
       expect(spy1.called).to.be.false;
       expect(spy2.called).to.be.false;
+    });
+  });
+
+  describe('metricsDidReceive', () => {
+    it('can only handle DefaultClientMetricReport with StreamMetricReport', () => {
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
+
+      class TestClientMetricReport implements ClientMetricReport {
+        getObservableMetrics(): { [id: string]: number } {
+          return;
+        }
+      }
+      task.metricsDidReceive(undefined);
+      const clientMetricReport = new TestClientMetricReport();
+      task.metricsDidReceive(clientMetricReport);
+
+      const defaultClientMetricReport = new DefaultClientMetricReport(logger);
+      const ssrc = 6789;
+      defaultClientMetricReport.streamMetricReports[ssrc] = new StreamMetricReport();
+      task.metricsDidReceive(defaultClientMetricReport);
+    });
+
+    it('no-op if there is no SdkBitrateFrame ever received', () => {
+      const metric = 'bytesReceived';
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.previousMetrics[metric] = 100 * 1000;
+      streamMetricReport.currentMetrics[metric] = 200 * 1000;
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+
+      const clientMetricReport = new DefaultClientMetricReport(logger);
+      clientMetricReport.streamMetricReports[1] = streamMetricReport;
+      task.metricsDidReceive(clientMetricReport);
+    });
+
+    it('handles clientMetricReport and not fire callback if receiving video meets expectation', () => {
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        attendeeIdForStreamId(streamId: number): string {
+          return 'attendee' + streamId.toString();
+        }
+      }
+      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      const metric = 'bytesReceived';
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.previousMetrics[metric] = 100 * 1000;
+      streamMetricReport.currentMetrics[metric] = 200 * 1000;
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+
+      const streamMetricReportAudio = new StreamMetricReport();
+      streamMetricReportAudio.previousMetrics[metric] = 10 * 1000;
+      streamMetricReportAudio.currentMetrics[metric] = 100 * 1000;
+      streamMetricReportAudio.streamId = 0;
+      streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
+
+      const clientMetricReport = new DefaultClientMetricReport(logger);
+      clientMetricReport.streamMetricReports[1] = streamMetricReport;
+      clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
+      task.metricsDidReceive(clientMetricReport);
+    });
+
+    it('handles clientMetricReport and fires callback if receiving video falls short', done => {
+      class TestObserver implements AudioVideoObserver {
+        videoNotReceivingEnoughData?(receivingDataMap: ClientVideoStreamReceivingReport[]): void {
+          for (const report of receivingDataMap) {
+            if (report.attendeeId === 'attendeeId1') {
+              done();
+            }
+          }
+        }
+      }
+      context.audioVideoController.addObserver(new TestObserver());
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        attendeeIdForStreamId(streamId: number): string {
+          return 'attendeeId' + streamId.toString();
+        }
+      }
+      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      const metric = 'bytesReceived';
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.previousMetrics[metric] = 30 * 1000;
+      streamMetricReport.currentMetrics[metric] = 80 * 1000;
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+
+      const streamMetricReportAudio = new StreamMetricReport();
+      streamMetricReportAudio.previousMetrics[metric] = 10 * 1000;
+      streamMetricReportAudio.currentMetrics[metric] = 100 * 1000;
+      streamMetricReportAudio.streamId = 0;
+      streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
+
+      const clientMetricReport = new DefaultClientMetricReport(logger);
+      clientMetricReport.streamMetricReports[1] = streamMetricReport;
+      clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
+      task.metricsDidReceive(clientMetricReport);
+    });
+
+    it('handles clientMetricReport in no attendee id case', () => {
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        attendeeIdForStreamId(_streamId: number): string {
+          return '';
+        }
+      }
+      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      const metric = 'bytesReceived';
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.previousMetrics[metric] = 100 * 1000;
+      streamMetricReport.currentMetrics[metric] = 200 * 1000;
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+
+      const clientMetricReport = new DefaultClientMetricReport(logger);
+      clientMetricReport.streamMetricReports[1] = streamMetricReport;
+      task.metricsDidReceive(clientMetricReport);
+    });
+
+    it('handles clientMetricReport in no previous metric case', () => {
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        attendeeIdForStreamId(_streamId: number): string {
+          return 'attendeeid';
+        }
+      }
+      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      const metric = 'bytesReceived';
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.previousMetrics[metric] = 100 * 1000;
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+
+      const clientMetricReport = new DefaultClientMetricReport(logger);
+      clientMetricReport.streamMetricReports[1] = streamMetricReport;
+      task.metricsDidReceive(clientMetricReport);
     });
   });
 
@@ -392,6 +564,65 @@ describe('MonitorTask', () => {
   });
 
   describe('handleSignalingClientEvent', () => {
+    it('handles SdkBitrateFrame', done => {
+      const avgBitrateTestValue = 35000 * 1000;
+      const streamIdTestValue = 1;
+      class TestObserver implements AudioVideoObserver {
+        estimatedDownlinkBandwidthLessThanRequired(_estimation: number, _required: number): void {
+          expect(_required).to.equal(avgBitrateTestValue / 1000);
+          done();
+        }
+      }
+      context.videoSubscriptions = [streamIdTestValue];
+      context.audioVideoController.addObserver(new TestObserver());
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const message = SdkSignalFrame.create();
+      message.bitrates = SdkBitrateFrame.create();
+      const bitrate = SdkBitrate.create();
+      bitrate.sourceStreamId = streamIdTestValue;
+      bitrate.avgBitrateBps = avgBitrateTestValue;
+      message.bitrates.bitrates.push(bitrate);
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+    });
+
+    it('handles SdkBitrate for no video subscription case', () => {
+      class TestObserver implements AudioVideoObserver {
+        estimatedDownlinkBandwidthLessThanRequired(_estimation: number, _required: number): void {
+          assert.fail();
+        }
+      }
+      context.videoSubscriptions = [];
+      context.audioVideoController.addObserver(new TestObserver());
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const message = SdkSignalFrame.create();
+      message.bitrates = SdkBitrateFrame.create();
+      const bitrate = SdkBitrate.create();
+      bitrate.sourceStreamId = 1;
+      bitrate.avgBitrateBps = 35000 * 1000;
+      message.bitrates.bitrates.push(bitrate);
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      context.videoSubscriptions = null;
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+    });
+
     it('does not handle non-ReceivedSignalFrame', () => {
       const spy = sinon.spy(MeetingSessionStatus, 'fromSignalFrame');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);

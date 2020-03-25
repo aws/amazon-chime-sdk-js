@@ -29,6 +29,7 @@ import {
   TimeoutScheduler,
   Versioning,
   VideoTileState,
+  ClientVideoStreamReceivingReport,
 } from '../../../../src/index';
 
 class DemoTileOrganizer {
@@ -489,6 +490,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.populateAudioOutputList();
   }
 
+  estimatedDownlinkBandwidthLessThanRequired(estimatedDownlinkBandwidthKbps: number, requiredVideoDownlinkBandwidthKbps: number ): void {
+    this.log(`Estimated downlink bandwidth is ${estimatedDownlinkBandwidthKbps} is less than required bandwidth for video ${requiredVideoDownlinkBandwidthKbps}`);
+  }
+
+  videoNotReceivingEnoughData(videoReceivingReports: ClientVideoStreamReceivingReport[]): void {
+    this.log(`One or more video streams are not receiving expected amounts of data ${JSON.stringify(videoReceivingReports)}`);
+  }
+
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const metricReport = clientMetricReport.getObservableMetrics();
     if (typeof metricReport.availableSendBandwidth === 'number' && !isNaN(metricReport.availableSendBandwidth)) {
@@ -521,8 +530,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     } else {
       logger = new MeetingSessionPOSTLogger(
         'SDK',
-        configuration, 
-        DemoMeetingApp.LOGGER_BATCH_SIZE, 
+        configuration,
+        DemoMeetingApp.LOGGER_BATCH_SIZE,
         DemoMeetingApp.LOGGER_INTERVAL_MS,
         `${DemoMeetingApp.BASE_URL}logs`,
         LogLevel.INFO
