@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add guide for content sharing
+- Display meeting id in the demo app
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
