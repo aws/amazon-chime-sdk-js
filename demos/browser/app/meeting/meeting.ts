@@ -167,8 +167,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       new AsyncScheduler().start(
         async (): Promise<void> => {
           this.showProgress('progress-authenticate');
+          let chimeMeetingId: string = '';
           try {
-            await this.authenticate();
+            chimeMeetingId = await this.authenticate();
           } catch (error) {
             (document.getElementById(
               'failed-meeting'
@@ -181,6 +182,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
           (document.getElementById(
             'meeting-id'
           ) as HTMLSpanElement).innerHTML = `${this.meeting} (${this.region})`;
+          (document.getElementById(
+            'chime-meeting-id'
+          ) as HTMLSpanElement).innerHTML = `${chimeMeetingId}`;
           (document.getElementById('info-meeting') as HTMLSpanElement).innerHTML = this.meeting;
           (document.getElementById('info-name') as HTMLSpanElement).innerHTML = this.name;
           this.switchToFlow('flow-devices');
@@ -1050,7 +1054,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     return value;
   }
 
-  async authenticate(): Promise<void> {
+  async authenticate(): Promise<string> {
     let joinInfo = (await this.joinMeeting()).JoinInfo;
     await this.initializeMeetingSession(
       new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee)
@@ -1058,6 +1062,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     const url = new URL(window.location.href);
     url.searchParams.set('m', this.meeting);
     history.replaceState({}, `${this.meeting}`, url.toString());
+    return joinInfo.Meeting.MeetingId;
   }
 
   log(str: string): void {
