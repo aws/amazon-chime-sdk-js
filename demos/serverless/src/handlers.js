@@ -32,6 +32,13 @@ const getMeeting = async(meetingTitle) => {
     return null;
   }
   const meetingData = JSON.parse(result.Item.Data.S);
+  try {
+    await chime.getMeeting({
+      MeetingId: meetingData.Meeting.MeetingId
+    }).promise();
+  } catch (err) {
+    return null;
+  }
   return meetingData;
 }
 
