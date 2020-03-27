@@ -7,7 +7,7 @@ export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   addStyles?: Object;
 }
 
-export const Button: React.FC<ButtonProps> = (props) => {
+export const Button: React.FC<ButtonProps> = props => {
   const { icon, label } = props;
   return (
     <StyledButton {...props}>
