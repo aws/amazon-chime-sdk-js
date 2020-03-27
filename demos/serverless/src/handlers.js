@@ -258,7 +258,8 @@ exports.logs = async (event, context) => {
     if (body.logs.length > 0) {
       for (let i = 0; i < body.logs.length; i++) {
         var log = body.logs[i];
-        var message = `${log.sequenceNumber} AttendeeID: ${body.attendeeId} [${log.logLevel}] ${log.message} ${log.timestampMs}`;
+        var timestampIso = new Date(log.timestampMs).toISOString();
+        var message = `${timestampIso} [${log.sequenceNumber}] [${log.logLevel}] [mid: ${body.meetingId.toString()}] [aid: ${body.attendeeId}]: ${log.message}`;
         logEvents.push({
           "message": message,
           "timestamp": log.timestampMs

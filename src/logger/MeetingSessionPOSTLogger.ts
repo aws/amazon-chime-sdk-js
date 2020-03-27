@@ -105,7 +105,7 @@ export default class MeetingSessionPOSTLogger {
       return;
     }
     const date = new Date();
-    this.logCapture.push(new Log(this.sequenceNumber, msg, date.getTime(), type));
+    this.logCapture.push(new Log(this.sequenceNumber, msg, date.getTime(), LogLevel[type]));
     this.sequenceNumber += 1;
   }
 }
