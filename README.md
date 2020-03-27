@@ -53,7 +53,7 @@ demo locally:
 role with a policy allowing `chime:CreateMeeting`, `chime:DeleteMeeting`, and
 `chime:CreateAttendee`.
 
-2. Change to the `demos/browser` folder: `cd demos/browser`
+2. Navigate to the `demos/browser` folder: `cd demos/browser`
 
 3. Start the demo application: `npm run start`
 
