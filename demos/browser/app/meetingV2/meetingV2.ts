@@ -145,11 +145,22 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).app = this;
-    this.switchToFlow('flow-authenticate');
     (document.getElementById('sdk-version') as HTMLSpanElement).innerHTML =
       "amazon-chime-sdk-js@" + Versioning.sdkVersion;
     this.initEventListeners();
     this.initParameters();
+    if (this.isRecorder()) {
+      new AsyncScheduler().start(async () => {
+        this.meeting = new URL(window.location.href).searchParams.get('m');
+        this.name = '«Meeting Recorder»';
+        await this.authenticate();
+        await this.join();
+        this.displayButtonStates();
+        this.switchToFlow('flow-meeting');
+      });
+    } else {
+      this.switchToFlow('flow-authenticate');
+    }
   }
 
   initParameters(): void {
@@ -744,6 +755,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     // a custom UX with a specific device id.
     this.audioVideo.setDeviceLabelTrigger(
       async (): Promise<MediaStream> => {
+        if (this.isRecorder()) {
+          throw new Error('recorder does not need device labels');
+        }
         this.switchToFlow('flow-need-permission');
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         this.switchToFlow('flow-devices');
@@ -1002,6 +1016,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   private audioInputSelectionToDevice(value: string): Device {
+    if (this.isRecorder()) {
+      return null;
+    }
     if (value === '440 Hz') {
       return DefaultDeviceController.synthesizeAudioDevice(440);
     } else if (value === 'None') {
@@ -1011,6 +1028,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   private videoInputSelectionToDevice(value: string): Device {
+    if (this.isRecorder()) {
+      return null;
+    }
     if (value === 'Blue') {
       return DefaultDeviceController.synthesizeVideoDevice('blue');
     } else if (value === 'SMPTE Color Bars') {
@@ -1085,6 +1105,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       videoFile.pause();
       videoFile.style.display = 'none';
     }
+  }
+
+  isRecorder(): boolean {
+    return (new URL(window.location.href).searchParams.get('record')) === 'true';
   }
 
   async authenticate(): Promise<string> {

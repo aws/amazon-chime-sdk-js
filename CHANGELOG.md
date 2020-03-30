@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add guide for content sharing
 - Display meeting id in the demo app
 - Add additional callback in AudioVideoObserver to indicate video downlink pressure
+- Add meeting demo parameter for recording user
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM

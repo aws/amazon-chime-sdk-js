@@ -38,7 +38,10 @@ const server = require(protocol).createServer(options, async (request, response)
   log(`${request.method} ${request.url} BEGIN`);
   compression({})(request, response, () => {});
   try {
-    if (request.method === 'GET' && (request.url === '/' || request.url.startsWith('/?'))) {
+    if (
+      request.method === 'GET' &&
+      (request.url === '/' || request.url === '/v2/' || request.url.startsWith('/?'))
+    ) {
       response.statusCode = 200;
       response.setHeader('Content-Type', 'text/html');
       response.end(fs.readFileSync(`dist/${app}.html`));
