@@ -1,5 +1,6 @@
 const {KiteBaseTest, TestUtils} = require('../node_modules/kite-common');
 const {SaucelabsSession} = require('./WebdriverSauceLabs');
+const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {emitMetric} = require('./CloudWatch');
 const uuidv4 = require('uuid/v4');
 const fs = require('fs');
@@ -90,19 +91,24 @@ class SdkBaseTest extends KiteBaseTest {
   }
 
   async createSeleniumSession(capabilities) {
-    const invalidSessionIdRegEx = new RegExp(/^new_request:/);
-    for (let i =0; i< 3; i++) {
-      const session = await SaucelabsSession.createSession(capabilities);
-      const sessionId = await session.getSessionId();
-      if (invalidSessionIdRegEx.test(sessionId)) {
-        console.log(`Invalid Saucelabs session id : ${sessionId}. Retrying: ${i+1}`);
-        await new Promise(r => setTimeout(r, 1000));
-      } else {
-        console.log(`Successfully create a Saucelabs session: ${sessionId}`);
-        return session;
+    if (process.env.SELENIUM_GRID_PROVIDER === "browserstack") {
+      const session = await BrowserStackSession.createSession(capabilities);
+      return session;
+    } else {
+      const invalidSessionIdRegEx = new RegExp(/^new_request:/);
+      for (let i =0; i< 3; i++) {
+        const session = await SaucelabsSession.createSession(capabilities);
+        const sessionId = await session.getSessionId();
+        if (invalidSessionIdRegEx.test(sessionId)) {
+          console.log(`Invalid Saucelabs session id : ${sessionId}. Retrying: ${i+1}`);
+          await new Promise(r => setTimeout(r, 1000));
+        } else {
+          console.log(`Successfully create a Saucelabs session: ${sessionId}`);
+          return session;
+        }
       }
+      throw new Error('Failed to create Selenium session');
     }
-    throw new Error('Failed to create Selenium session');
   }
 
   numberOfSessions(browser) {
@@ -146,7 +152,7 @@ class SdkBaseTest extends KiteBaseTest {
     let retryCount = 0;
     while (retryCount < maxRetries) {
       //Wait for other to be ready
-      if (this.numberOfParticipant > 1) {
+      if (this.numberOfParticipant > 1 && this.io) {
         this.io.emit('test_ready', true);
         await this.waitForTestReady();
         if (!this.testReady) {
@@ -181,7 +187,7 @@ class SdkBaseTest extends KiteBaseTest {
         break;
       }
       // If the other participant did not reach finish state then dont retry
-      if (this.numberOfParticipant > 1 && !this.testFinish) {
+      if (this.numberOfParticipant > 1 && this.io && !this.testFinish) {
         console.log('[OTHER_PARTICIPANT] timed out')
         this.io.emit('test_ready', false);
         break;

@@ -12,7 +12,7 @@
       "testImpl": "MeetingLeaveScreenShareTest.js",
       "payload": {
         "url": "http://localhost:8080/",
-        "retry": 1
+        "retry": 2
       }
     }
   ],
