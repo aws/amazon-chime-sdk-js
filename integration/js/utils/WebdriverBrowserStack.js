@@ -1,5 +1,6 @@
 const {Builder} = require('selenium-webdriver');
 const {getBuildId, getRunDetails} = require('./BrowserStackLogs');
+const {AppPage} = require('../pages/AppPage');
 
 const getOS = capabilities => {
   switch (capabilities.platform) {
@@ -76,20 +77,6 @@ const getBrowserStackUrl = () => {
   );
 };
 
-getWebDriverBrowserStack = async capabilities => {
-  let cap = {};
-  if (capabilities.browserName === 'chrome') {
-    cap = getChromeCapabilities(capabilities);
-  } else {
-    cap = getFirefoxCapabilities(capabilities);
-  }
-  return await new Builder()
-    .usingServer(getBrowserStackUrl())
-    .withCapabilities(cap)
-    .build();
-};
-
-
 class BrowserStackSession {
   static async createSession(capabilities) {
     let cap = {};
@@ -98,7 +85,7 @@ class BrowserStackSession {
     } else {
       cap = getFirefoxCapabilities(capabilities);
     }
-    return await new Builder()
+    const driver = await new Builder()
       .usingServer(getBrowserStackUrl())
       .withCapabilities(cap)
       .build();
@@ -109,12 +96,33 @@ class BrowserStackSession {
     this.driver = inDriver;
   }
 
+  async init() {
+    await this.getSessionId();
+    this.name = "";
+    this.logger = (message) => {
+      const prefix = this.name === "" ? "" : `[${this.name} App] `;
+      console.log(`${prefix}${message}`)
+    };
+    this.getAppPage();
+  }
+
   async getSessionId() {
     if (this.sessionId === undefined) {
       const session = await this.driver.getSession();
       this.sessionId = session.getId();
     }
     return this.sessionId
+  }
+
+  setSessionName(inName) {
+    this.name = inName;
+  }
+
+  getAppPage() {
+    if (this.page === undefined) {
+      this.page = new AppPage(this.driver, this.logger);
+    }
+    return this.page;
   }
 
   async updateTestResults(passed) {
@@ -130,7 +138,7 @@ class BrowserStackSession {
         sessionId
       }
     }));
-    const run_details = await getRunDetails(session_id);
+    const run_details = await getRunDetails(sessionId);
     console.log("Browserstack run details :");
     console.log(JSON.stringify(run_details))
   }

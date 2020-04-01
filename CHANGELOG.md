@@ -18,9 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change the cloudwatch log message format
 
 ### Removed
-
 - Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver
 
+### Fixed
+- Fix retry logic for integration test
 
 
 ## [1.2.1] - 2020-03-20
