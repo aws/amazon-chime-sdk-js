@@ -26,9 +26,7 @@ class AppTestStep extends TestStep {
       await this.run();
     } catch (error) {
       this.failed();
-      // Kite Error status is set to pass for retry logic to work
-      // If we set it to Failed or Broken or Skipped, the kite framework will skip all the steps in next retry
-      throw new KiteTestError(Status.PASSED, error.message);
+      throw error;
     }
     this.emitCwMetric(1);
   }

@@ -1,4 +1,5 @@
 const {KiteBaseTest, TestUtils} = require('../node_modules/kite-common');
+const {AllureTestReport} = require('../node_modules/kite-common/report');
 const {SaucelabsSession} = require('./WebdriverSauceLabs');
 const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {emitMetric} = require('./CloudWatch');
@@ -84,6 +85,8 @@ class SdkBaseTest extends KiteBaseTest {
     this.remoteFailed = false;
     this.numRemoteJoined = 0;
     this.meetingCreated = false;
+    //Reset the status so KITE does not skip all the steps in next run
+    this.report = new AllureTestReport(this.name);
     if (this.io !== undefined) {
       const createMeetingUrl = `${this.baseUrl}meeting?title=${this.meetingTitle}`;
       this.io.emit("setup_test", createMeetingUrl, this.attendeeId);
