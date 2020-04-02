@@ -21,6 +21,7 @@ To get started, see the following resources:
 * [Amazon Chime Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/what-is-chime.html)
 * [Amazon Chime SDK API Reference](http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
 * [JavaScript Client SDK Documentation](https://aws.github.io/amazon-chime-sdk-js)
+* [Amazon Chime SDK Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
 
 And review the following guides:
 

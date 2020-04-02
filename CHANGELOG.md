@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Add base infrastucture for demo app in react
 
 ### Added
 - Add guide for content sharing
@@ -15,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add meeting demo parameter for recording user
 - Add a script demo to bundle Chime SDK into a single JS file
 - Add device demo
+- Add base infrastucture for demo app in react
+- Add pricing link in README
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
@@ -22,10 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver
+- Remove the minimal demo app
 
 ### Fixed
 - Fix retry logic for integration test
-
+- Update typedocs to 0.16 and re-generate doc files
 
 ## [1.2.1] - 2020-03-20
 
@@ -121,7 +123,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Remove SDP class withPlanBSimulcast method
 - Remove noSignalStatusReceived from ReconnectionHealthPolicy and remove SignalStrengthBarsConnectionHealthPolicy.
-- Remove the minimal demo app
 
 ### Fixed
 - Add cleanup code for failed open screen sharing
@@ -154,6 +155,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix canary deployment script
 - Fix sip call integration test
 - Fix Travis deployment script
-- Update typedocs and re-generate doc files
 
 ## [1.0.0] - 2019-11-20
