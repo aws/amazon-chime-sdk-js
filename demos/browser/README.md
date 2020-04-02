@@ -15,7 +15,7 @@ To run the `meeting` application demo locally:
 Demo applications are located in the `app` folder. Current demos are:
 
 * `meeting` - incorporates all functionality into a videoconferencing application with a Bootstrap user interface
-* `minimal` - barebones application that can be used as a starting point
+* `meetingV2` - A similar demo app to `meeting` with content share functionality 
 
 To run a specific demo application use:
 
@@ -23,10 +23,10 @@ To run a specific demo application use:
 npm run start --app=<app>
 ```
 
-For example, to run the `minimal` demo, run:
+For example, to run the `meeting` demo, run:
 
 ```
-npm run start --app=minimal
+npm run start --app=meeting
 ```
 
 After running `start` the first time, you can speed things up on subsequent iterations by using `start:fast`, e.g.

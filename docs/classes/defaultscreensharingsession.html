@@ -136,7 +136,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Screen<wbr>Sharing<wbr>Session<span class="tsd-signature-symbol">(</span>webSocket<span class="tsd-signature-symbol">: </span><a href="../interfaces/promisedwebsocket.html" class="tsd-signature-type">PromisedWebSocket</a>, constraintsProvider<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, timeSliceMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, messageSerialization<span class="tsd-signature-symbol">: </span><a href="../interfaces/screensharingmessageserialization.html" class="tsd-signature-type">ScreenSharingMessageSerialization</a>, mediaStreamBroker<span class="tsd-signature-symbol">: </span><a href="../interfaces/mediastreambroker.html" class="tsd-signature-type">MediaStreamBroker</a>, screenShareStreamFactory<span class="tsd-signature-symbol">: </span><a href="screensharestreamfactory.html" class="tsd-signature-type">ScreenShareStreamFactory</a>, mediaRecordingFactory<span class="tsd-signature-symbol">: </span><a href="../interfaces/mediarecordingfactory.html" class="tsd-signature-type">MediaRecordingFactory</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, browserBehavior<span class="tsd-signature-symbol">?: </span><a href="defaultbrowserbehavior.html" class="tsd-signature-type">DefaultBrowserBehavior</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultscreensharingsession.html" class="tsd-signature-type">DefaultScreenSharingSession</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Screen<wbr>Sharing<wbr>Session<span class="tsd-signature-symbol">(</span>webSocket<span class="tsd-signature-symbol">: </span><a href="../interfaces/promisedwebsocket.html" class="tsd-signature-type">PromisedWebSocket</a>, constraintsProvider<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">MediaStreamConstraints</span>, timeSliceMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, messageSerialization<span class="tsd-signature-symbol">: </span><a href="../interfaces/screensharingmessageserialization.html" class="tsd-signature-type">ScreenSharingMessageSerialization</a>, mediaStreamBroker<span class="tsd-signature-symbol">: </span><a href="../interfaces/mediastreambroker.html" class="tsd-signature-type">MediaStreamBroker</a>, screenShareStreamFactory<span class="tsd-signature-symbol">: </span><a href="screensharestreamfactory.html" class="tsd-signature-type">ScreenShareStreamFactory</a>, mediaRecordingFactory<span class="tsd-signature-symbol">: </span><a href="../interfaces/mediarecordingfactory.html" class="tsd-signature-type">MediaRecordingFactory</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, browserBehavior<span class="tsd-signature-symbol">?: </span><a href="defaultbrowserbehavior.html" class="tsd-signature-type">DefaultBrowserBehavior</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultscreensharingsession.html" class="tsd-signature-type">DefaultScreenSharingSession</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -151,11 +151,11 @@
 									<h5>webSocket: <a href="../interfaces/promisedwebsocket.html" class="tsd-signature-type">PromisedWebSocket</a></h5>
 								</li>
 								<li>
-									<h5>constraintsProvider: <span class="tsd-signature-type">function</span></h5>
+									<h5>constraintsProvider: <span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">MediaStreamConstraints</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-siganture">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamConstraints</span></li>
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamConstraints</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
@@ -190,7 +190,7 @@
 									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> browserBehavior: <a href="defaultbrowserbehavior.html" class="tsd-signature-type">DefaultBrowserBehavior</a><span class="tsd-signature-symbol"> =&nbsp;new DefaultBrowserBehavior()</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> browserBehavior: <a href="defaultbrowserbehavior.html" class="tsd-signature-type">DefaultBrowserBehavior</a><span class="tsd-signature-symbol"> = new DefaultBrowserBehavior()</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="defaultscreensharingsession.html" class="tsd-signature-type">DefaultScreenSharingSession</a></h4>
@@ -213,7 +213,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="constraintsprovider" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> constraints<wbr>Provider</h3>
-					<div class="tsd-signature tsd-kind-icon">constraints<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<div class="tsd-signature tsd-kind-icon">constraints<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">MediaStreamConstraints</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/DefaultScreenSharingSession.ts#L27">src/screensharingsession/DefaultScreenSharingSession.ts:27</a></li>
@@ -223,8 +223,8 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamConstraints</span></li>
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStreamConstraints</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -284,7 +284,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="observerqueue" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> observer<wbr>Queue</h3>
-					<div class="tsd-signature tsd-kind-icon">observer<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/screensharingsessionobserver.html" class="tsd-signature-type">ScreenSharingSessionObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new Set&lt;ScreenSharingSessionObserver&gt;()</span></div>
+					<div class="tsd-signature tsd-kind-icon">observer<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/screensharingsessionobserver.html" class="tsd-signature-type">ScreenSharingSessionObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Set&lt;ScreenSharingSessionObserver&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/DefaultScreenSharingSession.ts#L22">src/screensharingsession/DefaultScreenSharingSession.ts:22</a></li>
@@ -304,7 +304,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="stream" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> stream</h3>
-					<div class="tsd-signature tsd-kind-icon">stream<span class="tsd-signature-symbol">:</span> <a href="../interfaces/screensharestreaming.html" class="tsd-signature-type">ScreenShareStreaming</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+					<div class="tsd-signature tsd-kind-icon">stream<span class="tsd-signature-symbol">:</span> <a href="../interfaces/screensharestreaming.html" class="tsd-signature-type">ScreenShareStreaming</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/screensharingsession/DefaultScreenSharingSession.ts#L23">src/screensharingsession/DefaultScreenSharingSession.ts:23</a></li>
@@ -606,7 +606,7 @@
 					<a name="start" class="tsd-anchor"></a>
 					<h3>start</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, timeoutMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, timeoutMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
