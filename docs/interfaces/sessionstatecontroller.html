@@ -66,6 +66,15 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Manages <a href="../enums/sessionstatecontrollerstate.html">SessionStateControllerState</a> state transitions via
+							<a href="../enums/sessionstatecontrolleraction.html">SessionStateControllerAction</a> actions and ensures that the work functions
+						attached to the transition are sequenced properly.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -100,7 +109,7 @@
 					<a name="perform" class="tsd-anchor"></a>
 					<h3>perform</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">perform<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a>, work<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrollertransitionresult.html" class="tsd-signature-type">SessionStateControllerTransitionResult</a></li>
+						<li class="tsd-signature tsd-kind-icon">perform<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a>, work<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrollertransitionresult.html" class="tsd-signature-type">SessionStateControllerTransitionResult</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -109,16 +118,25 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/SessionStateController.ts#L21">src/sessionstatecontroller/SessionStateController.ts:21</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Performs the state transition action and if the transition is possible calls
+										the work function. If the transition is not currently possible, but could
+										become possible after the next transition then the action may be deferred.
+										For example, while in the Connecting state, if Stop is called this action
+									will be deferred until the Connected state is reached.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>action: <a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a></h5>
 								</li>
 								<li>
-									<h5>work: <span class="tsd-signature-type">function</span></h5>
+									<h5>work: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-siganture">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+											<ul class="tsd-signatures tsd-kind-type-literal">
 												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
@@ -147,6 +165,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/SessionStateController.ts#L29">src/sessionstatecontroller/SessionStateController.ts:29</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the current state.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../enums/sessionstatecontrollerstate.html" class="tsd-signature-type">SessionStateControllerState</a></h4>
 						</li>
 					</ul>

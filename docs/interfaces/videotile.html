@@ -66,6 +66,14 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p><a href="videotile.html">VideoTile</a> is a binding of attendee id, a video stream, and a video element
+						that sends out updates to session observers whenever one of its properties changes.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -118,6 +126,14 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L44">src/videotile/VideoTile.ts:44</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds the video element to the tile and sends out updates. This must also be called
+										anytime the display of the video element changes,
+										for example, when changing its dimensions or hiding it. To unbind
+									the video element from the tile pass null.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -141,6 +157,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L29">src/videotile/VideoTile.ts:29</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds the video stream to the tile and sends out updates.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -179,10 +200,13 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L77">src/videotile/VideoTile.ts:77</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span>
-								<span class="tsd-signature-symbol"> | </span>
-								<span class="tsd-signature-type">null</span>
-							</h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Captures a snapshot image from the tile, or null if the tile is not
+									active right now.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -199,6 +223,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L71">src/videotile/VideoTile.ts:71</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Cleans up resources associated with the tile. The tile may not be used
+									after destroy is called.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -216,6 +246,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L14">src/videotile/VideoTile.ts:14</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the tile id for this tile.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
@@ -233,6 +268,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L60">src/videotile/VideoTile.ts:60</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Marks the tile as having a poor connection returning whether it was previously unmarked</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -250,6 +290,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L49">src/videotile/VideoTile.ts:49</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Pauses the tile. When paused, the tile moves to an inactive state.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -267,6 +312,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L19">src/videotile/VideoTile.ts:19</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a <a href="../classes/videotilestate.html">VideoTileState</a> representing a copy of the state of the tile.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../classes/videotilestate.html" class="tsd-signature-type">VideoTileState</a></h4>
 						</li>
 					</ul>
@@ -284,6 +334,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L24">src/videotile/VideoTile.ts:24</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a <a href="../classes/videotilestate.html">VideoTileState</a>] representing a mutable reference to the state of the tile.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../classes/videotilestate.html" class="tsd-signature-type">VideoTileState</a></h4>
 						</li>
 					</ul>
@@ -301,6 +356,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L65">src/videotile/VideoTile.ts:65</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unmarks the tile as having a poor connection returning whether it was previously marked</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -318,6 +378,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L55">src/videotile/VideoTile.ts:55</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unpauses the tile if it was paused. When unpaused,
+									the tile moves to the active state.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>

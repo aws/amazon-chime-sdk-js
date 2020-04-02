@@ -120,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Remove SDP class withPlanBSimulcast method
 - Remove noSignalStatusReceived from ReconnectionHealthPolicy and remove SignalStrengthBarsConnectionHealthPolicy.
+- Remove the minimal demo app
 
 ### Fixed
 - Add cleanup code for failed open screen sharing
@@ -152,5 +153,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix canary deployment script
 - Fix sip call integration test
 - Fix Travis deployment script
+- Update typedocs and re-generate doc files
 
 ## [1.0.0] - 2019-11-20

@@ -66,6 +66,16 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p><a href="videotilecontroller.html">VideoTileController</a> allows one to manipulate how the underlying media
+							streams are assigned to video elements. The caller is responsible for laying
+							out video elements as desired and binding tile ids received from the observer
+						in the [[videoTileUpdated]] callbacks.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -127,6 +137,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L85">src/videotilecontroller/VideoTileController.ts:85</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a new tile. The tile id is assigned automatically.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a></h4>
 						</li>
 					</ul>
@@ -144,6 +159,13 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L19">src/videotilecontroller/VideoTileController.ts:19</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds the video element to the tile. This should also be called any time
+										the layout of the video element changes, for example, when changing its
+									dimensions.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -170,16 +192,18 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L116">src/videotilecontroller/VideoTileController.ts:116</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This can be used to capture the image data for a given tile.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span>
-								<span class="tsd-signature-symbol"> | </span>
-								<span class="tsd-signature-type">null</span>
-							</h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ImageData</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -196,6 +220,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L75">src/videotilecontroller/VideoTileController.ts:75</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the remote video tile</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
@@ -213,6 +242,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L80">src/videotilecontroller/VideoTileController.ts:80</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get all video tiles.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
@@ -230,10 +264,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L50">src/videotilecontroller/VideoTileController.ts:50</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a>
-								<span class="tsd-signature-symbol"> | </span>
-								<span class="tsd-signature-type">null</span>
-							</h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the current local video tile if it exists</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -250,16 +286,18 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L65">src/videotilecontroller/VideoTileController.ts:65</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Looks up a video tile from its tile id</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a>
-								<span class="tsd-signature-symbol"> | </span>
-								<span class="tsd-signature-type">null</span>
-							</h4>
+							<h4 class="tsd-returns-title">Returns <a href="videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -276,6 +314,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L70">src/videotilecontroller/VideoTileController.ts:70</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets a video tile area in physical pixels</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -299,6 +342,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L40">src/videotilecontroller/VideoTileController.ts:40</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether the local video tile has been started.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -316,6 +364,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L111">src/videotilecontroller/VideoTileController.ts:111</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns whether at least one video tile has a bound media stream.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -333,6 +386,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L55">src/videotilecontroller/VideoTileController.ts:55</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Pauses the video tile, if it exists.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -356,6 +414,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L101">src/videotilecontroller/VideoTileController.ts:101</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Removes all the tiles.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -373,6 +436,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L45">src/videotilecontroller/VideoTileController.ts:45</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stops and removes a local video tile, if it exists.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -390,6 +458,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L90">src/videotilecontroller/VideoTileController.ts:90</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Removes a tile by tile id.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -413,6 +486,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L96">src/videotilecontroller/VideoTileController.ts:96</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Removes any tiles that have the given attendee id and returns the tile ids of the
+									tiles removed</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -436,6 +515,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L106">src/videotilecontroller/VideoTileController.ts:106</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Broadcasts a tile state update to the session observers.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -459,6 +543,12 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L30">src/videotilecontroller/VideoTileController.ts:30</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Starts sharing the local video tile, creating a new video tile if one does
+									not already exist. It returns the the tile id of the video tile.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
@@ -476,6 +566,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L35">src/videotilecontroller/VideoTileController.ts:35</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stops a local video tile, if it exists.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -493,6 +588,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L24">src/videotilecontroller/VideoTileController.ts:24</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unbinds the video element from the tile.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -516,6 +616,11 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/VideoTileController.ts#L60">src/videotilecontroller/VideoTileController.ts:60</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unpauses the video tile, if it exists.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
