@@ -1,0 +1,22 @@
+{
+  "name": "singlejs",
+  "version": "0.1.0",
+  "description": "Generate a single JS file from Chime SDK",
+  "scripts": {
+    "bundle": "rollup --config rollup.config.js"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/amazon-chime-sdk-js"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "rollup": "^2.3.2",
+    "rollup-plugin-terser": "^5.3.0"
+  },
+  "dependencies": {
+    "amazon-chime-sdk-js": "^1.0.0"
+  }
+}
