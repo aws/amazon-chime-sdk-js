@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Skip tests when merging to master
 - Bump acorn dependency in package-lock.json to 6.4.1 to address CVE-2020-7598
 - Use max-bundle RTCRtpPolicy for Firefox
+- Throw error in Travis if integration test failed
 
 ### Fixed
 - Remove line endings in the keyword when searching for connection attributes in SDP
