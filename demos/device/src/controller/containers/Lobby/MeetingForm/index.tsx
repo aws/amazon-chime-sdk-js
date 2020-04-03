@@ -4,10 +4,12 @@ import { useControllerDispatch } from '../../ControllerProvider';
 import Submit from '../../../../components/form/Submit';
 import KeyboardInput from '../../../../components/form/KeyboardInput';
 import { Type as actionType } from '../../../../room/containers/RoomProvider/reducer';
+import { IoTClient } from '../../../../IoTClient';
 
 import './MeetingForm.css';
 
 const MeetingForm: React.FC = () => {
+  const iotClient = IoTClient.getInstance();
   const dispatch = useControllerDispatch();
   const [name, setName] = useState('');
   const [meetingId, setMeetingId] = useState('');
@@ -22,6 +24,7 @@ const MeetingForm: React.FC = () => {
         meetingId,
       },
     });
+    iotClient.publish('iot/meeting/join/', JSON.stringify({ meetingId: meetingId, name: name }));
     setIsLoading(true);
   };
 
