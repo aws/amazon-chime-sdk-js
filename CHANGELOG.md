@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix retry logic for integration test
 - Update typedocs to 0.16 and re-generate doc files
+- Fix issue in Travis script that prevents integration tests from running
 
 ## [1.2.1] - 2020-03-20
 

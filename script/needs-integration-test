@@ -27,6 +27,8 @@ commits.each do |commit|
     end
   end
 end
-exit(1) if requires_integration_test
 
-puts 'Skipping integration tests -- no relevant files modified'
+unless requires_integration_test
+  puts 'Skipping integration tests -- no relevant files modified'
+  exit(1)
+end
