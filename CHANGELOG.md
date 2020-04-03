@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
 - Change the cloudwatch log message format
+- Only run integration tests if files on watchlist were modified
 
 ### Removed
 - Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver

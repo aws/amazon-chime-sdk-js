@@ -1,0 +1,9 @@
+# run integration tests if files in these directories change
+demos/serverless/
+demos/browser/app/meeting/
+demos/browser/app/meetingV2/
+src/
+integration/
+
+# exceptions
+!src/versioning/Versioning.ts
