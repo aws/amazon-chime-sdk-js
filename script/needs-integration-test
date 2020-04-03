@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+def verbose command
+  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
+end
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+base = File.read('.base-branch').strip
+watchlist = File.read('.integration-watchlist').strip.split("\n")
+commits = `git rev-list #{base}..`.strip.split("\n")
+requires_integration_test = false
+commits.each do |commit|
+  commit_files = `git diff-tree --no-commit-id --name-only -r #{commit}`.strip.split("\n")
+  commit_files.each do |file|
+    matches = false
+    watchlist.each do |stem|
+      next if stem == '' || stem.start_with?('#')
+      if stem.start_with?('!')
+        matches = false if file.start_with?(stem[1..-1])
+      else
+        matches = true if file.start_with?(stem)
+      end
+    end
+    if matches
+      puts "* file '#{file}' on integration watchlist was modified"
+      requires_integration_test = true
+    end
+  end
+end
+exit(1) if requires_integration_test
+
+puts 'Skipping integration tests -- no relevant files modified'
