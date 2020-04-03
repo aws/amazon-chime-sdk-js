@@ -5,8 +5,10 @@ import React from 'react';
 import Button from '../../../../components/Button';
 import { useControllerDispatch, useControllerState } from '../../ControllerProvider';
 import { Type as actionType } from '../../../../room/containers/RoomProvider/reducer';
+import { IoTClient } from '../../../../IoTClient';
 
 const MeetingControls: React.FC = () => {
+  const iotClient = IoTClient.getInstance();
   const state = useControllerState();
   const dispatch = useControllerDispatch();
 
@@ -14,6 +16,7 @@ const MeetingControls: React.FC = () => {
     dispatch({
       type: state.isSharingLocalVideo ? actionType.StopLocalVideo : actionType.StartLocalVideo,
     });
+    iotClient.publish('iot/meeting/video/', "Device toggle video");
   };
 
   const toggleScreenShareViewTile = (): void => {
@@ -22,18 +25,21 @@ const MeetingControls: React.FC = () => {
         ? actionType.StopScreenShareView
         : actionType.StartScreenShareView,
     });
+    iotClient.publish('iot/meeting/screenShare/', "Device toggle screen share");
   };
 
   const leaveMeeting = (): void => {
     dispatch({
       type: actionType.LeaveMeeting,
     });
+    iotClient.publish('iot/meeting/leave/', "Device leaves meeting");
   };
 
   const endMeeting = (): void => {
     dispatch({
       type: actionType.EndMeeting,
     });
+    iotClient.publish('iot/meeting/end/', "Device ends meeting");
   };
 
   return (

@@ -30,6 +30,10 @@ module.exports = {
   resolve: {
     extensions: ['.webpack.js', '.web.js', '.ts', '.tsx', '.js'],
   },
+  node: {
+    fs: 'empty',
+    tls: 'empty'
+  },
   module: {
     rules: [
       {
