@@ -3,16 +3,6 @@ node_js:
 - 12
 git:
   depth: false
-before_install:
- - script/needs-integration-test || (sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)" LNK POP)
- - script/needs-integration-test || (test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv))
- - script/needs-integration-test || (test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile)
- - script/needs-integration-test || (echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile)
-install:
- - script/needs-integration-test || pip install --user awscli
- - script/needs-integration-test || brew tap aws/tap
- - script/needs-integration-test || brew install aws-sam-cli
- - script/needs-integration-test || ./integration/js/script/install-kite
 addons:
  sauce_connect:
    username: "chimesdk"
@@ -24,38 +14,49 @@ jobs:
     #Build and unit tests
     - stage: build
       if: (type = pull_request) OR (type = push AND branch != master)
-      before_install: skip
-      install: skip
       script: npm run build:release
       addons: skip
     #Integ test audio
     - stage: integ_audio
       if: (type = pull_request) OR (type = push AND branch != master)
-      script: script/needs-integration-test || npm run test:integration-audio
+      before_install: script/needs-integration-test || travis_terminate 0
+      install: integration/js/script/install-kite
+      script: npm run test:integration-audio
     #Integ test video
     - stage: integ_video
       if: (type = pull_request) OR (type = push AND branch != master)
-      script: script/needs-integration-test || npm run test:integration-video
+      before_install: script/needs-integration-test || travis_terminate 0
+      install: integration/js/script/install-kite
+      script: npm run test:integration-video
     #Integ test meeting leave & end
     - stage: integ_meeting_quit
       if: (type = pull_request) OR (type = push AND branch != master)
-      script: script/needs-integration-test || npm run test:integration-meeting-quit
+      before_install: script/needs-integration-test || travis_terminate 0
+      install: integration/js/script/install-kite
+      script: npm run test:integration-meeting-quit
     #Integ test app quit
     - stage: integ_app_quit
       if: (type = pull_request) OR (type = push AND branch != master)
-      script: script/needs-integration-test || npm run test:integration-app-quit
+      before_install: script/needs-integration-test || travis_terminate 0
+      install: integration/js/script/install-kite
+      script: npm run test:integration-app-quit
     #Integ test screen share
     - stage: integ_screen_share
       if: (type = pull_request) OR (type = push AND branch != master)
-      script: script/needs-integration-test || npm run test:integration-screen-share
+      before_install: script/needs-integration-test || travis_terminate 0
+      install: integration/js/script/install-kite
+      script: npm run test:integration-screen-share
     #Integ test content share
     - stage: integ_content_share
       if: (type = pull_request) OR (type = push AND branch != master)
-      script: script/needs-integration-test || npm run test:integration-content-share
+      before_install: script/needs-integration-test || travis_terminate 0
+      install: integration/js/script/install-kite
+      script: npm run test:integration-content-share
     #Deploy
     - stage: deploy
       script: skip
       addons: skip
+      install: script/travis-awscli-installation
       deploy:
         provider: script
         script: script/deploy-canary-demo
