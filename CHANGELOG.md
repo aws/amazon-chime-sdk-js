@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add device demo
 - Add base infrastucture for demo app in react
 - Add pricing link in README
+- Add an overview of API methods
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
