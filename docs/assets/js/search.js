@@ -13138,4 +13138,7 @@ var typedoc = typedoc || {};
 "classes":"tsd-kind-module"},
 {"id":3356,"kind":2,"name":"ContentShare",
 "url":"modules/contentshare.html",
+"classes":"tsd-kind-module"},
+{"id":3357,"kind":2,"name":"APIOverview",
+"url":"modules/apioverview.html",
 "classes":"tsd-kind-module"}]};

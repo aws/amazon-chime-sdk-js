@@ -1,0 +1,387 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>APIOverview | amazon-chime-sdk-js</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="apioverview.html">APIOverview</a>
+				</li>
+			</ul>
+			<h1>Module APIOverview</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#api-overview" id="api-overview" style="color: inherit; text-decoration: none;">
+							<h1>API Overview</h1>
+						</a>
+					</div>
+					<p>This guide gives an overview of the API methods you can use to create meeting with audio and video with a roster of attendees and basic controls. Several additional API methods that may be helpful are also described and marked optional.</p>
+					<a href="#1-create-a-session" id="1-create-a-session" style="color: inherit; text-decoration: none;">
+						<h2>1. Create a session</h2>
+					</a>
+					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html">MeetingSession</a> and its <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html#audiovideo">AudioVideoFacade</a> are the starting points for creating meetings. To create a meeting session, you will first need a <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/logger.html">Logger</a>, <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/devicecontrollerbasedmediastreambroker.html">DeviceController</a>, and <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html">MeetingSessionConfiguration</a>. The subsequent sections assume that you have created these four things.</p>
+					<a href="#1a-create-a-logger" id="1a-create-a-logger" style="color: inherit; text-decoration: none;">
+						<h3>1a. Create a logger</h3>
+					</a>
+					<p>Create a <a href="https://aws.github.io/amazon-chime-sdk-js/classes/consolelogger.html">ConsoleLogger</a> to log everything to the browser console. You can also implement the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/logger.html">Logger</a> interface to customize logging behavior.</p>
+					<pre><code><span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(`<span class="hljs-string">'MeetingLogs'</span>, LogLevel.INFO);`</code></pre>
+					<a href="#1b-create-a-device-controller" id="1b-create-a-device-controller" style="color: inherit; text-decoration: none;">
+						<h3>1b. Create a device controller</h3>
+					</a>
+					<p>Create a <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultdevicecontroller.html#constructor">DefaultDeviceController</a> and pass in the Logger you created. This object allows you to enumerate and select audio and video devices and control some of their features, even before the meeting session has been created.</p>
+					<pre><code>const deviceController = <span class="hljs-keyword">new</span> <span class="hljs-constructor">DefaultDeviceController(<span class="hljs-params">logger</span>)</span>;</code></pre>
+					<a href="#1c-create-a-meeting-session-configuration" id="1c-create-a-meeting-session-configuration" style="color: inherit; text-decoration: none;">
+						<h3>1c. Create a meeting session configuration</h3>
+					</a>
+					<p>Create a <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#constructor">MeetingSessionConfiguration</a> object with the responses to <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">chime:CreateMeeting</a> and <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">chime:CreateAttendee</a>. Your server application should make these API calls and securely pass the meeting and attendee responses to the browser client application.</p>
+					<pre><code>const configuration = <span class="hljs-keyword">new</span> <span class="hljs-constructor">MeetingSessionConfiguration(<span class="hljs-params">meetingResponse</span>, <span class="hljs-params">attendeeResponse</span>)</span>;</code></pre>
+					<a href="#1d-create-a-meeting-session" id="1d-create-a-meeting-session" style="color: inherit; text-decoration: none;">
+						<h3>1d. Create a meeting session</h3>
+					</a>
+					<p>Using the above objects, create a <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultmeetingsession.html#constructor">DefaultMeetingSession</a>.</p>
+					<pre><code>const meetingSession = <span class="hljs-keyword">new</span> <span class="hljs-constructor">DefaultMeetingSession(<span class="hljs-params">configuration</span>, <span class="hljs-params">logger</span>, <span class="hljs-params">deviceController</span>)</span>;</code></pre>
+					<a href="#2-configure-the-session" id="2-configure-the-session" style="color: inherit; text-decoration: none;">
+						<h2>2. Configure the session</h2>
+					</a>
+					<p>Before starting the meeting session, you should configure audio and video devices. By default, no devices are selected.</p>
+					<a href="#2a-configure-the-device-label-trigger-optional" id="2a-configure-the-device-label-trigger-optional" style="color: inherit; text-decoration: none;">
+						<h3>2a. Configure the device label trigger (optional)</h3>
+					</a>
+					<p>When obtaining devices to configure, the browser may initially decline to provide device labels due to privacy restrictions. However, without device labels the application user will not be able to select devices by name. When no labels are present, the device-label trigger is run. The default implementation of the device-label trigger requests permission to the mic and camera. If the user grants permission, the device labels will become available.</p>
+					<p>You can override the behavior of the device-label trigger by calling <code>meetingSession.audioVideo.[setDeviceLabelTrigger(trigger)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setdevicelabeltrigger)</code>.</p>
+					<a href="#2b-register-a-device-change-observer-optional" id="2b-register-a-device-change-observer-optional" style="color: inherit; text-decoration: none;">
+						<h3>2b. Register a device-change observer (optional)</h3>
+					</a>
+					<p>You can receive events about changes to available devices by implementing a <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/devicechangeobserver.html">DeviceChangeObserver</a> and registering the observer with the device controller.</p>
+					<p>To add a DeviceChangeObserver, call <code>deviceController.[addDeviceChangeObserver(observer)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#adddevicechangeobserver)</code>.</p>
+					<p>To remove a DeviceChangeObserver, call <code>deviceController.[removeDeviceChangeObserver(observer)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#removedevicechangeobserver)</code>.</p>
+					<p>You can implement the following callbacks:</p>
+					<ul>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/devicechangeobserver.html#audioinputschanged">audioInputsChanged</a>: occurs when audio inputs are changed</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/devicechangeobserver.html#audiooutputschanged">audioOutputsChanged</a>: occurs when audio outputs are changed</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/devicechangeobserver.html#videoinputschanged">videoInputsChanged</a>: occurs when video inputs are changed</li>
+					</ul>
+					<a href="#2c-configure-the-audio-input-device" id="2c-configure-the-audio-input-device" style="color: inherit; text-decoration: none;">
+						<h3>2c. Configure the audio input device</h3>
+					</a>
+					<p>To send audio to the remote attendees, list the available audio input devices and choose an input to use.</p>
+					<p>To retrieve a list of available audio input devices, call <code>meetingSession.audioVideo.[listAudioInputDevices()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listaudioinputdevices)</code>.</p>
+					<p>To use the chosen audio input device, call <code>meetingSession.audioVideo.[chooseAudioInputDevice(device)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#chooseaudioinputdevice)</code>.</p>
+					<a href="#2d-preview-microphone-volume-levels-optional" id="2d-preview-microphone-volume-levels-optional" style="color: inherit; text-decoration: none;">
+						<h3>2d. Preview microphone volume levels (optional)</h3>
+					</a>
+					<p>You can create a WebAudio <a href="https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode">AnalyserNode</a> from the current audio input to generate a display such as a mic indicator. This is useful for allowing attendees to preview their microphone volume level prior to joining the meeting.</p>
+					<p>To create the AnalyserNode, call <code>meetingSession.audioVideo.[createAnalyserNodeForAudioInput()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#createanalysernodeforaudioinput)</code>.</p>
+					<a href="#2e-configure-the-audio-output-device-optional" id="2e-configure-the-audio-output-device-optional" style="color: inherit; text-decoration: none;">
+						<h3>2e. Configure the audio output device (optional)</h3>
+					</a>
+					<p>On browsers that <a href="https://caniuse.com/#search=setSinkId">support setSinkId</a>, you can optionally list the available audio output devices and choose one to use.</p>
+					<p>To retrieve a list of available audio output devices, call <code>meetingSession.audioVideo.[listAudioOutputDevices()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listaudiooutputdevices)</code>.</p>
+					<p>To use the chosen audio output device, call <code>meetingSession.audioVideo.[chooseAudioOutputDevice(deviceId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#chooseaudiooutputdevice)</code>.</p>
+					<a href="#2f-bind-the-audio-output-to-an--element" id="2f-bind-the-audio-output-to-an--element" style="color: inherit; text-decoration: none;">
+						<h3>2f. Bind the audio output to an <audio> element</h3>
+					</a>
+					<p>To hear audio from the remote attendees, bind the audio output device to an HTMLAudioElement in the DOM. The element does not need to be visible; you can hide it with CSS style <code>display: none</code>.</p>
+					<p>To bind the chosen audio output device to a HTMLAudioElement, call <code>meetingSession.audioVideo.[bindAudioElement(element)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#bindaudioelement)</code>.</p>
+					<p>To unbind the chosen audio output device, call <code>meetingSession.audioVideo.[unbindAudioElement()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unbindaudioelement)</code>.</p>
+					<a href="#2g-configure-the-video-input-device" id="2g-configure-the-video-input-device" style="color: inherit; text-decoration: none;">
+						<h3>2g. Configure the video input device</h3>
+					</a>
+					<p>To send video to remote attendees, list the available video input devices, optionally select video quality settings, and choose a device to use.</p>
+					<p>To get a list of available video input devices, call <code>meetingSession.audioVideo.[listVideoInputDevices()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#listvideoinputdevices)</code>.</p>
+					<p>You can configure the quality of the video that is sent to the remote attendees by calling <code>meetingSession.audioVideo.[chooseVideoInputQuality(width, height, frameRate, maxBandwidthKbps)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputquality)</code>. The changes take effect the next time a video input device is chosen. The default quality is 960x540 @ 15 fps with a maximum uplink bandwidth of 1400 kbps. The maximum supported quality settings are 1280x720 @ 30 fps with a maximum uplink bandwidth of 2400 Kbps. Actual quality achieved may vary throughout the call depending on what the device, system, and network can provide.</p>
+					<p>To use the chosen video input device, call <code>meetingSession.audioVideo.[chooseVideoInputDevice(device)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputdevice)</code>.</p>
+					<a href="#2h-preview-local-camera-in-a--element-optional" id="2h-preview-local-camera-in-a--element-optional" style="color: inherit; text-decoration: none;">
+						<h3>2h. Preview local camera in a <video> element (optional)</h3>
+					</a>
+					<p>Before the session is started, you can start a preview of the video in an HTMLVideoElement in the DOM.</p>
+					<p>To start video preview, call <code>meetingSession.audioVideo.[startVideoPreviewForVideoInput(element)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#choosevideoinputdevice)</code>.</p>
+					<p>To stop video preview, call <code>meetingSession.audioVideo.[stopVideoPreviewForVideoInput(element)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopvideopreviewforvideoinput)</code>.</p>
+					<a href="#3-register-an-audio-video-observer" id="3-register-an-audio-video-observer" style="color: inherit; text-decoration: none;">
+						<h2>3. Register an audio-video observer</h2>
+					</a>
+					<p>You can receive audio and video events by implementing the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a> interface and registering the observer with the meeting session.</p>
+					<p>To add an AudioVideoObserver, call <code>meetingSession.audioVideo.[addObserver(observer)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addobserver)</code>.</p>
+					<p>To remove an AudioVideoObserver, call <code>meetingSession.audioVideo.[removeObserver(observer)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#removeobserver)</code>.</p>
+					<p>You should implement the following key observer callbacks:</p>
+					<ul>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstart">audioVideoDidStart</a>: occurs when the audio-video session finishes connecting</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstartconnecting">audioVideoDidStartConnecting</a>: occurs when the audio-video session is in the process of connecting or reconnecting</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#audiovideodidstop">audioVideoDidStop</a>: occurs when the audio-video session has disconnected. Use the provided <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html">MeetingSessionStatus</a> to determine why the session disconnected.</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a>: occurs when either a video stream is started or updated. Use the provided VideoTileState to determine the tile ID and the attendee ID of the video stream.</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a>: occurs when a video stream stops and the reference to the tile (the tile ID) is deleted</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoavailabilitydidchange">videoAvailabilityDidChange</a>: occurs video availability state has changed such as whether the attendee can start local video or whether remote video is available. See <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionvideoavailability.html">MeetingSessionVideoAvailability</a> for more information.</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable">videoSendDidBecomeUnavailable</a>: occurs when attendee tries to start video but the maximum video limit of 16 tiles has already been reached by other attendees sharing their video</li>
+					</ul>
+					<p>You may optionally listen to the following callbacks to monitor aspects of connection health:</p>
+					<ul>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidbecomepoor">connectionDidBecomePoor</a>: occurs when the connection has been poor for a while</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectiondidsuggeststopvideo">connectionDidSuggestStopVideo</a>: occurs when the connection has been poor while using video. You can use this to prompt the attendee to turn off video.</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#connectionhealthdidchange">connectionHealthDidChange</a>: occurs when connection health has changed</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired">estimatedDownlinkBandwidthLessThanRequired</a>: occurs when the total downlink video bandwidth estimation is less than the required video bitrate</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive">metricsDidReceive</a>: occurs periodically when WebRTC media stats are available</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata">videoNotReceivingEnoughData</a>: occurs when one or more remote video streams do not meet the expected average bitrate</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videoreceivebandwidthdidchange">videoReceiveBandwidthDidChange</a>: occurs when the available video receive bandwidth changed</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendbandwidthdidchange">videoSendBandwidthDidChange</a>: occurs when available video send bandwidth changed</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosendhealthdidchange">videoSendHealthDidChange</a>: occurs when the actual video send bitrate or packets-per-second changes</li>
+					</ul>
+					<a href="#4-start-and-stop-the-session" id="4-start-and-stop-the-session" style="color: inherit; text-decoration: none;">
+						<h2>4. Start and stop the session</h2>
+					</a>
+					<p>Call this API after doing pre-requisite configuration (See previous sections). Otherwise, there will not be working audio and video.</p>
+					<p>To start the meeting session, call <code>meetingSession.audioVideo.</code><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start"><code>start()</code></a>. This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.</p>
+					<p>To stop the meeting session, call <code>meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop)</code>.</p>
+					<a href="#5-build-a-roster-of-participants-using-the-real-time-api" id="5-build-a-roster-of-participants-using-the-real-time-api" style="color: inherit; text-decoration: none;">
+						<h2>5. Build a roster of participants using the real-time API</h2>
+					</a>
+					<p>Use the following methods to learn when attendees join and leave and when their volume level, mute state, or signal strength changes.</p>
+					<p>When implementing a real-time callback, you must ensure that it never throws an exception. To preserve privacy, uncaught exceptions inside a real-time callback are treated as fatal: the session is disconnected immediately.</p>
+					<p>Real-time volume indicator callbacks are called at a rate of 5 updates per second. Ensure that your application is able to smoothly render these updates to avoid causing unnecessary CPU load that could degrade the meeting experience.</p>
+					<p><em>If you are using Angular</em>, ensure that all calls to the SDK are run outside of the Angular zone. Otherwise, the real-time messages received via the signaling channel and their real-time callbacks may cause the DOM to thrash with updates and degrade performance.</p>
+					<a href="#5a-subscribe-to-attendee-presence-changes" id="5a-subscribe-to-attendee-presence-changes" style="color: inherit; text-decoration: none;">
+						<h3>5a. Subscribe to attendee presence changes</h3>
+					</a>
+					<p>To learn when attendees join or leave, subscribe to the attendee ID presence changes. The callback provides both the attendee ID and external user ID from <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">chime:CreateAttendee</a> so that you may map between the two IDs.</p>
+					<p>To subscribe to attendee presence changes, call <code>meetingSession.audioVideo.[realtimeSubscribeToAttendeeIdPresence(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetoattendeeidpresence)</code>.</p>
+					<p>To unsubscribe to attendee presence changes, call <code>meetingSession.audioVideo.[realtimeUnsubscribeToAttendeeIdPresence(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribetoattendeeidpresence)</code>.</p>
+					<a href="#5b-subscribe-to-volume-indicators" id="5b-subscribe-to-volume-indicators" style="color: inherit; text-decoration: none;">
+						<h3>5b. Subscribe to volume indicators</h3>
+					</a>
+					<p>To show speaker volume, mute state, and signal strength for each attendee, subscribe to volume indicators for each attendee ID. You should subscribe and unsubscribe to attendee volume indicators as part of the attendee ID presence callback.</p>
+					<p>Volume is on a scale of 0 to 1 (no volume to max volume). Signal strength is on a scale of 0 to 1 (full packet loss to no packet loss). You can use the signal strength of remote attendees to show an indication of whether an attendee is experiencing packet loss and thus may be unable to communicate at the moment.</p>
+					<p>To subscribe to an attendee’s volume indicator, call <code>meetingSession.audioVideo.[realtimeSubscribeToVolumeIndicator(attendeeId, callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetovolumeindicator)</code>.</p>
+					<p>To unsubscribe from an attendee’s volume indicator, call <code>meetingSession.audioVideo.[realtimeUnsubscribeFromVolumeIndicator(attendeeId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribefromvolumeindicator)</code>.</p>
+					<a href="#5c-signal-strength-change-optional" id="5c-signal-strength-change-optional" style="color: inherit; text-decoration: none;">
+						<h3>5c. Signal strength change (optional)</h3>
+					</a>
+					<p>To subscribe to the local attendee’s signal strength changes, call <code>meetingSession.audioVideo.[realtimeSubscribeToLocalSignalStrengthChange(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetolocalsignalstrengthchange)</code>.</p>
+					<p>To unsubscribe from the local attendee’s signal strength changes, call <code>meetingSession.audioVideo.[realtimeUnsubscribeToLocalSignalStrengthChange(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribetolocalsignalstrengthchange)</code>.</p>
+					<a href="#5d-subscribe-to-an-active-speaker-detector-optional" id="5d-subscribe-to-an-active-speaker-detector-optional" style="color: inherit; text-decoration: none;">
+						<h3>5d. Subscribe to an active-speaker detector (optional)</h3>
+					</a>
+					<p>If you are interested in detecting the active speaker (e.g. to display the active speaker’s video as a large, central tile), subscribe to the active-speaker detector with an active speaker policy such as the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultactivespeakerpolicy.html">DefaultActiveSpeakerPolicy</a>. You can receive updates when the list of active speakers changes. The list is ordered most active to least active. Active speaker policies use volume indicator changes to determine the prominence of each speaker over time.</p>
+					<p>To subscribe to active speaker updates, call <code>meetingSession.audioVideo.[subscribeToActiveSpeakerDetector(policy, callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#subscribetoactivespeakerdetector)</code>.</p>
+					<p>To unsubscribe from active speaker updates, call <code>meetingSession.audioVideo.[unsubscribeFromActiveSpeakerDetector(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unsubscribefromactivespeakerdetector)</code>.</p>
+					<a href="#6-mute-and-unmute-microphone-audio-with-the-real-time-api" id="6-mute-and-unmute-microphone-audio-with-the-real-time-api" style="color: inherit; text-decoration: none;">
+						<h2>6. Mute and unmute microphone audio with the real-time API</h2>
+					</a>
+					<p>Use the below real-time API methods to mute and unmute microphone audio. Mute is effective immediately and applied locally; no audio from the microphone will be transmitted to the server when muted.</p>
+					<p>When implementing a real-time callback, you must ensure that it never throws an exception. To preserve privacy, uncaught exceptions inside a real-time callback are treated as fatal: the session is disconnected immediately.</p>
+					<p>To ensure that attendee privacy is respected, pay close attention that the UI controls for mute are implemented properly with as direct a path possible to the mute and unmute methods. Use the real-time API to determine the current state of mute rather than keeping track of mute state yourself.</p>
+					<a href="#6a-mute-and-unmute-audio" id="6a-mute-and-unmute-audio" style="color: inherit; text-decoration: none;">
+						<h3>6a. Mute and unmute audio</h3>
+					</a>
+					<p>To mute the local attendee’s audio, call <code>meetingSession.audioVideo.[realtimeMuteLocalAudio()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimemutelocalaudio)</code>.</p>
+					<p>To unmute the local attendee’s audio, call <code>meetingSession.audioVideo.[realtimeUnmuteLocalAudio()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunmutelocalaudio)</code>.</p>
+					<p>To determine if the local attendee’s audio is muted, call <code>meetingSession.audioVideo.[realtimeIsLocalAudioMuted()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeislocalaudiomuted)</code>.</p>
+					<p>To subscribe to changes in the local attendee’s audio mute state, call <code>meetingSession.audioVideo.[realtimeSubscribeToMuteAndUnmuteLocalAudio(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetomuteandunmutelocalaudio)</code>.</p>
+					<p>To unsubscribe from changes in the local attendee’s audio mute state, call <code>meetingSession.audioVideo.[realtimeUnsubscribeToMuteAndUnmuteLocalAudio(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribetomuteandunmutelocalaudio)</code>.</p>
+					<a href="#6b-prevent-a-local-attendee-from-unmuting-audio-optional" id="6b-prevent-a-local-attendee-from-unmuting-audio-optional" style="color: inherit; text-decoration: none;">
+						<h3>6b. Prevent a local attendee from unmuting audio (optional)</h3>
+					</a>
+					<p>Depending on the type of meeting application you are building, you may want to temporarily prevent the local attendee from unmuting (e.g. to avoid disruption if someone is presenting). If so, use the methods below rather than keeping track of your own can-unmute state.</p>
+					<p>To set whether or not the local attendee can unmute, call <code>meetingSession.audioVideo.[realtimeSetCanUnmuteLocalAudio(canUnmute)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesetcanunmutelocalaudio)</code>.</p>
+					<p>To determine whether or not the local attendee can unmute, call <code>meetingSession.audioVideo.[realtimeCanUnmuteLocalAudio()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimecanunmutelocalaudio)</code>.</p>
+					<p>To subscribe to changes in whether or not the local attendee can unmute, call <code>meetingSession.audioVideo.[realtimeSubscribeToSetCanUnmuteLocalAudio(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetosetcanunmutelocalaudio)</code>.</p>
+					<p>To unsubscribe from changes in whether or not the local attendee can unmute, call <code>meetingSession.audioVideo.[realtimeUnsubscribeToSetCanUnmuteLocalAudio(callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribetosetcanunmutelocalaudio)</code>.</p>
+					<a href="#7-share-and-display-video" id="7-share-and-display-video" style="color: inherit; text-decoration: none;">
+						<h2>7. Share and display video</h2>
+					</a>
+					<p>A video tile is a binding of four key things: a tile ID, an attendee ID, that attendee’s video stream, and an HTMLVideoElement in the DOM. If all those things are present, the video tile is said to be active, and the video element displays video.</p>
+					<p>Local video is automatically displayed horizontally-mirrored by convention.</p>
+					<a href="#7a-share-local-video" id="7a-share-local-video" style="color: inherit; text-decoration: none;">
+						<h3>7a. Share local video</h3>
+					</a>
+					<p>After choosing the video input and starting the meeting session, you can share the local attendee’s video with remote attendees.</p>
+					<p>To start sharing video with others, call <code>meetingSession.audioVideo.[startLocalVideoTile()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startlocalvideotile)</code>.</p>
+					<p>To stop sharing video with others, call <code>meetingSession.audioVideo.[stopLocalVideoTile()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stoplocalvideotile)</code>.</p>
+					<a href="#7b-display-local-and-remote-video" id="7b-display-local-and-remote-video" style="color: inherit; text-decoration: none;">
+						<h3>7b. Display local and remote video</h3>
+					</a>
+					<p>You are responsible for maintaining HTMLVideoElement objects in the DOM and arranging their layout within the web page. To display a video, you must handle the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a> callbacks in an <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a>. In the implementation of <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a>, bind the tile ID from the provided VideoTileState with the HTMLVideoElement in your DOM by calling <code>meetingSession.audioVideo.[bindVideoElement(tileId, videoElement)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#bindvideoelement)</code>.</p>
+					<p>To unbind a tile, call <code>meetingSession.audioVideo.[unbindVideoElement(tileId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unbindvideoelement)</code>.</p>
+					<a href="#7c-pause-and-unpause-video-optional" id="7c-pause-and-unpause-video-optional" style="color: inherit; text-decoration: none;">
+						<h3>7c. Pause and unpause video (optional)</h3>
+					</a>
+					<p>Video tiles may be paused individually. The server will not send paused video streams to the attendee requesting the pause. Pausing video does not affect remote attendees.</p>
+					<p>To pause video, call <code>meetingSession.audioVideo.</code><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile"><code>pauseVideoTile(tileId)</code></a>.</p>
+					<p>To resume a paused video, call <code>meetingSession.audioVideo.[unpauseVideoTile(tileId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unpausevideotile)</code>.</p>
+					<a href="#7d-find-video-tiles-optional" id="7d-find-video-tiles-optional" style="color: inherit; text-decoration: none;">
+						<h3>7d. Find video tiles (optional)</h3>
+					</a>
+					<p>Aside from the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a> callbacks in an <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a>, video tile information can be gathered from the following methods.</p>
+					<p>To get all video tiles, call <code>meetingSession.audioVideo.[getAllVideoTiles()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#getallvideotiles)</code>.</p>
+					<p>To get all remote attendees’ video tiles, call <code>meetingSession.audioVideo.[getAllRemoteVideoTiles()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#getallremotevideotiles)</code>.</p>
+					<p>To get the local attendee’s video tile, call <code>meetingSession.audioVideo.[getLocalVideoTile()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#getlocalvideotile)</code>.</p>
+					<p>To get a video tile, call <code>meetingSession.audioVideo.[getVideoTile(tileId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#getvideotile)</code>.</p>
+					<a href="#8-share-screen-and-other-content-optional" id="8-share-screen-and-other-content-optional" style="color: inherit; text-decoration: none;">
+						<h2>8. Share screen and other content (optional)</h2>
+					</a>
+					<p>You can share any <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a>, such as from a screen capture or media file, as the content share for an attendee. When a content share is started, another attendee with the attendee ID <code>&lt;attendee-id&gt;#content</code> joins the meeting. The content audio and video appears like a regular attendee. You can subscribe to its volume indicator to show it in the roster and bind its video tile to a video element the same as you would for a regular attendee.</p>
+					<p>Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares.</p>
+					<a href="#8a-start-and-stop-the-content-share" id="8a-start-and-stop-the-content-share" style="color: inherit; text-decoration: none;">
+						<h3>8a. Start and stop the content share</h3>
+					</a>
+					<p>To start the content share, call <code>meetingSession.audioVideo.[startContentShare(stream)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare)</code>.</p>
+					<p>To start sharing screen as a content share, call <code>meetingSession.audioVideo.[startContentShareFromScreenCapture(sourceId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentsharefromscreencapture)</code>.</p>
+					<p>To stop the content share, call <code>meetingSession.audioVideo.[stopContentShare()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopcontentshare)</code>.</p>
+					<p>To pause content share, call <code>meetingSession.audioVideo.[pauseContentShare()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausecontentshare)</code>.</p>
+					<p>To resume content share, call <code>meetingSession.audioVideo.[unpauseContentShare()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unpausecontentshare)</code>.</p>
+					<a href="#8b-register-a-content-share-observer" id="8b-register-a-content-share-observer" style="color: inherit; text-decoration: none;">
+						<h3>8b. Register a content share observer</h3>
+					</a>
+					<p>You can receive events about the content share by implementing a <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html">ContentShareObserver</a> and adding the observer to the meeting session.</p>
+					<p>To add a ContentShareObserver, call <code>meetingSession.audioVideo.</code><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addcontentshareobserver"><code>addContentShareObserver(observer)</code></a>.</p>
+					<p>To remove a ContentShareObserver, call <code>meetingSession.audioVideo.[removeContentShareObserver(observer)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#removecontentshareobserver)</code>.</p>
+					<p>You can implement the following callbacks:</p>
+					<ul>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html#contentsharedidstart">contentShareDidStart</a>: occurs when a content share session is started</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html#contentsharedidstop">contentShareDidStop</a>: occurs when a content share session is stopped</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html#contentsharedidpause">contentShareDidPause</a>: occurs when a content share session is paused</li>
+						<li><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html#contentsharedidunpause">contentShareDidUnpause</a>: occurs when a content share session is resumed</li>
+					</ul>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=API%20Overview%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

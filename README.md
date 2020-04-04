@@ -27,6 +27,7 @@ And review the following guides:
 
 * [Getting Started](https://aws.github.io/amazon-chime-sdk-js/modules/gettingstarted.html)
 * [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html)
+* [API Overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html)
 
 ### Prerequisites
 
