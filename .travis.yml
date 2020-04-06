@@ -20,37 +20,49 @@ jobs:
     - stage: integ_audio
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
-      install: integration/js/script/install-kite
+      install:
+        - script/travis-awscli-installation
+        - integration/js/script/install-kite
       script: npm run test:integration-audio
     #Integ test video
     - stage: integ_video
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
-      install: integration/js/script/install-kite
+      install:
+        - script/travis-awscli-installation
+        - integration/js/script/install-kite
       script: npm run test:integration-video
     #Integ test meeting leave & end
     - stage: integ_meeting_quit
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
-      install: integration/js/script/install-kite
+      install:
+        - script/travis-awscli-installation
+        - integration/js/script/install-kite
       script: npm run test:integration-meeting-quit
     #Integ test app quit
     - stage: integ_app_quit
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
-      install: integration/js/script/install-kite
+      install:
+        - script/travis-awscli-installation
+        - integration/js/script/install-kite
       script: npm run test:integration-app-quit
     #Integ test screen share
     - stage: integ_screen_share
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
-      install: integration/js/script/install-kite
+      install:
+        - script/travis-awscli-installation
+        - integration/js/script/install-kite
       script: npm run test:integration-screen-share
     #Integ test content share
     - stage: integ_content_share
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
-      install: integration/js/script/install-kite
+      install:
+        - script/travis-awscli-installation
+        - integration/js/script/install-kite
       script: npm run test:integration-content-share
     #Deploy
     - stage: deploy
