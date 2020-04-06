@@ -1,6 +1,7 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
@@ -75,6 +76,11 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.protocolVersion = 2;
     joinFrame.maxNumOfVideos = settings.maxVideos;
     joinFrame.flags = SdkJoinFlags.HAS_STREAM_UPDATE;
+    // Only Chrome currently supports the new send side bandwidth estimation
+    const browserBehavior = new DefaultBrowserBehavior();
+    if (browserBehavior.hasChromiumWebRTC()) {
+      joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
+    }
     joinFrame.flags |= settings.sendBitrates ? SdkJoinFlags.SEND_BITRATES : 0;
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;

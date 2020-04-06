@@ -314,7 +314,8 @@ export class SdkErrorFrame implements ISdkErrorFrame {
 /** SdkJoinFlags enum. */
 export enum SdkJoinFlags {
     SEND_BITRATES = 1,
-    HAS_STREAM_UPDATE = 2
+    HAS_STREAM_UPDATE = 2,
+    USE_SEND_SIDE_BWE = 8
 }
 
 /** Properties of a SdkClientDetails. */
