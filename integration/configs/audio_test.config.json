@@ -18,11 +18,6 @@
   ],
   "clients": [
     {
-      "browserName": "firefox",
-      "version": "70",
-      "platform": "MAC"
-    },
-    {
       "browserName": "chrome",
       "version": "78",
       "platform": "MAC"
