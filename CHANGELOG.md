@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Enabled the use of send-side bandwidth estimation
 - Add guide for content sharing
 - Display meeting id in the demo app
 - Add additional callback in AudioVideoObserver to indicate video downlink pressure

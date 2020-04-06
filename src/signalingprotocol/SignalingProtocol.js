@@ -1006,11 +1006,13 @@ $root.SdkErrorFrame = (function() {
  * @enum {string}
  * @property {number} SEND_BITRATES=1 SEND_BITRATES value
  * @property {number} HAS_STREAM_UPDATE=2 HAS_STREAM_UPDATE value
+ * @property {number} USE_SEND_SIDE_BWE=8 USE_SEND_SIDE_BWE value
  */
 $root.SdkJoinFlags = (function() {
     var valuesById = {}, values = Object.create(valuesById);
     values[valuesById[1] = "SEND_BITRATES"] = 1;
     values[valuesById[2] = "HAS_STREAM_UPDATE"] = 2;
+    values[valuesById[3] = "USE_SEND_SIDE_BWE"] = 8;
     return values;
 })();
 
