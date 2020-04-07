@@ -14,6 +14,25 @@ import DOMMockBuilder from '../dommock/DOMMockBuilder';
 describe('ContentShareMediaStreamBroker', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const behavior = new DOMMockBehavior();
+  const defaultStreamConstraints: MediaStreamConstraints = {
+    audio: false,
+    video: {
+      frameRate: {
+        max: 15,
+      },
+    },
+  };
+  const defaultElectronStreamConstraints: MediaStreamConstraints = {
+    audio: false,
+    video: {
+      // @ts-ignore
+      mandatory: {
+        chromeMediaSource: 'desktop',
+        chromeMediaSourceId: 'sourceId',
+        maxFrameRate: 15,
+      },
+    },
+  };
 
   let contentShareMediaStreamBroker: ContentShareMediaStreamBroker;
   let noOpLogger: NoOpLogger;
@@ -96,9 +115,8 @@ describe('ContentShareMediaStreamBroker', () => {
       const mediaDevices = navigator.mediaDevices;
       // @ts-ignore
       const getDisplayMediaSpy = sinon.spy(mediaDevices, 'getDisplayMedia');
-      const streamConstrait: MediaStreamConstraints = { video: true };
-      await contentShareMediaStreamBroker.acquireDisplayInputStream(streamConstrait);
-      getDisplayMediaSpy.calledOnceWith(streamConstrait);
+      await contentShareMediaStreamBroker.acquireDisplayInputStream(defaultStreamConstraints);
+      expect(getDisplayMediaSpy.calledWith(sinon.match(defaultStreamConstraints))).to.be.true;
     });
 
     it('getUserMedia if electron', async () => {
@@ -106,19 +124,10 @@ describe('ContentShareMediaStreamBroker', () => {
       const mediaDevices = navigator.mediaDevices;
       // @ts-ignore
       const getUserMedia = sinon.spy(mediaDevices, 'getUserMedia');
-      const streamConstrait: MediaStreamConstraints = {
-        audio: false,
-        video: {
-          // @ts-ignore
-          mandatory: {
-            chromeMediaSource: 'desktop',
-            chromeMediaSourceId: 'sourceId',
-            maxFrameRate: 3,
-          },
-        },
-      };
-      await contentShareMediaStreamBroker.acquireDisplayInputStream(streamConstrait);
-      getUserMedia.calledOnceWith(streamConstrait);
+      await contentShareMediaStreamBroker.acquireDisplayInputStream(
+        defaultElectronStreamConstraints
+      );
+      expect(getUserMedia.calledWith(sinon.match(defaultElectronStreamConstraints))).to.be.true;
     });
   });
 
@@ -126,13 +135,44 @@ describe('ContentShareMediaStreamBroker', () => {
     it('with source Id', async () => {
       const spy = sinon.spy(contentShareMediaStreamBroker, 'acquireDisplayInputStream');
       await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream('sourceId');
-      spy.calledOnceWith(sinon.match.any);
+      expect(spy.calledWith(sinon.match(defaultElectronStreamConstraints))).to.be.true;
     });
 
     it('without source Id', async () => {
       const spy = sinon.spy(contentShareMediaStreamBroker, 'acquireDisplayInputStream');
-      await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream('sourceId');
-      spy.calledOnceWith(sinon.match.any);
+      await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream();
+      expect(spy.calledWith(sinon.match(defaultStreamConstraints))).to.be.true;
+    });
+
+    it('with non-default framerate', async () => {
+      const streamConstraints: MediaStreamConstraints = {
+        audio: false,
+        video: {
+          frameRate: {
+            max: 30,
+          },
+        },
+      };
+      const spy = sinon.spy(contentShareMediaStreamBroker, 'acquireDisplayInputStream');
+      await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream(null, 30);
+      expect(spy.calledWith(sinon.match(streamConstraints))).to.be.true;
+    });
+
+    it('with sourceId and non-default framerate', async () => {
+      const streamConstraints: MediaStreamConstraints = {
+        audio: false,
+        video: {
+          // @ts-ignore
+          mandatory: {
+            chromeMediaSource: 'desktop',
+            chromeMediaSourceId: 'sourceId',
+            maxFrameRate: 30,
+          },
+        },
+      };
+      const spy = sinon.spy(contentShareMediaStreamBroker, 'acquireDisplayInputStream');
+      await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream('sourceId', 30);
+      expect(spy.calledWith(sinon.match(streamConstraints))).to.be.true;
     });
   });
 

@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change the cloudwatch log message format
 - Only run integration tests if files on watchlist were modified
 - Temporarily only run test in Chrome for Travis integration tests
+- Allow content share frame rate to be configurable
 
 ### Removed
 - Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver

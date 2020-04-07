@@ -7,6 +7,7 @@ import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 
 export default class ContentShareMediaStreamBroker implements MediaStreamBroker {
+  private static defaultFrameRate = 15;
   private _mediaStream: MediaStream;
 
   constructor(private logger: Logger) {}
@@ -56,24 +57,32 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     throw new Error('unsupported');
   }
 
-  async acquireScreenCaptureDisplayInputStream(sourceId?: string): Promise<MediaStream> {
-    return this.acquireDisplayInputStream(this.screenCaptureDisplayMediaConstraints(sourceId));
+  async acquireScreenCaptureDisplayInputStream(
+    sourceId?: string,
+    frameRate?: number
+  ): Promise<MediaStream> {
+    return this.acquireDisplayInputStream(
+      this.screenCaptureDisplayMediaConstraints(sourceId, frameRate)
+    );
   }
 
-  private screenCaptureDisplayMediaConstraints(sourceId?: string): MediaStreamConstraints {
+  private screenCaptureDisplayMediaConstraints(
+    sourceId?: string,
+    frameRate?: number
+  ): MediaStreamConstraints {
     return {
       audio: false,
       video: {
         ...(!sourceId && {
           frameRate: {
-            max: 3,
+            max: frameRate ? frameRate : ContentShareMediaStreamBroker.defaultFrameRate,
           },
         }),
         ...(sourceId && {
           mandatory: {
             chromeMediaSource: 'desktop',
             chromeMediaSourceId: sourceId,
-            maxFrameRate: 3,
+            maxFrameRate: frameRate ? frameRate : ContentShareMediaStreamBroker.defaultFrameRate,
           },
         }),
       },

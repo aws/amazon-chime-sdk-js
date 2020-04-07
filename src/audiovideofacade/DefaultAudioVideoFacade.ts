@@ -366,8 +366,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     return result;
   }
 
-  startContentShareFromScreenCapture(sourceId?: string): Promise<void> {
-    const result = this.contentShareController.startContentShareFromScreenCapture(sourceId);
+  startContentShareFromScreenCapture(sourceId?: string, frameRate?: number): Promise<void> {
+    const result = this.contentShareController.startContentShareFromScreenCapture(
+      sourceId,
+      frameRate
+    );
     this.trace('startContentShareFromScreenCapture');
     return result;
   }
