@@ -2,6 +2,7 @@ const {KiteBaseTest, TestUtils} = require('../node_modules/kite-common');
 const {AllureTestReport} = require('../node_modules/kite-common/report');
 const {SaucelabsSession} = require('./WebdriverSauceLabs');
 const {BrowserStackSession} = require('./WebdriverBrowserStack');
+const {LocalSession} = require('./WebdriverLocal');
 const {emitMetric} = require('./CloudWatch');
 const uuidv4 = require('uuid/v4');
 const fs = require('fs');
@@ -96,6 +97,9 @@ class SdkBaseTest extends KiteBaseTest {
   async createSeleniumSession(capabilities) {
     if (process.env.SELENIUM_GRID_PROVIDER === "browserstack") {
       const session = await BrowserStackSession.createSession(capabilities);
+      return session;
+    } else if (process.env.SELENIUM_GRID_PROVIDER === "local") {
+      const session = await LocalSession.createSession(capabilities, this.remoteUrl);
       return session;
     } else {
       const invalidSessionIdRegEx = new RegExp(/^new_request:/);

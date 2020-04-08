@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add pricing link in README
 - Add an overview of API methods
 - Add IoT integration to device demo
+- Add option to run integration tests locally
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
