@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver
 - Remove the minimal demo app
+- Removed incomplete demo and component directories
 
 ### Fixed
 - Fix retry logic for integration test
