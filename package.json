@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "1.2.22",
+  "version": "1.2.23",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -39,7 +39,6 @@
     "@fluffy-spoon/substitute": "^1.89.0",
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
-    "@types/dom-mediacapture-record": "^1.0.1",
     "@types/mocha": "^5.2.6",
     "@types/sinon": "^7.0.12",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
@@ -63,6 +62,7 @@
     "typescript": "^3.4.5"
   },
   "dependencies": {
+    "@types/dom-mediacapture-record": "^1.0.4",
     "detect-browser": "^4.7.0",
     "protobufjs": "~6.8.8",
     "resize-observer": "^1.0.0"
