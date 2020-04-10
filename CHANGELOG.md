@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add an overview of API methods
 - Add IoT integration to device demo
 - Add option to run integration tests locally
+- Add the use case guide
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only run integration tests if files on watchlist were modified
 - Temporarily only run test in Chrome for Travis integration tests
 - Allow content share frame rate to be configurable
+- Move demo guides to demo folders
 
 ### Removed
 - Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver
