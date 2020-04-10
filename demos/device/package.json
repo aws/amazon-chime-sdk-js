@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "amazon-chime-sdk-js": "file:../..",
     "@types/aws-iot-device-sdk": "^2.1.x",
     "@types/aws-sdk": "^2.7.0",
+    "amazon-chime-sdk-js": "file:../..",
+    "aws-iot-device-sdk": "^2.2.4",
     "aws-sdk": "^2.622.0",
-    "aws-iot-device-sdk": "^2.2.3",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
