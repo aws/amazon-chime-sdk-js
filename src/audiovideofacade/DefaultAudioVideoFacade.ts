@@ -16,6 +16,9 @@ import RealtimeController from '../realtimecontroller/RealtimeController';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 
+// Flip this to `true` if you want lots of TRACE-level output logged at DEBUG.
+const TRACE_AS_DEBUG: boolean = false;
+
 export default class DefaultAudioVideoFacade implements AudioVideoFacade {
   constructor(
     private audioVideoController: AudioVideoController,
@@ -402,6 +405,10 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private trace(name: string, input?: any, output?: any): void {
+    if (!TRACE_AS_DEBUG) {
+      return;
+    }
+
     const meetingId = this.audioVideoController.configuration.meetingId;
     const attendeeId = this.audioVideoController.configuration.credentials.attendeeId;
     let s = `API/DefaultAudioVideoFacade/${meetingId}/${attendeeId}/${name}`;
@@ -411,6 +418,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     if (typeof output !== 'undefined') {
       s += ` -> ${JSON.stringify(output)}`;
     }
-    this.audioVideoController.logger.info(s);
+
+    this.audioVideoController.logger.debug(s);
   }
 }
