@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue in Travis script that prevents integration tests from running
 - Fix markdown formatting with backticks in API overview
 - Fix an issue that a dev dependnecy @types/dom-mediacapture-record is not getting installed
+- Fix typo in README.md file
 
 ## [1.2.1] - 2020-03-20
 
