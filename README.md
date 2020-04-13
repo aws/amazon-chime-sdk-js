@@ -32,7 +32,7 @@ And review the following guides:
 ## Examples
 
 - [Meeting demo](demos/browser) - A browser meeting application with a local server
-- [Serverelss meeting demo](demos/serverless) - A self-contained serverless meeting application
+- [Serverless meeting demo](demos/serverless) - A self-contained serverless meeting application
 - [Video help desk](demos/videohelpdesk) - A widget to allow a customer to make a video call to a help desk
 - [Single JS script](demos/singlejs) - A Rollup script to bundle SDK into a single `.js` file
 - [Recording demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) - Recording the meeting's audio, video and screen share in high definition
