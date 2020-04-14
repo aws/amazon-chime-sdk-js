@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade dependency aws-iot-device-sdk version
 - Add externalUserId to the tile properties
 - Add post publish script
+- Add feature flag to enable WebRTC Unified Plan for Chromium-based browsers
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM

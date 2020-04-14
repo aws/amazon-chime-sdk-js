@@ -9,6 +9,8 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
@@ -71,6 +73,7 @@ describe('MonitorTask', () => {
   const assert: Chai.AssertStatic = chai.assert;
   const behavior = new DOMMockBehavior();
   const logger = new NoOpDebugLogger();
+  const browserBehavior = new DefaultBrowserBehavior();
 
   let task: MonitorTask;
   let context: AudioVideoControllerState;
@@ -118,8 +121,12 @@ describe('MonitorTask', () => {
   }
 
   class TestStatsCollector extends DefaultStatsCollector {
-    constructor(audioVideoController: AudioVideoController, logger: Logger) {
-      super(audioVideoController, logger);
+    constructor(
+      audioVideoController: AudioVideoController,
+      logger: Logger,
+      browserBehavior: BrowserBehavior
+    ) {
+      super(audioVideoController, logger, browserBehavior);
     }
     start(): boolean {
       return false;
@@ -146,7 +153,11 @@ describe('MonitorTask', () => {
     );
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
-    context.statsCollector = new DefaultStatsCollector(context.audioVideoController, logger);
+    context.statsCollector = new DefaultStatsCollector(
+      context.audioVideoController,
+      logger,
+      browserBehavior
+    );
     context.reconnectController = new DefaultReconnectController(
       RECONNECT_TIMEOUT_MS,
       new FullJitterBackoff(
@@ -157,7 +168,11 @@ describe('MonitorTask', () => {
     );
     context.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
     context.connectionMonitor = new TestConnectionMonitor();
-    context.statsCollector = new TestStatsCollector(context.audioVideoController, logger);
+    context.statsCollector = new TestStatsCollector(
+      context.audioVideoController,
+      logger,
+      browserBehavior
+    );
 
     context.signalingClient = new DefaultSignalingClient(
       new DefaultWebSocketAdapter(context.logger),

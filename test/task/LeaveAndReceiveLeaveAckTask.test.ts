@@ -1,10 +1,12 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClient from '../../src/signalingclient/SignalingClient';
@@ -30,6 +32,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
   let signalingClient: SignalingClient;
   let leaveAckBuffer: Uint8Array;
   let request: SignalingClientConnectionRequest;
+  const browser: BrowserBehavior = new DefaultBrowserBehavior();
 
   function makeLeaveAckFrame(): Uint8Array {
     const frame = SdkLeaveAckFrame.create();
@@ -48,7 +51,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
     domMockBuilder = new DOMMockBuilder(behavior);
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
-    context.transceiverController = new DefaultTransceiverController(context.logger);
+    context.transceiverController = new DefaultTransceiverController(context.logger, browser);
     context.logger = context.audioVideoController.logger;
     webSocketAdapter = new DefaultWebSocketAdapter(context.logger);
     signalingClient = new DefaultSignalingClient(webSocketAdapter, context.logger);

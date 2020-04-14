@@ -29,6 +29,13 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   };
 
   private chromeLike: string[] = ['chrome', 'edge-chromium', 'chromium-webview', 'opera'];
+  private enableUnifiedPlanForChromiumBasedBrowsers: boolean;
+
+  constructor({
+    enableUnifiedPlanForChromiumBasedBrowsers = false,
+  }: { enableUnifiedPlanForChromiumBasedBrowsers?: boolean } = {}) {
+    this.enableUnifiedPlanForChromiumBasedBrowsers = enableUnifiedPlanForChromiumBasedBrowsers;
+  }
 
   version(): string {
     return this.browser.version;
@@ -60,7 +67,11 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresUnifiedPlan(): boolean {
-    return this.isSafari() || this.isFirefox();
+    let shouldEnable = this.isSafari() || this.isFirefox();
+    if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
+      shouldEnable = shouldEnable || this.hasChromiumWebRTC();
+    }
+    return shouldEnable;
   }
 
   requiresCheckForSdpConnectionAttributes(): boolean {
@@ -72,15 +83,15 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresUnifiedPlanMunging(): boolean {
-    return this.isSafari();
+    let shouldRequire = this.isSafari();
+    if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
+      shouldRequire = shouldRequire || this.hasChromiumWebRTC();
+    }
+    return shouldRequire;
   }
 
   requiresBundlePolicy(): RTCBundlePolicy {
-    if (this.isSafari() || this.isFirefox()) {
-      return 'max-bundle';
-    } else {
-      return 'balanced';
-    }
+    return 'max-bundle';
   }
 
   requiresPromiseBasedWebRTCGetStats(): boolean {

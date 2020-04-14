@@ -46,6 +46,8 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.eq(true);
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(false);
     });
 
     it('can detect Chrome', () => {
@@ -54,7 +56,28 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(78);
-      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      const enableUnifiedPlan = true;
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.eq(false);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.eq(false);
     });
 
     it('can detect Edge Chromium', () => {
@@ -63,7 +86,28 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(79);
-      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('balanced');
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      const enableUnifiedPlan = true;
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.eq(false);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.eq(false);
     });
 
     it('can detect Safari', () => {
@@ -73,6 +117,27 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      const enableUnifiedPlan = true;
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.eq(true);
 
       setUserAgent(SAFARI12_USERAGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');

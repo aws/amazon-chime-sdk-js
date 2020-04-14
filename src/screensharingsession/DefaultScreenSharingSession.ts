@@ -1,6 +1,7 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
@@ -31,7 +32,7 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
     private screenShareStreamFactory: ScreenShareStreamFactory,
     private mediaRecordingFactory: MediaRecordingFactory,
     private logger: Logger,
-    private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior()
+    private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior()
   ) {
     this.webSocket.addEventListener('message', (event: MessageEvent) => {
       this.didReceiveMessageEvent(event);

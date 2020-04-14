@@ -178,7 +178,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this.connectionHealthData.reset();
     this.meetingSessionContext = new AudioVideoControllerState();
     this.meetingSessionContext.logger = this.logger;
-    this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
+    this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior({
+      enableUnifiedPlanForChromiumBasedBrowsers: this.configuration
+        .enableUnifiedPlanForChromiumBasedBrowsers,
+    });
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
       this._webSocketAdapter,
@@ -189,7 +192,8 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this.meetingSessionContext.audioMixController = this._audioMixController;
     this.meetingSessionContext.audioVideoController = this;
     this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
-      this.logger
+      this.logger,
+      this.meetingSessionContext.browserBehavior
     );
     this.meetingSessionContext.volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
       this.logger,
@@ -215,7 +219,11 @@ export default class DefaultAudioVideoController implements AudioVideoController
     );
     this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
     this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
-    this.meetingSessionContext.statsCollector = new DefaultStatsCollector(this, this.logger);
+    this.meetingSessionContext.statsCollector = new DefaultStatsCollector(
+      this,
+      this.logger,
+      this.meetingSessionContext.browserBehavior
+    );
     this.meetingSessionContext.connectionMonitor = new SignalingAndMetricsConnectionMonitor(
       this,
       this._realtimeController,

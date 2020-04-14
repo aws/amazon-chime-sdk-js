@@ -1,8 +1,7 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import BrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
-import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import Logger from '../logger/Logger';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
@@ -14,9 +13,8 @@ export default class DefaultTransceiverController implements TransceiverControll
   private videoSubscriptions: number[] = [];
   private defaultMediaStream: MediaStream | null = null;
   private peer: RTCPeerConnection | null = null;
-  private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior();
 
-  constructor(private logger: Logger) {}
+  constructor(private logger: Logger, private browserBehavior: BrowserBehavior) {}
 
   static async setVideoSendingBitrateKbpsForSender(
     sender: RTCRtpSender,

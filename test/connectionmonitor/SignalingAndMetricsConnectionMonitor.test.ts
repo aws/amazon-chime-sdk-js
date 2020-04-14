@@ -5,6 +5,8 @@ import * as chai from 'chai';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/SignalingAndMetricsConnectionMonitor';
@@ -22,6 +24,7 @@ import DOMMockBuilder from '../dommock/DOMMockBuilder';
 type RawMetrics = any;
 
 describe('SignalingAndMetricsConnectionMonitor', () => {
+  const browser: BrowserBehavior = new DefaultBrowserBehavior();
   let domMockBuilder: DOMMockBuilder;
   let audioVideoController: NoOpAudioVideoController;
   let realTimeController: DefaultRealtimeController;
@@ -148,7 +151,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
       videoTileController,
       connectionHealthData,
       new TestPingPong(),
-      new DefaultStatsCollector(audioVideoController, new NoOpDebugLogger())
+      new DefaultStatsCollector(audioVideoController, new NoOpDebugLogger(), browser)
     );
     connectionMonitor.start();
     testClientMetricReport = new TestClientMetricReport();

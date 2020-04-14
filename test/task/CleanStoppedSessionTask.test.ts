@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -8,6 +8,8 @@ import AudioVideoController from '../../src/audiovideocontroller/AudioVideoContr
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
 import Logger from '../../src/logger/Logger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
@@ -34,6 +36,7 @@ describe('CleanStoppedSessionTask', () => {
   const RECONNECT_SHORT_BACKOFF_MS = 1 * 1000;
   const RECONNECT_LONG_BACKOFF_MS = 5 * 1000;
   const behavior = new DOMMockBehavior();
+  const browserBehavior = new DefaultBrowserBehavior();
 
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder | null = null;
@@ -43,8 +46,12 @@ describe('CleanStoppedSessionTask', () => {
   let request: SignalingClientConnectionRequest;
 
   class TestStatsCollector extends DefaultStatsCollector {
-    constructor(audioVideoController: AudioVideoController, logger: Logger) {
-      super(audioVideoController, logger);
+    constructor(
+      audioVideoController: AudioVideoController,
+      logger: Logger,
+      browser: BrowserBehavior
+    ) {
+      super(audioVideoController, logger, browser);
     }
     start(): boolean {
       return false;
@@ -65,9 +72,16 @@ describe('CleanStoppedSessionTask', () => {
     context.realtimeController = context.audioVideoController.realtimeController;
     context.videoTileController = context.audioVideoController.videoTileController;
     context.mediaStreamBroker = new NoOpMediaStreamBroker();
-    context.statsCollector = new TestStatsCollector(context.audioVideoController, context.logger);
+    context.statsCollector = new TestStatsCollector(
+      context.audioVideoController,
+      context.logger,
+      browserBehavior
+    );
     context.connectionMonitor = new TestConnectionMonitor();
-    context.transceiverController = new DefaultTransceiverController(context.logger);
+    context.transceiverController = new DefaultTransceiverController(
+      context.logger,
+      browserBehavior
+    );
     context.videoTileController = new DefaultVideoTileController(
       new DefaultVideoTileFactory(),
       context.audioVideoController,

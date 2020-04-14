@@ -49,7 +49,11 @@ describe('AttachMediaInputTask', () => {
       iceTransportPolicy: 'relay',
     };
     context.peer = new RTCPeerConnection(configuration);
-    context.transceiverController = new DefaultTransceiverController(logger);
+    context.browserBehavior = new DefaultBrowserBehavior();
+    context.transceiverController = new DefaultTransceiverController(
+      logger,
+      context.browserBehavior
+    );
     // @ts-ignore
     const audioTrack = new MediaStreamTrack('attach-media-input-task-audio-track-id', 'audio');
     // @ts-ignore
@@ -61,8 +65,11 @@ describe('AttachMediaInputTask', () => {
     context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
     context.videosToReceive = new DefaultVideoStreamIdSet();
     context.videoSubscriptions = [];
-    context.statsCollector = new DefaultStatsCollector(context.audioVideoController, logger);
-    context.browserBehavior = new DefaultBrowserBehavior();
+    context.statsCollector = new DefaultStatsCollector(
+      context.audioVideoController,
+      logger,
+      context.browserBehavior
+    );
     task = new AttachMediaInputTask(context);
   });
 
@@ -170,6 +177,15 @@ describe('AttachMediaInputTask', () => {
       // @ts-ignore
       navigator.userAgent = 'Chrome/77.0.3865.75';
       context.browserBehavior = new DefaultBrowserBehavior();
+      context.transceiverController = new DefaultTransceiverController(
+        logger,
+        context.browserBehavior
+      );
+      context.statsCollector = new DefaultStatsCollector(
+        context.audioVideoController,
+        logger,
+        context.browserBehavior
+      );
     });
 
     it("adds an audio track if the audio input's track ID does not have any matching sender", done => {

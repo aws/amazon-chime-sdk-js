@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
-import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
 import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
@@ -41,10 +41,11 @@ export default class DefaultStatsCollector implements StatsCollector {
   private signalingClient: SignalingClient;
   private videoStreamIndex: VideoStreamIndex;
   private clientMetricReport: DefaultClientMetricReport;
-  private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
+
   constructor(
     private audioVideoController: AudioVideoController,
     private logger: Logger,
+    private browserBehavior: BrowserBehavior,
     private readonly interval: number = DefaultStatsCollector.INTERVAL_MS
   ) {}
 
