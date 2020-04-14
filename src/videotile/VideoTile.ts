@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import VideoTileState from './VideoTileState';
@@ -32,7 +32,8 @@ export default interface VideoTile {
     mediaStream: MediaStream | null,
     contentWidth: number | null,
     contentHeight: number | null,
-    streamId: number | null
+    streamId: number | null,
+    externalUserId?: string | null
   ): void;
 
   /**
