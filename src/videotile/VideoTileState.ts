@@ -13,6 +13,7 @@ export default class VideoTileState {
   paused: boolean = false;
   poorConnection: boolean = false;
   boundAttendeeId: string | null = null;
+  boundExternalUserId: string | null = null;
   boundVideoStream: MediaStream | null = null;
   boundVideoElement: HTMLVideoElement | null = null;
   nameplate: string | null = null;
@@ -34,6 +35,7 @@ export default class VideoTileState {
     cloned.paused = this.paused;
     cloned.poorConnection = this.poorConnection;
     cloned.boundAttendeeId = this.boundAttendeeId;
+    cloned.boundExternalUserId = this.boundExternalUserId;
     cloned.boundVideoStream = this.boundVideoStream;
     cloned.boundVideoElement = this.boundVideoElement;
     cloned.nameplate = this.nameplate;
