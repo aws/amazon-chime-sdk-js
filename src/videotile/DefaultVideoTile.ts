@@ -31,6 +31,11 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     if (!videoElement.hasAttribute('autoplay')) {
       videoElement.setAttribute('autoplay', 'true');
     }
+    // playsinline is needed for video to play in Iphone in non-fullscreen mode.
+    // See https://developer.apple.com/documentation/webkit/safari_tools_and_features/delivering_video_content_for_safari#3030250
+    if (!videoElement.hasAttribute('playsinline')) {
+      videoElement.setAttribute('playsinline', 'true');
+    }
     if (!videoElement.hasAttribute('muted')) {
       videoElement.setAttribute('muted', 'true');
     }

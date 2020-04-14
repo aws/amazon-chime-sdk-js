@@ -229,6 +229,7 @@ describe('DefaultVideoTile', () => {
 
       expect(removeAttributeSpy.callCount).to.equal(0);
       expect(setAttributeSpy.calledWith('autoplay', 'true')).to.be.true;
+      expect(setAttributeSpy.calledWith('playsinline', 'true')).to.be.true;
       expect(setAttributeSpy.calledWith('muted', 'true')).to.be.true;
     });
 
@@ -264,7 +265,7 @@ describe('DefaultVideoTile', () => {
       const videoElement = videoElementFactory.create();
       // @ts-ignore
       videoElement.hasAttribute = (attr: string): boolean =>
-        attr === 'controls' || attr === 'autoplay' || attr === 'muted';
+        attr === 'controls' || attr === 'autoplay' || attr === 'muted' || attr === 'playsinline';
 
       const removeAttributeSpy = sinon.spy(videoElement, 'removeAttribute');
       const setAttributeSpy = sinon.spy(videoElement, 'setAttribute');

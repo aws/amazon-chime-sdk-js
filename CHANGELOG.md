@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix an issue that a dev dependnecy @types/dom-mediacapture-record is not getting installed
 - Fix typo in README.md file
 - Ensure that attendee presence leave and join are ordered correctly
+- Fix video element issue in Iphone
 
 ## [1.2.1] - 2020-03-20
 
