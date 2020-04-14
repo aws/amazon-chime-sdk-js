@@ -9,6 +9,7 @@ integration/
 !src/versioning/Versioning.ts
 !README.md
 !demos/browser/README.md
+!demos/browser/package.json
 !demos/device/README.md
 !demos/serverless/README.md
 !demos/singlejs/README.md

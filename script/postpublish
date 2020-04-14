@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+require 'json'
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+
+puts
+puts "Enter the version to deploy to prod"
+puts
+npm_version = STDIN.gets.strip
+puts "Are you sure to deploy '#{npm_version}' this to prod?"
+puts
+puts "This will reset the HEAD to origin/master?"
+puts
+puts "Current staged and local changes will be lost!"
+puts
+puts "Type 'yes' to continue"
+x = STDIN.gets
+exit(1) unless x.strip == 'yes'
+puts
+
+def verbose command
+  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
+end
+
+verbose('git fetch origin')
+verbose('git reset --hard origin/master')
+verbose('git clean -ffxd .')
+
+verbose("git checkout tags/amazon-chime-sdk-js@#{npm_version} -b deploy-to-prod")
+
+
+Dir.chdir('demos/browser/')
+verbose('npm uninstall amazon-chime-sdk-js')
+verbose("npm install amazon-chime-sdk-js@#{npm_version}")
+
+demo_package = JSON.parse(File.read('package.json'))
+
+if demo_package['dependencies']['amazon-chime-sdk-js'] != "^#{npm_version}"
+  puts 'npm version is not the same as the version specified'
+  exit(1)
+end
+
+meeting_app = 'app/meetingV2/meetingV2.ts'
+
+File.write(meeting_app, File.read(meeting_app).gsub("'../../../../src/index'", "'amazon-chime-sdk-js'"))
+verbose('npm run build')
+Dir.chdir('../serverless/')
+verbose('node deploy.js -b chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary')
