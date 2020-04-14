@@ -12,6 +12,7 @@
     "copy": "node script/copy-protocol.js",
     "check": "node script/check-code-style.js",
     "prepublishOnly": "script/publish",
+    "postpublish": "script/postpublish",
     "lint": "eslint . --ext .ts,.tsx,.js --fix",
     "build": "npm install && node script/barrelize.js && tsc && npm run copy",
     "prebuild:release": "script/prebuild",
