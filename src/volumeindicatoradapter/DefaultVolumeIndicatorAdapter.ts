@@ -26,6 +26,10 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
   ) {}
 
   sendRealtimeUpdatesForAudioStreamIdInfo(info: SdkAudioStreamIdInfoFrame): void {
+    // @ts-ignore
+    info.streams.sort((a, b) => {
+      a.audioStreamId - b.audioStreamId;
+    });
     for (const stream of info.streams) {
       const hasAttendeeId = !!stream.attendeeId;
       const hasExternalUserId = !!stream.externalUserId;

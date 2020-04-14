@@ -119,6 +119,53 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       expect(volumeUpdate).to.equal(2);
       expect(attendeeIdUpdate).to.equal(2);
     });
+
+    it('handles out of order stream ids', () => {
+      const streamInfo1Join = SdkAudioStreamIdInfo.create();
+      const streamInfo1Frame = SdkAudioStreamIdInfoFrame.create();
+      const streamInfo2Join = SdkAudioStreamIdInfo.create();
+      const streamInfo2Leave = SdkAudioStreamIdInfo.create();
+      const streamInfo2Frame = SdkAudioStreamIdInfoFrame.create();
+      streamInfo1Join.audioStreamId = 1;
+      streamInfo1Join.attendeeId = fooAttendee;
+      streamInfo1Join.externalUserId = fooExternal;
+      streamInfo1Frame.streams = [streamInfo1Join];
+      streamInfo2Join.audioStreamId = 2;
+      streamInfo2Join.attendeeId = fooAttendee;
+      streamInfo2Join.externalUserId = fooExternal;
+      streamInfo2Leave.audioStreamId = 1;
+      streamInfo2Frame.streams = [streamInfo2Join, streamInfo2Leave];
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let attendeeIdUpdate = 0;
+      rt.realtimeSubscribeToAttendeeIdPresence(
+        (attendeeId: string, present: boolean, externalUserId: string) => {
+          let expected = false;
+          if (attendeeIdUpdate === 0) {
+            expected =
+              attendeeId === fooAttendee && present === true && externalUserId === fooExternal;
+          } else if (attendeeIdUpdate === 1) {
+            expected =
+              attendeeId === fooAttendee && present === false && externalUserId === fooExternal;
+          } else if (attendeeIdUpdate === 2) {
+            expected =
+              attendeeId === fooAttendee && present === true && externalUserId === fooExternal;
+          }
+          attendeeIdUpdate += 1;
+          expect(expected).to.be.true;
+        }
+      );
+      const vi: VolumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
+        new NoOpLogger(),
+        rt,
+        minVolumeDecibels,
+        maxVolumeDecibels
+      );
+      expect(attendeeIdUpdate).to.equal(0);
+      vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfo1Frame);
+      expect(attendeeIdUpdate).to.equal(1);
+      vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfo2Frame);
+      expect(attendeeIdUpdate).to.equal(3);
+    });
   });
 
   describe('metadata frame', () => {
