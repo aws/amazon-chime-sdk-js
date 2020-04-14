@@ -1,8 +1,10 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -27,15 +29,17 @@ describe('DefaultTransceiverController', () => {
   const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
   let tc: TransceiverController;
   let domMockBuilder: DOMMockBuilder;
+  let browser: BrowserBehavior;
 
   beforeEach(() => {
     domMockBehavior.browserName = 'firefox';
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
-    tc = new DefaultTransceiverController(logger);
+    browser = new DefaultBrowserBehavior();
+    tc = new DefaultTransceiverController(logger, browser);
   });
 
   afterEach(() => {
-    tc = new DefaultTransceiverController(logger);
+    tc = new DefaultTransceiverController(logger, browser);
     domMockBuilder.cleanup();
   });
 

@@ -7,6 +7,7 @@ import * as sinon from 'sinon';
 import DefaultAudioMixController from '../../src/audiomixcontroller/DefaultAudioMixController';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
@@ -40,6 +41,7 @@ describe('CreatePeerConnectionTask', () => {
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder | null = null;
   let task: Task;
+  const browser: BrowserBehavior = new DefaultBrowserBehavior();
 
   function makeICEEvent(candidateStr: string | null): RTCPeerConnectionIceEvent {
     let iceCandidate: RTCIceCandidate = null;
@@ -76,7 +78,7 @@ describe('CreatePeerConnectionTask', () => {
     context.videosToReceive = new DefaultVideoStreamIdSet();
     context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
     context.activeVideoInput = null;
-    context.transceiverController = new DefaultTransceiverController(logger);
+    context.transceiverController = new DefaultTransceiverController(logger, browser);
     context.audioMixController = new DefaultAudioMixController();
     context.browserBehavior = new DefaultBrowserBehavior();
     task = new CreatePeerConnectionTask(context);
@@ -163,7 +165,7 @@ describe('CreatePeerConnectionTask', () => {
             return true;
           }
         }
-        context.transceiverController = new TestTransceiverController(logger);
+        context.transceiverController = new TestTransceiverController(logger, browser);
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
@@ -184,7 +186,7 @@ describe('CreatePeerConnectionTask', () => {
             return false;
           }
         }
-        context.transceiverController = new TestTransceiverController(logger);
+        context.transceiverController = new TestTransceiverController(logger, browser);
 
         const videoTrack = new MediaStreamTrack();
         // @ts-ignore
@@ -215,7 +217,7 @@ describe('CreatePeerConnectionTask', () => {
             return false;
           }
         }
-        context.transceiverController = new TestTransceiverController(logger);
+        context.transceiverController = new TestTransceiverController(logger, browser);
 
         // @ts-ignore
         const videoTrack = new MediaStreamTrack('local-track-id', 'video');
@@ -472,7 +474,7 @@ describe('CreatePeerConnectionTask', () => {
             return true;
           }
         }
-        context.transceiverController = new TestTransceiverController(logger);
+        context.transceiverController = new TestTransceiverController(logger, browser);
 
         let tile: VideoTile;
         class TestVideoTileController extends DefaultVideoTileController {

@@ -59,6 +59,11 @@ export default class MeetingSessionConfiguration {
   enableWebAudio: boolean = false;
 
   /**
+   * Feature flag to enable Chromium-based browsers
+   */
+  enableUnifiedPlanForChromiumBasedBrowsers: boolean = false;
+
+  /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
    * chime:CreateAttendee response. You can pass in either a JSON object containing the
    * responses, or a JSON object containing the information in the Meeting and Attendee

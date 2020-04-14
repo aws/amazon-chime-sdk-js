@@ -1,10 +1,11 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
@@ -19,6 +20,7 @@ import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVid
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+
 class TestPingPong implements PingPong {
   addObserver(_observer: PingPongObserver): void {}
   removeObserver(_observer: PingPongObserver): void {}
@@ -33,6 +35,7 @@ describe('CleanRestartedSessionTask', () => {
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
   let task: Task;
+  const browserBehavior = new DefaultBrowserBehavior();
 
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
@@ -40,7 +43,10 @@ describe('CleanRestartedSessionTask', () => {
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
-    context.transceiverController = new DefaultTransceiverController(context.logger);
+    context.transceiverController = new DefaultTransceiverController(
+      context.logger,
+      browserBehavior
+    );
     context.videoTileController = new DefaultVideoTileController(
       new DefaultVideoTileFactory(),
       context.audioVideoController,
@@ -52,7 +58,11 @@ describe('CleanRestartedSessionTask', () => {
       context.audioVideoController.videoTileController,
       new ConnectionHealthData(),
       new TestPingPong(),
-      new DefaultStatsCollector(context.audioVideoController, new NoOpDebugLogger())
+      new DefaultStatsCollector(
+        context.audioVideoController,
+        new NoOpDebugLogger(),
+        browserBehavior
+      )
     );
 
     task = new CleanRestartedSessionTask(context);
