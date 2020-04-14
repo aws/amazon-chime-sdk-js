@@ -62,7 +62,8 @@ export default class DefaultVideoTileController implements VideoTileController {
       null,
       null,
       null,
-      null
+      null,
+      this.audioVideoController.configuration.credentials.externalUserId
     );
     this.audioVideoController.update();
   }
@@ -208,7 +209,8 @@ export default class DefaultVideoTileController implements VideoTileController {
       null,
       null,
       null,
-      null
+      null,
+      this.audioVideoController.configuration.credentials.externalUserId
     );
     return this.currentLocalTile;
   }

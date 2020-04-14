@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add option to run integration tests locally
 - Add the use case guide
 - Upgrade dependency aws-iot-device-sdk version
+- Add externalUserId to the tile properties
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM
