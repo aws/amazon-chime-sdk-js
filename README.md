@@ -18,25 +18,26 @@ control meeting features such as audio mute and video tile bindings.
 To get started, see the following resources:
 
 * [Amazon Chime](https://aws.amazon.com/chime)
-* [Amazon Chime Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/what-is-chime.html)
-* [Amazon Chime SDK API Reference](http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
-* [JavaScript Client SDK Documentation](https://aws.github.io/amazon-chime-sdk-js)
+* [Amazon Chime SDK Security](https://aws.amazon.com/blogs/business-productivity/understanding-security-in-the-amazon-chime-application-and-sdk/)
 * [Amazon Chime SDK Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
+* [Amazon Chime SDK Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html)
+* [Amazon Chime SDK API Reference](http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
+* [Amazon Chime SDK for JavaScript Documentation](https://aws.github.io/amazon-chime-sdk-js)
 
 And review the following guides:
 
 * [Getting Started](https://aws.github.io/amazon-chime-sdk-js/modules/gettingstarted.html)
-* [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html)
 * [API Overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html)
+* [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html)
 
 ## Examples
 
-- [Meeting demo](demos/browser) - A browser meeting application with a local server
-- [Serverless meeting demo](demos/serverless) - A self-contained serverless meeting application
-- [Video help desk](demos/videohelpdesk) - A widget to allow a customer to make a video call to a help desk
-- [Single JS script](demos/singlejs) - A Rollup script to bundle SDK into a single `.js` file
-- [Recording demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) - Recording the meeting's audio, video and screen share in high definition
-- [Virtual classroom](https://github.com/aws-samples/amazon-chime-sdk-classroom-demo) - An online classroom built with Electron and React
+- [Meeting Demo](demos/browser) - A browser meeting application with a local server
+- [Serverless Meeting Demo](demos/serverless) - A self-contained serverless meeting application
+- [Video Help Desk](demos/videohelpdesk) - A tutorial that shows how to build a website widget that allows a customer to make a video call to a help desk
+- [Single JS](demos/singlejs) - A script to bundle the SDK into a single `.js` file
+- [Recording Demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) - Recording the meeting's audio, video and screen share in high definition
+- [Virtual Classroom](https://github.com/aws-samples/amazon-chime-sdk-classroom-demo) - An online classroom built with Electron and React
 
 ## Installation
 
@@ -160,7 +161,7 @@ await meetingSession.audioVideo.chooseVideoInputDevice(null);
 ```
 
 **Use case 4.** Add a device change observer to receive the updated device list.
-For example, when you pair Bluetooth headsets with your computer, `audioInputsChanged` and `audioOutputsChanged` are called 
+For example, when you pair Bluetooth headsets with your computer, `audioInputsChanged` and `audioOutputsChanged` are called
 with the device list including headsets.
 
 ```js
@@ -184,7 +185,7 @@ meetingSession.audioVideo.addDeviceChangeObserver(observer);
 
 ### Starting a session
 
-**Use case 5.** Start a session. To hear audio, you need to bind a device and stream to an `<audio>` element. 
+**Use case 5.** Start a session. To hear audio, you need to bind a device and stream to an `<audio>` element.
 Once the session has started, you can talk and listen to attendees.
 Make sure you have chosen your microphone and speaker (See the "Device" section), and at least one other attendee has joined the session.
 
@@ -205,7 +206,7 @@ meetingSession.audioVideo.start();
 
 **Use case 6.** Add an observer to receive session lifecycle events: connecting, start, and stop.
 
-> Note: You can remove an observer by calling `meetingSession.audioVideo.removeObserver(observer)`. 
+> Note: You can remove an observer by calling `meetingSession.audioVideo.removeObserver(observer)`.
 In a component-based architecture (such as React, Vue, and Angular), you may need to add an observer
 when a component is mounted, and remove it when unmounted.
 
@@ -294,7 +295,7 @@ meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
 
     // A null value for any field means that it has not changed.
     console.log(`${attendeeId}'s volume data: `, {
-      volume, // a fraction between 0 and 1 
+      volume, // a fraction between 0 and 1
       muted, // a boolean
       signalStrength // 0 (no signal), 0.5 (weak), 1 (strong)
     });
@@ -427,7 +428,7 @@ and that an empty cell means it's taken.
   ╠════╬════╬════╬════╣                 ╠════╬════╬════╬════╣
   ║ 12 ║ 13 ║ 14 ║ 15 ║                 ║ 12 ║ 13 ║ 14 ║ 15 ║
   ╚════╩════╩════╩════╝                 ╚════╩════╩════╩════╝
- */ 
+ */
 const videoElements = [/* an array of 16 HTMLVideoElement objects in your application */];
 
 // index-tileId pairs
@@ -484,9 +485,9 @@ meetingSession.audioVideo.addObserver(observer);
 
 > Note: When you or other attendees share content (a screen capture, a video file, or any other MediaStream object),
 the content attendee (attendee-id#content) joins the session and shares content as if a regular attendee shares a video.
-> 
+>
 > For example, your attendee ID is "my-id". When you call `meetingSession.audioVideo.startContentShare`,
-the content attendee "my-id#content" will join the session and share your content. 
+the content attendee "my-id#content" will join the session and share your content.
 
 **Use case 16.** Start sharing your screen.
 
@@ -621,7 +622,7 @@ meetingSession.audioVideo.addObserver(observer);
 
 ### Attendees
 
-**Use case 21.** Subscribe to attendee presence changes. When an attendee joins or leaves a session, 
+**Use case 21.** Subscribe to attendee presence changes. When an attendee joins or leaves a session,
 the callback receives `presentAttendeeId` and `present` (a boolean).
 
 ```js
@@ -686,7 +687,7 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
 
 ### Monitoring and alerts
 
-**Use case 23.** Add an observer to receive video metrics. See `AudioVideoObserver` for more available metrics, 
+**Use case 23.** Add an observer to receive video metrics. See `AudioVideoObserver` for more available metrics,
 such as WebRTC statistics processed by Chime SDK.
 
 ```js
@@ -770,7 +771,7 @@ const observer = {
   audioVideoDidStop: sessionStatus => {
     const sessionStatusCode = sessionStatus.statusCode();
     if (sessionStatusCode === MeetingSessionStatusCode.AudioCallEnded) {
-      /* 
+      /*
         - You (or someone else) have called the DeleteMeeting API action in your server application.
         - No audio connections are present in the meeting for more than five minutes.
         - Fewer than two audio connections are present in the meeting for more than 30 minutes.
