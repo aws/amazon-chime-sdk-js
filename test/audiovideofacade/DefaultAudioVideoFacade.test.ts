@@ -106,6 +106,10 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith());
     });
 
+    it('can get rtcPeerConnection', () => {
+      expect(facade.rtcPeerConnection).to.be.null;
+    });
+
     it('will call bindVideoElement', () => {
       const spy = sinon.spy(controller.videoTileController, 'bindVideoElement');
       const arg1 = 0;

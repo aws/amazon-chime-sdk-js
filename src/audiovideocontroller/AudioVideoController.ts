@@ -90,12 +90,6 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   readonly logger: Logger;
 
   /**
-   * Returns the RTCPeerConnection for this audio-video controller if there is
-   * one.
-   */
-  readonly rtcPeerConnection: RTCPeerConnection | null;
-
-  /**
    * Returns the [[MediaStreamBroker]] for this audio-video controller.
    */
   readonly mediaStreamBroker: MediaStreamBroker;

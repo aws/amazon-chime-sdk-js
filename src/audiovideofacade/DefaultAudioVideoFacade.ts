@@ -46,6 +46,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('stop');
   }
 
+  get rtcPeerConnection(): RTCPeerConnection | null {
+    this.trace('getRTCPeerConnection');
+    return this.audioVideoController.rtcPeerConnection;
+  }
+
   bindAudioElement(element: HTMLAudioElement): boolean {
     const result = this.audioMixController.bindAudioElement(element);
     this.trace('bindAudioElement', element.id, result);
