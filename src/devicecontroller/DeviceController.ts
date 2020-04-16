@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
@@ -121,7 +121,7 @@ export default interface DeviceController {
 
   /**
    * Sets the video input quality parameters to request when enabling video. These settings
-   * take effect the next time a video input device is chosen. The default is 1280x720 @ 15 fps
+   * take effect the next time a video input device is chosen. The default is 960x540 @ 15 fps
    * with a max bandwidth of 1400 kbps.
    */
   chooseVideoInputQuality(

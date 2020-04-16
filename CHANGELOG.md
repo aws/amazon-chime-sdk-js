@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Temporarily only run test in Chrome for Travis integration tests
 - Allow content share frame rate to be configurable
 - Move demo guides to demo folders
+- Fix the default video resolution comment in DeviceController
 
 ### Removed
 - Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver
