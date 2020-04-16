@@ -76,13 +76,6 @@ export default interface AudioVideoObserver {
   metricsDidReceive?(clientMetricReport: ClientMetricReport): void;
 
   /**
-   * Called when RTCPeerConnection stats are available.
-   * This returns the raw stats from RTCPeerConnection
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  rtcPeerConnectionStatsDidReceive?(statsReport: any): void;
-
-  /**
    * Called when connection health has changed.
    */
   connectionHealthDidChange?(connectionHealthData: ConnectionHealthData): void;
