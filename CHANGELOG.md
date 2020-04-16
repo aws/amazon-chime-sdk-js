@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add post publish script
 - Add feature flag to enable WebRTC Unified Plan for Chromium-based browsers
 - Add link to Amazon Chime SDK Security in README
+- Add an observer to retrieve raw stats from RTCPeerConnection
 
 ### Changed
 - Prevent prebuild from increase patch number when publishing to NPM

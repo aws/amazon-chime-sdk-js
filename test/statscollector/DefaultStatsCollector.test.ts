@@ -267,21 +267,27 @@ describe('DefaultStatsCollector', () => {
 
       it('cannot get stats if the peer connection does not exist', done => {
         class TestObserver implements AudioVideoObserver {
-          metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
-            done();
-          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          rtcPeerConnectionStatsDidReceive(_statsReport: any): void {}
+
+          metricsDidReceive(_clientMetricReport: ClientMetricReport): void {}
         }
         class NoPeerAudioVideoController extends NoOpAudioVideoController {
           get rtcPeerConnection(): RTCPeerConnection | null {
             return null;
           }
         }
+        const testObserver = new TestObserver();
+        const rtcStatsSpy = sinon.spy(testObserver, 'rtcPeerConnectionStatsDidReceive');
+        const metricsSpy = sinon.spy(testObserver, 'metricsDidReceive');
         audioVideoController = new NoPeerAudioVideoController();
-        audioVideoController.addObserver(new TestObserver());
+        audioVideoController.addObserver(testObserver);
         statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
         new TimeoutScheduler(interval + 5).start(() => {
           statsCollector.stop();
+          expect(rtcStatsSpy.notCalled).to.be.true;
+          expect(metricsSpy.notCalled).to.be.true;
           done();
         });
       });
@@ -322,14 +328,23 @@ describe('DefaultStatsCollector', () => {
 
       it('notifies observers', done => {
         class TestObserver implements AudioVideoObserver {
-          metricsDidReceive(_clientMetricReport: ClientMetricReport): void {
-            statsCollector.stop();
-            done();
-          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          rtcPeerConnectionStatsDidReceive(_statsReport: any): void {}
+
+          metricsDidReceive(_clientMetricReport: ClientMetricReport): void {}
         }
-        audioVideoController.addObserver(new TestObserver());
+        const testObserver = new TestObserver();
+        const rtcStatsSpy = sinon.spy(testObserver, 'rtcPeerConnectionStatsDidReceive');
+        const metricsSpy = sinon.spy(testObserver, 'metricsDidReceive');
+        audioVideoController.addObserver(testObserver);
         statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
         statsCollector.start(signalingClient, new DefaultVideoStreamIndex(logger));
+        new TimeoutScheduler(interval + 5).start(() => {
+          statsCollector.stop();
+          expect(rtcStatsSpy.calledOnce).to.be.true;
+          expect(metricsSpy.calledOnce).to.be.true;
+          done();
+        });
       });
     });
 

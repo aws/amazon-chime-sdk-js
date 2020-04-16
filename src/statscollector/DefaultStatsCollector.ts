@@ -447,8 +447,10 @@ export default class DefaultStatsCollector implements StatsCollector {
       this.audioVideoController.rtcPeerConnection.getStats(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (res: any) => {
+          const result = res.result();
+          this.triggerRtcPeerConnectionStatsDidReceive(result);
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          res.result().forEach((report: any) => {
+          result.forEach((report: any) => {
             const item: { [name: string]: StatsReportItem } = {};
             report.names().forEach((name: string) => {
               item[name] = report.stat(name);
@@ -470,6 +472,7 @@ export default class DefaultStatsCollector implements StatsCollector {
       this.audioVideoController.rtcPeerConnection
         .getStats()
         .then((report: RTCStatsReport) => {
+          this.triggerRtcPeerConnectionStatsDidReceive(report);
           report.forEach((item: StatsReportItem) => {
             rawMetricReports.push(item);
           });
@@ -479,6 +482,13 @@ export default class DefaultStatsCollector implements StatsCollector {
           this.logger.error(error.message);
         });
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private triggerRtcPeerConnectionStatsDidReceive(report: any): void {
+    this.audioVideoController.forEachObserver(observer => {
+      Maybe.of(observer.rtcPeerConnectionStatsDidReceive).map(f => f.bind(observer)(report));
+    });
   }
 
   private compareMajorVersion(version: string): number {
