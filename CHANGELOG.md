@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix video element issue in Iphone
 - Fix post publish script to also include meeting v1
 - Use build:publish for publish script
+- Fix Travis deploy failure
 
 ## [1.2.1] - 2020-03-20
 
