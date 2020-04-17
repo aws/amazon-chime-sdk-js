@@ -83,7 +83,7 @@ verbose("git commit -m 'Publish #{tag}'")
 verbose("git tag -d #{tag} || true")
 verbose("git tag #{tag}")
 
-verbose('npm run build:release')
+verbose('npm run build:publish')
 verbose('npm pack --dry-run')
 
 puts
