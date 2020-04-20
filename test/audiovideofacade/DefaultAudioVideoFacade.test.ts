@@ -106,6 +106,19 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith());
     });
 
+    it('will call getRTCPeerConnectionStats', () => {
+      const spy = sinon.spy(controller, 'getRTCPeerConnectionStats');
+      facade.getRTCPeerConnectionStats();
+      assert(spy.calledOnceWith());
+    });
+
+    it('will call getRTCPeerConnectionStats with media stream track', () => {
+      const spy = sinon.spy(controller, 'getRTCPeerConnectionStats');
+      const track = new MediaStreamTrack();
+      facade.getRTCPeerConnectionStats(track);
+      assert(spy.calledOnceWith(track));
+    });
+
     it('will call bindVideoElement', () => {
       const spy = sinon.spy(controller.videoTileController, 'bindVideoElement');
       const arg1 = 0;

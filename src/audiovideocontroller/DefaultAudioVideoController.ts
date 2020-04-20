@@ -148,6 +148,13 @@ export default class DefaultAudioVideoController implements AudioVideoController
     return this._mediaStreamBroker;
   }
 
+  getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport> {
+    if (!this.rtcPeerConnection) {
+      return null;
+    }
+    return this.rtcPeerConnection.getStats(selector);
+  }
+
   addObserver(observer: AudioVideoObserver): void {
     this.logger.info('adding meeting observer');
     this.observerQueue.add(observer);
