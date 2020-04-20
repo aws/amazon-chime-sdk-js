@@ -1283,4 +1283,56 @@ describe('DefaultAudioVideoController', () => {
       expect(spy.callCount).to.equal(1);
     });
   });
+
+  describe('getRTCPeerConnectionStats', () => {
+    it('calls getStats', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      await start();
+
+      const spy = sinon.spy(audioVideoController.rtcPeerConnection, 'getStats');
+      await audioVideoController.getRTCPeerConnectionStats();
+
+      await stop();
+
+      expect(spy.calledOnceWith()).to.be.true;
+    });
+
+    it('calls getStats with media stream strack', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      const track = new MediaStreamTrack();
+      await start();
+
+      const spy = sinon.spy(audioVideoController.rtcPeerConnection, 'getStats');
+      await audioVideoController.getRTCPeerConnectionStats(track);
+
+      await stop();
+
+      expect(spy.calledOnceWith(track)).to.be.true;
+    });
+
+    it('return null if no peer connection is established', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+
+      const result = await audioVideoController.getRTCPeerConnectionStats();
+      expect(result).to.be.null;
+    });
+  });
 });
