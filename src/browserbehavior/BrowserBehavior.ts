@@ -76,4 +76,9 @@ export default interface BrowserBehavior {
    * Returns the browser support string
    */
   supportString(): string;
+
+  /**
+   * Returns the supported codecs
+   */
+  supportedVideoCodecs(): Promise<string[]>;
 }

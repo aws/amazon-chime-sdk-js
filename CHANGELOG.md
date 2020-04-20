@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Expose an API for GetStats from RTCPeerConnection
+- Add BrowserBehavior test for supported video codecs
+
+### Changed
+
+### Removed
 
 ## [1.3.0] - 2020-04-17
 

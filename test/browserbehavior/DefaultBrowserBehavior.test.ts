@@ -159,4 +159,12 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(false);
     });
   });
+
+  describe('supportedVideoCodecs', () => {
+    it('can determine the available video codecs from a test SDP', async () => {
+      const codecs = await new DefaultBrowserBehavior().supportedVideoCodecs();
+      expect(codecs.includes('H264')).to.equal(true);
+      expect(codecs.includes('VP8')).to.equal(true);
+    });
+  });
 });
