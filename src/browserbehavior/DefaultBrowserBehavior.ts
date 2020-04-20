@@ -117,6 +117,25 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return s.join(', ');
   }
 
+  async supportedVideoCodecs(): Promise<string[]> {
+    const pc = new RTCPeerConnection();
+    pc.addTransceiver('video', { direction: 'inactive', streams: [] });
+    return (await pc.createOffer({ offerToReceiveVideo: true })).sdp
+      .split('\r\n')
+      .filter(x => {
+        return x.includes('a=rtpmap:');
+      })
+      .map(x => {
+        return x.replace(/.* /, '').replace(/\/.*/, '');
+      })
+      .filter((v, i, a) => {
+        return a.indexOf(v) === i;
+      })
+      .filter(x => {
+        return x !== 'rtx' && x !== 'red' && x !== 'ulpfec';
+      });
+  }
+
   // These helpers should be kept private to encourage
   // feature detection instead of browser detection.
   private isIOSSafari(): boolean {
