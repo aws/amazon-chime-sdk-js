@@ -32,10 +32,11 @@ And review the following guides:
 
 ## Examples
 
-- [Meeting Demo](demos/browser) - A browser meeting application with a local server
-- [Serverless Meeting Demo](demos/serverless) - A self-contained serverless meeting application
-- [Video Help Desk](demos/videohelpdesk) - A tutorial that shows how to build a website widget that allows a customer to make a video call to a help desk
-- [Single JS](demos/singlejs) - A script to bundle the SDK into a single `.js` file
+- [Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser) - A browser
+ meeting application with a local server
+- [Serverless Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless) - A self-contained serverless meeting application
+- [Video Help Desk](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/videohelpdesk) - A tutorial that shows how to build a website widget that allows a customer to make a video call to a help desk
+- [Single JS](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/singlejs) - A script to bundle the SDK into a single `.js` file
 - [Recording Demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) - Recording the meeting's audio, video and screen share in high definition
 - [Virtual Classroom](https://github.com/aws-samples/amazon-chime-sdk-classroom-demo) - An online classroom built with Electron and React
 

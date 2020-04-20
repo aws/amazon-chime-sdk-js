@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+### Fixed
+- Fix broken link in GitHub main page README
+
 ## [1.3.0] - 2020-04-17
 
 ### Added
