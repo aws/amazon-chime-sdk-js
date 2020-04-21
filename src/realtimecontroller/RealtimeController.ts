@@ -48,15 +48,20 @@ export default interface RealtimeController {
    * subscribe and unsubscribe to for volume indicator updates.
    */
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
   ): void;
 
   /**
    * Unsubscribes to changes in attendee ids
    */
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
   ): void;
+
+  /**
+   * Returns the external user ID for a given attendee ID
+   */
+  realtimeExternalUserIdFromAttendeeId(attendeeId: string): string | null;
 
   // Audio Input
 
@@ -137,7 +142,7 @@ export default interface RealtimeController {
       volume: number | null,
       muted: boolean | null,
       signalStrength: number | null,
-      externalUserId?: string | null
+      externalUserId?: string
     ) => void
   ): void;
 

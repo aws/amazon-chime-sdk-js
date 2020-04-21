@@ -23,7 +23,7 @@ export default class RealtimeState {
   attendeeIdChangesCallbacks: ((
     attendeeId: string,
     present: boolean,
-    externalUserId?: string | null
+    externalUserId?: string
   ) => void)[] = [];
 
   /**
@@ -70,7 +70,7 @@ export default class RealtimeState {
       volume: number | null,
       muted: boolean | null,
       signalStrength: number | null,
-      externalUserId?: string | null
+      externalUserId?: string
     ) => void)[];
   } = {};
 

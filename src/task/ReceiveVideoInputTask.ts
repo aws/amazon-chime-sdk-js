@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -52,13 +52,16 @@ export default class ReceiveVideoInputTask extends BaseTask {
       const videoTracks = videoInput.getVideoTracks();
       const attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
       const trackSettings = videoTracks[0].getSettings();
+      const externalUserId = this.context.audioVideoController.configuration.credentials
+        .externalUserId;
       localTile.bindVideoStream(
         attendeeId,
         true,
         videoInput,
         trackSettings.width,
         trackSettings.height,
-        null
+        null,
+        externalUserId
       );
 
       for (let i = 0; i < videoTracks.length; i++) {

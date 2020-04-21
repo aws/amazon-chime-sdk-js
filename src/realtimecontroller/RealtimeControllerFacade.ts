@@ -3,10 +3,10 @@
 
 export default interface RealtimeControllerFacade {
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
   ): void;
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
   ): void;
   realtimeSetCanUnmuteLocalAudio(canUnmute: boolean): void;
   realtimeSubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void;
@@ -24,7 +24,7 @@ export default interface RealtimeControllerFacade {
       volume: number | null,
       muted: boolean | null,
       signalStrength: number | null,
-      externalUserId?: string | null
+      externalUserId?: string
     ) => void
   ): void;
   realtimeUnsubscribeFromVolumeIndicator(attendeeId: string): void;

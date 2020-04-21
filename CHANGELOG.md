@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Expose an API for GetStats from RTCPeerConnection
 - Add BrowserBehavior test for supported video codecs
+- Expose ExternalUserID on videoTileDidUpdate
 
 ### Changed
 - Use getByteTimeDomainData to support iOS Safari in meeting demo
