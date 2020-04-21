@@ -11,6 +11,7 @@ import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
+import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
 import Task from '../../src/task/Task';
@@ -268,10 +269,14 @@ describe('CreatePeerConnectionTask', () => {
       it('can have a stream ID', async () => {
         const streamId = 1;
         let tile: VideoTile;
-
+        const attendeeIdForTrack = 'attendee-id';
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
         class TestVideoStreamIndex extends DefaultVideoStreamIndex {
           streamIdForTrack(_trackId: string): number {
             return streamId;
+          }
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
           }
         }
         context.videoStreamIndex = new TestVideoStreamIndex(logger);
@@ -302,7 +307,14 @@ describe('CreatePeerConnectionTask', () => {
         };
 
         let tile: VideoTile;
-
+        const attendeeIdForTrack = 'attendee-id';
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
         class TestVideoTileController extends DefaultVideoTileController {
           addVideoTile(): VideoTile {
             return (tile = super.addVideoTile());
@@ -342,6 +354,15 @@ describe('CreatePeerConnectionTask', () => {
 
         // eslint-disable-next-line
         delete MediaStreamTrack.prototype['getCapabilities'];
+
+        const attendeeIdForTrack = 'attendee-id';
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
 
         class TestVideoTileController extends DefaultVideoTileController {
           addVideoTile(): VideoTile {
@@ -387,6 +408,113 @@ describe('CreatePeerConnectionTask', () => {
         );
       });
 
+      it('has externalUserId for an attendee', async () => {
+        const externalUserIdTimeOutMs = 100;
+        task = new CreatePeerConnectionTask(context, externalUserIdTimeOutMs);
+        const attendeeIdForTrack = 'attendee-id';
+        const spyRealtimeSubscribeToAttendeeIdPresence = sinon.spy(
+          context.realtimeController,
+          'realtimeSubscribeToAttendeeIdPresence'
+        );
+        context.realtimeController = new DefaultRealtimeController();
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+
+        await task.run();
+        context.peer.addEventListener('track', (event: RTCTrackEvent) => {
+          const track = event.track;
+          track.stop();
+        });
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+        await new Promise(resolve =>
+          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
+        );
+        expect(spyRealtimeSubscribeToAttendeeIdPresence.called).to.be.false;
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, false, 'foo');
+        expect(spyRealtimeSubscribeToAttendeeIdPresence.called).to.be.false;
+        context.removableObservers[0].removeObserver();
+      });
+
+      it('has null as externalUserId for an attendee', async () => {
+        const attendeeIdForTrack = 'attendee-id';
+        const externalUserIdTimeOutMs = 100;
+        task = new CreatePeerConnectionTask(context, externalUserIdTimeOutMs);
+
+        context.realtimeController = new DefaultRealtimeController();
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, null);
+
+        const spyRealtimeSubscribeToAttendeeIdPresence = sinon.spy(
+          context.realtimeController,
+          'realtimeSubscribeToAttendeeIdPresence'
+        );
+        const spyRealtimeUnsubscribeToAttendeeIdPresence = sinon.spy(
+          context.realtimeController,
+          'realtimeUnsubscribeToAttendeeIdPresence'
+        );
+
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        await task.run();
+        context.peer.addEventListener('track', (event: RTCTrackEvent) => {
+          const track = event.track;
+          track.stop();
+        });
+
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+
+        await new Promise(resolve => new TimeoutScheduler(externalUserIdTimeOutMs).start(resolve));
+        expect(spyRealtimeSubscribeToAttendeeIdPresence.called).to.be.true;
+        expect(spyRealtimeUnsubscribeToAttendeeIdPresence.called).to.be.true;
+        context.removableObservers[0].removeObserver();
+      });
+
+      it('has no externalUserId for an attendee and call removeObserver', async () => {
+        const externalUserIdTimeOutMs = 100;
+        task = new CreatePeerConnectionTask(context, externalUserIdTimeOutMs);
+        const attendeeIdForTrack = 'attendee-id';
+        context.realtimeController = new DefaultRealtimeController();
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, null);
+        const spyRealtimeSubscribeToAttendeeIdPresence = sinon.spy(
+          context.realtimeController,
+          'realtimeSubscribeToAttendeeIdPresence'
+        );
+        const spyRealtimeUnsubscribeToAttendeeIdPresence = sinon.spy(
+          context.realtimeController,
+          'realtimeUnsubscribeToAttendeeIdPresence'
+        );
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        await task.run();
+        context.peer.addEventListener('track', (event: RTCTrackEvent) => {
+          const track = event.track;
+          track.stop();
+        });
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+        await new Promise(resolve =>
+          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
+        );
+        expect(spyRealtimeSubscribeToAttendeeIdPresence.called).to.be.true;
+        context.realtimeController.realtimeSetAttendeeIdPresence('new-attendee', true, null);
+        expect(spyRealtimeUnsubscribeToAttendeeIdPresence.called).to.be.false;
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        expect(spyRealtimeUnsubscribeToAttendeeIdPresence.called).to.be.true;
+
+        context.removableObservers[0].removeObserver();
+      });
+
       it('uses a track ID for Plan B', async () => {
         // @ts-ignore
         navigator.userAgent = 'Chrome/77.0.3865.75';
@@ -422,9 +550,14 @@ describe('CreatePeerConnectionTask', () => {
     describe('stopping a track', () => {
       it('removes stream ID from the paused video stream ID set if stream ID exists', done => {
         let called = false;
+        const attendeeIdForTrack = 'attendee-id';
+        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
         class TestVideoStreamIndex extends DefaultVideoStreamIndex {
           streamIdForTrack(_trackId: string): number {
             return 1;
+          }
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
           }
         }
         context.videoStreamIndex = new TestVideoStreamIndex(logger);

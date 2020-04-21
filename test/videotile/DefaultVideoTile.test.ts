@@ -212,6 +212,39 @@ describe('DefaultVideoTile', () => {
     });
   });
 
+  describe('bindVideoStream with externalUserId', () => {
+    it('binds a video stream with externalUser', () => {
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+
+      const boundAttendeeId = 'attendee';
+      const localTile = true;
+      const videoStreamContentWidth = 1;
+      const videoStreamContentHeight = 1;
+      const streamId = 1;
+      const boundExternalUserId = 'external-user-id';
+
+      tile.bindVideoStream(
+        boundAttendeeId,
+        localTile,
+        mockVideoStream,
+        videoStreamContentWidth,
+        videoStreamContentHeight,
+        streamId,
+        boundExternalUserId
+      );
+
+      expect(tile.state().boundAttendeeId).to.equal(boundAttendeeId);
+      expect(tile.state().localTile).to.equal(localTile);
+      expect(tile.state().boundVideoStream).to.equal(mockVideoStream);
+      expect(tile.state().videoStreamContentWidth).to.equal(videoStreamContentWidth);
+      expect(tile.state().videoStreamContentHeight).to.equal(videoStreamContentHeight);
+      expect(tile.state().streamId).to.equal(streamId);
+      expect(tile.state().boundExternalUserId).to.equal(boundExternalUserId);
+      expect(tile.state().isContent).to.be.false;
+      expect(tileControllerSpy.called).to.be.true;
+    });
+  });
+
   describe('bindVideoElement', () => {
     it('binds a video element', () => {
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);

@@ -77,7 +77,7 @@ export default class DefaultRealtimeController implements RealtimeController {
   }
 
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
   ): void {
     this.wrap(() => {
       this.state.attendeeIdChangesCallbacks.push(callback);
@@ -85,7 +85,7 @@ export default class DefaultRealtimeController implements RealtimeController {
   }
 
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string | null) => void
+    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
   ): void {
     this.wrap(() => {
       const index = this.state.attendeeIdChangesCallbacks.indexOf(callback);
@@ -225,7 +225,7 @@ export default class DefaultRealtimeController implements RealtimeController {
       volume: number | null,
       muted: boolean | null,
       signalStrength: number | null,
-      externalUserId?: string | null
+      externalUserId?: string
     ) => void
   ): void {
     this.wrap(() => {
@@ -315,6 +315,10 @@ export default class DefaultRealtimeController implements RealtimeController {
         this.state.localSignalStrengthChangeCallbacks.splice(index, 1);
       }
     });
+  }
+
+  realtimeExternalUserIdFromAttendeeId(attendeeId: string): string | null {
+    return this.state.attendeeIdToExternalUserId[attendeeId] || null;
   }
 
   // Error Handling
