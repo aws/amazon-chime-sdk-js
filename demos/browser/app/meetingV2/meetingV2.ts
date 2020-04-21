@@ -958,19 +958,19 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     if (!analyserNode) {
       return;
     }
-    if (!analyserNode.getFloatTimeDomainData) {
+    if (!analyserNode.getByteTimeDomainData) {
       document.getElementById('audio-preview').parentElement.style.visibility = 'hidden';
       return;
     }
-    const data = new Float32Array(analyserNode.fftSize);
+    const data = new Uint8Array(analyserNode.fftSize);
     let frameIndex = 0;
     this.analyserNodeCallback = () => {
       if (frameIndex === 0) {
-        analyserNode.getFloatTimeDomainData(data);
+        analyserNode.getByteTimeDomainData(data);
         const lowest = 0.01;
         let max = lowest;
         for (const f of data) {
-          max = Math.max(max, Math.abs(f));
+          max = Math.max(max, (f - 128) / 128);
         }
         let normalized = (Math.log(lowest) - Math.log(max)) / Math.log(lowest);
         let percent = Math.min(Math.max(normalized * 100, 0), 100);
