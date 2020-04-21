@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add BrowserBehavior test for supported video codecs
 
 ### Changed
+- Use getByteTimeDomainData to support iOS Safari in meeting demo
 
 ### Removed
 
