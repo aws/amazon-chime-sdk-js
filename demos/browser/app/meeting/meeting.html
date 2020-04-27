@@ -48,7 +48,7 @@
           <div class="row mt-3">
             <p>Anyone with access to the meeting link can join.</p>
           </div>
-            <a id="to-sip-flow" class="row mt-3" href="#">Joining via SIP? Click here.</a>
+          <a id="to-sip-flow" class="row mt-3" href="#">Joining via SIP? Click here.</a>
           <div class="row mt-3">
             <div id="progress-authenticate" class="w-100 progress progress-hidden">
               <div class="w-100 progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
@@ -141,7 +141,7 @@
           <div class="row mt-3">
             <div class="col-8">
               <label for="audio-input">Microphone</label>
-              <select id="audio-input" class="custom-select" style="width:308px"></select>
+              <select id="audio-input" class="custom-select" style="width:100%"></select>
             </div>
             <div class="text-center col-4">
               <label>Preview</label>
@@ -153,7 +153,7 @@
           <div class="row mt-3">
             <div class="col-8">
               <label for="video-input">Camera</label>
-              <select id="video-input" class="custom-select" style="width:308px"></select>
+              <select id="video-input" class="custom-select" style="width:100%"></select>
             </div>
             <div class="col-4 text-center" style="width:137px;height:82px">
               <video id="video-preview" class="w-100 h-100" style="max-width:137px;max-height:82px;border-radius:8px"></video>
@@ -161,7 +161,7 @@
           </div>
           <div class="row mt-3">
             <div class="col-8">
-              <select id="video-input-quality" class="custom-select" style="width:308px">
+              <select id="video-input-quality" class="custom-select" style="width:100%">
                 <option value="360p">360p (nHD) @ 15 fps (600 Kbps max)</option>
                 <option value="540p" selected>540p (qHD) @ 15 fps (1.4 Mbps max)</option>
                 <option value="720p">720p (HD) @ 15 fps (1.4 Mbps max)</option>
@@ -171,7 +171,7 @@
           <div class="row mt-3">
             <div class="col-8">
               <label for="audio-output">Speaker</label>
-              <select id="audio-output" class="custom-select" style="width:308px"></select>
+              <select id="audio-output" class="custom-select" style="width:100%"></select>
             </div>
             <div class="col-4">
               <button id="button-test-sound" class="btn btn-outline-secondary btn-block h-50" style="margin-top:2rem">Test</button>
@@ -202,11 +202,11 @@
       <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="video-downlink-bandwidth"></div>
       <audio id="meeting-audio" style="display:none"></audio>
       <div class="container-fluid h-100">
-        <div class="row">
+        <div class="row container-wrap">
           <div class="col-1 text-left">
             <div id="meeting-id" class="navbar-brand text-muted m-2"></div>
           </div>
-          <div class="col-5 text-right">
+          <div class="col-5 text-right control-wrap">
             <div class="btn-group m-2" role="group" aria-label="Toggle microphone">
               <button id="button-microphone" type="button" class="btn btn-success" title="Toggle microphone">
                 ${require('../../node_modules/open-iconic/svg/microphone.svg').default}
@@ -252,7 +252,7 @@
               ${require('../../node_modules/open-iconic/svg/browser.svg').default}
             </button>
           </div>
-          <div class="col-2 text-right">
+          <div class="col-4 text-right control-wrap">
             <button id="button-meeting-leave" type="button" class="btn btn-outline-success m-2 px-4" title="Leave meeting">
               ${require('../../node_modules/open-iconic/svg/account-logout.svg').default}
             </button>
@@ -261,111 +261,111 @@
             </button>
           </div>
         </div>
-        <div class="row h-100">
+        <div class="row h-100 list-wrap">
           <div class="col-sm-4">
-            <div class="bs-component">
+            <div class="bs-component ">
               <ul id="roster" class="list-group"></ul>
             </div>
           </div>
           <div class="col p-0">
             <div id="tile-area" class="w-100 h-100">
-              <div id="tile-0" style="display:none">
+              <div class="tile-wrap" id="tile-0" style="display:none">
                 <video id="video-0" class="w-100 h-100"></video>
                 <div id="nameplate-0"></div>
                 <button id="video-pause-0">Pause</button>
                 <button id="video-resume-0">Resume</button>
               </div>
-              <div id="tile-1" style="display:none">
+              <div class="tile-wrap" id="tile-1" style="display:none">
                 <video id="video-1" class="w-100 h-100"></video>
                 <div id="nameplate-1"></div>
                 <button id="video-pause-1">Pause</button>
                 <button id="video-resume-1">Resume</button>
               </div>
-              <div id="tile-2" style="display:none">
+              <div class="tile-wrap" id="tile-2" style="display:none">
                 <video id="video-2" class="w-100 h-100"></video>
                 <div id="nameplate-2"></div>
                 <button id="video-pause-2">Pause</button>
                 <button id="video-resume-2">Resume</button>
               </div>
-              <div id="tile-3" style="display:none">
+              <div class="tile-wrap" id="tile-3" style="display:none">
                 <video id="video-3" class="w-100 h-100"></video>
                 <div id="nameplate-3"></div>
                 <button id="video-pause-3">Pause</button>
                 <button id="video-resume-3">Resume</button>
               </div>
-              <div id="tile-4" style="display:none">
+              <div class="tile-wrap" id="tile-4" style="display:none">
                 <video id="video-4" class="w-100 h-100"></video>
                 <div id="nameplate-4"></div>
                 <button id="video-pause-4">Pause</button>
                 <button id="video-resume-4">Resume</button>
               </div>
-              <div id="tile-5" style="display:none">
+              <div class="tile-wrap" id="tile-5" style="display:none">
                 <video id="video-5" class="w-100 h-100"></video>
                 <div id="nameplate-5"></div>
                 <button id="video-pause-5">Pause</button>
                 <button id="video-resume-5">Resume</button>
               </div>
-              <div id="tile-6" style="display:none">
+              <div class="tile-wrap" id="tile-6" style="display:none">
                 <video id="video-6" class="w-100 h-100"></video>
                 <div id="nameplate-6"></div>
                 <button id="video-pause-6">Pause</button>
                 <button id="video-resume-6">Resume</button>
               </div>
-              <div id="tile-7" style="display:none">
+              <div class="tile-wrap" id="tile-7" style="display:none">
                 <video id="video-7" class="w-100 h-100"></video>
                 <div id="nameplate-7"></div>
                 <button id="video-pause-7">Pause</button>
                 <button id="video-resume-7">Resume</button>
               </div>
-              <div id="tile-8" style="display:none">
+              <div class="tile-wrap" id="tile-8" style="display:none">
                 <video id="video-8" class="w-100 h-100"></video>
                 <div id="nameplate-8"></div>
                 <button id="video-pause-8">Pause</button>
                 <button id="video-resume-8">Resume</button>
               </div>
-              <div id="tile-9" style="display:none">
+              <div class="tile-wrap" id="tile-9" style="display:none">
                 <video id="video-9" class="w-100 h-100"></video>
                 <div id="nameplate-9"></div>
                 <button id="video-pause-9">Pause</button>
                 <button id="video-resume-9">Resume</button>
               </div>
-              <div id="tile-10" style="display:none">
+              <div class="tile-wrap" id="tile-10" style="display:none">
                 <video id="video-10" class="w-100 h-100"></video>
                 <div id="nameplate-10"></div>
                 <button id="video-pause-10">Pause</button>
                 <button id="video-resume-10">Resume</button>
               </div>
-              <div id="tile-11" style="display:none">
+              <div class="tile-wrap" id="tile-11" style="display:none">
                 <video id="video-11" class="w-100 h-100"></video>
                 <div id="nameplate-11"></div>
                 <button id="video-pause-11">Pause</button>
                 <button id="video-resume-11">Resume</button>
               </div>
-              <div id="tile-12" style="display:none">
+              <div class="tile-wrap" id="tile-12" style="display:none">
                 <video id="video-12" class="w-100 h-100"></video>
                 <div id="nameplate-12"></div>
                 <button id="video-pause-12">Pause</button>
                 <button id="video-resume-12">Resume</button>
               </div>
-              <div id="tile-13" style="display:none">
+              <div class="tile-wrap" id="tile-13" style="display:none">
                 <video id="video-13" class="w-100 h-100"></video>
                 <div id="nameplate-13"></div>
                 <button id="video-pause-13">Pause</button>
                 <button id="video-resume-13">Resume</button>
               </div>
-              <div id="tile-14" style="display:none">
+              <div class="tile-wrap" id="tile-14" style="display:none">
                 <video id="video-14" class="w-100 h-100"></video>
                 <div id="nameplate-14"></div>
                 <button id="video-pause-14">Pause</button>
                 <button id="video-resume-14">Resume</button>
               </div>
-              <div id="tile-15" style="display:none">
+              <div class="tile-wrap" id="tile-15" style="display:none">
                 <video id="video-15" class="w-100 h-100"></video>
                 <div id="nameplate-15"></div>
                 <button id="video-pause-15">Pause</button>
                 <button id="video-resume-15">Resume</button>
               </div>
-              <div id="tile-16" style="display:none">
+              <div class="tile-wrap" id="tile-16" style="display:none">
                 <video id="video-16" class="w-100 h-100"></video>
                 <div id="nameplate-16"></div>
                 <button id="video-pause-16" class="btn">Pause</button>

@@ -353,3 +353,29 @@ svg {
 .progress-hidden {
   visibility: hidden;
 }
+ @media only screen and (max-width: 600px) {
+  .container-wrap {
+    display: block !important;
+    background-color: #28313E;
+  }
+
+  .control-wrap {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .list-wrap {
+    margin-top: 10px;
+    display: block !important;
+  }
+
+  .tile-wrap {
+    position: relative !important;
+    width: 80% !important;
+    margin: 5px auto !important;
+    left: 0px !important;
+    top: 0px !important;
+    height: 200px !important;
+    border: #212529 1px solid;
+  }
+}
