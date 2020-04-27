@@ -5,14 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.4.0] - 2020-04-24
 
 ### Added
 - Expose an API for GetStats from RTCPeerConnection
 - Add BrowserBehavior test for supported video codecs
+- Expose ExternalUserID on videoTileDidUpdate
 
 ### Changed
 - Use getByteTimeDomainData to support iOS Safari in meeting demo
+- Update README to incorporate documentation feedback
 
 ### Removed
 

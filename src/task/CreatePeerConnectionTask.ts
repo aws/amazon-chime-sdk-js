@@ -3,6 +3,8 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import RemovableObserver from '../removableobserver/RemovableObserver';
+import TimeoutScheduler from '../scheduler/TimeoutScheduler';
+import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
 
@@ -14,6 +16,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
 
   private removeTrackAddedEventListener: (() => void) | null = null;
   private removeTrackRemovedEventListeners: { [trackId: string]: () => void } = {};
+  private presenceHandlerSet = new Set<
+    (attendeeId: string, present: boolean, externalUserId?: string | null) => void
+  >();
 
   private readonly trackEvents: string[] = [
     'ended',
@@ -24,7 +29,12 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
   ];
   private removeVideoTrackEventListeners: { [trackId: string]: (() => void)[] } = {};
 
-  constructor(private context: AudioVideoControllerState) {
+  static readonly REMOVE_HANDLER_INTERVAL_MS: number = 10000;
+
+  constructor(
+    private context: AudioVideoControllerState,
+    private externalUserIdTimeoutMs: number = CreatePeerConnectionTask.REMOVE_HANDLER_INTERVAL_MS
+  ) {
     super(context.logger);
   }
 
@@ -32,6 +42,10 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     this.removeTrackAddedEventListener && this.removeTrackAddedEventListener();
     for (const trackId in this.removeTrackRemovedEventListeners) {
       this.removeTrackRemovedEventListeners[trackId]();
+    }
+    for (const handler of this.presenceHandlerSet) {
+      this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
+      this.presenceHandlerSet.delete(handler);
     }
   }
 
@@ -128,6 +142,31 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     return false;
   }
 
+  private bindExternalIdToRemoteTile(
+    tile: VideoTile,
+    attendeeId: string,
+    stream: MediaStream,
+    width: number,
+    height: number,
+    streamId: number
+  ): void {
+    const timeoutScheduler = new TimeoutScheduler(this.externalUserIdTimeoutMs);
+    const handler = (presentAttendeeId: string, present: boolean, externalUserId: string): void => {
+      if (attendeeId === presentAttendeeId && present && externalUserId !== null) {
+        tile.bindVideoStream(attendeeId, false, stream, width, height, streamId, externalUserId);
+        this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
+        this.presenceHandlerSet.delete(handler);
+        timeoutScheduler.stop();
+      }
+    };
+    this.context.realtimeController.realtimeSubscribeToAttendeeIdPresence(handler);
+    this.presenceHandlerSet.add(handler);
+    timeoutScheduler.start(() => {
+      this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
+      this.presenceHandlerSet.delete(handler);
+    });
+  }
+
   private addRemoteVideoTrack(track: MediaStreamTrack, stream: MediaStream): void {
     let trackId = stream.id;
     if (!this.context.browserBehavior.requiresUnifiedPlan()) {
@@ -187,7 +226,14 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       width = cap.width as number;
       height = cap.height as number;
     }
-    tile.bindVideoStream(attendeeId, false, stream, width, height, streamId);
+    const externalUserId = this.context.realtimeController.realtimeExternalUserIdFromAttendeeId(
+      attendeeId
+    );
+    if (externalUserId) {
+      tile.bindVideoStream(attendeeId, false, stream, width, height, streamId, externalUserId);
+    } else {
+      this.bindExternalIdToRemoteTile(tile, attendeeId, stream, width, height, streamId);
+    }
     this.logger.info(
       `video track added, created tile=${tile.id()} track=${trackId} streamId=${streamId}`
     );

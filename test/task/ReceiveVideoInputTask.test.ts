@@ -48,6 +48,7 @@ describe('ReceiveVideoInputTask', () => {
     configuration.urls.signalingURL = 'https://signaling.test.example.com';
     configuration.credentials = new MeetingSessionCredentials();
     configuration.credentials.attendeeId = 'foo-attendee';
+    configuration.credentials.externalUserId = 'external-user-id';
     configuration.credentials.joinToken = 'foo-join-token';
     return configuration;
   }

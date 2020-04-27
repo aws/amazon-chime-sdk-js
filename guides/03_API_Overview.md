@@ -146,13 +146,15 @@ Call this API after doing pre-requisite configuration (See previous sections). O
 
 To start the meeting session, call meetingSession.audioVideo.[start()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start). This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.
 
-To stop the meeting session, call meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop).
+To stop the meeting session, call meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop). 
+
+The `stop()` method does not clean up observers. You can start and stop a session multiple times using the same observers. In other words observers are not tied to the lifecycle of the session.
 
 ## 5. Build a roster of participants using the real-time API
 
 Use the following methods to learn when attendees join and leave and when their volume level, mute state, or signal strength changes.
 
-When implementing a real-time callback, you must ensure that it never throws an exception. To preserve privacy, uncaught exceptions inside a real-time callback are treated as fatal: the session is disconnected immediately.
+When implementing a real-time callback, you must ensure that it never throws an exception. To preserve privacy, uncaught exceptions inside a real-time callback are treated as fatal: the session is disconnected immediately. The cautions around real-time callbacks do not apply to the observers. For example, uncaught exceptions are not fatal to observers (though they should be avoided).
 
 Real-time volume indicator callbacks are called at a rate of 5 updates per second. Ensure that your application is able to smoothly render these updates to avoid causing unnecessary CPU load that could degrade the meeting experience.
 
@@ -185,6 +187,8 @@ To unsubscribe from the local attendee’s signal strength changes, call meeting
 ### 5d. Subscribe to an active-speaker detector (optional)
 
 If you are interested in detecting the active speaker (e.g. to display the active speaker’s video as a large, central tile), subscribe to the active-speaker detector with an active speaker policy such as the [DefaultActiveSpeakerPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/defaultactivespeakerpolicy.html). You can receive updates when the list of active speakers changes. The list is ordered most active to least active. Active speaker policies use volume indicator changes to determine the prominence of each speaker over time.
+
+`DefaultActiveSpeakerPolicy` algorithm works as follows: as you speak, your active speaker score rises and simultaneously decreases the score of others. There are some adjustable weightings in the constructor to control how reactive it is. In general, the defaults do a reasonable job of identifying the active speaker, preventing short noises or interjections from switching the active speaker, but also allowing take over to be relatively quick.
 
 To subscribe to active speaker updates, call meetingSession.audioVideo.[subscribeToActiveSpeakerDetector(policy, callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#subscribetoactivespeakerdetector).
 
@@ -242,6 +246,8 @@ You are responsible for maintaining HTMLVideoElement objects in the DOM and arra
 
 To unbind a tile, call meetingSession.audioVideo.[unbindVideoElement(tileId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unbindvideoelement).
 
+A `tileId` is a unique identifier representing a video stream. When you stop and start, it generates a new `tileId`. You can have tileIds exceeding 16; they merely identify a particular stream uniquely. When you start video it consumes a video publishing slot, when you stop video it releases that video publishing slot. Pausing does not affect video publishing slots; it allows a remote to choose to not receive a video stream (and thus not consume bandwidth and CPU for that stream).
+
 ### 7c. Pause and unpause video (optional)
 
 Video tiles may be paused individually. The server will not send paused video streams to the attendee requesting the pause. Pausing video does not affect remote attendees.
@@ -266,7 +272,7 @@ To get a video tile, call meetingSession.audioVideo.[getVideoTile(tileId)](https
 
 You can share any [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream), such as from a screen capture or media file, as the content share for an attendee. When a content share is started, another attendee with the attendee ID `<attendee-id>#content` joins the meeting. The content audio and video appears like a regular attendee. You can subscribe to its volume indicator to show it in the roster and bind its video tile to a video element the same as you would for a regular attendee.
 
-Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares.
+Each attendee can share one content share in addition to their main mic and camera. Each meeting may have two simultaneous content shares. Content share does not count towards the max video tile limit. There may be up to two content shares irrespective of how many attendees are sharing their camera.
 
 ### 8a. Start and stop the content share
 

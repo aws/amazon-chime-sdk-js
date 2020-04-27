@@ -20,6 +20,8 @@ To get started, see the following resources:
 * [Amazon Chime](https://aws.amazon.com/chime)
 * [Amazon Chime SDK Security](https://aws.amazon.com/blogs/business-productivity/understanding-security-in-the-amazon-chime-application-and-sdk/)
 * [Amazon Chime SDK Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
+* [Amazon Chime SDK for JavaScript Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers)
+* [Amazon Chime SDK Technical Blogs](https://aws.amazon.com/blogs/business-productivity/tag/amazon-chime-sdk/)
 * [Amazon Chime SDK Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html)
 * [Amazon Chime SDK API Reference](http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
 * [Amazon Chime SDK for JavaScript Documentation](https://aws.github.io/amazon-chime-sdk-js)
@@ -108,6 +110,36 @@ const attendeeResponse = await chime.createAttendee({
 
 Now securely transfer the `meetingResponse` and `attendeeResponse` objects to your client application.
 These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.
+
+## Building and testing
+
+```
+npm run build
+npm run test
+```
+
+After running `npm run test` the first time, you can use `npm run test:fast` to
+speed up the test suite.
+
+To view code coverage results open `build/coverage/index.html` in your browser
+after running `npm run test`.
+
+## Generating the documentation
+
+To generate JavaScript API reference documentation run:
+
+```
+npm run build
+npm run doc
+```
+
+Then open `docs/index.html` in your browser.
+
+## Reporting a suspected vulnerability
+
+If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our
+[vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/).
+Please do **not** create a public GitHub issue.
 
 ## Usage
 
@@ -789,35 +821,5 @@ const observer = {
 
 meetingSession.audioVideo.addObserver(observer);
 ```
-
-## Building and testing
-
-```
-npm run build
-npm run test
-```
-
-After running `npm run test` the first time, you can use `npm run test:fast` to
-speed up the test suite.
-
-To view code coverage results open `build/coverage/index.html` in your browser
-after running `npm run test`.
-
-## Generating the documentation
-
-To generate JavaScript API reference documentation run:
-
-```
-npm run build
-npm run doc
-```
-
-Then open `docs/index.html` in your browser.
-
-## Reporting a suspected vulnerability
-
-If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our
-[vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/).
-Please do **not** create a public GitHub issue.
 
 Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.

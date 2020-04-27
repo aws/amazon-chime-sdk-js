@@ -855,6 +855,14 @@ describe('DefaultRealtimeController', () => {
     });
   });
 
+  it('will test realtimeExternalUserIdFromAttendeeId', () => {
+    const rt: RealtimeController = new DefaultRealtimeController();
+    const attendeeId = 'fake-attendee';
+    const externalUserId = 'fake-external-id';
+    rt.realtimeSetAttendeeIdPresence(attendeeId, true, externalUserId);
+    expect(rt.realtimeExternalUserIdFromAttendeeId(attendeeId)).to.be.equal(externalUserId);
+  });
+
   describe('unsubscribe', () => {
     it('can unsubscribe from callbacks', () => {
       const rt: RealtimeController = new DefaultRealtimeController();

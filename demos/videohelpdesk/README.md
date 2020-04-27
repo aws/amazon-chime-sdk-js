@@ -102,3 +102,6 @@ see both local and remote videos in their Help Desk Widget.
 
 Press the **Join Next** button again to go to the next call, and so on until the queue
 is drained.
+
+### Cleaning up
+To avoid incurring any unintended charges as a result of deploying the video help desk, it is important to delete the AWS Cloud9 environment and AWS CloudFormation stack after you are finished using them. You can delete the provisioned CloudFormation stack using the [AWS CloudFormation console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-delete-stack.html) or the [AWS CLI](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-cli-deleting-stack.html).
