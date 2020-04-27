@@ -1,0 +1,17 @@
+{
+  "name": "amazon-chime-sdk-js-serverless-demos",
+  "version": "0.1.0",
+  "description": "Amazon Chime SDK JavaScript Serverless Demos",
+  "scripts": {
+    "deploy": "npm install && node ./deploy.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.664.0",
+    "fs-extra": "^9.0.0"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/amazon-chime-sdk-js"
+  }
+}

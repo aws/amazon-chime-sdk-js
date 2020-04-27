@@ -1,4 +1,4 @@
-var AWS = require('./aws-sdk');
+var AWS = require('aws-sdk');
 var ddb = new AWS.DynamoDB();
 const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com/console');
