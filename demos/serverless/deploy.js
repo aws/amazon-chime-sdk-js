@@ -1,5 +1,5 @@
 const { spawnSync } = require('child_process');
-const fs = require("fs");
+const fs = require('fs-extra');
 const path = require("path");
 
 // Parameters
@@ -80,6 +80,10 @@ function parseArgs() {
 }
 
 function spawnOrFail(command, args, options) {
+  options = {
+    ...options,
+    shell: true
+  };
   const cmd = spawnSync(command, args, options);
   if (cmd.error) {
     console.log(`Command ${command} failed with ${cmd.error.code}`);
@@ -133,13 +137,9 @@ if (!fs.existsSync('build')) {
 console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}`);
 ensureBucket();
 
-  // TODO: remove this once AWS Lambda Node.js runtime includes the Chime APIs
-spawnOrFail('cp', ['-Rp', path.join(__dirname, '..', 'browser', 'node_modules', 'aws-sdk'), 'src']);
-
-spawnOrFail('cp', [appHtml(app), 'src/index.html']);
-
+fs.copySync(appHtml(app), 'src/index.html');
 if (app === 'meeting') {
-  spawnOrFail('cp', [appHtml('meetingV2'), 'src/indexV2.html']);
+  fs.copySync(appHtml('meetingV2'), 'src/indexV2.html');
 }
 
 spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,

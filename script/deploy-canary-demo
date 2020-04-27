@@ -8,11 +8,11 @@ npm run build
 cd $repo_path/demos/serverless
 
 echo "Deploying to alpha stage for canary"
-node deploy.js -b chime-sdk-demo-canary -s chime-sdk-demo-canary
+npm run deploy -- -b chime-sdk-demo-canary -s chime-sdk-demo-canary
 
 
 echo "Deploying to gamma stage for canary"
 
 export AWS_ACCESS_KEY_ID=$GAMMA_AWS_ACCESS_KEY_ID
 export AWS_SECRET_ACCESS_KEY=$GAMMA_AWS_SECRET_ACCESS_KEY
-node deploy.js -b chime-sdk-demo-gamma-canary -s chime-sdk-demo-gamma-canary
+npm run deploy -- -b chime-sdk-demo-gamma-canary -s chime-sdk-demo-gamma-canary
