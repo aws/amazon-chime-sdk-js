@@ -697,7 +697,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
           attendeeId: string,
           volume: number | null,
           muted: boolean | null,
-          signalStrength: number | null
+          signalStrength: number | null,
+          externalUserId: string,
         ) => {
           if (!this.roster[attendeeId]) {
             this.roster[attendeeId] = { name: '' };
@@ -711,12 +712,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
           if (signalStrength !== null) {
             this.roster[attendeeId].signalStrength = Math.round(signalStrength * 100);
           }
-          if (!this.roster[attendeeId].name) {
-            const response = await fetch(`${DemoMeetingApp.BASE_URL}attendee?title=${encodeURIComponent(this.meeting)}&attendee=${encodeURIComponent(attendeeId)}`);
-            const json = await response.json();
-            const name = json.AttendeeInfo.Name;
-            this.roster[attendeeId].name = name ? name : '';
-          }
+          this.roster[attendeeId].name = externalUserId.split('#')[1];
           this.updateRoster();
         }
       );
@@ -1067,13 +1063,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
 
   async authenticate(): Promise<string> {
     let joinInfo = (await this.joinMeeting()).JoinInfo;
-    await this.initializeMeetingSession(
-      new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee)
-    );
+    const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
+    await this.initializeMeetingSession(configuration);
     const url = new URL(window.location.href);
     url.searchParams.set('m', this.meeting);
     history.replaceState({}, `${this.meeting}`, url.toString());
-    return joinInfo.Meeting.MeetingId;
+    return configuration.meetingId;
   }
 
   log(str: string): void {
@@ -1099,6 +1094,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
 
   videoTileDidUpdate(tileState: VideoTileState): void {
     this.log(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
+    if (!tileState.boundAttendeeId) {
+      return;
+    }
     const tileIndex = tileState.localTile
       ? 16
       : this.tileOrganizer.acquireTileIndex(tileState.tileId);
@@ -1125,15 +1123,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
-    // TODO: enforce roster names
-    new TimeoutScheduler(200).start(() => {
-      const rosterName = this.roster[tileState.boundAttendeeId]
-        ? this.roster[tileState.boundAttendeeId].name
-        : '';
-      if (nameplateElement.innerHTML !== rosterName) {
-        nameplateElement.innerHTML = rosterName;
-      }
-    });
+    const rosterName = tileState.boundExternalUserId.split('#')[1];
+    if (nameplateElement.innerHTML !== rosterName) {
+      nameplateElement.innerHTML = rosterName;
+    }
     tileElement.style.display = 'block';
     this.layoutVideoTiles();
   }

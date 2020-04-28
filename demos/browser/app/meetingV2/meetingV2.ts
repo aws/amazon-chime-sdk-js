@@ -146,7 +146,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).app = this;
-    (document.getElementById('sdk-version') as HTMLSpanElement).innerHTML =
+    (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
       "amazon-chime-sdk-js@" + Versioning.sdkVersion;
     this.initEventListeners();
     this.initParameters();
@@ -193,20 +193,20 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           } catch (error) {
             (document.getElementById(
               'failed-meeting'
-            ) as HTMLDivElement).innerHTML = `Meeting ID: ${this.meeting}`;
-            (document.getElementById('failed-meeting-error') as HTMLDivElement).innerHTML =
+            ) as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
+            (document.getElementById('failed-meeting-error') as HTMLDivElement).innerText =
               error.message;
             this.switchToFlow('flow-failed-meeting');
             return;
           }
           (document.getElementById(
             'meeting-id'
-          ) as HTMLSpanElement).innerHTML = `${this.meeting} (${this.region})`;
+          ) as HTMLSpanElement).innerText = `${this.meeting} (${this.region})`;
           (document.getElementById(
             'chime-meeting-id'
-          ) as HTMLSpanElement).innerHTML = `${chimeMeetingId}`;
-          (document.getElementById('info-meeting') as HTMLSpanElement).innerHTML = this.meeting;
-          (document.getElementById('info-name') as HTMLSpanElement).innerHTML = this.name;
+          ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
+          (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
+          (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
           this.switchToFlow('flow-devices');
           await this.openAudioInputFromSelection();
           try {
@@ -252,8 +252,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           } catch (error) {
             (document.getElementById(
               'failed-meeting'
-            ) as HTMLDivElement).innerHTML = `Meeting ID: ${this.meeting}`;
-            (document.getElementById('failed-meeting-error') as HTMLDivElement).innerHTML =
+            ) as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
+            (document.getElementById('failed-meeting-error') as HTMLDivElement).innerText =
               error.message;
             this.switchToFlow('flow-failed-meeting');
             return;
@@ -334,8 +334,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           this.displayButtonStates();
           this.switchToFlow('flow-meeting');
         } catch (error) {
-          document.getElementById('failed-join').innerHTML = `Meeting ID: ${this.meeting}`;
-          document.getElementById('failed-join-error').innerHTML = `Error: ${error.message}`;
+          document.getElementById('failed-join').innerText = `Meeting ID: ${this.meeting}`;
+          document.getElementById('failed-join-error').innerText = `Error: ${error.message}`;
         }
       });
     });
@@ -513,24 +513,24 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const metricReport = clientMetricReport.getObservableMetrics();
     if (typeof metricReport.availableSendBandwidth === 'number' && !isNaN(metricReport.availableSendBandwidth)) {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerHTML =
+      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
         'Available Uplink Bandwidth: ' + String(metricReport.availableSendBandwidth / 1000) + ' Kbps';
     } else if (typeof metricReport.availableOutgoingBitrate === 'number' && !isNaN(metricReport.availableOutgoingBitrate)) {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerHTML =
+      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
         'Available Uplink Bandwidth: ' + String(metricReport.availableOutgoingBitrate / 1000) + ' Kbps';
     } else {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerHTML =
+      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
         'Available Uplink Bandwidth: Unknown';
     }
 
     if (typeof metricReport.availableReceiveBandwidth === 'number' && !isNaN(metricReport.availableReceiveBandwidth)) {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerHTML =
+      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
         'Available Downlink Bandwidth: ' + String(metricReport.availableReceiveBandwidth / 1000) + ' Kbps';
     } else if (typeof metricReport.availableIncomingBitrate === 'number' && !isNaN(metricReport.availableIncomingBitrate)) {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerHTML =
+      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
         'Available Downlink Bandwidth: ' + String(metricReport.availableIncomingBitrate / 1000) + ' Kbps';
     } else {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerHTML =
+      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
         'Available Downlink Bandwidth: Unknown';
     }
   }
@@ -604,52 +604,69 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   updateRoster(): void {
-    let rosterText = '';
-    for (const attendeeId in this.roster) {
-      rosterText +=
-        '<li class="list-group-item d-flex justify-content-between align-items-center">';
-      rosterText += this.roster[attendeeId].name;
-      let score = this.roster[attendeeId].score;
-      if (!score) {
-        score = 0;
-      }
-      score = Math.floor(score * 100);
-      if (score) {
-        rosterText += ` (${score})`
-      }
-      rosterText += '<span class="badge badge-pill ';
-      let status = '';
-      if (this.roster[attendeeId].signalStrength < 1) {
-        status = '&nbsp;';
-        rosterText += 'badge-warning';
-      } else if (this.roster[attendeeId].signalStrength === 0) {
-        status = '&nbsp;';
-        rosterText += 'badge-danger';
-      } else if (this.roster[attendeeId].muted) {
-        status = 'MUTED';
-        rosterText += 'badge-secondary';
-      } else if (this.roster[attendeeId].active) {
-        status = 'SPEAKING';
-        rosterText += 'badge-success';
-      } else if (this.roster[attendeeId].volume > 0) {
-        status = '&nbsp;';
-        rosterText += 'badge-success';
-      }
-      rosterText += `">${status}</span></li>`;
-    }
     const roster = document.getElementById('roster');
-    if (roster.innerHTML !== rosterText) {
-      roster.innerHTML = rosterText;
+    const newRosterCount = Object.keys(this.roster).length;
+    while (roster.getElementsByTagName('li').length < newRosterCount) {
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+      li.appendChild(document.createElement('span'));
+      li.appendChild(document.createElement('span'));
+      roster.appendChild(li);
+    }
+    while (roster.getElementsByTagName('li').length > newRosterCount) {
+      roster.removeChild(roster.getElementsByTagName('li')[0]);
+    }
+    const entries = roster.getElementsByTagName('li');
+    let i = 0;
+    for (const attendeeId in this.roster) {
+      const spanName = entries[i].getElementsByTagName('span')[0];
+      const spanStatus = entries[i].getElementsByTagName('span')[1];
+      let statusClass = 'badge badge-pill ';
+      let statusText = '\xa0'; // &nbsp
+      if (this.roster[attendeeId].signalStrength < 1) {
+        statusClass += 'badge-warning';
+      } else if (this.roster[attendeeId].signalStrength === 0) {
+        statusClass += 'badge-danger';
+      } else if (this.roster[attendeeId].muted) {
+        statusText = 'MUTED';
+        statusClass += 'badge-secondary';
+      } else if (this.roster[attendeeId].active) {
+        statusText = 'SPEAKING';
+        statusClass += 'badge-success';
+      } else if (this.roster[attendeeId].volume > 0) {
+        statusClass += 'badge-success';
+      }
+      this.updateProperty(spanName, 'innerText', this.roster[attendeeId].name);
+      this.updateProperty(spanStatus, 'innerText', statusText);
+      this.updateProperty(spanStatus, 'className', statusClass);
+      i++;
+    }
+  }
+
+  updateProperty(obj: any, key: string, value: string) {
+    if (value !== undefined && obj[key] !== value) {
+      obj[key] = value;
     }
   }
 
   setupSubscribeToAttendeeIdPresenceHandler(): void {
-    const handler = (attendeeId: string, present: boolean): void => {
+    const handler = (attendeeId: string, present: boolean, externalUserId: string): void => {
       this.log(`${attendeeId} present = ${present}`);
+      const isContentAttendee = new DefaultModality(attendeeId).hasModality(DefaultModality.MODALITY_CONTENT);
+      const isSelfAttendee = new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId;
       if (!present) {
         delete this.roster[attendeeId];
         this.updateRoster();
         return;
+      }
+      //If someone else share content, stop the current content share
+      if (!this.allowMaxContentShare() && !isSelfAttendee && this.isButtonOn('button-content-share')) {
+        this.contentShareStop();
+      }
+      if (!this.roster[attendeeId]) {
+        this.roster[attendeeId] = {
+          name: externalUserId.split('#')[1] + (isContentAttendee ? ' «Content»' : ''),
+        };
       }
       this.audioVideo.realtimeSubscribeToVolumeIndicator(
         attendeeId,
@@ -660,7 +677,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           signalStrength: number | null
         ) => {
           if (!this.roster[attendeeId]) {
-            this.roster[attendeeId] = { name: '' };
+            return;
           }
           if (volume !== null) {
             this.roster[attendeeId].volume = Math.round(volume * 100);
@@ -670,21 +687,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           }
           if (signalStrength !== null) {
             this.roster[attendeeId].signalStrength = Math.round(signalStrength * 100);
-          }
-          if (!this.roster[attendeeId].name) {
-            const baseAttendeeId = new DefaultModality(attendeeId).base();
-            const response = await fetch(`${DemoMeetingApp.BASE_URL}attendee?title=${encodeURIComponent(this.meeting)}&attendee=${encodeURIComponent(baseAttendeeId)}`);
-            const json = await response.json();
-            let name = json.AttendeeInfo.Name;
-            if (baseAttendeeId !== attendeeId) {
-              name += " «Content»";
-              const selfAttendeeId = this.meetingSession.configuration.credentials.attendeeId;
-              //If someone else share content, stop the current content share
-              if (!this.allowMaxContentShare() && selfAttendeeId !== baseAttendeeId && this.isButtonOn('button-content-share')) {
-                this.contentShareStop();
-              }
-            }
-            this.roster[attendeeId].name = name ? name : '';
           }
           this.updateRoster();
         }
@@ -845,11 +847,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   ): HTMLButtonElement {
     const button = document.createElement('button') as HTMLButtonElement;
     menu.appendChild(button);
-    button.innerHTML = title;
+    button.innerText = title;
     button.classList.add('dropdown-item');
-    if (id !== undefined) {
-      button.id = id;
-    }
+    this.updateProperty(button, 'id', id);
     button.addEventListener('click', () => {
       clickHandler();
     });
@@ -942,13 +942,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   setAudioPreviewPercent(percent: number): void {
     const audioPreview = document.getElementById('audio-preview');
+    this.updateProperty(audioPreview.style, 'transitionDuration', '33ms');
+    this.updateProperty(audioPreview.style, 'width', `${percent}%`);
     if (audioPreview.getAttribute('aria-valuenow') !== `${percent}`) {
-      audioPreview.style.width = `${percent}%`;
       audioPreview.setAttribute('aria-valuenow', `${percent}`);
-    }
-    const transitionDuration = '33ms';
-    if (audioPreview.style.transitionDuration !== transitionDuration) {
-      audioPreview.style.transitionDuration = transitionDuration;
     }
   }
 
@@ -1115,13 +1112,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   async authenticate(): Promise<string> {
     let joinInfo = (await this.joinMeeting()).JoinInfo;
-    await this.initializeMeetingSession(
-      new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee)
-    );
+    const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
+    await this.initializeMeetingSession(configuration);
     const url = new URL(window.location.href);
     url.searchParams.set('m', this.meeting);
     history.replaceState({}, `${this.meeting}`, url.toString());
-    return joinInfo.Meeting.MeetingId;
+    return configuration.meetingId;
   }
 
   log(str: string): void {
@@ -1162,19 +1158,15 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
-
     const pauseButtonElement = document.getElementById(`video-pause-${tileIndex}`) as HTMLButtonElement;
-    const resumeButtonElement = document.getElementById(`video-resume-${tileIndex}`) as HTMLButtonElement;
 
     pauseButtonElement.addEventListener('click', () => {
       if (!tileState.paused) {
         this.audioVideo.pauseVideoTile(tileState.tileId);
-      }
-    });
-
-    resumeButtonElement.addEventListener('click', () => {
-      if (tileState.paused) {
+        pauseButtonElement.innerText = 'Resume';
+      } else {
         this.audioVideo.unpauseVideoTile(tileState.tileId);
+        pauseButtonElement.innerText = 'Pause';
       }
     });
 
@@ -1182,15 +1174,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
-    // TODO: enforce roster names
-    new TimeoutScheduler(2000).start(() => {
-      const rosterName = this.roster[tileState.boundAttendeeId]
-        ? this.roster[tileState.boundAttendeeId].name
-        : '';
-      if (nameplateElement.innerHTML !== rosterName) {
-        nameplateElement.innerHTML = rosterName;
-      }
-    });
+    this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#')[1]);
     tileElement.style.display = 'block';
     this.layoutVideoTiles();
   }
@@ -1375,28 +1359,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     button.style.position = 'absolute';
     button.style.display = 'inline-block';
     button.style.right = '0px';
-    // button.style.top = `${h - nameplateSize - nameplatePadding}px`;
+    button.style.top = `${h - nameplateSize - nameplatePadding}px`;
     button.style.height = `${nameplateSize}px`;
-    // button.style.width = `${w}px`;
     button.style.margin = '0';
     button.style.padding = '0';
-    button.style.paddingLeft = `${nameplatePadding}px`;
-    button.style.color = '#fff';
-    button.style.backgroundColor = 'rgba(0,0,0,0)';
-    button.style.textShadow = '0px 0px 5px black';
-    button.style.letterSpacing = '0.1em';
-    button.style.fontSize = `${nameplateSize - 6}px`;
-
-    button = document.getElementById(`video-resume-${tileIndex}`) as HTMLButtonElement;
-
-    button.style.position = 'absolute';
-    button.style.left = '0px';
-    button.style.top = '0px';
-    button.style.height = `${nameplateSize}px`;
-    // button.style.width = `${w}px`;
-    button.style.margin = '0';
-    button.style.padding = '0';
-    button.style.paddingLeft = `${nameplatePadding}px`;
+    button.style.border = 'none';
+    button.style.paddingRight = `${nameplatePadding}px`;
     button.style.color = '#fff';
     button.style.backgroundColor = 'rgba(0,0,0,0)';
     button.style.textShadow = '0px 0px 5px black';
