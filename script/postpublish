@@ -48,4 +48,4 @@ File.write(meetingV2_app, File.read(meetingV2_app).gsub("'../../../../src/index'
 verbose('npm run build --app=meeting')
 verbose('npm run build')
 Dir.chdir('../serverless/')
-verbose('node deploy.js -b chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary')
+verbose('npm run deploy -- -b chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary')

@@ -23,7 +23,7 @@ API Gateway deployment that runs the `meeting` demo.
 
 ```
 cd demos/serverless
-node ./deploy.js -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
+npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
 The script will create an S3 bucket and CloudFormation stack
