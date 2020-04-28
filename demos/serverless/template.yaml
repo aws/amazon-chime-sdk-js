@@ -17,7 +17,6 @@ Globals:
     Environment:
       Variables:
         MEETINGS_TABLE_NAME: !Ref Meetings
-        ATTENDEES_TABLE_NAME: !Ref Attendees
         SQS_QUEUE_ARN: !GetAtt MeetingNotificationsQueue.Arn
         BROWSER_LOG_GROUP_NAME: !Ref ChimeBrowserLogs
 Resources:
@@ -42,9 +41,7 @@ Resources:
             Resource: '*'
       Roles:
         - Ref: ChimeSdkJoinLambdaRole
-        - Ref: ChimeSdkAttendeeLambdaRole
         - Ref: ChimeSdkEndLambdaRole
-        - Ref: ChimeSdkCreateMeetingLambdaRole
   CloudWatchAccessPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -87,24 +84,12 @@ Resources:
       TimeToLiveSpecification:
         AttributeName: "TTL"
         Enabled: true
-  Attendees:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: "AttendeeId"
-          AttributeType: "S"
-      KeySchema:
-        - AttributeName: "AttendeeId"
-          KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
   MeetingNotificationsQueue:
     Type: AWS::SQS::Queue
   ChimeSdkIndexLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: index.handler
+      Handler: handlers.index
       Runtime: nodejs10.x
       CodeUri: src/
       Events:
@@ -116,7 +101,7 @@ Resources:
   ChimeSdkIndexV2Lambda:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: index.handlerV2
+      Handler: handlers.indexV2
       Runtime: nodejs10.x
       CodeUri: src/
       Events:
@@ -125,23 +110,6 @@ Resources:
           Properties:
             Path: /v2/
             Method: GET
-  ChimeSdkCreateMeetingLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers.createMeeting
-      CodeUri: src/
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Meetings
-      Environment:
-        Variables:
-          USE_EVENT_BRIDGE: !Ref UseEventBridge
-      Events:
-        Api1:
-          Type: Api
-          Properties:
-            Path: /meeting
-            Method: POST
   ChimeSdkJoinLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -150,8 +118,6 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Meetings
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Attendees
       Environment:
         Variables:
           USE_EVENT_BRIDGE: !Ref UseEventBridge
@@ -175,26 +141,10 @@ Resources:
           Properties:
             Path: /end
             Method: POST
-  ChimeSdkAttendeeLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers.attendee
-      CodeUri: src/
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Meetings
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Attendees
-      Events:
-        Api1:
-          Type: Api
-          Properties:
-            Path: /attendee
-            Method: GET
   ChimeSQSQueueLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: notification_handlers.sqs_handler
+      Handler: handlers.sqs_handler
       CodeUri: src/
       Events:
         MeetingNotificaionsEvent:
@@ -206,7 +156,7 @@ Resources:
     Type: AWS::Serverless::Function
     Condition: ShouldUseEventBridge
     Properties:
-      Handler: notification_handlers.event_bridge_handler
+      Handler: handlers.event_bridge_handler
       CodeUri: src/
       Events:
         ChimeEventBridgeEvent:

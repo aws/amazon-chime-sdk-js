@@ -1,153 +1,109 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-/* eslint-disable */
+const AWS = require('aws-sdk');
 const compression = require('compression');
 const fs = require('fs');
+const http = require('http');
 const url = require('url');
 const uuid = require('uuid/v4');
-const AWS = require('aws-sdk');
-/* eslint-enable */
 
-let hostname = '127.0.0.1';
-let port = 8080;
-let protocol = 'http';
-let options = {};
+// Store created meetings in a map so attendees can join by meeting title
+const meetingTable = {};
 
+// Use local host for application server
+const host = '127.0.0.1:8080';
+
+// Load the contents of the web application to be used as the index page
+const indexPage = fs.readFileSync(`dist/${process.env.npm_config_app || 'meetingV2'}.html`);
+
+// Create ans AWS SDK Chime object. Region 'us-east-1' is currently required.
+// Use the MediaRegion property below in CreateMeeting to select the region
+// the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
-const alternateEndpoint = process.env.ENDPOINT;
-if (alternateEndpoint) {
-  console.log('Using endpoint: ' + alternateEndpoint);
-  chime.createMeeting({ ClientRequestToken: uuid() }, () => {});
-  AWS.NodeHttpClient.sslAgent.options.rejectUnauthorized = false;
-  chime.endpoint = new AWS.Endpoint(alternateEndpoint);
-} else {
-  chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com/console');
-}
 
-const meetingCache = {};
-const attendeeCache = {};
+// Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
+chime.endpoint = new AWS.Endpoint(process.env.ENDPOINT || 'https://service.chime.aws.amazon.com');
 
-const log = message => {
+// Start an HTTP server to serve the index page and handle meeting actions
+http.createServer({}, async (request, response) => {
+  log(`${request.method} ${request.url} BEGIN`);
+  try {
+    // Enable HTTP compression
+    compression({})(request, response, () => {});
+    const requestUrl = url.parse(request.url, true);
+    if (request.method === 'GET' && requestUrl.pathname === '/') {
+      // Return the contents of the index page
+      respond(response, 200, 'text/html', indexPage);
+    } else if (request.method === 'POST' && requestUrl.pathname === '/join') {
+      if (!requestUrl.query.title || !requestUrl.query.name || !requestUrl.query.region) {
+        throw new Error('Need parameters: title, name, region');
+      }
+
+      // Look up the meeting by its title. If it does not exist, create the meeting.
+      if (!meetingTable[requestUrl.query.title]) {
+        meetingTable[requestUrl.query.title] = await chime.createMeeting({
+          // Use a UUID for the client request token to ensure that any request retries
+          // do not create multiple meetings.
+          ClientRequestToken: uuid(),
+          // Specify the media region (where the meeting is hosted).
+          // In this case, we use the region selected by the user.
+          MediaRegion: requestUrl.query.region,
+          // Any meeting ID you wish to associate with the meeting.
+          // For simplicity here, we use the meeting title.
+          ExternalMeetingId: requestUrl.query.title.substring(0, 64),
+        }).promise();
+      }
+
+      // Fetch the meeting info
+      const meeting = meetingTable[requestUrl.query.title];
+
+      // Create new attendee for the meeting
+      const attendee = await chime.createAttendee({
+        // The meeting ID of the created meeting to add the attendee to
+        MeetingId: meeting.Meeting.MeetingId,
+
+        // Any user ID you wish to associate with the attendeee.
+        // For simplicity here, we use a random id for uniqueness
+        // combined with the name the user provided, which can later
+        // be used to help build the roster.
+        ExternalUserId: `${uuid().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
+      }).promise()
+
+      // Return the meeting and attendee responses. The client will use these
+      // to join the meeting.
+      respond(response, 201, 'application/json', JSON.stringify({
+        JoinInfo: {
+          Meeting: meeting,
+          Attendee: attendee,
+        },
+      }, null, 2));
+    } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
+      // End the meeting. All attendee connections will hang up.
+      await chime.deleteMeeting({
+        MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
+      }).promise();
+      respond(response, 200, 'application/json', JSON.stringify({}));
+    } else {
+      respond(response, 404, 'text/html', '404 Not Found');
+    }
+  } catch (err) {
+    respond(response, 400, 'application/json', JSON.stringify({ error: err.message }, null, 2));
+  }
+  log(`${request.method} ${request.url} END`);
+}).listen(host.split(':')[1], host.split(':')[0], () => {
+  log(`server running at http://${host}/`);
+});
+
+function log(message) {
   console.log(`${new Date().toISOString()} ${message}`);
 };
 
-const app = process.env.npm_config_app || 'meetingV2';
-
-const server = require(protocol).createServer(options, async (request, response) => {
-  log(`${request.method} ${request.url} BEGIN`);
-  compression({})(request, response, () => {});
-  try {
-    if (
-      request.method === 'GET' &&
-      (request.url === '/' || request.url === '/v2/' || request.url.startsWith('/?'))
-    ) {
-      response.statusCode = 200;
-      response.setHeader('Content-Type', 'text/html');
-      response.end(fs.readFileSync(`dist/${app}.html`));
-    } else if (request.method === 'POST' && request.url.startsWith('/join?')) {
-      const query = url.parse(request.url, true).query;
-      const title = query.title;
-      const name = query.name;
-      if (!meetingCache[title]) {
-        meetingCache[title] = await chime
-          .createMeeting({
-            ClientRequestToken: uuid(),
-            // NotificationsConfiguration: {
-            //   SqsQueueArn: 'Paste your arn here',
-            //   SnsTopicArn: 'Paste your arn here'
-            // }
-          })
-          .promise();
-        attendeeCache[title] = {};
-      }
-      const joinInfo = {
-        JoinInfo: {
-          Title: title,
-          Meeting: meetingCache[title].Meeting,
-          Attendee: (
-            await chime
-              .createAttendee({
-                MeetingId: meetingCache[title].Meeting.MeetingId,
-                ExternalUserId: uuid(),
-              })
-              .promise()
-          ).Attendee,
-        },
-      };
-      attendeeCache[title][joinInfo.JoinInfo.Attendee.AttendeeId] = name;
-      response.statusCode = 201;
-      response.setHeader('Content-Type', 'application/json');
-      response.write(JSON.stringify(joinInfo), 'utf8');
-      response.end();
-      log(JSON.stringify(joinInfo, null, 2));
-    } else if (request.method === 'GET' && request.url.startsWith('/attendee?')) {
-      const query = url.parse(request.url, true).query;
-      const attendeeInfo = {
-        AttendeeInfo: {
-          AttendeeId: query.attendee,
-          Name: attendeeCache[query.title][query.attendee],
-        },
-      };
-      response.statusCode = 200;
-      response.setHeader('Content-Type', 'application/json');
-      response.write(JSON.stringify(attendeeInfo), 'utf8');
-      response.end();
-      log(JSON.stringify(attendeeInfo, null, 2));
-    } else if (request.method === 'POST' && request.url.startsWith('/meeting?')) {
-      const query = url.parse(request.url, true).query;
-      const title = query.title;
-      if (!meetingCache[title]) {
-        meetingCache[title] = await chime
-          .createMeeting({
-            ClientRequestToken: uuid(),
-            // NotificationsConfiguration: {
-            //   SqsQueueArn: 'Paste your arn here',
-            //   SnsTopicArn: 'Paste your arn here'
-            // }
-          })
-          .promise();
-        attendeeCache[title] = {};
-      }
-      const joinInfo = {
-        JoinInfo: {
-          Title: title,
-          Meeting: meetingCache[title].Meeting,
-        },
-      };
-      response.statusCode = 201;
-      response.setHeader('Content-Type', 'application/json');
-      response.write(JSON.stringify(joinInfo), 'utf8');
-      response.end();
-      log(JSON.stringify(joinInfo, null, 2));
-    } else if (request.method === 'POST' && request.url.startsWith('/end?')) {
-      const query = url.parse(request.url, true).query;
-      const title = query.title;
-      await chime
-        .deleteMeeting({
-          MeetingId: meetingCache[title].Meeting.MeetingId,
-        })
-        .promise();
-      response.statusCode = 200;
-      response.end();
-    } else if (request.method === 'POST' && request.url.startsWith('/logs')) {
-      console.log('Writing logs to cloudwatch');
-      response.end('Writing logs to cloudwatch');
-    } else {
-      response.statusCode = 404;
-      response.setHeader('Content-Type', 'text/plain');
-      response.end('404 Not Found');
-    }
-  } catch (err) {
-    log(`server caught error: ${err}`);
-    response.statusCode = 403;
-    response.setHeader('Content-Type', 'application/json');
-    response.write(JSON.stringify({ error: err.message }), 'utf8');
-    response.end();
+function respond(response, statusCode, contentType, body) {
+  response.statusCode = statusCode;
+  response.setHeader('Content-Type', contentType);
+  response.end(body);
+  if (contentType === 'application/json') {
+    log(body);
   }
-  log(`${request.method} ${request.url} END`);
-});
-
-server.listen(port, hostname, () => {
-  log(`server running at ${protocol}://${hostname}:${port}/`);
-});
+}

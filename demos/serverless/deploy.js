@@ -9,6 +9,12 @@ let stack = ``;
 let app = `meeting`;
 let useEventBridge = false;
 
+const packages = [
+  // Use latest AWS SDK instead of default version provided by Lambda runtime
+  'aws-sdk',
+  'uuid',
+];
+
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
   console.log(`  -r, --region       Target region, default '${region}'`);
@@ -89,7 +95,7 @@ function spawnOrFail(command, args, options) {
     console.log(`Command ${command} failed with ${cmd.error.code}`);
     process.exit(255);
   }
-  const output=cmd.output.toString();
+  const output = cmd.stdout.toString();
   console.log(output);
   if (cmd.status !== 0) {
     console.log(`Command ${command} failed with exit code ${cmd.status} signal ${cmd.signal}`);
@@ -114,8 +120,9 @@ function ensureApp(appName) {
     spawnOrFail('npm', ['run', 'build', `--app=${appName}`], {cwd: path.join(__dirname, '..', 'browser')});
   }
 
-  // TODO: remove this once AWS Lambda Node.js runtime includes the Chime APIs
-  spawnOrFail('npm', ['install', '--production'], {cwd: path.join(__dirname, '..', 'browser', 'node_modules', 'aws-sdk')});
+  for (const package of packages) {
+    spawnOrFail('npm', ['install', '--production'], {cwd: path.join(__dirname, '..', 'browser', 'node_modules', package)});
+  }
 }
 
 function ensureTools() {
@@ -137,6 +144,9 @@ if (!fs.existsSync('build')) {
 console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}`);
 ensureBucket();
 
+for (const package of packages) {
+  fs.copySync(path.join(__dirname, '..', 'browser', 'node_modules', package), 'src');
+}
 fs.copySync(appHtml(app), 'src/index.html');
 if (app === 'meeting') {
   fs.copySync(appHtml('meetingV2'), 'src/indexV2.html');

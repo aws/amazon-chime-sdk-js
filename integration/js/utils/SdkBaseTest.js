@@ -89,7 +89,7 @@ class SdkBaseTest extends KiteBaseTest {
     //Reset the status so KITE does not skip all the steps in next run
     this.report = new AllureTestReport(this.name);
     if (this.io !== undefined) {
-      const createMeetingUrl = `${this.baseUrl}meeting?title=${this.meetingTitle}`;
+      const createMeetingUrl = `${this.baseUrl}join?title=${this.meetingTitle}&name=MeetingOwner&region=us-east-1`;
       this.io.emit("setup_test", createMeetingUrl, this.attendeeId);
     }
   }

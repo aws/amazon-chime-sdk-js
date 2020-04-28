@@ -17,4 +17,3 @@ rust
 screensignalingprotocol
 signalingprotocol
 !demos/browser/app/*/*.ts
-!demos/browser/server.js
