@@ -11,6 +11,7 @@ import DevicePixelRatioObserver from '../../src/devicepixelratioobserver/DeviceP
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
+import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 class InvokingDevicePixelRatioMonitor implements DevicePixelRatioMonitor {
@@ -46,12 +47,14 @@ describe('DefaultVideoTile', () => {
   let tileController: VideoTileController;
   let tile: DefaultVideoTile;
   let domMockBuilder: DOMMockBuilder;
+  let domMockBehavior: DOMMockBehavior;
   let tileControllerSpy: sinon.SinonSpy;
   let mockVideoStream: MediaStream;
   let mockVideoTrack: MediaStreamTrack;
 
   beforeEach(() => {
-    domMockBuilder = new DOMMockBuilder();
+    domMockBehavior = new DOMMockBehavior();
+    domMockBuilder = new DOMMockBuilder(domMockBehavior);
     monitor = new InvokingDevicePixelRatioMonitor();
     audioVideoController = new NoOpAudioVideoController();
     tileController = audioVideoController.videoTileController;
@@ -207,6 +210,8 @@ describe('DefaultVideoTile', () => {
 
       // @ts-ignore
       const mockMediaStream2: MediaStream = new MediaStream();
+      // @ts-ignore
+      mockMediaStream2.addTrack(new MediaStreamTrack('mockMediaStream2', 'video'));
       tile.bindVideoStream('attendee', true, mockMediaStream2, 2, 2, 1);
       expect(videoElement.srcObject).to.equal(mockMediaStream2);
     });
@@ -310,7 +315,7 @@ describe('DefaultVideoTile', () => {
       expect(setAttributeSpy.callCount).to.equal(0);
     });
 
-    it('disables picture-in-picture and remote playback on local tiles', () => {
+    it('disables picture-in-picture and remote playback and mirror on local tiles', () => {
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       const videoElement = videoElementFactory.create();
       // @ts-ignore
@@ -323,6 +328,29 @@ describe('DefaultVideoTile', () => {
       expect(videoElement.disablePictureInPicture).to.be.true;
       // @ts-ignore
       expect(videoElement.disableRemotePlayback).to.be.true;
+      expect(videoElement.style.transform).to.eq('rotateY(180deg)');
+    });
+
+    it('do not mirror local video for rear-facing camera', () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 640,
+        height: 480,
+        deviceId: 'testCamera',
+        facingMode: 'environment',
+      };
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+      const videoElement = videoElementFactory.create();
+      // @ts-ignore
+      videoElement.disablePictureInPicture = false;
+      // @ts-ignore
+      videoElement.disableRemotePlayback = false;
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+      // @ts-ignore
+      expect(videoElement.disablePictureInPicture).to.be.true;
+      // @ts-ignore
+      expect(videoElement.disableRemotePlayback).to.be.true;
+      expect(videoElement.style.transform).to.be.empty;
     });
   });
 

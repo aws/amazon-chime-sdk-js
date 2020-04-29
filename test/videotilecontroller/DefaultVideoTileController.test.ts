@@ -13,13 +13,6 @@ import VideoTileState from '../../src/videotile/VideoTileState';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
-// @ts-ignore
-const mockMediaStream: MediaStream = {
-  getTracks: (): MediaStreamTrack[] => {
-    return [];
-  },
-};
-
 describe('DefaultVideoTileController', () => {
   const assert: Chai.AssertStatic = chai.assert;
   const expect: Chai.ExpectStatic = chai.expect;
@@ -27,11 +20,15 @@ describe('DefaultVideoTileController', () => {
   let audioVideoController: AudioVideoTileController;
   let tileController: VideoTileController;
   let domMockBuilder: DOMMockBuilder;
+  let mockMediaStream: MediaStream;
 
   beforeEach(() => {
     domMockBuilder = new DOMMockBuilder();
     audioVideoController = new NoOpAudioVideoTileController();
     tileController = audioVideoController.videoTileController;
+    mockMediaStream = new MediaStream();
+    // @ts-ignore
+    mockMediaStream.addTrack(new MediaStreamTrack('mock-track', 'video'));
   });
 
   afterEach(() => {
