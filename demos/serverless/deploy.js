@@ -119,15 +119,12 @@ function ensureApp(appName) {
     console.log(`Application ${appHtml(appName)} does not exist. Rebuilding demo apps`);
     spawnOrFail('npm', ['run', 'build', `--app=${appName}`], {cwd: path.join(__dirname, '..', 'browser')});
   }
-
-  for (const package of packages) {
-    spawnOrFail('npm', ['install', '--production'], {cwd: path.join(__dirname, '..', 'browser', 'node_modules', package)});
-  }
 }
 
 function ensureTools() {
   spawnOrFail('aws', ['--version']);
   spawnOrFail('sam', ['--version']);
+  spawnOrFail('npm', ['install']);
 }
 
 parseArgs();
@@ -145,8 +142,11 @@ console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}`);
 ensureBucket();
 
 for (const package of packages) {
-  fs.copySync(path.join(__dirname, '..', 'browser', 'node_modules', package), 'src');
+  spawnOrFail('npm', ['install', '--production'], {cwd: path.join(__dirname, 'node_modules', package)});
+  fs.removeSync(path.join(__dirname, 'src', package));
+  fs.copySync(path.join(__dirname, 'node_modules', package), path.join(__dirname, 'src', package));
 }
+
 fs.copySync(appHtml(app), 'src/index.html');
 if (app === 'meeting') {
   fs.copySync(appHtml('meetingV2'), 'src/indexV2.html');
