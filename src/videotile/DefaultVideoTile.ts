@@ -17,7 +17,10 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     videoElement: HTMLVideoElement,
     localTile: boolean
   ): void {
-    const transform = localTile ? 'rotateY(180deg)' : '';
+    const transform =
+      localTile && videoStream.getVideoTracks()[0].getSettings().facingMode !== 'environment'
+        ? 'rotateY(180deg)'
+        : '';
 
     DefaultVideoTile.setVideoElementFlag(videoElement, 'disablePictureInPicture', localTile);
     DefaultVideoTile.setVideoElementFlag(videoElement, 'disableRemotePlayback', localTile);

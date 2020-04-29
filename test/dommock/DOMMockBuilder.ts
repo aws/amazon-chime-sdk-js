@@ -194,6 +194,7 @@ export default class DOMMockBuilder {
           width: mockBehavior.mediaStreamTrackSettings.width,
           height: mockBehavior.mediaStreamTrackSettings.height,
           deviceId: mockBehavior.mediaStreamTrackSettings.deviceId,
+          facingMode: mockBehavior.mediaStreamTrackSettings.facingMode,
         };
       }
 

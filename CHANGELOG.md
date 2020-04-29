@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix serverless deploy script to work on Windows
 - Clean up and fix serverless package bundling
+- Do not mirror local video for rear-facing camera
 
 ## [1.4.0] - 2020-04-24
 

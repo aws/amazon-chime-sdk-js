@@ -29,10 +29,16 @@ export default class DOMMockBehavior {
     height: 0,
   };
 
-  mediaStreamTrackSettings: { width: number; height: number; deviceId: string } = {
+  mediaStreamTrackSettings: {
+    width: number;
+    height: number;
+    deviceId: string;
+    facingMode?: string;
+  } = {
     width: 0,
     height: 0,
     deviceId: 'test',
+    facingMode: 'user',
   };
 
   deviceCounter: number = 0;
