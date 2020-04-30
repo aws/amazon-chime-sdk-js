@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Simplify meeting demos to leverage externalUserId in roster
+- Update PR template to add testing information
 
 ### Removed
 
