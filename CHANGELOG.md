@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Add bandwidth policy to meeting session configuration to allow overriding default policies
 
 ### Changed
 - Simplify meeting demos to leverage externalUserId in roster
