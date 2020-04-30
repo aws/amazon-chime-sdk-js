@@ -53,13 +53,11 @@ import SubscribeAndReceiveSubscribeAckTask from '../task/SubscribeAndReceiveSubs
 import TimeoutTask from '../task/TimeoutTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
-import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
 import DefaultVideoTileController from '../videotilecontroller/DefaultVideoTileController';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
-import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultVolumeIndicatorAdapter from '../volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
@@ -210,12 +208,8 @@ export default class DefaultAudioVideoController implements AudioVideoController
     );
     this.meetingSessionContext.videoTileController = this._videoTileController;
     this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
-    this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
-      this.configuration.credentials.attendeeId
-    );
-    this.meetingSessionContext.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
-      this.configuration.credentials.attendeeId
-    );
+    this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
+    this.meetingSessionContext.videoUplinkBandwidthPolicy = this.configuration.videoUplinkBandwidthPolicy;
     this.meetingSessionContext.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
     this.meetingSessionContext.videoCaptureAndEncodeParameter = new DefaultVideoCaptureAndEncodeParameter(
       0,

@@ -4,6 +4,10 @@
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ScreenSharingSessionOptions from '../screensharingsession/ScreenSharingSessionOptions';
+import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
+import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
+import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
+import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import MeetingSessionCredentials from './MeetingSessionCredentials';
 import MeetingSessionURLs from './MeetingSessionURLs';
 
@@ -62,6 +66,18 @@ export default class MeetingSessionConfiguration {
    * Feature flag to enable Chromium-based browsers
    */
   enableUnifiedPlanForChromiumBasedBrowsers: boolean = false;
+
+  /**
+   * Video downlink bandwidth policy to determine which remote videos
+   * are subscribed to.
+   */
+  videoDownlinkBandwidthPolicy: VideoDownlinkBandwidthPolicy = null;
+
+  /**
+   * Video uplink bandwidth policy to determine the bandwidth constraints
+   * of the local video.
+   */
+  videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy = null;
 
   /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
@@ -136,5 +152,11 @@ export default class MeetingSessionConfiguration {
     if (new DefaultBrowserBehavior().screenShareSendsOnlyKeyframes()) {
       this.screenSharingSessionOptions = { bitRate: 384000 };
     }
+    this.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
+      this.credentials ? this.credentials.attendeeId : null
+    );
+    this.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+      this.credentials ? this.credentials.attendeeId : null
+    );
   }
 }
