@@ -221,14 +221,15 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
         async (): Promise<void> => {
           this.showProgress('progress-authenticate');
           try {
+            const region = this.region || 'us-east-1';
             const response = await fetch(
-              `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(this.meeting)}&name=${encodeURIComponent(DemoMeetingApp.DID)}&region=${encodeURIComponent(this.region)}`,
+              `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(this.meeting)}&name=${encodeURIComponent(DemoMeetingApp.DID)}&region=${encodeURIComponent(region)}`,
               {
                 method: 'POST',
               }
             );
             const json = await response.json();
-            const joinToken = json.JoinInfo.Attendee.JoinToken;
+            const joinToken = json.JoinInfo.Attendee.Attendee.JoinToken;
             this.sipURI = `sip:${DemoMeetingApp.DID}@${this.voiceConnectorId};transport=tls;X-joinToken=${joinToken}`;
             this.switchToFlow('flow-sip-uri');
           } catch (error) {
