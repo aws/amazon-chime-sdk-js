@@ -115,6 +115,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       const enableUnifiedPlan = true;

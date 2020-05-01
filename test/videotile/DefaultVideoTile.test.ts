@@ -8,6 +8,7 @@ import AudioVideoController from '../../src/audiovideocontroller/AudioVideoContr
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DevicePixelRatioMonitor from '../../src/devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../../src/devicepixelratioobserver/DevicePixelRatioObserver';
+import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
@@ -180,6 +181,44 @@ describe('DefaultVideoTile', () => {
       expect(tileControllerSpy.called).to.be.true;
     });
 
+    it('binds a video stream in Safari', done => {
+      domMockBehavior.browserName = 'safari';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+      const videoElement = videoElementFactory.create();
+      const videoElementSpy = sinon.spy(videoElement, 'play');
+      tile.bindVideoElement(videoElement);
+
+      const boundAttendeeId = 'attendee';
+      const localTile = true;
+      const videoStreamContentWidth = 1;
+      const videoStreamContentHeight = 1;
+      const streamId = 1;
+
+      tile.bindVideoStream(
+        boundAttendeeId,
+        localTile,
+        mockVideoStream,
+        videoStreamContentWidth,
+        videoStreamContentHeight,
+        streamId
+      );
+
+      expect(tile.state().boundAttendeeId).to.equal(boundAttendeeId);
+      expect(tile.state().localTile).to.equal(localTile);
+      expect(tile.state().boundVideoStream).to.equal(mockVideoStream);
+      expect(tile.state().videoStreamContentWidth).to.equal(videoStreamContentWidth);
+      expect(tile.state().videoStreamContentHeight).to.equal(videoStreamContentHeight);
+      expect(tile.state().streamId).to.equal(streamId);
+      expect(tile.state().isContent).to.be.false;
+
+      expect(tileControllerSpy.called).to.be.true;
+      new TimeoutScheduler(10).start(() => {
+        expect(videoElementSpy.calledOnce).to.be.true;
+        done();
+      });
+    });
+
     it('unbinds a video stream', () => {
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
@@ -194,6 +233,44 @@ describe('DefaultVideoTile', () => {
       expect(tile.state().isContent).to.be.false;
 
       expect(tileControllerSpy.called).to.be.true;
+    });
+
+    it('unbinds a video stream in Safari', done => {
+      domMockBehavior.browserName = 'safari';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+
+      const boundAttendeeId = 'attendee';
+      const localTile = true;
+      const videoStreamContentWidth = 1;
+      const videoStreamContentHeight = 1;
+      const streamId = 1;
+
+      tile.bindVideoStream(
+        boundAttendeeId,
+        localTile,
+        mockVideoStream,
+        videoStreamContentWidth,
+        videoStreamContentHeight,
+        streamId
+      );
+      tile.bindVideoStream(null, true, null, null, null, null);
+
+      expect(tile.state().boundAttendeeId).to.equal(null);
+      expect(tile.state().localTile).to.equal(true);
+      expect(tile.state().boundVideoStream).to.equal(null);
+      expect(tile.state().videoStreamContentWidth).to.equal(null);
+      expect(tile.state().videoStreamContentHeight).to.equal(null);
+      expect(tile.state().streamId).to.equal(null);
+      expect(tile.state().isContent).to.be.false;
+
+      expect(tileControllerSpy.called).to.be.true;
+      new TimeoutScheduler(10).start(() => {
+        expect(videoElement.srcObject).to.be.null;
+        done();
+      });
     });
 
     it("does not remove a video element's srcObject again until it binds a new stream", () => {

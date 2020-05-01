@@ -1,6 +1,7 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
@@ -46,6 +47,12 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     if (videoElement.srcObject !== videoStream) {
       videoElement.srcObject = videoStream;
     }
+
+    if (new DefaultBrowserBehavior().requiresVideoElementWorkaround()) {
+      new AsyncScheduler().start(async () => {
+        await videoElement.play();
+      });
+    }
   }
 
   static disconnectVideoStreamFromVideoElement(
@@ -80,9 +87,13 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
 
       // Need to yield the message loop before clearing `srcObject` to
       // prevent Safari from crashing.
-      new AsyncScheduler().start(() => {
+      if (new DefaultBrowserBehavior().requiresVideoElementWorkaround()) {
+        new AsyncScheduler().start(() => {
+          videoElement.srcObject = null;
+        });
+      } else {
         videoElement.srcObject = null;
-      });
+      }
     }
   }
 

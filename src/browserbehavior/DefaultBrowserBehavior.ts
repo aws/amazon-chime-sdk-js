@@ -98,6 +98,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return !this.hasChromiumWebRTC();
   }
 
+  requiresVideoElementWorkaround(): boolean {
+    return this.isSafari();
+  }
+
   screenShareUnsupported(): boolean {
     if (this.isSafari()) {
       return true;
