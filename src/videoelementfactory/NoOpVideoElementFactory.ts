@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import VideoElementFactory from './VideoElementFactory';
@@ -22,6 +22,9 @@ export default class NoOpVideoElementFactory implements VideoElementFactory {
       setAttribute: (): void => {},
       srcObject: false,
       pause: (): void => {},
+      play: (): Promise<void> => {
+        return Promise.resolve();
+      },
     };
     // @ts-ignore
     return element;

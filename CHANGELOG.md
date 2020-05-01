@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean up and fix serverless package bundling
 - Do not mirror local video for rear-facing camera
 - Fix sip url for meeting demo
+- Fix local video freeze in Safari after toggling off and on
 
 ## [1.4.0] - 2020-04-24
 
