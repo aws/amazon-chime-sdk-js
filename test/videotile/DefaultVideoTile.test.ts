@@ -196,6 +196,61 @@ describe('DefaultVideoTile', () => {
       expect(tileControllerSpy.called).to.be.true;
     });
 
+    it('unbinds a video stream with a video element', done => {
+      tile = new DefaultVideoTile(tileId, false, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      // @ts-ignore
+      videoElement.hasAttribute = (attr: string): boolean =>
+        attr === 'controls' || attr === 'autoplay' || attr === 'muted' || attr === 'playsinline';
+
+      const removeAttributeSpy = sinon.spy(videoElement, 'removeAttribute');
+      const setAttributeSpy = sinon.spy(videoElement, 'setAttribute');
+
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', false, mockVideoStream, 1, 1, 1);
+
+      expect(removeAttributeSpy.calledWith('controls')).to.be.true;
+      expect(setAttributeSpy.callCount).to.equal(0);
+      expect(videoElement.srcObject).to.eq(mockVideoStream);
+
+      tile.bindVideoStream(null, false, null, null, null, null);
+      setTimeout(() => {
+        expect(videoElement.srcObject).to.be.null;
+        done();
+      }, 50);
+    });
+
+    it("does not remove a video element's srcObject if it is set to a different stream", done => {
+      tile = new DefaultVideoTile(tileId, false, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      // @ts-ignore
+      videoElement.hasAttribute = (attr: string): boolean =>
+        attr === 'controls' || attr === 'autoplay' || attr === 'muted' || attr === 'playsinline';
+
+      const removeAttributeSpy = sinon.spy(videoElement, 'removeAttribute');
+      const setAttributeSpy = sinon.spy(videoElement, 'setAttribute');
+
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+
+      expect(removeAttributeSpy.calledWith('controls')).to.be.true;
+      expect(setAttributeSpy.callCount).to.equal(0);
+      expect(videoElement.srcObject).to.eq(mockVideoStream);
+
+      // @ts-ignore
+      const mockMediaStream2: MediaStream = new MediaStream();
+      // @ts-ignore
+      mockMediaStream2.addTrack(new MediaStreamTrack('mockMediaStream2', 'video'));
+      tile.bindVideoStream(null, true, null, null, null, null);
+      tile.bindVideoStream('attendee', true, mockMediaStream2, 2, 2, 1);
+      setTimeout(() => {
+        expect(videoElement.srcObject).to.be.eq(mockMediaStream2);
+        done();
+      }, 50);
+    });
+
     it("does not remove a video element's srcObject again until it binds a new stream", () => {
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
 

@@ -4,7 +4,6 @@
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
-import AsyncScheduler from '../scheduler/AsyncScheduler';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoTile from './VideoTile';
 import VideoTileState from './VideoTileState';
@@ -69,6 +68,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       DefaultVideoTile.setVideoElementFlag(videoElement, 'disablePictureInPicture', false);
       DefaultVideoTile.setVideoElementFlag(videoElement, 'disableRemotePlayback', false);
 
+      // videoElement.srcObject = null;
       // We must remove all the tracks from the MediaStream before
       // clearing the `srcObject` to prevent Safari from crashing.
       const mediaStream = videoElement.srcObject as MediaStream;
@@ -78,10 +78,15 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
         mediaStream.removeTrack(track);
       }
 
-      // Need to yield the message loop before clearing `srcObject` to
-      // prevent Safari from crashing.
-      new AsyncScheduler().start(() => {
-        videoElement.srcObject = null;
+      const clearSrcCallBack = ((originalSource: MediaStream | MediaSource | Blob | null) => {
+        return () => {
+          if (videoElement.srcObject === originalSource) {
+            videoElement.srcObject = null;
+          }
+        };
+      })(videoElement.srcObject);
+      requestAnimationFrame(() => {
+        clearSrcCallBack();
       });
     }
   }

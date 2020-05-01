@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix broken link in GitHub main page README
+- Fix video freeze in Safari after toggling off and on
 
 ## [1.3.0] - 2020-04-17
 
