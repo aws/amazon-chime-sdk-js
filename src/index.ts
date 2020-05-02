@@ -265,7 +265,6 @@ import TimeoutTask from './task/TimeoutTask';
 import TransceiverController from './transceivercontroller/TransceiverController';
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import Versioning from './versioning/Versioning';
-import VideoAdaptiveSubscribePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveSubscribePolicy';
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
@@ -552,7 +551,6 @@ export {
   TransceiverController,
   UnusableAudioWarningConnectionHealthPolicy,
   Versioning,
-  VideoAdaptiveSubscribePolicy,
   VideoCaptureAndEncodeParameter,
   VideoDownlinkBandwidthPolicy,
   VideoElementFactory,

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update PR template to add testing information
 
 ### Removed
+- Remove unused VideoAdaptiveSubscribePolicy
 
 ### Fixed
 - Fix serverless deploy script to work on Windows
