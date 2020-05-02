@@ -661,7 +661,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         return;
       }
       //If someone else share content, stop the current content share
-      if (!this.allowMaxContentShare() && !isSelfAttendee && this.isButtonOn('button-content-share')) {
+      if (!this.allowMaxContentShare() && !isSelfAttendee && isContentAttendee && this.isButtonOn('button-content-share')) {
         this.contentShareStop();
       }
       if (!this.roster[attendeeId]) {
