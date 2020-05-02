@@ -592,13 +592,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       trackConstraints.height = trackConstraints.height || this.videoHeight;
       trackConstraints.frameRate = trackConstraints.frameRate || this.videoFrameRate;
     }
-    if (kind === 'audio' && DefaultDeviceController.supportSampleRateConstraint()) {
+    if (kind === 'audio' && this.supportSampleRateConstraint()) {
       trackConstraints.sampleRate = { ideal: DefaultDeviceController.defaultSampleRate };
     }
-    if (kind === 'audio' && DefaultDeviceController.supportSampleSizeConstraint()) {
+    if (kind === 'audio' && this.supportSampleSizeConstraint()) {
       trackConstraints.sampleSize = { ideal: DefaultDeviceController.defaultSampleSize };
     }
-    if (kind === 'audio' && DefaultDeviceController.supportChannelCountConstraint()) {
+    if (kind === 'audio' && this.supportChannelCountConstraint()) {
       trackConstraints.channelCount = { ideal: DefaultDeviceController.defaultChannelCount };
     }
     if (kind === 'audio') {
@@ -699,23 +699,23 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   static createAudioContext(): AudioContext {
     const options: AudioContextOptions = {};
-    if (DefaultDeviceController.supportSampleRateConstraint()) {
+    if (navigator.mediaDevices.getSupportedConstraints().sampleRate) {
       options.sampleRate = DefaultDeviceController.defaultSampleRate;
     }
     // @ts-ignore
     return new (window.AudioContext || window.webkitAudioContext)(options);
   }
 
-  static supportSampleRateConstraint(): boolean {
-    return !!navigator.mediaDevices.getSupportedConstraints().sampleRate;
+  private supportSampleRateConstraint(): boolean {
+    return this.useWebAudio && !!navigator.mediaDevices.getSupportedConstraints().sampleRate;
   }
 
-  static supportSampleSizeConstraint(): boolean {
-    return !!navigator.mediaDevices.getSupportedConstraints().sampleSize;
+  private supportSampleSizeConstraint(): boolean {
+    return this.useWebAudio && !!navigator.mediaDevices.getSupportedConstraints().sampleSize;
   }
 
-  static supportChannelCountConstraint(): boolean {
-    return !!navigator.mediaDevices.getSupportedConstraints().channelCount;
+  private supportChannelCountConstraint(): boolean {
+    return this.useWebAudio && !!navigator.mediaDevices.getSupportedConstraints().channelCount;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
