@@ -1,0 +1,26 @@
+{
+  "`": 1,
+  "name": "content_share_join_later_test.config.json %ts",
+  "grids": [
+  ],
+  "tests": [
+    {
+      "name": "Content Share Join Later Test %ts",
+      "description": "Test that content share can be viewed when an attendee joins after",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "ContentShareJoinLaterTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "78",
+      "platform": "MAC"
+    }
+  ]
+}
