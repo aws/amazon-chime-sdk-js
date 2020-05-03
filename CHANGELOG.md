@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add bandwidth policy to meeting session configuration to allow overriding default policies
+- Add more content sharing integration tests
 
 ### Changed
 - Simplify meeting demos to leverage externalUserId in roster
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix local video freeze in Safari after toggling off and on
 - Fix meeting demo content share turning off on attendee join
 - Disable audio sample constraints when not using WebAudio
+- Reset Sauce Lab session to make sure clean state
 
 ## [1.4.0] - 2020-04-24
 

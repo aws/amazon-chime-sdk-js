@@ -118,12 +118,30 @@ class SdkBaseTest extends KiteBaseTest {
     }
   }
 
+  async initializeSeleniumSession(numberOfSeleniumSessions) {
+    console.log(`Provisioning ${numberOfSeleniumSessions} sessions on ${process.env.SELENIUM_GRID_PROVIDER}`);
+    this.seleniumSessions = [];
+    for (let i = 0; i < numberOfSeleniumSessions; i++) {
+      try {
+        const session = await this.createSeleniumSession(this.capabilities);
+        await session.init();
+        this.seleniumSessions.push(session)
+      } catch (e) {
+        console.log('Failed to initialize');
+        console.log(e);
+        await emitMetric(this.testName, this.capabilities, 'E2E', 0);
+        await this.updateSeleniumTestResult(false);
+        await this.quitSeleniumSessions();
+        return;
+      }
+    }
+  }
+
   numberOfSessions(browser) {
     if (this.payload.seleniumSessions && this.payload.seleniumSessions[browser]){
       return this.payload.seleniumSessions[browser]
     }
     return 1;
-    // return this.payload.seleniumSessions === undefined || this.payload.seleniumSessions < 1 ? 1 : this.payload.seleniumSessions;
   }
 
   writeCompletionTimeTo(filePath) {
@@ -140,51 +158,32 @@ class SdkBaseTest extends KiteBaseTest {
     const maxRetries = this.payload.retry === undefined || this.payload.retry < 1 ? 5 : this.payload.retry;
     const numberOfSeleniumSessions = this.numberOfSessions(this.capabilities.browserName);
 
-    console.log(`Provisioning ${numberOfSeleniumSessions} sessions on ${process.env.SELENIUM_GRID_PROVIDER}`);
-    for (let i = 0; i < numberOfSeleniumSessions; i++) {
-      try {
-        const session = await this.createSeleniumSession(this.capabilities);
-        await session.init();
-        this.seleniumSessions.push(session)
-      } catch (e) {
-        console.log('Failed to initialize');
-        console.log(e);
-        await emitMetric(this.testName, this.capabilities, 'E2E', 0);
-        await this.updateSeleniumTestResult(false);
-        await this.quitSeleniumSessions();
-        return;
-      }
-    }
-
     let retryCount = 0;
     while (retryCount < maxRetries) {
+      if (retryCount !== 0) {
+        console.log(`Retrying : ${retryCount}`);
+      }
+      await this.initializeSeleniumSession(numberOfSeleniumSessions);
       //Wait for other to be ready
       if (this.numberOfParticipant > 1 && this.io) {
         this.io.emit('test_ready', true);
         await this.waitForTestReady();
         if (!this.testReady) {
           this.io.emit('test_ready', false);
-          await emitMetric(this.testName, this.capabilities, 'E2E', 0);
-          await this.updateSeleniumTestResult(false);
-          await this.quitSeleniumSessions();
           console.log('[OTHER_PARTICIPANT] failed to be ready');
+          await this.closeCurrentTest(false);
           return;
         }
       }
       this.testFinish = false;
       this.initializeState();
-      if (retryCount !== 0) {
-        console.log(`Retrying : ${retryCount}`);
-      }
       try {
         console.log("Running test on: " + process.env.SELENIUM_GRID_PROVIDER);
         await this.runIntegrationTest();
       } catch (e) {
         console.log(e);
       } finally {
-        const metricValue = this.failedTest || this.remoteFailed ? 0 : 1;
-        await emitMetric(this.testName, this.capabilities, 'E2E', metricValue);
-        await this.updateSeleniumTestResult(!this.failedTest && !this.remoteFailed);
+        await this.closeCurrentTest(!this.failedTest && !this.remoteFailed);
       }
       if (this.payload.canaryLogPath !== undefined) {
         this.writeCompletionTimeTo(this.payload.canaryLogPath)
@@ -200,16 +199,6 @@ class SdkBaseTest extends KiteBaseTest {
         break;
       }
       retryCount++;
-    }
-
-    try {
-      for (let i = 0; i < this.seleniumSessions.length; i++) {
-        await this.seleniumSessions[i].printRunDetails(!this.failedTest && !this.remoteFailed)
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      await this.quitSeleniumSessions();
     }
   }
 
@@ -239,6 +228,24 @@ class SdkBaseTest extends KiteBaseTest {
   async quitSeleniumSessions() {
     for (let i = 0; i < this.seleniumSessions.length; i++) {
       await this.seleniumSessions[i].quit();
+    }
+  }
+
+  async printRunDetails(testResult) {
+    for (let i = 0; i < this.seleniumSessions.length; i++) {
+      await this.seleniumSessions[i].printRunDetails(testResult)
+    }
+  }
+
+  async closeCurrentTest(testResult) {
+    try {
+      await emitMetric(this.testName, this.capabilities, 'E2E', testResult);
+      await this.updateSeleniumTestResult(testResult);
+      await this.printRunDetails(testResult);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      await this.quitSeleniumSessions();
     }
   }
 }

@@ -59,18 +59,16 @@ cd ../
 case $1 in
    audio)
       r audio_test.config.json
+      r app_quit_audio_test.config.json
+      r meeting_leave_audio_test.config.json
       ;;
    video)
       r video_test.config.json
-      ;;
-   meeting_quit)
-      r meeting_leave_audio_test.config.json
-      r meeting_leave_video_test.config.json
-      r meeting_end_test.config.json
-      ;;
-   app_quit)
-      r app_quit_audio_test.config.json
       r app_quit_video_test.config.json
+      r meeting_leave_video_test.config.json
+      ;;
+   meeting_end)
+      r meeting_end_test.config.json
       ;;
    screen_share)
       r screen_sharing_test.config.json
@@ -81,6 +79,9 @@ case $1 in
    content_share)
       r content_share_screen_capture_test.config.json
       r content_share_only_allow_two_test.config.json
+      r content_share_join_later_test.config.json
+      r app_quit_content_share_test.config.json
+      r meeting_leave_content_share_test.config.json
       ;;
    *)
       r audio_test.config.json

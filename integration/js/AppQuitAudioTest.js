@@ -78,6 +78,6 @@ module.exports = AppQuitAudioTest;
 
 (async () => {
   const kiteConfig = await TestUtils.getKiteConfig(__dirname);
-  let test = new AppQuitAudioTest('Meeting end audio test', kiteConfig);
+  let test = new AppQuitAudioTest('App quit audio test', kiteConfig);
   await test.run();
 })();

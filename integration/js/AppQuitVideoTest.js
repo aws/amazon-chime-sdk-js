@@ -78,6 +78,6 @@ module.exports = AppQuitVideoTest;
 
 (async () => {
   const kiteConfig = await TestUtils.getKiteConfig(__dirname);
-  let test = new AppQuitVideoTest('Meeting end video test', kiteConfig);
+  let test = new AppQuitVideoTest('App quit video test', kiteConfig);
   await test.run();
 })();
