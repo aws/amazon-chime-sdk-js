@@ -150,6 +150,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       "amazon-chime-sdk-js@" + Versioning.sdkVersion;
     this.initEventListeners();
     this.initParameters();
+    this.getNearestMediaRegion();
     if (this.isRecorder()) {
       new AsyncScheduler().start(async () => {
         this.meeting = new URL(window.location.href).searchParams.get('m');
@@ -436,6 +437,30 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         window.location = window.location.pathname;
       });
     });
+  }
+
+  getNearestMediaRegion(): void {
+    const supportedMediaRegions: Array<string> = ['ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'sa-east-1', 'us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'];
+    new AsyncScheduler().start(
+      async (): Promise<void> => {
+        try {
+          const nearestMediaRegionResponse = await fetch(
+            `https://nearest-media-region.l.chime.aws`,
+            {
+              method: 'GET',
+            }
+          );
+          const nearestMediaRegionJSON = await nearestMediaRegionResponse.json();
+          const nearestMediaRegion = nearestMediaRegionJSON.region;
+          if (supportedMediaRegions.indexOf(nearestMediaRegion) !== -1) {
+            (document.getElementById('inputRegion') as HTMLInputElement).value = nearestMediaRegion;
+          } else {
+            throw new Error(`${nearestMediaRegion} doesn't exist`);
+          }
+        } catch (error) {
+          this.log('Default media region selected: ' + error.message);
+        }
+      });
   }
 
   toggleButton(button: string, state?: 'on' | 'off'): boolean {

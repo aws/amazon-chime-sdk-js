@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add bandwidth policy to meeting session configuration to allow overriding default policies
 - Add more content sharing integration tests
 - Add gifs to read me file to show latest npm version and downloads
+- Add method to get the nearest media region
 
 ### Changed
 - Simplify meeting demos to leverage externalUserId in roster
