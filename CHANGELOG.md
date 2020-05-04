@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix meeting demo content share turning off on attendee join
 - Disable audio sample constraints when not using WebAudio
 - Reset Sauce Lab session to make sure clean state
+- Fix integration test emit metrics
 
 ## [1.4.0] - 2020-04-24
 
