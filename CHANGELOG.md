@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reset Sauce Lab session to make sure clean state
 - Fix integration test emit metrics
 
+### Security
+- Bump package-lock.json jquery to 3.5.0 and yargs-parser to 18.1.3
+
 ## [1.4.0] - 2020-04-24
 
 ### Added

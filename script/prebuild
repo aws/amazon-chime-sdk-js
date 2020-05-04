@@ -43,7 +43,7 @@ elsif commits.size == 1
     File.write(version_file, File.read(version_file).gsub(/return '[.0-9]+';/, "return '#{new_version}';"))
 
     #Pull in npm audit fixes automatically
-    verbose('npm audit fix --only=prod')
+    verbose('npm audit fix')
 
     verbose("git add #{version_file}")
     verbose("git add package.json")
