@@ -239,7 +239,7 @@ class SdkBaseTest extends KiteBaseTest {
 
   async closeCurrentTest(testResult) {
     try {
-      await emitMetric(this.testName, this.capabilities, 'E2E', testResult);
+      await emitMetric(this.testName, this.capabilities, 'E2E', testResult? 1 : 0);
       await this.updateSeleniumTestResult(testResult);
       await this.printRunDetails(testResult);
     } catch (e) {
