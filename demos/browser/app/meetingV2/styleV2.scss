@@ -370,9 +370,19 @@ svg {
     right: auto !important;
     bottom: auto !important;
     left: auto !important;
-    width: 50% !important;
     height: auto !important;
+  }
+
+  #tile-area > div.video-tile {
+    width: 50% !important;
     padding-bottom: 33% !important;
+  }
+
+  #tile-area > div.content-share-tile {
+    order: -1;
+    width: 100% !important;
+    padding-bottom: 66% !important;
+    margin-bottom: 2rem;
   }
 
   #tile-area > div > video {
