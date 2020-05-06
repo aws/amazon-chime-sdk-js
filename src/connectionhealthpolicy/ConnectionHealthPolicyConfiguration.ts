@@ -1,11 +1,11 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 export default class ConnectionHealthPolicyConfiguration {
   minHealth: number = 0;
   maxHealth: number = 1;
   initialHealth: number = 1;
-  connectionUnhealthyThreshold = 10;
+  connectionUnhealthyThreshold = 25;
   noSignalThresholdTimeMs = 10000;
   connectionWaitTimeMs = 10000;
   zeroBarsNoSignalTimeMs = 5000;
@@ -21,7 +21,7 @@ export default class ConnectionHealthPolicyConfiguration {
   packetsExpected = 50;
   maximumTimesToWarn = 2;
   missedPongsLowerThreshold = 1;
-  missedPongsUpperThreshold = 2;
-  maximumAudioDelayMs = 1000;
+  missedPongsUpperThreshold = 4;
+  maximumAudioDelayMs = 60000;
   maximumAudioDelayDataPoints = 10;
 }
