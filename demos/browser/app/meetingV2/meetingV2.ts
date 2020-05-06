@@ -33,7 +33,7 @@ import {
 } from '../../../../src/index';
 
 class DemoTileOrganizer {
-  private static MAX_TILES = 17;
+  static MAX_TILES = 17;
   private tiles: { [id: number]: number } = {};
   public tileStates: {[id: number]: boolean } = {};
 
@@ -366,7 +366,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
-          this.hideTile(16);
+          this.hideTile(DemoTileOrganizer.MAX_TILES);
         }
       });
     });
@@ -1216,6 +1216,19 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     return null;
   }
 
+  isContentTile(tileIndex: number): boolean {
+    const tileId = this.tileIndexToTileId[tileIndex];
+    if (!tileId) {
+      return false;
+    }
+    const tile = this.audioVideo.getVideoTile(tileId);
+    const state = tile.state();
+    if (state.isContent) {
+      return true;
+    }
+    return false;
+  }
+
   activeTileId(): number | null {
     let contentTileId = this.findContentTileId();
     if (contentTileId !== null) {
@@ -1256,7 +1269,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   visibleTileIndices(): number[] {
     let tiles: number[] = [];
-    const localTileIndex = 16;
+    const localTileIndex = DemoTileOrganizer.MAX_TILES;
     for (let tileIndex = 0; tileIndex <= localTileIndex; tileIndex++) {
       const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
       if (tileElement.style.display === 'block') {
@@ -1317,6 +1330,13 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   updateTilePlacement(tileIndex: number, x: number, y: number, w: number, h: number): void {
     const tile = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
+    if (this.isContentTile(tileIndex)) {
+      tile.classList.remove('video-tile');
+      tile.classList.add('content-share-tile');
+    } else {
+      tile.classList.remove('content-share-tile');
+      tile.classList.add('video-tile');
+    }
     const insetWidthSize = 4;
     const insetHeightSize = insetWidthSize / (16 / 9);
     tile.style.position = 'absolute';
