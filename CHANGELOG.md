@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update PR template to add testing information
 - Support a mobile-friendly demo
 - Increase the size of content share video tile for the demo app in small screen
+- Update reconnection parameters in ConnectionHealthPolicyConfiguration
 
 ### Removed
 - Remove unused VideoAdaptiveSubscribePolicy
