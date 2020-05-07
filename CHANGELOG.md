@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Disable audio sample constraints when not using WebAudio
 - Reset Sauce Lab session to make sure clean state
 - Fix integration test emit metrics
+- Fix handler for log
 
 ### Security
 - Bump package-lock.json jquery to 3.5.0 and yargs-parser to 18.1.3

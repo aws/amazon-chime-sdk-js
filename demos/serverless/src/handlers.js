@@ -114,8 +114,8 @@ exports.logs = async (event, context) => {
     putLogEventsInput.sequenceToken = uploadSequence;
   }
   const logEvents = [];
-  if (body.logs.length !== 0) {
-    return response(200, 'application/json', JSON.stringify({}));
+  if (body.logs.length === 0) {
+    return response(200, 'application/json', JSON.stringify({error: 'Body log empty'}));
   }
   for (let i = 0; i < body.logs.length; i++) {
     const log = body.logs[i];
@@ -128,7 +128,7 @@ exports.logs = async (event, context) => {
   }
   putLogEventsInput.logEvents = logEvents;
   await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
-  return response(200, 'application/json', JSON.stringify({}));
+  return response(200, 'application/json', JSON.stringify({success: "Logs written to Cloudwatch"}));
 };
 
 // Called when SQS receives records of meeting events and logs out those records
