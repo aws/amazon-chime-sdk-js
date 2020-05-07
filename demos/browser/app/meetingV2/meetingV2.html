@@ -201,10 +201,15 @@
     <div class="row w-100">
       <video id="content-share-video" crossOrigin="anonymous" style="left:0px;bottom:0px;width:320px;height:240px;display:none"></video>
     </div>
-    <div class="row w-100">
-      <div id="video-uplink-bandwidth" class="text-muted col"></div>
-      <div id="chime-meeting-id" class="text-muted col" style="align:center;"></div>
-      <div id="video-downlink-bandwidth" class="text-muted col" style="text-align:right;"></div>
+    <div class="row align-items-end">
+      <div class="col">
+        <div id="chime-meeting-id" class="text-muted"></div>
+        <div id="desktop-attendee-id" class="text-muted"></div>
+      </div>
+      <div class="col d-none d-lg-block">
+        <div id="video-uplink-bandwidth" class="text-muted text-right"></div>
+        <div id="video-downlink-bandwidth" class="text-muted text-right"></div>
+      </div>
     </div>
   </div>
   <audio id="meeting-audio" style="display:none"></audio>
@@ -212,6 +217,8 @@
     <div class="row mb-3 mb-lg-0">
       <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left">
         <div id="meeting-id" class="navbar-brand text-muted m-0 m-lg-2"></div>
+        <div id="mobile-chime-meeting-id" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
+        <div id="mobile-attendee-id" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
       </div>
       <div class="col-8 col-lg-6 order-2 order-lg-2 text-left text-lg-center">
         <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">

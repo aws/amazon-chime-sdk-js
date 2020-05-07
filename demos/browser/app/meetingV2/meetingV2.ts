@@ -206,6 +206,15 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           (document.getElementById(
             'chime-meeting-id'
           ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
+          (document.getElementById(
+            'mobile-chime-meeting-id'
+          ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
+          (document.getElementById(
+            'mobile-attendee-id'
+          ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
+          (document.getElementById(
+            'desktop-attendee-id'
+          ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
           (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
           this.switchToFlow('flow-devices');
