@@ -102,7 +102,10 @@ exports.logs = async (event, context) => {
   const body = JSON.parse(event.body);
   if (!body.logs || !body.meetingId || !body.attendeeId || !body.appName) {
     return response(400, 'application/json', JSON.stringify({error: 'Need properties: logs, meetingId, attendeeId, appName'}));
+  } else if (!body.logs.length) {
+    return response(200, 'application/json', JSON.stringify({}));
   }
+
   const logStreamName = `ChimeSDKMeeting_${body.meetingId.toString()}`;
   const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
   const putLogEventsInput = {
@@ -114,9 +117,6 @@ exports.logs = async (event, context) => {
     putLogEventsInput.sequenceToken = uploadSequence;
   }
   const logEvents = [];
-  if (body.logs.length !== 0) {
-    return response(200, 'application/json', JSON.stringify({}));
-  }
   for (let i = 0; i < body.logs.length; i++) {
     const log = body.logs[i];
     const timestamp = new Date(log.timestampMs).toISOString();

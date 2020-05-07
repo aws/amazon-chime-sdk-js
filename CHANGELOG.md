@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add more content sharing integration tests
 - Add gifs to read me file to show latest npm version and downloads
 - Add method to get the nearest media region
+- Display meeting and attendee IDs in the demo
 
 ### Changed
 - Simplify meeting demos to leverage externalUserId in roster
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Disable audio sample constraints when not using WebAudio
 - Reset Sauce Lab session to make sure clean state
 - Fix integration test emit metrics
+- Fix the CloudWatch log handler
 
 ### Security
 - Bump package-lock.json jquery to 3.5.0 and yargs-parser to 18.1.3
