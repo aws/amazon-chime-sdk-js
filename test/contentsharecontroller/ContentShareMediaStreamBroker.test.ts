@@ -13,7 +13,6 @@ import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('ContentShareMediaStreamBroker', () => {
   const expect: Chai.ExpectStatic = chai.expect;
-  const behavior = new DOMMockBehavior();
   const defaultStreamConstraints: MediaStreamConstraints = {
     audio: false,
     video: {
@@ -36,6 +35,7 @@ describe('ContentShareMediaStreamBroker', () => {
 
   let contentShareMediaStreamBroker: ContentShareMediaStreamBroker;
   let noOpLogger: NoOpLogger;
+  let dommMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
   let mediaStream: MediaStream;
   let mediaAudioTrack: MediaStreamTrack;
@@ -43,8 +43,9 @@ describe('ContentShareMediaStreamBroker', () => {
   beforeEach(() => {
     noOpLogger = new NoOpLogger();
     contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(noOpLogger);
+    dommMockBehavior = new DOMMockBehavior();
     // @ts-ignore
-    domMockBuilder = new DOMMockBuilder(behavior);
+    domMockBuilder = new DOMMockBuilder(dommMockBehavior);
     mediaStream = new MediaStream();
     // @ts-ignore
     mediaAudioTrack = new MediaStreamTrack('audio-track-id', 'audio');
@@ -172,6 +173,36 @@ describe('ContentShareMediaStreamBroker', () => {
       };
       const spy = sinon.spy(contentShareMediaStreamBroker, 'acquireDisplayInputStream');
       await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream('sourceId', 30);
+      expect(spy.calledWith(sinon.match(streamConstraints))).to.be.true;
+    });
+
+    it('allow audio in Chrome browser', async () => {
+      dommMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(dommMockBehavior);
+      const streamConstraints: MediaStreamConstraints = {
+        audio: true,
+        video: {
+          frameRate: {
+            max: 15,
+          },
+        },
+      };
+      const spy = sinon.spy(contentShareMediaStreamBroker, 'acquireDisplayInputStream');
+      await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream();
+      expect(spy.calledWith(sinon.match(streamConstraints))).to.be.true;
+    });
+
+    it('do not allow audio in Firefox browser', async () => {
+      const streamConstraints: MediaStreamConstraints = {
+        audio: false,
+        video: {
+          frameRate: {
+            max: 15,
+          },
+        },
+      };
+      const spy = sinon.spy(contentShareMediaStreamBroker, 'acquireDisplayInputStream');
+      await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream();
       expect(spy.calledWith(sinon.match(streamConstraints))).to.be.true;
     });
   });

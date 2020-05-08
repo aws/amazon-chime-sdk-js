@@ -102,6 +102,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return this.isSafari();
   }
 
+  getDisplayMediaAudioCaptureSupport(): boolean {
+    return this.isChrome() || this.isEdge();
+  }
+
   screenShareUnsupported(): boolean {
     if (this.isSafari()) {
       return true;
@@ -152,5 +156,13 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   private isFirefox(): boolean {
     return this.browser.name === 'firefox';
+  }
+
+  private isChrome(): boolean {
+    return this.browser.name === 'chrome';
+  }
+
+  private isEdge(): boolean {
+    return this.browser.name === 'edge-chromium';
   }
 }
