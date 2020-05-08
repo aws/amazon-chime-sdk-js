@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DefaultDeviceController from '../devicecontroller/DefaultDeviceController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
@@ -71,7 +72,7 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     frameRate?: number
   ): MediaStreamConstraints {
     return {
-      audio: false,
+      audio: new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport() ? true : false,
       video: {
         ...(!sourceId && {
           frameRate: {

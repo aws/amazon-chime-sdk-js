@@ -48,6 +48,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.eq(true);
       expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(false);
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
     });
 
     it('can detect Chrome', () => {
@@ -57,6 +58,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(78);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       const enableUnifiedPlan = true;
       expect(
         new DefaultBrowserBehavior({
@@ -87,6 +89,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(79);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       const enableUnifiedPlan = true;
       expect(
         new DefaultBrowserBehavior({
@@ -118,6 +121,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       const enableUnifiedPlan = true;
       expect(
         new DefaultBrowserBehavior({
