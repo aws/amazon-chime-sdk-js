@@ -23,6 +23,7 @@ API Gateway deployment that runs the `meeting` demo.
 
 ```
 cd demos/serverless
+npm install
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
