@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Disable audio capture for Electron Screen Capture
+- Mark 403 (Forbidden) for fetching turn credentials as terminal error and avoid retrying.
 
 ## [1.6.0] - 2020-05-15
 

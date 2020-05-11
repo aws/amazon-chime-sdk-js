@@ -759,7 +759,11 @@ export default class DOMMockBuilder {
         if (mockBehavior.responseSuccess) {
           return 200;
         } else {
-          return 500;
+          if (mockBehavior.responseStatusCode && mockBehavior.responseStatusCode !== 200) {
+            return mockBehavior.responseStatusCode;
+          } else {
+            return 500;
+          }
         }
       }
     };
