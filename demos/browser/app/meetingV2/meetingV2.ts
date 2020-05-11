@@ -217,7 +217,16 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
           (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
-          this.switchToFlow('flow-devices');
+
+          if(this.skipDeviceSelection()) {
+            await this.authenticate();
+            await this.join();
+            this.displayButtonStates();
+            this.switchToFlow('flow-meeting');
+          } else {
+            this.switchToFlow('flow-devices');
+          }
+
           await this.openAudioInputFromSelection();
           try {
             await this.openVideoInputFromSelection(
@@ -1143,6 +1152,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   isRecorder(): boolean {
     return (new URL(window.location.href).searchParams.get('record')) === 'true';
+  }
+
+  skipDeviceSelection(): boolean {
+    return (new URL(window.location.href).searchParams.get('device')) === 'default';
   }
 
   async authenticate(): Promise<string> {

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
+- Allow option to skip device selection page in demo app.
 ### Changed
 - Allow audio for screen capture in Chrome and Edge browsers
 ### Removed
