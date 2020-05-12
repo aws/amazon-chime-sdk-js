@@ -77,17 +77,19 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
   async run(): Promise<void> {
     this.context.removableObservers.push(this);
 
-    const configuration: RTCConfiguration = {
-      iceServers: [
-        {
-          urls: this.context.turnCredentials.uris,
-          username: this.context.turnCredentials.username,
-          credential: this.context.turnCredentials.password,
-          credentialType: 'password',
-        },
-      ],
-      iceTransportPolicy: 'relay',
-    };
+    const configuration: RTCConfiguration = this.context.turnCredentials
+      ? {
+          iceServers: [
+            {
+              urls: this.context.turnCredentials.uris,
+              username: this.context.turnCredentials.username,
+              credential: this.context.turnCredentials.password,
+              credentialType: 'password',
+            },
+          ],
+          iceTransportPolicy: 'relay',
+        }
+      : {};
     configuration.bundlePolicy = this.context.browserBehavior.requiresBundlePolicy();
     // @ts-ignore
     configuration.sdpSemantics = this.context.browserBehavior.requiresUnifiedPlan()

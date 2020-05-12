@@ -114,6 +114,16 @@ describe('CreatePeerConnectionTask', () => {
       });
     });
 
+    it('can create a peer connection without TURN credentials', done => {
+      context.turnCredentials = null;
+      task = new CreatePeerConnectionTask(context);
+      task.run().then(() => {
+        const configuration = context.peer.getConfiguration();
+        expect(configuration.bundlePolicy).to.equal(context.browserBehavior.requiresBundlePolicy());
+        done();
+      });
+    });
+
     it('reuses peer connection if it already exists', done => {
       const peer = new RTCPeerConnection();
       context.peer = peer;
