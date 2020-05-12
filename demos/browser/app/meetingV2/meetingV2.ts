@@ -150,7 +150,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       "amazon-chime-sdk-js@" + Versioning.sdkVersion;
     this.initEventListeners();
     this.initParameters();
-    this.getNearestMediaRegion();
+    this.setMediaRegion();
     if (this.isRecorder()) {
       new AsyncScheduler().start(async () => {
         this.meeting = new URL(window.location.href).searchParams.get('m');
@@ -217,16 +217,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
           (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
-
-          if(this.skipDeviceSelection()) {
-            await this.authenticate();
-            await this.join();
-            this.displayButtonStates();
-            this.switchToFlow('flow-meeting');
-          } else {
-            this.switchToFlow('flow-devices');
-          }
-
+          this.switchToFlow('flow-devices');
           await this.openAudioInputFromSelection();
           try {
             await this.openVideoInputFromSelection(
@@ -457,24 +448,45 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     });
   }
 
-  getNearestMediaRegion(): void {
-    const supportedMediaRegions: Array<string> = ['ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'sa-east-1', 'us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'];
+  getSupportedMediaRegions(): Array<string> {
+    const supportedMediaRegions: Array<string> = [];
+    const mediaRegion = (document.getElementById("inputRegion")) as HTMLSelectElement;
+    for (var i = 0; i < mediaRegion.length; i++) {
+      supportedMediaRegions.push(mediaRegion.value);
+    }
+    return supportedMediaRegions;
+  }
+
+  async getNearestMediaRegion(): Promise<string> {
+     const nearestMediaRegionResponse = await fetch(
+      `https://nearest-media-region.l.chime.aws`,
+      {
+        method: 'GET',
+      }
+    );
+    const nearestMediaRegionJSON = await nearestMediaRegionResponse.json();
+    const nearestMediaRegion = nearestMediaRegionJSON.region;
+    return nearestMediaRegion;
+  }
+
+  setMediaRegion(): void {
     new AsyncScheduler().start(
       async (): Promise<void> => {
         try {
-          const nearestMediaRegionResponse = await fetch(
-            `https://nearest-media-region.l.chime.aws`,
-            {
-              method: 'GET',
-            }
-          );
-          const nearestMediaRegionJSON = await nearestMediaRegionResponse.json();
-          const nearestMediaRegion = nearestMediaRegionJSON.region;
-          if (supportedMediaRegions.indexOf(nearestMediaRegion) !== -1) {
-            (document.getElementById('inputRegion') as HTMLInputElement).value = nearestMediaRegion;
-          } else {
-            throw new Error(`${nearestMediaRegion} doesn't exist`);
+          const nearestMediaRegion = await this.getNearestMediaRegion();
+          if (nearestMediaRegion === '' || nearestMediaRegion === null) {
+            throw new Error('Nearest Media Region cannot be null or empty');
           }
+          const supportedMediaRegions: Array<string> = this.getSupportedMediaRegions();
+          if (supportedMediaRegions.indexOf(nearestMediaRegion) === -1 ) {
+            supportedMediaRegions.push(nearestMediaRegion);
+            const mediaRegionElement = (document.getElementById("inputRegion")) as HTMLSelectElement;
+            const newMediaRegionOption = document.createElement("option");
+            newMediaRegionOption.value = nearestMediaRegion;
+            newMediaRegionOption.text = nearestMediaRegion + " (" + nearestMediaRegion + ")";
+            mediaRegionElement.add(newMediaRegionOption, null);
+          }
+          (document.getElementById('inputRegion') as HTMLInputElement).value = nearestMediaRegion;
         } catch (error) {
           this.log('Default media region selected: ' + error.message);
         }
@@ -1152,10 +1164,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   isRecorder(): boolean {
     return (new URL(window.location.href).searchParams.get('record')) === 'true';
-  }
-
-  skipDeviceSelection(): boolean {
-    return (new URL(window.location.href).searchParams.get('device')) === 'default';
   }
 
   async authenticate(): Promise<string> {

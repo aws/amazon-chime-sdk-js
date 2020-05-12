@@ -8,8 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Allow option to skip device selection page in demo app.
+
 ### Changed
 - Allow audio for screen capture in Chrome and Edge browsers
+- Decouple the get call request from the UI
+
 ### Removed
 
 ### Fixed
