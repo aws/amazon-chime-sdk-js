@@ -129,10 +129,14 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
 
   private trackIsVideoInput(track: MediaStreamTrack): boolean {
     if (this.context.transceiverController.useTransceivers()) {
-      this.logger.info(`getting video track type (unified-plan)`);
+      this.logger.debug(() => {
+        return `getting video track type (unified-plan)`;
+      });
       return this.context.transceiverController.trackIsVideoInput(track);
     }
-    this.logger.info(`getting video track type (plan-b)`);
+    this.logger.debug(() => {
+      return `getting video track type (plan-b)`;
+    });
     if (this.context.activeVideoInput) {
       const tracks = this.context.activeVideoInput.getVideoTracks();
       if (tracks && tracks.length > 0 && tracks[0].id === track.id) {
@@ -170,7 +174,6 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
   private addRemoteVideoTrack(track: MediaStreamTrack, stream: MediaStream): void {
     let trackId = stream.id;
     if (!this.context.browserBehavior.requiresUnifiedPlan()) {
-      this.logger.info('redefining MediaStream as track array (plan-b)');
       stream = new MediaStream([track]);
       trackId = track.id;
     }
@@ -181,7 +184,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     // why this can happen, so adding a log statement to track this and learn more.
     const tilesRemoved = this.context.videoTileController.removeVideoTilesByAttendeeId(attendeeId);
     if (tilesRemoved.length > 0) {
-      this.logger.warn(
+      this.logger.info(
         `removing existing tiles ${tilesRemoved} with same attendee id ${attendeeId}`
       );
     }
@@ -217,12 +220,12 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
 
     let width: number;
     let height: number;
-    if (track.getCapabilities) {
-      const cap: MediaTrackCapabilities = track.getCapabilities();
+    if (track.getSettings) {
+      const cap: MediaTrackSettings = track.getSettings();
       width = cap.width as number;
       height = cap.height as number;
     } else {
-      const cap: MediaTrackSettings = track.getSettings();
+      const cap: MediaTrackCapabilities = track.getCapabilities();
       width = cap.width as number;
       height = cap.height as number;
     }
@@ -241,7 +244,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     let endEvent = 'removetrack';
     let target: MediaStream = stream;
     if (!this.context.browserBehavior.requiresUnifiedPlan()) {
-      this.logger.info('updating end event and target track (plan-b)');
+      this.logger.debug(() => {
+        return 'updating end event and target track (plan-b)';
+      });
       endEvent = 'ended';
       // @ts-ignore
       target = track;

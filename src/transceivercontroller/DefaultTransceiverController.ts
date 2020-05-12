@@ -19,7 +19,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   static async setVideoSendingBitrateKbpsForSender(
     sender: RTCRtpSender,
     bitrateKbps: number,
-    logger: Logger
+    _logger: Logger
   ): Promise<void> {
     if (!sender || bitrateKbps <= 0) {
       return;
@@ -32,7 +32,6 @@ export default class DefaultTransceiverController implements TransceiverControll
       encodeParam.maxBitrate = bitrateKbps * 1000;
     }
     await sender.setParameters(param);
-    logger.info(`set video send bandwidth to ${bitrateKbps}kbps`);
   }
 
   static async replaceAudioTrackForSender(

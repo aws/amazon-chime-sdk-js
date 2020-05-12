@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -24,7 +24,9 @@ export default class SetLocalDescriptionTask extends BaseTask {
   async run(): Promise<void> {
     const peer = this.context.peer;
     const sdpOffer = this.context.sdpOfferInit;
-    this.logger.info(`local description is >>>${sdpOffer.sdp}<<<`);
+    this.logger.debug(() => {
+      return `local description is >>>${sdpOffer.sdp}<<<`;
+    });
 
     await new Promise<void>(async (resolve, reject) => {
       this.cancelPromise = (error: Error) => {
