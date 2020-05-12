@@ -707,7 +707,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   setupSubscribeToAttendeeIdPresenceHandler(): void {
     const handler = (attendeeId: string, present: boolean, externalUserId: string): void => {
-      this.log(`${attendeeId} present = ${present}`);
+      this.log(`${attendeeId} present = ${present} (${externalUserId})`);
       const isContentAttendee = new DefaultModality(attendeeId).hasModality(DefaultModality.MODALITY_CONTENT);
       const isSelfAttendee = new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId;
       if (!present) {
@@ -721,7 +721,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       }
       if (!this.roster[attendeeId]) {
         this.roster[attendeeId] = {
-          name: externalUserId.split('#')[1] + (isContentAttendee ? ' «Content»' : ''),
+          name: (externalUserId.split('#').slice(-1)[0]) + (isContentAttendee ? ' «Content»' : ''),
         };
       }
       this.audioVideo.realtimeSubscribeToVolumeIndicator(

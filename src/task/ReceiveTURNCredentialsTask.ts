@@ -31,6 +31,11 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
   }
 
   async run(): Promise<void> {
+    if (!this.url) {
+      this.context.logger.info('skipping TURN credentials');
+      return;
+    }
+
     const options: RequestInit = {
       method: 'POST',
       mode: 'cors',

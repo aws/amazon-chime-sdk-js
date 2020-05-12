@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -67,6 +67,13 @@ describe('ReceiveTURNCredentialsTask', () => {
           expect(context.turnCredentials).to.equal(null);
           done();
         });
+    });
+
+    it('will bypass the task when a url is not specified', async () => {
+      context.meetingSessionConfiguration.urls.turnControlURL = null;
+      task = new ReceiveTURNCredentialsTask(context);
+      await task.run();
+      expect(context.turnCredentials).to.equal(null);
     });
   });
 

@@ -8,11 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Allow option to skip device selection page in demo app.
+- Add demo hook for debugging media connections
 
 ### Changed
 - Allow audio for screen capture in Chrome and Edge browsers
 - Decouple the get call request from the UI
-- Use getSettings if possile on MediaStream
+- Use getSettings if possible on MediaStream
 
 ### Removed
 
