@@ -638,7 +638,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
   async handleHasBandwidthPriority(hasBandwidthPriority: boolean): Promise<void> {
     if (this.meetingSessionContext && this.meetingSessionContext.videoUplinkBandwidthPolicy) {
-      this.logger.info(`video send has bandwidth priority: ${hasBandwidthPriority}`);
       const oldMaxBandwidth = this.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps();
       this.meetingSessionContext.videoUplinkBandwidthPolicy.setHasBandwidthPriority(
         hasBandwidthPriority
@@ -646,7 +645,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
       const newMaxBandwidth = this.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps();
       if (oldMaxBandwidth !== newMaxBandwidth) {
         this.logger.info(
-          `video send bandwidth max has changed from ${oldMaxBandwidth} kbps to ${newMaxBandwidth} kbps`
+          `video send bandwidth priority ${hasBandwidthPriority} max has changed from ${oldMaxBandwidth} kbps to ${newMaxBandwidth} kbps`
         );
         await this.enforceBandwidthLimitationForSender(newMaxBandwidth);
       }

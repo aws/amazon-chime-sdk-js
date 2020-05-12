@@ -300,11 +300,14 @@ describe('CreatePeerConnectionTask', () => {
         expect(tile.state().streamId).to.equal(streamId);
       });
 
-      it('uses getCapabilities if available in the track', async () => {
+      it('uses getCapabilities if getSettings is not available in the track', async () => {
         domMockBehavior.mediaStreamTrackCapabilities = {
           width: 640,
           height: 480,
         };
+
+        // eslint-disable-next-line
+        delete MediaStreamTrack.prototype['getSettings'];
 
         let tile: VideoTile;
         const attendeeIdForTrack = 'attendee-id';
@@ -339,7 +342,7 @@ describe('CreatePeerConnectionTask', () => {
         );
       });
 
-      it('uses getSettings if getCapabilities is not available in the track', async () => {
+      it('uses getSettings if available', async () => {
         domMockBehavior.mediaStreamTrackCapabilities = {
           width: 400,
           height: 300,
@@ -351,9 +354,6 @@ describe('CreatePeerConnectionTask', () => {
         };
 
         let tile: VideoTile;
-
-        // eslint-disable-next-line
-        delete MediaStreamTrack.prototype['getCapabilities'];
 
         const attendeeIdForTrack = 'attendee-id';
         context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
