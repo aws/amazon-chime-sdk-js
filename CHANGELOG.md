@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow audio for screen capture in Chrome and Edge browsers
 - Decouple the get call request from the UI
 - Use getSettings if possible on MediaStream
+- Use innerText instead of innerHTML 
 
 ### Removed
 
