@@ -37,6 +37,7 @@ import CreatePeerConnectionTask from './task/CreatePeerConnectionTask';
 import CreateSDPTask from './task/CreateSDPTask';
 import DOMWebSocket from './domwebsocket/DOMWebSocket';
 import DOMWebSocketFactory from './domwebsocket/DOMWebSocketFactory';
+import DataMessage from './datamessage/DataMessage';
 import DefaultActiveSpeakerDetector from './activespeakerdetector/DefaultActiveSpeakerDetector';
 import DefaultActiveSpeakerPolicy from './activespeakerpolicy/DefaultActiveSpeakerPolicy';
 import DefaultAudioMixController from './audiomixcontroller/DefaultAudioMixController';
@@ -236,6 +237,7 @@ import ScreenViewingSession from './screenviewing/session/ScreenViewingSession';
 import ScreenViewingSessionConnectionRequest from './screenviewing/session/ScreenViewingSessionConnectionRequest';
 import ScreenViewingSessionObserver from './screenviewing/clientobserver/ScreenViewingSessionObserver';
 import ScreenViewingViewer from './screenviewing/viewer/ScreenViewingViewer';
+import SendAndReceiveDataMessagesTask from './task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from './task/SerialGroupTask';
 import SessionStateController from './sessionstatecontroller/SessionStateController';
 import SessionStateControllerAction from './sessionstatecontroller/SessionStateControllerAction';
@@ -323,6 +325,7 @@ export {
   CreateSDPTask,
   DOMWebSocket,
   DOMWebSocketFactory,
+  DataMessage,
   DefaultActiveSpeakerDetector,
   DefaultActiveSpeakerPolicy,
   DefaultAudioMixController,
@@ -522,6 +525,7 @@ export {
   ScreenViewingSessionConnectionRequest,
   ScreenViewingSessionObserver,
   ScreenViewingViewer,
+  SendAndReceiveDataMessagesTask,
   SerialGroupTask,
   SessionStateController,
   SessionStateControllerAction,

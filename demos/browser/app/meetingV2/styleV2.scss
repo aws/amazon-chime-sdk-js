@@ -397,4 +397,30 @@ svg {
   #content-share-video {
     display: none !important;
   }
+
+  #meeting-container {
+    height: auto !important;
+  }
+
+  #roster-tile-container {
+    height: auto !important;
+  }
+
+  #roster-message-container {
+    height: auto !important;
+  }
+
+  #tile-container {
+    height: auto !important;
+  }
+
+  .bs-component {
+    max-height: 210px;
+    height: auto !important;
+  }
+
+  .message {
+    max-height: 210px;
+    height: 210px !important;
+  }
 }

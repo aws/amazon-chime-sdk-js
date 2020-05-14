@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import DataMessage from '../../src/datamessage/DataMessage';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import RealtimeController from '../../src/realtimecontroller/RealtimeController';
 
@@ -863,6 +864,204 @@ describe('DefaultRealtimeController', () => {
     expect(rt.realtimeExternalUserIdFromAttendeeId(attendeeId)).to.be.equal(externalUserId);
   });
 
+  describe('data message', () => {
+    it('will trigger send message callbacks if subscribed', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let callbackIndex = 0;
+      let resultTopic, resultData, resultLifetimeMs;
+      const callback = (
+        topic: string,
+        data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        lifetimeMs?: number
+      ): void => {
+        callbackIndex++;
+        resultTopic = topic;
+        resultData = data;
+        resultLifetimeMs = lifetimeMs;
+      };
+      rt.realtimeSubscribeToSendDataMessage(callback);
+      rt.realtimeSendDataMessage('topic1', 'text1', 100);
+      expect(callbackIndex).to.eq(1);
+      expect(resultTopic).to.eq('topic1');
+      expect(resultData).to.eq('text1');
+      expect(resultLifetimeMs).to.eq(100);
+      rt.realtimeSendDataMessage('topic2', 'text2');
+      expect(callbackIndex).to.eq(2);
+      expect(resultTopic).to.eq('topic2');
+      expect(resultData).to.eq('text2');
+      expect(resultLifetimeMs).to.be.undefined;
+    });
+
+    it('will not trigger send message callbacks if unsubscribed', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let callbackIndex = 0;
+      let resultTopic, resultData, resultLifetimeMs;
+      const callback = (
+        topic: string,
+        data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        lifetimeMs?: number
+      ): void => {
+        callbackIndex++;
+        resultTopic = topic;
+        resultData = data;
+        resultLifetimeMs = lifetimeMs;
+      };
+      rt.realtimeSubscribeToSendDataMessage(callback);
+      rt.realtimeSendDataMessage('topic1', 'text1', 100);
+      expect(callbackIndex).to.eq(1);
+      expect(resultTopic).to.eq('topic1');
+      expect(resultData).to.eq('text1');
+      expect(resultLifetimeMs).to.eq(100);
+      rt.realtimeUnsubscribeFromSendDataMessage(callback);
+      rt.realtimeSendDataMessage('topic2', 'text2');
+      expect(callbackIndex).to.eq(1);
+      expect(resultTopic).to.eq('topic1');
+      expect(resultData).to.eq('text1');
+      expect(resultLifetimeMs).to.eq(100);
+    });
+
+    it('will trigger receive message callbacks if subscribed and match topic', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let callbackIndex = 0;
+      let resultDataMessage: DataMessage = null;
+      const callback = (dataMessage: DataMessage): void => {
+        callbackIndex++;
+        resultDataMessage = dataMessage;
+      };
+      const topic = 'topic';
+      rt.realtimeSubscribeToReceiveDataMessage(topic, callback);
+      let dataMessage = new DataMessage(
+        10000,
+        topic,
+        new TextEncoder().encode('text1'),
+        'sender1',
+        'senderExtId1'
+      );
+      rt.realtimeReceiveDataMessage(dataMessage);
+      expect(callbackIndex).to.eq(1);
+      expect(resultDataMessage.timestampMs).to.eq(10000);
+      expect(resultDataMessage.topic).to.eq(topic);
+      expect(resultDataMessage.text()).to.eq('text1');
+      expect(resultDataMessage.senderAttendeeId).to.eq('sender1');
+      expect(resultDataMessage.senderExternalUserId).to.eq('senderExtId1');
+      dataMessage = new DataMessage(
+        20000,
+        topic,
+        new TextEncoder().encode('text2'),
+        'sender2',
+        'senderExtId2'
+      );
+      rt.realtimeReceiveDataMessage(dataMessage);
+      expect(callbackIndex).to.eq(2);
+      expect(resultDataMessage.timestampMs).to.eq(20000);
+      expect(resultDataMessage.topic).to.eq(topic);
+      expect(resultDataMessage.text()).to.eq('text2');
+      expect(resultDataMessage.senderAttendeeId).to.eq('sender2');
+      expect(resultDataMessage.senderExternalUserId).to.eq('senderExtId2');
+    });
+
+    it('will not trigger receive message callbacks if topic does not match', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let callbackIndex = 0;
+      let resultDataMessage: DataMessage = null;
+      const callback = (dataMessage: DataMessage): void => {
+        callbackIndex++;
+        resultDataMessage = dataMessage;
+      };
+      const topic = 'topic';
+      rt.realtimeSubscribeToReceiveDataMessage(topic, callback);
+      let dataMessage = new DataMessage(
+        10000,
+        topic,
+        new TextEncoder().encode('text1'),
+        'sender1',
+        'senderExtId1'
+      );
+      rt.realtimeReceiveDataMessage(dataMessage);
+      expect(callbackIndex).to.eq(1);
+      expect(resultDataMessage.timestampMs).to.eq(10000);
+      expect(resultDataMessage.topic).to.eq(topic);
+      expect(resultDataMessage.text()).to.eq('text1');
+      expect(resultDataMessage.senderAttendeeId).to.eq('sender1');
+      expect(resultDataMessage.senderExternalUserId).to.eq('senderExtId1');
+      dataMessage = new DataMessage(
+        20000,
+        'otherTopic',
+        new TextEncoder().encode('text2'),
+        'sender2',
+        'senderExtId2'
+      );
+      rt.realtimeReceiveDataMessage(dataMessage);
+      expect(callbackIndex).to.eq(1);
+      expect(resultDataMessage.timestampMs).to.eq(10000);
+      expect(resultDataMessage.topic).to.eq(topic);
+      expect(resultDataMessage.text()).to.eq('text1');
+      expect(resultDataMessage.senderAttendeeId).to.eq('sender1');
+      expect(resultDataMessage.senderExternalUserId).to.eq('senderExtId1');
+    });
+
+    it('will not trigger receive message callbacks if unsubscribed', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let callbackIndex = 0;
+      let resultDataMessage: DataMessage = null;
+      const callback = (dataMessage: DataMessage): void => {
+        callbackIndex++;
+        resultDataMessage = dataMessage;
+      };
+      const topic = 'topic';
+      rt.realtimeSubscribeToReceiveDataMessage(topic, callback);
+      let dataMessage = new DataMessage(
+        10000,
+        topic,
+        new TextEncoder().encode('text1'),
+        'sender1',
+        'senderExtId1'
+      );
+      rt.realtimeReceiveDataMessage(dataMessage);
+      expect(callbackIndex).to.eq(1);
+      expect(resultDataMessage.timestampMs).to.eq(10000);
+      expect(resultDataMessage.topic).to.eq(topic);
+      expect(resultDataMessage.text()).to.eq('text1');
+      expect(resultDataMessage.senderAttendeeId).to.eq('sender1');
+      expect(resultDataMessage.senderExternalUserId).to.eq('senderExtId1');
+      dataMessage = new DataMessage(
+        20000,
+        topic,
+        new TextEncoder().encode('text2'),
+        'sender2',
+        'senderExtId1'
+      );
+      rt.realtimeUnsubscribeFromReceiveDataMessage(topic);
+      rt.realtimeReceiveDataMessage(dataMessage);
+      expect(callbackIndex).to.eq(1);
+      expect(resultDataMessage.timestampMs).to.eq(10000);
+      expect(resultDataMessage.topic).to.eq(topic);
+      expect(resultDataMessage.text()).to.eq('text1');
+      expect(resultDataMessage.senderAttendeeId).to.eq('sender1');
+      expect(resultDataMessage.senderExternalUserId).to.eq('senderExtId1');
+    });
+
+    it('can add multiple callbacks for the same topic', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let callbackIndex1 = 0;
+      const callback1 = (_dataMessage: DataMessage): void => {
+        callbackIndex1++;
+      };
+      let callbackIndex2 = 0;
+      const callback2 = (_dataMessage: DataMessage): void => {
+        callbackIndex2++;
+      };
+      const topic = 'topic';
+      rt.realtimeSubscribeToReceiveDataMessage(topic, callback1);
+      rt.realtimeSubscribeToReceiveDataMessage(topic, callback2);
+      rt.realtimeReceiveDataMessage(
+        new DataMessage(10000, topic, new TextEncoder().encode('text1'), 'sender1', 'senderExtId1')
+      );
+      expect(callbackIndex1).to.eq(1);
+      expect(callbackIndex2).to.eq(1);
+    });
+  });
+
   describe('unsubscribe', () => {
     it('can unsubscribe from callbacks', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
@@ -883,6 +1082,17 @@ describe('DefaultRealtimeController', () => {
       let LocalSignalStrengthChangeCallback = (_signalStrength: number): void => {
         callbacksRemoved = false;
       };
+      let SendDataMessageCallback = (
+        _topic: string,
+        _data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        _lifetimeMs?: number
+      ): void => {
+        callbacksRemoved = false;
+      };
+
+      let ReceiveDataMessageCallback = (_dataMessage: DataMessage): void => {
+        callbacksRemoved = false;
+      };
       let fatalErrorCallback = (_error: Error): void => {
         fatalErrorCallbackRemoved = false;
       };
@@ -901,6 +1111,8 @@ describe('DefaultRealtimeController', () => {
         }
       );
       rt.realtimeSubscribeToLocalSignalStrengthChange(LocalSignalStrengthChangeCallback);
+      rt.realtimeSubscribeToSendDataMessage(SendDataMessageCallback);
+      rt.realtimeSubscribeToReceiveDataMessage('topic', ReceiveDataMessageCallback);
       rt.realtimeSubscribeToFatalError(fatalErrorCallback);
 
       // attempt to trigger a fake error after unsubscribing to fatal errors
@@ -915,6 +1127,8 @@ describe('DefaultRealtimeController', () => {
       rt.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(MuteAndUnmuteLocalAudioCallback);
       rt.realtimeUnsubscribeFromVolumeIndicator('fakeAttendeeId');
       rt.realtimeUnsubscribeToLocalSignalStrengthChange(LocalSignalStrengthChangeCallback);
+      rt.realtimeUnsubscribeFromSendDataMessage(SendDataMessageCallback);
+      rt.realtimeUnsubscribeFromReceiveDataMessage('topic');
 
       // attempt to trigger callbacks
       rt.realtimeSetAttendeeIdPresence('unused', true, null);
@@ -922,6 +1136,16 @@ describe('DefaultRealtimeController', () => {
       rt.realtimeMuteLocalAudio();
       // also triggers local signal strength callbacks
       rt.realtimeUpdateVolumeIndicator('fakeAttendeeId', 0.5, null, 1, null);
+      rt.realtimeSendDataMessage('topic', 'test message');
+      rt.realtimeReceiveDataMessage(
+        new DataMessage(
+          10000,
+          'topic',
+          new TextEncoder().encode('text1'),
+          'sender1',
+          'senderExtId1'
+        )
+      );
       expect(callbacksRemoved).to.be.true;
     });
   });

@@ -8,6 +8,7 @@ import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ContentShareController from '../contentsharecontroller/ContentShareController';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
+import DataMessage from '../datamessage/DataMessage';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Device from '../devicecontroller/Device';
 import DeviceController from '../devicecontroller/DeviceController';
@@ -242,6 +243,29 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
 
   realtimeUnsubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void {
     this.realtimeController.realtimeUnsubscribeToLocalSignalStrengthChange(callback);
+    this.trace('realtimeUnsubscribeToLocalSignalStrengthChange');
+  }
+
+  realtimeSendDataMessage(
+    topic: string, // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: Uint8Array | string | any,
+    lifetimeMs?: number
+  ): void {
+    this.realtimeController.realtimeSendDataMessage(topic, data, lifetimeMs);
+    this.trace('realtimeSendDataMessage');
+  }
+
+  realtimeSubscribeToReceiveDataMessage(
+    topic: string,
+    callback: (dataMessage: DataMessage) => void
+  ): void {
+    this.realtimeController.realtimeSubscribeToReceiveDataMessage(topic, callback);
+    this.trace('realtimeSubscribeToReceiveDataMessage');
+  }
+
+  realtimeUnsubscribeFromReceiveDataMessage(topic: string): void {
+    this.realtimeController.realtimeUnsubscribeFromReceiveDataMessage(topic);
+    this.trace('realtimeUnsubscribeFromReceiveDataMessage');
   }
 
   realtimeSubscribeToFatalError(callback: (error: Error) => void): void {

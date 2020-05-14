@@ -1,6 +1,7 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DataMessage from '../datamessage/DataMessage';
 import RealtimeController from './RealtimeController';
 import RealtimeState from './RealtimeState';
 import RealtimeVolumeIndicator from './RealtimeVolumeIndicator';
@@ -319,6 +320,68 @@ export default class DefaultRealtimeController implements RealtimeController {
 
   realtimeExternalUserIdFromAttendeeId(attendeeId: string): string | null {
     return this.state.attendeeIdToExternalUserId[attendeeId] || null;
+  }
+
+  realtimeSubscribeToSendDataMessage(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
+  ): void {
+    this.wrap(() => {
+      this.state.sendDataMessageCallbacks.push(callback);
+    });
+  }
+
+  realtimeUnsubscribeFromSendDataMessage(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
+  ): void {
+    this.wrap(() => {
+      const index = this.state.sendDataMessageCallbacks.indexOf(callback);
+      if (index !== -1) {
+        this.state.sendDataMessageCallbacks.splice(index, 1);
+      }
+    });
+  }
+
+  realtimeSendDataMessage(
+    topic: string,
+    data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    lifetimeMs?: number
+  ): void {
+    this.wrap(() => {
+      for (const fn of this.state.sendDataMessageCallbacks) {
+        fn(topic, data, lifetimeMs);
+      }
+    });
+  }
+
+  realtimeSubscribeToReceiveDataMessage(
+    topic: string,
+    callback: (dataMessage: DataMessage) => void
+  ): void {
+    this.wrap(() => {
+      if (this.state.didReceiveDataMessageCallbacks.has(topic)) {
+        this.state.didReceiveDataMessageCallbacks.get(topic).push(callback);
+      } else {
+        this.state.didReceiveDataMessageCallbacks.set(topic, [callback]);
+      }
+    });
+  }
+
+  realtimeUnsubscribeFromReceiveDataMessage(topic: string): void {
+    this.wrap(() => {
+      this.state.didReceiveDataMessageCallbacks.delete(topic);
+    });
+  }
+
+  realtimeReceiveDataMessage(dataMessage: DataMessage): void {
+    this.wrap(() => {
+      if (this.state.didReceiveDataMessageCallbacks.has(dataMessage.topic)) {
+        for (const fn of this.state.didReceiveDataMessageCallbacks.get(dataMessage.topic)) {
+          fn(dataMessage);
+        }
+      }
+    });
   }
 
   // Error Handling

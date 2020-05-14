@@ -7,6 +7,7 @@ import SignalingClientObserver from '../signalingclientobserver/SignalingClientO
 import {
   SdkAudioControlFrame,
   SdkClientMetricFrame,
+  SdkDataMessageFrame,
   SdkJoinFlags,
   SdkJoinFrame,
   SdkLeaveFrame,
@@ -143,6 +144,13 @@ export default class DefaultSignalingClient implements SignalingClient {
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.CLIENT_METRIC;
     message.clientMetric = clientMetricFrame;
+    this.sendMessage(message);
+  }
+
+  sendDataMessage(messageFrame: SdkDataMessageFrame): void {
+    const message = SdkSignalFrame.create();
+    message.type = SdkSignalFrame.Type.DATA_MESSAGE;
+    message.dataMessage = messageFrame;
     this.sendMessage(message);
   }
 

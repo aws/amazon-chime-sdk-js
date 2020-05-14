@@ -1,8 +1,12 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
-import { SdkClientMetricFrame, SdkPingPongFrame } from '../signalingprotocol/SignalingProtocol.js';
+import {
+  SdkClientMetricFrame,
+  SdkDataMessageFrame,
+  SdkPingPongFrame,
+} from '../signalingprotocol/SignalingProtocol.js';
 import SignalingClientConnectionRequest from './SignalingClientConnectionRequest';
 import SignalingClientJoin from './SignalingClientJoin';
 import SignalingClientSubscribe from './SignalingClientSubscribe';
@@ -69,6 +73,11 @@ export default interface SignalingClient {
    * Sends a client stats frame.
    */
   sendClientMetrics(clientMetricFrame: SdkClientMetricFrame): void;
+
+  /**
+   * Send a message frame to data channel
+   */
+  sendDataMessage(messageFrame: SdkDataMessageFrame): void;
 
   /**
    * Closes any existing connection.
