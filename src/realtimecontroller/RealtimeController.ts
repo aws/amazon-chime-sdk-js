@@ -1,6 +1,8 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DataMessage from '../datamessage/DataMessage';
+
 /**
  * [[RealtimeController]] controls aspects meetings concerning realtime UX
  * that for performance, privacy, or other reasons should be implemented using
@@ -177,6 +179,47 @@ export default interface RealtimeController {
    * Unsubscribes to changes in local signal strength
    */
   realtimeUnsubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void;
+
+  /**
+   * Subscribe to local send message event
+   */
+  realtimeSubscribeToSendDataMessage( // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
+  ): void;
+
+  /**
+   * Unscribe to local send message event
+   */
+  realtimeUnsubscribeFromSendDataMessage( // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
+  ): void;
+
+  /**
+   * Send message via data channel
+   */
+  realtimeSendDataMessage(
+    topic: string,
+    data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    lifetimeMs?: number
+  ): void;
+
+  /**
+   * Subscribe to receiving message on a topic
+   */
+  realtimeSubscribeToReceiveDataMessage(
+    topic: string,
+    callback: (dataMessage: DataMessage) => void
+  ): void;
+
+  /**
+   * Unsubscribe from a message topic
+   */
+  realtimeUnsubscribeFromReceiveDataMessage(topic: string): void;
+
+  /**
+   * Trigger callbacks when receiving a message from data channel
+   */
+  realtimeReceiveDataMessage(dataMessage: DataMessage): void;
 
   // Error Handling
 

@@ -56,6 +56,9 @@ export interface ISdkSignalFrame {
 
     /** SdkSignalFrame clientMetric */
     clientMetric?: (ISdkClientMetricFrame|null);
+
+    /** SdkSignalFrame dataMessage */
+    dataMessage?: (ISdkDataMessageFrame|null);
 }
 
 /** Represents a SdkSignalFrame. */
@@ -120,6 +123,9 @@ export class SdkSignalFrame implements ISdkSignalFrame {
 
     /** SdkSignalFrame clientMetric. */
     public clientMetric?: (ISdkClientMetricFrame|null);
+
+    /** SdkSignalFrame dataMessage. */
+    public dataMessage?: (ISdkDataMessageFrame|null);
 
     /**
      * Creates a new SdkSignalFrame instance using the specified properties.
@@ -211,7 +217,8 @@ export namespace SdkSignalFrame {
         AUDIO_STREAM_ID_INFO = 18,
         PING_PONG = 19,
         AUDIO_STATUS = 20,
-        CLIENT_METRIC = 21
+        CLIENT_METRIC = 21,
+        DATA_MESSAGE = 22
     }
 }
 
@@ -2782,6 +2789,216 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
 
     /**
      * Converts this SdkClientMetricFrame to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkDataMessageFrame. */
+export interface ISdkDataMessageFrame {
+
+    /** SdkDataMessageFrame dataMessagePayloads */
+    dataMessagePayloads?: (ISdkDataMessagePayload[]|null);
+}
+
+/** Represents a SdkDataMessageFrame. */
+export class SdkDataMessageFrame implements ISdkDataMessageFrame {
+
+    /**
+     * Constructs a new SdkDataMessageFrame.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkDataMessageFrame);
+
+    /** SdkDataMessageFrame dataMessagePayloads. */
+    public dataMessagePayloads: ISdkDataMessagePayload[];
+
+    /**
+     * Creates a new SdkDataMessageFrame instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkDataMessageFrame instance
+     */
+    public static create(properties?: ISdkDataMessageFrame): SdkDataMessageFrame;
+
+    /**
+     * Encodes the specified SdkDataMessageFrame message. Does not implicitly {@link SdkDataMessageFrame.verify|verify} messages.
+     * @param message SdkDataMessageFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkDataMessageFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkDataMessageFrame message, length delimited. Does not implicitly {@link SdkDataMessageFrame.verify|verify} messages.
+     * @param message SdkDataMessageFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkDataMessageFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkDataMessageFrame message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkDataMessageFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkDataMessageFrame;
+
+    /**
+     * Decodes a SdkDataMessageFrame message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkDataMessageFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkDataMessageFrame;
+
+    /**
+     * Verifies a SdkDataMessageFrame message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkDataMessageFrame message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkDataMessageFrame
+     */
+    public static fromObject(object: { [k: string]: any }): SdkDataMessageFrame;
+
+    /**
+     * Creates a plain object from a SdkDataMessageFrame message. Also converts values to other types if specified.
+     * @param message SdkDataMessageFrame
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkDataMessageFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkDataMessageFrame to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkDataMessagePayload. */
+export interface ISdkDataMessagePayload {
+
+    /** SdkDataMessagePayload topic */
+    topic?: (string|null);
+
+    /** SdkDataMessagePayload data */
+    data?: (Uint8Array|null);
+
+    /** SdkDataMessagePayload lifetimeMs */
+    lifetimeMs?: (number|null);
+
+    /** SdkDataMessagePayload senderAttendeeId */
+    senderAttendeeId?: (string|null);
+
+    /** SdkDataMessagePayload ingestTimeNs */
+    ingestTimeNs?: (number|Long|null);
+
+    /** SdkDataMessagePayload senderExternalUserId */
+    senderExternalUserId?: (string|null);
+}
+
+/** Represents a SdkDataMessagePayload. */
+export class SdkDataMessagePayload implements ISdkDataMessagePayload {
+
+    /**
+     * Constructs a new SdkDataMessagePayload.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkDataMessagePayload);
+
+    /** SdkDataMessagePayload topic. */
+    public topic: string;
+
+    /** SdkDataMessagePayload data. */
+    public data: Uint8Array;
+
+    /** SdkDataMessagePayload lifetimeMs. */
+    public lifetimeMs: number;
+
+    /** SdkDataMessagePayload senderAttendeeId. */
+    public senderAttendeeId: string;
+
+    /** SdkDataMessagePayload ingestTimeNs. */
+    public ingestTimeNs: (number|Long);
+
+    /** SdkDataMessagePayload senderExternalUserId. */
+    public senderExternalUserId: string;
+
+    /**
+     * Creates a new SdkDataMessagePayload instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkDataMessagePayload instance
+     */
+    public static create(properties?: ISdkDataMessagePayload): SdkDataMessagePayload;
+
+    /**
+     * Encodes the specified SdkDataMessagePayload message. Does not implicitly {@link SdkDataMessagePayload.verify|verify} messages.
+     * @param message SdkDataMessagePayload message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkDataMessagePayload, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkDataMessagePayload message, length delimited. Does not implicitly {@link SdkDataMessagePayload.verify|verify} messages.
+     * @param message SdkDataMessagePayload message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkDataMessagePayload, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkDataMessagePayload message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkDataMessagePayload
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkDataMessagePayload;
+
+    /**
+     * Decodes a SdkDataMessagePayload message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkDataMessagePayload
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkDataMessagePayload;
+
+    /**
+     * Verifies a SdkDataMessagePayload message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkDataMessagePayload message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkDataMessagePayload
+     */
+    public static fromObject(object: { [k: string]: any }): SdkDataMessagePayload;
+
+    /**
+     * Creates a plain object from a SdkDataMessagePayload message. Also converts values to other types if specified.
+     * @param message SdkDataMessagePayload
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkDataMessagePayload, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkDataMessagePayload to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };

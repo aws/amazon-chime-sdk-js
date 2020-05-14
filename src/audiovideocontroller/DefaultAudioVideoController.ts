@@ -46,6 +46,7 @@ import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
 import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from '../task/ReceiveVideoStreamIndexTask';
+import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from '../task/SerialGroupTask';
 import SetLocalDescriptionTask from '../task/SetLocalDescriptionTask';
 import SetRemoteDescriptionTask from '../task/SetRemoteDescriptionTask';
@@ -271,6 +272,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
               new SerialGroupTask(this.logger, 'Signaling', [
                 new OpenSignalingConnectionTask(this.meetingSessionContext),
                 new ListenForVolumeIndicatorsTask(this.meetingSessionContext),
+                new SendAndReceiveDataMessagesTask(this.meetingSessionContext),
                 new JoinAndReceiveIndexTask(this.meetingSessionContext),
                 // TODO: ensure index handler does not race with incoming index update
                 new ReceiveVideoStreamIndexTask(this.meetingSessionContext),
