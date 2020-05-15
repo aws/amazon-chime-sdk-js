@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
-
+- Fix minor coding styles for data message APIs
 
 ## [1.5.0] - 2020-05-07
 

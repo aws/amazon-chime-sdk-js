@@ -97,5 +97,5 @@ export default class RealtimeState {
   /**
    * Callbacks to listen for receiving message from data channel based on given topic
    */
-  didReceiveDataMessageCallbacks: Map<string, ((dataMessage: DataMessage) => void)[]> = new Map();
+  receiveDataMessageCallbacks: Map<string, ((dataMessage: DataMessage) => void)[]> = new Map();
 }

@@ -92,13 +92,13 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#attendeeidtoexternaluserid" class="tsd-kind-icon">attendee<wbr>IdTo<wbr>External<wbr>User<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#audioinput" class="tsd-kind-icon">audio<wbr>Input</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#canunmute" class="tsd-kind-icon">can<wbr>Unmute</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#didreceivedatamessagecallbacks" class="tsd-kind-icon">did<wbr>Receive<wbr>Data<wbr>Message<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#fatalerrorcallbacks" class="tsd-kind-icon">fatal<wbr>Error<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#localattendeeid" class="tsd-kind-icon">local<wbr>Attendee<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#localexternaluserid" class="tsd-kind-icon">local<wbr>External<wbr>User<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#localsignalstrengthchangecallbacks" class="tsd-kind-icon">local<wbr>Signal<wbr>Strength<wbr>Change<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#muteandunmutelocalaudiocallbacks" class="tsd-kind-icon">mute<wbr>And<wbr>Unmute<wbr>Local<wbr>Audio<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#muted" class="tsd-kind-icon">muted</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#receivedatamessagecallbacks" class="tsd-kind-icon">receive<wbr>Data<wbr>Message<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#senddatamessagecallbacks" class="tsd-kind-icon">send<wbr>Data<wbr>Message<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#setcanunmutelocalaudiocallbacks" class="tsd-kind-icon">set<wbr>Can<wbr>Unmute<wbr>Local<wbr>Audio<wbr>Callbacks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="realtimestate.html#volumeindicatorcallbacks" class="tsd-kind-icon">volume<wbr>Indicator<wbr>Callbacks</a></li>
@@ -175,21 +175,6 @@
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Stores whether the user can transition from muted to unmuted</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="didreceivedatamessagecallbacks" class="tsd-anchor"></a>
-					<h3>did<wbr>Receive<wbr>Data<wbr>Message<wbr>Callbacks</h3>
-					<div class="tsd-signature tsd-kind-icon">did<wbr>Receive<wbr>Data<wbr>Message<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="datamessage.html" class="tsd-signature-type">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map()</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L100">src/realtimecontroller/RealtimeState.ts:100</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Callbacks to listen for receiving message from data channel based on given topic</p>
 						</div>
 					</div>
 				</section>
@@ -280,6 +265,21 @@
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Stores whether the user is presently muted</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="receivedatamessagecallbacks" class="tsd-anchor"></a>
+					<h3>receive<wbr>Data<wbr>Message<wbr>Callbacks</h3>
+					<div class="tsd-signature tsd-kind-icon">receive<wbr>Data<wbr>Message<wbr>Callbacks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>dataMessage<span class="tsd-signature-symbol">: </span><a href="datamessage.html" class="tsd-signature-type">DataMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map()</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeState.ts#L100">src/realtimecontroller/RealtimeState.ts:100</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Callbacks to listen for receiving message from data channel based on given topic</p>
 						</div>
 					</div>
 				</section>
@@ -389,9 +389,6 @@
 								<a href="realtimestate.html#canunmute" class="tsd-kind-icon">can<wbr>Unmute</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="realtimestate.html#didreceivedatamessagecallbacks" class="tsd-kind-icon">did<wbr>Receive<wbr>Data<wbr>Message<wbr>Callbacks</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="realtimestate.html#fatalerrorcallbacks" class="tsd-kind-icon">fatal<wbr>Error<wbr>Callbacks</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -408,6 +405,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="realtimestate.html#muted" class="tsd-kind-icon">muted</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="realtimestate.html#receivedatamessagecallbacks" class="tsd-kind-icon">receive<wbr>Data<wbr>Message<wbr>Callbacks</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="realtimestate.html#senddatamessagecallbacks" class="tsd-kind-icon">send<wbr>Data<wbr>Message<wbr>Callbacks</a>
