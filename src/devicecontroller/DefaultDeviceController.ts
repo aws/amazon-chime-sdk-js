@@ -42,7 +42,19 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   private useWebAudio: boolean = false;
 
+  private isAndroid: boolean = false;
+  private isPixel3: boolean = false;
+
   constructor(private logger: Logger) {
+    this.isAndroid = /(android)/i.test(navigator.userAgent);
+    this.isPixel3 = /( pixel 3)/i.test(navigator.userAgent);
+    if (this.isAndroid && this.isPixel3) {
+      this.videoWidth = Math.ceil(this.videoWidth / 32) * 32;
+      this.videoHeight = Math.ceil(this.videoHeight / 32) * 32;
+    }
+    this.logger.info(
+      `DefaultDeviceController video dimension ${this.videoWidth} x ${this.videoHeight}`
+    );
     // @ts-ignore
     navigator.mediaDevices.addEventListener('devicechange', async () => {
       await this.handleDeviceChange();
@@ -175,8 +187,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     frameRate: number,
     maxBandwidthKbps: number
   ): void {
-    this.videoWidth = width;
-    this.videoHeight = height;
+    if (this.isAndroid && this.isPixel3) {
+      this.videoWidth = Math.ceil(width / 32) * 32;
+      this.videoHeight = Math.ceil(height / 32) * 32;
+    } else {
+      this.videoWidth = width;
+      this.videoHeight = height;
+    }
     this.videoFrameRate = frameRate;
     this.videoMaxBandwidthKbps = maxBandwidthKbps;
     this.updateMaxBandwidthKbps();
