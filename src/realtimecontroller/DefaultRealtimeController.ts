@@ -360,24 +360,24 @@ export default class DefaultRealtimeController implements RealtimeController {
     callback: (dataMessage: DataMessage) => void
   ): void {
     this.wrap(() => {
-      if (this.state.didReceiveDataMessageCallbacks.has(topic)) {
-        this.state.didReceiveDataMessageCallbacks.get(topic).push(callback);
+      if (this.state.receiveDataMessageCallbacks.has(topic)) {
+        this.state.receiveDataMessageCallbacks.get(topic).push(callback);
       } else {
-        this.state.didReceiveDataMessageCallbacks.set(topic, [callback]);
+        this.state.receiveDataMessageCallbacks.set(topic, [callback]);
       }
     });
   }
 
   realtimeUnsubscribeFromReceiveDataMessage(topic: string): void {
     this.wrap(() => {
-      this.state.didReceiveDataMessageCallbacks.delete(topic);
+      this.state.receiveDataMessageCallbacks.delete(topic);
     });
   }
 
   realtimeReceiveDataMessage(dataMessage: DataMessage): void {
     this.wrap(() => {
-      if (this.state.didReceiveDataMessageCallbacks.has(dataMessage.topic)) {
-        for (const fn of this.state.didReceiveDataMessageCallbacks.get(dataMessage.topic)) {
+      if (this.state.receiveDataMessageCallbacks.has(dataMessage.topic)) {
+        for (const fn of this.state.receiveDataMessageCallbacks.get(dataMessage.topic)) {
           fn(dataMessage);
         }
       }

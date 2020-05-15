@@ -429,7 +429,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         if (!textToSend) {
           return;
         }
-        textArea.value = ''
+        textArea.value = '';
         this.audioVideo.realtimeSendDataMessage(DemoMeetingApp.DATA_MESSAGE_TOPIC, textToSend, DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS);
         // echo the message to the handler
         this.dataMessageHandler(new DataMessage(
@@ -440,7 +440,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           this.meetingSession.configuration.credentials.externalUserId
         ));
       });
-    }
+    };
 
     const textAreaSendMessage = document.getElementById('send-message');
     textAreaSendMessage.addEventListener('keyup', e => {
@@ -625,7 +625,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     let logger: Logger;
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-      logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+      logger = new ConsoleLogger('SDK', LogLevel.INFO);
     } else {
       logger = new MeetingSessionPOSTLogger(
         'SDK',
@@ -641,9 +641,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
     this.audioVideo = this.meetingSession.audioVideo;
-
-    // XXX
-    (global as any).audioVideo = this.audioVideo;
 
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
@@ -829,7 +826,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       messageDiv.appendChild(messageSpan);
       messageDiv.scrollTop = messageDiv.scrollHeight;
     } else {
-      this.log("Message is throttled. Please resend");
+      this.log('Message is throttled. Please resend');
     }
   }
 

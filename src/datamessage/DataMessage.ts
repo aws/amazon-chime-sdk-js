@@ -31,9 +31,8 @@ export default class DataMessage {
   /**
    * true if server throttled or rejected message
    * false if server has posted the message to its recipients
-   * null if this DataMessage is not a sender receipt
    */
-  readonly throttled: boolean | null;
+  readonly throttled: boolean;
 
   constructor(
     timestampMs: number,
