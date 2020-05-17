@@ -54,10 +54,6 @@ exports.join = async(event, context) => {
 
       // Set up SQS notifications if being used
       NotificationsConfiguration: useSqsInsteadOfEventBridge ? { SqsQueueArn: sqsQueueArn } : {},
-
-      // Any meeting ID you wish to associate with the meeting.
-      // For simplicity here, we use the meeting title.
-      ExternalMeetingId: query.title.substring(0, 64),
     };
     console.info('Creating new meeting: ' + JSON.stringify(request));
     meeting = await chime.createMeeting(request).promise();
