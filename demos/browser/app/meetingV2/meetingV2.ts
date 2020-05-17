@@ -11,6 +11,7 @@ import {
   ClientMetricReport,
   ConsoleLogger,
   ContentShareObserver,
+  DataMessage,
   DefaultActiveSpeakerPolicy,
   DefaultAudioMixController,
   DefaultDeviceController,
@@ -109,6 +110,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   static testVideo: string = 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
   static readonly LOGGER_BATCH_SIZE: number = 85;
   static readonly LOGGER_INTERVAL_MS: number = 1150;
+  static readonly DATA_MESSAGE_TOPIC: string = "chat";
+  static readonly DATA_MESSAGE_LIFETIME_MS: number = 300000;
 
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
@@ -419,6 +422,34 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       });
     });
 
+    const sendMessage = () => {
+      new AsyncScheduler().start(() => {
+        const textArea = document.getElementById('send-message') as HTMLTextAreaElement;
+        const textToSend = textArea.value.trim();
+        if (!textToSend) {
+          return;
+        }
+        textArea.value = '';
+        this.audioVideo.realtimeSendDataMessage(DemoMeetingApp.DATA_MESSAGE_TOPIC, textToSend, DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS);
+        // echo the message to the handler
+        this.dataMessageHandler(new DataMessage(
+          Date.now(),
+          DemoMeetingApp.DATA_MESSAGE_TOPIC,
+          new TextEncoder().encode(textToSend),
+          this.meetingSession.configuration.credentials.attendeeId,
+          this.meetingSession.configuration.credentials.externalUserId
+        ));
+      });
+    };
+
+    const textAreaSendMessage = document.getElementById('send-message');
+    textAreaSendMessage.addEventListener('keyup', e => {
+      e.preventDefault();
+      if (e.keyCode === 13) {
+        sendMessage();
+      }
+    });
+
     const buttonMeetingEnd = document.getElementById('button-meeting-end');
     buttonMeetingEnd.addEventListener('click', _e => {
       const confirmEnd = (new URL(window.location.href).searchParams.get('confirm-end')) === 'true';
@@ -617,6 +648,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.setupMuteHandler();
     this.setupCanUnmuteHandler();
     this.setupSubscribeToAttendeeIdPresenceHandler();
+    this.setupDataMessage();
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
     this.initContentShareDropDownItems();
@@ -776,6 +808,34 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     );
   }
 
+  dataMessageHandler(dataMessage: DataMessage): void {
+    if (!dataMessage.throttled) {
+      const messageDiv = document.getElementById('receive-message') as HTMLDivElement;
+      const messageSpan = document.createElement('span') as HTMLSpanElement;
+      messageSpan.setAttribute('style', 'white-space: pre-wrap; word-break: break-word');
+      const messageNameSpan = document.createElement('span') as HTMLSpanElement;
+      messageNameSpan.setAttribute('style','font-weight: bold');
+      messageNameSpan.innerText = (dataMessage.senderExternalUserId.split('#').slice(-1)[0]);
+      const messageTextSpan = document.createElement('span') as HTMLSpanElement;
+      messageTextSpan.innerText = ':' + dataMessage.text();
+      messageSpan.appendChild(messageNameSpan);
+      messageSpan.appendChild(messageTextSpan);
+      if (messageDiv.innerText) {
+        messageDiv.appendChild(document.createElement('br'));
+      }
+      messageDiv.appendChild(messageSpan);
+      messageDiv.scrollTop = messageDiv.scrollHeight;
+    } else {
+      this.log('Message is throttled. Please resend');
+    }
+  }
+
+  setupDataMessage(): void {
+    this.audioVideo.realtimeSubscribeToReceiveDataMessage(DemoMeetingApp.DATA_MESSAGE_TOPIC, (dataMessage: DataMessage) => {
+      this.dataMessageHandler(dataMessage);
+    });
+  }
+
   // eslint-disable-next-line
   async joinMeeting(): Promise<any> {
     const response = await fetch(
@@ -796,6 +856,16 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     await fetch(`${DemoMeetingApp.BASE_URL}end?title=${encodeURIComponent(this.meeting)}`, {
       method: 'POST',
     });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getAttendee(attendeeId: string): Promise<any> {
+    const response = await fetch(`${DemoMeetingApp.BASE_URL}attendee?title=${encodeURIComponent(this.meeting)}&attendee=${encodeURIComponent(attendeeId)}`);
+    const json = await response.json();
+    if (json.error) {
+      throw new Error(`Server error: ${json.error}`);
+    }
+    return json;
   }
 
   setupDeviceLabelTrigger(): void {

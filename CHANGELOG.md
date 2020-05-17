@@ -4,21 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [Unreleased]
+## [1.6.0] - 2020-05-15
 
 ### Added
 - Allow option to skip device selection page in demo app.
 - Add demo hook for debugging media connections
+- Add github link to getNearestMediaRegion method in README.md
+- Add data message APIs
 
 ### Changed
 - Allow audio for screen capture in Chrome and Edge browsers
 - Decouple the get call request from the UI
-- Use getSettings if possible on MediaStream
+- Use getSettings if possible on MediaStream and move some info logs to debug level
+- Use innerText instead of innerHTML
 
 ### Removed
 
 ### Fixed
-
+- Fix minor coding styles for data message APIs
 
 ## [1.5.0] - 2020-05-07
 

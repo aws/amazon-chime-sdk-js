@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -16,6 +16,8 @@ import SignalingClientSubscribe from '../../src/signalingclient/SignalingClientS
 import SignalingClientObserver from '../../src/signalingclientobserver/SignalingClientObserver';
 import {
   SdkClientMetricFrame,
+  SdkDataMessageFrame,
+  SdkDataMessagePayload,
   SdkJoinFlags,
   SdkPingPongFrame,
   SdkPingPongType,
@@ -446,6 +448,35 @@ describe('DefaultSignalingClient', () => {
               done();
             });
             event.client.sendClientMetrics(SdkClientMetricFrame.create());
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+  });
+
+  describe('sendDataMessage', () => {
+    it('will send data message', done => {
+      const testObjects = createTestObjects();
+      const dataMessageFrame = SdkDataMessageFrame.create();
+      const dataMessage = SdkDataMessagePayload.create();
+      dataMessageFrame.dataMessagePayloads = [dataMessage];
+
+      dataMessage.topic = 'topic';
+      dataMessage.data = new TextEncoder().encode('Test message');
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.DATA_MESSAGE);
+              expect(frame.dataMessage.dataMessagePayloads[0]).to.be.eql(dataMessage);
+              done();
+            });
+            event.client.sendDataMessage(dataMessageFrame);
           }
         }
       }

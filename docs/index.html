@@ -172,6 +172,8 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 }).promise();</code></pre>
 				<p>Now securely transfer the <code>meetingResponse</code> and <code>attendeeResponse</code> objects to your client application.
 				These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.</p>
+				<p>The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting.
+				An implementation can be found in the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts#L460">getNearestMediaRegion()</a></p>
 				<a href="#building-and-testing" id="building-and-testing" style="color: inherit; text-decoration: none;">
 					<h2>Building and testing</h2>
 				</a>
@@ -927,6 +929,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/createsdptask.html" class="tsd-kind-icon">CreateSDPTask</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/datamessage.html" class="tsd-kind-icon">Data<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/defaultactivespeakerdetector.html" class="tsd-kind-icon">Default<wbr>Active<wbr>Speaker<wbr>Detector</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1279,6 +1284,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/screenviewingsessionconnectionrequest.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Session<wbr>Connection<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/sendandreceivedatamessagestask.html" class="tsd-kind-icon">Send<wbr>And<wbr>Receive<wbr>Data<wbr>Messages<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/serialgrouptask.html" class="tsd-kind-icon">Serial<wbr>Group<wbr>Task</a>

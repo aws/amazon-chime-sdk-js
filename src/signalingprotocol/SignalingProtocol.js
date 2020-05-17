@@ -33,6 +33,7 @@ $root.SdkSignalFrame = (function() {
      * @property {ISdkPingPongFrame|null} [pingPong] SdkSignalFrame pingPong
      * @property {ISdkAudioStatusFrame|null} [audioStatus] SdkSignalFrame audioStatus
      * @property {ISdkClientMetricFrame|null} [clientMetric] SdkSignalFrame clientMetric
+     * @property {ISdkDataMessageFrame|null} [dataMessage] SdkSignalFrame dataMessage
      */
 
     /**
@@ -195,6 +196,14 @@ $root.SdkSignalFrame = (function() {
     SdkSignalFrame.prototype.clientMetric = null;
 
     /**
+     * SdkSignalFrame dataMessage.
+     * @member {ISdkDataMessageFrame|null|undefined} dataMessage
+     * @memberof SdkSignalFrame
+     * @instance
+     */
+    SdkSignalFrame.prototype.dataMessage = null;
+
+    /**
      * Creates a new SdkSignalFrame instance using the specified properties.
      * @function create
      * @memberof SdkSignalFrame
@@ -252,6 +261,8 @@ $root.SdkSignalFrame = (function() {
             $root.SdkAudioStatusFrame.encode(message.audioStatus, writer.uint32(/* id 21, wireType 2 =*/170).fork()).ldelim();
         if (message.clientMetric != null && message.hasOwnProperty("clientMetric"))
             $root.SdkClientMetricFrame.encode(message.clientMetric, writer.uint32(/* id 22, wireType 2 =*/178).fork()).ldelim();
+        if (message.dataMessage != null && message.hasOwnProperty("dataMessage"))
+            $root.SdkDataMessageFrame.encode(message.dataMessage, writer.uint32(/* id 23, wireType 2 =*/186).fork()).ldelim();
         return writer;
     };
 
@@ -340,6 +351,9 @@ $root.SdkSignalFrame = (function() {
             case 22:
                 message.clientMetric = $root.SdkClientMetricFrame.decode(reader, reader.uint32());
                 break;
+            case 23:
+                message.dataMessage = $root.SdkDataMessageFrame.decode(reader, reader.uint32());
+                break;
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -400,6 +414,7 @@ $root.SdkSignalFrame = (function() {
         case 19:
         case 20:
         case 21:
+        case 22:
             break;
         }
         if (message.error != null && message.hasOwnProperty("error")) {
@@ -481,6 +496,11 @@ $root.SdkSignalFrame = (function() {
             var error = $root.SdkClientMetricFrame.verify(message.clientMetric);
             if (error)
                 return "clientMetric." + error;
+        }
+        if (message.dataMessage != null && message.hasOwnProperty("dataMessage")) {
+            var error = $root.SdkDataMessageFrame.verify(message.dataMessage);
+            if (error)
+                return "dataMessage." + error;
         }
         return null;
     };
@@ -571,6 +591,10 @@ $root.SdkSignalFrame = (function() {
         case 21:
             message.type = 21;
             break;
+        case "DATA_MESSAGE":
+        case 22:
+            message.type = 22;
+            break;
         }
         if (object.error != null) {
             if (typeof object.error !== "object")
@@ -652,6 +676,11 @@ $root.SdkSignalFrame = (function() {
                 throw TypeError(".SdkSignalFrame.clientMetric: object expected");
             message.clientMetric = $root.SdkClientMetricFrame.fromObject(object.clientMetric);
         }
+        if (object.dataMessage != null) {
+            if (typeof object.dataMessage !== "object")
+                throw TypeError(".SdkSignalFrame.dataMessage: object expected");
+            message.dataMessage = $root.SdkDataMessageFrame.fromObject(object.dataMessage);
+        }
         return message;
     };
 
@@ -691,6 +720,7 @@ $root.SdkSignalFrame = (function() {
             object.pingPong = null;
             object.audioStatus = null;
             object.clientMetric = null;
+            object.dataMessage = null;
         }
         if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
             if (typeof message.timestampMs === "number")
@@ -731,6 +761,8 @@ $root.SdkSignalFrame = (function() {
             object.audioStatus = $root.SdkAudioStatusFrame.toObject(message.audioStatus, options);
         if (message.clientMetric != null && message.hasOwnProperty("clientMetric"))
             object.clientMetric = $root.SdkClientMetricFrame.toObject(message.clientMetric, options);
+        if (message.dataMessage != null && message.hasOwnProperty("dataMessage"))
+            object.dataMessage = $root.SdkDataMessageFrame.toObject(message.dataMessage, options);
         return object;
     };
 
@@ -765,6 +797,7 @@ $root.SdkSignalFrame = (function() {
      * @property {number} PING_PONG=19 PING_PONG value
      * @property {number} AUDIO_STATUS=20 AUDIO_STATUS value
      * @property {number} CLIENT_METRIC=21 CLIENT_METRIC value
+     * @property {number} DATA_MESSAGE=22 DATA_MESSAGE value
      */
     SdkSignalFrame.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -784,6 +817,7 @@ $root.SdkSignalFrame = (function() {
         values[valuesById[19] = "PING_PONG"] = 19;
         values[valuesById[20] = "AUDIO_STATUS"] = 20;
         values[valuesById[21] = "CLIENT_METRIC"] = 21;
+        values[valuesById[22] = "DATA_MESSAGE"] = 22;
         return values;
     })();
 
@@ -1012,7 +1046,7 @@ $root.SdkJoinFlags = (function() {
     var valuesById = {}, values = Object.create(valuesById);
     values[valuesById[1] = "SEND_BITRATES"] = 1;
     values[valuesById[2] = "HAS_STREAM_UPDATE"] = 2;
-    values[valuesById[3] = "USE_SEND_SIDE_BWE"] = 8;
+    values[valuesById[8] = "USE_SEND_SIDE_BWE"] = 8;
     return values;
 })();
 
@@ -7106,6 +7140,535 @@ $root.SdkClientMetricFrame = (function() {
     };
 
     return SdkClientMetricFrame;
+})();
+
+$root.SdkDataMessageFrame = (function() {
+
+    /**
+     * Properties of a SdkDataMessageFrame.
+     * @exports ISdkDataMessageFrame
+     * @interface ISdkDataMessageFrame
+     * @property {Array.<ISdkDataMessagePayload>|null} [dataMessagePayloads] SdkDataMessageFrame dataMessagePayloads
+     */
+
+    /**
+     * Constructs a new SdkDataMessageFrame.
+     * @exports SdkDataMessageFrame
+     * @classdesc Represents a SdkDataMessageFrame.
+     * @implements ISdkDataMessageFrame
+     * @constructor
+     * @param {ISdkDataMessageFrame=} [properties] Properties to set
+     */
+    function SdkDataMessageFrame(properties) {
+        this.dataMessagePayloads = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkDataMessageFrame dataMessagePayloads.
+     * @member {Array.<ISdkDataMessagePayload>} dataMessagePayloads
+     * @memberof SdkDataMessageFrame
+     * @instance
+     */
+    SdkDataMessageFrame.prototype.dataMessagePayloads = $util.emptyArray;
+
+    /**
+     * Creates a new SdkDataMessageFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {ISdkDataMessageFrame=} [properties] Properties to set
+     * @returns {SdkDataMessageFrame} SdkDataMessageFrame instance
+     */
+    SdkDataMessageFrame.create = function create(properties) {
+        return new SdkDataMessageFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkDataMessageFrame message. Does not implicitly {@link SdkDataMessageFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {ISdkDataMessageFrame} message SdkDataMessageFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkDataMessageFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.dataMessagePayloads != null && message.dataMessagePayloads.length)
+            for (var i = 0; i < message.dataMessagePayloads.length; ++i)
+                $root.SdkDataMessagePayload.encode(message.dataMessagePayloads[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkDataMessageFrame message, length delimited. Does not implicitly {@link SdkDataMessageFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {ISdkDataMessageFrame} message SdkDataMessageFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkDataMessageFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkDataMessageFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkDataMessageFrame} SdkDataMessageFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkDataMessageFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkDataMessageFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                if (!(message.dataMessagePayloads && message.dataMessagePayloads.length))
+                    message.dataMessagePayloads = [];
+                message.dataMessagePayloads.push($root.SdkDataMessagePayload.decode(reader, reader.uint32()));
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkDataMessageFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkDataMessageFrame} SdkDataMessageFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkDataMessageFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkDataMessageFrame message.
+     * @function verify
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkDataMessageFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.dataMessagePayloads != null && message.hasOwnProperty("dataMessagePayloads")) {
+            if (!Array.isArray(message.dataMessagePayloads))
+                return "dataMessagePayloads: array expected";
+            for (var i = 0; i < message.dataMessagePayloads.length; ++i) {
+                var error = $root.SdkDataMessagePayload.verify(message.dataMessagePayloads[i]);
+                if (error)
+                    return "dataMessagePayloads." + error;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkDataMessageFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkDataMessageFrame} SdkDataMessageFrame
+     */
+    SdkDataMessageFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkDataMessageFrame)
+            return object;
+        var message = new $root.SdkDataMessageFrame();
+        if (object.dataMessagePayloads) {
+            if (!Array.isArray(object.dataMessagePayloads))
+                throw TypeError(".SdkDataMessageFrame.dataMessagePayloads: array expected");
+            message.dataMessagePayloads = [];
+            for (var i = 0; i < object.dataMessagePayloads.length; ++i) {
+                if (typeof object.dataMessagePayloads[i] !== "object")
+                    throw TypeError(".SdkDataMessageFrame.dataMessagePayloads: object expected");
+                message.dataMessagePayloads[i] = $root.SdkDataMessagePayload.fromObject(object.dataMessagePayloads[i]);
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkDataMessageFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkDataMessageFrame
+     * @static
+     * @param {SdkDataMessageFrame} message SdkDataMessageFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkDataMessageFrame.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.dataMessagePayloads = [];
+        if (message.dataMessagePayloads && message.dataMessagePayloads.length) {
+            object.dataMessagePayloads = [];
+            for (var j = 0; j < message.dataMessagePayloads.length; ++j)
+                object.dataMessagePayloads[j] = $root.SdkDataMessagePayload.toObject(message.dataMessagePayloads[j], options);
+        }
+        return object;
+    };
+
+    /**
+     * Converts this SdkDataMessageFrame to JSON.
+     * @function toJSON
+     * @memberof SdkDataMessageFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkDataMessageFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkDataMessageFrame;
+})();
+
+$root.SdkDataMessagePayload = (function() {
+
+    /**
+     * Properties of a SdkDataMessagePayload.
+     * @exports ISdkDataMessagePayload
+     * @interface ISdkDataMessagePayload
+     * @property {string|null} [topic] SdkDataMessagePayload topic
+     * @property {Uint8Array|null} [data] SdkDataMessagePayload data
+     * @property {number|null} [lifetimeMs] SdkDataMessagePayload lifetimeMs
+     * @property {string|null} [senderAttendeeId] SdkDataMessagePayload senderAttendeeId
+     * @property {number|Long|null} [ingestTimeNs] SdkDataMessagePayload ingestTimeNs
+     * @property {string|null} [senderExternalUserId] SdkDataMessagePayload senderExternalUserId
+     */
+
+    /**
+     * Constructs a new SdkDataMessagePayload.
+     * @exports SdkDataMessagePayload
+     * @classdesc Represents a SdkDataMessagePayload.
+     * @implements ISdkDataMessagePayload
+     * @constructor
+     * @param {ISdkDataMessagePayload=} [properties] Properties to set
+     */
+    function SdkDataMessagePayload(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkDataMessagePayload topic.
+     * @member {string} topic
+     * @memberof SdkDataMessagePayload
+     * @instance
+     */
+    SdkDataMessagePayload.prototype.topic = "";
+
+    /**
+     * SdkDataMessagePayload data.
+     * @member {Uint8Array} data
+     * @memberof SdkDataMessagePayload
+     * @instance
+     */
+    SdkDataMessagePayload.prototype.data = $util.newBuffer([]);
+
+    /**
+     * SdkDataMessagePayload lifetimeMs.
+     * @member {number} lifetimeMs
+     * @memberof SdkDataMessagePayload
+     * @instance
+     */
+    SdkDataMessagePayload.prototype.lifetimeMs = 0;
+
+    /**
+     * SdkDataMessagePayload senderAttendeeId.
+     * @member {string} senderAttendeeId
+     * @memberof SdkDataMessagePayload
+     * @instance
+     */
+    SdkDataMessagePayload.prototype.senderAttendeeId = "";
+
+    /**
+     * SdkDataMessagePayload ingestTimeNs.
+     * @member {number|Long} ingestTimeNs
+     * @memberof SdkDataMessagePayload
+     * @instance
+     */
+    SdkDataMessagePayload.prototype.ingestTimeNs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkDataMessagePayload senderExternalUserId.
+     * @member {string} senderExternalUserId
+     * @memberof SdkDataMessagePayload
+     * @instance
+     */
+    SdkDataMessagePayload.prototype.senderExternalUserId = "";
+
+    /**
+     * Creates a new SdkDataMessagePayload instance using the specified properties.
+     * @function create
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {ISdkDataMessagePayload=} [properties] Properties to set
+     * @returns {SdkDataMessagePayload} SdkDataMessagePayload instance
+     */
+    SdkDataMessagePayload.create = function create(properties) {
+        return new SdkDataMessagePayload(properties);
+    };
+
+    /**
+     * Encodes the specified SdkDataMessagePayload message. Does not implicitly {@link SdkDataMessagePayload.verify|verify} messages.
+     * @function encode
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {ISdkDataMessagePayload} message SdkDataMessagePayload message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkDataMessagePayload.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.topic != null && message.hasOwnProperty("topic"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.topic);
+        if (message.data != null && message.hasOwnProperty("data"))
+            writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.data);
+        if (message.lifetimeMs != null && message.hasOwnProperty("lifetimeMs"))
+            writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.lifetimeMs);
+        if (message.senderAttendeeId != null && message.hasOwnProperty("senderAttendeeId"))
+            writer.uint32(/* id 4, wireType 2 =*/34).string(message.senderAttendeeId);
+        if (message.ingestTimeNs != null && message.hasOwnProperty("ingestTimeNs"))
+            writer.uint32(/* id 5, wireType 0 =*/40).int64(message.ingestTimeNs);
+        if (message.senderExternalUserId != null && message.hasOwnProperty("senderExternalUserId"))
+            writer.uint32(/* id 6, wireType 2 =*/50).string(message.senderExternalUserId);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkDataMessagePayload message, length delimited. Does not implicitly {@link SdkDataMessagePayload.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {ISdkDataMessagePayload} message SdkDataMessagePayload message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkDataMessagePayload.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkDataMessagePayload message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkDataMessagePayload} SdkDataMessagePayload
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkDataMessagePayload.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkDataMessagePayload();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.topic = reader.string();
+                break;
+            case 2:
+                message.data = reader.bytes();
+                break;
+            case 3:
+                message.lifetimeMs = reader.uint32();
+                break;
+            case 4:
+                message.senderAttendeeId = reader.string();
+                break;
+            case 5:
+                message.ingestTimeNs = reader.int64();
+                break;
+            case 6:
+                message.senderExternalUserId = reader.string();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkDataMessagePayload message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkDataMessagePayload} SdkDataMessagePayload
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkDataMessagePayload.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkDataMessagePayload message.
+     * @function verify
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkDataMessagePayload.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.topic != null && message.hasOwnProperty("topic"))
+            if (!$util.isString(message.topic))
+                return "topic: string expected";
+        if (message.data != null && message.hasOwnProperty("data"))
+            if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                return "data: buffer expected";
+        if (message.lifetimeMs != null && message.hasOwnProperty("lifetimeMs"))
+            if (!$util.isInteger(message.lifetimeMs))
+                return "lifetimeMs: integer expected";
+        if (message.senderAttendeeId != null && message.hasOwnProperty("senderAttendeeId"))
+            if (!$util.isString(message.senderAttendeeId))
+                return "senderAttendeeId: string expected";
+        if (message.ingestTimeNs != null && message.hasOwnProperty("ingestTimeNs"))
+            if (!$util.isInteger(message.ingestTimeNs) && !(message.ingestTimeNs && $util.isInteger(message.ingestTimeNs.low) && $util.isInteger(message.ingestTimeNs.high)))
+                return "ingestTimeNs: integer|Long expected";
+        if (message.senderExternalUserId != null && message.hasOwnProperty("senderExternalUserId"))
+            if (!$util.isString(message.senderExternalUserId))
+                return "senderExternalUserId: string expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkDataMessagePayload message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkDataMessagePayload} SdkDataMessagePayload
+     */
+    SdkDataMessagePayload.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkDataMessagePayload)
+            return object;
+        var message = new $root.SdkDataMessagePayload();
+        if (object.topic != null)
+            message.topic = String(object.topic);
+        if (object.data != null)
+            if (typeof object.data === "string")
+                $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+            else if (object.data.length)
+                message.data = object.data;
+        if (object.lifetimeMs != null)
+            message.lifetimeMs = object.lifetimeMs >>> 0;
+        if (object.senderAttendeeId != null)
+            message.senderAttendeeId = String(object.senderAttendeeId);
+        if (object.ingestTimeNs != null)
+            if ($util.Long)
+                (message.ingestTimeNs = $util.Long.fromValue(object.ingestTimeNs)).unsigned = false;
+            else if (typeof object.ingestTimeNs === "string")
+                message.ingestTimeNs = parseInt(object.ingestTimeNs, 10);
+            else if (typeof object.ingestTimeNs === "number")
+                message.ingestTimeNs = object.ingestTimeNs;
+            else if (typeof object.ingestTimeNs === "object")
+                message.ingestTimeNs = new $util.LongBits(object.ingestTimeNs.low >>> 0, object.ingestTimeNs.high >>> 0).toNumber();
+        if (object.senderExternalUserId != null)
+            message.senderExternalUserId = String(object.senderExternalUserId);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkDataMessagePayload message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkDataMessagePayload
+     * @static
+     * @param {SdkDataMessagePayload} message SdkDataMessagePayload
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkDataMessagePayload.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.topic = "";
+            if (options.bytes === String)
+                object.data = "";
+            else {
+                object.data = [];
+                if (options.bytes !== Array)
+                    object.data = $util.newBuffer(object.data);
+            }
+            object.lifetimeMs = 0;
+            object.senderAttendeeId = "";
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.ingestTimeNs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.ingestTimeNs = options.longs === String ? "0" : 0;
+            object.senderExternalUserId = "";
+        }
+        if (message.topic != null && message.hasOwnProperty("topic"))
+            object.topic = message.topic;
+        if (message.data != null && message.hasOwnProperty("data"))
+            object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
+        if (message.lifetimeMs != null && message.hasOwnProperty("lifetimeMs"))
+            object.lifetimeMs = message.lifetimeMs;
+        if (message.senderAttendeeId != null && message.hasOwnProperty("senderAttendeeId"))
+            object.senderAttendeeId = message.senderAttendeeId;
+        if (message.ingestTimeNs != null && message.hasOwnProperty("ingestTimeNs"))
+            if (typeof message.ingestTimeNs === "number")
+                object.ingestTimeNs = options.longs === String ? String(message.ingestTimeNs) : message.ingestTimeNs;
+            else
+                object.ingestTimeNs = options.longs === String ? $util.Long.prototype.toString.call(message.ingestTimeNs) : options.longs === Number ? new $util.LongBits(message.ingestTimeNs.low >>> 0, message.ingestTimeNs.high >>> 0).toNumber() : message.ingestTimeNs;
+        if (message.senderExternalUserId != null && message.hasOwnProperty("senderExternalUserId"))
+            object.senderExternalUserId = message.senderExternalUserId;
+        return object;
+    };
+
+    /**
+     * Converts this SdkDataMessagePayload to JSON.
+     * @function toJSON
+     * @memberof SdkDataMessagePayload
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkDataMessagePayload.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkDataMessagePayload;
 })();
 
 module.exports = $root;

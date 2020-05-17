@@ -21,6 +21,7 @@ message SdkSignalFrame {
         PING_PONG = 19;
         AUDIO_STATUS = 20;
         CLIENT_METRIC = 21;
+        DATA_MESSAGE = 22;
     }
     required uint64 timestamp_ms = 1;
     required Type type = 2;
@@ -40,6 +41,7 @@ message SdkSignalFrame {
     optional SdkPingPongFrame ping_pong = 20;
     optional SdkAudioStatusFrame audio_status = 21;
     optional SdkClientMetricFrame client_metric = 22;
+    optional SdkDataMessageFrame data_message = 23;
 }
 
 message SdkErrorFrame {
@@ -250,4 +252,17 @@ message SdkStreamMetricFrame {
 message SdkClientMetricFrame {
     repeated SdkMetric global_metrics = 1;
     repeated SdkStreamMetricFrame stream_metric_frames = 2;
+}
+
+message SdkDataMessageFrame {
+    repeated SdkDataMessagePayload data_message_payloads = 1;
+}
+
+message SdkDataMessagePayload {
+    optional string topic = 1;
+    optional bytes data = 2;
+    optional uint32 lifetime_ms = 3;
+    optional string sender_attendee_id = 4;
+    optional int64 ingest_time_ns = 5;
+    optional string sender_external_user_id = 6;
 }

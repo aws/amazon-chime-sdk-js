@@ -146,7 +146,7 @@ Call this API after doing pre-requisite configuration (See previous sections). O
 
 To start the meeting session, call meetingSession.audioVideo.[start()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start). This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.
 
-To stop the meeting session, call meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop). 
+To stop the meeting session, call meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop).
 
 The `stop()` method does not clean up observers. You can start and stop a session multiple times using the same observers. In other words observers are not tied to the lifecycle of the session.
 
@@ -300,3 +300,17 @@ You can implement the following callbacks:
 * [contentShareDidStop](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html#contentsharedidstop): occurs when a content share session is stopped
 * [contentShareDidPause](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html#contentsharedidpause): occurs when a content share session is paused
 * [contentShareDidUnpause](https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html#contentsharedidunpause): occurs when a content share session is resumed
+
+## 9. Send and receive data messages (optional)
+
+Attendees can broadcast small (2KB max) data messages to other attendees. Data messages can be used to signal attendees of changes to meeting state or develop custom collaborative features. Each message is sent on a particular topic, which allows you to tag messages according to their function to make it easier to handle messages of different types.
+
+To send a message on a given topic, call meetingSession.audioVideo.[realtimeSendDataMessage()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesenddatamessage). When sending a message if you specify a lifetime, then the media server stores the messages for the lifetime. Up to 1024 messages may be stored for a maximum of 5 minutes. Any attendee joining late or reconnecting will automatically receive the messages in this buffer once they connect. You can use this feature to help paper over gaps in connectivity or give attendees some context into messages that were recently received.
+
+To receive messages on a given topic, set up a handler using the meetingSession.audioVideo.[realtimeSubscribeToReceiveDataMessage()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetoreceivedatamessage). In the handler, you receive a [DataMessage](https://aws.github.io/amazon-chime-sdk-js/classes/datamessage.html) containing the payload of the message and other metadata about the message.
+
+To unsubscribe the receive message handler, call meetingSession.audioVideo.[realtimeUnsubscribeFromReceiveDataMessage()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribefromreceivedatamessage).
+
+If you send too many messages at once, your messages may be returned to you with the [throttled](https://aws.github.io/amazon-chime-sdk-js/classes/datamessage.html#throttled) flag set. If you continue to exceed the throttle limit, then the server may hang up the connection.
+
+**Note:** Take care when using data messages for functionality involving *asymmetric permissions* (e.g. a moderator attendee sending a message to regular attendees). Any attendee may, in theory, send any message on any topic. You should always confirm that the message's [senderAttendeeId](https://aws.github.io/amazon-chime-sdk-js/classes/datamessage.html#senderattendeeid) belongs to an attendee that is allowed to send that type of message, and your handler should tolerate messages that are not serialized in the format you are expecting.

@@ -12,6 +12,7 @@ import DefaultAudioVideoFacade from '../../src/audiovideofacade/DefaultAudioVide
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import ContentShareController from '../../src/contentsharecontroller/ContentShareController';
 import ContentShareObserver from '../../src/contentshareobserver/ContentShareObserver';
+import DataMessage from '../../src/datamessage/DataMessage';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -372,6 +373,28 @@ describe('DefaultAudioVideoFacade', () => {
       const arg1 = (_signalStrength: number): void => {};
       facade.realtimeUnsubscribeToLocalSignalStrengthChange(arg1);
       assert(spy.calledOnceWith(arg1));
+    });
+
+    it('realtimeSendDataMessage', () => {
+      const spy = sinon.spy(controller.realtimeController, 'realtimeSendDataMessage');
+      facade.realtimeSendDataMessage('topic', 'test message', 100);
+      assert(spy.calledOnceWithExactly('topic', 'test message', 100));
+    });
+
+    it('realtimeSubscribeToReceiveDataMessage', () => {
+      const spy = sinon.spy(controller.realtimeController, 'realtimeSubscribeToReceiveDataMessage');
+      const callback = (_dataMessage: DataMessage): void => {};
+      facade.realtimeSubscribeToReceiveDataMessage('topic', callback);
+      assert(spy.calledOnceWithExactly('topic', callback));
+    });
+
+    it('realtimeUnsubscribeFromReceiveDataMessage', () => {
+      const spy = sinon.spy(
+        controller.realtimeController,
+        'realtimeUnsubscribeFromReceiveDataMessage'
+      );
+      facade.realtimeUnsubscribeFromReceiveDataMessage('topic');
+      assert(spy.calledOnceWithExactly('topic'));
     });
 
     it('will call realtimeSubscribeToFatalError', () => {
