@@ -72,7 +72,10 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
     frameRate?: number
   ): MediaStreamConstraints {
     return {
-      audio: new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport() ? true : false,
+      audio:
+        !sourceId && new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()
+          ? true
+          : false,
       video: {
         ...(!sourceId && {
           frameRate: {
