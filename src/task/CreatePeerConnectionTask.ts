@@ -121,6 +121,10 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       `received track event: kind=${track.kind} id=${track.id} label=${track.label}`
     );
 
+    if (event.transceiver && event.transceiver.currentDirection === 'inactive') {
+      return;
+    }
+
     const stream: MediaStream = event.streams[0];
     if (track.kind === 'audio') {
       this.context.audioMixController.bindAudioStream(stream);
@@ -180,15 +184,8 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       trackId = track.id;
     }
     const attendeeId = this.context.videoStreamIndex.attendeeIdForTrack(trackId);
-
-    // TODO: in case a previous tile with the same attendee id hasn't been cleaned up
-    // we do it here to avoid showing a duplicate tile. We should try to understand
-    // why this can happen, so adding a log statement to track this and learn more.
-    const tilesRemoved = this.context.videoTileController.removeVideoTilesByAttendeeId(attendeeId);
-    if (tilesRemoved.length > 0) {
-      this.logger.info(
-        `removing existing tiles ${tilesRemoved} with same attendee id ${attendeeId}`
-      );
+    if (this.context.videoTileController.haveVideoTileForAttendeeId(attendeeId)) {
+      return;
     }
 
     const tile = this.context.videoTileController.addVideoTile();

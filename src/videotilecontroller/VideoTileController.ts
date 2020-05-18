@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import VideoTile from '../videotile/VideoTile';
@@ -109,6 +109,11 @@ export default interface VideoTileController {
    * Returns whether at least one video tile has a bound media stream.
    */
   haveVideoTilesWithStreams(): boolean;
+
+  /**
+   * Returns whether an attendeeId is associated with a video tile
+   */
+  haveVideoTileForAttendeeId(attendeeId: string): boolean;
 
   /**
    * This can be used to capture the image data for a given tile.

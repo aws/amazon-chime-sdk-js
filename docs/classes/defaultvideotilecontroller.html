@@ -116,6 +116,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideotilecontroller.html#getvideotile" class="tsd-kind-icon">get<wbr>Video<wbr>Tile</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideotilecontroller.html#getvideotilearea" class="tsd-kind-icon">get<wbr>Video<wbr>Tile<wbr>Area</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideotilecontroller.html#hasstartedlocalvideotile" class="tsd-kind-icon">has<wbr>Started<wbr>Local<wbr>Video<wbr>Tile</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideotilecontroller.html#havevideotileforattendeeid" class="tsd-kind-icon">have<wbr>Video<wbr>Tile<wbr>For<wbr>Attendee<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideotilecontroller.html#havevideotileswithstreams" class="tsd-kind-icon">have<wbr>Video<wbr>Tiles<wbr>With<wbr>Streams</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideotilecontroller.html#pausevideotile" class="tsd-kind-icon">pause<wbr>Video<wbr>Tile</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideotilecontroller.html#removeallvideotiles" class="tsd-kind-icon">remove<wbr>All<wbr>Video<wbr>Tiles</a></li>
@@ -309,7 +310,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videotilecontroller.html">VideoTileController</a>.<a href="../interfaces/videotilecontroller.html#capturevideotile">captureVideoTile</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/DefaultVideoTileController.ts#L193">src/videotilecontroller/DefaultVideoTileController.ts:193</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/DefaultVideoTileController.ts#L203">src/videotilecontroller/DefaultVideoTileController.ts:203</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -332,7 +333,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/DefaultVideoTileController.ts#L201">src/videotilecontroller/DefaultVideoTileController.ts:201</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/DefaultVideoTileController.ts#L211">src/videotilecontroller/DefaultVideoTileController.ts:211</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/videotile.html" class="tsd-signature-type">VideoTile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
@@ -455,6 +456,30 @@
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/DefaultVideoTileController.ts#L71">src/videotilecontroller/DefaultVideoTileController.ts:71</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="havevideotileforattendeeid" class="tsd-anchor"></a>
+					<h3>have<wbr>Video<wbr>Tile<wbr>For<wbr>Attendee<wbr>Id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">have<wbr>Video<wbr>Tile<wbr>For<wbr>Attendee<wbr>Id<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videotilecontroller.html">VideoTileController</a>.<a href="../interfaces/videotilecontroller.html#havevideotileforattendeeid">haveVideoTileForAttendeeId</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotilecontroller/DefaultVideoTileController.ts#L193">src/videotilecontroller/DefaultVideoTileController.ts:193</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attendeeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -766,6 +791,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultvideotilecontroller.html#hasstartedlocalvideotile" class="tsd-kind-icon">has<wbr>Started<wbr>Local<wbr>Video<wbr>Tile</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideotilecontroller.html#havevideotileforattendeeid" class="tsd-kind-icon">have<wbr>Video<wbr>Tile<wbr>For<wbr>Attendee<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultvideotilecontroller.html#havevideotileswithstreams" class="tsd-kind-icon">have<wbr>Video<wbr>Tiles<wbr>With<wbr>Streams</a>
