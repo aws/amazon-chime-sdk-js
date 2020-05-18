@@ -241,6 +241,10 @@ export default class MonitorTask extends BaseTask
             Maybe.of(observer.connectionDidBecomePoor).map(f => f.bind(observer)());
           });
         }
+      } else {
+        this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
+          Maybe.of(observer.connectionDidBecomeGood).map(f => f.bind(observer)());
+        });
       }
     }
   }

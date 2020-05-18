@@ -81,15 +81,21 @@ export default interface AudioVideoObserver {
   connectionHealthDidChange?(connectionHealthData: ConnectionHealthData): void;
 
   /**
-   * Called when the connection has been poor for a while.
+   * Called when the connection has been poor for a while if meeting only uses audio.
    */
   connectionDidBecomePoor?(): void;
 
   /**
-   * Called when the connection has been poor while using video so that the observer
+   * Called when the connection has been poor if meeting uses video so that the observer
    * can prompt the user about turning off video.
    */
   connectionDidSuggestStopVideo?(): void;
+
+  /**
+   * Called when connection has changed to good from poor. This will be fired regardless whether the meeting
+   * is audio-only or uses audio video.
+   */
+  connectionDidBecomeGood?(): void;
 
   /**
    * Called when a user tries to start a video but by the time the backend processes the request,
