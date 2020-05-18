@@ -500,6 +500,9 @@ export default class DOMMockBuilder {
               mediaStreamTrack.kind =
                 /^m=video/gm.exec(description.sdp) !== null ? 'video' : 'audio';
               addTrackEvent.track = mediaStreamTrack;
+              if (mockBehavior.hasInactiveTransceiver) {
+                addTrackEvent.transceiver = { currentDirection: 'inactive' };
+              }
               const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
               const mediaStream = new mediaStreamMaker();
               mediaStream.id = mockBehavior.setRemoteDescriptionStreamId;

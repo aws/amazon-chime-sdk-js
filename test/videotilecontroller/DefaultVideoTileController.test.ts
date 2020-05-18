@@ -348,6 +348,16 @@ describe('DefaultVideoTileController', () => {
     });
   });
 
+  describe('haveVideoTileForAttendeeId', () => {
+    it('returns true if a tile is associated with an attendee id', () => {
+      expect(tileController.haveVideoTileForAttendeeId('unknown-attendee')).to.equal(false);
+      const tile = tileController.addVideoTile();
+      tile.bindVideoStream('attendee', true, null, 0, 0, 0);
+      expect(tileController.haveVideoTileForAttendeeId('attendee')).to.equal(true);
+      expect(tileController.haveVideoTileForAttendeeId('unknown-attendee')).to.equal(false);
+    });
+  });
+
   describe('sendTileStateUpdate', () => {
     it('sends a tile state update to session observers for the session set on the tile manager', done => {
       class Observer implements AudioVideoObserver {

@@ -244,7 +244,27 @@ describe('CreatePeerConnectionTask', () => {
         expect(addVideoTileSpy.called).to.be.true;
       });
 
-      it('removes a previous tile with the same attendee ID', async () => {
+      it('ignore a m-line which is inactive', async () => {
+        const addVideoTileSpy: sinon.SinonSpy = sinon.spy(
+          context.videoTileController,
+          'addVideoTile'
+        );
+
+        domMockBehavior.hasInactiveTransceiver = true;
+        await task.run();
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+        await new Promise(resolve =>
+          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
+        );
+        expect(addVideoTileSpy.called).to.be.false;
+      });
+
+      it('ignore track event when attendee ID already associated with tile', async () => {
+        const addVideoTileSpy: sinon.SinonSpy = sinon.spy(
+          context.videoTileController,
+          'addVideoTile'
+        );
+
         let called = false;
 
         const attendeeIdForTrack = 'attendee-id';
@@ -256,10 +276,10 @@ describe('CreatePeerConnectionTask', () => {
         context.videoStreamIndex = new TestVideoStreamIndex(logger);
 
         class TestVideoTileController extends DefaultVideoTileController {
-          removeVideoTilesByAttendeeId(attendeeId: string): number[] {
+          haveVideoTileForAttendeeId(attendeeId: string): boolean {
             expect(attendeeId).to.equal(attendeeIdForTrack);
             called = true;
-            return [1, 2, 3];
+            return true;
           }
         }
         context.videoTileController = new TestVideoTileController(
@@ -274,6 +294,7 @@ describe('CreatePeerConnectionTask', () => {
           new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
         );
         expect(called).to.be.true;
+        expect(addVideoTileSpy.called).to.be.false;
       });
 
       it('can have a stream ID', async () => {
