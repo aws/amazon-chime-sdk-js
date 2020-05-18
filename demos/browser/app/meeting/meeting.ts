@@ -1440,6 +1440,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   videoSendDidBecomeUnavailable(): void {
     this.log('sending video is not available');
   }
+
+  connectionDidBecomeGood(): void {
+    this.log('connection is good now');
+  }
 }
 
 window.addEventListener('load', () => {

@@ -26,6 +26,7 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionVideoAvailability from '../../src/meetingsession/MeetingSessionVideoAvailability';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from '../../src/reconnectcontroller/DefaultReconnectController';
+import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../../src/signalingclient/SignalingClientEventType';
@@ -534,6 +535,82 @@ describe('MonitorTask', () => {
 
       // connectionDidBecomePoor() should not be called again.
       task.connectionHealthDidChange(connectionHealthData);
+    });
+
+    it('notifies the connection is good when changed from poor', done => {
+      const testConfig = new ConnectionHealthPolicyConfiguration();
+      testConfig.cooldownTimeMs = 500;
+      testConfig.pastSamplesToConsider = 15;
+      testConfig.packetsExpected = 10;
+      task = new MonitorTask(context, testConfig, new ConnectionHealthData());
+      let notifiedPoor = 0;
+      let notifiedGood = 0;
+      class TestObserver implements AudioVideoObserver {
+        connectionDidBecomePoor(): void {
+          notifiedPoor++;
+        }
+
+        connectionDidBecomeGood(): void {
+          notifiedGood++;
+        }
+      }
+
+      context.audioVideoController.addObserver(new TestObserver());
+      const connectionHealthData = new ConnectionHealthData();
+      connectionHealthData.packetsReceivedInLastMinute = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+      ];
+      task.connectionHealthDidChange(connectionHealthData);
+      expect(notifiedPoor).to.equal(1);
+      expect(notifiedGood).to.equal(0);
+      // during hold down time, connectionDidBecomePoor and connectionDidBecomeGood should not be called.
+      task.connectionHealthDidChange(connectionHealthData);
+      expect(notifiedPoor).to.equal(1);
+      expect(notifiedGood).to.equal(0);
+
+      new TimeoutScheduler(testConfig.cooldownTimeMs + 10).start(() => {
+        connectionHealthData.packetsReceivedInLastMinute = [
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+        ];
+
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(notifiedPoor).to.equal(1);
+        expect(notifiedGood).to.equal(1);
+
+        task.connectionHealthDidChange(connectionHealthData);
+        expect(notifiedPoor).to.equal(1);
+        expect(notifiedGood).to.equal(1);
+
+        done();
+      });
     });
 
     it('suggests turning off video', done => {

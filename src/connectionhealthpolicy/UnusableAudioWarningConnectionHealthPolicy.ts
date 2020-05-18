@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import BaseConnectionHealthPolicy from './BaseConnectionHealthPolicy';
@@ -44,11 +44,10 @@ export default class UnusableAudioWarningConnectionHealthPolicy extends BaseConn
   health(): number {
     const warnedRecently = Date.now() - this.lastWarnTimestampMs < this.coolDownTimeMs;
     if (warnedRecently) {
-      return 1;
+      return this.currentHealth;
     }
     const hasHadHighPacketLoss = this.calculateFractionalLoss() >= this.fractionalLoss;
-    const shouldWarn = hasHadHighPacketLoss;
-    if (shouldWarn) {
+    if (hasHadHighPacketLoss) {
       if (this.currentHealth !== 0) {
         this.lastWarnTimestampMs = Date.now();
         this.warnCount++;
