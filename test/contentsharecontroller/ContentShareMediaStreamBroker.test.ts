@@ -205,6 +205,25 @@ describe('ContentShareMediaStreamBroker', () => {
       await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream();
       expect(spy.calledWith(sinon.match(streamConstraints))).to.be.true;
     });
+
+    it('disable audio in Electron', async () => {
+      dommMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(dommMockBehavior);
+      const streamConstraints: MediaStreamConstraints = {
+        audio: false,
+        video: {
+          // @ts-ignore
+          mandatory: {
+            chromeMediaSource: 'desktop',
+            chromeMediaSourceId: 'sourceId',
+            maxFrameRate: 15,
+          },
+        },
+      };
+      const spy = sinon.spy(contentShareMediaStreamBroker, 'acquireDisplayInputStream');
+      await contentShareMediaStreamBroker.acquireScreenCaptureDisplayInputStream('sourceId');
+      expect(spy.calledWith(sinon.match(streamConstraints))).to.be.true;
+    });
   });
 
   describe('toggleMediaStream', () => {
