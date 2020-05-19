@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix Firefox version 76 missing/grey tiles
+- Fix data message integration tests
 
 ## [1.6.2] - 2020-05-18
 

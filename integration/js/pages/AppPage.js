@@ -502,7 +502,7 @@ class AppPage {
   }
 
   async checkDataMessageExist(message) {
-    const dataMessageSpan = await this.driver.findElement(By.xpath(`//div[@id='receive-message']//*[text() = ':${message}']`));
+    const dataMessageSpan = await this.driver.findElement(By.xpath(`//div[@id='receive-message']//*[text() = '${message}']`));
     return dataMessageSpan? true: false;
   }
 }
