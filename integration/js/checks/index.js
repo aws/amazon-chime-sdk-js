@@ -5,5 +5,6 @@ exports.UserAuthenticationCheck = require('./UserAuthenticationCheck');
 exports.RemoteAudioCheck = require('./RemoteAudioCheck');
 exports.MeetingJoinFailedCheck = require('./MeetingJoinFailedCheck');
 exports.RosterCheck = require('./RosterCheck');
-exports.ScreenViewingCheck = require('./ScreenViewingCheck')
+exports.ScreenViewingCheck = require('./ScreenViewingCheck');
 exports.ContentShareVideoCheck = require('./ContentShareVideoCheck');
+exports.DataMessageCheck = require('./DataMessageCheck');

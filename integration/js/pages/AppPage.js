@@ -1,4 +1,4 @@
-const {By, promise} = require('selenium-webdriver');
+const {By, Key} = require('selenium-webdriver');
 const {TestUtils} = require('kite-common');
 
 const elements = {
@@ -15,6 +15,7 @@ const elements = {
   screenViewButton: By.id('button-screen-view'),
   contentShareButton: By.id('button-content-share'),
   contentSharePauseButton: By.id('button-pause-content-share'),
+  dataMessageSendInput: By.id('send-message'),
   sipAuthenticateButton: By.id('button-sip-authenticate'),
   roster: By.id('roster'),
   participants: By.css('li'),
@@ -493,6 +494,17 @@ class AppPage {
     return expectedState
   }
 
+  async sendDataMessage(message) {
+    const dataMessageSendInput = await this.driver.findElement(elements.dataMessageSendInput);
+    await dataMessageSendInput.clear();
+    await dataMessageSendInput.sendKeys(message);
+    await dataMessageSendInput.sendKeys(Key.ENTER);
+  }
+
+  async checkDataMessageExist(message) {
+    const dataMessageSpan = await this.driver.findElement(By.xpath(`//div[@id='receive-message']//*[text() = ':${message}']`));
+    return dataMessageSpan? true: false;
+  }
 }
 
 module.exports.AppPage = AppPage;
