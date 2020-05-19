@@ -4,7 +4,7 @@ require "json"
 failure_reasons = {}
 
 def failure_reason(failed_step)
-  if failed_step["attachments"] != nil
+  if failed_step["attachments"].nil? and failed_step["attachments"].empty?
     puts "\s\sFailure reason: "
     failed_step["attachments"].each do |attachment|
       File.open("./kite-allure-reports/#{attachment["source"]}") do |f|
@@ -49,7 +49,7 @@ def explain_failure(failed_run)
   get_run_configuration(failed_run["name"])
   puts "Failure details:"
   failed_run["steps"].each do |step|
-    if (step["status"] == "FAILED")
+    if ["FAILED", "BROKEN"].include?(step["status"])
       puts "\s#{step["name"]}"
       failure_reason(step)
     end
@@ -64,7 +64,7 @@ resultFiles = Dir["./kite-allure-reports/*result.json"]
 resultFiles.each do |resultFile|
   file = File.read(resultFile)
   result = JSON.parse(file)
-  if (result["status"]) == "FAILED"
+  if ["FAILED", "BROKEN"].include?(result["status"])
     isFailed = true
     explain_failure(result)
   end
