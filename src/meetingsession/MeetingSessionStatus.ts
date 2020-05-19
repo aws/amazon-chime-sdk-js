@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { SdkSignalFrame } from '../signalingprotocol/SignalingProtocol.js';
@@ -45,6 +45,7 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.AudioCallEnded:
       case MeetingSessionStatusCode.AudioInternalServerError:
       case MeetingSessionStatusCode.AudioDisconnected:
+      case MeetingSessionStatusCode.TURNCredentialsForbidden:
       case MeetingSessionStatusCode.SignalingBadRequest:
       case MeetingSessionStatusCode.SignalingInternalServerError:
       case MeetingSessionStatusCode.SignalingRequestFailed:

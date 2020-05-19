@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -31,6 +31,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.SignalingInternalServerError,
     MeetingSessionStatusCode.SignalingRequestFailed,
     MeetingSessionStatusCode.StateMachineTransitionFailed,
+    MeetingSessionStatusCode.TURNCredentialsForbidden,
     MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround,
     MeetingSessionStatusCode.ConnectionHealthReconnect,
     MeetingSessionStatusCode.RealtimeApiFailed,
@@ -73,6 +74,7 @@ describe('MeetingSessionStatus', () => {
         MeetingSessionStatusCode.SignalingBadRequest,
         MeetingSessionStatusCode.SignalingInternalServerError,
         MeetingSessionStatusCode.SignalingRequestFailed,
+        MeetingSessionStatusCode.TURNCredentialsForbidden,
         MeetingSessionStatusCode.VideoCallAtSourceCapacity,
         MeetingSessionStatusCode.RealtimeApiFailed,
       ]);

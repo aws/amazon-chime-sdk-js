@@ -756,11 +756,7 @@ export default class DOMMockBuilder {
         return mockBehavior.FakeTURNCredentialsBody;
       }
       get status(): number {
-        if (mockBehavior.responseSuccess) {
-          return 200;
-        } else {
-          return 500;
-        }
+        return mockBehavior.responseStatusCode;
       }
     };
 

@@ -58,5 +58,6 @@ export default class DOMMockBehavior {
   browserName: string = 'firefox';
   fetchSucceeds: boolean = true;
   responseSuccess: boolean = true;
+  responseStatusCode: number = 200;
   hasInactiveTransceiver: boolean = false;
 }
