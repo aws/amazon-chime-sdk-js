@@ -118,6 +118,11 @@ export enum MeetingSessionStatusCode {
    * Session update produces incompatible SDP.
    */
   IncompatibleSDP = 21,
+
+  /**
+   * This can happen when you attempt to join a meeting which has ended
+   */
+  TURNCredentialsForbidden = 22,
 }
 
 export default MeetingSessionStatusCode;

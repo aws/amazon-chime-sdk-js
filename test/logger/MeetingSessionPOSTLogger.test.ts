@@ -253,6 +253,7 @@ describe('MeetingSessionPOSTLogger', () => {
       );
       domMockBehavior.fetchSucceeds = true;
       domMockBehavior.responseSuccess = false;
+      domMockBehavior.responseStatusCode = 500;
       logger.error('error');
       expect(logger.getLogCaptureSize()).is.equal(1);
       logger.startLogPublishScheduler(batchSize);

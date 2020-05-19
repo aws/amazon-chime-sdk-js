@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix Firefox version 76 missing/grey tiles
 - Fix data message integration tests
 - Fix several integration test name
+- Mark 403 (Forbidden) for fetching turn credentials as terminal error and avoid retrying.
 - Fix Android Pixel3 Chrome Video artifacts on far sites
 
 ## [1.6.2] - 2020-05-18
