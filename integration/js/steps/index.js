@@ -11,6 +11,7 @@ exports.ClickScreenShareButton = require('./ClickScreenShareButton');
 exports.ClickScreenViewButton = require('./ClickScreenViewButton');
 exports.ClickContentShareButton = require('./ClickContentShareButton');
 exports.ClickContentSharePauseButton = require('./ClickContentSharePauseButton');
+exports.SendDataMessage = require('./SendDataMessage');
 exports.GetSipUriForCallStep = require('./GetSipUriForCallStep');
 
 

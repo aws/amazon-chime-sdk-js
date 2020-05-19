@@ -44,7 +44,7 @@ function wait_for_demo_to_start {
 
 curr=`pwd`
 
-if [[ $1 != content_share ]]
+if [[ $1 != content_share ]] && [[ $1 != data_message ]]
 then
   start_demo_meeting 'v1'
 else
@@ -82,6 +82,9 @@ case $1 in
       r content_share_join_later_test.config.json
       r app_quit_content_share_test.config.json
       r meeting_leave_content_share_test.config.json
+      ;;
+   data_message)
+      r data_message_test.config.json
       ;;
    *)
       r audio_test.config.json

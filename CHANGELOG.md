@@ -9,14 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add connectionDidBecomeGood callback in AudioVideoObserver
-
-## [1.6.2] - 2020-05-18
-
-### Added
+- Add an integration test for Data Message
 
 ### Changed
 
 ### Removed
+
+### Fixed
+- Fix Firefox version 76 missing/grey tiles
+
+## [1.6.2] - 2020-05-18
 
 ### Fixed
 - Disable audio capture for Electron Screen Capture
@@ -39,7 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix minor coding styles for data message APIs
-- Fix Firefox version 76 missing/grey tiles
 
 ## [1.5.0] - 2020-05-07
 

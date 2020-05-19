@@ -16,7 +16,7 @@ jobs:
       if: (type = pull_request) OR (type = push AND branch != master)
       script: npm run build:release
       addons: skip
-    #Integ test audio
+    #Integration tests
     - stage: integ_audio
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
@@ -24,7 +24,6 @@ jobs:
         - source script/travis-awscli-installation
         - integration/js/script/install-kite
       script: npm run test:integration-audio
-    #Integ test video
     - stage: integ_video
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
@@ -32,7 +31,6 @@ jobs:
         - source script/travis-awscli-installation
         - integration/js/script/install-kite
       script: npm run test:integration-video
-    #Integ test meeting end
     - stage: integ_meeting_quit
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
@@ -40,7 +38,6 @@ jobs:
         - source script/travis-awscli-installation
         - integration/js/script/install-kite
       script: npm run test:integration-meeting-end
-    #Integ test screen share
     - stage: integ_screen_share
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
@@ -48,7 +45,6 @@ jobs:
         - source script/travis-awscli-installation
         - integration/js/script/install-kite
       script: npm run test:integration-screen-share
-    #Integ test content share
     - stage: integ_content_share
       if: (type = pull_request) OR (type = push AND branch != master)
       before_install: script/needs-integration-test || travis_terminate 0
@@ -56,6 +52,13 @@ jobs:
         - source script/travis-awscli-installation
         - integration/js/script/install-kite
       script: npm run test:integration-content-share
+    - stage: integ_data_message
+      if: (type = pull_request) OR (type = push AND branch != master)
+      before_install: script/needs-integration-test || travis_terminate 0
+      install:
+        - source script/travis-awscli-installation
+        - integration/js/script/install-kite
+      script: npm run test:integration-data-message
     #Deploy
     - stage: deploy
       script: skip
