@@ -146,6 +146,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   enableWebAudio = false;
   enableUnifiedPlanForChromiumBasedBrowsers = true;
 
+  markdown = require('markdown-it')({linkify: true});
+  lastMessageSender: string | null = null;
+  lastReceivedMessageTimestamp = 0;
+
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).app = this;
@@ -442,11 +446,16 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       });
     };
 
-    const textAreaSendMessage = document.getElementById('send-message');
-    textAreaSendMessage.addEventListener('keyup', e => {
-      e.preventDefault();
+    const textAreaSendMessage = document.getElementById('send-message') as HTMLTextAreaElement;
+    textAreaSendMessage.addEventListener('keydown', e => {
       if (e.keyCode === 13) {
-        sendMessage();
+        if (e.shiftKey) {
+          textAreaSendMessage.rows++;
+        } else {
+          e.preventDefault();
+          sendMessage();
+          textAreaSendMessage.rows = 1;
+        }
       }
     });
 
@@ -810,20 +819,31 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   dataMessageHandler(dataMessage: DataMessage): void {
     if (!dataMessage.throttled) {
-      const messageDiv = document.getElementById('receive-message') as HTMLDivElement;
-      const messageSpan = document.createElement('span') as HTMLSpanElement;
-      messageSpan.setAttribute('style', 'white-space: pre-wrap; word-break: break-word');
-      const messageNameSpan = document.createElement('span') as HTMLSpanElement;
-      messageNameSpan.setAttribute('style','font-weight: bold');
-      messageNameSpan.innerText = (dataMessage.senderExternalUserId.split('#').slice(-1)[0]);
-      const messageTextSpan = document.createElement('span') as HTMLSpanElement;
-      messageTextSpan.innerText = ':' + dataMessage.text();
-      messageSpan.appendChild(messageNameSpan);
-      messageSpan.appendChild(messageTextSpan);
-      if (messageDiv.innerText) {
-        messageDiv.appendChild(document.createElement('br'));
+      const isSelf = dataMessage.senderAttendeeId === this.meetingSession.configuration.credentials.attendeeId;
+      if (dataMessage.timestampMs <= this.lastReceivedMessageTimestamp) {
+        return;
       }
-      messageDiv.appendChild(messageSpan);
+      this.lastReceivedMessageTimestamp = dataMessage.timestampMs;
+      const messageDiv = document.getElementById('receive-message') as HTMLDivElement;
+      const messageNameSpan = document.createElement('div') as HTMLDivElement;
+      messageNameSpan.classList.add('message-bubble-sender');
+      messageNameSpan.innerText = (dataMessage.senderExternalUserId.split('#').slice(-1)[0]);
+      const messageTextSpan = document.createElement('div') as HTMLDivElement;
+      messageTextSpan.classList.add(isSelf ? 'message-bubble-self' : 'message-bubble-other');
+      messageTextSpan.innerHTML = this.markdown.render(dataMessage.text()).replace(/[<]a /g, '<a target="_blank" ');
+      const appendClass = (element: HTMLElement, className: string) => {
+        for (let i = 0; i < element.children.length; i++) {
+          const child = element.children[i] as HTMLElement;
+          child.classList.add(className);
+          appendClass(child, className);
+        }
+      }
+      appendClass(messageTextSpan, 'markdown');
+      if (this.lastMessageSender !== dataMessage.senderAttendeeId) {
+        messageDiv.appendChild(messageNameSpan);
+      }
+      this.lastMessageSender = dataMessage.senderAttendeeId;
+      messageDiv.appendChild(messageTextSpan);
       messageDiv.scrollTop = messageDiv.scrollHeight;
     } else {
       this.log('Message is throttled. Please resend');
