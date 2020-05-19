@@ -424,3 +424,56 @@ svg {
     height: 210px !important;
   }
 }
+
+.markdown {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+a.markdown:link {
+  color: rgb(39, 137, 144);
+}
+
+a.markdown:visited {
+  color: rgb(39, 137, 144);
+}
+
+a.markdown:hover {
+  color: rgb(39, 137, 144);
+}
+
+a.markdown:active {
+  color: rgb(39, 137, 144);
+}
+
+.message-bubble-self {
+  border-radius: 5px;
+  background-color: rgb(238, 248, 248);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(134, 209, 215);
+  padding: 0.3rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 0rem;
+  margin-bottom: 0.5rem;
+}
+
+.message-bubble-other {
+  border-radius: 5px;
+  background-color: rgb(241, 241, 241);
+  border-style: none;
+  padding: 0.3rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 0rem;
+  margin-bottom: 0.5rem;
+}
+
+.message-bubble-sender {
+  font-weight: bold;
+  margin-left: 1.3rem;
+  margin-right: 1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
