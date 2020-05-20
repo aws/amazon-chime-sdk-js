@@ -8,7 +8,7 @@ const uuidv4 = require('uuid/v4');
 
 class MeetingLeaveContentShareTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
-    super(name, kiteConfig, "AppQuitAudioCheck");
+    super(name, kiteConfig, "MeetingLeaveContentShareCheck");
   }
 
   async runIntegrationTest() {

@@ -18,7 +18,7 @@ const uuidv4 = require('uuid/v4');
 * */
 class DataMessageTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
-    super(name, kiteConfig, "AppQuitAudioCheck");
+    super(name, kiteConfig, "DataMessageCheck");
   }
 
   async runIntegrationTest() {
