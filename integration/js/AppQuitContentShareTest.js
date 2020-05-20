@@ -8,7 +8,7 @@ const uuidv4 = require('uuid/v4');
 
 class AppQuitContentShareTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
-    super(name, kiteConfig, "AppQuitAudioCheck");
+    super(name, kiteConfig, "AppQuitContentShareCheck");
   }
 
   async runIntegrationTest() {
