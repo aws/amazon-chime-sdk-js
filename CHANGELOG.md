@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add connectionDidBecomeGood callback in AudioVideoObserver
 - Add an integration test for Data Message
+- Add the device selection to the "Starting a session" example
 
 ### Changed
 - Styling and Markdown support for meeting demo chat
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix several integration test name
 - Mark 403 (Forbidden) for fetching turn credentials as terminal error and avoid retrying.
 - Fix Android Pixel3 Chrome Video artifacts on far sites
+- Don't throw the "cannot replace" message if the device controller is not bound to any audio-video controller
 
 ## [1.6.2] - 2020-05-18
 
