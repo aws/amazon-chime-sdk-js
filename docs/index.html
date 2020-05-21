@@ -260,9 +260,18 @@ meetingSession.audioVideo.addDeviceChangeObserver(observer);</code></pre>
 					<h3>Starting a session</h3>
 				</a>
 				<p><strong>Use case 5.</strong> Start a session. To hear audio, you need to bind a device and stream to an <code>&lt;audio&gt;</code> element.
-					Once the session has started, you can talk and listen to attendees.
-				Make sure you have chosen your microphone and speaker (See the &quot;Device&quot; section), and at least one other attendee has joined the session.</p>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> audioElement = <span class="hljs-comment">/* HTMLAudioElement object e.g. document.getElementById('audio-element-id') */</span>;
+				Once the session has started, you can talk and listen to attendees.</p>
+				<pre><code class="language-js"><span class="hljs-comment">// Before starting a session, make sure you have chosen your microphone and speaker.</span>
+<span class="hljs-comment">// chooseAudioInputDevice and chooseAudioOutputDevice are async functions that return a Promise.</span>
+<span class="hljs-comment">// In this example, the await operator is used to wait for a Promise to resolve.</span>
+
+<span class="hljs-keyword">const</span> audioInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioInputDevices */</span>;
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
+
+<span class="hljs-keyword">const</span> audioOutputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioOutputDevices */</span>;
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+
+<span class="hljs-keyword">const</span> audioElement = <span class="hljs-comment">/* HTMLAudioElement object e.g. document.getElementById('audio-element-id') */</span>;
 meetingSession.audioVideo.bindAudioElement(audioElement);
 
 <span class="hljs-keyword">const</span> observer = {

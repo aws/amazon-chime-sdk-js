@@ -563,7 +563,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         this.attachAudioInputStreamToAudioContext(this.activeDevices[kind].stream);
       } else {
         try {
-          await this.boundAudioVideoController.restartLocalAudio(() => {});
+          if (this.boundAudioVideoController) {
+            await this.boundAudioVideoController.restartLocalAudio(() => {});
+          }
         } catch (error) {
           this.logger.info(`cannot replace audio track due to: ${error.message}`);
         }
