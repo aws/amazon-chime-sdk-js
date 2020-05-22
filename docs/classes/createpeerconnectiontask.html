@@ -145,7 +145,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="basetask.html">BaseTask</a>.<a href="basetask.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L32">src/task/CreatePeerConnectionTask.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L37">src/task/CreatePeerConnectionTask.ts:37</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -170,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="audiovideocontrollerstate.html" class="tsd-signature-type">AudioVideoControllerState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L35">src/task/CreatePeerConnectionTask.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L40">src/task/CreatePeerConnectionTask.ts:40</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -180,7 +180,7 @@
 					<div class="tsd-signature tsd-kind-icon">external<wbr>User<wbr>IdTimeout<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L36">src/task/CreatePeerConnectionTask.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L41">src/task/CreatePeerConnectionTask.ts:41</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -198,7 +198,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="presencehandlerset" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> presence<wbr>Handler<wbr>Set</h3>
-					<div class="tsd-signature tsd-kind-icon">presence<wbr>Handler<wbr>Set<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, present<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Set&lt;(attendeeId: string, present: boolean, externalUserId?: string | null) &#x3D;&gt; void&gt;()</span></div>
+					<div class="tsd-signature tsd-kind-icon">presence<wbr>Handler<wbr>Set<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, present<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, externalUserId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, dropped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Set&lt;(attendeeId: string,present: boolean,externalUserId: string | null,dropped: boolean | null) &#x3D;&gt; void&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L19">src/task/CreatePeerConnectionTask.ts:19</a></li>
@@ -251,7 +251,7 @@
 					<div class="tsd-signature tsd-kind-icon">remove<wbr>Video<wbr>Track<wbr>Event<wbr>Listeners<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L30">src/task/CreatePeerConnectionTask.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L35">src/task/CreatePeerConnectionTask.ts:35</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -280,7 +280,7 @@
 					<div class="tsd-signature tsd-kind-icon">track<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = [&#x27;ended&#x27;,&#x27;mute&#x27;,&#x27;unmute&#x27;,&#x27;isolationchange&#x27;,&#x27;overconstrained&#x27;,]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L23">src/task/CreatePeerConnectionTask.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L28">src/task/CreatePeerConnectionTask.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -290,7 +290,7 @@
 					<div class="tsd-signature tsd-kind-icon">REMOVE_<wbr>HANDLER_<wbr>INTERVAL_<wbr>MS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 10000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L32">src/task/CreatePeerConnectionTask.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L37">src/task/CreatePeerConnectionTask.ts:37</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -307,7 +307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L52">src/task/CreatePeerConnectionTask.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L57">src/task/CreatePeerConnectionTask.ts:57</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -324,7 +324,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L180">src/task/CreatePeerConnectionTask.ts:180</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L190">src/task/CreatePeerConnectionTask.ts:190</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -350,7 +350,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L155">src/task/CreatePeerConnectionTask.ts:155</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L160">src/task/CreatePeerConnectionTask.ts:160</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -469,7 +469,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/removableobserver.html">RemovableObserver</a>.<a href="../interfaces/removableobserver.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L41">src/task/CreatePeerConnectionTask.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L46">src/task/CreatePeerConnectionTask.ts:46</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -486,7 +486,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L262">src/task/CreatePeerConnectionTask.ts:262</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L272">src/task/CreatePeerConnectionTask.ts:272</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -514,7 +514,7 @@
 								<p>Implementation of <a href="../interfaces/task.html">Task</a>.<a href="../interfaces/task.html#run">run</a></p>
 								<p>Overrides <a href="basetask.html">BaseTask</a>.<a href="basetask.html#run">run</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L77">src/task/CreatePeerConnectionTask.ts:77</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L82">src/task/CreatePeerConnectionTask.ts:82</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -556,7 +556,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L118">src/task/CreatePeerConnectionTask.ts:118</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L123">src/task/CreatePeerConnectionTask.ts:123</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -579,7 +579,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L136">src/task/CreatePeerConnectionTask.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/CreatePeerConnectionTask.ts#L141">src/task/CreatePeerConnectionTask.ts:141</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
