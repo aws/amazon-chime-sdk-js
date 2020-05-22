@@ -34,6 +34,8 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
       const hasAttendeeId = !!stream.attendeeId;
       const hasExternalUserId = !!stream.externalUserId;
       const hasMuted = stream.hasOwnProperty('muted');
+      // TODO: wire dropped through to the realtime interface
+      // const hasDropped = !!stream.dropped;
       if (hasAttendeeId) {
         this.streamIdToAttendeeId[stream.audioStreamId] = stream.attendeeId;
         const externalUserId = hasExternalUserId ? stream.externalUserId : stream.attendeeId;

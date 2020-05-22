@@ -51,7 +51,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
     dataMessage.senderAttendeeId = 'senderId';
     dataMessage.senderExternalUserId = 'senderExtId';
     dataMessage.data = new TextEncoder().encode(data);
-    dataMessageFrame.dataMessagePayloads = [dataMessage];
+    dataMessageFrame.messages = [dataMessage];
 
     const event = new SignalingClientEvent(
       context.signalingClient,
@@ -65,7 +65,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
   function makeSendDataMessageFrame(topic: string, data: Uint8Array): SdkDataMessageFrame {
     const dataMessageFrame = SdkDataMessageFrame.create();
     const dataMessage = SdkDataMessagePayload.create();
-    dataMessageFrame.dataMessagePayloads = [dataMessage];
+    dataMessageFrame.messages = [dataMessage];
 
     dataMessage.topic = topic;
     dataMessage.data = data;

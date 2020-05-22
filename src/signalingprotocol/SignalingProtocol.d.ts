@@ -329,22 +329,28 @@ export enum SdkJoinFlags {
 export interface ISdkClientDetails {
 
     /** SdkClientDetails appVersionName */
-    appVersionName: string;
+    appVersionName?: (string|null);
 
     /** SdkClientDetails appVersionCode */
-    appVersionCode: string;
+    appVersionCode?: (string|null);
 
     /** SdkClientDetails deviceModel */
-    deviceModel: string;
+    deviceModel?: (string|null);
 
     /** SdkClientDetails deviceMake */
-    deviceMake: string;
+    deviceMake?: (string|null);
 
     /** SdkClientDetails platformName */
-    platformName: string;
+    platformName?: (string|null);
 
     /** SdkClientDetails platformVersion */
-    platformVersion: string;
+    platformVersion?: (string|null);
+
+    /** SdkClientDetails clientSource */
+    clientSource?: (string|null);
+
+    /** SdkClientDetails chimeSdkVersion */
+    chimeSdkVersion?: (string|null);
 }
 
 /** Represents a SdkClientDetails. */
@@ -373,6 +379,12 @@ export class SdkClientDetails implements ISdkClientDetails {
 
     /** SdkClientDetails platformVersion. */
     public platformVersion: string;
+
+    /** SdkClientDetails clientSource. */
+    public clientSource: string;
+
+    /** SdkClientDetails chimeSdkVersion. */
+    public chimeSdkVersion: string;
 
     /**
      * Creates a new SdkClientDetails instance using the specified properties.
@@ -2158,6 +2170,9 @@ export interface ISdkAudioStreamIdInfo {
 
     /** SdkAudioStreamIdInfo externalUserId */
     externalUserId?: (string|null);
+
+    /** SdkAudioStreamIdInfo dropped */
+    dropped?: (boolean|null);
 }
 
 /** Represents a SdkAudioStreamIdInfo. */
@@ -2180,6 +2195,9 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
 
     /** SdkAudioStreamIdInfo externalUserId. */
     public externalUserId: string;
+
+    /** SdkAudioStreamIdInfo dropped. */
+    public dropped: boolean;
 
     /**
      * Creates a new SdkAudioStreamIdInfo instance using the specified properties.
@@ -2797,8 +2815,8 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
 /** Properties of a SdkDataMessageFrame. */
 export interface ISdkDataMessageFrame {
 
-    /** SdkDataMessageFrame dataMessagePayloads */
-    dataMessagePayloads?: (ISdkDataMessagePayload[]|null);
+    /** SdkDataMessageFrame messages */
+    messages?: (ISdkDataMessagePayload[]|null);
 }
 
 /** Represents a SdkDataMessageFrame. */
@@ -2810,8 +2828,8 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
      */
     constructor(properties?: ISdkDataMessageFrame);
 
-    /** SdkDataMessageFrame dataMessagePayloads. */
-    public dataMessagePayloads: ISdkDataMessagePayload[];
+    /** SdkDataMessageFrame messages. */
+    public messages: ISdkDataMessagePayload[];
 
     /**
      * Creates a new SdkDataMessageFrame instance using the specified properties.

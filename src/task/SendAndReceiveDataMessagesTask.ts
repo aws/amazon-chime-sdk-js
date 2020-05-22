@@ -43,7 +43,7 @@ export default class SendAndReceiveDataMessagesTask extends BaseTask
       event.type === SignalingClientEventType.ReceivedSignalFrame &&
       event.message.type === SdkSignalFrame.Type.DATA_MESSAGE
     ) {
-      for (let message of event.message.dataMessage.dataMessagePayloads) {
+      for (let message of event.message.dataMessage.messages) {
         const dataMessage = new DataMessage(
           (message.ingestTimeNs as number) / 1000000,
           message.topic,
@@ -77,7 +77,7 @@ export default class SendAndReceiveDataMessagesTask extends BaseTask
       message.lifetimeMs = lifetimeMs;
       message.data = uint8Data;
       const messageFrame = SdkDataMessageFrame.create();
-      messageFrame.dataMessagePayloads = [message];
+      messageFrame.messages = [message];
       this.context.signalingClient.sendDataMessage(messageFrame);
     } else {
       throw new Error('Signaling client is not ready');
