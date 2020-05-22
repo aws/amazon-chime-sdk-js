@@ -17,7 +17,12 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
   private removeTrackAddedEventListener: (() => void) | null = null;
   private removeTrackRemovedEventListeners: { [trackId: string]: () => void } = {};
   private presenceHandlerSet = new Set<
-    (attendeeId: string, present: boolean, externalUserId?: string | null) => void
+    (
+      attendeeId: string,
+      present: boolean,
+      externalUserId: string | null,
+      dropped: boolean | null
+    ) => void
   >();
 
   private readonly trackEvents: string[] = [
@@ -161,8 +166,13 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     streamId: number
   ): void {
     const timeoutScheduler = new TimeoutScheduler(this.externalUserIdTimeoutMs);
-    const handler = (presentAttendeeId: string, present: boolean, externalUserId: string): void => {
-      if (attendeeId === presentAttendeeId && present && externalUserId !== null) {
+    const handler = (
+      presentAttendeeId: string,
+      present: boolean,
+      externalUserId: string,
+      dropped: boolean
+    ): void => {
+      if (attendeeId === presentAttendeeId && present && externalUserId !== null && !dropped) {
         tile.bindVideoStream(attendeeId, false, stream, width, height, streamId, externalUserId);
         this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
         this.presenceHandlerSet.delete(handler);

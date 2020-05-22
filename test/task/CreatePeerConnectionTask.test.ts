@@ -301,7 +301,12 @@ describe('CreatePeerConnectionTask', () => {
         const streamId = 1;
         let tile: VideoTile;
         const attendeeIdForTrack = 'attendee-id';
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          true,
+          'foo',
+          false
+        );
         class TestVideoStreamIndex extends DefaultVideoStreamIndex {
           streamIdForTrack(_trackId: string): number {
             return streamId;
@@ -342,7 +347,12 @@ describe('CreatePeerConnectionTask', () => {
 
         let tile: VideoTile;
         const attendeeIdForTrack = 'attendee-id';
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          true,
+          'foo',
+          false
+        );
         class TestVideoStreamIndex extends DefaultVideoStreamIndex {
           attendeeIdForTrack(_trackId: string): string {
             return attendeeIdForTrack;
@@ -387,7 +397,12 @@ describe('CreatePeerConnectionTask', () => {
         let tile: VideoTile;
 
         const attendeeIdForTrack = 'attendee-id';
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          true,
+          'foo',
+          false
+        );
         class TestVideoStreamIndex extends DefaultVideoStreamIndex {
           attendeeIdForTrack(_trackId: string): string {
             return attendeeIdForTrack;
@@ -448,7 +463,12 @@ describe('CreatePeerConnectionTask', () => {
           'realtimeSubscribeToAttendeeIdPresence'
         );
         context.realtimeController = new DefaultRealtimeController();
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          true,
+          'foo',
+          false
+        );
         class TestVideoStreamIndex extends DefaultVideoStreamIndex {
           attendeeIdForTrack(_trackId: string): string {
             return attendeeIdForTrack;
@@ -466,7 +486,12 @@ describe('CreatePeerConnectionTask', () => {
           new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
         );
         expect(spyRealtimeSubscribeToAttendeeIdPresence.called).to.be.false;
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, false, 'foo');
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          false,
+          'foo',
+          false
+        );
         expect(spyRealtimeSubscribeToAttendeeIdPresence.called).to.be.false;
         context.removableObservers[0].removeObserver();
       });
@@ -477,7 +502,12 @@ describe('CreatePeerConnectionTask', () => {
         task = new CreatePeerConnectionTask(context, externalUserIdTimeOutMs);
 
         context.realtimeController = new DefaultRealtimeController();
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, null);
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          true,
+          null,
+          false
+        );
 
         const spyRealtimeSubscribeToAttendeeIdPresence = sinon.spy(
           context.realtimeController,
@@ -513,7 +543,12 @@ describe('CreatePeerConnectionTask', () => {
         task = new CreatePeerConnectionTask(context, externalUserIdTimeOutMs);
         const attendeeIdForTrack = 'attendee-id';
         context.realtimeController = new DefaultRealtimeController();
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, null);
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          true,
+          null,
+          false
+        );
         const spyRealtimeSubscribeToAttendeeIdPresence = sinon.spy(
           context.realtimeController,
           'realtimeSubscribeToAttendeeIdPresence'
@@ -538,9 +573,14 @@ describe('CreatePeerConnectionTask', () => {
           new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
         );
         expect(spyRealtimeSubscribeToAttendeeIdPresence.called).to.be.true;
-        context.realtimeController.realtimeSetAttendeeIdPresence('new-attendee', true, null);
+        context.realtimeController.realtimeSetAttendeeIdPresence('new-attendee', true, null, false);
         expect(spyRealtimeUnsubscribeToAttendeeIdPresence.called).to.be.false;
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          true,
+          'foo',
+          false
+        );
         expect(spyRealtimeUnsubscribeToAttendeeIdPresence.called).to.be.true;
 
         context.removableObservers[0].removeObserver();
@@ -582,7 +622,12 @@ describe('CreatePeerConnectionTask', () => {
       it('removes stream ID from the paused video stream ID set if stream ID exists', done => {
         let called = false;
         const attendeeIdForTrack = 'attendee-id';
-        context.realtimeController.realtimeSetAttendeeIdPresence(attendeeIdForTrack, true, 'foo');
+        context.realtimeController.realtimeSetAttendeeIdPresence(
+          attendeeIdForTrack,
+          true,
+          'foo',
+          false
+        );
         class TestVideoStreamIndex extends DefaultVideoStreamIndex {
           streamIdForTrack(_trackId: string): number {
             return 1;

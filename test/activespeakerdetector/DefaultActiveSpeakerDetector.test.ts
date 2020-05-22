@@ -40,7 +40,7 @@ describe('DefaultActiveSpeakerDetector', () => {
         callbackFired = true;
       };
       detector.subscribe(policy, callback);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null, false);
       rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
       rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
       expect(callbackFired).to.be.true;
@@ -48,7 +48,7 @@ describe('DefaultActiveSpeakerDetector', () => {
       rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
       rt.realtimeUpdateVolumeIndicator(fooAttendee, 0, false, 1, null);
       expect(callbackFired).to.be.false;
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null, true);
       expect(callbackFired).to.be.true;
       detector.unsubscribe(callback);
     });
@@ -64,8 +64,8 @@ describe('DefaultActiveSpeakerDetector', () => {
         expect(attendeeIds[0] === fooAttendee2);
       };
       detector.subscribe(policy, callback);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee1, true, null);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee2, true, null);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee1, true, null, false);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee2, true, null, false);
       rt.realtimeUpdateVolumeIndicator(fooAttendee1, 10, false, 1, null);
       rt.realtimeUpdateVolumeIndicator(fooAttendee1, 20, false, 1, null);
       rt.realtimeUpdateVolumeIndicator(fooAttendee2, 10, false, 1, null);
@@ -86,7 +86,7 @@ describe('DefaultActiveSpeakerDetector', () => {
       };
       detector.subscribe(policy, callback);
       detector.unsubscribe(callback);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null, false);
       rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
       rt.realtimeUpdateVolumeIndicator(fooAttendee, 10, false, 1, null);
       expect(callbackFired).to.be.false;

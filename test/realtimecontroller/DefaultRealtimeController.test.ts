@@ -849,9 +849,9 @@ describe('DefaultRealtimeController', () => {
         callbackIndex += 1;
       });
       expect(callbackIndex).to.equal(0);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null, false);
       expect(callbackIndex).to.equal(1);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null, false);
       expect(callbackIndex).to.equal(2);
     });
   });
@@ -860,7 +860,7 @@ describe('DefaultRealtimeController', () => {
     const rt: RealtimeController = new DefaultRealtimeController();
     const attendeeId = 'fake-attendee';
     const externalUserId = 'fake-external-id';
-    rt.realtimeSetAttendeeIdPresence(attendeeId, true, externalUserId);
+    rt.realtimeSetAttendeeIdPresence(attendeeId, true, externalUserId, false);
     expect(rt.realtimeExternalUserIdFromAttendeeId(attendeeId)).to.be.equal(externalUserId);
   });
 
@@ -1117,7 +1117,7 @@ describe('DefaultRealtimeController', () => {
 
       // attempt to trigger a fake error after unsubscribing to fatal errors
       rt.realtimeUnsubscribeToFatalError(fatalErrorCallback);
-      rt.realtimeSetAttendeeIdPresence('unused', true, null);
+      rt.realtimeSetAttendeeIdPresence('unused', true, null, false);
       expect(fatalErrorCallbackRemoved).to.be.true;
 
       // unsubscribe from other callbacks
@@ -1131,7 +1131,7 @@ describe('DefaultRealtimeController', () => {
       rt.realtimeUnsubscribeFromReceiveDataMessage('topic');
 
       // attempt to trigger callbacks
-      rt.realtimeSetAttendeeIdPresence('unused', true, null);
+      rt.realtimeSetAttendeeIdPresence('unused', true, null, false);
       rt.realtimeSetCanUnmuteLocalAudio(false);
       rt.realtimeMuteLocalAudio();
       // also triggers local signal strength callbacks

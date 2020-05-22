@@ -5,10 +5,20 @@ import DataMessage from '../datamessage/DataMessage';
 
 export default interface RealtimeControllerFacade {
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
+    callback: (
+      attendeeId: string,
+      present: boolean,
+      externalUserId?: string,
+      dropped?: boolean
+    ) => void
   ): void;
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
+    callback: (
+      attendeeId: string,
+      present: boolean,
+      externalUserId?: string,
+      dropped?: boolean
+    ) => void
   ): void;
   realtimeSetCanUnmuteLocalAudio(canUnmute: boolean): void;
   realtimeSubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void;

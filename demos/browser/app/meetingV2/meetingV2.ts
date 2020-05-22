@@ -747,13 +747,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   setupSubscribeToAttendeeIdPresenceHandler(): void {
-    const handler = (attendeeId: string, present: boolean, externalUserId: string): void => {
+    const handler = (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean): void => {
       this.log(`${attendeeId} present = ${present} (${externalUserId})`);
       const isContentAttendee = new DefaultModality(attendeeId).hasModality(DefaultModality.MODALITY_CONTENT);
       const isSelfAttendee = new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId;
       if (!present) {
         delete this.roster[attendeeId];
         this.updateRoster();
+        this.log(`${attendeeId} dropped = ${dropped} (${externalUserId})`);
         return;
       }
       //If someone else share content, stop the current content share

@@ -65,20 +65,26 @@ export default class DefaultRealtimeController implements RealtimeController {
   realtimeSetAttendeeIdPresence(
     attendeeId: string,
     present: boolean,
-    externalUserId: string | null
+    externalUserId: string | null,
+    dropped: boolean | null
   ): void {
     this.wrap(() => {
       if (present) {
         this.state.attendeeIdToExternalUserId[attendeeId] = externalUserId;
       }
       for (const fn of this.state.attendeeIdChangesCallbacks) {
-        fn(attendeeId, present, externalUserId);
+        fn(attendeeId, present, externalUserId, dropped);
       }
     });
   }
 
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
+    callback: (
+      attendeeId: string,
+      present: boolean,
+      externalUserId?: string,
+      dropped?: boolean
+    ) => void
   ): void {
     this.wrap(() => {
       this.state.attendeeIdChangesCallbacks.push(callback);
@@ -86,7 +92,12 @@ export default class DefaultRealtimeController implements RealtimeController {
   }
 
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
+    callback: (
+      attendeeId: string,
+      present: boolean,
+      externalUserId?: string,
+      dropped?: boolean
+    ) => void
   ): void {
     this.wrap(() => {
       const index = this.state.attendeeIdChangesCallbacks.indexOf(callback);

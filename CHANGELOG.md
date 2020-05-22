@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add an integration test for Data Message
 - Add the device selection to the "Starting a session" example
 - Added Bandwidth and connectivity guide
+- Add 'dropped' boolean attribute to realtime interface to indicate attendee drop
 
 ### Changed
 - Styling and Markdown support for meeting demo chat

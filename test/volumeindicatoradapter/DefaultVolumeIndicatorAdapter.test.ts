@@ -83,11 +83,12 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       );
       let attendeeIdUpdate = 0;
       rt.realtimeSubscribeToAttendeeIdPresence(
-        (attendeeId: string, present: boolean, externalUserId: string) => {
+        (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
           if (attendeeIdUpdate === 0) {
             expect(attendeeId).to.equal(fooAttendee);
             expect(present).to.be.true;
             expect(externalUserId).to.equal(fooExternal);
+            expect(dropped).to.be.false;
           } else if (attendeeIdUpdate === 1) {
             expect(attendeeId).to.equal(fooAttendee);
             expect(present).to.be.false;
@@ -138,11 +139,14 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       let attendeeIdUpdate = 0;
       rt.realtimeSubscribeToAttendeeIdPresence(
-        (attendeeId: string, present: boolean, externalUserId: string) => {
+        (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
           let expected = false;
           if (attendeeIdUpdate === 0) {
             expected =
-              attendeeId === fooAttendee && present === true && externalUserId === fooExternal;
+              attendeeId === fooAttendee &&
+              present === true &&
+              externalUserId === fooExternal &&
+              dropped === false;
           } else if (attendeeIdUpdate === 1) {
             expected =
               attendeeId === fooAttendee && present === false && externalUserId === fooExternal;

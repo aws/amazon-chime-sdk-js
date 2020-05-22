@@ -42,7 +42,8 @@ export default interface RealtimeController {
   realtimeSetAttendeeIdPresence(
     attendeeId: string,
     present: boolean,
-    externalUserId: string | null
+    externalUserId: string | null,
+    dropped: boolean | null
   ): void;
 
   /**
@@ -50,14 +51,24 @@ export default interface RealtimeController {
    * subscribe and unsubscribe to for volume indicator updates.
    */
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
+    callback: (
+      attendeeId: string,
+      present: boolean,
+      externalUserId?: string,
+      dropped?: boolean
+    ) => void
   ): void;
 
   /**
    * Unsubscribes to changes in attendee ids
    */
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (attendeeId: string, present: boolean, externalUserId?: string) => void
+    callback: (
+      attendeeId: string,
+      present: boolean,
+      externalUserId?: string,
+      dropped?: boolean
+    ) => void
   ): void;
 
   /**

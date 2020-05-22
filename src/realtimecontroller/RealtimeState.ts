@@ -24,7 +24,8 @@ export default class RealtimeState {
   attendeeIdChangesCallbacks: ((
     attendeeId: string,
     present: boolean,
-    externalUserId?: string
+    externalUserId: string,
+    dropped: boolean
   ) => void)[] = [];
 
   /**
