@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "1.6.12",
+  "version": "1.6.13",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -33,8 +33,7 @@
     "test:integration-video": "cd ./integration/js && npm run test -- video && npm run upload-logs-to-s3",
     "test:integration-meeting-end": "cd ./integration/js && npm run test -- meeting_end && npm run upload-logs-to-s3",
     "test:integration-screen-share": "cd ./integration/js && npm run test -- screen_share && npm run upload-logs-to-s3",
-    "test:integration-content-share": "cd ./integration/js && npm run test -- content_share && npm run upload-logs-to-s3",
-    "test:integration-data-message": "cd ./integration/js && npm run test -- data_message && npm run upload-logs-to-s3"
+    "test:integration-content-share": "cd ./integration/js && npm run test -- content_share && npm run upload-logs-to-s3"
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.89.0",

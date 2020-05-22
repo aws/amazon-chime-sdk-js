@@ -34,6 +34,7 @@ And review the following guides:
 * [Getting Started](https://aws.github.io/amazon-chime-sdk-js/modules/gettingstarted.html)
 * [API Overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html)
 * [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html)
+* [Quality, Bandwidth, and Connectivity](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html)
 
 ## Examples
 
@@ -226,18 +227,9 @@ meetingSession.audioVideo.addDeviceChangeObserver(observer);
 
 **Use case 5.** Start a session. To hear audio, you need to bind a device and stream to an `<audio>` element.
 Once the session has started, you can talk and listen to attendees.
+Make sure you have chosen your microphone and speaker (See the "Device" section), and at least one other attendee has joined the session.
 
 ```js
-// Before starting a session, make sure you have chosen your microphone and speaker.
-// chooseAudioInputDevice and chooseAudioOutputDevice are async functions that return a Promise.
-// In this example, the await operator is used to wait for a Promise to resolve.
-
-const audioInputDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioInputDevices */;
-await meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
-
-const audioOutputDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioOutputDevices */;
-await meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
-
 const audioElement = /* HTMLAudioElement object e.g. document.getElementById('audio-element-id') */;
 meetingSession.audioVideo.bindAudioElement(audioElement);
 

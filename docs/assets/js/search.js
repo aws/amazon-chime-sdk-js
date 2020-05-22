@@ -13396,4 +13396,7 @@ var typedoc = typedoc || {};
 "classes":"tsd-kind-module"},
 {"id":3421,"kind":2,"name":"APIOverview",
 "url":"modules/apioverview.html",
+"classes":"tsd-kind-module"},
+{"id":3422,"kind":2,"name":"QualityBandwidth_Connectivity",
+"url":"modules/qualitybandwidth_connectivity.html",
 "classes":"tsd-kind-module"}]};
