@@ -86,6 +86,14 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
         this.removeEventListener();
         reject(error);
       };
+      if (!this.context.turnCredentials) {
+        this.context.peer.addEventListener('icegatheringstatechange', () => {
+          if (this.context.peer.iceGatheringState === 'complete') {
+            resolve();
+            return;
+          }
+        });
+      }
 
       this.context.iceCandidateHandler = (event: RTCPeerConnectionIceEvent) => {
         this.context.logger.info(
