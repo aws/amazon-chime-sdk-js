@@ -461,7 +461,7 @@ describe('DefaultSignalingClient', () => {
       const testObjects = createTestObjects();
       const dataMessageFrame = SdkDataMessageFrame.create();
       const dataMessage = SdkDataMessagePayload.create();
-      dataMessageFrame.dataMessagePayloads = [dataMessage];
+      dataMessageFrame.messages = [dataMessage];
 
       dataMessage.topic = 'topic';
       dataMessage.data = new TextEncoder().encode('Test message');
@@ -473,7 +473,7 @@ describe('DefaultSignalingClient', () => {
               const frame = SdkSignalFrame.decode(buffer.slice(1));
               expect(buffer[0]).to.equal(_messageType);
               expect(frame.type).to.equal(SdkSignalFrame.Type.DATA_MESSAGE);
-              expect(frame.dataMessage.dataMessagePayloads[0]).to.be.eql(dataMessage);
+              expect(frame.dataMessage.messages[0]).to.be.eql(dataMessage);
               done();
             });
             event.client.sendDataMessage(dataMessageFrame);

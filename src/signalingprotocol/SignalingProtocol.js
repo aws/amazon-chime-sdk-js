@@ -1056,12 +1056,14 @@ $root.SdkClientDetails = (function() {
      * Properties of a SdkClientDetails.
      * @exports ISdkClientDetails
      * @interface ISdkClientDetails
-     * @property {string} appVersionName SdkClientDetails appVersionName
-     * @property {string} appVersionCode SdkClientDetails appVersionCode
-     * @property {string} deviceModel SdkClientDetails deviceModel
-     * @property {string} deviceMake SdkClientDetails deviceMake
-     * @property {string} platformName SdkClientDetails platformName
-     * @property {string} platformVersion SdkClientDetails platformVersion
+     * @property {string|null} [appVersionName] SdkClientDetails appVersionName
+     * @property {string|null} [appVersionCode] SdkClientDetails appVersionCode
+     * @property {string|null} [deviceModel] SdkClientDetails deviceModel
+     * @property {string|null} [deviceMake] SdkClientDetails deviceMake
+     * @property {string|null} [platformName] SdkClientDetails platformName
+     * @property {string|null} [platformVersion] SdkClientDetails platformVersion
+     * @property {string|null} [clientSource] SdkClientDetails clientSource
+     * @property {string|null} [chimeSdkVersion] SdkClientDetails chimeSdkVersion
      */
 
     /**
@@ -1128,6 +1130,22 @@ $root.SdkClientDetails = (function() {
     SdkClientDetails.prototype.platformVersion = "";
 
     /**
+     * SdkClientDetails clientSource.
+     * @member {string} clientSource
+     * @memberof SdkClientDetails
+     * @instance
+     */
+    SdkClientDetails.prototype.clientSource = "";
+
+    /**
+     * SdkClientDetails chimeSdkVersion.
+     * @member {string} chimeSdkVersion
+     * @memberof SdkClientDetails
+     * @instance
+     */
+    SdkClientDetails.prototype.chimeSdkVersion = "";
+
+    /**
      * Creates a new SdkClientDetails instance using the specified properties.
      * @function create
      * @memberof SdkClientDetails
@@ -1151,12 +1169,22 @@ $root.SdkClientDetails = (function() {
     SdkClientDetails.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        writer.uint32(/* id 1, wireType 2 =*/10).string(message.appVersionName);
-        writer.uint32(/* id 2, wireType 2 =*/18).string(message.appVersionCode);
-        writer.uint32(/* id 3, wireType 2 =*/26).string(message.deviceModel);
-        writer.uint32(/* id 4, wireType 2 =*/34).string(message.deviceMake);
-        writer.uint32(/* id 5, wireType 2 =*/42).string(message.platformName);
-        writer.uint32(/* id 6, wireType 2 =*/50).string(message.platformVersion);
+        if (message.appVersionName != null && message.hasOwnProperty("appVersionName"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.appVersionName);
+        if (message.appVersionCode != null && message.hasOwnProperty("appVersionCode"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.appVersionCode);
+        if (message.deviceModel != null && message.hasOwnProperty("deviceModel"))
+            writer.uint32(/* id 3, wireType 2 =*/26).string(message.deviceModel);
+        if (message.deviceMake != null && message.hasOwnProperty("deviceMake"))
+            writer.uint32(/* id 4, wireType 2 =*/34).string(message.deviceMake);
+        if (message.platformName != null && message.hasOwnProperty("platformName"))
+            writer.uint32(/* id 5, wireType 2 =*/42).string(message.platformName);
+        if (message.platformVersion != null && message.hasOwnProperty("platformVersion"))
+            writer.uint32(/* id 6, wireType 2 =*/50).string(message.platformVersion);
+        if (message.clientSource != null && message.hasOwnProperty("clientSource"))
+            writer.uint32(/* id 7, wireType 2 =*/58).string(message.clientSource);
+        if (message.chimeSdkVersion != null && message.hasOwnProperty("chimeSdkVersion"))
+            writer.uint32(/* id 8, wireType 2 =*/66).string(message.chimeSdkVersion);
         return writer;
     };
 
@@ -1209,23 +1237,17 @@ $root.SdkClientDetails = (function() {
             case 6:
                 message.platformVersion = reader.string();
                 break;
+            case 7:
+                message.clientSource = reader.string();
+                break;
+            case 8:
+                message.chimeSdkVersion = reader.string();
+                break;
             default:
                 reader.skipType(tag & 7);
                 break;
             }
         }
-        if (!message.hasOwnProperty("appVersionName"))
-            throw $util.ProtocolError("missing required 'appVersionName'", { instance: message });
-        if (!message.hasOwnProperty("appVersionCode"))
-            throw $util.ProtocolError("missing required 'appVersionCode'", { instance: message });
-        if (!message.hasOwnProperty("deviceModel"))
-            throw $util.ProtocolError("missing required 'deviceModel'", { instance: message });
-        if (!message.hasOwnProperty("deviceMake"))
-            throw $util.ProtocolError("missing required 'deviceMake'", { instance: message });
-        if (!message.hasOwnProperty("platformName"))
-            throw $util.ProtocolError("missing required 'platformName'", { instance: message });
-        if (!message.hasOwnProperty("platformVersion"))
-            throw $util.ProtocolError("missing required 'platformVersion'", { instance: message });
         return message;
     };
 
@@ -1256,18 +1278,30 @@ $root.SdkClientDetails = (function() {
     SdkClientDetails.verify = function verify(message) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (!$util.isString(message.appVersionName))
-            return "appVersionName: string expected";
-        if (!$util.isString(message.appVersionCode))
-            return "appVersionCode: string expected";
-        if (!$util.isString(message.deviceModel))
-            return "deviceModel: string expected";
-        if (!$util.isString(message.deviceMake))
-            return "deviceMake: string expected";
-        if (!$util.isString(message.platformName))
-            return "platformName: string expected";
-        if (!$util.isString(message.platformVersion))
-            return "platformVersion: string expected";
+        if (message.appVersionName != null && message.hasOwnProperty("appVersionName"))
+            if (!$util.isString(message.appVersionName))
+                return "appVersionName: string expected";
+        if (message.appVersionCode != null && message.hasOwnProperty("appVersionCode"))
+            if (!$util.isString(message.appVersionCode))
+                return "appVersionCode: string expected";
+        if (message.deviceModel != null && message.hasOwnProperty("deviceModel"))
+            if (!$util.isString(message.deviceModel))
+                return "deviceModel: string expected";
+        if (message.deviceMake != null && message.hasOwnProperty("deviceMake"))
+            if (!$util.isString(message.deviceMake))
+                return "deviceMake: string expected";
+        if (message.platformName != null && message.hasOwnProperty("platformName"))
+            if (!$util.isString(message.platformName))
+                return "platformName: string expected";
+        if (message.platformVersion != null && message.hasOwnProperty("platformVersion"))
+            if (!$util.isString(message.platformVersion))
+                return "platformVersion: string expected";
+        if (message.clientSource != null && message.hasOwnProperty("clientSource"))
+            if (!$util.isString(message.clientSource))
+                return "clientSource: string expected";
+        if (message.chimeSdkVersion != null && message.hasOwnProperty("chimeSdkVersion"))
+            if (!$util.isString(message.chimeSdkVersion))
+                return "chimeSdkVersion: string expected";
         return null;
     };
 
@@ -1295,6 +1329,10 @@ $root.SdkClientDetails = (function() {
             message.platformName = String(object.platformName);
         if (object.platformVersion != null)
             message.platformVersion = String(object.platformVersion);
+        if (object.clientSource != null)
+            message.clientSource = String(object.clientSource);
+        if (object.chimeSdkVersion != null)
+            message.chimeSdkVersion = String(object.chimeSdkVersion);
         return message;
     };
 
@@ -1318,6 +1356,8 @@ $root.SdkClientDetails = (function() {
             object.deviceMake = "";
             object.platformName = "";
             object.platformVersion = "";
+            object.clientSource = "";
+            object.chimeSdkVersion = "";
         }
         if (message.appVersionName != null && message.hasOwnProperty("appVersionName"))
             object.appVersionName = message.appVersionName;
@@ -1331,6 +1371,10 @@ $root.SdkClientDetails = (function() {
             object.platformName = message.platformName;
         if (message.platformVersion != null && message.hasOwnProperty("platformVersion"))
             object.platformVersion = message.platformVersion;
+        if (message.clientSource != null && message.hasOwnProperty("clientSource"))
+            object.clientSource = message.clientSource;
+        if (message.chimeSdkVersion != null && message.hasOwnProperty("chimeSdkVersion"))
+            object.chimeSdkVersion = message.chimeSdkVersion;
         return object;
     };
 
@@ -5402,6 +5446,7 @@ $root.SdkAudioStreamIdInfo = (function() {
      * @property {string|null} [attendeeId] SdkAudioStreamIdInfo attendeeId
      * @property {boolean|null} [muted] SdkAudioStreamIdInfo muted
      * @property {string|null} [externalUserId] SdkAudioStreamIdInfo externalUserId
+     * @property {boolean|null} [dropped] SdkAudioStreamIdInfo dropped
      */
 
     /**
@@ -5452,6 +5497,14 @@ $root.SdkAudioStreamIdInfo = (function() {
     SdkAudioStreamIdInfo.prototype.externalUserId = "";
 
     /**
+     * SdkAudioStreamIdInfo dropped.
+     * @member {boolean} dropped
+     * @memberof SdkAudioStreamIdInfo
+     * @instance
+     */
+    SdkAudioStreamIdInfo.prototype.dropped = false;
+
+    /**
      * Creates a new SdkAudioStreamIdInfo instance using the specified properties.
      * @function create
      * @memberof SdkAudioStreamIdInfo
@@ -5483,6 +5536,8 @@ $root.SdkAudioStreamIdInfo = (function() {
             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.muted);
         if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.externalUserId);
+        if (message.dropped != null && message.hasOwnProperty("dropped"))
+            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.dropped);
         return writer;
     };
 
@@ -5528,6 +5583,9 @@ $root.SdkAudioStreamIdInfo = (function() {
                 break;
             case 4:
                 message.externalUserId = reader.string();
+                break;
+            case 5:
+                message.dropped = reader.bool();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -5576,6 +5634,9 @@ $root.SdkAudioStreamIdInfo = (function() {
         if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
             if (!$util.isString(message.externalUserId))
                 return "externalUserId: string expected";
+        if (message.dropped != null && message.hasOwnProperty("dropped"))
+            if (typeof message.dropped !== "boolean")
+                return "dropped: boolean expected";
         return null;
     };
 
@@ -5599,6 +5660,8 @@ $root.SdkAudioStreamIdInfo = (function() {
             message.muted = Boolean(object.muted);
         if (object.externalUserId != null)
             message.externalUserId = String(object.externalUserId);
+        if (object.dropped != null)
+            message.dropped = Boolean(object.dropped);
         return message;
     };
 
@@ -5620,6 +5683,7 @@ $root.SdkAudioStreamIdInfo = (function() {
             object.attendeeId = "";
             object.muted = false;
             object.externalUserId = "";
+            object.dropped = false;
         }
         if (message.audioStreamId != null && message.hasOwnProperty("audioStreamId"))
             object.audioStreamId = message.audioStreamId;
@@ -5629,6 +5693,8 @@ $root.SdkAudioStreamIdInfo = (function() {
             object.muted = message.muted;
         if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
             object.externalUserId = message.externalUserId;
+        if (message.dropped != null && message.hasOwnProperty("dropped"))
+            object.dropped = message.dropped;
         return object;
     };
 
@@ -7148,7 +7214,7 @@ $root.SdkDataMessageFrame = (function() {
      * Properties of a SdkDataMessageFrame.
      * @exports ISdkDataMessageFrame
      * @interface ISdkDataMessageFrame
-     * @property {Array.<ISdkDataMessagePayload>|null} [dataMessagePayloads] SdkDataMessageFrame dataMessagePayloads
+     * @property {Array.<ISdkDataMessagePayload>|null} [messages] SdkDataMessageFrame messages
      */
 
     /**
@@ -7160,7 +7226,7 @@ $root.SdkDataMessageFrame = (function() {
      * @param {ISdkDataMessageFrame=} [properties] Properties to set
      */
     function SdkDataMessageFrame(properties) {
-        this.dataMessagePayloads = [];
+        this.messages = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -7168,12 +7234,12 @@ $root.SdkDataMessageFrame = (function() {
     }
 
     /**
-     * SdkDataMessageFrame dataMessagePayloads.
-     * @member {Array.<ISdkDataMessagePayload>} dataMessagePayloads
+     * SdkDataMessageFrame messages.
+     * @member {Array.<ISdkDataMessagePayload>} messages
      * @memberof SdkDataMessageFrame
      * @instance
      */
-    SdkDataMessageFrame.prototype.dataMessagePayloads = $util.emptyArray;
+    SdkDataMessageFrame.prototype.messages = $util.emptyArray;
 
     /**
      * Creates a new SdkDataMessageFrame instance using the specified properties.
@@ -7199,9 +7265,9 @@ $root.SdkDataMessageFrame = (function() {
     SdkDataMessageFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.dataMessagePayloads != null && message.dataMessagePayloads.length)
-            for (var i = 0; i < message.dataMessagePayloads.length; ++i)
-                $root.SdkDataMessagePayload.encode(message.dataMessagePayloads[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.messages != null && message.messages.length)
+            for (var i = 0; i < message.messages.length; ++i)
+                $root.SdkDataMessagePayload.encode(message.messages[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
         return writer;
     };
 
@@ -7237,9 +7303,9 @@ $root.SdkDataMessageFrame = (function() {
             var tag = reader.uint32();
             switch (tag >>> 3) {
             case 1:
-                if (!(message.dataMessagePayloads && message.dataMessagePayloads.length))
-                    message.dataMessagePayloads = [];
-                message.dataMessagePayloads.push($root.SdkDataMessagePayload.decode(reader, reader.uint32()));
+                if (!(message.messages && message.messages.length))
+                    message.messages = [];
+                message.messages.push($root.SdkDataMessagePayload.decode(reader, reader.uint32()));
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -7276,13 +7342,13 @@ $root.SdkDataMessageFrame = (function() {
     SdkDataMessageFrame.verify = function verify(message) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.dataMessagePayloads != null && message.hasOwnProperty("dataMessagePayloads")) {
-            if (!Array.isArray(message.dataMessagePayloads))
-                return "dataMessagePayloads: array expected";
-            for (var i = 0; i < message.dataMessagePayloads.length; ++i) {
-                var error = $root.SdkDataMessagePayload.verify(message.dataMessagePayloads[i]);
+        if (message.messages != null && message.hasOwnProperty("messages")) {
+            if (!Array.isArray(message.messages))
+                return "messages: array expected";
+            for (var i = 0; i < message.messages.length; ++i) {
+                var error = $root.SdkDataMessagePayload.verify(message.messages[i]);
                 if (error)
-                    return "dataMessagePayloads." + error;
+                    return "messages." + error;
             }
         }
         return null;
@@ -7300,14 +7366,14 @@ $root.SdkDataMessageFrame = (function() {
         if (object instanceof $root.SdkDataMessageFrame)
             return object;
         var message = new $root.SdkDataMessageFrame();
-        if (object.dataMessagePayloads) {
-            if (!Array.isArray(object.dataMessagePayloads))
-                throw TypeError(".SdkDataMessageFrame.dataMessagePayloads: array expected");
-            message.dataMessagePayloads = [];
-            for (var i = 0; i < object.dataMessagePayloads.length; ++i) {
-                if (typeof object.dataMessagePayloads[i] !== "object")
-                    throw TypeError(".SdkDataMessageFrame.dataMessagePayloads: object expected");
-                message.dataMessagePayloads[i] = $root.SdkDataMessagePayload.fromObject(object.dataMessagePayloads[i]);
+        if (object.messages) {
+            if (!Array.isArray(object.messages))
+                throw TypeError(".SdkDataMessageFrame.messages: array expected");
+            message.messages = [];
+            for (var i = 0; i < object.messages.length; ++i) {
+                if (typeof object.messages[i] !== "object")
+                    throw TypeError(".SdkDataMessageFrame.messages: object expected");
+                message.messages[i] = $root.SdkDataMessagePayload.fromObject(object.messages[i]);
             }
         }
         return message;
@@ -7327,11 +7393,11 @@ $root.SdkDataMessageFrame = (function() {
             options = {};
         var object = {};
         if (options.arrays || options.defaults)
-            object.dataMessagePayloads = [];
-        if (message.dataMessagePayloads && message.dataMessagePayloads.length) {
-            object.dataMessagePayloads = [];
-            for (var j = 0; j < message.dataMessagePayloads.length; ++j)
-                object.dataMessagePayloads[j] = $root.SdkDataMessagePayload.toObject(message.dataMessagePayloads[j], options);
+            object.messages = [];
+        if (message.messages && message.messages.length) {
+            object.messages = [];
+            for (var j = 0; j < message.messages.length; ++j)
+                object.messages[j] = $root.SdkDataMessagePayload.toObject(message.messages[j], options);
         }
         return object;
     };
