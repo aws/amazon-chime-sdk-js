@@ -103,6 +103,36 @@ describe('FinishGatheringICECandidatesTask', () => {
   });
 
   describe('run', () => {
+    it('can be run and succeed without turn credentials', done => {
+      const peer = context.peer;
+      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      context.turnCredentials = null;
+      task = new FinishGatheringICECandidatesTask(context);
+      task.run().then(() => {
+        done();
+      });
+      const event = new Event('icegatheringstatechange');
+      new AsyncScheduler().start(() => {
+        // @ts-ignore
+        peer.iceGatheringState = 'complete';
+        // fake a complete ice gathering without turn
+        peer.dispatchEvent(event);
+      });
+    });
+
+    it('can be run and timeout without turn credentials', () => {
+      const peer = context.peer;
+      setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      context.turnCredentials = null;
+      task = new FinishGatheringICECandidatesTask(context, 300);
+      task.run().then(() => {});
+      const event = new Event('icegatheringstatechange');
+      new AsyncScheduler().start(() => {
+        // fake a complete ice gathering without turn
+        peer.dispatchEvent(event);
+      });
+    });
+
     it('can be run and succeed with one rtp candidate', done => {
       const peer = context.peer;
       setLocalDescription(peer, SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);

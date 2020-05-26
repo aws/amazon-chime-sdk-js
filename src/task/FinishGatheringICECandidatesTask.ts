@@ -28,6 +28,12 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
   private removeEventListener(): void {
     if (this.context.peer) {
       this.context.peer.removeEventListener('icecandidate', this.context.iceCandidateHandler);
+      if (!this.context.turnCredentials) {
+        this.context.peer.removeEventListener(
+          'icegatheringstatechange',
+          this.context.iceGatheringStateEventHandler
+        );
+      }
     }
   }
 
@@ -86,6 +92,22 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
         this.removeEventListener();
         reject(error);
       };
+
+      if (!this.context.turnCredentials) {
+        // if one day, we found a case where a FinishGatheringICECandidate did not resolve but ice gathering state is complete and SDP answer has ice candidates
+        // we may need to enable this
+        this.context.iceGatheringStateEventHandler = () => {
+          if (this.context.peer.iceGatheringState === 'complete') {
+            this.removeEventListener();
+            resolve();
+            return;
+          }
+        };
+        this.context.peer.addEventListener(
+          'icegatheringstatechange',
+          this.context.iceGatheringStateEventHandler
+        );
+      }
 
       this.context.iceCandidateHandler = (event: RTCPeerConnectionIceEvent) => {
         this.context.logger.info(
