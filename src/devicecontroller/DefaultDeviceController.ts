@@ -524,6 +524,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
               `${kind} input device which was active is no longer available, resetting to null device`
             );
             this.chooseInputDevice(kind, null, false);
+            if (
+              kind === 'video' &&
+              this.boundAudioVideoController &&
+              this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
+            ) {
+              this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
+            }
           }
         });
       }
