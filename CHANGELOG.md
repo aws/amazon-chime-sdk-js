@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix FinishGatheringICECandidatesTask when there are no turn credentials
 - Fix log line to print device constraints
 - Fix build line to take out duplicate npm install
+- Fix video audio preview for mobile devices
 
 ## [1.7.0] - 2020-05-23
 
