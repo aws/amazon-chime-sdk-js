@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Amazon Chime SDK JavaScript Demos",
   "scripts": {
-    "deps": "cd ../.. && npm install && npm run build",
+    "deps": "cd ../.. && npm run build",
     "build:fast": "tsc && webpack --config ./webpack.config.js",
     "build": "npm run deps && npm install && npm run build:fast",
     "start:fast": "npm run build:fast && node server.js",

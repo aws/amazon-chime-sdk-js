@@ -505,7 +505,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     let startTimeMs = Date.now();
     let newDevice: DeviceSelection;
     try {
-      this.logger.info(`requesting new ${kind} device with constraint ${proposedConstraints}`);
+      this.logger.info(
+        `requesting new ${kind} device with constraint ${JSON.stringify(proposedConstraints)}`
+      );
       const stream = this.deviceAsMediaStream(device);
       if (kind === 'audio' && device === null) {
         newDevice = new DeviceSelection();
