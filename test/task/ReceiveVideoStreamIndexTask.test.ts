@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -9,12 +9,15 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionVideoAvailability from '../../src/meetingsession/MeetingSessionVideoAvailability';
+import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
 import {
   SdkIndexFrame,
   SdkSignalFrame,
+  SdkStreamDescriptor,
+  SdkStreamMediaType,
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import ReceiveVideoStreamIndexTask from '../../src/task/ReceiveVideoStreamIndexTask';
@@ -45,9 +48,27 @@ describe('ReceiveVideoStreamIndexTask', () => {
     atCapacity: boolean = false,
     pausedAtSourceIds: number[] | null = null
   ): Uint8Array => {
-    const indexFrame = SdkIndexFrame.create();
-    indexFrame.atCapacity = atCapacity;
-    indexFrame.pausedAtSourceIds = pausedAtSourceIds;
+    const indexFrame = new SdkIndexFrame({
+      atCapacity: atCapacity,
+      pausedAtSourceIds: pausedAtSourceIds,
+      sources: [
+        new SdkStreamDescriptor({
+          streamId: 1,
+          groupId: 1,
+          maxBitrateKbps: 100,
+          attendeeId: 'abc',
+          externalUserId: 'abc.external',
+          mediaType: SdkStreamMediaType.VIDEO,
+        }),
+        new SdkStreamDescriptor({
+          streamId: 1,
+          groupId: 1,
+          maxBitrateKbps: 100,
+          attendeeId: 'xyz',
+          mediaType: SdkStreamMediaType.VIDEO,
+        }),
+      ],
+    });
     const indexSignal = SdkSignalFrame.create();
     indexSignal.type = SdkSignalFrame.Type.INDEX;
     indexSignal.index = indexFrame;
@@ -77,6 +98,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
     context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
     context.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
     context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
+    context.realtimeController = new DefaultRealtimeController();
 
     task = new ReceiveVideoStreamIndexTask(context);
 
@@ -396,6 +418,29 @@ describe('ReceiveVideoStreamIndexTask', () => {
         expect(context.removableObservers.length).to.equal(1);
         context.removableObservers[0].removeObserver();
       });
+    });
+  });
+
+  describe('handles attendee and external id', () => {
+    it('parses external id', done => {
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(createIndexSignalBuffer());
+        await new Promise(resolve =>
+          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+        );
+        expect(context.realtimeController.realtimeExternalUserIdFromAttendeeId('abc')).to.equal(
+          'abc.external'
+        );
+        expect(context.realtimeController.realtimeExternalUserIdFromAttendeeId('def')).to.equal(
+          null
+        );
+        expect(context.realtimeController.realtimeExternalUserIdFromAttendeeId('xyz')).to.equal(
+          null
+        );
+        done();
+      });
+
+      task.run();
     });
   });
 });

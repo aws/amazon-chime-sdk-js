@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Handle user revoking video input permission
 - Fix FinishGatheringICECandidatesTask when there are no turn credentials
+- Fix duplicate tiles and error logs due to external id race condition
 
 ## [1.7.0] - 2020-05-23
 

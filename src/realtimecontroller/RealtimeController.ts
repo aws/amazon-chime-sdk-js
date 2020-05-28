@@ -47,6 +47,12 @@ export default interface RealtimeController {
   ): void;
 
   /**
+   * Sets the external user id for an attendee id.
+   * @hidden
+   */
+  realtimeSetExternalUserIdForAttendeeId(attendeeId: string, externalUserId: string): void;
+
+  /**
    * Subscribes to changes in attendee ids in order to discover attendee ids to
    * subscribe and unsubscribe to for volume indicator updates.
    */

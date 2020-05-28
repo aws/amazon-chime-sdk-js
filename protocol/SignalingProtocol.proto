@@ -130,6 +130,7 @@ message SdkStreamDescriptor {
     optional uint32 avg_bitrate_bps = 7;
     optional string attendee_id = 8;
     optional SdkStreamMediaType media_type = 9;
+    optional string external_user_id = 10;
 }
 
 message SdkStreamAllocation {

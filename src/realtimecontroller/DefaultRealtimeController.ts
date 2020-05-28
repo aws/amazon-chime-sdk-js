@@ -78,6 +78,10 @@ export default class DefaultRealtimeController implements RealtimeController {
     });
   }
 
+  realtimeSetExternalUserIdForAttendeeId(attendeeId: string, externalUserId: string): void {
+    this.state.attendeeIdToExternalUserId[attendeeId] = externalUserId;
+  }
+
   realtimeSubscribeToAttendeeIdPresence(
     callback: (
       attendeeId: string,
