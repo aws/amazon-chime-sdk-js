@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Fix duplicate tiles and error logs due to external id race condition
 
 ## [1.8.0] - 2020-06-05
 

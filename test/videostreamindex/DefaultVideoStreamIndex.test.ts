@@ -710,6 +710,158 @@ describe('DefaultVideoStreamIndex', () => {
     });
   });
 
+  describe('externalUserIdForTrack', () => {
+    const indexFrame = new SdkIndexFrame({
+      sources: [
+        new SdkStreamDescriptor({
+          streamId: 1,
+          groupId: 1,
+          maxBitrateKbps: 100,
+          attendeeId: '688c',
+          externalUserId: '688c-ext',
+          mediaType: SdkStreamMediaType.VIDEO,
+        }),
+        new SdkStreamDescriptor({
+          streamId: 2,
+          groupId: 1,
+          maxBitrateKbps: 200,
+          attendeeId: '4d82',
+          mediaType: SdkStreamMediaType.VIDEO,
+        }),
+        new SdkStreamDescriptor({
+          streamId: 4,
+          groupId: 399,
+          maxBitrateKbps: 800,
+          attendeeId: 'a0ff',
+          externalUserId: 'a0ff-ext',
+          mediaType: SdkStreamMediaType.VIDEO,
+        }),
+      ],
+    });
+    const subackFrame = new SdkSubscribeAckFrame({
+      tracks: [
+        new SdkTrackMapping({ streamId: 2, trackLabel: 'b18b9db2' }),
+        new SdkTrackMapping({ streamId: 4, trackLabel: '4107' }),
+        new SdkTrackMapping({ streamId: 9, trackLabel: '9318' }),
+      ],
+    });
+
+    it('resolves a track id to an attendee id', () => {
+      expect(index.externalUserIdForTrack('4107')).to.equal('');
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(subackFrame);
+      expect(index.externalUserIdForTrack('4107')).to.equal('a0ff-ext');
+    });
+
+    it('returns empty string if externalUserId not in message', () => {
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(subackFrame);
+      expect(index.externalUserIdForTrack('b18b9db2')).to.equal('');
+    });
+
+    it('resolves a track id to an attendee id when index frame and subscribe ack received in swapped order', () => {
+      index.integrateSubscribeAckFrame(subackFrame);
+      index.integrateIndexFrame(indexFrame);
+      expect(index.externalUserIdForTrack('4107')).to.equal('a0ff-ext');
+    });
+
+    it('returns empty string if index frame never integrated', () => {
+      index.integrateSubscribeAckFrame(subackFrame);
+      expect(index.externalUserIdForTrack('4107')).to.equal('');
+    });
+
+    it('returns empty string if subscribe ack frame never integrated', () => {
+      index.integrateIndexFrame(indexFrame);
+      expect(index.externalUserIdForTrack('4107')).to.equal('');
+    });
+
+    it('returns empty string on unmapped track id', () => {
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(subackFrame);
+      expect(index.externalUserIdForTrack('85e9')).to.equal('');
+    });
+
+    it('returns empty string on unmapped stream id', () => {
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(subackFrame);
+      expect(index.externalUserIdForTrack('9318')).to.equal('');
+    });
+
+    it('resolves a track id to an externalUserId after updating index frame', () => {
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(subackFrame);
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 6,
+              groupId: 2,
+              maxBitrateKbps: 400,
+              attendeeId: '50ed1255afb4',
+              externalUserId: '50ed1255afb4-ext',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 5,
+              groupId: 2,
+              maxBitrateKbps: 50,
+              attendeeId: 'f1c1',
+              externalUserId: 'f1c1-ext',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 9,
+              groupId: 1,
+              maxBitrateKbps: 200,
+              attendeeId: 'cd3f2893',
+              externalUserId: 'cd3f2893-ext',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 1,
+              groupId: 1,
+              maxBitrateKbps: 100,
+              attendeeId: '688c',
+              externalUserId: '688c-ext',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      expect(index.externalUserIdForTrack('9318')).to.equal('cd3f2893-ext');
+    });
+
+    it('resolves a track id to an externalUserId after updating subscribe ack frame', () => {
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(subackFrame);
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [
+            new SdkTrackMapping({ streamId: 2, trackLabel: 'b18b9db2' }),
+            new SdkTrackMapping({ streamId: 4, trackLabel: '85e9' }),
+            new SdkTrackMapping({ streamId: 1, trackLabel: '9318' }),
+          ],
+        })
+      );
+      expect(index.externalUserIdForTrack('85e9')).to.equal('a0ff-ext');
+      expect(index.externalUserIdForTrack('9318')).to.equal('688c-ext');
+    });
+
+    it('ignores track mapping with empty track label or zero-valued stream id', () => {
+      index.integrateIndexFrame(indexFrame);
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [
+            new SdkTrackMapping({ streamId: 2, trackLabel: '' }),
+            new SdkTrackMapping({ streamId: 0, trackLabel: '85e9' }),
+            new SdkTrackMapping({ streamId: 9, trackLabel: '9318' }),
+          ],
+        })
+      );
+      expect(index.externalUserIdForTrack('85e9')).to.equal('');
+    });
+  });
+
   describe('attendeeIdForStreamId', () => {
     const indexFrame = new SdkIndexFrame({
       sources: [

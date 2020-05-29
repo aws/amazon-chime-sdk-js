@@ -329,10 +329,6 @@ export default class DefaultRealtimeController implements RealtimeController {
     });
   }
 
-  realtimeExternalUserIdFromAttendeeId(attendeeId: string): string | null {
-    return this.state.attendeeIdToExternalUserId[attendeeId] || null;
-  }
-
   realtimeSubscribeToSendDataMessage(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void

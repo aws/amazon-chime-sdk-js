@@ -20,6 +20,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   private currentSubscribeAck: SdkSubscribeAckFrame | null = null;
   private trackToStreamMap: Map<string, number> | null = null;
   private streamToAttendeeMap: Map<number, string> | null = null;
+  private streamToExternalUserIdMap: Map<number, string> | null = null;
   private ssrcToStreamMap: Map<number, number> | null = null;
 
   constructor(private logger: Logger) {}
@@ -27,6 +28,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   integrateIndexFrame(indexFrame: SdkIndexFrame): void {
     this.currentIndex = indexFrame;
     this.streamToAttendeeMap = null;
+    this.streamToExternalUserIdMap = null;
     this.ssrcToStreamMap = null;
   }
 
@@ -167,6 +169,29 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     return attendeeId;
   }
 
+  externalUserIdForTrack(trackId: string): string {
+    const streamId: number = this.streamIdForTrack(trackId);
+    if (streamId === undefined) {
+      this.logger.warn(`track ${trackId} does not correspond to a known stream`);
+      return '';
+    }
+    if (!this.streamToExternalUserIdMap) {
+      if (this.currentIndex) {
+        this.streamToExternalUserIdMap = this.buildStreamExternalUserIdMap(this.currentIndex);
+      } else {
+        return '';
+      }
+    }
+    const externalUserId: string = this.streamToExternalUserIdMap.get(streamId);
+    if (!externalUserId) {
+      this.logger.info(
+        `track ${trackId} (stream ${streamId}) does not correspond to a known externalUserId`
+      );
+      return '';
+    }
+    return externalUserId;
+  }
+
   attendeeIdForStreamId(streamId: number): string {
     if (!this.streamToAttendeeMap) {
       if (this.currentIndex) {
@@ -241,6 +266,16 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     const map = new Map<number, string>();
     for (const source of indexFrame.sources) {
       map.set(source.streamId, source.attendeeId);
+    }
+    return map;
+  }
+
+  private buildStreamExternalUserIdMap(indexFrame: SdkIndexFrame): Map<number, string> {
+    const map = new Map<number, string>();
+    for (const source of indexFrame.sources) {
+      if (!!source.externalUserId) {
+        map.set(source.streamId, source.externalUserId);
+      }
     }
     return map;
   }
