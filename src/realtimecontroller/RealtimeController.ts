@@ -71,11 +71,6 @@ export default interface RealtimeController {
     ) => void
   ): void;
 
-  /**
-   * Returns the external user ID for a given attendee ID
-   */
-  realtimeExternalUserIdFromAttendeeId(attendeeId: string): string | null;
-
   // Audio Input
 
   /**
