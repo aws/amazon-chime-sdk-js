@@ -65,12 +65,10 @@ Resources:
           AttributeType: "S"
         - AttributeName: "Passcode"
           AttributeType: "S"
+      BillingMode: PAY_PER_REQUEST
       KeySchema:
         - AttributeName: "Title"
           KeyType: HASH
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
       GlobalSecondaryIndexes:
         - IndexName: "Passcode"
           KeySchema:
@@ -78,9 +76,6 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: "5"
-            WriteCapacityUnits: "5"
       TimeToLiveSpecification:
         AttributeName: "TTL"
         Enabled: true
