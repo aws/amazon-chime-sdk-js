@@ -806,7 +806,7 @@ describe('CreatePeerConnectionTask', () => {
       await new Promise(resolve =>
         new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
       );
-      expect(called).to.be.false;
+      expect(called).to.be.true;
       expect(peerRemoveEventListenerSpy.called).to.be.true;
     });
 
@@ -840,7 +840,7 @@ describe('CreatePeerConnectionTask', () => {
       await new Promise(resolve =>
         new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
       );
-      expect(called).to.be.false;
+      expect(called).to.be.true;
       expect(peerRemoveEventListenerSpy.called).to.be.false;
     });
   });

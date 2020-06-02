@@ -195,6 +195,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     }
     const attendeeId = this.context.videoStreamIndex.attendeeIdForTrack(trackId);
     if (this.context.videoTileController.haveVideoTileForAttendeeId(attendeeId)) {
+      this.context.logger.info(
+        `Not adding remote track. Already have tile for attendeeId:  ${attendeeId}`
+      );
       return;
     }
 
@@ -216,6 +219,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
               track.id
             } streamId=${streamId}`
           );
+          if (trackEvent === 'ended' && this.context.browserBehavior.requiresUnifiedPlan()) {
+            this.removeRemoteVideoTrack(track, tile.state());
+          }
         };
         videoTrack.addEventListener(trackEvent, callback);
         if (!this.removeVideoTrackEventListeners[track.id]) {
@@ -270,12 +276,14 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
   }
 
   private removeRemoteVideoTrack(track: MediaStreamTrack, tileState: VideoTileState): void {
-    this.removeTrackRemovedEventListeners[track.id]();
+    if (this.removeTrackRemovedEventListeners.hasOwnProperty(track.id)) {
+      this.removeTrackRemovedEventListeners[track.id]();
 
-    for (const removeVideoTrackEventListener of this.removeVideoTrackEventListeners[track.id]) {
-      removeVideoTrackEventListener();
+      for (const removeVideoTrackEventListener of this.removeVideoTrackEventListeners[track.id]) {
+        removeVideoTrackEventListener();
+      }
+      delete this.removeVideoTrackEventListeners[track.id];
     }
-    delete this.removeVideoTrackEventListeners[track.id];
 
     this.logger.info(
       `video track ended, removing tile=${tileState.tileId} id=${track.id} stream=${tileState.streamId}`
