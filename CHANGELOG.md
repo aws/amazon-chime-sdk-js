@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add an integration tests to check remote video when reconnecting
+- Add device controller tests
 
 ### Changed
 - Switch demo DDB table to on demand
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix build line to take out duplicate npm install
 - Fix video audio preview for mobile devices
 - Fix black remote video tiles on reconnect
+- Fix LED light issue
 
 ## [1.7.0] - 2020-05-23
 
