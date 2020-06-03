@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Add an integration tests to check remote video when reconnecting
 
 ### Changed
 - Switch demo DDB table to on demand
