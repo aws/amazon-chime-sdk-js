@@ -297,6 +297,14 @@ export default class DOMMockBuilder {
       ): Promise<typeof GlobalAny.MediaStream> {
         await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
         return new Promise<typeof GlobalAny.MediaStream>((resolve, reject) => {
+          if (constraints === null) {
+            reject(
+              new Error(
+                `TypeError: Failed to execute 'getUserMedia' on 'MediaDevices': At least one of audio and video must be requested`
+              )
+            );
+          }
+
           if (mockBehavior.getUserMediaSucceeds) {
             this.gotLabels = true;
             const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
@@ -328,19 +336,24 @@ export default class DOMMockBuilder {
         }
         await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs));
         if (mockBehavior.enumerateDevicesSucceeds) {
-          let label = this.gotLabels ? 'fakeLabel' : '';
-          let deviceLists = [
-            { deviceId: ++mockBehavior.deviceCounter + '', kind: 'audioinput', label: label },
-            { deviceId: ++mockBehavior.deviceCounter + '', kind: 'videoinput', label: label },
-            { deviceId: ++mockBehavior.deviceCounter + '', kind: 'audioinput', label: label },
-            { deviceId: ++mockBehavior.deviceCounter + '', kind: 'videoinput', label: label },
-          ];
-          if (mockBehavior.enumerateAudioOutputDeviceSupported) {
-            deviceLists.push({
-              deviceId: ++mockBehavior.deviceCounter + '',
-              kind: 'audiooutput',
-              label: label,
-            });
+          let deviceLists: typeof GlobalAny.MediaDeviceInfo[];
+          if (mockBehavior.enumerateDeviceList) {
+            deviceLists = mockBehavior.enumerateDeviceList;
+          } else {
+            let label = this.gotLabels ? 'fakeLabel' : '';
+            deviceLists = [
+              { deviceId: ++mockBehavior.deviceCounter + '', kind: 'audioinput', label: label },
+              { deviceId: ++mockBehavior.deviceCounter + '', kind: 'videoinput', label: label },
+              { deviceId: ++mockBehavior.deviceCounter + '', kind: 'audioinput', label: label },
+              { deviceId: ++mockBehavior.deviceCounter + '', kind: 'videoinput', label: label },
+            ];
+            if (mockBehavior.enumerateAudioOutputDeviceSupported) {
+              deviceLists.push({
+                deviceId: ++mockBehavior.deviceCounter + '',
+                kind: 'audiooutput',
+                label: label,
+              });
+            }
           }
           return Promise.resolve(deviceLists);
         } else {
@@ -375,6 +388,22 @@ export default class DOMMockBuilder {
           }
         }
         return true;
+      }
+
+      getSupportedConstraints(): MediaTrackSupportedConstraints {
+        if (mockBehavior.mediaDeviceHasSupportedConstraints) {
+          return {
+            // @ts-ignore
+            sampleRate: 48000,
+            // @ts-ignore
+            sampleSize: 16,
+            // @ts-ignore
+            channelCount: 1,
+          };
+        } else {
+          // @ts-ignore
+          return {};
+        }
       }
     };
 
@@ -808,7 +837,7 @@ export default class DOMMockBuilder {
       createElement(_tagName: string): HTMLElement {
         const element = {
           getContext(_contextId: string): CanvasRenderingContext2D {
-            const element = {
+            const context = {
               drawImage(
                 _image: CanvasImageSource,
                 _dx: number,
@@ -823,9 +852,13 @@ export default class DOMMockBuilder {
                   height: sh,
                 };
               },
+              fillRect(_x: number, _y: number, _w: number, _h: number): void {},
             };
             // @ts-ignore
-            return element;
+            return context;
+          },
+          captureStream(_frameRate: number): MediaStream {
+            return mockBehavior.createElementCaptureStream;
           },
         };
         // @ts-ignore
@@ -839,6 +872,113 @@ export default class DOMMockBuilder {
 
     GlobalAny.requestAnimationFrame = function mockRequestAnimationFrame(callback: () => void) {
       setTimeout(callback);
+    };
+
+    GlobalAny.AudioContext = class MockAudioContext {
+      constructor(_contextOptions?: AudioContextOptions) {}
+
+      createMediaStreamDestination(): MediaStreamAudioDestinationNode {
+        return new GlobalAny.MediaStreamAudioDestinationNode();
+      }
+
+      createMediaStreamSource(mediaStream: MediaStream): MediaStreamAudioSourceNode {
+        return new GlobalAny.MediaStreamAudioSourceNode(this, {
+          mediaStream,
+        });
+      }
+
+      createAnalyser(): AnalyserNode {
+        // @ts-ignore
+        return {};
+      }
+
+      createBufferSource(): AudioBufferSourceNode {
+        return new GlobalAny.AudioBufferSourceNode();
+      }
+
+      createGain(): GainNode {
+        // @ts-ignore
+        return {
+          // @ts-ignore
+          connect(_destinationParam: AudioParam, _output?: number): void {},
+          // @ts-ignore
+          gain: {},
+        };
+      }
+
+      createOscillator(): OscillatorNode {
+        // @ts-ignore
+        return {
+          // @ts-ignore
+          start(_when?: number): void {},
+          // @ts-ignore
+          connect(destinationNode: AudioNode, _output?: number, _input?: number): AudioNode {
+            return destinationNode;
+          },
+          // @ts-ignore
+          frequency: {},
+        };
+      }
+
+      createBuffer(_numberOfChannels: number, _length: number, _sampleRate: number): AudioBuffer {
+        return new GlobalAny.AudioBuffer();
+      }
+
+      close(): void {}
+    };
+
+    GlobalAny.AudioBufferSourceNode = class MockAudioBufferSourceNode {
+      start(_when?: number, _offset?: number, _duration?: number): void {}
+
+      connect(_destinationParam: AudioParam, _output?: number): void {}
+    };
+
+    GlobalAny.AudioBuffer = class MockAudioBuffer {
+      getChannelData(_channel: number): Float32Array {
+        return new Float32Array(1);
+      }
+    };
+
+    GlobalAny.MediaStreamAudioDestinationNode = class MockMediaStreamAudioDestinationNode {
+      stream: typeof GlobalAny.MediaStream;
+
+      constructor() {
+        this.stream = new GlobalAny.MediaStream();
+
+        // For testing the "ended" event handler, dispatch the "ended" event right after
+        // initialization.
+        asyncWait(() => {
+          if (this.listeners.hasOwnProperty('ended')) {
+            this.listeners.ended.forEach((listener: MockListener) =>
+              listener({
+                ...Substitute.for(),
+                type: 'ended',
+              })
+            );
+          }
+        });
+      }
+
+      private listeners: { [type: string]: MockListener[] } = {};
+
+      addEventListener(type: string, listener: MockListener): void {
+        if (!this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = [];
+        }
+        this.listeners[type].push(listener);
+      }
+    };
+
+    GlobalAny.MediaStreamAudioSourceNode = class MockMediaStreamAudioSourceNode {
+      mediaStream: typeof GlobalAny.MediaStream;
+
+      constructor(_context: AudioContext, options: MediaStreamAudioSourceOptions) {
+        this.mediaStream = options.mediaStream;
+      }
+
+      connect(_destinationParam: AudioParam, _output?: number): void {}
+
+      disconnect(): void {}
     };
   }
 
@@ -863,5 +1003,10 @@ export default class DOMMockBuilder {
     delete GlobalAny.matchMedia;
     delete GlobalAny.document;
     delete GlobalAny.requestAnimationFrame;
+    delete GlobalAny.AudioContext;
+    delete GlobalAny.AudioBufferSourceNode;
+    delete GlobalAny.AudioBuffer;
+    delete GlobalAny.MediaStreamAudioDestinationNode;
+    delete GlobalAny.MediaStreamAudioSourceNode;
   }
 }

@@ -45,6 +45,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private isAndroid: boolean = false;
   private isPixel3: boolean = false;
 
+  private inputDeviceCount: number = 0;
+  private lastNoVideoInputDeviceCount: number;
+
   constructor(private logger: Logger) {
     this.isAndroid = /(android)/i.test(navigator.userAgent);
     this.isPixel3 = /( pixel 3)/i.test(navigator.userAgent);
@@ -169,7 +172,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   mixIntoAudioInput(stream: MediaStream): MediaStreamAudioSourceNode {
     let node: MediaStreamAudioSourceNode | null = null;
-    if (this.enableWebAudio) {
+    if (this.useWebAudio) {
       this.ensureAudioInputContext();
       node = this.audioInputContext.createMediaStreamSource(stream);
       node.connect(this.audioInputDestinationNode);
@@ -303,17 +306,17 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     canvas.height = (canvas.width / 16) * 9;
     const scheduler = new IntervalScheduler(1000);
     const context = canvas.getContext('2d');
-    scheduler.start(() => {
-      if (colorOrPattern === 'smpte') {
-        DefaultDeviceController.fillSMPTEColorBars(canvas, 0);
-      } else {
-        context.fillStyle = colorOrPattern;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-      }
-    });
     // @ts-ignore
     const stream: MediaStream | null = canvas.captureStream(5) || null;
     if (stream) {
+      scheduler.start(() => {
+        if (colorOrPattern === 'smpte') {
+          DefaultDeviceController.fillSMPTEColorBars(canvas, 0);
+        } else {
+          context.fillStyle = colorOrPattern;
+          context.fillRect(0, 0, canvas.width, canvas.height);
+        }
+      });
       stream.getVideoTracks()[0].addEventListener('ended', () => {
         scheduler.stop();
       });
@@ -476,7 +479,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     device: Device,
     fromAcquire: boolean
   ): Promise<DevicePermission> {
+    this.inputDeviceCount += 1;
+    const callCount = this.inputDeviceCount;
+
     if (device === null && kind === 'video') {
+      this.lastNoVideoInputDeviceCount = this.inputDeviceCount;
       if (this.activeDevices[kind]) {
         this.releaseMediaStream(this.activeDevices[kind].stream);
         delete this.activeDevices[kind];
@@ -484,7 +491,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       return DevicePermission.PermissionGrantedByBrowser;
     }
 
-    let proposedConstraints: MediaStreamConstraints | null = this.calculateMediaStreamConstraints(
+    const proposedConstraints: MediaStreamConstraints | null = this.calculateMediaStreamConstraints(
       kind,
       device
     );
@@ -496,30 +503,36 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       this.logger.info(`reusing existing ${kind} device`);
       return DevicePermission.PermissionGrantedPreviously;
     }
-    const oldStream: MediaStream | null = this.activeDevices[kind]
-      ? this.activeDevices[kind].stream
-      : null;
-    if (kind === 'audio') {
-      this.releaseMediaStream(oldStream);
-    }
-    let startTimeMs = Date.now();
-    let newDevice: DeviceSelection;
+
+    const startTimeMs = Date.now();
+    const newDevice: DeviceSelection = new DeviceSelection();
     try {
       this.logger.info(
         `requesting new ${kind} device with constraint ${JSON.stringify(proposedConstraints)}`
       );
       const stream = this.deviceAsMediaStream(device);
       if (kind === 'audio' && device === null) {
-        newDevice = new DeviceSelection();
         newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
         newDevice.constraints = null;
       } else if (stream) {
         this.logger.info(`using media stream ${stream.id} for ${kind} device`);
-        newDevice = new DeviceSelection();
         newDevice.stream = stream;
         newDevice.constraints = proposedConstraints;
       } else {
-        newDevice = await this.getDeviceFromBrowser(proposedConstraints);
+        newDevice.stream = await navigator.mediaDevices.getUserMedia(proposedConstraints);
+        newDevice.constraints = proposedConstraints;
+
+        if (kind === 'video' && this.lastNoVideoInputDeviceCount > callCount) {
+          this.logger.warn(
+            `ignored to get video device for constraints ${JSON.stringify(
+              proposedConstraints
+            )} as no device was requested`
+          );
+          this.releaseMediaStream(newDevice.stream);
+          return DevicePermission.PermissionGrantedByUser;
+        }
+
+        await this.handleDeviceChange();
         newDevice.stream.getTracks()[0].addEventListener('ended', () => {
           if (this.activeDevices[kind].stream === newDevice.stream) {
             this.logger.warn(
@@ -548,36 +561,44 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         : DevicePermission.PermissionDeniedByUser;
     }
     this.logger.info(`got ${kind} device for constraints ${JSON.stringify(proposedConstraints)}`);
-    const restartVideo =
-      kind === 'video' &&
-      !fromAcquire &&
-      this.boundAudioVideoController &&
-      this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile();
+
+    const oldStream: MediaStream | null = this.activeDevices[kind]
+      ? this.activeDevices[kind].stream
+      : null;
     this.activeDevices[kind] = newDevice;
-    if (restartVideo) {
-      this.logger.info('restarting local video to switch to new device');
-      this.boundAudioVideoController.restartLocalVideo(() => {
-        // TODO: implement MediaStreamDestroyer
-        // tracks of oldStream should be stopped when video tile is disconnected from MediaStream
-        // otherwise, camera is still being accessed and we need to stop it here.
-        if (oldStream && oldStream.active) {
-          this.logger.warn('previous media stream is not stopped during restart video');
-          this.releaseMediaStream(oldStream);
-        }
-      });
-    } else if (kind === 'video') {
-      this.releaseMediaStream(oldStream);
+
+    if (kind === 'video') {
+      if (
+        !fromAcquire &&
+        this.boundAudioVideoController &&
+        this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
+      ) {
+        this.logger.info('restarting local video to switch to new device');
+        this.boundAudioVideoController.restartLocalVideo(() => {
+          // TODO: implement MediaStreamDestroyer
+          // tracks of oldStream should be stopped when video tile is disconnected from MediaStream
+          // otherwise, camera is still being accessed and we need to stop it here.
+          if (oldStream && oldStream.active) {
+            this.logger.warn('previous media stream is not stopped during restart video');
+            this.releaseMediaStream(oldStream);
+          }
+        });
+      } else {
+        this.releaseMediaStream(oldStream);
+      }
     } else {
+      this.releaseMediaStream(oldStream);
+
       if (this.useWebAudio) {
         this.attachAudioInputStreamToAudioContext(this.activeDevices[kind].stream);
-      } else {
+      } else if (this.boundAudioVideoController) {
         try {
-          if (this.boundAudioVideoController) {
-            await this.boundAudioVideoController.restartLocalAudio(() => {});
-          }
+          await this.boundAudioVideoController.restartLocalAudio(() => {});
         } catch (error) {
           this.logger.info(`cannot replace audio track due to: ${error.message}`);
         }
+      } else {
+        this.logger.info('no audio-video controller is bound to the device controller');
       }
     }
     return Date.now() - startTimeMs <
@@ -648,16 +669,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       trackConstraints.googAutoGainControl2 = true;
     }
     return kind === 'audio' ? { audio: trackConstraints } : { video: trackConstraints };
-  }
-
-  private async getDeviceFromBrowser(
-    constraints: MediaStreamConstraints
-  ): Promise<DeviceSelection> {
-    const deviceSelection = new DeviceSelection();
-    deviceSelection.stream = await navigator.mediaDevices.getUserMedia(constraints);
-    deviceSelection.constraints = constraints;
-    await this.handleDeviceChange();
-    return deviceSelection;
   }
 
   private deviceInfoFromDeviceId(
