@@ -13,6 +13,7 @@ exports.ClickContentShareButton = require('./ClickContentShareButton');
 exports.ClickContentSharePauseButton = require('./ClickContentSharePauseButton');
 exports.SendDataMessage = require('./SendDataMessage');
 exports.GetSipUriForCallStep = require('./GetSipUriForCallStep');
+exports.Reconnect = require('./Reconnect');
 
 
 exports.WaitForRemoteVideoCheckToComplete = require('./WaitForRemoteVideoCheckToComplete');

@@ -66,6 +66,7 @@ case $1 in
       r video_test.config.json
       r app_quit_video_test.config.json
       r meeting_leave_video_test.config.json
+      r reconnection_test.config.json
       ;;
    meeting_end)
       r meeting_end_test.config.json

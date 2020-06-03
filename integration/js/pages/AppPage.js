@@ -494,6 +494,13 @@ class AppPage {
     return expectedState
   }
 
+  async triggerReconnection() {
+    //this.driver.executeScript('app.audioVideo.audioVideoController.actionReconnect();');
+    this.driver.executeAsyncScript(
+      '(async () => { await app.audioVideo.audioVideoController.actionReconnect(); })().then(arguments[0]);'
+    );
+  }
+
   async sendDataMessage(message) {
     const dataMessageSendInput = await this.driver.findElement(elements.dataMessageSendInput);
     await dataMessageSendInput.clear();

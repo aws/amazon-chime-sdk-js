@@ -1,0 +1,29 @@
+{
+  "`": 1,
+  "name": "reconnection_test.config.json %ts",
+  "grids": [
+  ],
+  "tests": [
+    {
+      "name": "Reconnection Test %ts",
+      "description": "Testing app when reconnection happens ",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "ReconnectionTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 1,
+        "seleniumSessions": {
+          "safari": 2
+        }
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "78",
+      "platform": "MAC"
+    }
+  ]
+}
