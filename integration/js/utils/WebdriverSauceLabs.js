@@ -14,6 +14,8 @@ const getPlatformName = capabilities => {
       return 'macOS 10.14';
     case 'WINDOWS':
       return 'Windows 10';
+    case 'LINUX':
+      return 'Linux';
     default:
       return '';
   }
@@ -80,6 +82,7 @@ const getChromeCapabilities = capabilities => {
   });
   cap.set('resolution', '1920x1080');
   cap.set('sauce:options', getSauceLabsConfig(capabilities));
+  console.log(getSauceLabsConfig(capabilities));
   return cap
 };
 
@@ -88,20 +91,29 @@ const getSauceLabsConfig = (capabilities) => {
     name: capabilities.name,
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
-    extendedDebugging: true,
-    capturePerformance: true,
-    crmuxdriverVersion: 'beta',
-    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
+    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+    ...(capabilities.platform.toUpperCase() !== 'LINUX' && {
+      extendedDebugging: true,
+      capturePerformance: true,
+      crmuxdriverVersion: 'beta'
+    })
   }
 };
 
-const getSauceLabsUrl = () => {
+const getSauceLabsDomain = (platform)  => {
+  if (platform.toUpperCase() === 'LINUX') {
+    return 'us-east-1.saucelabs.com';
+  }
+  return 'saucelabs.com';
+};
+
+const getSauceLabsUrl = (domain) => {
   return (
     'https://' +
     process.env.SAUCE_USERNAME +
     ':' +
     process.env.SAUCE_ACCESS_KEY +
-    '@ondemand.saucelabs.com:443/wd/hub'
+    `@ondemand.${domain}:443/wd/hub`
   );
 };
 
@@ -116,16 +128,18 @@ class SaucelabsSession {
     } else {
       cap = getSafariCapabilities(capabilities);
     }
+    const domain = getSauceLabsDomain(capabilities.platform);
     const driver = await new Builder()
-      .usingServer(getSauceLabsUrl())
+      .usingServer(getSauceLabsUrl(domain))
       .withCapabilities(cap)
       .forBrowser(capabilities.browserName)
       .build();
-    return new SaucelabsSession(driver);
+    return new SaucelabsSession(driver, domain);
   }
 
-  constructor(inDriver) {
+  constructor(inDriver, domain) {
     this.driver = inDriver;
+    this.domain = domain;
   }
 
   async init() {
@@ -160,7 +174,7 @@ class SaucelabsSession {
   async updateTestResults(passed) {
     const sessionId = await this.getSessionId();
     console.log(`Publishing test results to saucelabs for session: ${sessionId} status: ${passed ? 'passed' : 'failed'}`);
-    const url = `https://saucelabs.com/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${sessionId}`;
+    const url = `https://${this.domain}/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${sessionId}`;
     await axios.put(url, `{\"passed\": ${passed}}`, {
       headers: {
         "Accept": "application/json",

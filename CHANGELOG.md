@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add an integration tests to check remote video when reconnecting
 - Add device controller tests
+- Add option to run integration tests in Sauce Labs headless
 
 ### Changed
 - Switch demo DDB table to on demand
