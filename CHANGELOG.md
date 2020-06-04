@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix video audio preview for mobile devices
 - Fix black remote video tiles on reconnect
 - Fix LED light issue
+- Fix typo in MeetingNotificaionsEvent present in template.yaml
 
 ## [1.7.0] - 2020-05-23
 
