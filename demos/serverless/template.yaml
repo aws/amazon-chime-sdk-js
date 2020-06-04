@@ -142,7 +142,7 @@ Resources:
       Handler: handlers.sqs_handler
       CodeUri: src/
       Events:
-        MeetingNotificaionsEvent:
+        MeetingNotificationsEvent:
           Type: SQS
           Properties:
             Queue: !GetAtt MeetingNotificationsQueue.Arn
