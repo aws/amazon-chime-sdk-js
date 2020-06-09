@@ -8,10 +8,17 @@ export default class Versioning {
   static X_AMZN_USER_AGENT = 'X-Amzn-User-Agent';
 
   /**
+   * Return string representation of SDK name
+   */
+  static get sdkName(): string {
+    return 'amazon-chime-sdk-js';
+  }
+
+  /**
    * Return string representation of SDK version
    */
   static get sdkVersion(): string {
-    return '1.8.1';
+    return '1.8.2';
   }
 
   /**

@@ -1372,6 +1372,9 @@ export interface ISdkStreamDescriptor {
 
     /** SdkStreamDescriptor mediaType */
     mediaType?: (SdkStreamMediaType|null);
+
+    /** SdkStreamDescriptor externalUserId */
+    externalUserId?: (string|null);
 }
 
 /** Represents a SdkStreamDescriptor. */
@@ -1406,6 +1409,9 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
 
     /** SdkStreamDescriptor mediaType. */
     public mediaType: SdkStreamMediaType;
+
+    /** SdkStreamDescriptor externalUserId. */
+    public externalUserId: string;
 
     /**
      * Creates a new SdkStreamDescriptor instance using the specified properties.

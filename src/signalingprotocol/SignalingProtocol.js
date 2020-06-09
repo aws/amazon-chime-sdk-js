@@ -3564,6 +3564,7 @@ $root.SdkStreamDescriptor = (function() {
      * @property {number|null} [avgBitrateBps] SdkStreamDescriptor avgBitrateBps
      * @property {string|null} [attendeeId] SdkStreamDescriptor attendeeId
      * @property {SdkStreamMediaType|null} [mediaType] SdkStreamDescriptor mediaType
+     * @property {string|null} [externalUserId] SdkStreamDescriptor externalUserId
      */
 
     /**
@@ -3646,6 +3647,14 @@ $root.SdkStreamDescriptor = (function() {
     SdkStreamDescriptor.prototype.mediaType = 1;
 
     /**
+     * SdkStreamDescriptor externalUserId.
+     * @member {string} externalUserId
+     * @memberof SdkStreamDescriptor
+     * @instance
+     */
+    SdkStreamDescriptor.prototype.externalUserId = "";
+
+    /**
      * Creates a new SdkStreamDescriptor instance using the specified properties.
      * @function create
      * @memberof SdkStreamDescriptor
@@ -3685,6 +3694,8 @@ $root.SdkStreamDescriptor = (function() {
             writer.uint32(/* id 8, wireType 2 =*/66).string(message.attendeeId);
         if (message.mediaType != null && message.hasOwnProperty("mediaType"))
             writer.uint32(/* id 9, wireType 0 =*/72).int32(message.mediaType);
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            writer.uint32(/* id 10, wireType 2 =*/82).string(message.externalUserId);
         return writer;
     };
 
@@ -3742,6 +3753,9 @@ $root.SdkStreamDescriptor = (function() {
                 break;
             case 9:
                 message.mediaType = reader.int32();
+                break;
+            case 10:
+                message.externalUserId = reader.string();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -3807,6 +3821,9 @@ $root.SdkStreamDescriptor = (function() {
             case 2:
                 break;
             }
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            if (!$util.isString(message.externalUserId))
+                return "externalUserId: string expected";
         return null;
     };
 
@@ -3846,6 +3863,8 @@ $root.SdkStreamDescriptor = (function() {
             message.mediaType = 2;
             break;
         }
+        if (object.externalUserId != null)
+            message.externalUserId = String(object.externalUserId);
         return message;
     };
 
@@ -3871,6 +3890,7 @@ $root.SdkStreamDescriptor = (function() {
             object.avgBitrateBps = 0;
             object.attendeeId = "";
             object.mediaType = options.enums === String ? "AUDIO" : 1;
+            object.externalUserId = "";
         }
         if (message.streamId != null && message.hasOwnProperty("streamId"))
             object.streamId = message.streamId;
@@ -3888,6 +3908,8 @@ $root.SdkStreamDescriptor = (function() {
             object.attendeeId = message.attendeeId;
         if (message.mediaType != null && message.hasOwnProperty("mediaType"))
             object.mediaType = options.enums === String ? $root.SdkStreamMediaType[message.mediaType] : message.mediaType;
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            object.externalUserId = message.externalUserId;
         return object;
     };
 
