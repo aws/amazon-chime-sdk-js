@@ -26,10 +26,6 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
   ) {}
 
   sendRealtimeUpdatesForAudioStreamIdInfo(info: SdkAudioStreamIdInfoFrame): void {
-    // @ts-ignore
-    info.streams.sort((a, b) => {
-      a.audioStreamId - b.audioStreamId;
-    });
     for (const stream of info.streams) {
       const hasAttendeeId = !!stream.attendeeId;
       const hasExternalUserId = !!stream.externalUserId;
@@ -63,12 +59,25 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
         delete this.streamIdToAttendeeId[stream.audioStreamId];
         delete this.streamIdToExternalUserId[stream.audioStreamId];
         delete this.warnedAboutMissingStreamIdMapping[stream.audioStreamId];
-        this.realtimeController.realtimeSetAttendeeIdPresence(
-          attendeeId,
-          false,
-          externalUserId,
-          hasDropped
-        );
+        let attendeeHasNewStreamId = false;
+        for (const otherStreamId of Object.keys(this.streamIdToAttendeeId)) {
+          const otherStreamIdNumber = parseInt(otherStreamId);
+          if (
+            otherStreamIdNumber > stream.audioStreamId &&
+            this.streamIdToAttendeeId[otherStreamIdNumber] === attendeeId
+          ) {
+            attendeeHasNewStreamId = true;
+            break;
+          }
+        }
+        if (!attendeeHasNewStreamId) {
+          this.realtimeController.realtimeSetAttendeeIdPresence(
+            attendeeId,
+            false,
+            externalUserId,
+            hasDropped
+          );
+        }
       }
     }
   }

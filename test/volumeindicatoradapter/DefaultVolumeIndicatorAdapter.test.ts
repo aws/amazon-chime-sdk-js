@@ -21,6 +21,8 @@ describe('DefaultVolumeIndicatorAdapter', () => {
   let domMockBuilder: DOMMockBuilder;
   const fooAttendee = 'foo-attendee';
   const fooExternal = 'foo-external';
+  const barAttendee = 'bar-attendee';
+  const barExternal = 'bar-external';
   const minVolumeDecibels = -42;
   const maxVolumeDecibels = -14;
 
@@ -121,7 +123,7 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       expect(attendeeIdUpdate).to.equal(2);
     });
 
-    it('handles out of order stream ids', () => {
+    it('presence leave event not fired when attendee already has a newer stream id', () => {
       const streamInfo1Join = SdkAudioStreamIdInfo.create();
       const streamInfo1Frame = SdkAudioStreamIdInfoFrame.create();
       const streamInfo2Join = SdkAudioStreamIdInfo.create();
@@ -149,10 +151,66 @@ describe('DefaultVolumeIndicatorAdapter', () => {
               dropped === false;
           } else if (attendeeIdUpdate === 1) {
             expected =
-              attendeeId === fooAttendee && present === false && externalUserId === fooExternal;
+              attendeeId === fooAttendee &&
+              present === true &&
+              externalUserId === fooExternal &&
+              dropped === false;
+          }
+          attendeeIdUpdate += 1;
+          expect(expected).to.be.true;
+        }
+      );
+      const vi: VolumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
+        new NoOpLogger(),
+        rt,
+        minVolumeDecibels,
+        maxVolumeDecibels
+      );
+      expect(attendeeIdUpdate).to.equal(0);
+      vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfo1Frame);
+      expect(attendeeIdUpdate).to.equal(1);
+      vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfo2Frame);
+      expect(attendeeIdUpdate).to.equal(2);
+    });
+
+    it('presence leave event is fired when different attendee has a newer stream id', () => {
+      const streamInfo1Join = SdkAudioStreamIdInfo.create();
+      const streamInfo1Frame = SdkAudioStreamIdInfoFrame.create();
+      const streamInfo2Join = SdkAudioStreamIdInfo.create();
+      const streamInfo2Leave = SdkAudioStreamIdInfo.create();
+      const streamInfo2Frame = SdkAudioStreamIdInfoFrame.create();
+      streamInfo1Join.audioStreamId = 1;
+      streamInfo1Join.attendeeId = fooAttendee;
+      streamInfo1Join.externalUserId = fooExternal;
+      streamInfo1Frame.streams = [streamInfo1Join];
+      streamInfo2Join.audioStreamId = 2;
+      streamInfo2Join.attendeeId = barAttendee;
+      streamInfo2Join.externalUserId = barExternal;
+      streamInfo2Leave.audioStreamId = 1;
+      streamInfo2Frame.streams = [streamInfo2Join, streamInfo2Leave];
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let attendeeIdUpdate = 0;
+      rt.realtimeSubscribeToAttendeeIdPresence(
+        (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
+          let expected = false;
+          if (attendeeIdUpdate === 0) {
+            expected =
+              attendeeId === fooAttendee &&
+              present === true &&
+              externalUserId === fooExternal &&
+              dropped === false;
+          } else if (attendeeIdUpdate === 1) {
+            expected =
+              attendeeId === barAttendee &&
+              present === true &&
+              externalUserId === barExternal &&
+              dropped === false;
           } else if (attendeeIdUpdate === 2) {
             expected =
-              attendeeId === fooAttendee && present === true && externalUserId === fooExternal;
+              attendeeId === fooAttendee &&
+              present === false &&
+              externalUserId === fooExternal &&
+              dropped === false;
           }
           attendeeIdUpdate += 1;
           expect(expected).to.be.true;
