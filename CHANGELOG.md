@@ -12,10 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bump websocket-extensions from 0.1.3 to 0.1.4
 - Updated SignalingProtocol.proto and use SDK version in JoinFrame
+
 ### Removed
 
 ### Fixed
 - Fix duplicate tiles and error logs due to external id race condition
+- Suppress presence leave when attendee has already joined from another device (#427)
 
 ## [1.8.0] - 2020-06-05
 
