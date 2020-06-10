@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bump websocket-extensions from 0.1.3 to 0.1.4
 - Updated SignalingProtocol.proto and use SDK version in JoinFrame
+- Use GET instead of POST to obtain Turn credentials
 
 ### Removed
 
