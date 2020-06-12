@@ -3,6 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
+import RealtimeAttendeePositionInFrame from '../realtimecontroller/RealtimeAttendeePositionInFrame';
 import BaseTask from './BaseTask';
 
 /*
@@ -33,7 +34,8 @@ export default class WaitForAttendeePresenceTask extends BaseTask {
         presentAttendeeId: string,
         present: boolean,
         _externalUserId: string,
-        _dropped: boolean
+        _dropped: boolean,
+        _pos: RealtimeAttendeePositionInFrame
       ): void => {
         if (attendeeId === presentAttendeeId && present) {
           this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);

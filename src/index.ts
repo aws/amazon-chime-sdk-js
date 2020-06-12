@@ -173,6 +173,7 @@ import PromisedWebSocketClosureCode from './promisedwebsocket/PromisedWebSocketC
 import PromisedWebSocketFactory from './promisedwebsocket/PromisedWebSocketFactory';
 import ProtocolScreenMessageDetail from './screenmessagedetail/ProtocolScreenMessageDetail';
 import ProtocolScreenMessageDetailSerialization from './screenmessagedetailserialization/ProtocolScreenMessageDetailSerialization';
+import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from './realtimecontroller/RealtimeController';
 import RealtimeControllerFacade from './realtimecontroller/RealtimeControllerFacade';
 import RealtimeState from './realtimecontroller/RealtimeState';
@@ -462,6 +463,7 @@ export {
   PromisedWebSocketFactory,
   ProtocolScreenMessageDetail,
   ProtocolScreenMessageDetailSerialization,
+  RealtimeAttendeePositionInFrame,
   RealtimeController,
   RealtimeControllerFacade,
   RealtimeState,

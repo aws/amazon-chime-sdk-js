@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
+import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
 
 export default interface RealtimeControllerFacade {
   realtimeSubscribeToAttendeeIdPresence(
@@ -9,7 +10,8 @@ export default interface RealtimeControllerFacade {
       attendeeId: string,
       present: boolean,
       externalUserId?: string,
-      dropped?: boolean
+      dropped?: boolean,
+      posInFrame?: RealtimeAttendeePositionInFrame | null
     ) => void
   ): void;
   realtimeUnsubscribeToAttendeeIdPresence(
@@ -17,7 +19,8 @@ export default interface RealtimeControllerFacade {
       attendeeId: string,
       present: boolean,
       externalUserId?: string,
-      dropped?: boolean
+      dropped?: boolean,
+      posInFrame?: RealtimeAttendeePositionInFrame | null
     ) => void
   ): void;
   realtimeSetCanUnmuteLocalAudio(canUnmute: boolean): void;

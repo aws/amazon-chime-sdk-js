@@ -5,6 +5,7 @@ import * as chai from 'chai';
 
 import DataMessage from '../../src/datamessage/DataMessage';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
+import RealtimeAttendeePositionInFrame from '../../src/realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from '../../src/realtimecontroller/RealtimeController';
 
 // @ts-ignore
@@ -849,9 +850,9 @@ describe('DefaultRealtimeController', () => {
         callbackIndex += 1;
       });
       expect(callbackIndex).to.equal(0);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null, false);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, true, null, false, null);
       expect(callbackIndex).to.equal(1);
-      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null, false);
+      rt.realtimeSetAttendeeIdPresence(fooAttendee, false, null, false, null);
       expect(callbackIndex).to.equal(2);
     });
   });
@@ -1109,7 +1110,7 @@ describe('DefaultRealtimeController', () => {
 
       // attempt to trigger a fake error after unsubscribing to fatal errors
       rt.realtimeUnsubscribeToFatalError(fatalErrorCallback);
-      rt.realtimeSetAttendeeIdPresence('unused', true, null, false);
+      rt.realtimeSetAttendeeIdPresence('unused', true, null, false, null);
       expect(fatalErrorCallbackRemoved).to.be.true;
 
       // unsubscribe from other callbacks
@@ -1123,7 +1124,7 @@ describe('DefaultRealtimeController', () => {
       rt.realtimeUnsubscribeFromReceiveDataMessage('topic');
 
       // attempt to trigger callbacks
-      rt.realtimeSetAttendeeIdPresence('unused', true, null, false);
+      rt.realtimeSetAttendeeIdPresence('unused', true, null, false, null);
       rt.realtimeSetCanUnmuteLocalAudio(false);
       rt.realtimeMuteLocalAudio();
       // also triggers local signal strength callbacks
@@ -1139,6 +1140,32 @@ describe('DefaultRealtimeController', () => {
         )
       );
       expect(callbacksRemoved).to.be.true;
+    });
+  });
+
+  describe('position in frame', () => {
+    it('can get correct position in frame', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let index = 0;
+      let attendeesInFrame = 5;
+      rt.realtimeSubscribeToAttendeeIdPresence(
+        (
+          _attendeeId: string,
+          _present: boolean,
+          _externalUserId: string,
+          _dropped: boolean,
+          posInFrame: RealtimeAttendeePositionInFrame
+        ) => {
+          expect(posInFrame.attendeeIndex).to.equal(index);
+          expect(posInFrame.attendeesInFrame).to.equal(attendeesInFrame);
+        }
+      );
+      for (index < attendeesInFrame; index++; ) {
+        rt.realtimeSetAttendeeIdPresence(null, null, null, null, {
+          attendeeIndex: index,
+          attendeesInFrame: attendeesInFrame,
+        });
+      }
     });
   });
 });
