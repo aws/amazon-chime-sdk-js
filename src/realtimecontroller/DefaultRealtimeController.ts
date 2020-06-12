@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
+import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
 import RealtimeController from './RealtimeController';
 import RealtimeState from './RealtimeState';
 import RealtimeVolumeIndicator from './RealtimeVolumeIndicator';
@@ -66,14 +67,15 @@ export default class DefaultRealtimeController implements RealtimeController {
     attendeeId: string,
     present: boolean,
     externalUserId: string | null,
-    dropped: boolean | null
+    dropped: boolean | null,
+    posInFrame: RealtimeAttendeePositionInFrame | null
   ): void {
     this.wrap(() => {
       if (present) {
         this.state.attendeeIdToExternalUserId[attendeeId] = externalUserId;
       }
       for (const fn of this.state.attendeeIdChangesCallbacks) {
-        fn(attendeeId, present, externalUserId, dropped);
+        fn(attendeeId, present, externalUserId, dropped, posInFrame);
       }
     });
   }
@@ -83,7 +85,8 @@ export default class DefaultRealtimeController implements RealtimeController {
       attendeeId: string,
       present: boolean,
       externalUserId?: string,
-      dropped?: boolean
+      dropped?: boolean,
+      posInFrame?: RealtimeAttendeePositionInFrame | null
     ) => void
   ): void {
     this.wrap(() => {
@@ -96,7 +99,8 @@ export default class DefaultRealtimeController implements RealtimeController {
       attendeeId: string,
       present: boolean,
       externalUserId?: string,
-      dropped?: boolean
+      dropped?: boolean,
+      posInFrame?: RealtimeAttendeePositionInFrame | null
     ) => void
   ): void {
     this.wrap(() => {
