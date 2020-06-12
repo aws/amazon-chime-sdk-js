@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
+import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
 
 /**
  * [[RealtimeController]] controls aspects meetings concerning realtime UX
@@ -43,7 +44,8 @@ export default interface RealtimeController {
     attendeeId: string,
     present: boolean,
     externalUserId: string | null,
-    dropped: boolean | null
+    dropped: boolean | null,
+    posInFrame: RealtimeAttendeePositionInFrame | null
   ): void;
 
   /**
@@ -55,7 +57,8 @@ export default interface RealtimeController {
       attendeeId: string,
       present: boolean,
       externalUserId?: string,
-      dropped?: boolean
+      dropped?: boolean,
+      posInFrame?: RealtimeAttendeePositionInFrame | null
     ) => void
   ): void;
 
@@ -67,7 +70,8 @@ export default interface RealtimeController {
       attendeeId: string,
       present: boolean,
       externalUserId?: string,
-      dropped?: boolean
+      dropped?: boolean,
+      posInFrame?: RealtimeAttendeePositionInFrame | null
     ) => void
   ): void;
 

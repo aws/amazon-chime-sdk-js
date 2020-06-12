@@ -26,6 +26,7 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
   ) {}
 
   sendRealtimeUpdatesForAudioStreamIdInfo(info: SdkAudioStreamIdInfoFrame): void {
+    let streamIndex = 0;
     for (const stream of info.streams) {
       const hasAttendeeId = !!stream.attendeeId;
       const hasExternalUserId = !!stream.externalUserId;
@@ -39,7 +40,8 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
           stream.attendeeId,
           true,
           externalUserId,
-          false
+          false,
+          { attendeeIndex: streamIndex++, attendeesInFrame: info.streams.length }
         );
       }
       if (hasMuted) {
@@ -75,7 +77,8 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
             attendeeId,
             false,
             externalUserId,
-            hasDropped
+            hasDropped,
+            { attendeeIndex: streamIndex++, attendeesInFrame: info.streams.length }
           );
         }
       }

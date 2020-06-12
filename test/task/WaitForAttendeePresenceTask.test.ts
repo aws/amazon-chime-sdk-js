@@ -48,19 +48,22 @@ describe('WaitForAttendeePresenceTask', () => {
             'attendee-id-1',
             true,
             'attendee-id-1',
-            false
+            false,
+            null
           );
           context.realtimeController.realtimeSetAttendeeIdPresence(
             'attendee-id-2',
             true,
             'attendee-id-2',
-            false
+            false,
+            null
           );
           context.realtimeController.realtimeSetAttendeeIdPresence(
             attendeeId,
             true,
             attendeeId,
-            false
+            false,
+            null
           );
         });
         await task.run();
@@ -79,7 +82,8 @@ describe('WaitForAttendeePresenceTask', () => {
             attendeeId,
             true,
             attendeeId,
-            false
+            false,
+            null
           );
         });
         await task.run();
