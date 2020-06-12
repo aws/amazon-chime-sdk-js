@@ -30,6 +30,7 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.ConnectionHealthReconnect:
       case MeetingSessionStatusCode.RealtimeApiFailed:
       case MeetingSessionStatusCode.TaskFailed:
+      case MeetingSessionStatusCode.NoAttendeePresent:
         return true;
       default:
         return false;
@@ -68,6 +69,7 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.SignalingInternalServerError:
       case MeetingSessionStatusCode.SignalingRequestFailed:
       case MeetingSessionStatusCode.RealtimeApiFailed:
+      case MeetingSessionStatusCode.NoAttendeePresent:
         return true;
       default:
         return false;

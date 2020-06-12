@@ -280,6 +280,7 @@ import VideoTileFactory from './videotilefactory/VideoTileFactory';
 import VideoTileState from './videotile/VideoTileState';
 import VideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import VolumeIndicatorAdapter from './volumeindicatoradapter/VolumeIndicatorAdapter';
+import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebMMediaRecording from './mediarecording/WebMMediaRecording';
 import WebMMediaRecordingFactory from './mediarecording/WebMMediaRecordingFactory';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
@@ -568,6 +569,7 @@ export {
   VideoTileState,
   VideoUplinkBandwidthPolicy,
   VolumeIndicatorAdapter,
+  WaitForAttendeePresenceTask,
   WebMMediaRecording,
   WebMMediaRecordingFactory,
   WebSocketAdapter,

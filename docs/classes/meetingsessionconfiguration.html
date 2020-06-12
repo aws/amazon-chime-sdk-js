@@ -95,6 +95,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#attendeepresencetimeoutms" class="tsd-kind-icon">attendee<wbr>Presence<wbr>Timeout<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#connectionhealthpolicyconfiguration" class="tsd-kind-icon">connection<wbr>Health<wbr>Policy<wbr>Configuration</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#connectiontimeoutms" class="tsd-kind-icon">connection<wbr>Timeout<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#credentials" class="tsd-kind-icon">credentials</a></li>
@@ -124,7 +125,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L80">src/meetingsession/MeetingSessionConfiguration.ts:80</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L86">src/meetingsession/MeetingSessionConfiguration.ts:86</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -186,12 +187,28 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="attendeepresencetimeoutms" class="tsd-anchor"></a>
+					<h3>attendee<wbr>Presence<wbr>Timeout<wbr>Ms</h3>
+					<div class="tsd-signature tsd-kind-icon">attendee<wbr>Presence<wbr>Timeout<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L53">src/meetingsession/MeetingSessionConfiguration.ts:53</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Maximum amount of time in milliseconds to wait for the current attendee to be present
+							after initial connection.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="connectionhealthpolicyconfiguration" class="tsd-anchor"></a>
 					<h3>connection<wbr>Health<wbr>Policy<wbr>Configuration</h3>
 					<div class="tsd-signature tsd-kind-icon">connection<wbr>Health<wbr>Policy<wbr>Configuration<span class="tsd-signature-symbol">:</span> <a href="connectionhealthpolicyconfiguration.html" class="tsd-signature-type">ConnectionHealthPolicyConfiguration</a><span class="tsd-signature-symbol"> = new ConnectionHealthPolicyConfiguration()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L58">src/meetingsession/MeetingSessionConfiguration.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L64">src/meetingsession/MeetingSessionConfiguration.ts:64</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -237,7 +254,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Unified<wbr>Plan<wbr>For<wbr>Chromium<wbr>Based<wbr>Browsers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L68">src/meetingsession/MeetingSessionConfiguration.ts:68</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L74">src/meetingsession/MeetingSessionConfiguration.ts:74</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -252,7 +269,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Web<wbr>Audio<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L63">src/meetingsession/MeetingSessionConfiguration.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L69">src/meetingsession/MeetingSessionConfiguration.ts:69</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -282,7 +299,7 @@
 					<div class="tsd-signature tsd-kind-icon">screen<wbr>Sharing<wbr>Session<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/screensharingsessionoptions.html" class="tsd-signature-type">ScreenSharingSessionOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L52">src/meetingsession/MeetingSessionConfiguration.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L58">src/meetingsession/MeetingSessionConfiguration.ts:58</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -342,7 +359,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Downlink<wbr>Bandwidth<wbr>Policy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videodownlinkbandwidthpolicy.html" class="tsd-signature-type">VideoDownlinkBandwidthPolicy</a><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L74">src/meetingsession/MeetingSessionConfiguration.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L80">src/meetingsession/MeetingSessionConfiguration.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -358,7 +375,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Uplink<wbr>Bandwidth<wbr>Policy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videouplinkbandwidthpolicy.html" class="tsd-signature-type">VideoUplinkBandwidthPolicy</a><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L80">src/meetingsession/MeetingSessionConfiguration.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L86">src/meetingsession/MeetingSessionConfiguration.ts:86</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -387,6 +404,9 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="meetingsessionconfiguration.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="meetingsessionconfiguration.html#attendeepresencetimeoutms" class="tsd-kind-icon">attendee<wbr>Presence<wbr>Timeout<wbr>Ms</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="meetingsessionconfiguration.html#connectionhealthpolicyconfiguration" class="tsd-kind-icon">connection<wbr>Health<wbr>Policy<wbr>Configuration</a>

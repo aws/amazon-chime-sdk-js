@@ -104,6 +104,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   enableWebAudio(flag: boolean): void {
     this.useWebAudio = flag;
+    this.trace('enableWebAudio', flag);
   }
 
   addDeviceChangeObserver(observer: DeviceChangeObserver): void {

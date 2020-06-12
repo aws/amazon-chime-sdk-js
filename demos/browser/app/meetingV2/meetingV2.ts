@@ -648,6 +648,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     const deviceController = new DefaultDeviceController(logger);
     configuration.enableWebAudio = this.enableWebAudio;
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
+    configuration.attendeePresenceTimeoutMs = 5000;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
     this.audioVideo = this.meetingSession.audioVideo;
 
