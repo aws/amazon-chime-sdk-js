@@ -123,6 +123,11 @@ export enum MeetingSessionStatusCode {
    * This can happen when you attempt to join a meeting which has ended
    */
   TURNCredentialsForbidden = 22,
+
+  /**
+   * The attendee is not present.
+   */
+  NoAttendeePresent = 23,
 }
 
 export default MeetingSessionStatusCode;

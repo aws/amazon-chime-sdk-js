@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Switch demo DDB table to on demand
+- Restart the session if an attendee is not present during initial connection
 
 ### Removed
 

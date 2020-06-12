@@ -52,6 +52,7 @@ import SetLocalDescriptionTask from '../task/SetLocalDescriptionTask';
 import SetRemoteDescriptionTask from '../task/SetRemoteDescriptionTask';
 import SubscribeAndReceiveSubscribeAckTask from '../task/SubscribeAndReceiveSubscribeAckTask';
 import TimeoutTask from '../task/TimeoutTask';
+import WaitForAttendeePresenceTask from '../task/WaitForAttendeePresenceTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
@@ -285,7 +286,16 @@ export default class DefaultAudioVideoController implements AudioVideoController
               new SetLocalDescriptionTask(this.meetingSessionContext),
               new FinishGatheringICECandidatesTask(this.meetingSessionContext),
               new SubscribeAndReceiveSubscribeAckTask(this.meetingSessionContext),
-              new SetRemoteDescriptionTask(this.meetingSessionContext),
+              this.meetingSessionContext.meetingSessionConfiguration.attendeePresenceTimeoutMs > 0
+                ? new TimeoutTask(
+                    this.logger,
+                    new ParallelGroupTask(this.logger, 'FinalizeConnection', [
+                      new WaitForAttendeePresenceTask(this.meetingSessionContext),
+                      new SetRemoteDescriptionTask(this.meetingSessionContext),
+                    ]),
+                    this.meetingSessionContext.meetingSessionConfiguration.attendeePresenceTimeoutMs
+                  )
+                : new SetRemoteDescriptionTask(this.meetingSessionContext),
             ]),
           ]),
           this.configuration.connectionTimeoutMs

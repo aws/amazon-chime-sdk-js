@@ -47,6 +47,12 @@ export default class MeetingSessionConfiguration {
   screenViewingTimeoutMs: number = 5000;
 
   /**
+   * Maximum amount of time in milliseconds to wait for the current attendee to be present
+   * after initial connection.
+   */
+  attendeePresenceTimeoutMs: number = 0;
+
+  /**
    * Screen sharing session options.
    */
   screenSharingSessionOptions: ScreenSharingSessionOptions = {};
