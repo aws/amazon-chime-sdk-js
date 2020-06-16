@@ -85,12 +85,22 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       : 'plan-b';
     // @ts-ignore
     this.logger.info(`SDP semantics are ${configuration.sdpSemantics}`);
-
+    const connectionConstraints = {
+      optional: [
+        { googHighStartBitrate: 0 },
+        { googCpuOveruseDetection: false },
+        { googCpuOveruseEncodeUsage: false },
+        { googCpuUnderuseThreshold: 55 },
+        { googCpuOveruseThreshold: 150 },
+        { googCombinedAudioVideoBwe: true },
+      ],
+    };
     if (this.context.peer) {
       this.context.logger.info('reusing peer connection');
     } else {
       this.context.logger.info('creating new peer connection');
-      this.context.peer = new RTCPeerConnection(configuration);
+      // @ts-ignore
+      this.context.peer = new RTCPeerConnection(configuration, connectionConstraints);
       this.addPeerConnectionEventLogger();
     }
 

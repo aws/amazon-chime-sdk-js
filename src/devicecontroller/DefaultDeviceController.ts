@@ -16,8 +16,8 @@ import DeviceSelection from './DeviceSelection';
 export default class DefaultDeviceController implements DeviceControllerBasedMediaStreamBroker {
   private static permissionGrantedOriginDetectionThresholdMs = 1000;
   private static permissionDeniedOriginDetectionThresholdMs = 500;
-  private static defaultVideoWidth = 960;
-  private static defaultVideoHeight = 540;
+  private static defaultVideoWidth = 1280;
+  private static defaultVideoHeight = 720;
   private static defaultVideoFrameRate = 15;
   private static defaultVideoMaxBandwidthKbps = 1400;
   private static defaultSampleRate = 48000;
@@ -641,6 +641,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       trackConstraints.width = trackConstraints.width || this.videoWidth;
       trackConstraints.height = trackConstraints.height || this.videoHeight;
       trackConstraints.frameRate = trackConstraints.frameRate || this.videoFrameRate;
+      // @ts-ignore
+      trackConstraints.googCpuOveruseDetection = true;
+      // @ts-ignore
+      trackConstraints.googCpuOveruseEncodeUsage = true;
+      // @ts-ignore
+      trackConstraints.googCpuOveruseThreshold = 85;
+      // @ts-ignore
+      trackConstraints.googCpuUnderuseThreshold = 55;
     }
     if (kind === 'audio' && this.supportSampleRateConstraint()) {
       trackConstraints.sampleRate = { ideal: DefaultDeviceController.defaultSampleRate };

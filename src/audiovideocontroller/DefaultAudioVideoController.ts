@@ -54,12 +54,18 @@ import SubscribeAndReceiveSubscribeAckTask from '../task/SubscribeAndReceiveSubs
 import TimeoutTask from '../task/TimeoutTask';
 import WaitForAttendeePresenceTask from '../task/WaitForAttendeePresenceTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
+import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
+import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
+import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
+import SimulcastVideoStreamIndex from '../videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../videotilecontroller/DefaultVideoTileController';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
+import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
+import SimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DefaultVolumeIndicatorAdapter from '../volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
@@ -84,6 +90,8 @@ export default class DefaultAudioVideoController implements AudioVideoController
   private static MAX_VOLUME_DECIBELS = -14;
   private static PING_PONG_INTERVAL_MS = 10000;
 
+  private enableSimulcast: boolean = false;
+
   constructor(
     configuration: MeetingSessionConfiguration,
     logger: Logger,
@@ -94,17 +102,24 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this._logger = logger;
     this.sessionStateController = new DefaultSessionStateController(this._logger);
     this._configuration = configuration;
+    this.enableSimulcast =
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers &&
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
+      new DefaultBrowserBehavior().hasChromiumWebRTC();
+
     this._webSocketAdapter = webSocketAdapter;
     this._realtimeController = new DefaultRealtimeController();
     this._realtimeController.realtimeSetLocalAttendeeId(
       configuration.credentials.attendeeId,
       configuration.credentials.externalUserId
     );
+
     this._activeSpeakerDetector = new DefaultActiveSpeakerDetector(
       this._realtimeController,
       configuration.credentials.attendeeId,
       this.handleHasBandwidthPriority.bind(this)
     );
+
     this._mediaStreamBroker = mediaStreamBroker;
     this._reconnectController = reconnectController;
     this._videoTileController = new DefaultVideoTileController(
@@ -198,10 +213,18 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this.meetingSessionContext.realtimeController = this._realtimeController;
     this.meetingSessionContext.audioMixController = this._audioMixController;
     this.meetingSessionContext.audioVideoController = this;
-    this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
-      this.logger,
-      this.meetingSessionContext.browserBehavior
-    );
+    if (this.enableSimulcast) {
+      this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
+        this.logger,
+        this.meetingSessionContext.browserBehavior
+      );
+    } else {
+      this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
+        this.logger,
+        this.meetingSessionContext.browserBehavior
+      );
+    }
+
     this.meetingSessionContext.volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
       this.logger,
       this._realtimeController,
@@ -209,9 +232,35 @@ export default class DefaultAudioVideoController implements AudioVideoController
       DefaultAudioVideoController.MAX_VOLUME_DECIBELS
     );
     this.meetingSessionContext.videoTileController = this._videoTileController;
-    this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
     this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
     this.meetingSessionContext.videoUplinkBandwidthPolicy = this.configuration.videoUplinkBandwidthPolicy;
+
+    this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
+    if (this.enableSimulcast) {
+      this.meetingSessionContext.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy(
+        this.configuration.credentials.attendeeId,
+        this.meetingSessionContext.logger
+      );
+      this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
+        this.logger,
+        this.meetingSessionContext.videoTileController
+      );
+      this.meetingSessionContext.videoStreamIndex = new SimulcastVideoStreamIndex(this.logger);
+    } else {
+      this.meetingSessionContext.enableSimulcast = false;
+      this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
+      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
+        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
+          this.configuration.credentials.attendeeId
+        );
+      }
+      if (!this.meetingSessionContext.videoUplinkBandwidthPolicy) {
+        this.meetingSessionContext.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
+          this.configuration.credentials.attendeeId
+        );
+      }
+    }
+
     this.meetingSessionContext.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
     this.meetingSessionContext.videoCaptureAndEncodeParameter = new DefaultVideoCaptureAndEncodeParameter(
       0,
@@ -322,9 +371,12 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
   private actionFinishConnecting(): void {
     this.meetingSessionContext.videoDuplexMode = SdkStreamServiceType.RX;
-    this.enforceBandwidthLimitationForSender(
-      this.meetingSessionContext.videoCaptureAndEncodeParameter.encodeBitrates()[0]
-    );
+    if (!this.meetingSessionContext.enableSimulcast) {
+      this.enforceBandwidthLimitationForSender(
+        this.meetingSessionContext.videoCaptureAndEncodeParameter.encodeBitrates()[0]
+      );
+    }
+
     this.forEachObserver(observer => {
       Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
     });
@@ -482,8 +534,11 @@ export default class DefaultAudioVideoController implements AudioVideoController
   }
 
   private actionFinishUpdating(): void {
-    const maxBitrateKbps = this.meetingSessionContext.videoCaptureAndEncodeParameter.encodeBitrates()[0];
-    this.enforceBandwidthLimitationForSender(maxBitrateKbps);
+    // we do not update parameter for simulcast since they are updated in AttachMediaInputTask
+    if (!this.meetingSessionContext.enableSimulcast) {
+      const maxBitrateKbps = this.meetingSessionContext.videoCaptureAndEncodeParameter.encodeBitrates()[0];
+      this.enforceBandwidthLimitationForSender(maxBitrateKbps);
+    }
     this.logger.info('updated audio-video session');
   }
 
@@ -649,12 +704,18 @@ export default class DefaultAudioVideoController implements AudioVideoController
   }
 
   async handleHasBandwidthPriority(hasBandwidthPriority: boolean): Promise<void> {
-    if (this.meetingSessionContext && this.meetingSessionContext.videoUplinkBandwidthPolicy) {
+    if (
+      this.meetingSessionContext &&
+      this.meetingSessionContext.videoUplinkBandwidthPolicy &&
+      !this.meetingSessionContext.enableSimulcast
+    ) {
       const oldMaxBandwidth = this.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps();
+
       this.meetingSessionContext.videoUplinkBandwidthPolicy.setHasBandwidthPriority(
         hasBandwidthPriority
       );
       const newMaxBandwidth = this.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps();
+
       if (oldMaxBandwidth !== newMaxBandwidth) {
         this.logger.info(
           `video send bandwidth priority ${hasBandwidthPriority} max has changed from ${oldMaxBandwidth} kbps to ${newMaxBandwidth} kbps`

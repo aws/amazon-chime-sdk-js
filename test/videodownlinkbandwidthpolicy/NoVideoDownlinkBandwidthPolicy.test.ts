@@ -1,8 +1,9 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
+import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
@@ -25,7 +26,9 @@ describe('NoVideoDownlinkBandwidthPolicy', () => {
       policy.updateIndex(emptyVideoStreamIndex);
       policy.updateCalculatedOptimalReceiveSet();
       expect(policy.wantsResubscribe()).to.be.false;
-      policy.updateAvailableBandwidth(500);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 500;
+      policy.updateMetrics(metricReport);
       expect(policy.wantsResubscribe()).to.be.false;
     });
   });

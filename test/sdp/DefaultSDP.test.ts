@@ -212,21 +212,23 @@ describe('DefaultSDP', () => {
     });
   });
 
-  describe('withPlanBSimulcast', () => {
+  describe('withOldFashionedMungingSimulcast', () => {
     it('returns same SDP if SDP is garbage', () => {
       const sdpLocalOffer = new DefaultSDP('garbage data');
-      const simulcastedSDP = new DefaultSDP(sdpLocalOffer.sdp).withPlanBSimulcast(2);
+      const simulcastedSDP = new DefaultSDP(sdpLocalOffer.sdp).withOldFashionedMungingSimulcast(2);
       expect(simulcastedSDP.sdp).to.equal(sdpLocalOffer.sdp);
     });
 
     it('returns same SDP if SDP has no video section', () => {
-      const simulcastedSDP = new DefaultSDP(SDPMock.VIDEO_HOST_AUDIO_ANSWER).withPlanBSimulcast(2);
+      const simulcastedSDP = new DefaultSDP(
+        SDPMock.VIDEO_HOST_AUDIO_ANSWER
+      ).withOldFashionedMungingSimulcast(2);
       expect(simulcastedSDP.sdp).to.equal(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
     });
 
     it('returns same SDP if only one layer is wanted for video', () => {
       const sdpLocalOffer = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
-      const simulcastedSDP = new DefaultSDP(sdpLocalOffer.sdp).withPlanBSimulcast(1);
+      const simulcastedSDP = new DefaultSDP(sdpLocalOffer.sdp).withOldFashionedMungingSimulcast(1);
       expect(simulcastedSDP.sdp).to.equal(sdpLocalOffer.sdp);
     });
 
@@ -234,27 +236,27 @@ describe('DefaultSDP', () => {
       const sdpLocalOffer = new DefaultSDP(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_NO_SSRC_ATTRIBUTE_VALUE
       );
-      const simulcastedSDP = new DefaultSDP(sdpLocalOffer.sdp).withPlanBSimulcast(2);
+      const simulcastedSDP = new DefaultSDP(sdpLocalOffer.sdp).withOldFashionedMungingSimulcast(2);
       expect(simulcastedSDP.sdp).to.equal(sdpLocalOffer.sdp);
     });
 
     it('returns same SDP if video section has no FID group', () => {
       const sdpLocalOffer = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITHOUT_FID);
-      const simulcastedSDP = new DefaultSDP(sdpLocalOffer.sdp).withPlanBSimulcast(2);
+      const simulcastedSDP = new DefaultSDP(sdpLocalOffer.sdp).withOldFashionedMungingSimulcast(2);
       expect(simulcastedSDP.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITHOUT_FID);
     });
 
     it('returns same SDP if original SDP only has recv video section', () => {
-      const simulcastedSDP = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_RECV_VIDEO).withPlanBSimulcast(
-        2
-      );
+      const simulcastedSDP = new DefaultSDP(
+        SDPMock.LOCAL_OFFER_WITH_RECV_VIDEO
+      ).withOldFashionedMungingSimulcast(2);
       expect(simulcastedSDP.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_RECV_VIDEO);
     });
 
     it('returns simulcasted SDP with 2 layers if SDP has correct PlanB sendrecv video section', () => {
       const simulcastedSDP = new DefaultSDP(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO
-      ).withPlanBSimulcast(2).sdp;
+      ).withOldFashionedMungingSimulcast(2).sdp;
       expect(simulcastedSDP).to.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SIMULCAST_TWO_LAYERS);
     });
   });

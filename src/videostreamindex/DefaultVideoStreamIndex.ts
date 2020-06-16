@@ -3,6 +3,7 @@
 
 import Logger from '../logger/Logger';
 import {
+  ISdkBitrateFrame,
   ISdkStreamDescriptor,
   SdkIndexFrame,
   SdkStreamMediaType,
@@ -10,20 +11,57 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import VideoStreamDescription from './VideoStreamDescription';
 
 /**
  * [[DefaultVideoStreamIndex]] implements [[VideoStreamIndex]] to facilitate video stream subscription
  * and includes query functions for stream id and attendee id.
  */
 export default class DefaultVideoStreamIndex implements VideoStreamIndex {
-  private currentIndex: SdkIndexFrame | null = null;
-  private currentSubscribeAck: SdkSubscribeAckFrame | null = null;
-  private trackToStreamMap: Map<string, number> | null = null;
-  private streamToAttendeeMap: Map<number, string> | null = null;
-  private streamToExternalUserIdMap: Map<number, string> | null = null;
-  private ssrcToStreamMap: Map<number, number> | null = null;
+  protected currentIndex: SdkIndexFrame | null = null;
+  protected currentSubscribeAck: SdkSubscribeAckFrame | null = null;
+  protected trackToStreamMap: Map<string, number> | null = null;
+  protected streamToAttendeeMap: Map<number, string> | null = null;
+  protected streamToExternalUserIdMap: Map<number, string> | null = null;
+  protected ssrcToStreamMap: Map<number, number> | null = null;
 
-  constructor(private logger: Logger) {}
+  private videoStreamDescription = new VideoStreamDescription();
+  constructor(protected logger: Logger) {
+    this.videoStreamDescription.trackLabel = 'AmazonChimeExpressVideo';
+    this.videoStreamDescription.streamId = 2;
+    this.videoStreamDescription.groupId = 2;
+  }
+
+  localStreamDescriptions(): VideoStreamDescription[] {
+    // localStreamDescriptions are used to construct IndexFrame
+    // old behavior for single video is to have streamId and groupId trackLabel fixed as the follows
+    return [this.videoStreamDescription.clone()];
+  }
+
+  remoteStreamDescriptions(): VideoStreamDescription[] {
+    if (!this.currentIndex || !this.currentIndex.sources) {
+      return [];
+    }
+    const streamInfos: VideoStreamDescription[] = [];
+    this.currentIndex.sources.forEach(source => {
+      const description = new VideoStreamDescription();
+      description.attendeeId = source.attendeeId;
+      description.groupId = source.groupId;
+      description.streamId = source.streamId;
+      description.maxBitrateKbps = source.maxBitrateKbps;
+      description.avgBitrateKbps = Math.floor(source.avgBitrateBps / 1000);
+      streamInfos.push(description);
+    });
+    return streamInfos;
+  }
+
+  integrateUplinkPolicyDecision(param: RTCRtpEncodingParameters[]): void {
+    if (!!param && param.length) {
+      const encodingParam = param[0];
+      this.videoStreamDescription.maxBitrateKbps = encodingParam.maxBitrate / 1000;
+      this.videoStreamDescription.maxFrameRate = encodingParam.maxFramerate;
+    }
+  }
 
   integrateIndexFrame(indexFrame: SdkIndexFrame): void {
     this.currentIndex = indexFrame;
@@ -35,6 +73,19 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
   integrateSubscribeAckFrame(subscribeAck: SdkSubscribeAckFrame): void {
     this.currentSubscribeAck = subscribeAck;
     this.trackToStreamMap = null;
+  }
+
+  integrateBitratesFrame(bitrates: ISdkBitrateFrame): void {
+    if (this.currentIndex) {
+      for (const bitrate of bitrates.bitrates) {
+        const source = this.currentIndex.sources.find(
+          source => source.streamId === bitrate.sourceStreamId
+        );
+        if (source !== undefined) {
+          source.avgBitrateBps = bitrate.avgBitrateBps;
+        }
+      }
+    }
   }
 
   allStreams(): DefaultVideoStreamIdSet {
@@ -206,6 +257,22 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       return '';
     }
     return attendeeId;
+  }
+
+  groupIdForStreamId(streamId: number): number {
+    for (const source of this.currentIndex.sources) {
+      if (source.streamId === streamId) {
+        return source.groupId;
+      }
+    }
+    return undefined;
+  }
+
+  StreamIdsInSameGroup(streamId1: number, streamId2: number): boolean {
+    if (this.groupIdForStreamId(streamId1) === this.groupIdForStreamId(streamId2)) {
+      return true;
+    }
+    return false;
   }
 
   streamIdForTrack(trackId: string): number {

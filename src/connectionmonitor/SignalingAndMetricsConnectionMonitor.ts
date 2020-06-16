@@ -93,9 +93,13 @@ export default class SignalingAndMetricsConnectionMonitor
       metricReport.availableReceiveBandwidth || metricReport.availableIncomingBitrate;
 
     const audioSpeakerDelayMs = metricReport.audioSpeakerDelayMs;
+
+    const nackCountPerSecond =
+      metricReport.nackCountReceivedPerSecond || metricReport.googNackCountReceivedPerSecond;
+
     // Firefox does not presently have aggregated bandwidth estimation
     if (typeof availableSendBandwidth === 'number' && !isNaN(availableSendBandwidth)) {
-      this.updateAvailableSendBandwidth(availableSendBandwidth / 1000);
+      this.updateAvailableSendBandwidth(availableSendBandwidth / 1000, nackCountPerSecond);
     }
     if (typeof availableRecvBandwidth === 'number' && !isNaN(availableRecvBandwidth)) {
       this.updateAvailableReceiveBandwidth(availableRecvBandwidth / 1000);
@@ -149,7 +153,10 @@ export default class SignalingAndMetricsConnectionMonitor
     }
   }
 
-  private updateAvailableSendBandwidth(sendBandwidthKbps: number): void {
+  private updateAvailableSendBandwidth(
+    sendBandwidthKbps: number,
+    nackCountPerSecond: number
+  ): void {
     if (sendBandwidthKbps !== this.lastAvailableSendBandwidthKbps) {
       if (this.lastAvailableSendBandwidthKbps === 0) {
         this.lastAvailableSendBandwidthKbps = sendBandwidthKbps;
@@ -159,7 +166,7 @@ export default class SignalingAndMetricsConnectionMonitor
       this.lastAvailableSendBandwidthKbps = sendBandwidthKbps;
       this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
         Maybe.of(observer.videoSendBandwidthDidChange).map(f =>
-          f.bind(observer)(sendBandwidthKbps, prevSendBandwidthKbps)
+          f.bind(observer)(sendBandwidthKbps, prevSendBandwidthKbps, nackCountPerSecond)
         );
       });
     }

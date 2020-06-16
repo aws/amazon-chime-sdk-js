@@ -50,7 +50,11 @@ export default interface AudioVideoObserver {
   /**
    * Called when available video sending bandwidth changed.
    */
-  videoSendBandwidthDidChange?(newBandwidthKbps: number, oldBandwidthKbps: number): void;
+  videoSendBandwidthDidChange?(
+    newBandwidthKbps: number,
+    oldBandwidthKbps: number,
+    nackCountPerSecond?: number
+  ): void;
 
   /**
    * Called when available video receiving bandwidth changed to trigger video subscription if needed.

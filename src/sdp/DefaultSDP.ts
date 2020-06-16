@@ -215,7 +215,7 @@ export default class DefaultSDP implements SDP {
     return new DefaultSDP(originalSdp);
   }
 
-  withPlanBSimulcast(videoSimulcastLayerCount: number): DefaultSDP {
+  withOldFashionedMungingSimulcast(videoSimulcastLayerCount: number): DefaultSDP {
     if (videoSimulcastLayerCount < 2) {
       return this.clone();
     }

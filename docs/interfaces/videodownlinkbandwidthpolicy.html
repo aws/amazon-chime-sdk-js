@@ -87,6 +87,7 @@
 				<ul class="tsd-hierarchy">
 					<li><a href="../classes/allhighestvideobandwidthpolicy.html" class="tsd-signature-type">AllHighestVideoBandwidthPolicy</a></li>
 					<li><a href="../classes/novideodownlinkbandwidthpolicy.html" class="tsd-signature-type">NoVideoDownlinkBandwidthPolicy</a></li>
+					<li><a href="../classes/videoadaptiveprobepolicy.html" class="tsd-signature-type">VideoAdaptiveProbePolicy</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -97,9 +98,9 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#choosesubscriptions" class="tsd-kind-icon">choose<wbr>Subscriptions</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#updateavailablebandwidth" class="tsd-kind-icon">update<wbr>Available<wbr>Bandwidth</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#updatecalculatedoptimalreceiveset" class="tsd-kind-icon">update<wbr>Calculated<wbr>Optimal<wbr>Receive<wbr>Set</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#updateindex" class="tsd-kind-icon">update<wbr>Index</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#updatemetrics" class="tsd-kind-icon">update<wbr>Metrics</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#wantsresubscribe" class="tsd-kind-icon">wants<wbr>Resubscribe</a></li>
 							</ul>
 						</section>
@@ -118,7 +119,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L38">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L39">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -132,34 +133,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="updateavailablebandwidth" class="tsd-anchor"></a>
-					<h3>update<wbr>Available<wbr>Bandwidth</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">update<wbr>Available<wbr>Bandwidth<span class="tsd-signature-symbol">(</span>bandwidthKbps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L21">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:21</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Update available downlink bandwidth in kbps</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>bandwidthKbps: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="updatecalculatedoptimalreceiveset" class="tsd-anchor"></a>
 					<h3>update<wbr>Calculated<wbr>Optimal<wbr>Receive<wbr>Set</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -169,7 +142,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L26">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L27">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:27</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -191,7 +164,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L16">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L17">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -211,6 +184,34 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="updatemetrics" class="tsd-anchor"></a>
+					<h3>update<wbr>Metrics</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Metrics<span class="tsd-signature-symbol">(</span>clientMetricReport<span class="tsd-signature-symbol">: </span><a href="clientmetricreport.html" class="tsd-signature-type">ClientMetricReport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L22">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:22</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Update connection metrics</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>clientMetricReport: <a href="clientmetricreport.html" class="tsd-signature-type">ClientMetricReport</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="wantsresubscribe" class="tsd-anchor"></a>
 					<h3>wants<wbr>Resubscribe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -220,7 +221,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L32">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L33">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:33</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -254,13 +255,13 @@
 								<a href="videodownlinkbandwidthpolicy.html#choosesubscriptions" class="tsd-kind-icon">choose<wbr>Subscriptions</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="videodownlinkbandwidthpolicy.html#updateavailablebandwidth" class="tsd-kind-icon">update<wbr>Available<wbr>Bandwidth</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videodownlinkbandwidthpolicy.html#updatecalculatedoptimalreceiveset" class="tsd-kind-icon">update<wbr>Calculated<wbr>Optimal<wbr>Receive<wbr>Set</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videodownlinkbandwidthpolicy.html#updateindex" class="tsd-kind-icon">update<wbr>Index</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videodownlinkbandwidthpolicy.html#updatemetrics" class="tsd-kind-icon">update<wbr>Metrics</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videodownlinkbandwidthpolicy.html#wantsresubscribe" class="tsd-kind-icon">wants<wbr>Resubscribe</a>

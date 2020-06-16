@@ -212,6 +212,14 @@ export default class DOMMockBuilder {
           );
         }
       }
+
+      applyConstraints(_constraints?: MediaTrackConstraints): Promise<void> {
+        if (mockBehavior.applyConstraintSucceeds) {
+          return;
+        } else {
+          throw Error('overconstrained');
+        }
+      }
     };
 
     GlobalAny.MediaStream = class MockMediaStream {
@@ -698,12 +706,22 @@ export default class DOMMockBuilder {
 
       constructor(trackOrKind: MediaStreamTrack | string, init?: RTCRtpTransceiverInit) {
         this.direction = init.direction;
+        const sendEncodings = init.sendEncodings;
         this.receiver = new GlobalAny.RTCRtpReceiver(
           new GlobalAny.MediaStreamTrack('mock-track-id', trackOrKind)
         );
         this.sender = new GlobalAny.RTCRtpSender(
           new GlobalAny.MediaStreamTrack('mock-track-id', trackOrKind)
         );
+        if (!!sendEncodings) {
+          this.sender.setParameters({
+            transactionId: undefined,
+            codecs: undefined,
+            rtcp: undefined,
+            headerExtensions: undefined,
+            encodings: sendEncodings,
+          });
+        }
         this.mid = 'mock-mid-id';
       }
     };

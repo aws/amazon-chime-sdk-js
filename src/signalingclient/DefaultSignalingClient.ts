@@ -82,7 +82,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     // Only Chrome currently supports the new send side bandwidth estimation
     const browserBehavior = new DefaultBrowserBehavior();
     if (browserBehavior.hasChromiumWebRTC()) {
-      joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
+      // joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
     }
     joinFrame.flags |= settings.sendBitrates ? SdkJoinFlags.SEND_BITRATES : 0;
     joinFrame.clientDetails = SdkClientDetails.create({
@@ -123,15 +123,13 @@ export default class DefaultSignalingClient implements SignalingClient {
     }
     if (settings.localVideoEnabled) {
       subscribeFrame.duplex = SdkStreamServiceType.DUPLEX;
-      const videoStream = SdkStreamDescriptor.create();
-      videoStream.mediaType = SdkStreamMediaType.VIDEO;
-      videoStream.trackLabel = 'AmazonChimeExpressVideo';
-      videoStream.attendeeId = settings.attendeeId;
-      videoStream.streamId = 2;
-      videoStream.groupId = 2;
-      videoStream.framerate = settings.videoInputFrameRate;
-      videoStream.maxBitrateKbps = settings.videoInputMaxBitrateKbps;
-      subscribeFrame.sendStreams.push(videoStream);
+      for (let i = 0; i < settings.videoStreamDescriptions.length; i++) {
+        // Non-simulcast use DefaultVideoStreamIndex.localStreamDescriptions
+        // which is the exact old behavior
+        const streamDescription = settings.videoStreamDescriptions[i].clone();
+        streamDescription.attendeeId = settings.attendeeId;
+        subscribeFrame.sendStreams.push(streamDescription.toStreamDescriptor());
+      }
     }
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.SUBSCRIBE;

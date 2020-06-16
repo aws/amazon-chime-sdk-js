@@ -6,6 +6,8 @@ import * as chai from 'chai';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import {
+  SdkBitrate,
+  SdkBitrateFrame,
   SdkIndexFrame,
   SdkStreamDescriptor,
   SdkStreamMediaType,
@@ -975,6 +977,160 @@ describe('DefaultVideoStreamIndex', () => {
       expect(index.streamsPausedAtSource().array()).to.be.deep.equal([]);
       index.integrateIndexFrame(indexFrame);
       expect(index.streamsPausedAtSource().array()).to.be.deep.equal([2, 4]);
+    });
+  });
+
+  describe('localStreamDescription', () => {
+    it('returns constant stream description', () => {
+      const localDescriptions = index.localStreamDescriptions();
+      expect(localDescriptions.length).to.equal(1);
+      const description = localDescriptions[0];
+      expect(description.trackLabel).to.equal('AmazonChimeExpressVideo');
+      expect(description.streamId).to.equal(2);
+      expect(description.groupId).to.equal(2);
+    });
+  });
+
+  describe('remoteStreamDescriptions', () => {
+    it('returns current remote stream info', () => {
+      const remoteDescriptions = index.remoteStreamDescriptions();
+      expect(remoteDescriptions.length).to.equal(0);
+      const indexFrame = new SdkIndexFrame({
+        sources: [
+          new SdkStreamDescriptor({
+            streamId: 1,
+            groupId: 1,
+            maxBitrateKbps: 1400,
+            attendeeId: '688c',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 2,
+            groupId: 1,
+            maxBitrateKbps: 200,
+            attendeeId: '4d82',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 4,
+            groupId: 399,
+            maxBitrateKbps: 800,
+            attendeeId: 'a0ff',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+        ],
+      });
+      index.integrateIndexFrame(indexFrame);
+      const remoteDescriptions2 = index.remoteStreamDescriptions();
+      expect(remoteDescriptions2.length).to.equal(3);
+    });
+  });
+
+  describe('integrateUplinkPolicyDecision', () => {
+    it('updates the local stream description', () => {
+      const encoding = [];
+      encoding.push({
+        active: true,
+        maxBitrate: 1200 * 1000,
+        maxFramerate: 15,
+      });
+      index.integrateUplinkPolicyDecision(null);
+      index.integrateUplinkPolicyDecision(encoding);
+      expect(index.localStreamDescriptions()[0].maxBitrateKbps).to.equal(1200);
+    });
+  });
+
+  describe('integrateBitratesFrame', () => {
+    it('updates the average bitrate in IndexFrame', () => {
+      const bitrateFrame = SdkBitrateFrame.create();
+      const bitrate = SdkBitrate.create();
+      bitrate.sourceStreamId = 1;
+      bitrate.avgBitrateBps = 1280 * 1000;
+      bitrateFrame.bitrates.push(bitrate);
+      const bitrate2 = SdkBitrate.create();
+      bitrate2.sourceStreamId = 2;
+      bitrate2.avgBitrateBps = 150 * 1000;
+      bitrateFrame.bitrates.push(bitrate2);
+      // a random extra stream id
+      const bitrate3 = SdkBitrate.create();
+      bitrate3.sourceStreamId = 5;
+      bitrate3.avgBitrateBps = 150 * 1000;
+      bitrateFrame.bitrates.push(bitrate3);
+
+      const indexFrame = new SdkIndexFrame({
+        sources: [
+          new SdkStreamDescriptor({
+            streamId: 1,
+            groupId: 1,
+            maxBitrateKbps: 1400,
+            avgBitrateBps: 1111 * 1000,
+            attendeeId: '688c',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 2,
+            groupId: 1,
+            maxBitrateKbps: 200,
+            attendeeId: '4d82',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 4,
+            groupId: 399,
+            maxBitrateKbps: 800,
+            attendeeId: 'a0ff',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+        ],
+      });
+
+      index.integrateBitratesFrame(bitrateFrame);
+      expect(index.remoteStreamDescriptions().length).to.equal(0);
+      index.integrateIndexFrame(indexFrame);
+      let remoteDescriptions = index.remoteStreamDescriptions();
+      expect(remoteDescriptions.length).to.equal(3);
+      expect(remoteDescriptions[0].avgBitrateKbps).to.equal(1111);
+      expect(remoteDescriptions[1].avgBitrateKbps).to.equal(0);
+      expect(remoteDescriptions[2].avgBitrateKbps).to.equal(0);
+      index.integrateBitratesFrame(bitrateFrame);
+      remoteDescriptions = index.remoteStreamDescriptions();
+      expect(remoteDescriptions[0].avgBitrateKbps).to.equal(1280);
+      expect(remoteDescriptions[1].avgBitrateKbps).to.equal(150);
+      expect(remoteDescriptions[2].avgBitrateKbps).to.equal(0);
+    });
+  });
+
+  describe('groupIdForStreamId', () => {
+    it('returns correct groupId if exists', () => {
+      const indexFrame = new SdkIndexFrame({
+        sources: [
+          new SdkStreamDescriptor({
+            streamId: 1,
+            groupId: 1,
+            maxBitrateKbps: 1400,
+            avgBitrateBps: 1111 * 1000,
+            attendeeId: '688c',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 2,
+            groupId: 1,
+            maxBitrateKbps: 200,
+            attendeeId: '4d82',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 4,
+            groupId: 5,
+            maxBitrateKbps: 800,
+            attendeeId: 'a0ff',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+        ],
+      });
+      index.integrateIndexFrame(indexFrame);
+      expect(index.groupIdForStreamId(1)).to.equal(1);
+      expect(index.groupIdForStreamId(6)).to.equal(undefined);
     });
   });
 });

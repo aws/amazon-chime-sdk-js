@@ -102,8 +102,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#localvideoenabled" class="tsd-kind-icon">local<wbr>Video<wbr>Enabled</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#receivestreamids" class="tsd-kind-icon">receive<wbr>Stream<wbr>Ids</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#sdpoffer" class="tsd-kind-icon">sdp<wbr>Offer</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#videoinputframerate" class="tsd-kind-icon">video<wbr>Input<wbr>Frame<wbr>Rate</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#videoinputmaxbitratekbps" class="tsd-kind-icon">video<wbr>Input<wbr>Max<wbr>Bitrate<wbr>Kbps</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientsubscribe.html#videostreamdescriptions" class="tsd-kind-icon">video<wbr>Stream<wbr>Descriptions</a></li>
 							</ul>
 						</section>
 					</div>
@@ -115,13 +114,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>Client<wbr>Subscribe<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, sdpOffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, audioHost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, audioMuted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, audioCheckin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, receiveStreamIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, localVideoEnabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, videoInputFrameRate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, videoInputMaxBitrateKbps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, connectionTypeHasVideo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingclientsubscribe.html" class="tsd-signature-type">SignalingClientSubscribe</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>Client<wbr>Subscribe<span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, sdpOffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, audioHost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, audioMuted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, audioCheckin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, receiveStreamIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, localVideoEnabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, videoStreamDescriptions<span class="tsd-signature-symbol">: </span><a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span>, connectionTypeHasVideo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingclientsubscribe.html" class="tsd-signature-type">SignalingClientSubscribe</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L7">src/signalingclient/SignalingClientSubscribe.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L9">src/signalingclient/SignalingClientSubscribe.ts:9</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -150,11 +149,8 @@
 									<dt>param{boolean}</dt>
 									<dd><p>localVideoEnabled Whether to send a video stream for the local camera</p>
 									</dd>
-									<dt>param{number}</dt>
-									<dd><p>videoInputFrameRate Video input capture framerate; zero for no video</p>
-									</dd>
-									<dt>param{number}</dt>
-									<dd><p>videoInputMaxBitrateKbps Video input max bitrate; zero for no video</p>
+									<dt>param{array&lt;videostreamdescription&gt;}</dt>
+									<dd><p>array of local video stream description</p>
 									</dd>
 									<dt>param{boolean}</dt>
 									<dd><p>connectionTypeHasVideo Whether connection type has video</p>
@@ -185,10 +181,7 @@
 									<h5>localVideoEnabled: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 								<li>
-									<h5>videoInputFrameRate: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>videoInputMaxBitrateKbps: <span class="tsd-signature-type">number</span></h5>
+									<h5>videoStreamDescriptions: <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 								<li>
 									<h5>connectionTypeHasVideo: <span class="tsd-signature-type">boolean</span></h5>
@@ -207,7 +200,7 @@
 					<div class="tsd-signature tsd-kind-icon">attendee<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L22">src/signalingclient/SignalingClientSubscribe.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L23">src/signalingclient/SignalingClientSubscribe.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -217,7 +210,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Checkin<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L26">src/signalingclient/SignalingClientSubscribe.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L27">src/signalingclient/SignalingClientSubscribe.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -227,7 +220,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Host<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L24">src/signalingclient/SignalingClientSubscribe.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L25">src/signalingclient/SignalingClientSubscribe.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -237,7 +230,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Muted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L25">src/signalingclient/SignalingClientSubscribe.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L26">src/signalingclient/SignalingClientSubscribe.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -257,7 +250,7 @@
 					<div class="tsd-signature tsd-kind-icon">local<wbr>Video<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L28">src/signalingclient/SignalingClientSubscribe.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L29">src/signalingclient/SignalingClientSubscribe.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -267,7 +260,7 @@
 					<div class="tsd-signature tsd-kind-icon">receive<wbr>Stream<wbr>Ids<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L27">src/signalingclient/SignalingClientSubscribe.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L28">src/signalingclient/SignalingClientSubscribe.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -277,24 +270,14 @@
 					<div class="tsd-signature tsd-kind-icon">sdp<wbr>Offer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L23">src/signalingclient/SignalingClientSubscribe.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L24">src/signalingclient/SignalingClientSubscribe.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="videoinputframerate" class="tsd-anchor"></a>
-					<h3>video<wbr>Input<wbr>Frame<wbr>Rate</h3>
-					<div class="tsd-signature tsd-kind-icon">video<wbr>Input<wbr>Frame<wbr>Rate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L29">src/signalingclient/SignalingClientSubscribe.ts:29</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="videoinputmaxbitratekbps" class="tsd-anchor"></a>
-					<h3>video<wbr>Input<wbr>Max<wbr>Bitrate<wbr>Kbps</h3>
-					<div class="tsd-signature tsd-kind-icon">video<wbr>Input<wbr>Max<wbr>Bitrate<wbr>Kbps<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="videostreamdescriptions" class="tsd-anchor"></a>
+					<h3>video<wbr>Stream<wbr>Descriptions</h3>
+					<div class="tsd-signature tsd-kind-icon">video<wbr>Stream<wbr>Descriptions<span class="tsd-signature-symbol">:</span> <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientSubscribe.ts#L30">src/signalingclient/SignalingClientSubscribe.ts:30</a></li>
@@ -346,10 +329,7 @@
 								<a href="signalingclientsubscribe.html#sdpoffer" class="tsd-kind-icon">sdp<wbr>Offer</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="signalingclientsubscribe.html#videoinputframerate" class="tsd-kind-icon">video<wbr>Input<wbr>Frame<wbr>Rate</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="signalingclientsubscribe.html#videoinputmaxbitratekbps" class="tsd-kind-icon">video<wbr>Input<wbr>Max<wbr>Bitrate<wbr>Kbps</a>
+								<a href="signalingclientsubscribe.html#videostreamdescriptions" class="tsd-kind-icon">video<wbr>Stream<wbr>Descriptions</a>
 							</li>
 						</ul>
 					</li>

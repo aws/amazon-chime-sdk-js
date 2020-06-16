@@ -1,6 +1,7 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 
@@ -16,9 +17,9 @@ export default interface VideoDownlinkBandwidthPolicy {
   updateIndex(videoIndex: VideoStreamIndex): void;
 
   /**
-   * Update available downlink bandwidth in kbps
+   * Update connection metrics
    */
-  updateAvailableBandwidth(bandwidthKbps: number): void;
+  updateMetrics(clientMetricReport: ClientMetricReport): void;
 
   /**
    * Triggers a round of calculation of the optimal receive set.

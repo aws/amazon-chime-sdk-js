@@ -8,13 +8,17 @@ import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import TransceiverController from './TransceiverController';
 
 export default class DefaultTransceiverController implements TransceiverController {
-  private _localCameraTransceiver: RTCRtpTransceiver | null = null;
-  private _localAudioTransceiver: RTCRtpTransceiver | null = null;
-  private videoSubscriptions: number[] = [];
-  private defaultMediaStream: MediaStream | null = null;
-  private peer: RTCPeerConnection | null = null;
+  protected _localCameraTransceiver: RTCRtpTransceiver | null = null;
+  protected _localAudioTransceiver: RTCRtpTransceiver | null = null;
+  protected videoSubscriptions: number[] = [];
+  protected defaultMediaStream: MediaStream | null = null;
+  protected peer: RTCPeerConnection | null = null;
 
-  constructor(private logger: Logger, private browserBehavior: BrowserBehavior) {}
+  constructor(protected logger: Logger, protected browserBehavior: BrowserBehavior) {}
+
+  setEncodingParameters(_params: Map<string, RTCRtpEncodingParameters>): void {
+    return;
+  }
 
   static async setVideoSendingBitrateKbpsForSender(
     sender: RTCRtpSender,
@@ -174,8 +178,18 @@ export default class DefaultTransceiverController implements TransceiverControll
       }
       // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
       // we use this to get the streamId for the track
-      const streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
-      if (streamId !== undefined && videosToReceive.contain(streamId)) {
+      let stillSubscribed = false;
+      let streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
+      if (streamId !== undefined) {
+        for (const recvStreamId of videosToReceive.array()) {
+          if (videoStreamIndex.StreamIdsInSameGroup(streamId, recvStreamId)) {
+            stillSubscribed = true;
+            streamId = recvStreamId;
+            break;
+          }
+        }
+      }
+      if (stillSubscribed) {
         transceiver.direction = 'recvonly';
         this.videoSubscriptions.push(streamId);
         videosToReceive.remove(streamId);

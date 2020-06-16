@@ -27,6 +27,8 @@ import {
   SdkSignalFrame,
   SdkSubscribeAckFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
+import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -225,7 +227,9 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('start', () => {
-    it('can be started', async () => {
+    it('can be started without policies in configuration', async () => {
+      configuration.videoUplinkBandwidthPolicy = null;
+      configuration.videoDownlinkBandwidthPolicy = null;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -267,6 +271,64 @@ describe('DefaultAudioVideoController', () => {
 
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+
+      await stop();
+    });
+
+    it('can be started with customized video policies', async () => {
+      const myUplinkPolicy = new NScaleVideoUplinkBandwidthPolicy('test');
+      const myDownlinkPolicy = new AllHighestVideoBandwidthPolicy('test');
+      configuration.videoUplinkBandwidthPolicy = myUplinkPolicy;
+      configuration.videoDownlinkBandwidthPolicy = myDownlinkPolicy;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          // use this opportunity to verify that start is idempotent
+          audioVideoController.start();
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      new TimeoutScheduler(10).start(() => {
+        // use this opportunity to verify that start cannot happen while connecting
+        audioVideoController.start();
+      });
+
+      await delay();
+      // use this opportunity to test signaling mute state to the server
+      audioVideoController.realtimeController.realtimeMuteLocalAudio();
+      audioVideoController.realtimeController.realtimeUnmuteLocalAudio();
+
+      await delay();
+      // use this opportunity to test volume indicators
+      webSocketAdapter.send(makeIndexFrame());
+      webSocketAdapter.send(makeAudioStreamIdInfoFrame());
+      webSocketAdapter.send(makeAudioMetadataFrame());
+
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+      // @ts-ignore
+      expect(audioVideoController.meetingSessionContext.videoDownlinkBandwidthPolicy).to.equal(
+        myDownlinkPolicy
+      );
+      // @ts-ignore
+      expect(audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy).to.equal(
+        myUplinkPolicy
+      );
 
       await stop();
     });
@@ -1470,6 +1532,92 @@ describe('DefaultAudioVideoController', () => {
 
       const result = await audioVideoController.getRTCPeerConnectionStats();
       expect(result).to.be.null;
+    });
+  });
+
+  describe('when simulcast is enabled', () => {
+    it('will be automatically switched off if platform is not Chrome', () => {
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      // @ts-ignore
+      expect(audioVideoController.enableSimulcast).to.equal(false);
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      // @ts-ignore
+      expect(audioVideoController.enableSimulcast).to.equal(true);
+    });
+
+    it('can be started', async () => {
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      // @ts-ignore
+      expect(audioVideoController.enableSimulcast).to.equal(true);
+
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          // use this opportunity to verify that start is idempotent
+          audioVideoController.start();
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      new TimeoutScheduler(10).start(() => {
+        // use this opportunity to verify that start cannot happen while connecting
+        audioVideoController.start();
+      });
+
+      await delay();
+      // use this opportunity to test signaling mute state to the server
+      audioVideoController.realtimeController.realtimeMuteLocalAudio();
+      audioVideoController.realtimeController.realtimeUnmuteLocalAudio();
+
+      await delay();
+      // use this opportunity to test volume indicators
+      webSocketAdapter.send(makeIndexFrame());
+      webSocketAdapter.send(makeAudioStreamIdInfoFrame());
+      webSocketAdapter.send(makeAudioMetadataFrame());
+
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      const tileId = audioVideoController.videoTileController.startLocalVideoTile();
+      expect(tileId).to.equal(1);
+      await sendICEEventAndSubscribeAckFrame();
+      audioVideoController.videoTileController.stopLocalVideoTile();
+      await sendICEEventAndSubscribeAckFrame();
+
+      await stop();
     });
   });
 });

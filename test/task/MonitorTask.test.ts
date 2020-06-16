@@ -42,10 +42,12 @@ import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollecto
 import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import MonitorTask from '../../src/task/MonitorTask';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
-import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
+import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
+import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -249,6 +251,7 @@ describe('MonitorTask', () => {
 
   describe('metricsDidReceive', () => {
     it('can only handle DefaultClientMetricReport with StreamMetricReport', () => {
+      context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
       task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
 
       class TestClientMetricReport implements ClientMetricReport {
@@ -281,13 +284,13 @@ describe('MonitorTask', () => {
     });
 
     it('handles clientMetricReport and not fire callback if receiving video meets expectation', () => {
-      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
         attendeeIdForStreamId(streamId: number): string {
           return 'attendee' + streamId.toString();
         }
       }
       context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
       streamMetricReport.previousMetrics[metric] = 100 * 1000;
@@ -320,13 +323,13 @@ describe('MonitorTask', () => {
         }
       }
       context.audioVideoController.addObserver(new TestObserver());
-      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
         attendeeIdForStreamId(streamId: number): string {
           return 'attendeeId' + streamId.toString();
         }
       }
       context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
       streamMetricReport.previousMetrics[metric] = 30 * 1000;
@@ -349,13 +352,13 @@ describe('MonitorTask', () => {
     });
 
     it('handles clientMetricReport in no attendee id case', () => {
-      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
         attendeeIdForStreamId(_streamId: number): string {
           return '';
         }
       }
       context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
       streamMetricReport.previousMetrics[metric] = 100 * 1000;
@@ -370,13 +373,13 @@ describe('MonitorTask', () => {
     });
 
     it('handles clientMetricReport in no previous metric case', () => {
-      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
         attendeeIdForStreamId(_streamId: number): string {
           return 'attendeeid';
         }
       }
       context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
       streamMetricReport.previousMetrics[metric] = 100 * 1000;
@@ -387,6 +390,93 @@ describe('MonitorTask', () => {
       const clientMetricReport = new DefaultClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
+    });
+
+    it('could trigger resubscription', done => {
+      // eslint-disable-next-line
+      type RawMetrics = any;
+      class TestClientMetricReport extends DefaultClientMetricReport {
+        packetsReceived: RawMetrics = null;
+        fractionLoss: RawMetrics = null;
+        videoPacketSentPerSecond: RawMetrics = 1000;
+        videoUpstreamBitrate: RawMetrics = 100;
+        availableSendBandwidth: RawMetrics = 1000 * 1000;
+        availableReceiveBandwidth: RawMetrics = 1000 * 1000;
+
+        getObservableMetrics(): { [id: string]: number } {
+          return {
+            audioPacketsReceived: this.packetsReceived,
+            audioPacketsReceivedFractionLoss: this.fractionLoss,
+            videoPacketSentPerSecond: this.videoPacketSentPerSecond,
+            videoUpstreamBitrate: this.videoUpstreamBitrate,
+            availableSendBandwidth: this.availableSendBandwidth,
+            availableReceiveBandwidth: this.availableReceiveBandwidth,
+          };
+        }
+      }
+      let firstTimeUplink = 0;
+      let firstTimeDownlink = 0;
+      class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
+        updateMetrics(_metricReport: ClientMetricReport): void {
+          return;
+        }
+
+        wantsResubscribe(): boolean {
+          firstTimeDownlink += 1;
+          if (firstTimeDownlink % 2 === 0) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+      class TestVideoUplinkPolicy extends SimulcastUplinkPolicy {
+        wantsResubscribe(): boolean {
+          if (firstTimeUplink < 4) {
+            firstTimeUplink += 1;
+            return false;
+          } else {
+            firstTimeUplink += 1;
+            return true;
+          }
+        }
+      }
+      context.videoTileController.startLocalVideoTile();
+      context.videoStreamIndex = new SimulcastVideoStreamIndex(logger);
+
+      context.videoUplinkBandwidthPolicy = new TestVideoUplinkPolicy('self', logger);
+      context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger, null);
+      const spy = sinon.spy(context.audioVideoController, 'update');
+      // task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
+      const metric = 'bytesReceived';
+      const streamMetricReport = new StreamMetricReport();
+      streamMetricReport.previousMetrics[metric] = 30 * 1000;
+      streamMetricReport.currentMetrics[metric] = 80 * 1000;
+      streamMetricReport.streamId = 1;
+      streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+
+      const streamMetricReportAudio = new StreamMetricReport();
+      streamMetricReportAudio.previousMetrics[metric] = 10 * 1000;
+      streamMetricReportAudio.currentMetrics[metric] = 100 * 1000;
+      streamMetricReportAudio.streamId = 0;
+      streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
+
+      const clientMetricReport = new TestClientMetricReport(logger);
+      clientMetricReport.streamMetricReports[1] = streamMetricReport;
+      clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
+      task.metricsDidReceive(clientMetricReport);
+      task.metricsDidReceive(clientMetricReport);
+      task.metricsDidReceive(clientMetricReport);
+      task.metricsDidReceive(clientMetricReport);
+      task.metricsDidReceive(clientMetricReport);
+      new TimeoutScheduler(100).start(() => {
+        // @ts-ignore
+        expect(context.videoUplinkBandwidthPolicy.lastUplinkBandwidthKbps).to.equal(1000);
+        expect(spy.called).to.be.true;
+        done();
+      });
     });
   });
 
@@ -445,28 +535,6 @@ describe('MonitorTask', () => {
       const spy = sinon.spy(context.statsCollector, 'logVideoEvent');
       task.videoSendHealthDidChange(1024, 5);
       expect(spy.called).to.be.false;
-    });
-  });
-
-  describe('videoReceiveBandwidthDidChange', () => {
-    it('does not update the available bandwidth if the downlink bandwidth policy does not exist', () => {
-      context.videoDownlinkBandwidthPolicy = null;
-      task.videoReceiveBandwidthDidChange(10, 20);
-    });
-
-    it('resubscribes if the downlink bandwidth policy wants resubscribe', () => {
-      const spy = sinon.spy(context.audioVideoController, 'update');
-      class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
-        wantsResubscribe(): boolean {
-          return true;
-        }
-        chooseSubscriptions(): DefaultVideoStreamIdSet {
-          return new DefaultVideoStreamIdSet([1, 2, 3]);
-        }
-      }
-      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
-      task.videoReceiveBandwidthDidChange(10, 20);
-      expect(spy.called).to.be.true;
     });
   });
 
@@ -666,6 +734,7 @@ describe('MonitorTask', () => {
         }
       }
       context.videoSubscriptions = [streamIdTestValue];
+      context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
       context.audioVideoController.addObserver(new TestObserver());
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();
@@ -690,6 +759,7 @@ describe('MonitorTask', () => {
         }
       }
       context.videoSubscriptions = [];
+      context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
       context.audioVideoController.addObserver(new TestObserver());
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();
