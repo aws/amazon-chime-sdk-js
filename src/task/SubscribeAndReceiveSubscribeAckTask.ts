@@ -47,11 +47,22 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       }
     }
 
-    let frameRate = 0;
-    let maxEncodeBitrateKbps = 0;
-    if (this.context.videoCaptureAndEncodeParameter) {
-      frameRate = this.context.videoCaptureAndEncodeParameter.captureFrameRate();
-      maxEncodeBitrateKbps = this.context.videoCaptureAndEncodeParameter.encodeBitrates()[0];
+    if (!this.context.enableSimulcast) {
+      // backward compatibility
+      let frameRate = 0;
+      let maxEncodeBitrateKbps = 0;
+      if (this.context.videoCaptureAndEncodeParameter) {
+        frameRate = this.context.videoCaptureAndEncodeParameter.captureFrameRate();
+        maxEncodeBitrateKbps = this.context.videoCaptureAndEncodeParameter.encodeBitrates()[0];
+      }
+      const param: RTCRtpEncodingParameters = {
+        rid: 'hi',
+        maxBitrate: maxEncodeBitrateKbps,
+        maxFramerate: frameRate,
+        active: true,
+      };
+
+      this.context.videoStreamIndex.integrateUplinkPolicyDecision([param]);
     }
 
     const isSendingStreams: boolean =
@@ -66,8 +77,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       false,
       this.context.videoSubscriptions,
       isSendingStreams,
-      frameRate,
-      maxEncodeBitrateKbps,
+      this.context.videoStreamIndex.localStreamDescriptions(),
       // TODO: handle check-in mode, or remove this param
       true
     );

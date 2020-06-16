@@ -1,8 +1,10 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
-import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
+import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
+import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
 
 /**
@@ -11,19 +13,19 @@ import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
  * for all non-self participants.
  */
 export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBandwidthPolicy {
-  private optimalReceiveSet: DefaultVideoStreamIdSet;
-  private subscribedReceiveSet: DefaultVideoStreamIdSet;
+  private optimalReceiveSet: VideoStreamIdSet;
+  private subscribedReceiveSet: VideoStreamIdSet;
 
   constructor(private selfAttendeeId: string) {
     this.optimalReceiveSet = new DefaultVideoStreamIdSet();
     this.subscribedReceiveSet = new DefaultVideoStreamIdSet();
   }
 
-  updateIndex(videoIndex: DefaultVideoStreamIndex): void {
+  updateIndex(videoIndex: VideoStreamIndex): void {
     this.optimalReceiveSet = this.calculateOptimalReceiveSet(videoIndex);
   }
 
-  updateAvailableBandwidth(_bandwidthKbps: number): void {}
+  updateMetrics(_clientMetricReport: ClientMetricReport): void {}
 
   updateCalculatedOptimalReceiveSet(): void {}
 
@@ -31,12 +33,12 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
     return !this.subscribedReceiveSet.equal(this.optimalReceiveSet);
   }
 
-  chooseSubscriptions(): DefaultVideoStreamIdSet {
+  chooseSubscriptions(): VideoStreamIdSet {
     this.subscribedReceiveSet = this.optimalReceiveSet.clone();
     return this.subscribedReceiveSet.clone();
   }
 
-  private calculateOptimalReceiveSet(videoIndex: DefaultVideoStreamIndex): DefaultVideoStreamIdSet {
+  private calculateOptimalReceiveSet(videoIndex: VideoStreamIndex): VideoStreamIdSet {
     return videoIndex.highestQualityStreamFromEachGroupExcludingSelf(this.selfAttendeeId);
   }
 }

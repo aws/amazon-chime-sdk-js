@@ -74,6 +74,11 @@ export default class MeetingSessionConfiguration {
   enableUnifiedPlanForChromiumBasedBrowsers: boolean = false;
 
   /**
+   * Feature flag to enable Simulcast
+   */
+  enableSimulcastForUnifiedPlanChromiumBasedBrowsers: boolean = false;
+
+  /**
    * Video downlink bandwidth policy to determine which remote videos
    * are subscribed to.
    */
@@ -158,6 +163,8 @@ export default class MeetingSessionConfiguration {
     if (new DefaultBrowserBehavior().screenShareSendsOnlyKeyframes()) {
       this.screenSharingSessionOptions = { bitRate: 384000 };
     }
+
+    // simulcast feature flag will override the following policies when DefaultAudioVideoController is created
     this.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
       this.credentials ? this.credentials.attendeeId : null
     );

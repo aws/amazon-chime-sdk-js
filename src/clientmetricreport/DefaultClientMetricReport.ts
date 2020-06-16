@@ -367,6 +367,17 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     // new getStats() API
     availableIncomingBitrate: { source: 'availableIncomingBitrate' },
     availableOutgoingBitrate: { source: 'availableOutgoingBitrate' },
+
+    nackCountReceivedPerSecond: {
+      source: 'nackCount',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
+    googNackCountReceivedPerSecond: {
+      source: 'googNacksReceived',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
   };
 
   getObservableMetricValue(metricName: string): number {

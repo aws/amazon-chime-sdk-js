@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -145,17 +145,6 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       await task.run();
       expect(context.sdpAnswer).to.equal(sdpAnswer);
     });
-
-    // it('should not subscribe if audio is disabled', async () => {
-    //   await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
-    //
-
-    //   const task = new SubscribeAndReceiveSubscribeAckTask(context);
-    //   await task.run();
-    //   const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
-    //     .settings;
-    //   expect(settings).to.be.undefined;
-    // });
 
     it('can subscribe without videoCaptureAndEncodeParameter', async () => {
       context.videoCaptureAndEncodeParameter = null;

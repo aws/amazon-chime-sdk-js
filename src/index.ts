@@ -16,6 +16,7 @@ import Backoff from './backoff/Backoff';
 import BackoffFactory from './backoff/BackoffFactory';
 import BaseConnectionHealthPolicy from './connectionhealthpolicy/BaseConnectionHealthPolicy';
 import BaseTask from './task/BaseTask';
+import BitrateParameters from './videouplinkbandwidthpolicy/BitrateParameters';
 import BrowserBehavior from './browserbehavior/BrowserBehavior';
 import CleanRestartedSessionTask from './task/CleanRestartedSessionTask';
 import CleanStoppedSessionTask from './task/CleanStoppedSessionTask';
@@ -256,6 +257,9 @@ import SignalingClientJoin from './signalingclient/SignalingClientJoin';
 import SignalingClientObserver from './signalingclientobserver/SignalingClientObserver';
 import SignalingClientSubscribe from './signalingclient/SignalingClientSubscribe';
 import SignalingSession from './screenviewing/signalingsession/SignalingSession';
+import SimulcastTransceiverController from './transceivercontroller/SimulcastTransceiverController';
+import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
+import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
 import Some from './maybe/Some';
 import StatsCollector from './statscollector/StatsCollector';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
@@ -268,10 +272,12 @@ import TimeoutTask from './task/TimeoutTask';
 import TransceiverController from './transceivercontroller/TransceiverController';
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import Versioning from './versioning/Versioning';
+import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoLogEvent from './statscollector/VideoLogEvent';
+import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
 import VideoStreamIdSet from './videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from './videostreamindex/VideoStreamIndex';
 import VideoTile from './videotile/VideoTile';
@@ -306,6 +312,7 @@ export {
   BackoffFactory,
   BaseConnectionHealthPolicy,
   BaseTask,
+  BitrateParameters,
   BrowserBehavior,
   CleanRestartedSessionTask,
   CleanStoppedSessionTask,
@@ -546,6 +553,9 @@ export {
   SignalingClientObserver,
   SignalingClientSubscribe,
   SignalingSession,
+  SimulcastTransceiverController,
+  SimulcastUplinkPolicy,
+  SimulcastVideoStreamIndex,
   Some,
   StatsCollector,
   StreamMetricReport,
@@ -558,10 +568,12 @@ export {
   TransceiverController,
   UnusableAudioWarningConnectionHealthPolicy,
   Versioning,
+  VideoAdaptiveProbePolicy,
   VideoCaptureAndEncodeParameter,
   VideoDownlinkBandwidthPolicy,
   VideoElementFactory,
   VideoLogEvent,
+  VideoStreamDescription,
   VideoStreamIdSet,
   VideoStreamIndex,
   VideoTile,

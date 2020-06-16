@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -82,7 +82,9 @@
       "src/screensharefacade/DefaultScreenShareFacade.ts",
       "src/screenshareviewfacade/DefaultScreenShareViewFacade.ts",
       "src/activespeakerdetector/DefaultActiveSpeakerDetector.ts",
-      "src/activespeakerpolicy/DefaultActiveSpeakerPolicy.ts"
+      "src/activespeakerpolicy/DefaultActiveSpeakerPolicy.ts",
+      "src/devicecontroller/*.ts",
+      "src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts"
     ],
     "extension": [
       ".ts"

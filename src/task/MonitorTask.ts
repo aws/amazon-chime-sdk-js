@@ -41,6 +41,8 @@ export default class MonitorTask extends BaseTask
   private currentVideoDownlinkBandwidthEstimationKbps: number = 10000;
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
 
+  // private logCount = 0;
+
   constructor(
     private context: AudioVideoControllerState,
     connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration,
@@ -119,32 +121,67 @@ export default class MonitorTask extends BaseTask
   }
 
   videoReceiveBandwidthDidChange(newBandwidthKbps: number, oldBandwidthKbps: number): void {
-    if (this.context.videoDownlinkBandwidthPolicy) {
-      this.logger.debug(() => {
-        return `receiving bandwidth changed from prev=${oldBandwidthKbps} Kbps to curr=${newBandwidthKbps} Kbps`;
-      });
-      this.currentVideoDownlinkBandwidthEstimationKbps = newBandwidthKbps;
+    this.logger.debug(() => {
+      return `receiving bandwidth changed from prev=${oldBandwidthKbps} Kbps to curr=${newBandwidthKbps} Kbps`;
+    });
+    this.currentVideoDownlinkBandwidthEstimationKbps = newBandwidthKbps;
+  }
 
-      this.context.videoDownlinkBandwidthPolicy.updateAvailableBandwidth(newBandwidthKbps);
-      const resubscribeForDownlink = this.context.videoDownlinkBandwidthPolicy.wantsResubscribe();
-      if (resubscribeForDownlink) {
-        this.context.videosToReceive = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+  private checkResubscribe(clientMetricReport: ClientMetricReport): boolean {
+    const metricReport = clientMetricReport.getObservableMetrics();
+    if (!metricReport) {
+      return false;
+    }
+    const availableSendBandwidth =
+      metricReport.availableSendBandwidth || metricReport.availableOutgoingBitrate;
+    const nackCountPerSecond =
+      metricReport.nackCountReceivedPerSecond || metricReport.googNackCountReceivedPerSecond;
+
+    let needResubscribe = false;
+
+    this.context.videoDownlinkBandwidthPolicy.updateMetrics(clientMetricReport);
+    const resubscribeForDownlink = this.context.videoDownlinkBandwidthPolicy.wantsResubscribe();
+    needResubscribe = needResubscribe || resubscribeForDownlink;
+    if (resubscribeForDownlink) {
+      this.context.videosToReceive = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+      this.logger.info(
+        `trigger resubscribe for down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}]`
+      );
+    }
+
+    if (this.context.videoTileController.hasStartedLocalVideoTile()) {
+      this.context.videoUplinkBandwidthPolicy.updateConnectionMetric({
+        uplinkKbps: availableSendBandwidth / 1000,
+        nackCountPerSecond: nackCountPerSecond,
+      });
+      const resubscribeForUplink = this.context.videoUplinkBandwidthPolicy.wantsResubscribe();
+      needResubscribe = needResubscribe || resubscribeForUplink;
+      if (resubscribeForUplink) {
         this.logger.info(
-          `trigger resubscribe for down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}]`
+          `trigger resubscribe for up=${resubscribeForUplink}; videosToReceive=[${this.context.videosToReceive.array()}]`
         );
-        this.context.audioVideoController.update();
+        this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
+        this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
       }
     }
+
+    return needResubscribe;
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
-    if (!this.currentAvailableStreamAvgBitrates) {
-      return;
-    }
     const defaultClientMetricReport = clientMetricReport as DefaultClientMetricReport;
     if (!defaultClientMetricReport) {
       return;
     }
+
+    if (this.checkResubscribe(clientMetricReport)) {
+      this.context.audioVideoController.update();
+    }
+
+    if (!this.currentAvailableStreamAvgBitrates) {
+      return;
+    }
+
     const streamMetricReport = defaultClientMetricReport.streamMetricReports;
     if (!streamMetricReport) {
       return;
@@ -249,40 +286,46 @@ export default class MonitorTask extends BaseTask
     }
   }
 
+  private handleBitrateFrame(bitrates: ISdkBitrateFrame): void {
+    const videoSubscription: number[] = this.context.videoSubscriptions || [];
+
+    let requiredBandwidthKbps = 0;
+    this.currentAvailableStreamAvgBitrates = bitrates;
+
+    this.logger.info(`simulcast: bitrates from server ${JSON.stringify(bitrates)}`);
+    for (const bitrate of bitrates.bitrates) {
+      if (videoSubscription.indexOf(bitrate.sourceStreamId) !== -1) {
+        requiredBandwidthKbps += bitrate.avgBitrateBps;
+      }
+    }
+    requiredBandwidthKbps /= 1000;
+
+    if (
+      this.currentVideoDownlinkBandwidthEstimationKbps *
+        MonitorTask.DEFAULT_DOWNLINK_CALLRATE_OVERSHOOT_FACTOR <
+      requiredBandwidthKbps
+    ) {
+      this.logger.info(
+        `Downlink bandwidth pressure is high: estimated bandwidth ${this.currentVideoDownlinkBandwidthEstimationKbps}Kbps, required bandwidth ${requiredBandwidthKbps}Kbps`
+      );
+      this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
+        Maybe.of(observer.estimatedDownlinkBandwidthLessThanRequired).map(f =>
+          f.bind(observer)(this.currentVideoDownlinkBandwidthEstimationKbps, requiredBandwidthKbps)
+        );
+      });
+    }
+  }
+
   handleSignalingClientEvent(event: SignalingClientEvent): void {
     if (event.type !== SignalingClientEventType.ReceivedSignalFrame) {
       return;
     }
 
     if (!!event.message.bitrates) {
-      const videoSubscription: number[] = this.context.videoSubscriptions || [];
-
-      let requiredBandwidthKbps = 0;
-      this.currentAvailableStreamAvgBitrates = event.message.bitrates;
-      for (const bitrate of event.message.bitrates.bitrates) {
-        if (videoSubscription.indexOf(bitrate.sourceStreamId) !== -1) {
-          requiredBandwidthKbps += bitrate.avgBitrateBps;
-        }
-      }
-      requiredBandwidthKbps /= 1000;
-
-      if (
-        this.currentVideoDownlinkBandwidthEstimationKbps *
-          MonitorTask.DEFAULT_DOWNLINK_CALLRATE_OVERSHOOT_FACTOR <
-        requiredBandwidthKbps
-      ) {
-        this.logger.debug(() => {
-          return `Downlink bandwidth pressure is high: estimated bandwidth ${this.currentVideoDownlinkBandwidthEstimationKbps}Kbps, required bandwidth ${requiredBandwidthKbps}Kbps`;
-        });
-        this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-          Maybe.of(observer.estimatedDownlinkBandwidthLessThanRequired).map(f =>
-            f.bind(observer)(
-              this.currentVideoDownlinkBandwidthEstimationKbps,
-              requiredBandwidthKbps
-            )
-          );
-        });
-      }
+      const bitrateFrame: ISdkBitrateFrame = event.message.bitrates;
+      this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);
+      this.context.videoDownlinkBandwidthPolicy.updateIndex(this.context.videoStreamIndex);
+      this.handleBitrateFrame(event.message.bitrates);
     }
     const status = MeetingSessionStatus.fromSignalFrame(event.message);
     if (status.statusCode() !== MeetingSessionStatusCode.OK) {

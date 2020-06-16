@@ -1,8 +1,9 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
+import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import {
@@ -193,8 +194,11 @@ describe('AllHighestVideoBandwidthPolicy', () => {
         })
       );
 
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 1000;
+
       policy.updateIndex(index);
-      policy.updateAvailableBandwidth(1000);
+      policy.updateMetrics(metricReport);
       policy.updateCalculatedOptimalReceiveSet();
       const subscriptions = policy.chooseSubscriptions();
       expect(subscriptions.array()).to.deep.equal([2, 4, 6]);

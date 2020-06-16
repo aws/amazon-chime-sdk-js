@@ -46,12 +46,33 @@ export default class ReceiveVideoInputTask extends BaseTask {
     } catch (error) {
       this.context.logger.warn('could not acquire video input from current device');
     }
-    this.context.activeVideoInput = videoInput;
+    if (this.context.enableSimulcast) {
+      const encodingParams = this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
+      this.context.logger.info(
+        `simulcast: choose encoding parameter ${Array.from(
+          JSON.stringify(encodingParams.values())
+        )}`
+      );
+      this.context.videoStreamIndex.integrateUplinkPolicyDecision(
+        Array.from(encodingParams.values())
+      );
+    }
 
+    this.context.activeVideoInput = videoInput;
     if (videoInput) {
       const videoTracks = videoInput.getVideoTracks();
       const attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
       const trackSettings = videoTracks[0].getSettings();
+      if (this.context.enableSimulcast) {
+        const constraint = this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
+        this.context.logger.info(`simulcast: choose constraint ${JSON.stringify(constraint)}`);
+        try {
+          await videoTracks[0].applyConstraints(constraint);
+        } catch (error) {
+          this.context.logger.info('simulcast: pass video without more constraint');
+        }
+      }
+
       const externalUserId = this.context.audioVideoController.configuration.credentials
         .externalUserId;
       localTile.bindVideoStream(

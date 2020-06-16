@@ -25,6 +25,7 @@ import {
   SdkStreamMediaType,
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import VideoStreamDescription from '../../src/videostreamindex/VideoStreamDescription';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -326,8 +327,7 @@ describe('DefaultSignalingClient', () => {
                 false,
                 [],
                 false,
-                0,
-                0,
+                [new VideoStreamDescription()],
                 false
               )
             );
@@ -365,8 +365,7 @@ describe('DefaultSignalingClient', () => {
                 true,
                 [0],
                 true,
-                1,
-                1,
+                [new VideoStreamDescription()],
                 true
               )
             );

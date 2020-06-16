@@ -135,6 +135,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   // feature flags
   enableWebAudio = false;
   enableUnifiedPlanForChromiumBasedBrowsers = true;
+  enableSimulcast = false;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -631,6 +632,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     const deviceController = new DefaultDeviceController(logger);
     configuration.enableWebAudio = this.enableWebAudio;
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
+    configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
     this.audioVideo = this.meetingSession.audioVideo;
 

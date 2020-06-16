@@ -172,4 +172,13 @@ describe('DefaultBrowserBehavior', () => {
       expect(codecs.includes('VP8')).to.equal(true);
     });
   });
+
+  describe('requiresSimulcastMunging', () => {
+    it('can determine if simulcast requires munging', async () => {
+      setUserAgent(CHROME_USERAGENT);
+      expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.eq(false);
+      setUserAgent(SAFARI_USERAGENT);
+      expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.eq(true);
+    });
+  });
 });

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add position in frame to attendee updates
 - Add stale-issue bot configuration
+- Add simulcast support and provides new uplink downlink policies
 
 ### Changed
 - Use GET instead of POST to obtain TURN credentials

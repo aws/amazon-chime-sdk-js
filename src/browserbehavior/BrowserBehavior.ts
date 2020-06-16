@@ -48,6 +48,11 @@ export default interface BrowserBehavior {
   requiresUnifiedPlanMunging(): boolean;
 
   /**
+   * Returns whether the browser requires munging to activate simulcast
+   */
+  requiresSimulcastMunging(): boolean;
+
+  /**
    * Returns the bundle policy for the browser
    */
   requiresBundlePolicy(): RTCBundlePolicy;

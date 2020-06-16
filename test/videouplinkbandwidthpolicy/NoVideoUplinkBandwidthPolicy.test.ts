@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -159,6 +159,24 @@ describe('NoVideoUplinkBandwidthPolicy', () => {
       );
       policy.updateIndex(index);
       expect(policy.wantsResubscribe()).to.be.false;
+    });
+  });
+
+  describe('updateConnectionMetric', () => {
+    it('is no-op', () => {
+      policy.updateConnectionMetric({});
+    });
+  });
+
+  describe('chooseMediaTrackConstraints', () => {
+    it('is no-op', () => {
+      policy.chooseMediaTrackConstraints();
+    });
+  });
+
+  describe('chooseEncodingParameters', () => {
+    it('is no-op', () => {
+      policy.chooseEncodingParameters();
     });
   });
 });

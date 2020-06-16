@@ -1,8 +1,13 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SdkIndexFrame, SdkSubscribeAckFrame } from '../signalingprotocol/SignalingProtocol.js';
+import {
+  ISdkBitrateFrame,
+  SdkIndexFrame,
+  SdkSubscribeAckFrame,
+} from '../signalingprotocol/SignalingProtocol.js';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
+import VideoStreamDescription from './VideoStreamDescription';
 
 /**
  * [[VideoStreamIndex]] holds the set of video streams available on the server for subscription
@@ -17,6 +22,11 @@ export default interface VideoStreamIndex {
    * Saves [[SdkSubscribeAckFrame]] in [[VideoStreamIndex]]
    */
   integrateSubscribeAckFrame(subscribeAck: SdkSubscribeAckFrame): void;
+
+  /**
+   * Saves [[SdkBitrateFrame]] in [[VideoStreamIndex]]
+   */
+  integrateBitratesFrame(bitrates: ISdkBitrateFrame): void;
 
   /**
    * Returns the set of all streams as [[VideoStreamIdSet]]
@@ -64,6 +74,16 @@ export default interface VideoStreamIndex {
   attendeeIdForStreamId(streamId: number): string;
 
   /**
+   * Returns group id for a stream id
+   */
+  groupIdForStreamId(streamId: number): number;
+
+  /**
+   * Determines if the stream ID's are from the same group (client)
+   */
+  StreamIdsInSameGroup(streamId1: number, streamId2: number): boolean;
+
+  /**
    * Returns a stream id for a track id
    */
   streamIdForTrack(trackId: string): number;
@@ -77,4 +97,19 @@ export default interface VideoStreamIndex {
    * Returns the set of streams which are paused at source.
    */
   streamsPausedAtSource(): VideoStreamIdSet;
+
+  /**
+   * Updates cached local stream description array via uplink decisions, an array of [[RTCRtpEncodingParameters]]
+   */
+  integrateUplinkPolicyDecision(encodingParameters: RTCRtpEncodingParameters[]): void;
+
+  /**
+   * Returns the cloned array of [[VideoStreamDescription]] corresponding to local streams
+   */
+  localStreamDescriptions(): VideoStreamDescription[];
+
+  /**
+   * Returns the cloned array of [[VideoStreamDescription]] corresponding to remote streams
+   */
+  remoteStreamDescriptions(): VideoStreamDescription[];
 }

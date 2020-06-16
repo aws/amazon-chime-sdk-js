@@ -1,5 +1,7 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 
 /**
  * [[SignalingClientSubscribe]] contains settings for the Subscribe SignalFrame.
@@ -14,8 +16,7 @@ export default class SignalingClientSubscribe {
    * @param{boolean} audioCheckin Whether audio is in checked-in state
    * @param{Array<number>} receiveStreamIds Which video streams to receive
    * @param{boolean} localVideoEnabled Whether to send a video stream for the local camera
-   * @param{number} videoInputFrameRate Video input capture framerate; zero for no video
-   * @param{number} videoInputMaxBitrateKbps Video input max bitrate; zero for no video
+   * @param{Array<VideoStreamDescription>} array of local video stream description
    * @param{boolean} connectionTypeHasVideo Whether connection type has video
    */
   constructor(
@@ -26,8 +27,7 @@ export default class SignalingClientSubscribe {
     public audioCheckin: boolean,
     public receiveStreamIds: number[],
     public localVideoEnabled: boolean,
-    public videoInputFrameRate: number,
-    public videoInputMaxBitrateKbps: number,
+    public videoStreamDescriptions: VideoStreamDescription[],
     public connectionTypeHasVideo: boolean
   ) {}
 }

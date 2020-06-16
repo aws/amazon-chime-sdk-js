@@ -7,6 +7,7 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultMeetingSession from '../../src/meetingsession/DefaultMeetingSession';
+import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultMeetingSession', () => {
@@ -47,6 +48,54 @@ describe('DefaultMeetingSession', () => {
         new NoOpDeviceController()
       );
       expect(session).to.exist;
+      mockBuilder.cleanup();
+    });
+
+    it('can be constructed with simulcast feature for chromium-based browsers', () => {
+      const domBehavior = new DOMMockBehavior();
+      domBehavior.browserName = 'chrome';
+      const mockBuilder = new DOMMockBuilder(domBehavior);
+      const config = new NoOpAudioVideoController().configuration;
+
+      config.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      let session = new DefaultMeetingSession(config, new NoOpLogger(), new NoOpDeviceController());
+      expect(session).to.exist;
+      expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
+        true
+      );
+      expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
+
+      config.enableUnifiedPlanForChromiumBasedBrowsers = false;
+      config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      session = new DefaultMeetingSession(config, new NoOpLogger(), new NoOpDeviceController());
+      expect(session).to.exist;
+      expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
+        false
+      );
+      expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(false);
+      mockBuilder.cleanup();
+    });
+
+    it('can be constructed with simulcast feature switched off for firefox', () => {
+      const domBehavior = new DOMMockBehavior();
+      domBehavior.browserName = 'firefox';
+      const mockBuilder = new DOMMockBuilder(domBehavior);
+
+      const config = new NoOpAudioVideoController().configuration;
+
+      config.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      const session = new DefaultMeetingSession(
+        config,
+        new NoOpLogger(),
+        new NoOpDeviceController()
+      );
+      expect(session).to.exist;
+      expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
+        false
+      );
+      expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
       mockBuilder.cleanup();
     });
   });

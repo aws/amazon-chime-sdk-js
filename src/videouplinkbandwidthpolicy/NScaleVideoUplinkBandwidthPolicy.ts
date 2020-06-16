@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
@@ -19,6 +19,18 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   constructor(private selfAttendeeId: string) {
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
+  }
+
+  updateConnectionMetric({}): void {
+    return;
+  }
+
+  chooseMediaTrackConstraints(): MediaTrackConstraints {
+    return {};
+  }
+
+  chooseEncodingParameters(): Map<string, RTCRtpEncodingParameters> {
+    return new Map<string, RTCRtpEncodingParameters>();
   }
 
   updateIndex(videoIndex: VideoStreamIndex): void {

@@ -90,6 +90,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return shouldRequire;
   }
 
+  requiresSimulcastMunging(): boolean {
+    return this.isSafari();
+  }
+
   requiresBundlePolicy(): RTCBundlePolicy {
     return 'max-bundle';
   }

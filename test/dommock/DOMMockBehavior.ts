@@ -24,6 +24,7 @@ export default class DOMMockBehavior {
   setRemoteDescriptionStreamId: string = 'bc20510c2a134aa798f4dc9982f7c4a3adk';
   setRemoteDescriptionNumberOfTracks: number = 1;
   setRemoteDescriptionAddTrackSucceeds: boolean = true;
+  applyConstraintSucceeds: boolean = true;
   mediaStreamTrackCapabilities: { width: number; height: number } = {
     width: 0,
     height: 0,

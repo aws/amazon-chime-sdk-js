@@ -44,6 +44,9 @@ export default class DefaultMeetingSession implements MeetingSession {
   ) {
     this._configuration = configuration;
     this._logger = logger;
+
+    this.checkBrowserSupportAndFeatureConfiguration();
+
     this._deviceController = deviceController;
     this._deviceController.enableWebAudio(configuration.enableWebAudio);
     this.audioVideoController = new DefaultAudioVideoController(
@@ -98,7 +101,6 @@ export default class DefaultMeetingSession implements MeetingSession {
       this._deviceController,
       this.contentShareController
     );
-    this.checkBrowserSupport();
   }
 
   get configuration(): MeetingSessionConfiguration {
@@ -129,7 +131,7 @@ export default class DefaultMeetingSession implements MeetingSession {
     return this._deviceController;
   }
 
-  private checkBrowserSupport(): void {
+  private checkBrowserSupportAndFeatureConfiguration(): void {
     const browserBehavior = new DefaultBrowserBehavior();
     const browser = `${browserBehavior.name()} ${browserBehavior.majorVersion()} (${browserBehavior.version()})`;
     this.logger.info(`browser is ${browser}`);
@@ -139,6 +141,30 @@ export default class DefaultMeetingSession implements MeetingSession {
           'Stability may suffer. ' +
           `Supported browsers are: ${browserBehavior.supportString()}.`
       );
+    }
+
+    if (this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
+      if (browserBehavior.hasChromiumWebRTC()) {
+        this.logger.info('WebRTC unified plan for Chromium-based browsers is enabled');
+      } else {
+        this.logger.info(`WebRTC unified plan is required for ${browserBehavior.name()}`);
+      }
+    }
+
+    if (this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers) {
+      if (!this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
+        this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
+        this.logger.info(
+          'Simulcast requires enabling WebRTC Unified Plan for Chromium-based browsers'
+        );
+      } else if (browserBehavior.hasChromiumWebRTC()) {
+        this.logger.info(`Simulcast is enabled for ${browserBehavior.name()}`);
+      } else {
+        this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
+        this.logger.info(
+          'Simulcast requires WebRTC Unified Plan and is only supported on Chromium-based browsers'
+        );
+      }
     }
   }
 }

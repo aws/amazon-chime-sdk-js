@@ -86,6 +86,7 @@
 				<h3>Implemented by</h3>
 				<ul class="tsd-hierarchy">
 					<li><a href="../classes/defaulttransceivercontroller.html" class="tsd-signature-type">DefaultTransceiverController</a></li>
+					<li><a href="../classes/simulcasttransceivercontroller.html" class="tsd-signature-type">SimulcastTransceiverController</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -100,6 +101,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#replaceaudiotrack" class="tsd-kind-icon">replace<wbr>Audio<wbr>Track</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#reset" class="tsd-kind-icon">reset</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#setaudioinput" class="tsd-kind-icon">set<wbr>Audio<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#setencodingparameters" class="tsd-kind-icon">set<wbr>Encoding<wbr>Parameters</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#setpeer" class="tsd-kind-icon">set<wbr>Peer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#setvideoinput" class="tsd-kind-icon">set<wbr>Video<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transceivercontroller.html#setvideosendingbitratekbps" class="tsd-kind-icon">set<wbr>Video<wbr>Sending<wbr>Bitrate<wbr>Kbps</a></li>
@@ -233,6 +235,34 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="setencodingparameters" class="tsd-anchor"></a>
+					<h3>set<wbr>Encoding<wbr>Parameters</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Encoding<wbr>Parameters<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RTCRtpEncodingParameters</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/TransceiverController.ts#L78">src/transceivercontroller/TransceiverController.ts:78</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set [[RTCRtpEncodingParameters]] on the sender of transceiver</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>params: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RTCRtpEncodingParameters</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -454,6 +484,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="transceivercontroller.html#setaudioinput" class="tsd-kind-icon">set<wbr>Audio<wbr>Input</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="transceivercontroller.html#setencodingparameters" class="tsd-kind-icon">set<wbr>Encoding<wbr>Parameters</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="transceivercontroller.html#setpeer" class="tsd-kind-icon">set<wbr>Peer</a>

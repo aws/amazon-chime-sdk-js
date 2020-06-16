@@ -15,6 +15,8 @@ import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
+import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -70,6 +72,7 @@ describe('AttachMediaInputTask', () => {
       logger,
       context.browserBehavior
     );
+    context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('self-attendees');
     task = new AttachMediaInputTask(context);
   });
 
@@ -167,6 +170,23 @@ describe('AttachMediaInputTask', () => {
       context.activeVideoInput = null;
       task.run().then(() => {
         expect(context.localVideoSender).to.equal(null);
+        done();
+      });
+    });
+  });
+
+  describe('Simulcast', () => {
+    it('could change transceiver encoding parameter', done => {
+      context.enableSimulcast = true;
+      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('self-attendee', logger);
+      // @ts-ignore
+      navigator.userAgent = 'Chrome/77.0.3865.75';
+      context.browserBehavior = new DefaultBrowserBehavior({
+        enableUnifiedPlanForChromiumBasedBrowsers: true,
+      });
+      const spy = sinon.spy(context.transceiverController, 'setEncodingParameters');
+      task.run().then(() => {
+        expect(spy.calledOnce).to.equal(true);
         done();
       });
     });

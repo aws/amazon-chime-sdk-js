@@ -145,6 +145,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   // feature flags
   enableWebAudio = false;
   enableUnifiedPlanForChromiumBasedBrowsers = true;
+  enableSimulcast = false;
 
   markdown = require('markdown-it')({linkify: true});
   lastMessageSender: string | null = null;
@@ -649,6 +650,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     configuration.enableWebAudio = this.enableWebAudio;
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.attendeePresenceTimeoutMs = 5000;
+    configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
     this.audioVideo = this.meetingSession.audioVideo;
 

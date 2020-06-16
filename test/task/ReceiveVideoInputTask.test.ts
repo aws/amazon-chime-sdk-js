@@ -2,16 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import ReceiveVideoInputTask from '../../src/task/ReceiveVideoInputTask';
 import DefaultVideoCaptureAndEncodeParameters from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
+import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
+import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
+import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 interface MockMediaStreamBrokerConfigs {
@@ -34,6 +39,7 @@ class MockMediaStreamBroker extends NoOpMediaStreamBroker {
 }
 
 describe('ReceiveVideoInputTask', () => {
+  let domMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
   let context: AudioVideoControllerState;
   const expect: Chai.ExpectStatic = chai.expect;
@@ -54,7 +60,8 @@ describe('ReceiveVideoInputTask', () => {
   }
 
   beforeEach(() => {
-    domMockBuilder = new DOMMockBuilder();
+    domMockBehavior = new DOMMockBehavior();
+    domMockBuilder = new DOMMockBuilder(domMockBehavior);
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
@@ -68,6 +75,7 @@ describe('ReceiveVideoInputTask', () => {
       false
     );
     context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
+    context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
   });
 
   afterEach(() => {
@@ -79,6 +87,33 @@ describe('ReceiveVideoInputTask', () => {
 
   describe('run', () => {
     it('will acquire the video input', async () => {
+      context.videoTileController.startLocalVideoTile();
+      context.mediaStreamBroker = new MockMediaStreamBroker({
+        acquireVideoInputDeviceSucceeds: true,
+      });
+      const task = new ReceiveVideoInputTask(context);
+      await task.run();
+      assert.exists(context.activeVideoInput);
+    });
+
+    it('will acquire the video input and query constraint', async () => {
+      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      context.enableSimulcast = true;
+      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('attendee', new NoOpLogger());
+      context.videoTileController.startLocalVideoTile();
+      context.mediaStreamBroker = new MockMediaStreamBroker({
+        acquireVideoInputDeviceSucceeds: true,
+      });
+      const task = new ReceiveVideoInputTask(context);
+      await task.run();
+      assert.exists(context.activeVideoInput);
+    });
+
+    it('will acquire the video input and query constraint', async () => {
+      domMockBehavior.applyConstraintSucceeds = false;
+      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      context.enableSimulcast = true;
+      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('attendee', new NoOpLogger());
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,
@@ -123,6 +158,29 @@ describe('ReceiveVideoInputTask', () => {
       const task = new ReceiveVideoInputTask(context);
       await task.run();
       expect(context.activeVideoInput).to.be.null;
+    });
+  });
+
+  describe('run with simulcast enabled', () => {
+    beforeEach(() => {
+      context.enableSimulcast = true;
+      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy(
+        'self-attendee',
+        new NoOpLogger()
+      );
+    });
+
+    it('will update video stream index if video is enabled', done => {
+      const spy = sinon.spy(context.videoStreamIndex, 'integrateUplinkPolicyDecision');
+      context.videoTileController.startLocalVideoTile();
+      context.mediaStreamBroker = new MockMediaStreamBroker({
+        acquireVideoInputDeviceSucceeds: true,
+      });
+      const task = new ReceiveVideoInputTask(context);
+      task.run().then(() => {
+        expect(spy.calledOnce).to.equal(true);
+        done();
+      });
     });
   });
 });
