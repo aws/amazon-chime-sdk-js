@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Updated cloudwatch log stream ID to have attendee_id
 
 ## [1.9.0] - 2020-06-12
 
