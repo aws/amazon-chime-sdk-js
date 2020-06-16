@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
-import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import MeetingSessionTURNCredentials from '../meetingsession/MeetingSessionTURNCredentials';
+import DefaultModality from '../modality/DefaultModality';
 import Versioning from '../versioning/Versioning';
 import BaseTask from './BaseTask';
 
@@ -38,21 +38,18 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
     }
 
     const options: RequestInit = {
-      method: 'POST',
+      method: 'GET',
       mode: 'cors',
       cache: 'no-cache',
       credentials: 'omit',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Chime-Auth-Token':
-          '_aws_wt_session=' + this.joinToken.replace(ContentShareConstants.Modality, ''),
-      },
       redirect: 'follow',
       referrer: 'no-referrer',
-      body: JSON.stringify({ meetingId: this.meetingId }),
     };
 
     this.context.logger.info(`requesting TURN credentials from ${this.url}`);
+
+    const url: string =
+      this.url + `?m=${this.meetingId}&t=${new DefaultModality(this.joinToken).base()}`;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const responseBodyJson = await new Promise<any>(async (resolve, reject) => {
@@ -61,13 +58,22 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
       };
 
       try {
-        const responseBody = await fetch(Versioning.urlWithVersion(this.url), options);
+        const responseBody = await fetch(Versioning.urlWithVersion(url), options);
         this.context.logger.info(`received TURN credentials`);
         if (responseBody.status && responseBody.status === 403) {
           reject(
             new Error(
               `canceling ${this.name()} due to the meeting status code: ${
                 MeetingSessionStatusCode.TURNCredentialsForbidden
+              }`
+            )
+          );
+        }
+        if (responseBody.status && responseBody.status === 404) {
+          reject(
+            new Error(
+              `canceling ${this.name()} due to the meeting status code: ${
+                MeetingSessionStatusCode.TURNMeetingEnded
               }`
             )
           );

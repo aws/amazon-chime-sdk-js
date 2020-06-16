@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add stale-issue bot configuration
 
 ### Changed
+- Use GET instead of POST to obtain TURN credentials
 
 ### Removed
 
