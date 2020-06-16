@@ -106,7 +106,7 @@ exports.logs = async (event, context) => {
     return response(200, 'application/json', JSON.stringify({}));
   }
 
-  const logStreamName = `ChimeSDKMeeting_${body.meetingId.toString()}`;
+  const logStreamName = `ChimeSDKMeeting_${body.meetingId.toString()}_${body.attendeeId.toString()}`;
   const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
   const putLogEventsInput = {
     logGroupName: logGroupName,
