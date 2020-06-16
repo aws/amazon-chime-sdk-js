@@ -84,6 +84,20 @@ describe('ReceiveTURNCredentialsTask', () => {
       }
     });
 
+    it('handles a 404 error to fetch TURN Credentials', async () => {
+      domMockBehavior.fetchSucceeds = true;
+      domMockBehavior.responseStatusCode = 404;
+      domMockBehavior.responseSuccess = false;
+      try {
+        await task.run();
+        throw new Error('This line should not be reached.');
+      } catch (error) {
+        expect(error.message).includes(
+          `the meeting status code: ${MeetingSessionStatusCode.TURNMeetingEnded}`
+        );
+      }
+    });
+
     it('will bypass the task when a url is not specified', async () => {
       context.meetingSessionConfiguration.urls.turnControlURL = null;
       task = new ReceiveTURNCredentialsTask(context);
