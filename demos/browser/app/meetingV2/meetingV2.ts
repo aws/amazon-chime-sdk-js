@@ -1249,7 +1249,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         break;
       case ContentShareType.VideoFile:
         const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
-        videoFile.style.display = 'block';
         if (videoUrl) {
           videoFile.src = videoUrl;
         }

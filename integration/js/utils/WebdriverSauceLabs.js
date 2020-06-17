@@ -82,7 +82,6 @@ const getChromeCapabilities = capabilities => {
   });
   cap.set('resolution', '1920x1080');
   cap.set('sauce:options', getSauceLabsConfig(capabilities));
-  console.log(getSauceLabsConfig(capabilities));
   return cap
 };
 
