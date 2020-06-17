@@ -393,7 +393,9 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
       this.downlinkStats.packetsLost === 0
     ) {
       // Set target to be the same as last
-      this.logger.info('bwe: ValidateRate: Using Previous rate ' + this.prevTargetRateKbps);
+      this.logger.debug(() => {
+        return 'bwe: ValidateRate: Using Previous rate ' + this.prevTargetRateKbps;
+      });
       this.usingPrevTargetRate = true;
       targetBitrate = this.prevTargetRateKbps;
     } else {

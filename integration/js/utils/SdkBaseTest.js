@@ -23,6 +23,10 @@ class SdkBaseTest extends KiteBaseTest {
     this.capabilities["name"] = process.env.STAGE !== undefined ? `${testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${testName}-${process.env.TEST_TYPE}`;
     this.seleniumSessions = [];
     this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
+    this.useSimulcast = !!this.payload.useSimulcast ? true : false;
+    if (this.useSimulcast) {
+      this.testName += 'Simulcast';
+    }
     if (this.numberOfParticipant > 1) {
       this.attendeeId = uuidv4();
       this.io.emit("test_name", testName);
