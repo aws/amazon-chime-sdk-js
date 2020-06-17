@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add stale-issue bot configuration
 - Add simulcast support and provides new uplink downlink policies
 - Add MultiLogger to support logging to multiple Logger instances
-
+- Add resize listener on HTMLVideoElement in demo
 ### Changed
 - Use GET instead of POST to obtain TURN credentials
 - Move integration tests to use meeting V2 demo
