@@ -41,8 +41,6 @@ export default class MonitorTask extends BaseTask
   private currentVideoDownlinkBandwidthEstimationKbps: number = 10000;
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
 
-  // private logCount = 0;
-
   constructor(
     private context: AudioVideoControllerState,
     connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration,
@@ -292,7 +290,9 @@ export default class MonitorTask extends BaseTask
     let requiredBandwidthKbps = 0;
     this.currentAvailableStreamAvgBitrates = bitrates;
 
-    this.logger.info(`simulcast: bitrates from server ${JSON.stringify(bitrates)}`);
+    this.logger.debug(() => {
+      return `simulcast: bitrates from server ${JSON.stringify(bitrates)}`;
+    });
     for (const bitrate of bitrates.bitrates) {
       if (videoSubscription.indexOf(bitrate.sourceStreamId) !== -1) {
         requiredBandwidthKbps += bitrate.avgBitrateBps;

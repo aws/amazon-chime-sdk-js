@@ -82,7 +82,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     // Only Chrome currently supports the new send side bandwidth estimation
     const browserBehavior = new DefaultBrowserBehavior();
     if (browserBehavior.hasChromiumWebRTC()) {
-      // joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
+      joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
     }
     joinFrame.flags |= settings.sendBitrates ? SdkJoinFlags.SEND_BITRATES : 0;
     joinFrame.clientDetails = SdkClientDetails.create({
