@@ -21,6 +21,7 @@ import {
   DeviceChangeObserver,
   LogLevel,
   Logger,
+  MultiLogger,
   MeetingSession,
   MeetingSessionConfiguration,
   MeetingSessionPOSTLogger,
@@ -652,16 +653,21 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     let logger: Logger;
+    const logLevel = LogLevel.INFO;
+    const consoleLogger = logger = new ConsoleLogger('SDK', logLevel);
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-      logger = new ConsoleLogger('SDK', LogLevel.INFO);
+      logger = consoleLogger;
     } else {
-      logger = new MeetingSessionPOSTLogger(
-        'SDK',
-        configuration,
-        DemoMeetingApp.LOGGER_BATCH_SIZE,
-        DemoMeetingApp.LOGGER_INTERVAL_MS,
-        `${DemoMeetingApp.BASE_URL}logs`,
-        LogLevel.INFO
+      logger = new MultiLogger(
+        consoleLogger,
+        new MeetingSessionPOSTLogger(
+          'SDK',
+          configuration,
+          DemoMeetingApp.LOGGER_BATCH_SIZE,
+          DemoMeetingApp.LOGGER_INTERVAL_MS,
+          `${DemoMeetingApp.BASE_URL}logs`,
+          logLevel
+        ),
       );
     }
     const deviceController = new DefaultDeviceController(logger);

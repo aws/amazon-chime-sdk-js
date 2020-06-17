@@ -145,6 +145,7 @@ import MeetingSessionURLs from './meetingsession/MeetingSessionURLs';
 import MeetingSessionVideoAvailability from './meetingsession/MeetingSessionVideoAvailability';
 import Modality from './modality/Modality';
 import MonitorTask from './task/MonitorTask';
+import MultiLogger from './logger/MultiLogger';
 import NScaleVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import NoOpAudioVideoController from './audiovideocontroller/NoOpAudioVideoController';
 import NoOpDebugLogger from './logger/NoOpDebugLogger';
@@ -441,6 +442,7 @@ export {
   MeetingSessionVideoAvailability,
   Modality,
   MonitorTask,
+  MultiLogger,
   NScaleVideoUplinkBandwidthPolicy,
   NoOpAudioVideoController,
   NoOpDebugLogger,
