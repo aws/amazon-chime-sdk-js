@@ -33,7 +33,7 @@ import {
 } from '../../../../src/index';
 
 class DemoTileOrganizer {
-  private static MAX_TILES = 16;
+  public static MAX_TILES = 16;
   private tiles: { [id: number]: number } = {};
   public tileStates: {[id: number]: boolean } = {};
 
@@ -146,6 +146,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     this.initEventListeners();
     this.initParameters();
     this.setMediaRegion();
+    this.setUpVideoTileElementResizer();
   }
 
   initParameters(): void {
@@ -489,6 +490,21 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
         window.location = window.location.pathname;
       });
     });
+  }
+
+  setUpVideoTileElementResizer(): void {
+    for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
+      const videoElem = document.getElementById(`video-${i}`) as HTMLVideoElement;
+      videoElem.onresize = () => {
+        if (videoElem.videoHeight > videoElem.videoWidth) {
+          // portrait mode
+          this.log(`video-${i} changed to portrait mode resolution ${videoElem.videoWidth}x${videoElem.videoHeight}`);
+          videoElem.style.objectFit = 'contain';
+        } else {
+          videoElem.style.objectFit = 'cover';
+        }
+      };
+    }
   }
 
   getSupportedMediaRegions(): Array<string> {

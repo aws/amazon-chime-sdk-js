@@ -35,17 +35,18 @@ import {
 } from '../../../../src/index';
 
 class DemoTileOrganizer {
+  // this is index instead of length
   static MAX_TILES = 17;
   private tiles: { [id: number]: number } = {};
   public tileStates: {[id: number]: boolean } = {};
 
   acquireTileIndex(tileId: number): number {
-    for (let index = 0; index < DemoTileOrganizer.MAX_TILES; index++) {
+    for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
       if (this.tiles[index] === tileId) {
         return index;
       }
     }
-    for (let index = 0; index < DemoTileOrganizer.MAX_TILES; index++) {
+    for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
       if (!(index in this.tiles)) {
         this.tiles[index] = tileId;
         return index;
@@ -55,7 +56,7 @@ class DemoTileOrganizer {
   }
 
   releaseTileIndex(tileId: number): number {
-    for (let index = 0; index < DemoTileOrganizer.MAX_TILES; index++) {
+    for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
       if (this.tiles[index] === tileId) {
         delete this.tiles[index];
         return index;
@@ -160,6 +161,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.initEventListeners();
     this.initParameters();
     this.setMediaRegion();
+    this.setUpVideoTileElementResizer();
     if (this.isRecorder()) {
       new AsyncScheduler().start(async () => {
         this.meeting = new URL(window.location.href).searchParams.get('m');
@@ -1449,6 +1451,21 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       }
     }
     return tiles;
+  }
+
+  setUpVideoTileElementResizer(): void {
+    for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
+      const videoElem = document.getElementById(`video-${i}`) as HTMLVideoElement;
+      videoElem.onresize = () => {
+        if (videoElem.videoHeight > videoElem.videoWidth) {
+          // portrait mode
+          videoElem.style.objectFit = 'contain';
+          this.log(`video-${i} changed to portrait mode resolution ${videoElem.videoWidth}x${videoElem.videoHeight}`);
+        } else {
+          videoElem.style.objectFit = 'cover';
+        }
+      };
+    }
   }
 
   layoutVideoTilesActiveSpeaker(visibleTileIndices: number[], activeTileId: number): void {
