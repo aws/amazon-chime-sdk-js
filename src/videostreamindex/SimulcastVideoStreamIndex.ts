@@ -137,7 +137,9 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
     for (const desc of this._localStreamInfos) {
       msg += `streamId=${desc.streamId} maxBitrate=${desc.maxBitrateKbps} disabledByWebRTC=${desc.disabledByWebRTC} disabledByUplink=${desc.disabledByUplinkPolicy}\n`;
     }
-    this.logger.info(msg);
+    this.logger.debug(() => {
+      return msg;
+    });
   }
 
   integrateIndexFrame(indexFrame: SdkIndexFrame): void {

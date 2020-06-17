@@ -293,6 +293,21 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       }
     });
 
+    const optionalFeatures = document.getElementById('optional-features') as HTMLSelectElement;
+    optionalFeatures.addEventListener('change', async (_ev: Event) => {
+      const collections = optionalFeatures.selectedOptions;
+      this.enableSimulcast = false;
+      this.enableWebAudio = false;
+      for (let i = 0; i < collections.length; i++) {
+        // hard code magic
+        if (collections[i].label === 'simulcast') {
+          this.enableSimulcast = true;
+        } else if (collections[i].label === 'webaudio') {
+          this.enableWebAudio = true;
+        }
+      }
+    });
+
     const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
     audioOutput.addEventListener('change', async (_ev: Event) => {
       this.log('audio output device is changed');

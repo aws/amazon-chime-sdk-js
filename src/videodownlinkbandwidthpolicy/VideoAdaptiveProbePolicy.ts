@@ -47,6 +47,7 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
   private static readonly MIN_TIME_BETWEEN_SUBSCRIBE = 2000;
   private static readonly MAX_HOLD_MS_BEFORE_PROBE = 60000;
 
+  private logCount: number;
   private optimalReceiveSet: VideoStreamIdSet;
   private subscribedReceiveSet: VideoStreamIdSet;
   private preProbeReceiveSet: VideoStreamIdSet;
@@ -281,10 +282,15 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
       probeState: this.rateProbeState,
       startupPeriod: this.startupPeriod,
     };
-    this.logger.info('bwe: optimalReceiveSet ' + JSON.stringify(optimalReceiveSet));
-    this.logger.info('bwe:   prev ' + JSON.stringify(this.prevDownlinkStats));
-    this.logger.info('bwe:   now ' + JSON.stringify(this.downlinkStats));
-    this.logger.info('bwe:   remoteInfos: ' + JSON.stringify(remoteInfos));
+    if (this.logCount % 15 === 0) {
+      this.logger.info('bwe: optimalReceiveSet ' + JSON.stringify(optimalReceiveSet));
+      this.logger.info('bwe:   prev ' + JSON.stringify(this.prevDownlinkStats));
+      this.logger.info('bwe:   now ' + JSON.stringify(this.downlinkStats));
+      this.logger.info('bwe:   remoteInfos: ' + JSON.stringify(remoteInfos));
+      this.logCount = 0;
+    }
+
+    this.logCount++;
 
     this.prevTargetRateKbps = targetDownlinkBitrate;
     this.prevRemoteInfos = remoteInfos;

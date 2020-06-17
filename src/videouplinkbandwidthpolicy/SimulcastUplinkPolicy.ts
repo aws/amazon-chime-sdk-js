@@ -82,11 +82,10 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
       return;
     }
     this.lastUplinkBandwidthKbps = this.updateWindowsUplinkKbps(uplinkKbps);
-    this.logger.info(
-      `simulcast: uplink policy update metrics ${uplinkKbps}Kbps
-      windowed ${this.lastUplinkBandwidthKbps}Kbps
-    `
-    );
+    this.logger.debug(() => {
+      return `simulcast: uplink policy update metrics ${uplinkKbps}Kbps
+      windowed ${this.lastUplinkBandwidthKbps}Kbps`;
+    });
     if (Date.now() < this.lastUpdatedMs + SimulcastUplinkPolicy.holdDownDurationMs) {
       return;
     }

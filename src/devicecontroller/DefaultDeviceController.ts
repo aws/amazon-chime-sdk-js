@@ -641,6 +641,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       trackConstraints.width = trackConstraints.width || this.videoWidth;
       trackConstraints.height = trackConstraints.height || this.videoHeight;
       trackConstraints.frameRate = trackConstraints.frameRate || this.videoFrameRate;
+      // TODO: try to replace hard-code value related to videos into quality-level presets
+      // The following configs relaxes CPU overuse detection threshold to offer better encoding quality
       // @ts-ignore
       trackConstraints.googCpuOveruseDetection = true;
       // @ts-ignore
