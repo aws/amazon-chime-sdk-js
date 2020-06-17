@@ -274,8 +274,8 @@ export default class DefaultAudioVideoController implements AudioVideoController
                 new OpenSignalingConnectionTask(this.meetingSessionContext),
                 new ListenForVolumeIndicatorsTask(this.meetingSessionContext),
                 new SendAndReceiveDataMessagesTask(this.meetingSessionContext),
-                new JoinAndReceiveIndexTask(this.meetingSessionContext),
                 // TODO: ensure index handler does not race with incoming index update
+                new JoinAndReceiveIndexTask(this.meetingSessionContext),
                 new ReceiveVideoStreamIndexTask(this.meetingSessionContext),
               ]),
             ]),
