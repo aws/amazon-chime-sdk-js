@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Use GET instead of POST to obtain TURN credentials
+- Move integration tests to use meeting V2 demo
 
 ### Removed
 
