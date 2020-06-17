@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Updated cloudwatch log stream ID to have attendee_id
+- Ability to choose default in chrome browsers 
 
 ## [1.9.0] - 2020-06-12
 

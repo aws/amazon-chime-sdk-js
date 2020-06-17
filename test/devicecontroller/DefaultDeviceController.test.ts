@@ -20,6 +20,7 @@ describe('DefaultDeviceController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const logger = new NoOpLogger();
   const stringDeviceId: Device = 'string-device-id';
+  const stringGroupId: Device = 'string-group-id';
 
   let deviceController: DefaultDeviceController;
   let audioVideoController: NoOpAudioVideoController;
@@ -38,8 +39,18 @@ describe('DefaultDeviceController', () => {
   function getMediaDeviceInfo(
     deviceId: string,
     kind: MediaDeviceKind,
-    label: string
+    label: string,
+    groupId?: string
   ): MediaDeviceInfo {
+    if (groupId) {
+      // @ts-ignore
+      return {
+        deviceId,
+        kind,
+        label,
+        groupId,
+      };
+    }
     // @ts-ignore
     return {
       deviceId,
@@ -240,8 +251,8 @@ describe('DefaultDeviceController', () => {
         await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
         deviceController.chooseAudioInputDevice(stringDeviceIds[3]);
       });
-      new TimeoutScheduler(500).start(() => {
-        expect(index).to.equal(3);
+      new TimeoutScheduler(100).start(() => {
+        expect(index).to.equal(1);
         done();
       });
     });
@@ -457,6 +468,17 @@ describe('DefaultDeviceController', () => {
     it('binds the audio device if the audio-video is bound', async () => {
       domMockBehavior.enumerateDeviceList = [
         getMediaDeviceInfo(stringDeviceId, 'audiooutput', 'label'),
+      ];
+      await deviceController.listAudioOutputDevices();
+      const spy = sinon.spy(audioVideoController.audioMixController, 'bindAudioDevice');
+      deviceController.bindToAudioVideoController(audioVideoController);
+      await deviceController.chooseAudioOutputDevice(stringDeviceId);
+      expect(spy.called).to.be.true;
+    });
+
+    it('binds the audio device if the audio-video is bound with groupId', async () => {
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo(stringDeviceId, 'audiooutput', 'label', stringGroupId),
       ];
       await deviceController.listAudioOutputDevices();
       const spy = sinon.spy(audioVideoController.audioMixController, 'bindAudioDevice');
