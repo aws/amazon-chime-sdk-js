@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Logger | amazon-chime-sdk-js</title>
+	<title>MultiLogger | amazon-chime-sdk-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="logger.html">Logger</a>
+					<a href="multilogger.html">MultiLogger</a>
 				</li>
 			</ul>
-			<h1>Interface Logger</h1>
+			<h1>Class MultiLogger</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p><a href="logger.html">Logger</a> defines how to write logs for different logging level.</p>
+						<p>MultiLogger writes logs to multiple other loggers</p>
 					</div>
 				</div>
 			</section>
@@ -77,17 +77,14 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Logger</span>
+						<span class="target">MultiLogger</span>
 					</li>
 				</ul>
 			</section>
 			<section class="tsd-panel">
-				<h3>Implemented by</h3>
+				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../classes/consolelogger.html" class="tsd-signature-type">ConsoleLogger</a></li>
-					<li><a href="../classes/multilogger.html" class="tsd-signature-type">MultiLogger</a></li>
-					<li><a href="../classes/noopdebuglogger.html" class="tsd-signature-type">NoOpDebugLogger</a></li>
-					<li><a href="../classes/nooplogger.html" class="tsd-signature-type">NoOpLogger</a></li>
+					<li><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -95,41 +92,85 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="multilogger.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="multilogger.html#_loggers" class="tsd-kind-icon">_loggers</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#debug" class="tsd-kind-icon">debug</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#error" class="tsd-kind-icon">error</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#getloglevel" class="tsd-kind-icon">get<wbr>Log<wbr>Level</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#info" class="tsd-kind-icon">info</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#setloglevel" class="tsd-kind-icon">set<wbr>Log<wbr>Level</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#warn" class="tsd-kind-icon">warn</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="multilogger.html#debug" class="tsd-kind-icon">debug</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="multilogger.html#error" class="tsd-kind-icon">error</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="multilogger.html#getloglevel" class="tsd-kind-icon">get<wbr>Log<wbr>Level</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="multilogger.html#info" class="tsd-kind-icon">info</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="multilogger.html#setloglevel" class="tsd-kind-icon">set<wbr>Log<wbr>Level</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="multilogger.html#warn" class="tsd-kind-icon">warn</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Multi<wbr>Logger<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>loggers<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="multilogger.html" class="tsd-signature-type">MultiLogger</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/MultiLogger.ts#L11">src/logger/MultiLogger.ts:11</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>loggers: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="multilogger.html" class="tsd-signature-type">MultiLogger</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_loggers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _loggers</h3>
+					<div class="tsd-signature tsd-kind-icon">_loggers<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/MultiLogger.ts#L11">src/logger/MultiLogger.ts:11</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="debug" class="tsd-anchor"></a>
 					<h3>debug</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">debug<span class="tsd-signature-symbol">(</span>debugFunction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/Logger.ts#L15">src/logger/Logger.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/MultiLogger.ts#L35">src/logger/MultiLogger.ts:35</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Calls [[debugFunction]] only if the log level is debug and emits the
-										resulting string. Use the debug level to dump large or verbose messages
-									that could slow down performance.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -152,24 +193,20 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="error" class="tsd-anchor"></a>
 					<h3>error</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/logger.html">Logger</a>.<a href="../interfaces/logger.html#error">error</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/Logger.ts#L30">src/logger/Logger.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/MultiLogger.ts#L29">src/logger/MultiLogger.ts:29</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Emits an error message if the log level is equal to or lower than error level.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -180,46 +217,38 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="getloglevel" class="tsd-anchor"></a>
 					<h3>get<wbr>Log<wbr>Level</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">get<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/logger.html">Logger</a>.<a href="../interfaces/logger.html#getloglevel">getLogLevel</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/Logger.ts#L40">src/logger/Logger.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/MultiLogger.ts#L47">src/logger/MultiLogger.ts:47</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Gets the current log level.</p>
-								</div>
-							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="info" class="tsd-anchor"></a>
 					<h3>info</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">info<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/logger.html">Logger</a>.<a href="../interfaces/logger.html#info">info</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/Logger.ts#L20">src/logger/Logger.ts:20</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/MultiLogger.ts#L17">src/logger/MultiLogger.ts:17</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Emits an info message if the log level is equal to or lower than info level.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -230,24 +259,20 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="setloglevel" class="tsd-anchor"></a>
 					<h3>set<wbr>Log<wbr>Level</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">set<wbr>Log<wbr>Level<span class="tsd-signature-symbol">(</span>level<span class="tsd-signature-symbol">: </span><a href="../enums/loglevel.html" class="tsd-signature-type">LogLevel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/logger.html">Logger</a>.<a href="../interfaces/logger.html#setloglevel">setLogLevel</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/Logger.ts#L35">src/logger/Logger.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/MultiLogger.ts#L41">src/logger/MultiLogger.ts:41</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Sets the log level.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -258,24 +283,20 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="warn" class="tsd-anchor"></a>
 					<h3>warn</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">warn<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/logger.html">Logger</a>.<a href="../interfaces/logger.html#warn">warn</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/Logger.ts#L25">src/logger/Logger.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/logger/MultiLogger.ts#L23">src/logger/MultiLogger.ts:23</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Emits a warning message if the log level is equal to or lower than warn level.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -300,26 +321,32 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="logger.html" class="tsd-kind-icon">Logger</a>
+					<li class="current tsd-kind-class">
+						<a href="multilogger.html" class="tsd-kind-icon">Multi<wbr>Logger</a>
 						<ul>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="logger.html#debug" class="tsd-kind-icon">debug</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="multilogger.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="logger.html#error" class="tsd-kind-icon">error</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="multilogger.html#_loggers" class="tsd-kind-icon">_loggers</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="logger.html#getloglevel" class="tsd-kind-icon">get<wbr>Log<wbr>Level</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="multilogger.html#debug" class="tsd-kind-icon">debug</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="logger.html#info" class="tsd-kind-icon">info</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="multilogger.html#error" class="tsd-kind-icon">error</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="logger.html#setloglevel" class="tsd-kind-icon">set<wbr>Log<wbr>Level</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="multilogger.html#getloglevel" class="tsd-kind-icon">get<wbr>Log<wbr>Level</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="logger.html#warn" class="tsd-kind-icon">warn</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="multilogger.html#info" class="tsd-kind-icon">info</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="multilogger.html#setloglevel" class="tsd-kind-icon">set<wbr>Log<wbr>Level</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="multilogger.html#warn" class="tsd-kind-icon">warn</a>
 							</li>
 						</ul>
 					</li>
