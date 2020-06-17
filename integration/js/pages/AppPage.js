@@ -34,6 +34,7 @@ const elements = {
 
   meetingAudio: By.id('meeting-audio'),
   sipUri: By.id('sip-uri'),
+  optionalFeatures: By.id('optional-features'),
 };
 
 const SessionStatus = {
@@ -71,6 +72,11 @@ class AppPage {
   async authenticate() {
     let authenticateButton = await this.driver.findElement(elements.authenticateButton);
     await authenticateButton.click();
+  }
+
+  async chooseUseSimulcast() {
+    let featureSelection = await this.driver.findElement(elements.optionalFeatures);
+    await featureSelection.sendKeys('simulcast');
   }
 
   async joinMeeting() {
