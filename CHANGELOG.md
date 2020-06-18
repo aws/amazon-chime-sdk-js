@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix missing uuidv4 import in integration test
 - Disable w3c check for Chrome Android webdriver integration tests
 - Fix setSinkId() from throwing DOMException in Chromium browsers
+- Fixing the ability to choose default input in browsers when default changes
 
 ## [1.10.0] - 2020-06-23
 
