@@ -38,13 +38,15 @@ describe('DefaultDeviceController', () => {
   function getMediaDeviceInfo(
     deviceId: string,
     kind: MediaDeviceKind,
-    label: string
+    label: string,
+    groupId?: string
   ): MediaDeviceInfo {
     // @ts-ignore
     return {
       deviceId,
       kind,
       label,
+      groupId,
     };
   }
 
@@ -185,7 +187,7 @@ describe('DefaultDeviceController', () => {
       expect(called).to.be.true;
     });
 
-    it('cathces an error from restarting the local audio', async () => {
+    it('catches an error from restarting the local audio', async () => {
       let called = false;
 
       class TestAudioVideoController extends NoOpAudioVideoController {
@@ -215,6 +217,38 @@ describe('DefaultDeviceController', () => {
 
       // The previous audio source node will be disconneted.
       permission = await deviceController.chooseAudioInputDevice('another-device-id');
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+    });
+
+    it('releases audio media stream when requesting default device and default is already active in chromium based browser', async () => {
+      deviceController.enableWebAudio(true);
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('default', 'audioinput', 'label', 'group-id-1'),
+      ];
+      await deviceController.listAudioInputDevices();
+      let permission = await deviceController.chooseAudioInputDevice('default');
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      domMockBehavior.enumerateDeviceList.pop();
+      // add external default device
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('default', 'audioinput', 'default - label2', 'group-id-2'),
+      ];
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      await deviceController.listAudioInputDevices();
+      permission = await deviceController.chooseAudioInputDevice('default');
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+    });
+
+    it('sets to null device when an external device disconnects', async () => {
+      deviceController.enableWebAudio(true);
+      let permission = await deviceController.chooseAudioInputDevice(stringDeviceId);
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+
+      // The previous audio source node will be disconneted.
+      permission = await deviceController.chooseAudioInputDevice(null);
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
     });
 
@@ -445,7 +479,7 @@ describe('DefaultDeviceController', () => {
       expect(spy.called).to.be.false;
     });
 
-    it("disconnects the audio input source node instead of the given stream 's tracks", async () => {
+    it("disconnects the audio input source node instead of the given stream's tracks", async () => {
       deviceController.enableWebAudio(true);
       await deviceController.chooseAudioInputDevice(stringDeviceId);
       const stream = await deviceController.acquireAudioInputStream();
@@ -799,6 +833,14 @@ describe('DefaultDeviceController', () => {
     it('synthesizes the audio device', async () => {
       DefaultDeviceController.synthesizeAudioDevice(100);
       await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+    });
+  });
+
+  describe('getActiveDeviceId', () => {
+    it('calls getActiveDeviceId to get the avtive device for the video', async () => {
+      let permission = await deviceController.chooseVideoInputDevice('default');
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(deviceController.getActiveDeviceId('video')).to.equal('default');
     });
   });
 });
