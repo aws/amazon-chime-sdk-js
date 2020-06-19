@@ -14,7 +14,8 @@
         "url": "http://localhost:8080/",
         "retry": 2,
         "seleniumSessions": {
-          "safari": 2
+          "safari": 2,
+          "ANDROID": 2
         }
       }
     }

@@ -501,7 +501,6 @@ class AppPage {
   }
 
   async triggerReconnection() {
-    //this.driver.executeScript('app.audioVideo.audioVideoController.actionReconnect();');
     this.driver.executeAsyncScript(
       '(async () => { await app.audioVideo.audioVideoController.actionReconnect(); })().then(arguments[0]);'
     );

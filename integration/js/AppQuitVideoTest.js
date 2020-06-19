@@ -1,6 +1,5 @@
 const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, ClickVideoButton, CloseAppStep} = require('./steps');
 const {UserJoinedMeetingCheck, RemoteVideoCheck, UserAuthenticationCheck, RosterCheck} = require('./checks');
-const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {Window} = require('./utils/Window');
@@ -15,7 +14,7 @@ class AppQuitVideoTest extends SdkBaseTest {
     this.url = this.baseUrl + '?m=' + uuidv4();
     this.numberOfParticipant = 2;
 
-    if (this.numberOfSessions(this.capabilities.browserName) > 1) {
+    if (this.numberOfSessions() > 1) {
       await this.runTestOnMultipleSessions()
     } else {
       await this.runTestOnSingleSessions()

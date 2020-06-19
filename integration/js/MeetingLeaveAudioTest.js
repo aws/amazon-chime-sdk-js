@@ -15,7 +15,7 @@ class MeetingLeaveAudioTest extends SdkBaseTest {
     this.url = this.baseUrl + '?m=' + uuidv4();
     this.numberOfParticipant = 2;
 
-    if (this.numberOfSessions(this.capabilities.browserName) > 1) {
+    if (this.numberOfSessions() > 1) {
       await this.runTestOnMultipleSessions()
     } else {
       await this.runTestOnSingleSessions()

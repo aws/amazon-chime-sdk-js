@@ -141,9 +141,12 @@ class SdkBaseTest extends KiteBaseTest {
     }
   }
 
-  numberOfSessions(browser) {
-    if (this.payload.seleniumSessions && this.payload.seleniumSessions[browser]){
-      return this.payload.seleniumSessions[browser]
+  numberOfSessions() {
+    if (this.payload.seleniumSessions && (this.payload.seleniumSessions[this.capabilities.browserName])){
+      return this.payload.seleniumSessions[this.capabilities.browserName]
+    }
+    if (this.payload.seleniumSessions && (this.payload.seleniumSessions[this.capabilities.platform])){
+      return this.payload.seleniumSessions[this.capabilities.platform]
     }
     return 1;
   }
@@ -160,7 +163,7 @@ class SdkBaseTest extends KiteBaseTest {
 
   async testScript() {
     const maxRetries = this.payload.retry === undefined || this.payload.retry < 1 ? 5 : this.payload.retry;
-    const numberOfSeleniumSessions = this.numberOfSessions(this.capabilities.browserName);
+    const numberOfSeleniumSessions = this.numberOfSessions();
 
     let retryCount = 0;
     while (retryCount < maxRetries) {
@@ -251,6 +254,10 @@ class SdkBaseTest extends KiteBaseTest {
     } finally {
       await this.quitSeleniumSessions();
     }
+  }
+
+  isMobilePlatform() {
+    return this.capabilities.platform === 'ANDROID' || this.capabilities.platform === 'IOS';
   }
 }
 
