@@ -25,7 +25,7 @@ class ReconnectionTest extends SdkBaseTest {
 
   async runIntegrationTest() {
     this.numberOfParticipant = 2;
-    if (this.numberOfSessions(this.capabilities.browserName) > 1) {
+    if (this.numberOfSessions() > 1) {
       await this.runTestOnMultipleSessions()
     } else {
       await this.runTestOnSingleSessions()
@@ -47,6 +47,7 @@ class ReconnectionTest extends SdkBaseTest {
 
     await SdkTestUtils.addUserToMeeting(this, test_attendee_id_2, testSession2);
     await RosterCheck.executeStep(this, testSession2, 2);
+
     await RemoteVideoCheck.executeStep(this, testSession2, 'VIDEO_ON');
     await ClickVideoButton.executeStep(this, testSession2);
 

@@ -22,7 +22,7 @@ class DataMessageTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    if (this.numberOfSessions(this.capabilities.browserName) > 1) {
+    if (this.numberOfSessions() > 1) {
       await this.runTestOnMultipleSessions()
     } else {
       await this.runTestOnSingleSessions()
