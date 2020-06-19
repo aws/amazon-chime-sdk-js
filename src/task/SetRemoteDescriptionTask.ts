@@ -1,7 +1,8 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DefaultSDP from '../sdp/DefaultSDP';
 import BaseTask from './BaseTask';
 
@@ -63,7 +64,11 @@ export default class SetRemoteDescriptionTask extends BaseTask {
       }
     }
 
-    this.logger.info(`remote description is >>>${sdp}<<<`);
+    if (new DefaultBrowserBehavior().requiresSortCodecPreferencesForSdpAnswer()) {
+      sdp = new DefaultSDP(sdp).preferH264IfExists().sdp;
+    }
+
+    this.logger.info(`processed remote description is >>>${sdp}<<<`);
     const remoteDescription: RTCSessionDescription = {
       type: 'answer',
       sdp: sdp,

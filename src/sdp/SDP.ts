@@ -66,4 +66,9 @@ export default interface SDP {
    * Returns whether the sendrecv video sections if exist have two different SSRCs in SDPs
    */
   videoSendSectionHasDifferentSSRC(previousSdp: SDP): boolean;
+
+  /**
+   * Sorts the codec preferences in video section.
+   */
+  preferH264IfExists(): SDP;
 }

@@ -90,6 +90,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return shouldRequire;
   }
 
+  requiresSortCodecPreferencesForSdpAnswer(): boolean {
+    return this.isFirefox() && this.majorVersion() <= 68;
+  }
+
   requiresSimulcastMunging(): boolean {
     return this.isSafari();
   }

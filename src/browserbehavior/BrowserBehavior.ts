@@ -68,6 +68,11 @@ export default interface BrowserBehavior {
   requiresCheckForSdpConnectionAttributes(): boolean;
 
   /**
+   * Returns whether it is needed to sort video section codec preference
+   */
+  requiresSortCodecPreferencesForSdpAnswer(): boolean;
+
+  /**
    * Returns whether screen share is unsupported by the browser
    */
   screenShareUnsupported(): boolean;

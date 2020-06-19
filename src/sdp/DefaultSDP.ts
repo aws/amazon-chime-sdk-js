@@ -215,6 +215,59 @@ export default class DefaultSDP implements SDP {
     return new DefaultSDP(originalSdp);
   }
 
+  preferH264IfExists(): DefaultSDP {
+    const srcSDP: string = this.sdp;
+    const sections = DefaultSDP.splitSections(srcSDP);
+    if (sections.length < 2) {
+      return new DefaultSDP(this.sdp);
+    }
+    const newSections = [];
+    for (let i = 0; i < sections.length; i++) {
+      if (/^m=video/.test(sections[i])) {
+        const lines = DefaultSDP.splitLines(sections[i]);
+        let payloadTypeForVP8 = 0;
+        let payloadTypeForH264 = 0;
+        lines.forEach(attribute => {
+          if (/^a=rtpmap:/.test(attribute)) {
+            const payloadMatch = /^a=rtpmap:([0-9]+)\s/.exec(attribute);
+            if (attribute.toLowerCase().includes('vp8')) {
+              payloadTypeForVP8 = parseInt(payloadMatch[1], 10);
+            } else if (attribute.toLowerCase().includes('h264')) {
+              payloadTypeForH264 = parseInt(payloadMatch[1], 10);
+            }
+          }
+        });
+
+        // m=video 9 UDP/+++ <payload>
+        if (payloadTypeForVP8 !== 0 && payloadTypeForH264 !== 0) {
+          const mline = lines[0].split(' ');
+          let indexForVP8 = -1;
+          let indexForH264 = -1;
+          for (let i = 3; i < mline.length; i++) {
+            const payload = parseInt(mline[i], 10);
+            if (payload === payloadTypeForVP8) {
+              indexForVP8 = i;
+            } else if (payload === payloadTypeForH264) {
+              indexForH264 = i;
+            }
+          }
+
+          if (indexForVP8 < indexForH264) {
+            mline[indexForVP8] = payloadTypeForH264.toString();
+            mline[indexForH264] = payloadTypeForVP8.toString();
+          }
+          lines[0] = mline.join(' ');
+        }
+        sections[i] = lines.join(DefaultSDP.CRLF) + DefaultSDP.CRLF;
+        // since there is only H264 or VP8, we don't switch payload places
+      }
+      newSections.push(sections[i]);
+    }
+
+    const newSdp = newSections.join('');
+    return new DefaultSDP(newSdp);
+  }
+
   withOldFashionedMungingSimulcast(videoSimulcastLayerCount: number): DefaultSDP {
     if (videoSimulcastLayerCount < 2) {
       return this.clone();
