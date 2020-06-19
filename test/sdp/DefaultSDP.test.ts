@@ -306,4 +306,31 @@ describe('DefaultSDP', () => {
       expect(sdp2.videoSendSectionHasDifferentSSRC(sdp1)).to.equal(false);
     });
   });
+
+  describe('preferH264IfExists', () => {
+    it('sorts codec preference', () => {
+      const sdpObj = new DefaultSDP(FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_H264_UNSORTED);
+      expect(sdpObj.preferH264IfExists().sdp).to.deep.equal(
+        FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_H264_SORTED
+      );
+      const newSdpObj = new DefaultSDP(FirefoxSDPMock.FIREFOX_NIGHTLY_79_REMOTE_ANSWER);
+      expect(newSdpObj.preferH264IfExists().sdp).to.deep.equal(
+        FirefoxSDPMock.FIREFOX_NIGHTLY_79_REMOTE_ANSWER_H264_PREFERRED
+      );
+    });
+
+    it('does nothing if the preference is sorted', () => {
+      const newSdpObj = new DefaultSDP(FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_H264_SORTED);
+      expect(newSdpObj.preferH264IfExists().sdp).to.deep.equal(
+        FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_H264_SORTED
+      );
+    });
+
+    it('does nothing if only contain VP8 or H264', () => {
+      const sdpObj = new DefaultSDP(FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_ONLY);
+      expect(sdpObj.preferH264IfExists().sdp).to.deep.equal(
+        FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_ONLY
+      );
+    });
+  });
 });

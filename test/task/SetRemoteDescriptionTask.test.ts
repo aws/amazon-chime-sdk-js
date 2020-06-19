@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -13,6 +13,7 @@ import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodepara
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import FirefoxSDPMock from '../sdp/FirefoxSDPMock';
 import SDPMock from '../sdp/SDPMock';
 
 describe('SetRemoteDescriptionTask', () => {
@@ -111,6 +112,31 @@ describe('SetRemoteDescriptionTask', () => {
       domMockBehavior.iceConnectionStates = ['someotherstate', 'completed'];
       context.peer = new RTCPeerConnection();
       task.run().then(() => done());
+    });
+  });
+
+  describe('run with Firefox 68', () => {
+    beforeEach(() => {
+      // @ts-ignore
+      navigator.userAgent =
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
+      context.browserBehavior = new DefaultBrowserBehavior();
+    });
+
+    it('uses the sdp answer if both offer and answer have a video', done => {
+      const localDescription: RTCSessionDescriptionInit = {
+        type: 'offer',
+        sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO,
+      };
+      context.peer.setLocalDescription(localDescription);
+      context.sdpAnswer = FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_H264_UNSORTED;
+
+      task.run().then(() => {
+        expect(context.peer.currentRemoteDescription.sdp).to.deep.equal(
+          FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_H264_SORTED
+        );
+        done();
+      });
     });
   });
 
