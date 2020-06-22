@@ -146,7 +146,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   // feature flags
   enableWebAudio = false;
-  enableUnifiedPlanForChromiumBasedBrowsers = true;
+  enableUnifiedPlanForChromiumBasedBrowsers = false;
   enableSimulcast = false;
 
   markdown = require('markdown-it')({linkify: true});
@@ -319,10 +319,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         // hard code magic
         if (collections[i].value === 'simulcast') {
           this.enableSimulcast = true;
+          this.enableUnifiedPlanForChromiumBasedBrowsers = true;
           this.log('attempt to enable simulcast');
         } else if (collections[i].value === 'webaudio') {
           this.enableWebAudio = true;
           this.log('attempt to enable webaudio');
+        } else if (collections[i].value === 'unifiedplan') {
+          this.enableUnifiedPlanForChromiumBasedBrowsers = true;
+          this.log('attempt to enable unified plan');
         }
       }
     });
