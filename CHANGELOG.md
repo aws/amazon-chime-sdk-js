@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add MultiLogger to support logging to multiple Logger instances
 - Add resize listener on HTMLVideoElement in demo
 - Add simulcast integration tests
+- Fix uplink max bitrate value calculation
 
 ### Changed
 - Use GET instead of POST to obtain TURN credentials

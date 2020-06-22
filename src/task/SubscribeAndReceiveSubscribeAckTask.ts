@@ -57,7 +57,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       }
       const param: RTCRtpEncodingParameters = {
         rid: 'hi',
-        maxBitrate: maxEncodeBitrateKbps,
+        maxBitrate: maxEncodeBitrateKbps * 1000,
         maxFramerate: frameRate,
         active: true,
       };
