@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
@@ -13,9 +13,6 @@ type DetectorCallback = (attendeeIds: string[]) => void;
 type DetectorHandler = (attendeeId: string, present: boolean) => void;
 
 export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetector {
-  private static ACTIVITY_WAIT_INTERVAL_MS = 1000;
-  private static ACTIVITY_UPDATE_INTERVAL_MS = 200;
-
   private speakerScores: { [attendeeId: string]: number } = {};
   private speakerMuteState: { [attendeeId: string]: boolean } = {};
 
@@ -39,7 +36,9 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
   constructor(
     private realtimeController: RealtimeController,
     private selfAttendeeId: string,
-    private hasBandwidthPriorityCallback: (hasBandwidthPriority: boolean) => void
+    private hasBandwidthPriorityCallback: (hasBandwidthPriority: boolean) => void,
+    private waitIntervalMs: number = 1000,
+    private updateIntervalMs: number = 200
   ) {}
 
   private needUpdate(attendeeId: string): boolean {
@@ -99,6 +98,7 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
     const activeScore = policy.calculateScore(attendeeId, volume, muted);
     if (this.speakerScores[attendeeId] !== activeScore) {
       this.speakerScores[attendeeId] = activeScore;
+      this.mostRecentUpdateTimestamp[attendeeId] = Date.now();
       this.updateActiveSpeakers(policy, callback, attendeeId);
     }
   }
@@ -112,6 +112,7 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
     let handler = (attendeeId: string, present: boolean): void => {
       if (!present) {
         this.speakerScores[attendeeId] = 0;
+        this.mostRecentUpdateTimestamp[attendeeId] = Date.now();
         this.updateActiveSpeakers(policy, callback, attendeeId);
         return;
       }
@@ -133,13 +134,10 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
     };
     this.detectorCallbackToHandler.set(callback, handler);
 
-    const activityTimer = new IntervalScheduler(
-      DefaultActiveSpeakerDetector.ACTIVITY_UPDATE_INTERVAL_MS
-    );
+    const activityTimer = new IntervalScheduler(this.updateIntervalMs);
     activityTimer.start(() => {
       for (const attendeeId in this.speakerScores) {
-        const lastTimestamp = this.mostRecentUpdateTimestamp[attendeeId] || 0;
-        if (Date.now() - lastTimestamp > DefaultActiveSpeakerDetector.ACTIVITY_WAIT_INTERVAL_MS) {
+        if (Date.now() - this.mostRecentUpdateTimestamp[attendeeId] > this.waitIntervalMs) {
           this.updateScore(policy, callback, attendeeId, 0, this.speakerMuteState[attendeeId]);
         }
       }
