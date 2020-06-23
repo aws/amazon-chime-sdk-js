@@ -121,3 +121,7 @@ You can use the [active speaker detector](https://aws.github.io/amazon-chime-sdk
 By default the SDK uses the [AllHighestVideoBandwidthPolicy](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy.ts) which subscribes to the highest quality video of all participants. This can be customized by setting the [VideoDownlinkBandwidthPolicy](https://github.com/aws/amazon-chime-sdk-js/blob/d658830a1f1d151c12a9fb89e371984bea3f9ebf/src/meetingsession/MeetingSessionConfiguration.ts#L74) in MeetingSessionConfiguration class.
 
 *Browser clients currently only send one stream resolution. You would only need to use this function if you were also using the Amazon Chime SDK for iOS or the Amazon Chime SDK for Android.*
+
+### Use video simulcast
+
+Simulcast is a standardized technique in WebRTC to enhance video quality in a multi-party call. Amazon Chime SDK for JavaScript provides a video simulcast solution for Chromium-based browsers. To use simulcast, please refer to the documentation [here](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#).

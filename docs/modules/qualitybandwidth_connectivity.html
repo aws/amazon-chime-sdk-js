@@ -289,7 +289,11 @@
 					</a>
 					<p>By default the SDK uses the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy.ts">AllHighestVideoBandwidthPolicy</a> which subscribes to the highest quality video of all participants. This can be customized by setting the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L74">VideoDownlinkBandwidthPolicy</a> in MeetingSessionConfiguration class.</p>
 					<p><em>Browser clients currently only send one stream resolution. You would only need to use this function if you were also using the Amazon Chime SDK for iOS or the Amazon Chime SDK for Android.</em></p>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Quality%20Bandwidth_Connectivity%20feedback">Give feedback on this guide</a></p>
+					<a href="#use-video-simulcast" id="use-video-simulcast" style="color: inherit; text-decoration: none;">
+						<h3>Use video simulcast</h3>
+					</a>
+					<p>Simulcast is a standardized technique in WebRTC to enhance video quality in a multi-party call. Amazon Chime SDK for JavaScript provides a video simulcast solution for Chromium-based browsers. To use simulcast, please refer to the documentation <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#">here</a>.
+					<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Quality%20Bandwidth_Connectivity%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>

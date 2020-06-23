@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add meeting demo parameter for broadcasting user
+- Add simulcast guide link in README and Quality Bandwidth Connectivity doc
 
 ### Changed
 
