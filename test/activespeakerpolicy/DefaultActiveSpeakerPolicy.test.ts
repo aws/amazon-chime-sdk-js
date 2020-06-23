@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -16,6 +16,11 @@ describe('DefaultActiveSpeakerPolicy', () => {
 
     it('can be constructed with different parameters', () => {
       const policy = new DefaultActiveSpeakerPolicy(0.1, 0.9);
+      expect(policy).to.not.equal(null);
+    });
+
+    it('can be constructed with optional parameters', () => {
+      const policy = new DefaultActiveSpeakerPolicy(0.1, 0.9, 0.5, 0.5);
       expect(policy).to.not.equal(null);
     });
   });

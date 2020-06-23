@@ -21,6 +21,11 @@ import ScreenShareViewFacade from './ScreenShareViewFacade';
 
 export default class DefaultScreenShareViewFacade implements ScreenShareViewFacade {
   private screenViewing: ScreenViewing;
+  private dragObserverFactory = (
+    window: Window,
+    callback: (dragEvent: DragEvent) => void,
+    element: HTMLElement
+  ) => new DefaultDragObserver(window, element, callback);
 
   constructor(private configuration: MeetingSessionConfiguration, private logger: Logger) {
     const reconnectingWSFactory = new ReconnectingPromisedWebSocketFactory(
@@ -31,8 +36,7 @@ export default class DefaultScreenShareViewFacade implements ScreenShareViewFaca
     this.screenViewing = new DefaultScreenViewing(
       new DefaultScreenViewingComponentContext(
         new ResizeObserverAdapterFactory(),
-        (window: Window, callback: (dragEvent: DragEvent) => void, element: HTMLElement) =>
-          new DefaultDragObserver(window, element, callback),
+        this.dragObserverFactory,
         reconnectingWSFactory,
         new ScreenSignalingSessionContainer(
           reconnectingWSFactory,
