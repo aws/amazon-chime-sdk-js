@@ -290,8 +290,16 @@ export default class DOMMockBuilder {
       : null;
 
     GlobalAny.MediaDevices = class MockMediaDevices {
+      constructor() {
+        if (!mockBehavior.mediaDeviceOnDeviceChangeSupported) {
+          delete this.ondevicechange;
+        }
+      }
+
       eventListeners: EventListenerObjectWrapper[] = [];
       gotLabels: boolean = false;
+      // ondevicechange is set to null if supported
+      ondevicechange: null = null;
 
       getDisplayMedia(
         _constraints: MockMediaStreamConstraints
@@ -430,7 +438,7 @@ export default class DOMMockBuilder {
     USER_AGENTS.set('safari', SAFARI_USERAGENT);
 
     GlobalAny.navigator = {
-      mediaDevices: new mediaDevicesMaker(),
+      mediaDevices: mockBehavior.mediaDevicesSupported ? new mediaDevicesMaker() : undefined,
       userAgent: USER_AGENTS.get(mockBehavior.browserName),
       sendBeacon(
         _url: string,
