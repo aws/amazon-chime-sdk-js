@@ -55,6 +55,7 @@ import DefaultDragObserver from './dragobserver/DefaultDragObserver';
 import DefaultJPEGDecoderComponentFactory from './jpegdecoder/DefaultJPEGDecoderComponentFactory';
 import DefaultJPEGDecoderController from './jpegdecoder/controller/DefaultJPEGDecoderController';
 import DefaultJPEGDecoderInstance from './jpegdecoder/instance/DefaultJPEGDecoderInstance';
+import DefaultMediaDeviceFactory from './mediadevicefactory/DefaultMediaDeviceFactory';
 import DefaultMeetingSession from './meetingsession/DefaultMeetingSession';
 import DefaultModality from './modality/DefaultModality';
 import DefaultPingPong from './pingpong/DefaultPingPong';
@@ -127,6 +128,8 @@ import LogLevel from './logger/LogLevel';
 import Logger from './logger/Logger';
 import Maybe from './maybe/Maybe';
 import MaybeProvider from './maybe/MaybeProvider';
+import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
+import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
 import MediaRecording from './mediarecording/MediaRecording';
 import MediaRecordingEvent from './mediarecording/MediaRecordingEvent';
 import MediaRecordingFactory from './mediarecording/MediaRecordingFactory';
@@ -352,6 +355,7 @@ export {
   DefaultJPEGDecoderComponentFactory,
   DefaultJPEGDecoderController,
   DefaultJPEGDecoderInstance,
+  DefaultMediaDeviceFactory,
   DefaultMeetingSession,
   DefaultModality,
   DefaultPingPong,
@@ -424,6 +428,8 @@ export {
   Logger,
   Maybe,
   MaybeProvider,
+  MediaDeviceFactory,
+  MediaDeviceProxyHandler,
   MediaRecording,
   MediaRecordingEvent,
   MediaRecordingFactory,

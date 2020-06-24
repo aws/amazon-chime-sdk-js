@@ -45,8 +45,10 @@ export default class DOMMockBehavior {
   enumerateDevicesSupported: boolean = true;
   enumerateAudioOutputDeviceSupported: boolean = true;
   enumerateDeviceList: MediaDeviceInfo[] = undefined;
+  mediaDevicesSupported: boolean = true;
   mediaDeviceInfoSupported: boolean = true;
   mediaDeviceHasSupportedConstraints: boolean = true;
+  mediaDeviceOnDeviceChangeSupported: boolean = true;
   rtcPeerConnectionGetStatsSucceeds: boolean = true;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rtcPeerConnectionGetStatsReport: { [name: string]: any } = {};

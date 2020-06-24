@@ -61,6 +61,16 @@ describe('DefaultDeviceController', () => {
     }
   });
 
+  describe('constructor', () => {
+    it('can be constructed without navigator.mediaDevices', () => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.mediaDevicesSupported = false;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      expect(deviceController).to.exist;
+    });
+  });
+
   describe('list devices', () => {
     it('lists audio input devices', async () => {
       const devices: MediaDeviceInfo[] = await deviceController.listAudioInputDevices();

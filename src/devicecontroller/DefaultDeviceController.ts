@@ -5,6 +5,7 @@ import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
+import DefaultMediaDeviceFactory from '../mediadevicefactory/DefaultMediaDeviceFactory';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
@@ -58,10 +59,15 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.logger.info(
       `DefaultDeviceController video dimension ${this.videoWidth} x ${this.videoHeight}`
     );
-    // @ts-ignore
-    navigator.mediaDevices.addEventListener('devicechange', async () => {
-      await this.handleDeviceChange();
-    });
+
+    try {
+      const mediaDeviceWrapper = new DefaultMediaDeviceFactory().create();
+      mediaDeviceWrapper.addEventListener('devicechange', () => {
+        this.handleDeviceChange();
+      });
+    } catch (error) {
+      logger.error(error.message);
+    }
   }
 
   async listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
@@ -456,6 +462,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private forEachObserver(observerFunc: (observer: DeviceChangeObserver) => void): void {
     for (const observer of this.deviceChangeObservers) {
       new AsyncScheduler().start(() => {
+        /* istanbul ignore else */
         if (this.deviceChangeObservers.has(observer)) {
           observerFunc(observer);
         }
