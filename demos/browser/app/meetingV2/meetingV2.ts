@@ -162,10 +162,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.initParameters();
     this.setMediaRegion();
     this.setUpVideoTileElementResizer();
-    if (this.isRecorder()) {
+    if (this.isRecorder() || this.isBroadcaster()) {
       new AsyncScheduler().start(async () => {
         this.meeting = new URL(window.location.href).searchParams.get('m');
-        this.name = '«Meeting Recorder»';
+        this.name = this.isRecorder() ? '«Meeting Recorder»' : '«Meeting Broadcaster»';
         await this.authenticate();
         await this.join();
         this.displayButtonStates();
@@ -939,8 +939,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     // a custom UX with a specific device id.
     this.audioVideo.setDeviceLabelTrigger(
       async (): Promise<MediaStream> => {
-        if (this.isRecorder()) {
-          throw new Error('recorder does not need device labels');
+        if (this.isRecorder() || this.isBroadcaster()) {
+          throw new Error('Recorder or Broadcaster does not need device labels');
         }
         this.switchToFlow('flow-need-permission');
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
@@ -1195,7 +1195,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   private audioInputSelectionToDevice(value: string): Device {
-    if (this.isRecorder()) {
+    if (this.isRecorder() || this.isBroadcaster()) {
       return null;
     }
     if (value === '440 Hz') {
@@ -1207,7 +1207,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   private videoInputSelectionToDevice(value: string): Device {
-    if (this.isRecorder()) {
+    if (this.isRecorder() || this.isBroadcaster()) {
       return null;
     }
     if (value === 'Blue') {
@@ -1287,6 +1287,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   isRecorder(): boolean {
     return (new URL(window.location.href).searchParams.get('record')) === 'true';
+  }
+
+  isBroadcaster(): boolean {
+    return (new URL(window.location.href).searchParams.get('broadcast')) === 'true';
   }
 
   async authenticate(): Promise<string> {
