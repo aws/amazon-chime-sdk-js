@@ -18,7 +18,7 @@ export default class Versioning {
    * Return string representation of SDK version
    */
   static get sdkVersion(): string {
-    return '1.9.13';
+    return '1.10.0';
   }
 
   /**
