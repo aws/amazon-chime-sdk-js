@@ -1,6 +1,4 @@
 const AWS = require('../node_modules/aws-sdk');
-const {getOS, getOSVersion} = require('./WebdriverBrowserStack');
-
 AWS.config.update({region: 'us-east-1'});
 var cloudWatch = new AWS.CloudWatch({
   apiVersion: '2010-08-01'
@@ -24,7 +22,7 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value) 
           },
           {
             Name: 'BrowserVersion',
-            Value: capabilities.version
+            Value: capabilities.version ? capabilities.version : 'default'
           },
           {
             Name: 'OS',
@@ -94,5 +92,39 @@ const publishMetricToCloudWatch = async (params) => {
     await cloudWatch.putMetricData(params).promise();
   } catch (error) {
     console.log(`Unable to emit metric: ${error}`)
+  }
+};
+
+const getOS = (capabilities) => {
+  switch (capabilities.platform) {
+    case 'MAC':
+      return 'OS X';
+    case 'WINDOWS':
+      return 'windows';
+    case 'LINUX':
+      return 'Linux';
+    case 'IOS':
+      return 'iOS';
+    case 'ANDROID':
+      return 'Android';
+    default:
+      return '';
+  }
+};
+
+const getOSVersion = (capabilities) => {
+  switch (capabilities.platform) {
+    case 'MAC':
+      return 'Mojave';
+    case 'WINDOWS':
+      return '10';
+    case 'LINUX':
+      return 'Linux';
+    case 'IOS':
+      return capabilities.version? capabilities.version : 'default';
+    case 'ANDROID':
+      return capabilities.version? capabilities.version : 'default';
+    default:
+      return '';
   }
 };
