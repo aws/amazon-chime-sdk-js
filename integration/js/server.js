@@ -40,7 +40,7 @@ createMeeting = async (createMeetingUrl) => {
       const data = await response.data;
       meetingMap[createMeetingUrl] = "created";
       console.log("Meeting created");
-      console.log(`Chime meeting id : ${data.JoinInfo.Meeting.MeetingId}`);
+      console.log(`Chime meeting id : ${data.JoinInfo.Meeting.Meeting.MeetingId}`);
       return data;
     } catch (error) {
       console.log(`Unable to create meeting, server error: ${error}`);
