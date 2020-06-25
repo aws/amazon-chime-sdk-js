@@ -4,7 +4,7 @@ const {SaucelabsSession} = require('./WebdriverSauceLabs');
 const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {LocalSession} = require('./WebdriverLocal');
 const {emitMetric} = require('./CloudWatch');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
 class SdkBaseTest extends KiteBaseTest {

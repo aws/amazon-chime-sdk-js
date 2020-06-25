@@ -5,7 +5,7 @@ const {TestUtils} = require('./node_modules/kite-common');
 const {SdkTestUtils} = require('./utils/SdkTestUtils');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {Window} = require('./utils/Window');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Test that we only allow two content share at the same time

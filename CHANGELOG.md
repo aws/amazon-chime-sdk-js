@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix CloudWatch metrics for Linux and Android integration tests
 - Fix create meeting request for audio and video e2e integration tests
 - Fix multiple issues with integration tests
+- Fix uuidv4 import
 
 ## [1.10.0] - 2020-06-23
 

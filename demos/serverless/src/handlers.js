@@ -3,7 +3,7 @@
 
 const AWS = require('./aws-sdk');
 const fs = require('fs');
-const uuid = require('./uuid/v4');
+const { v4: uuidv4 } = require('./uuid');
 
 // Store meetings in a DynamoDB table so attendees can join by meeting title
 const ddb = new AWS.DynamoDB();
@@ -46,7 +46,7 @@ exports.join = async(event, context) => {
     const request = {
       // Use a UUID for the client request token to ensure that any request retries
       // do not create multiple meetings.
-      ClientRequestToken: uuid(),
+      ClientRequestToken: uuidv4(),
 
       // Specify the media region (where the meeting is hosted).
       // In this case, we use the region selected by the user.
@@ -76,7 +76,7 @@ exports.join = async(event, context) => {
     // For simplicity here, we use a random UUID for uniqueness
     // combined with the name the user provided, which can later
     // be used to help build the roster.
-    ExternalUserId: `${uuid().substring(0, 8)}#${query.name}`.substring(0, 64),
+    ExternalUserId: `${uuidv4().substring(0, 8)}#${query.name}`.substring(0, 64),
   }).promise());
 
   // Return the meeting and attendee responses. The client will use these
