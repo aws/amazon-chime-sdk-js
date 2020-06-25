@@ -5,7 +5,7 @@ const {TestUtils} = require('./node_modules/kite-common');
 const {SdkTestUtils} = require('./utils/SdkTestUtils');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {Window} = require('./utils/Window');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Test screen capture sharing check

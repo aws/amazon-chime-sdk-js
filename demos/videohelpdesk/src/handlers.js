@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const ddb = new AWS.DynamoDB();
 const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com/console');

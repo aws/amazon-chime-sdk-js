@@ -1,5 +1,5 @@
 const {KiteTestError, Status} = require('kite-common');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const AppTestStep = require('../utils/AppTestStep');
 
 class JoinMeetingStep extends AppTestStep {

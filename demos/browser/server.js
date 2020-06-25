@@ -6,7 +6,7 @@ const compression = require('compression');
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 // Store created meetings in a map so attendees can join by meeting title
 const meetingTable = {};
@@ -48,7 +48,7 @@ http.createServer({}, async (request, response) => {
         meetingTable[requestUrl.query.title] = await chime.createMeeting({
           // Use a UUID for the client request token to ensure that any request retries
           // do not create multiple meetings.
-          ClientRequestToken: uuid(),
+          ClientRequestToken: uuidv4(),
           // Specify the media region (where the meeting is hosted).
           // In this case, we use the region selected by the user.
           MediaRegion: requestUrl.query.region,
@@ -70,7 +70,7 @@ http.createServer({}, async (request, response) => {
         // For simplicity here, we use a random id for uniqueness
         // combined with the name the user provided, which can later
         // be used to help build the roster.
-        ExternalUserId: `${uuid().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
+        ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
       }).promise()
 
       // Return the meeting and attendee responses. The client will use these

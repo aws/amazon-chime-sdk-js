@@ -4,7 +4,7 @@ const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {SdkTestUtils} = require('./utils/SdkTestUtils');
 const {Window} = require('./utils/Window');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 class ContentShareJoinLaterTest extends SdkBaseTest {
   constructor(name, kiteConfig) {

@@ -4,7 +4,7 @@ const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {Key} = require('selenium-webdriver');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Test screen sharing check
