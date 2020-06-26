@@ -12,6 +12,7 @@
       "testImpl": "AudioTest.js",
       "payload": {
         "url": "http://localhost:8080/",
+        "port": 30001,
         "retry": 2
       }
     }

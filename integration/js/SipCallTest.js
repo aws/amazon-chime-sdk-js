@@ -17,8 +17,6 @@ class SipCallTest extends SdkBaseTest {
 
   async runIntegrationTest() {
     const session = this.seleniumSessions[0];
-    const meetingId = uuidv4();
-    this.url = this.baseUrl + '?m=' + meetingId;
     let attendee_id = uuidv4();
     const test_window = await Window.openNew(session.driver, "SipCall");
     await test_window.runCommands(async () => {

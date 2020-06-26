@@ -12,6 +12,7 @@
       "testImpl": "VideoTest.js",
       "payload": {
         "url": "http://localhost:8080/",
+        "port": 30010,
         "retry": 2,
         "useSimulcast": true
       }
