@@ -1404,11 +1404,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       return false;
     }
     const tile = this.audioVideo.getVideoTile(tileId);
-    const state = tile.state();
-    if (state.isContent) {
-      return true;
+    if (!tile) {
+      return false;
     }
-    return false;
+    return tile.state().isContent;
   }
 
   activeTileId(): number | null {

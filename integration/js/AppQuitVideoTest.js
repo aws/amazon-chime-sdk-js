@@ -11,7 +11,6 @@ class AppQuitVideoTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    this.url = this.baseUrl + '?m=' + uuidv4();
     this.numberOfParticipant = 2;
 
     if (this.numberOfSessions() > 1) {

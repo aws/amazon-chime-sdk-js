@@ -17,7 +17,6 @@ class MeetingEndTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    this.url = this.baseUrl + '?m=' + uuidv4();
     const session = this.seleniumSessions[0];
     let attendee_id = uuidv4();
     await OpenAppStep.executeStep(this, session);

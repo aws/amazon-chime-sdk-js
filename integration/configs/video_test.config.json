@@ -12,6 +12,7 @@
       "testImpl": "VideoTest.js",
       "payload": {
         "url": "http://localhost:8080/",
+        "port": 30002,
         "retry": 2
       }
     }

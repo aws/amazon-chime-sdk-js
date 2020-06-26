@@ -16,11 +16,9 @@ class SdkBaseTest extends KiteBaseTest {
       this.baseUrl = this.url;
     }
     if (testName === 'ContentShareOnlyAllowTwoTest') {
-      this.url = this.url + '?max-content-share=true' + '&m=' + kiteConfig.uuid;
-    } else {
-      this.url = this.url + '?m=' + kiteConfig.uuid;
+      this.url += '?max-content-share=true';
     }
-    this.meetingTitle = kiteConfig.uuid;
+    this.originalURL = this.url;
     this.testName = testName;
     this.testReady = false;
     this.testFinish = false;
@@ -32,7 +30,6 @@ class SdkBaseTest extends KiteBaseTest {
       this.testName += 'Simulcast';
     }
     if (this.numberOfParticipant > 1) {
-      this.attendeeId = uuidv4();
       this.io.emit("test_name", testName);
       this.io.emit("test_capabilities", this.capabilities);
       this.io.on('all_clients_ready', isReady => {
@@ -74,8 +71,10 @@ class SdkBaseTest extends KiteBaseTest {
         console.log("Number of participants on the meeting: " + count);
         this.numRemoteJoined = count;
       });
-      this.io.on("meeting_created", () => {
+      this.io.on("meeting_created", meetingId => {
         this.meetingCreated = true;
+        this.meetingTitle = meetingId;
+        this.url = this.originalURL + '?m=' + this.meetingTitle;
       });
       this.io.on("finished", () => {
         this.testFinish = true;
@@ -97,8 +96,15 @@ class SdkBaseTest extends KiteBaseTest {
     //Reset the status so KITE does not skip all the steps in next run
     this.report = new AllureTestReport(this.name);
     if (this.io !== undefined) {
-      const createMeetingUrl = `${this.baseUrl}join?title=${this.meetingTitle}&name=MeetingOwner&region=us-east-1`;
-      this.io.emit("setup_test", createMeetingUrl, this.attendeeId);
+      this.attendeeId = uuidv4();
+      this.io.emit("setup_test", this.baseUrl, this.attendeeId);
+    } else {
+      this.meetingTitle = uuidv4();
+      if (this.testName === 'ContentShareOnlyAllowTwoTest') {
+        this.url = this.originalURL + '&m=' + this.meetingTitle;
+      } else {
+        this.url = this.originalURL + '?m=' + this.meetingTitle;
+      }
     }
   }
 
