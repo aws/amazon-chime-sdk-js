@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -46,6 +46,7 @@ describe('DefaultAudioMixController', () => {
   it('can unbind an audio element when element does not exist', () => {
     defaultAudioMixController.bindAudioDevice(device);
     defaultAudioMixController.bindAudioStream(stream);
+    defaultAudioMixController.unbindAudioElement();
     expect(defaultAudioMixController.bindAudioElement(element)).to.equal(true);
     defaultAudioMixController.unbindAudioElement();
     expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(false);
@@ -66,6 +67,15 @@ describe('DefaultAudioMixController', () => {
   });
 
   it('can successfully bind and sink an audio stream', () => {
+    defaultAudioMixController.bindAudioDevice(device);
+    defaultAudioMixController.bindAudioElement(element);
+    expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(true);
+  });
+
+  it('can successfully bind and sink an audio stream in chromium based browser', () => {
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController();
     defaultAudioMixController.bindAudioDevice(device);
     defaultAudioMixController.bindAudioElement(element);
     expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(true);
