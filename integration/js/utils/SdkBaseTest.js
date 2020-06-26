@@ -16,11 +16,8 @@ class SdkBaseTest extends KiteBaseTest {
       this.baseUrl = this.url;
     }
     if (testName === 'ContentShareOnlyAllowTwoTest') {
-      this.url = this.url + '?max-content-share=true' + '&m=' + kiteConfig.uuid;
-    } else {
-      this.url = this.url + '?m=' + kiteConfig.uuid;
+      this.url = this.url + '?max-content-share=true';
     }
-    this.meetingTitle = kiteConfig.uuid;
     this.testName = testName;
     this.testReady = false;
     this.testFinish = false;
@@ -96,6 +93,8 @@ class SdkBaseTest extends KiteBaseTest {
     this.meetingCreated = false;
     //Reset the status so KITE does not skip all the steps in next run
     this.report = new AllureTestReport(this.name);
+    this.meetingTitle = uuidv4();
+    this.url += '?m=' + this.meetingTitle;
     if (this.io !== undefined) {
       const createMeetingUrl = `${this.baseUrl}join?title=${this.meetingTitle}&name=MeetingOwner&region=us-east-1`;
       this.io.emit("setup_test", createMeetingUrl, this.attendeeId);

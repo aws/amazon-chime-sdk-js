@@ -12,7 +12,6 @@ class MeetingLeaveScreenShareTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    this.url = this.baseUrl + '?m=' + uuidv4();
     this.numberOfParticipant = 2;
     const session = this.seleniumSessions[0];
 
