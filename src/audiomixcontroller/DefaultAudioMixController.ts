@@ -1,12 +1,16 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import BrowserBehavior from '../browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import AsyncScheduler from '../scheduler/AsyncScheduler';
 import AudioMixController from './AudioMixController';
 
 export default class DefaultAudioMixController implements AudioMixController {
   private audioDevice: MediaDeviceInfo | null = null;
   private audioElement: HTMLAudioElement | null = null;
   private audioStream: MediaStream | null = null;
+  private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior();
 
   bindAudioElement(element: HTMLAudioElement): boolean {
     if (element) {
@@ -51,8 +55,19 @@ export default class DefaultAudioMixController implements AudioMixController {
         // @ts-ignore
         const oldSinkId: string = this.audioElement.sinkId;
         if (newSinkId !== oldSinkId) {
-          // @ts-ignore
-          this.audioElement.setSinkId(newSinkId);
+          if (this.browserBehavior.hasChromiumWebRTC()) {
+            new AsyncScheduler().start(async () => {
+              const existingStream = await this.audioElement.srcObject;
+              this.audioElement.srcObject = null;
+              // @ts-ignore
+              await this.audioElement.setSinkId(newSinkId);
+              this.audioElement.srcObject = existingStream;
+              this.audioStream = existingStream as MediaStream;
+            });
+          } else {
+            // @ts-ignore
+            this.audioElement.setSinkId(newSinkId);
+          }
         }
         return true;
       }
