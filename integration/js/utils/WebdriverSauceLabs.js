@@ -130,6 +130,7 @@ const getChromeAndroidConfig = capabilities => {
     deviceOrientation: 'portrait',
     chromeOptions: {
       'args': ['use-fake-device-for-media-stream', 'use-fake-ui-for-media-stream'],
+      'w3c': false
     },
     name: capabilities.name,
   };
