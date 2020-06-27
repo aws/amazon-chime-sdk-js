@@ -3,7 +3,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const {emitMetric} = require('./utils/CloudWatch');
 const axios = require('axios').default;
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 let stepArray = [];
 let doneArray = [];
