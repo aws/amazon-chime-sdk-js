@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Removed
+- Remove browser demo optional feature HTMLSelectElement multiple attribute
 
 ### Fixed
 - Fix CloudWatch metrics for Linux and Android integration tests
