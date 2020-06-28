@@ -314,6 +314,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       const collections = optionalFeatures.selectedOptions;
       this.enableSimulcast = false;
       this.enableWebAudio = false;
+      this.enableUnifiedPlanForChromiumBasedBrowsers = false;
       this.log("Feature lists:");
       for (let i = 0; i < collections.length; i++) {
         // hard code magic
@@ -321,10 +322,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           this.enableSimulcast = true;
           this.enableUnifiedPlanForChromiumBasedBrowsers = true;
           this.log('attempt to enable simulcast');
-        } else if (collections[i].value === 'webaudio') {
+        }
+        if (collections[i].value === 'webaudio') {
           this.enableWebAudio = true;
           this.log('attempt to enable webaudio');
-        } else if (collections[i].value === 'unifiedplan') {
+        }
+        if (collections[i].value === 'unifiedplan') {
           this.enableUnifiedPlanForChromiumBasedBrowsers = true;
           this.log('attempt to enable unified plan');
         }

@@ -299,14 +299,17 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       const collections = optionalFeatures.selectedOptions;
       this.enableSimulcast = false;
       this.enableWebAudio = false;
+      this.enableUnifiedPlanForChromiumBasedBrowsers = false;
       for (let i = 0; i < collections.length; i++) {
         // hard code magic
         if (collections[i].label === 'simulcast') {
           this.enableSimulcast = true;
           this.enableUnifiedPlanForChromiumBasedBrowsers = true;
-        } else if (collections[i].label === 'webaudio') {
+        }
+        if (collections[i].label === 'webaudio') {
           this.enableWebAudio = true;
-        } else if (collections[i].label === 'unifiedplan') {
+        }
+        if (collections[i].label === 'unifiedplan') {
           this.enableUnifiedPlanForChromiumBasedBrowsers = true;
         }
       }
