@@ -117,29 +117,41 @@ describe('SimulcastVideoStreamIndex', () => {
       expect(index.localStreamDescriptions().length).to.equal(3);
     });
 
-    it('updates stream description', () => {
+    it('updates stream description and marks stream as disbableByWebRTC if two consecutive bitrate message do not contain stream id', () => {
       const encodingParamArr: RTCRtpEncodingParameters[] = [];
       const bitrateArr = [300, 0, 1500];
       for (const bitrate of bitrateArr) {
         const param: RTCRtpEncodingParameters = {
           active: true,
-          maxBitrate: bitrate,
+          maxBitrate: bitrate * 1000,
         };
         encodingParamArr.push(param);
       }
       const streamIdTestValue = 3;
-      const avgBitrateTestValue = 2000;
+      const avgBitrateTestValue = 2000 * 1000;
       const bitrateFrame = SdkBitrateFrame.create();
       const bitrate = SdkBitrate.create();
       bitrate.sourceStreamId = streamIdTestValue;
       bitrate.avgBitrateBps = avgBitrateTestValue;
       bitrateFrame.bitrates.push(bitrate);
 
-      const localDescs = index.localStreamDescriptions();
+      let localDescs = index.localStreamDescriptions();
       expect(localDescs.length).to.equal(0);
 
       index.integrateUplinkPolicyDecision(encodingParamArr);
-      expect(index.localStreamDescriptions().length).to.equal(3);
+      localDescs = index.localStreamDescriptions();
+      expect(localDescs.length).to.equal(3);
+      expect(localDescs[0].maxBitrateKbps).to.equal(300);
+      expect(localDescs[0].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[0].disabledByWebRTC).to.equal(false);
+
+      expect(localDescs[1].maxBitrateKbps).to.equal(0);
+      expect(localDescs[1].disabledByUplinkPolicy).to.equal(true);
+      expect(localDescs[1].disabledByWebRTC).to.equal(false);
+
+      expect(localDescs[2].maxBitrateKbps).to.equal(1500);
+      expect(localDescs[2].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[2].disabledByWebRTC).to.equal(false);
 
       const subackFrame = new SdkSubscribeAckFrame({
         tracks: [
@@ -156,12 +168,12 @@ describe('SimulcastVideoStreamIndex', () => {
           new SdkStreamAllocation({
             trackLabel: '',
             streamId: 2,
-            groupId: 2,
+            groupId: 1,
           }),
           new SdkStreamAllocation({
             trackLabel: '',
             streamId: 3,
-            groupId: 2,
+            groupId: 1,
           }),
           new SdkStreamAllocation({
             trackLabel: '',
@@ -172,14 +184,64 @@ describe('SimulcastVideoStreamIndex', () => {
       });
 
       index.integrateSubscribeAckFrame(subackFrame);
-      index.integrateBitratesFrame(bitrateFrame);
-      expect(index.localStreamDescriptions().length).to.equal(3);
+      localDescs = index.localStreamDescriptions();
+      expect(localDescs.length).to.equal(3);
+      expect(localDescs[0].maxBitrateKbps).to.equal(300);
+      expect(localDescs[0].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[0].disabledByWebRTC).to.equal(false);
+      expect(localDescs[0].streamId).to.equal(1);
+
+      expect(localDescs[1].maxBitrateKbps).to.equal(0);
+      expect(localDescs[1].disabledByUplinkPolicy).to.equal(true);
+      expect(localDescs[1].disabledByWebRTC).to.equal(false);
+      expect(localDescs[1].streamId).to.equal(2);
+
+      expect(localDescs[2].maxBitrateKbps).to.equal(1500);
+      expect(localDescs[2].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[2].disabledByWebRTC).to.equal(false);
+      expect(localDescs[2].streamId).to.equal(3);
 
       index.integrateBitratesFrame(bitrateFrame);
-      expect(index.localStreamDescriptions().length).to.equal(3);
+      localDescs = index.localStreamDescriptions();
+      expect(localDescs[0].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[0].disabledByWebRTC).to.equal(false);
+      expect(localDescs[0].streamId).to.equal(1);
+
+      expect(localDescs[1].disabledByUplinkPolicy).to.equal(true);
+      expect(localDescs[1].disabledByWebRTC).to.equal(false);
+      expect(localDescs[1].streamId).to.equal(2);
+
+      expect(localDescs[2].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[2].disabledByWebRTC).to.equal(false);
+      expect(localDescs[2].streamId).to.equal(3);
 
       index.integrateBitratesFrame(bitrateFrame);
-      expect(index.localStreamDescriptions().length).to.equal(3);
+      localDescs = index.localStreamDescriptions();
+      expect(localDescs[0].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[0].disabledByWebRTC).to.equal(true);
+      expect(localDescs[0].streamId).to.equal(1);
+
+      expect(localDescs[1].disabledByUplinkPolicy).to.equal(true);
+      expect(localDescs[1].disabledByWebRTC).to.equal(false);
+      expect(localDescs[1].streamId).to.equal(2);
+
+      expect(localDescs[2].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[2].disabledByWebRTC).to.equal(false);
+      expect(localDescs[2].streamId).to.equal(3);
+
+      index.integrateBitratesFrame(bitrateFrame);
+      localDescs = index.localStreamDescriptions();
+      expect(localDescs[0].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[0].disabledByWebRTC).to.equal(true);
+      expect(localDescs[0].streamId).to.equal(1);
+
+      expect(localDescs[1].disabledByUplinkPolicy).to.equal(true);
+      expect(localDescs[1].disabledByWebRTC).to.equal(false);
+      expect(localDescs[1].streamId).to.equal(2);
+
+      expect(localDescs[2].disabledByUplinkPolicy).to.equal(false);
+      expect(localDescs[2].disabledByWebRTC).to.equal(false);
+      expect(localDescs[2].streamId).to.equal(3);
     });
 
     it('updates average bitrates in the IndexFrame', () => {
