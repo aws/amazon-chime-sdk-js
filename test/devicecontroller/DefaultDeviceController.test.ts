@@ -259,18 +259,19 @@ describe('DefaultDeviceController', () => {
         'device-id-3',
         'device-id-4',
       ];
-      let index = 0;
+      let releasedDevices = new Set();
 
       class TestDeviceController extends DefaultDeviceController {
         releaseMediaStream(mediaStreamToRelease: MediaStream | null): void {
           super.releaseMediaStream(mediaStreamToRelease);
 
-          if (mediaStreamToRelease) {
+          if (!mediaStreamToRelease) {
+            return;
+          }
+          // @ts-ignore
+          if (mediaStreamToRelease.constraints && mediaStreamToRelease.constraints.audio) {
             // @ts-ignore
-            expect(mediaStreamToRelease.constraints.audio.deviceId.exact).to.equal(
-              stringDeviceIds[index]
-            );
-            index += 1;
+            releasedDevices.add(mediaStreamToRelease.constraints.audio.deviceId.exact);
           }
         }
       }
@@ -285,7 +286,7 @@ describe('DefaultDeviceController', () => {
         deviceController.chooseAudioInputDevice(stringDeviceIds[3]);
       });
       new TimeoutScheduler(500).start(() => {
-        expect(index).to.equal(3);
+        expect(releasedDevices.size).to.equal(3);
         done();
       });
     });
@@ -833,14 +834,6 @@ describe('DefaultDeviceController', () => {
     it('synthesizes the audio device', async () => {
       DefaultDeviceController.synthesizeAudioDevice(100);
       await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
-    });
-  });
-
-  describe('getActiveDeviceId', () => {
-    it('calls getActiveDeviceId to get the avtive device for the video', async () => {
-      let permission = await deviceController.chooseVideoInputDevice('default');
-      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
-      expect(deviceController.getActiveDeviceId('video')).to.equal('default');
     });
   });
 });
