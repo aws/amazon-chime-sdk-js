@@ -55,7 +55,7 @@ export default class VideoStreamDescription {
     descriptor.groupId = this.groupId;
     descriptor.framerate = this.maxFrameRate;
     descriptor.maxBitrateKbps =
-      this.disabledByUplinkPolicy || this.disabledByWebRTC ? 0 : this.maxBitrateKbps;
+      this.disabledByUplinkPolicy || this.disabledByUplinkPolicy ? 0 : this.maxBitrateKbps;
     descriptor.avgBitrateBps = this.avgBitrateKbps;
     return descriptor;
   }

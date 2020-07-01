@@ -52,7 +52,10 @@ export default class CreateSDPTask extends BaseTask {
 
       try {
         this.context.sdpOfferInit = await this.context.peer.createOffer(offerOptions);
-        this.context.logger.info('peer connection created offer');
+        this.context.logger.info(
+          `peer connection created offer ${JSON.stringify(this.context.sdpOfferInit)}`
+        );
+
         if (this.context.previousSdpOffer) {
           if (
             new DefaultSDP(this.context.sdpOfferInit.sdp).videoSendSectionHasDifferentSSRC(
