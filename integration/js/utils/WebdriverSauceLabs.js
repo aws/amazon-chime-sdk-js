@@ -39,6 +39,9 @@ const getFirefoxCapabilities = (capabilities) => {
       prefs: {
         'media.navigator.streams.fake': true,
         'media.navigator.permission.disabled': true,
+        'media.peerconnection.video.h264_enabled': true,
+        'media.webrtc.hw.h264.enabled': true,
+        'media.webrtc.platformencoder': true,
         'devtools.chrome.enabled': true,
         'devtools.debugger.prompt-connection': false,
         'devtools.debugger.remote-enabled': true
