@@ -128,6 +128,8 @@ class SdkBaseTest extends KiteBaseTest {
           if (this.isMobilePlatform()) {
             this.capabilities.deviceName = await session.getDeviceName();
             console.log(`Using device: ${this.capabilities.deviceName}`);
+            const testMobileURL = await session.getMobileTestRunURL();
+            console.log(`Test report URL: ${testMobileURL}`);
           }
           return session;
         }
