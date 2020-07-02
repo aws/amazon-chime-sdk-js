@@ -213,6 +213,14 @@ class SaucelabsSession {
     return this.deviceName;
   }
 
+  async getMobileTestRunURL() {
+    if (isMobileDomain(this.domain) && this.mobileTestRunURL === undefined) {
+      const session = await this.driver.getSession();
+      this.mobileTestRunURL = session.getCapability('testobject_test_report_url');
+    }
+    return this.mobileTestRunURL;
+  }
+
   setSessionName(inName) {
     this.name = inName;
   }
