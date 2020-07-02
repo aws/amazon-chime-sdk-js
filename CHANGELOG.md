@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add device name for mobile integration tests
+- Added new FAQs and updated Readme to include new demos for PSTN calling and live events
+
+### Changed
+
+### Removed
 
 ### Fixed
 - Fix typo in VideoStreamDescription when stream is disabled by WebRTC
