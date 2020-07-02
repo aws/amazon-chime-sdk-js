@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add device name for mobile integration tests
+
 ### Fixed
 - Fix typo in VideoStreamDescription when stream is disabled by WebRTC
 
