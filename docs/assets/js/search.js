@@ -14507,4 +14507,7 @@ var typedoc = typedoc || {};
 "classes":"tsd-kind-module"},
 {"id":3703,"kind":2,"name":"Simulcast",
 "url":"modules/simulcast.html",
+"classes":"tsd-kind-module"},
+{"id":3704,"kind":2,"name":"FAQs",
+"url":"modules/faqs.html",
 "classes":"tsd-kind-module"}]};
