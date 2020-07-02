@@ -1,4 +1,4 @@
-# Amazon Chime SDK for JavaScript - Frequently Asked Questions
+# Frequently Asked Questions
 
 ## General questions
 
