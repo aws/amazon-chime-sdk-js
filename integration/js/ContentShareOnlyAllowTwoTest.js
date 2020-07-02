@@ -24,15 +24,15 @@ class ContentShareOnlyAllowTwoTest extends SdkBaseTest {
     const test_attendee_id_2 = uuidv4();
     const test_attendee_id_3 = uuidv4();
     const test_window_1 = await Window.existing(session.driver, "TEST1");
-    const test_window_2 = await Window.openNew(session.driver, "TEST2");
-    const test_window_3 = await Window.openNew(session.driver, "TEST3");
-
     await test_window_1.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, test_attendee_id_1, session));
-    await test_window_2.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, test_attendee_id_2, session));
-    await test_window_3.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, test_attendee_id_3, session));
+    await test_window_1.runCommands(async () => await RosterCheck.executeStep(this, session, 1));
 
-    await test_window_1.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
-    await test_window_2.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
+    const test_window_2 = await Window.openNew(session.driver, "TEST2");
+    await test_window_2.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, test_attendee_id_2, session));
+    await test_window_2.runCommands(async () => await RosterCheck.executeStep(this, session, 2));
+
+    const test_window_3 = await Window.openNew(session.driver, "TEST3");
+    await test_window_3.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, test_attendee_id_3, session));
     await test_window_3.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
 
     //Turn on Content Share for first participant

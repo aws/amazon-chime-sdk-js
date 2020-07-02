@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add device name for mobile integration tests
 - Added new FAQs and updated Readme to include new demos for PSTN calling and live events
 - Add test report URL for mobile integration tests
+- Add Firefox to Travis integration tests
 
 ### Changed
 - Fix title for FAQ guide 
