@@ -32,6 +32,10 @@ module.exports.emitMetric = async (namespace, capabilities, metric_name, value) 
             Name: 'OSVersion',
             Value: getOSVersion(capabilities)
           },
+          ...(isMobilePlatform(capabilities) ? [{
+            Name: 'DeviceName',
+            Value: capabilities.deviceName ? capabilities.deviceName : 'None'
+          }] : []),
         ],
         Unit: 'None',
         Value: value
@@ -127,4 +131,9 @@ const getOSVersion = (capabilities) => {
     default:
       return '';
   }
+};
+
+const isMobilePlatform = (capabilities) => {
+  const os = getOS(capabilities);
+  return os === 'Android' || os === 'iOS';
 };

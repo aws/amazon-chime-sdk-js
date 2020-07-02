@@ -125,6 +125,10 @@ class SdkBaseTest extends KiteBaseTest {
           await new Promise(r => setTimeout(r, 1000));
         } else {
           console.log(`Successfully create a Saucelabs session: ${sessionId}`);
+          if (this.isMobilePlatform()) {
+            this.capabilities.deviceName = await session.getDeviceName();
+            console.log(`Using device: ${this.capabilities.deviceName}`);
+          }
           return session;
         }
       }

@@ -205,6 +205,14 @@ class SaucelabsSession {
     return this.sessionId
   }
 
+  async getDeviceName() {
+    if (isMobileDomain(this.domain) && this.deviceName === undefined) {
+      const session = await this.driver.getSession();
+      this.deviceName = session.getCapability('testobject_device_name');
+    }
+    return this.deviceName;
+  }
+
   setSessionName(inName) {
     this.name = inName;
   }
