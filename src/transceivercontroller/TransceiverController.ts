@@ -25,6 +25,11 @@ export default interface TransceiverController {
   useTransceivers(): boolean;
 
   /**
+   *  Indicates if there is a video input attached
+   */
+  hasVideoInput(): boolean;
+
+  /**
    * Returns whether the track is a video track.
    */
   trackIsVideoInput(track: MediaStreamTrack): boolean;

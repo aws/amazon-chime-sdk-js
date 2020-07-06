@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix typo in VideoStreamDescription when stream is disabled by WebRTC
 - Fix issue where audio input is not able to switch in Firefox
+- Fix handling WebRTC Track event with no associated streams
 
 ## [1.11.0] - 2020-06-30
 

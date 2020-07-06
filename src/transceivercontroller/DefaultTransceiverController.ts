@@ -90,6 +90,13 @@ export default class DefaultTransceiverController implements TransceiverControll
     return typeof this.peer.getTransceivers !== 'undefined';
   }
 
+  hasVideoInput(): boolean {
+    if (!this._localCameraTransceiver || this._localCameraTransceiver.direction !== 'sendrecv')
+      return false;
+
+    return true;
+  }
+
   trackIsVideoInput(track: MediaStreamTrack): boolean {
     if (!this._localCameraTransceiver) {
       return false;
