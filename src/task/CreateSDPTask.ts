@@ -29,7 +29,12 @@ export default class CreateSDPTask extends BaseTask {
 
   sessionUsesVideo(): boolean {
     const enabled = true;
-    const sending = this.context.videoTileController.hasStartedLocalVideoTile();
+    let sending: boolean;
+    if (this.context.transceiverController.useTransceivers()) {
+      sending = this.context.transceiverController.hasVideoInput();
+    } else {
+      sending = this.context.videoTileController.hasStartedLocalVideoTile();
+    }
     const receiving = !!this.context.videosToReceive && !this.context.videosToReceive.empty();
     const usesVideo = enabled && (sending || receiving);
     this.context.logger.info(

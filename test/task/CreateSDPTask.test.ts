@@ -5,9 +5,12 @@ import * as chai from 'chai';
 
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import CreateSDPTask from '../../src/task/CreateSDPTask';
 import Task from '../../src/task/Task';
+import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -17,6 +20,7 @@ describe('CreateSDPTask', () => {
   let context: AudioVideoControllerState;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
+  const browser: BrowserBehavior = new DefaultBrowserBehavior();
   let task: Task;
 
   beforeEach(() => {
@@ -24,6 +28,7 @@ describe('CreateSDPTask', () => {
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
+    context.transceiverController = new DefaultTransceiverController(context.logger, browser);
     context.videoTileController = context.audioVideoController.videoTileController;
     context.logger = context.audioVideoController.logger;
     context.videosToReceive = new DefaultVideoStreamIdSet();

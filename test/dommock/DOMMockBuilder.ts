@@ -548,13 +548,15 @@ export default class DOMMockBuilder {
               if (mockBehavior.hasInactiveTransceiver) {
                 addTrackEvent.transceiver = { currentDirection: 'inactive' };
               }
-              const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
-              const mediaStream = new mediaStreamMaker();
-              mediaStream.id = mockBehavior.setRemoteDescriptionStreamId;
-              if (mockBehavior.setRemoteDescriptionAddTrackSucceeds) {
-                mediaStream.addTrack(mediaStreamTrack);
+              if (mockBehavior.hasStreamForTrack) {
+                const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
+                const mediaStream = new mediaStreamMaker();
+                mediaStream.id = mockBehavior.setRemoteDescriptionStreamId;
+                if (mockBehavior.setRemoteDescriptionAddTrackSucceeds) {
+                  mediaStream.addTrack(mediaStreamTrack);
+                }
+                addTrackEvent.streams = [mediaStream];
               }
-              addTrackEvent.streams = [mediaStream];
               this.dispatchEvent(addTrackEvent);
             }
 
