@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Firefox to Travis integration tests
 
 ### Changed
-- Fix title for FAQ guide 
+- Fix title for FAQ guide
+- Change DefaultDeviceController video MediaTrackConstraint parameters to be "ideal" explicitly
 
 ### Removed
 

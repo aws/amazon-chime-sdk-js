@@ -137,9 +137,9 @@ describe('DefaultDeviceController', () => {
       const constraints: Device = {};
       await deviceController.chooseVideoInputDevice(constraints);
 
-      expect(constraints.width).to.equal(width);
-      expect(constraints.height).to.equal(height);
-      expect(constraints.frameRate).to.equal(frameRate);
+      expect(JSON.stringify(constraints.width)).to.equal(JSON.stringify({ ideal: width }));
+      expect(JSON.stringify(constraints.height)).to.equal(JSON.stringify({ ideal: height }));
+      expect(JSON.stringify(constraints.frameRate)).to.equal(JSON.stringify({ ideal: frameRate }));
       expect(spy.calledWith(maxBandwidthKbps)).to.be.true;
     });
 
@@ -158,8 +158,8 @@ describe('DefaultDeviceController', () => {
       const constraints: Device = {};
       await deviceController.chooseVideoInputDevice(constraints);
 
-      expect(constraints.width).to.equal(544);
-      expect(constraints.height).to.equal(544);
+      expect(JSON.stringify(constraints.width)).to.equal(JSON.stringify({ ideal: 544 }));
+      expect(JSON.stringify(constraints.height)).to.equal(JSON.stringify({ ideal: 544 }));
     });
   });
 
