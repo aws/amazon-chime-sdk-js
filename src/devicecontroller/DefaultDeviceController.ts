@@ -693,9 +693,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       trackConstraints = device;
     }
     if (kind === 'video') {
-      trackConstraints.width = trackConstraints.width || this.videoWidth;
-      trackConstraints.height = trackConstraints.height || this.videoHeight;
-      trackConstraints.frameRate = trackConstraints.frameRate || this.videoFrameRate;
+      trackConstraints.width = trackConstraints.width || { ideal: this.videoWidth };
+      trackConstraints.height = trackConstraints.height || { ideal: this.videoHeight };
+      trackConstraints.frameRate = trackConstraints.frameRate || { ideal: this.videoFrameRate };
       // TODO: try to replace hard-code value related to videos into quality-level presets
       // The following configs relaxes CPU overuse detection threshold to offer better encoding quality
       // @ts-ignore
