@@ -102,7 +102,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
   static readonly DID: string = '+17035550122';
   static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/')].join('');
   static readonly LOGGER_BATCH_SIZE: number = 85;
-  static readonly LOGGER_INTERVAL_MS: number = 1150;
+  static readonly LOGGER_INTERVAL_MS: number = 2000;
 
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;

@@ -111,7 +111,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/').replace('/v2', '')].join('');
   static testVideo: string = 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
   static readonly LOGGER_BATCH_SIZE: number = 85;
-  static readonly LOGGER_INTERVAL_MS: number = 1150;
+  static readonly LOGGER_INTERVAL_MS: number = 2000;
   static readonly DATA_MESSAGE_TOPIC: string = "chat";
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300000;
 
