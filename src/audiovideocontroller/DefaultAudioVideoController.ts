@@ -676,12 +676,12 @@ export default class DefaultAudioVideoController implements AudioVideoController
       return false;
     }
     if (status.isFailure()) {
-      this.logger.error(
+      this.logger.warn(
         `connection failed with status code: ${MeetingSessionStatusCode[status.statusCode()]}`
       );
     }
     if (status.isTerminal()) {
-      this.logger.info('session will not be reconnected');
+      this.logger.error('session will not be reconnected');
       if (this.meetingSessionContext.reconnectController) {
         this.meetingSessionContext.reconnectController.disableReconnect();
       }

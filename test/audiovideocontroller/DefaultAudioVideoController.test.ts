@@ -1204,7 +1204,7 @@ describe('DefaultAudioVideoController', () => {
       this.timeout(15000);
 
       const logger = new NoOpDebugLogger();
-      const spy = sinon.spy(logger, 'error');
+      const spy = sinon.spy(logger, 'warn');
       const noAttendeeTimeout = configuration.attendeePresenceTimeoutMs;
 
       class TestMediaStreamBroker extends NoOpMediaStreamBroker {
