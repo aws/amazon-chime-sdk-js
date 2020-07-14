@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Firefox to Travis integration tests
 - Add README for integration tests
 - Add log to list the set of constraints supported by the browser
+- Catch exceptions taking place when putLogEvents fails
 
 ### Changed
 - Fix title for FAQ guide
