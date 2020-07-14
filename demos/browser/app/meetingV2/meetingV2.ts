@@ -1267,6 +1267,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         if (videoUrl) {
           videoFile.src = videoUrl;
         }
+        videoFile.style.display = 'block';
         await videoFile.play();
         // @ts-ignore
         const mediaStream: MediaStream = videoFile.captureStream();

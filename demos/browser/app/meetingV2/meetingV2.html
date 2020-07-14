@@ -290,17 +290,18 @@
       </div>
     </div>
     <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100">
-      <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-6 col-md-5 col-lg-4 h-100">
+      <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-6 col-md-5 col-lg-4 h-100" style="overflow-y: scroll;">
         <div class="bs-component" style="flex: 1 1 auto; overflow-y: scroll; height: 50%;">
           <ul id="roster" class="list-group"></ul>
         </div>
-        <div class="message d-flex flex-column pt-3" style="flex: 1 1 auto; overflow: hidden; height: 50%;">
-          <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: scroll;
+        <div class="message d-flex flex-column pt-3" style="flex: 1 1 auto; overflow: scroll; height: 100%;">
+          <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; min-height:30%; overflow-y: scroll;
             border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
           <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
             <textarea class="form-control shadow-none" id="send-message" rows="1" placeholder="Type a message (markdown supported)" style="display:inline-block; width:100%;
               resize:none; border-color: rgba(0, 0, 0, 0.125); outline: none; padding-left: 1.4rem"></textarea>
           </div>
+          <video id="content-share-video" crossOrigin="anonymous" style="display:none;width: 100%;margin-top: 5px;" ></video>
         </div>
       </div>
       <div id="tile-container" class="col-12 col-sm-6 col-md-7 col-lg-8 my-4 my-sm-0 h-100">
@@ -397,7 +398,6 @@
           </div>
         </div>
       </div>
-      <video id="content-share-video" crossOrigin="anonymous" style="display:none"></video>
     </div>
   </div>
 </div>
