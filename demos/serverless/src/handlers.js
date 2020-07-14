@@ -127,7 +127,11 @@ exports.logs = async (event, context) => {
     });
   }
   putLogEventsInput.logEvents = logEvents;
-  await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
+  try {
+    await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
+  } catch (error) {
+    console.error(`Failed to put CloudWatch log events with error ${error.message} and params ${JSON.stringify(putLogEventsInput)}`);
+  }
   return response(200, 'application/json', JSON.stringify({}));
 };
 
