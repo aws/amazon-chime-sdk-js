@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Firefox to Travis integration tests
 - Add README for integration tests
 - Add log to list the set of constraints supported by the browser
-- Catch exceptions taking place when putLogEvents fails
+- Add device change observer events when the current audio/video input stream ended
 
 ### Changed
 - Fix title for FAQ guide
@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix handling WebRTC Track event with no associated streams
 - Increase log interval to avoid multiple Cloudwatch requests at once
 - Fix incorrect log level for terminal error code
+- Catch exceptions taking place when putLogEvents fails
 
 ## [1.11.0] - 2020-06-30
 

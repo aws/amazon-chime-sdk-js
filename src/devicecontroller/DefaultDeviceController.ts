@@ -260,6 +260,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     for (const kind in this.activeDevices) {
       if (this.activeDevices[kind] && this.activeDevices[kind].stream === mediaStreamToRelease) {
         this.activeDevices[kind] = null;
+        if (
+          kind === 'video' &&
+          this.boundAudioVideoController &&
+          this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
+        ) {
+          this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
+        }
       }
     }
   }
@@ -458,6 +465,19 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.alreadyHandlingDeviceChange = false;
   }
 
+  private async handleDeviceStreamEnded(kind: string, deviceId: string): Promise<void> {
+    await this.chooseInputDevice(kind, null, false);
+    if (kind === 'audio') {
+      this.forEachObserver((observer: DeviceChangeObserver) => {
+        Maybe.of(observer.audioInputStreamEnded).map(f => f.bind(observer)(deviceId));
+      });
+    } else {
+      this.forEachObserver((observer: DeviceChangeObserver) => {
+        Maybe.of(observer.videoInputStreamEnded).map(f => f.bind(observer)(deviceId));
+      });
+    }
+  }
+
   private forEachObserver(observerFunc: (observer: DeviceChangeObserver) => void): void {
     for (const observer of this.deviceChangeObservers) {
       new AsyncScheduler().start(() => {
@@ -526,6 +546,22 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     return '';
   }
 
+  private getActiveDeviceId(kind: string): string | null {
+    /* istanbul ignore else */
+    if (this.activeDevices[kind] && this.activeDevices[kind].constraints) {
+      const activeDeviceMediaTrackConstraints =
+        this.activeDevices[kind].constraints.audio || this.activeDevices[kind].constraints.video;
+      const activeDeviceConstrainDOMStringParameters = (activeDeviceMediaTrackConstraints as MediaTrackConstraints)
+        .deviceId;
+      const activeDeviceId = (activeDeviceConstrainDOMStringParameters as ConstrainDOMStringParameters)
+        .exact;
+      /* istanbul ignore else */
+      if (activeDeviceId as string) return activeDeviceId as string;
+    }
+    /* istanbul ignore next */
+    return null;
+  }
+
   private async chooseInputDevice(
     kind: string,
     device: Device,
@@ -590,18 +626,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
         await this.handleDeviceChange();
         newDevice.stream.getTracks()[0].addEventListener('ended', () => {
-          if (this.activeDevices[kind].stream === newDevice.stream) {
+          if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
             this.logger.warn(
               `${kind} input device which was active is no longer available, resetting to null device`
             );
-            this.chooseInputDevice(kind, null, false);
-            if (
-              kind === 'video' &&
-              this.boundAudioVideoController &&
-              this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
-            ) {
-              this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
-            }
+            this.handleDeviceStreamEnded(kind, this.getActiveDeviceId(kind));
           }
         });
       }
