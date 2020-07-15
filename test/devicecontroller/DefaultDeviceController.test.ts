@@ -10,6 +10,7 @@ import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceCon
 import Device from '../../src/devicecontroller/Device';
 import DevicePermission from '../../src/devicecontroller/DevicePermission';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import MediaDeviceProxyHandler from '../../src/mediadevicefactory/MediaDeviceProxyHandler';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
@@ -67,6 +68,12 @@ describe('DefaultDeviceController', () => {
   describe('constructor', () => {
     it('can be constructed without navigator.mediaDevices', () => {
       domMockBehavior = new DOMMockBehavior();
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const mediaDeviceWrapper = new Proxy<MediaDevices>(
+        navigator.mediaDevices,
+        new MediaDeviceProxyHandler()
+      );
+      expect(mediaDeviceWrapper.getSupportedConstraints).to.exist;
       domMockBehavior.mediaDevicesSupported = false;
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       deviceController = new DefaultDeviceController(logger);

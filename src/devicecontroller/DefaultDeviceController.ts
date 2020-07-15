@@ -65,6 +65,10 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       mediaDeviceWrapper.addEventListener('devicechange', () => {
         this.handleDeviceChange();
       });
+      const supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+      this.logger.info(
+        `Supported Constraints in this browser ${JSON.stringify(supportedConstraints)}`
+      );
     } catch (error) {
       logger.error(error.message);
     }
