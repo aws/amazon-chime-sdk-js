@@ -24,6 +24,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private static defaultSampleRate = 48000;
   private static defaultSampleSize = 16;
   private static defaultChannelCount = 1;
+  private static audioContext: AudioContext | null = null;
+
   private deviceInfoCache: MediaDeviceInfo[] | null = null;
   private activeDevices: { [kind: string]: DeviceSelection | null } = { audio: null, video: null };
   private audioOutputDeviceId: string | null = null;
@@ -32,7 +34,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private deviceLabelTrigger = (): Promise<MediaStream> => {
     return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
   };
-  private audioInputContext: AudioContext | null = null;
   private audioInputDestinationNode: MediaStreamAudioDestinationNode | null = null;
   private audioInputSourceNode: MediaStreamAudioSourceNode | null = null;
 
@@ -128,7 +129,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     if (!this.activeDevices['audio']) {
       return null;
     }
-    const audioContext = DefaultDeviceController.createAudioContext();
+    const audioContext = DefaultDeviceController.getAudioContext();
     const analyser = audioContext.createAnalyser();
     audioContext.createMediaStreamSource(this.activeDevices['audio'].stream).connect(analyser);
     this.trace('createAnalyserNodeForAudioInput');
@@ -179,9 +180,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   mixIntoAudioInput(stream: MediaStream): MediaStreamAudioSourceNode {
     let node: MediaStreamAudioSourceNode | null = null;
     if (this.useWebAudio) {
-      this.ensureAudioInputContext();
-      node = this.audioInputContext.createMediaStreamSource(stream);
-      node.connect(this.audioInputDestinationNode);
+      node = DefaultDeviceController.getAudioContext().createMediaStreamSource(stream);
+      node.connect(this.getMediaStreamDestinationNode());
     } else {
       this.logger.warn('WebAudio is not enabled, mixIntoAudioInput will not work');
     }
@@ -274,14 +274,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   static synthesizeAudioDevice(toneHz: number): Device {
-    const audioContext = DefaultDeviceController.createAudioContext();
+    const audioContext = DefaultDeviceController.getAudioContext();
     const outputNode = audioContext.createMediaStreamDestination();
     if (!toneHz) {
       const source = audioContext.createBufferSource();
       source.buffer = audioContext.createBuffer(
         1,
-        audioContext.sampleRate * 5,
-        audioContext.sampleRate
+        DefaultDeviceController.defaultSampleRate * 5,
+        DefaultDeviceController.defaultSampleRate
       );
       // Some browsers will not play audio out the MediaStreamDestination
       // unless there is actually audio to play, so we add a small amount of
@@ -299,9 +299,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       oscillatorNode.connect(gainNode);
       oscillatorNode.start();
     }
-    outputNode.addEventListener('ended', () => {
-      audioContext.close();
-    });
     return outputNode.stream;
   }
 
@@ -755,8 +752,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private async acquireInputStream(kind: string): Promise<MediaStream> {
     if (kind === 'audio') {
       if (this.useWebAudio) {
-        this.ensureAudioInputContext();
-        return this.audioInputDestinationNode.stream;
+        return this.getMediaStreamDestinationNode().stream;
       }
     }
     let existingConstraints: MediaTrackConstraints | null = null;
@@ -785,30 +781,42 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     return this.activeDevices[kind].stream;
   }
 
-  private ensureAudioInputContext(): void {
-    if (this.audioInputContext) {
-      return;
-    }
-    this.audioInputContext = DefaultDeviceController.createAudioContext();
-    this.audioInputDestinationNode = this.audioInputContext.createMediaStreamDestination();
-  }
-
   private attachAudioInputStreamToAudioContext(stream: MediaStream): void {
-    this.ensureAudioInputContext();
     if (this.audioInputSourceNode) {
       this.audioInputSourceNode.disconnect();
     }
-    this.audioInputSourceNode = this.audioInputContext.createMediaStreamSource(stream);
-    this.audioInputSourceNode.connect(this.audioInputDestinationNode);
+    this.audioInputSourceNode = DefaultDeviceController.getAudioContext().createMediaStreamSource(
+      stream
+    );
+    this.audioInputSourceNode.connect(this.getMediaStreamDestinationNode());
   }
 
-  static createAudioContext(): AudioContext {
-    const options: AudioContextOptions = {};
-    if (navigator.mediaDevices.getSupportedConstraints().sampleRate) {
-      options.sampleRate = DefaultDeviceController.defaultSampleRate;
+  private getMediaStreamDestinationNode(): MediaStreamAudioDestinationNode {
+    if (!this.audioInputDestinationNode) {
+      this.audioInputDestinationNode = DefaultDeviceController.getAudioContext().createMediaStreamDestination();
     }
-    // @ts-ignore
-    return new (window.AudioContext || window.webkitAudioContext)(options);
+    return this.audioInputDestinationNode;
+  }
+
+  static getAudioContext(): AudioContext {
+    if (!DefaultDeviceController.audioContext) {
+      const options: AudioContextOptions = {};
+      if (navigator.mediaDevices.getSupportedConstraints().sampleRate) {
+        options.sampleRate = DefaultDeviceController.defaultSampleRate;
+      }
+      // @ts-ignore
+      DefaultDeviceController.audioContext = new (window.AudioContext || window.webkitAudioContext)(
+        options
+      );
+    }
+    return DefaultDeviceController.audioContext;
+  }
+
+  static closeAudioContext(): void {
+    if (DefaultDeviceController.audioContext) {
+      DefaultDeviceController.audioContext.close();
+    }
+    DefaultDeviceController.audioContext = null;
   }
 
   private supportSampleRateConstraint(): boolean {
