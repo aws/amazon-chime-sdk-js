@@ -627,6 +627,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.populateAudioOutputList();
   }
 
+  audioInputStreamEnded(deviceId: string): void {
+    this.log(`Current audio input stream from device id ${deviceId} ended.`);
+  }
+
+  videoInputStreamEnded(deviceId: string): void {
+    this.log(`Current video input stream from device id ${deviceId} ended.`);
+  }
+
   estimatedDownlinkBandwidthLessThanRequired(estimatedDownlinkBandwidthKbps: number, requiredVideoDownlinkBandwidthKbps: number ): void {
     this.log(`Estimated downlink bandwidth is ${estimatedDownlinkBandwidthKbps} is less than required bandwidth for video ${requiredVideoDownlinkBandwidthKbps}`);
   }

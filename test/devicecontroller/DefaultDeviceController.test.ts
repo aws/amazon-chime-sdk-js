@@ -857,4 +857,57 @@ describe('DefaultDeviceController', () => {
       await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
     });
   });
+  describe('input stream ended event', () => {
+    it('audio input stream ended', async () => {
+      let audioInputStreamEndedCallCount = 0;
+      const observer: DeviceChangeObserver = {
+        audioInputStreamEnded: (_deviceId: string): void => {
+          audioInputStreamEndedCallCount += 1;
+        },
+      };
+      deviceController.addDeviceChangeObserver(observer);
+      await deviceController.chooseAudioInputDevice(stringDeviceId);
+      const stream = await deviceController.acquireAudioInputStream();
+      stream.getAudioTracks()[0].stop();
+      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      expect(audioInputStreamEndedCallCount).to.equal(1);
+    });
+
+    it('video input stream ended and stop local video if it started', async () => {
+      let videoInputStreamEndedCallCount = 0;
+      const observer: DeviceChangeObserver = {
+        videoInputStreamEnded: (_deviceId: string): void => {
+          videoInputStreamEndedCallCount += 1;
+        },
+      };
+      deviceController.addDeviceChangeObserver(observer);
+      const spy = sinon.spy(audioVideoController.videoTileController, 'stopLocalVideoTile');
+      deviceController.bindToAudioVideoController(audioVideoController);
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      audioVideoController.videoTileController.startLocalVideoTile();
+      const stream = await deviceController.acquireVideoInputStream();
+      stream.getVideoTracks()[0].stop();
+      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      expect(videoInputStreamEndedCallCount).to.equal(1);
+      expect(spy.called).to.be.true;
+    });
+
+    it('video input stream ended but do not need to stop local video if it did not start', async () => {
+      let videoInputStreamEndedCallCount = 0;
+      const observer: DeviceChangeObserver = {
+        videoInputStreamEnded: (_deviceId: string): void => {
+          videoInputStreamEndedCallCount += 1;
+        },
+      };
+      deviceController.addDeviceChangeObserver(observer);
+      const spy = sinon.spy(audioVideoController.videoTileController, 'stopLocalVideoTile');
+      deviceController.bindToAudioVideoController(audioVideoController);
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      const stream = await deviceController.acquireVideoInputStream();
+      stream.getVideoTracks()[0].stop();
+      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      expect(videoInputStreamEndedCallCount).to.equal(1);
+      expect(spy.called).to.be.false;
+    });
+  });
 });
