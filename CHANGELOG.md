@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add test report URL for mobile integration tests
 - Add Firefox to Travis integration tests
 - Add README for integration tests
+- Add log to list the set of constraints supported by the browser
 
 ### Changed
 - Fix title for FAQ guide
