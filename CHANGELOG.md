@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Fix title for FAQ guide
 - Change DefaultDeviceController video MediaTrackConstraint parameters to be "ideal" explicitly
+- Use a single instance of AudioContext
+- Use the SDK default sample rate 48,000 Hz for an AudioBuffer object
 
 ### Removed
 
