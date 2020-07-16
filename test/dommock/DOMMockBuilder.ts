@@ -903,7 +903,15 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.AudioContext = class MockAudioContext {
-      constructor(_contextOptions?: AudioContextOptions) {}
+      sampleRate: number = 48000;
+
+      constructor(contextOptions?: AudioContextOptions) {
+        if (contextOptions && contextOptions.sampleRate) {
+          this.sampleRate = contextOptions.sampleRate;
+        } else {
+          this.sampleRate = mockBehavior.audioContextDefaultSampleRate;
+        }
+      }
 
       createMediaStreamDestination(): MediaStreamAudioDestinationNode {
         return new GlobalAny.MediaStreamAudioDestinationNode();
@@ -948,7 +956,17 @@ export default class DOMMockBuilder {
         };
       }
 
-      createBuffer(_numberOfChannels: number, _length: number, _sampleRate: number): AudioBuffer {
+      createBuffer(_numberOfChannels: number, _length: number, sampleRate: number): AudioBuffer {
+        if (!mockBehavior.audioContextCreateBufferSucceeds) {
+          throw new Error('Unknown error');
+        }
+
+        if (sampleRate < 8000 || sampleRate > 96000) {
+          const error = new Error('The operation is not supported');
+          error.name = 'NotSupportedError';
+          throw error;
+        }
+
         return new GlobalAny.AudioBuffer();
       }
 

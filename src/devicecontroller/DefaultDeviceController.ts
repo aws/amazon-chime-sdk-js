@@ -289,11 +289,28 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     const outputNode = audioContext.createMediaStreamDestination();
     if (!toneHz) {
       const source = audioContext.createBufferSource();
-      source.buffer = audioContext.createBuffer(
-        1,
-        DefaultDeviceController.defaultSampleRate * 5,
-        DefaultDeviceController.defaultSampleRate
-      );
+
+      // The AudioContext object uses the sample rate of the default output device
+      // if not specified. Creating an AudioBuffer object with the output device's
+      // sample rate fails in some browsers, e.g. Safari with a Bluetooth headphone.
+      try {
+        source.buffer = audioContext.createBuffer(
+          1,
+          audioContext.sampleRate * 5,
+          audioContext.sampleRate
+        );
+      } catch (error) {
+        if (error && error.name === 'NotSupportedError') {
+          source.buffer = audioContext.createBuffer(
+            1,
+            DefaultDeviceController.defaultSampleRate * 5,
+            DefaultDeviceController.defaultSampleRate
+          );
+        } else {
+          throw error;
+        }
+      }
+
       // Some browsers will not play audio out the MediaStreamDestination
       // unless there is actually audio to play, so we add a small amount of
       // noise here to ensure that audio is played out.

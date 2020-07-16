@@ -191,14 +191,14 @@ Note that for Android, if an attendee joins later after the video stream is in b
 
 This seems to be a [bug](https://bugs.chromium.org/p/webrtc/issues/detail?id=11677) with Android 8 or 9 when using getUserMedia with speakerphone device Id that the audio stream will end after a brief moment. Using default device Id will fix this issue. Note that this only happens if users select speakerphone first. If you use default device when joining the meeting then switch to Speakerphone, this issue does not happen.
 
-### I see a slate which says “Your client does not support hardware acceleration” when I enable video on my device?
+### I see a slate which says "Your client does not support hardware acceleration" when I enable video on my device?
 
 This error indicates that the device you are using does not support hardware acceleration decoding. However this does not impact the ability of this user to participate in Amazon Chime SDK meetings as the device can render and transmit VP8 streams to other parties in the call. Specifically for Chrome, you will need to enable Unified Plan support by setting this [flag](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers) to true or enable [Simulcast](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers). 
 In some cases, H.264 may be missing from the initial SDP offer [tracking Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1047994)) causing this slate to appear. Rejoining the meeting can fix the videos to be rendered once again.
 
 ## Audio and video
 
-### My clients are unable to join the meeting and I see “`navigator.mediaDevices is undefined`", what could be the reason?
+### My clients are unable to join the meeting and I see `navigator.mediaDevices is undefined`, what could be the reason?
 
 Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the chooseVideoInputDevice API which can operate in [secure contexts inside a browser only](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security) for privacy concerns so you will need to access your browsers using HTTPS://. The hostname `localhost` and the loopback address `127.0.0.1` are exceptions.
 
@@ -208,8 +208,8 @@ Applications that show multiple video tiles on the screen will need to decide wh
 
 * A video whose source is a mobile device in portrait mode will display quite differently compared to a video in landscape mode from a laptop camera. The CSS object-fit rule can be applied to the video element to change how the content scales to fit the parent video element.
 * Use the `VideoTileState` [videoStreamContentWidth and videoStreamContentHeight](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTileState.ts#L20) properties to determine the aspect ratio of the content.
-* For landscape aspect ratios (width > height), apply the CSS rule “`object-fit:cover"` to the HTML element that will contain the video to crop and scale the video to the aspect ratio of the video element.
-* For portrait aspect ratios (height > width), apply the CSS rule “`object-fit:contain"` to the HTML element that will contain the video to ensure that all video content can be seen.
+* For landscape aspect ratios (width > height), apply the CSS rule `object-fit:cover` to the HTML element that will contain the video to crop and scale the video to the aspect ratio of the video element.
+* For portrait aspect ratios (height > width), apply the CSS rule `object-fit:contain` to the HTML element that will contain the video to ensure that all video content can be seen.
 
 ### After leaving a meeting, the camera LED is still on indicating that the camera has not been released. What could be wrong?
 
@@ -229,7 +229,7 @@ meetingSession.audioVideo.stopVideoPreviewForVideoInput(previewVideoElement);
 meetingSession.audioVideo.stop();
 ```
 
-### My clients are unable to successfully join audio calls from Safari, they get a “failed to get audio device for constraints null: Type error”, what could be the issue?
+### My clients are unable to successfully join audio calls from Safari, they get a `failed to get audio device for constraints null: Type error`, what could be the issue?
 
 This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the `chooseVideoInputDevice` API. In this case you will see the following entry in the log where an empty string after `chooseVideoInputDevice`:
 
@@ -239,3 +239,20 @@ This error message is an indication that the browser application did not success
 
 This applies for video input as well.
 
+### How can I show a custom UX when the browser prompts the user for permission to use microphone and camera?
+
+Device labels are privileged since they add to the fingerprinting surface area of the browser session. In Chrome private tabs and in all Firefox tabs, the labels can only be read once a MediaStream is active. How to deal with this restriction depends on the desired UX. The device controller includes an injectable device label trigger which allows you to perform custom behavior in case there are no labels, such as creating a temporary audio/video stream to unlock the device names, which is the default behavior.
+
+You may want to override this behavior to provide a custom UX such as a prompt explaining why microphone and camera access is being asked for by supplying your own function to setDeviceLabelTrigger(). See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/b0e1b16b83b9d56b2a6354b0509aa888ef7b983c/demos/browser/app/meetingV2/meetingV2.ts#L928) for an example.
+
+```
+meetingSession.audioVideo.setDeviceLabelTrigger(
+  async (): Promise<MediaStream> => {
+    // For example, let the user know that the browser is asking for microphone and camera permissions.
+    showCustomUX();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    hideCustomUX();
+    return stream;
+  }
+);
+```
