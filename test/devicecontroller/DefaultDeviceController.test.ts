@@ -116,16 +116,20 @@ describe('DefaultDeviceController', () => {
       expect(devices.length).to.equal(0);
     });
 
-    it('throws an error if it has an error while getting device labels', async () => {
+    it('does not fail even when the custom label device trigger throws an error', async () => {
+      let called = false;
       deviceController.setDeviceLabelTrigger(async () => {
+        called = true;
         throw new Error('Something went wrong');
         return new MediaStream();
       });
+      // Simulate the device list when no permission is granted.
+      domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo('', 'audioinput', '', '')];
       try {
         await deviceController.listAudioInputDevices();
-        new Error('This line should not be reached.');
+        expect(called).to.be.true;
       } catch (error) {
-        expect(error.message).includes(`unable to get media device labels`);
+        throw new Error('This line should not be reached.');
       }
     });
   });
@@ -214,7 +218,7 @@ describe('DefaultDeviceController', () => {
         expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
         expect(called).to.be.true;
       } catch (error) {
-        new Error('This line should not be reached.');
+        throw new Error('This line should not be reached.');
       }
     });
 
@@ -556,7 +560,7 @@ describe('DefaultDeviceController', () => {
 
         // SDK will fail to acquire the inactive video stream.
         await deviceController.acquireVideoInputStream();
-        new Error('This line should not be reached.');
+        throw new Error('This line should not be reached.');
       } catch (error) {
         expect(error.message).includes(`unable to acquire video device`);
       }
@@ -797,7 +801,7 @@ describe('DefaultDeviceController', () => {
 
       try {
         await deviceController.acquireVideoInputStream();
-        new Error('This line should not be reached.');
+        throw new Error('This line should not be reached.');
       } catch (error) {
         expect(error.message).includes(`no video device chosen, stopping local video tile`);
       }
@@ -855,6 +859,26 @@ describe('DefaultDeviceController', () => {
     it('synthesizes the audio device', async () => {
       DefaultDeviceController.synthesizeAudioDevice(100);
       await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+    });
+
+    it('succeeds even when using the sample rate outside the supported range', async () => {
+      domMockBehavior.mediaDeviceHasSupportedConstraints = false;
+      domMockBehavior.audioContextDefaultSampleRate = Infinity;
+      try {
+        DefaultDeviceController.synthesizeAudioDevice(0);
+      } catch (error) {
+        throw new Error('This line should not be reached.');
+      }
+    });
+
+    it('fails if the create buffer throws a non-NotSupportedError error', async () => {
+      domMockBehavior.audioContextCreateBufferSucceeds = false;
+      try {
+        DefaultDeviceController.synthesizeAudioDevice(0);
+        throw new Error('This line should not be reached.');
+      } catch (error) {
+        expect(error.name).to.not.equal('NotSupportedError');
+      }
     });
   });
   describe('input stream ended event', () => {

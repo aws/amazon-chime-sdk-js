@@ -260,16 +260,16 @@
 						<h3><strong>When I join a meeting in Chrome in Android 8 or 9 with speakerphone, other people could not hear me. Switch to default mic fixes the issue.</strong></h3>
 					</a>
 					<p>This seems to be a <a href="https://bugs.chromium.org/p/webrtc/issues/detail?id=11677">bug</a> with Android 8 or 9 when using getUserMedia with speakerphone device Id that the audio stream will end after a brief moment. Using default device Id will fix this issue. Note that this only happens if users select speakerphone first. If you use default device when joining the meeting then switch to Speakerphone, this issue does not happen.</p>
-					<a href="#i-see-a-slate-which-says-your-client-does-not-support-hardware-acceleration-when-i-enable-video-on-my-device" id="i-see-a-slate-which-says-your-client-does-not-support-hardware-acceleration-when-i-enable-video-on-my-device" style="color: inherit; text-decoration: none;">
-						<h3>I see a slate which says “Your client does not support hardware acceleration” when I enable video on my device?</h3>
+					<a href="#i-see-a-slate-which-says-quotyour-client-does-not-support-hardware-accelerationquot-when-i-enable-video-on-my-device" id="i-see-a-slate-which-says-quotyour-client-does-not-support-hardware-accelerationquot-when-i-enable-video-on-my-device" style="color: inherit; text-decoration: none;">
+						<h3>I see a slate which says &quot;Your client does not support hardware acceleration&quot; when I enable video on my device?</h3>
 					</a>
 					<p>This error indicates that the device you are using does not support hardware acceleration decoding. However this does not impact the ability of this user to participate in Amazon Chime SDK meetings as the device can render and transmit VP8 streams to other parties in the call. Specifically for Chrome, you will need to enable Unified Plan support by setting this <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers">flag</a> to true or enable <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers">Simulcast</a>.
 					In some cases, H.264 may be missing from the initial SDP offer <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1047994">tracking Chromium bug</a>) causing this slate to appear. Rejoining the meeting can fix the videos to be rendered once again.</p>
 					<a href="#audio-and-video" id="audio-and-video" style="color: inherit; text-decoration: none;">
 						<h2>Audio and video</h2>
 					</a>
-					<a href="#my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefinedquot-what-could-be-the-reason" id="my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefinedquot-what-could-be-the-reason" style="color: inherit; text-decoration: none;">
-						<h3>My clients are unable to join the meeting and I see “<code>navigator.mediaDevices is undefined</code>&quot;, what could be the reason?</h3>
+					<a href="#my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefined-what-could-be-the-reason" id="my-clients-are-unable-to-join-the-meeting-and-i-see-navigatormediadevices-is-undefined-what-could-be-the-reason" style="color: inherit; text-decoration: none;">
+						<h3>My clients are unable to join the meeting and I see <code>navigator.mediaDevices is undefined</code>, what could be the reason?</h3>
 					</a>
 					<p>Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke the chooseVideoInputDevice API which can operate in <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Privacy_and_security">secure contexts inside a browser only</a> for privacy concerns so you will need to access your browsers using HTTPS://. The hostname <code>localhost</code> and the loopback address <code>127.0.0.1</code> are exceptions.</p>
 					<a href="#how-can-i-create-a-video-tile-layout-for-my-application" id="how-can-i-create-a-video-tile-layout-for-my-application" style="color: inherit; text-decoration: none;">
@@ -279,8 +279,8 @@
 					<ul>
 						<li>A video whose source is a mobile device in portrait mode will display quite differently compared to a video in landscape mode from a laptop camera. The CSS object-fit rule can be applied to the video element to change how the content scales to fit the parent video element.</li>
 						<li>Use the <code>VideoTileState</code> <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTileState.ts#L20">videoStreamContentWidth and videoStreamContentHeight</a> properties to determine the aspect ratio of the content.</li>
-						<li>For landscape aspect ratios (width &gt; height), apply the CSS rule “<code>object-fit:cover&quot;</code> to the HTML element that will contain the video to crop and scale the video to the aspect ratio of the video element.</li>
-						<li>For portrait aspect ratios (height &gt; width), apply the CSS rule “<code>object-fit:contain&quot;</code> to the HTML element that will contain the video to ensure that all video content can be seen.</li>
+						<li>For landscape aspect ratios (width &gt; height), apply the CSS rule <code>object-fit:cover</code> to the HTML element that will contain the video to crop and scale the video to the aspect ratio of the video element.</li>
+						<li>For portrait aspect ratios (height &gt; width), apply the CSS rule <code>object-fit:contain</code> to the HTML element that will contain the video to ensure that all video content can be seen.</li>
 					</ul>
 					<a href="#after-leaving-a-meeting-the-camera-led-is-still-on-indicating-that-the-camera-has-not-been-released-what-could-be-wrong" id="after-leaving-a-meeting-the-camera-led-is-still-on-indicating-that-the-camera-has-not-been-released-what-could-be-wrong" style="color: inherit; text-decoration: none;">
 						<h3>After leaving a meeting, the camera LED is still on indicating that the camera has not been released. What could be wrong?</h3>
@@ -298,11 +298,24 @@ meetingSession.audioVideo.stopVideoPreviewForVideoInput(previewVideoElement);
 // <span class="hljs-keyword">Stop</span> the meeting <span class="hljs-keyword">session</span> (audio <span class="hljs-keyword">and</span> video)
 meetingSession.audioVideo.stop();</code></pre>
 					<a href="#my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" id="my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" style="color: inherit; text-decoration: none;">
-						<h3>My clients are unable to successfully join audio calls from Safari, they get a “failed to get audio device for constraints null: Type error”, what could be the issue?</h3>
+						<h3>My clients are unable to successfully join audio calls from Safari, they get a <code>failed to get audio device for constraints null: Type error</code>, what could be the issue?</h3>
 					</a>
 					<p>This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the <code>chooseVideoInputDevice</code> API. In this case you will see the following entry in the log where an empty string after <code>chooseVideoInputDevice</code>:</p>
 					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">""</span> -&gt; <span class="hljs-string">"PermissionDeniedByBrowser"</span></code></pre><p>This applies for video input as well.</p>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
+					<a href="#how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" id="how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" style="color: inherit; text-decoration: none;">
+						<h3>How can I show a custom UX when the browser prompts the user for permission to use microphone and camera?</h3>
+					</a>
+					<p>Device labels are privileged since they add to the fingerprinting surface area of the browser session. In Chrome private tabs and in all Firefox tabs, the labels can only be read once a MediaStream is active. How to deal with this restriction depends on the desired UX. The device controller includes an injectable device label trigger which allows you to perform custom behavior in case there are no labels, such as creating a temporary audio/video stream to unlock the device names, which is the default behavior.</p>
+					<p>You may want to override this behavior to provide a custom UX such as a prompt explaining why microphone and camera access is being asked for by supplying your own function to setDeviceLabelTrigger(). See the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts#L928">meeting demo application</a> for an example.</p>
+					<pre><code>meetingSession.audioVideo.setDeviceLabelTrigger(
+  <span class="hljs-keyword">async</span> (): Promise&lt;MediaStream&gt; =&gt; {
+    <span class="hljs-comment">// For example, let the user know that the browser is asking for microphone and camera permissions.</span>
+    showCustomUX();
+    <span class="hljs-keyword">const</span> stream = <span class="hljs-keyword">await</span> navigator.mediaDevices.getUserMedia({ audio: <span class="hljs-keyword">true</span>, video: <span class="hljs-keyword">true</span> });
+    hideCustomUX();
+    <span class="hljs-keyword">return</span> stream;
+  }
+);</code></pre><p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>
