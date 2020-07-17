@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Increase log interval to avoid multiple Cloudwatch requests at once
 - Fix incorrect log level for terminal error code
 - Catch exceptions taking place when putLogEvents fails
+- Fix demo app responsiveness issue
 
 ## [1.11.0] - 2020-06-30
 
