@@ -1197,18 +1197,15 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
 
     const pauseButtonElement = document.getElementById(`video-pause-${tileIndex}`) as HTMLButtonElement;
-    const resumeButtonElement = document.getElementById(`video-resume-${tileIndex}`) as HTMLButtonElement;
 
     pauseButtonElement.addEventListener('click', () => {
         if (!tileState.paused) {
           this.audioVideo.pauseVideoTile(tileState.tileId);
+          pauseButtonElement.innerText = 'Resume';
+        } else {
+          this.audioVideo.unpauseVideoTile(tileState.tileId);
+          pauseButtonElement.innerText = 'Pause';
         }
-    });
-
-    resumeButtonElement.addEventListener('click', () => {
-      if (tileState.paused) {
-        this.audioVideo.unpauseVideoTile(tileState.tileId);
-      }
     });
 
     this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
@@ -1398,35 +1395,17 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       button.style.position = 'absolute';
       button.style.display = 'inline-block';
       button.style.right = '0px';
-      // button.style.top = `${h - nameplateSize - nameplatePadding}px`;
+      button.style.top = `${h - nameplateSize - nameplatePadding}px`;
       button.style.height = `${nameplateSize}px`;
-      // button.style.width = `${w}px`;
       button.style.margin = '0';
       button.style.padding = '0';
-      button.style.paddingLeft = `${nameplatePadding}px`;
+      button.style.paddingRight = `${nameplatePadding}px`;
       button.style.color = '#fff';
       button.style.backgroundColor = 'rgba(0,0,0,0)';
       button.style.textShadow = '0px 0px 5px black';
       button.style.letterSpacing = '0.1em';
       button.style.fontSize = `${nameplateSize - 6}px`;
-    }
-
-    button = document.getElementById(`video-resume-${tileIndex}`) as HTMLButtonElement;
-
-    if (button) {
-      button.style.position = 'absolute';
-      button.style.left = '0px';
-      button.style.top = '0px';
-      button.style.height = `${nameplateSize}px`;
-      // button.style.width = `${w}px`;
-      button.style.margin = '0';
-      button.style.padding = '0';
-      button.style.paddingLeft = `${nameplatePadding}px`;
-      button.style.color = '#fff';
-      button.style.backgroundColor = 'rgba(0,0,0,0)';
-      button.style.textShadow = '0px 0px 5px black';
-      button.style.letterSpacing = '0.1em';
-      button.style.fontSize = `${nameplateSize - 6}px`;
+      button.style.border = 'none';
     }
   }
 
