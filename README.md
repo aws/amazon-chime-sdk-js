@@ -594,7 +594,7 @@ inputElement.addEventListener('change', async () => {
   videoElement.src = url;
   await videoElement.play();
 
-  const mediaSream = videoElement.captureStream();
+  const mediaSream = videoElement.captureStream(); /* use mozCaptureStream for Firefox e.g. videoElement.mozCaptureStream(); */
   await meetingSession.audioVideo.startContentShare(mediaSream);
   inputElement.value = '';
 });
