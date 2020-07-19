@@ -18,6 +18,7 @@ import {
   DefaultMeetingSession,
   DefaultModality,
   Device,
+  DefaultBrowserBehavior,
   DeviceChangeObserver,
   LogLevel,
   Logger,
@@ -126,6 +127,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   audioVideo: AudioVideoFacade | null = null;
   tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
   canStartLocalVideo: boolean = true;
+  defaultBrowserBehaviour: DefaultBrowserBehavior;
   // eslint-disable-next-line
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
@@ -184,6 +186,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     } else {
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
     }
+    this.defaultBrowserBehaviour = new DefaultBrowserBehavior();
   }
 
   initEventListeners(): void {
@@ -527,7 +530,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   async getNearestMediaRegion(): Promise<string> {
-     const nearestMediaRegionResponse = await fetch(
+    const nearestMediaRegionResponse = await fetch(
       `https://nearest-media-region.l.chime.aws`,
       {
         method: 'GET',
@@ -1276,8 +1279,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           videoFile.src = videoUrl;
         }
         await videoFile.play();
-        // @ts-ignore
-        const mediaStream: MediaStream = videoFile.captureStream();
+        let mediaStream: MediaStream;
+        if(this.defaultBrowserBehaviour.hasFirefoxWebRTC()) {
+          // @ts-ignore
+          mediaStream = videoFile.mozCaptureStream();
+        } else {
+          // @ts-ignore
+          mediaStream = videoFile.captureStream();
+        }
         this.audioVideo.startContentShare(mediaStream);
         break;
     }

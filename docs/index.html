@@ -583,7 +583,7 @@ inputElement.addEventListener(<span class="hljs-string">'change'</span>, <span c
   videoElement.src = url;
   <span class="hljs-keyword">await</span> videoElement.play();
 
-  <span class="hljs-keyword">const</span> mediaSream = videoElement.captureStream();
+  <span class="hljs-keyword">const</span> mediaSream = videoElement.captureStream(); <span class="hljs-comment">/* use mozCaptureStream for Firefox e.g. videoElement.mozCaptureStream(); */</span>
   <span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShare(mediaSream);
   inputElement.value = <span class="hljs-string">''</span>;
 });</code></pre>
