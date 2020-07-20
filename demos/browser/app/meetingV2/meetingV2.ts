@@ -865,6 +865,46 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     );
   }
 
+
+  async getStatsForOutbound(id: string): Promise<void> {
+    const videoElement = document.getElementById(id) as HTMLVideoElement;
+    const stream = videoElement.srcObject as MediaStream;
+    const track = stream.getVideoTracks()[0];
+    let basicReports: {[id: string]: number} =  {};
+
+    let reports = await this.audioVideo.getRTCPeerConnectionStats(track);
+    let duration: number;
+
+    reports.forEach(report => {
+      if (report.type === 'outbound-rtp') {
+        // remained to be calculated
+        this.log(`${id} is bound to ssrc ${report.ssrc}`);
+        basicReports['bitrate'] = report.bytesSent;
+        basicReports['width'] = report.frameWidth;
+        basicReports['height'] = report.frameHeight;
+        basicReports['fps'] = report.framesEncoded;
+        duration = report.timestamp;
+      }
+    });
+
+    await new TimeoutScheduler(1000).start(() => {
+      this.audioVideo.getRTCPeerConnectionStats(track).then((reports) => {
+        reports.forEach(report => {
+          if (report.type === 'outbound-rtp') {
+            duration = report.timestamp - duration;
+            duration = duration / 1000;
+            // remained to be calculated
+            basicReports['bitrate'] =  Math.trunc((report.bytesSent - basicReports['bitrate']) * 8 / duration);
+            basicReports['width'] = report.frameWidth;
+            basicReports['height'] = report.frameHeight;
+            basicReports['fps'] = Math.trunc((report.framesEncoded - basicReports['fps']) / duration);
+            this.log(JSON.stringify(basicReports));
+          }
+        });
+      });
+    });
+  }
+
   dataMessageHandler(dataMessage: DataMessage): void {
     if (!dataMessage.throttled) {
       const isSelf = dataMessage.senderAttendeeId === this.meetingSession.configuration.credentials.attendeeId;

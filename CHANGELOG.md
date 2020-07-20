@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Add function to query outbound WebRTC video stats in browser demo
 
 ### Changed
 - Use POST instead of GET for TURN control endpoint
