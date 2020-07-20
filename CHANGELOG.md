@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add content share video test integration test
+- Add function to query outbound WebRTC video stats in browser demo
 
 ### Changed
 
@@ -30,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix demo app responsiveness issue
 - Fix content share test video in Firefox
 - Marking `TURNMeetingEnded` error as terminal to prevent session from reconnecting
-- Fix exception thrown in Safari when multiple startVideoPreviewForVideoInput() are made 
+- Fix exception thrown in Safari when multiple startVideoPreviewForVideoInput() are made
 
 ## [1.12.0] - 2020-07-17
 
