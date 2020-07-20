@@ -181,44 +181,6 @@ describe('DefaultVideoTile', () => {
       expect(tileControllerSpy.called).to.be.true;
     });
 
-    it('binds a video stream in Safari', done => {
-      domMockBehavior.browserName = 'safari';
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
-      const videoElement = videoElementFactory.create();
-      const videoElementSpy = sinon.spy(videoElement, 'play');
-      tile.bindVideoElement(videoElement);
-
-      const boundAttendeeId = 'attendee';
-      const localTile = true;
-      const videoStreamContentWidth = 1;
-      const videoStreamContentHeight = 1;
-      const streamId = 1;
-
-      tile.bindVideoStream(
-        boundAttendeeId,
-        localTile,
-        mockVideoStream,
-        videoStreamContentWidth,
-        videoStreamContentHeight,
-        streamId
-      );
-
-      expect(tile.state().boundAttendeeId).to.equal(boundAttendeeId);
-      expect(tile.state().localTile).to.equal(localTile);
-      expect(tile.state().boundVideoStream).to.equal(mockVideoStream);
-      expect(tile.state().videoStreamContentWidth).to.equal(videoStreamContentWidth);
-      expect(tile.state().videoStreamContentHeight).to.equal(videoStreamContentHeight);
-      expect(tile.state().streamId).to.equal(streamId);
-      expect(tile.state().isContent).to.be.false;
-
-      expect(tileControllerSpy.called).to.be.true;
-      new TimeoutScheduler(10).start(() => {
-        expect(videoElementSpy.calledOnce).to.be.true;
-        done();
-      });
-    });
-
     it('unbinds a video stream', () => {
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
