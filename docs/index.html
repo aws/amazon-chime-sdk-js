@@ -568,7 +568,10 @@ meetingSession.audioVideo.addContentShareObserver(observer);
 meetingSession.audioVideo.addObserver(observer);
 
 <span class="hljs-comment">// A browser will prompt the user to choose the screen.</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture();</code></pre>
+<span class="hljs-keyword">const</span> contentShareStream = <span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture();</code></pre>
+				<p>If you want to display the content share stream for the sharer, you can bind the returned content share stream to a
+				video element using <code>connectVideoStreamToVideoElement</code> from DefaultVideoTile.</p>
+				<pre><code class="language-js">DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, <span class="hljs-literal">false</span>);</code></pre>
 				<p><strong>Use case 17.</strong> Start sharing your screen in an environment that does not support a screen picker dialog. e.g. Electron</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> sourceId = <span class="hljs-comment">/* Window or screen ID e.g. the ID of a DesktopCapturerSource object in Electron */</span>;
 
