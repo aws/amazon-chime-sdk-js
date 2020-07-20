@@ -47,6 +47,7 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.AudioInternalServerError:
       case MeetingSessionStatusCode.AudioDisconnected:
       case MeetingSessionStatusCode.TURNCredentialsForbidden:
+      case MeetingSessionStatusCode.TURNMeetingEnded:
       case MeetingSessionStatusCode.SignalingBadRequest:
       case MeetingSessionStatusCode.SignalingInternalServerError:
       case MeetingSessionStatusCode.SignalingRequestFailed:

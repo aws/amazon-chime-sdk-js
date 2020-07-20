@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix demo app responsiveness issue
+- Marking `TURNMeetingEnded` error as terminal to prevent session from reconnecting
 
 ## [1.12.0] - 2020-07-17
 
