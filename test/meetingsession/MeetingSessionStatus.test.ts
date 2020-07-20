@@ -32,6 +32,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.SignalingRequestFailed,
     MeetingSessionStatusCode.StateMachineTransitionFailed,
     MeetingSessionStatusCode.TURNCredentialsForbidden,
+    MeetingSessionStatusCode.TURNMeetingEnded,
     MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround,
     MeetingSessionStatusCode.ConnectionHealthReconnect,
     MeetingSessionStatusCode.RealtimeApiFailed,
@@ -75,6 +76,7 @@ describe('MeetingSessionStatus', () => {
         MeetingSessionStatusCode.SignalingInternalServerError,
         MeetingSessionStatusCode.SignalingRequestFailed,
         MeetingSessionStatusCode.TURNCredentialsForbidden,
+        MeetingSessionStatusCode.TURNMeetingEnded,
         MeetingSessionStatusCode.VideoCallAtSourceCapacity,
         MeetingSessionStatusCode.RealtimeApiFailed,
       ]);
