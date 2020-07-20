@@ -33,7 +33,9 @@ describe('DefaultAudioVideoFacade', () => {
   class NoOpContentShareController implements ContentShareController {
     async startContentShare(_stream: MediaStream): Promise<void> {}
 
-    async startContentShareFromScreenCapture(_sourceId?: string): Promise<void> {}
+    async startContentShareFromScreenCapture(_sourceId?: string): Promise<MediaStream> {
+      return new MediaStream();
+    }
 
     pauseContentShare(): void {}
 

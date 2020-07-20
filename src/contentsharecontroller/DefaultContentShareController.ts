@@ -54,12 +54,16 @@ export default class DefaultContentShareController
     }
   }
 
-  async startContentShareFromScreenCapture(sourceId?: string, frameRate?: number): Promise<void> {
+  async startContentShareFromScreenCapture(
+    sourceId?: string,
+    frameRate?: number
+  ): Promise<MediaStream> {
     const mediaStream = await this.mediaStreamBroker.acquireScreenCaptureDisplayInputStream(
       sourceId,
       frameRate
     );
     await this.startContentShare(mediaStream);
+    return mediaStream;
   }
 
   pauseContentShare(): void {

@@ -571,7 +571,14 @@ meetingSession.audioVideo.addContentShareObserver(observer);
 meetingSession.audioVideo.addObserver(observer);
 
 // A browser will prompt the user to choose the screen.
-await meetingSession.audioVideo.startContentShareFromScreenCapture();
+const contentShareStream = await meetingSession.audioVideo.startContentShareFromScreenCapture();
+```
+
+If you want to display the content share stream for the sharer, you can bind the returned content share stream to a
+ video element using `connectVideoStreamToVideoElement` from DefaultVideoTile.
+ 
+```js
+DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, false);
 ```
 
 **Use case 17.** Start sharing your screen in an environment that does not support a screen picker dialog. e.g. Electron
