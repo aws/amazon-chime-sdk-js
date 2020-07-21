@@ -8,6 +8,7 @@ exports.ClickMicrophoneButton = require('./ClickMicrophoneButton');
 exports.EndMeetingStep = require('./EndMeetingStep');
 exports.LeaveMeetingStep = require('./LeaveMeetingStep');
 exports.ClickScreenShareButton = require('./ClickScreenShareButton');
+exports.ClickContentShareVideoTestButton = require('./ClickContentShareVideoTestButton');
 exports.ClickScreenViewButton = require('./ClickScreenViewButton');
 exports.ClickContentShareButton = require('./ClickContentShareButton');
 exports.ClickContentSharePauseButton = require('./ClickContentSharePauseButton');
