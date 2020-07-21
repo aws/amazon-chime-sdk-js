@@ -14,6 +14,8 @@ const elements = {
   screenShareButton: By.id('button-screen-share'),
   screenViewButton: By.id('button-screen-view'),
   contentShareButton: By.id('button-content-share'),
+  contentShareDropButton: By.id('button-content-share-drop'),
+  contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
   contentSharePauseButton: By.id('button-pause-content-share'),
   dataMessageSendInput: By.id('send-message'),
   sipAuthenticateButton: By.id('button-sip-authenticate'),
@@ -107,6 +109,16 @@ class AppPage {
   async clickContentShareButton() {
     const contentShareButton = await this.driver.findElement(elements.contentShareButton);
     await contentShareButton.click();
+  }
+
+  async clickContentShareDropButton() {
+    const contentShareDropButton = await this.driver.findElement(elements.contentShareDropButton);
+    await contentShareDropButton.click();
+  }
+
+  async clickContentShareVideoTestButton() {
+    const contentShareVideoTestButton = await this.driver.findElement(elements.contentShareVideoTestButton);
+    await contentShareVideoTestButton.click();
   }
 
   async clickContentSharePauseButton() {
