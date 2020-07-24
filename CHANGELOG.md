@@ -13,10 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add error message for TaskFailed errors
 
 ### Changed
+- Return the screen capture media stream for startContentShareFromScreenCapture
 
 ### Removed
 
 ### Fixed
+- Fix exception thrown in Safari when multiple startVideoPreviewForVideoInput() are made
 
 ## [1.13.0] - 2020-07-21
 
@@ -24,7 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Use POST instead of GET for TURN control endpoint
-- Return the screen capture media stream for startContentShareFromScreenCapture
 
 ### Removed
 
@@ -32,7 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix demo app responsiveness issue
 - Fix content share test video in Firefox
 - Marking `TURNMeetingEnded` error as terminal to prevent session from reconnecting
-- Fix exception thrown in Safari when multiple startVideoPreviewForVideoInput() are made
 
 ## [1.12.0] - 2020-07-17
 
