@@ -170,8 +170,8 @@ describe('DefaultDeviceController', () => {
       const constraints: Device = {};
       await deviceController.chooseVideoInputDevice(constraints);
 
-      expect(JSON.stringify(constraints.width)).to.equal(JSON.stringify({ ideal: 544 }));
-      expect(JSON.stringify(constraints.height)).to.equal(JSON.stringify({ ideal: 544 }));
+      expect(JSON.stringify(constraints.width)).to.equal(JSON.stringify({ ideal: 576 }));
+      expect(JSON.stringify(constraints.height)).to.equal(JSON.stringify({ ideal: 576 }));
     });
   });
 

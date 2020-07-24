@@ -28,7 +28,7 @@ describe('SimulcastUplinkPolicy', () => {
   let policy: VideoUplinkBandwidthPolicy;
   const highResolution: MediaTrackConstraints = {
     width: { ideal: 1280 },
-    height: { ideal: 720 },
+    height: { ideal: 768 },
     frameRate: { ideal: 15 },
   };
 
@@ -47,7 +47,7 @@ describe('SimulcastUplinkPolicy', () => {
         JSON.stringify({ ideal: SimulcastUplinkPolicy.defaultMaxFrameRate })
       );
       expect(JSON.stringify(constraint.width)).to.equal(JSON.stringify({ ideal: 1280 }));
-      expect(JSON.stringify(constraint.height)).to.equal(JSON.stringify({ ideal: 720 }));
+      expect(JSON.stringify(constraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
       const encodingParameter = policy.chooseEncodingParameters();
       expect(encodingParameter.has(SimulcastTransceiverController.MID_LEVEL_NAME)).to.equal(true);
       expect(encodingParameter.has(SimulcastTransceiverController.HIGH_LEVEL_NAME)).to.equal(true);
@@ -64,7 +64,7 @@ describe('SimulcastUplinkPolicy', () => {
       let mediaConstraint = policy.chooseMediaTrackConstraints();
       let encodingParameter = policy.chooseEncodingParameters();
 
-      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 720 }));
+      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
       expect(encodingParameter.has(SimulcastTransceiverController.MID_LEVEL_NAME)).to.equal(true);
       expect(encodingParameter.has(SimulcastTransceiverController.HIGH_LEVEL_NAME)).to.equal(true);
 
@@ -103,7 +103,7 @@ describe('SimulcastUplinkPolicy', () => {
         // @ts-ignore
         expect(policy.lastUplinkBandwidthKbps).to.equal(1000);
         mediaConstraint = policy.chooseMediaTrackConstraints();
-        expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 540 }));
+        expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 576 }));
 
         policy.updateConnectionMetric({
           uplinkKbps: 300,
@@ -121,7 +121,7 @@ describe('SimulcastUplinkPolicy', () => {
           uplinkKbps: 300,
         });
         mediaConstraint = policy.chooseMediaTrackConstraints();
-        expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 720 }));
+        expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
         policy.updateConnectionMetric({});
         done();
       });
@@ -176,7 +176,7 @@ describe('SimulcastUplinkPolicy', () => {
         // @ts-ignore
         expect(policy.lastUplinkBandwidthKbps).to.equal(1100);
         mediaConstraint = policy.chooseMediaTrackConstraints();
-        expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 720 }));
+        expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
         policy.updateConnectionMetric({
           uplinkKbps: 300,
         });
@@ -193,7 +193,7 @@ describe('SimulcastUplinkPolicy', () => {
           uplinkKbps: 300,
         });
         mediaConstraint = policy.chooseMediaTrackConstraints();
-        expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 720 }));
+        expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
         done();
       });
     }).timeout(6000);
@@ -209,7 +209,7 @@ describe('SimulcastUplinkPolicy', () => {
       const shouldResub = policy.wantsResubscribe();
       expect(shouldResub).to.equal(true);
       const mediaConstraint = policy.chooseMediaTrackConstraints();
-      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 720 }));
+      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
     });
 
     it('could change the encoding parameters', () => {
@@ -242,7 +242,7 @@ describe('SimulcastUplinkPolicy', () => {
       const shouldResub = policy.wantsResubscribe();
       expect(shouldResub).to.equal(true);
       const mediaConstraint = policy.chooseMediaTrackConstraints();
-      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 540 }));
+      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 576 }));
     });
 
     it('could change the encoding parameters', () => {
@@ -276,7 +276,7 @@ describe('SimulcastUplinkPolicy', () => {
       expect(shouldResub).to.equal(true);
       const mediaConstraint = policy.chooseMediaTrackConstraints();
       policy.chooseEncodingParameters();
-      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 720 }));
+      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
       expect(policy.wantsResubscribe()).to.equal(false);
     });
 
@@ -343,7 +343,7 @@ describe('SimulcastUplinkPolicy', () => {
       expect(shouldResub).to.equal(true);
       const mediaConstraint = policy.chooseMediaTrackConstraints();
       policy.chooseEncodingParameters();
-      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 720 }));
+      expect(JSON.stringify(mediaConstraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
       expect(policy.wantsResubscribe()).to.equal(false);
       policy.chooseEncodingParameters();
       index.integrateBitratesFrame(new SdkBitrateFrame({}));
