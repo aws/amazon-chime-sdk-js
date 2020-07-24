@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+- Ensure all simulcast stream resolution are 16-aligned to avoid pixel3(XL) encoder issue
+
 ## [1.14.0] - 2020-07-28
 
 ### Added
