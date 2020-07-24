@@ -47,7 +47,7 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   /**
    * Handles the meeting session status and returns true if it will restart the session.
    */
-  handleMeetingSessionStatus(status: MeetingSessionStatus): boolean;
+  handleMeetingSessionStatus(status: MeetingSessionStatus, error: Error | null): boolean;
 
   /**
    * Sets the max bandwidth for video publishing
