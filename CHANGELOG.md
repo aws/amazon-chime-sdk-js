@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add content share video test integration test
 - Add function to query outbound WebRTC video stats in browser demo
+- Add error message for TaskFailed errors
 
 ### Changed
 

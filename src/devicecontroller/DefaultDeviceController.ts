@@ -655,8 +655,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     } catch (error) {
       this.logger.error(
         `failed to get ${kind} device for constraints ${JSON.stringify(proposedConstraints)}: ${
-          error.message
-        }`
+          error.name
+        }: ${error.message}`
       );
       return Date.now() - startTimeMs <
         DefaultDeviceController.permissionDeniedOriginDetectionThresholdMs
