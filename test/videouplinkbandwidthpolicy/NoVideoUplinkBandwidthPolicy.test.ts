@@ -27,10 +27,10 @@ describe('NoVideoUplinkBandwidthPolicy', () => {
 
   describe('chooseCaptureAndEncodeParameters', () => {
     const expectedNumParticipantsToParameters = new Map([
-      [1, new DefaultVideoCaptureAndEncodeParameter(640, 480, 15, 600, false)],
-      [2, new DefaultVideoCaptureAndEncodeParameter(640, 480, 15, 600, false)],
-      [3, new DefaultVideoCaptureAndEncodeParameter(640, 480, 15, 400, false)],
-      [4, new DefaultVideoCaptureAndEncodeParameter(640, 480, 15, 400, false)],
+      [1, new DefaultVideoCaptureAndEncodeParameter(640, 512, 15, 600, false)],
+      [2, new DefaultVideoCaptureAndEncodeParameter(640, 512, 15, 600, false)],
+      [3, new DefaultVideoCaptureAndEncodeParameter(640, 512, 15, 400, false)],
+      [4, new DefaultVideoCaptureAndEncodeParameter(640, 512, 15, 400, false)],
     ]);
 
     it('returns the initial value 0 although the self is present in the SdkIndexFrame', () => {

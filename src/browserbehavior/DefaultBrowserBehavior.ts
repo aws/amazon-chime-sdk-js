@@ -74,6 +74,13 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return shouldEnable;
   }
 
+  requiresResolutionAlignment(width: number, height: number): [number, number] {
+    if (this.isAndroid() && this.isPixel3()) {
+      return [Math.ceil(width / 64) * 64, Math.ceil(height / 64) * 64];
+    }
+    return [width, height];
+  }
+
   requiresCheckForSdpConnectionAttributes(): boolean {
     return !this.isIOSSafari();
   }
@@ -172,5 +179,13 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   private isEdge(): boolean {
     return this.browser.name === 'edge-chromium';
+  }
+
+  private isAndroid(): boolean {
+    return /(android)/i.test(navigator.userAgent);
+  }
+
+  private isPixel3(): boolean {
+    return /( pixel 3)/i.test(navigator.userAgent);
   }
 }
