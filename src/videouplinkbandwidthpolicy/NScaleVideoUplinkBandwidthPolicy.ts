@@ -65,9 +65,9 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   }
 
   private captureHeight(): number {
-    let height = 360;
+    let height = 384;
     if (this.numParticipants > 4) {
-      height = 180;
+      height = 192;
     }
     return height;
   }

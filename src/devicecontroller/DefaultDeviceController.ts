@@ -53,8 +53,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.isAndroid = /(android)/i.test(navigator.userAgent);
     this.isPixel3 = /( pixel 3)/i.test(navigator.userAgent);
     if (this.isAndroid && this.isPixel3) {
-      this.videoWidth = Math.ceil(this.videoWidth / 32) * 32;
-      this.videoHeight = Math.ceil(this.videoHeight / 32) * 32;
+      this.videoWidth = Math.ceil(this.videoWidth / 64) * 64;
+      this.videoHeight = Math.ceil(this.videoHeight / 64) * 64;
     }
     this.logger.info(
       `DefaultDeviceController video dimension ${this.videoWidth} x ${this.videoHeight}`
@@ -201,8 +201,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     maxBandwidthKbps: number
   ): void {
     if (this.isAndroid && this.isPixel3) {
-      this.videoWidth = Math.ceil(width / 32) * 32;
-      this.videoHeight = Math.ceil(height / 32) * 32;
+      this.videoWidth = Math.ceil(width / 64) * 64;
+      this.videoHeight = Math.ceil(height / 64) * 64;
     } else {
       this.videoWidth = width;
       this.videoHeight = height;
