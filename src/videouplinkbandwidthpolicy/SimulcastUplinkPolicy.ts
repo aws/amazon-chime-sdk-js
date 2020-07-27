@@ -103,28 +103,28 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
     ];
 
     if (this.numParticipants <= 2 && this.lastUplinkBandwidthKbps >= 1600) {
-      // 320x192+ (640x384) +  + 1280x768
+      // 320x180+ (640x360) +  + 1280x720
       newBitrates[0].maxBitrateKbps = 300;
 
       newBitrates[1].maxBitrateKbps = 0;
 
       newBitrates[2].maxBitrateKbps = 1200;
     } else if (this.numParticipants <= 2 && this.lastUplinkBandwidthKbps >= 1100) {
-      // 240x144 + (480x288) + 960x576
+      // 240 * 140 + (480x280) + 960x560
       newBitrates[0].maxBitrateKbps = 200;
 
       newBitrates[1].maxBitrateKbps = 0;
 
       newBitrates[2].maxBitrateKbps = 900;
     } else if (this.numParticipants <= 4 && this.lastUplinkBandwidthKbps >= 600) {
-      // 240x144 + (480x288) + 960x576
+      // 240 * 140 + (480x280) + 960x560
       newBitrates[0].maxBitrateKbps = 200;
 
       newBitrates[1].maxBitrateKbps = 0;
 
       newBitrates[2].maxBitrateKbps = 600;
     } else {
-      // 320x192 + 640x384 + (1280x768)
+      // 640x360
       newBitrates[0].maxBitrateKbps = 200;
 
       newBitrates[1].maxBitrateKbps = 400;
@@ -236,7 +236,7 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
 
   private captureHeight(): number {
     // should deprecate in this policy
-    let height = 768;
+    let height = 720;
     return height;
   }
 
@@ -286,19 +286,19 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
     if (this.numParticipants <= 2 && this.lastUplinkBandwidthKbps >= 1100) {
       trackConstraint = {
         width: { ideal: 1280 },
-        height: { ideal: 768 },
+        height: { ideal: 720 },
         frameRate: { ideal: 15 },
       };
     } else if (this.numParticipants <= 4 && this.lastUplinkBandwidthKbps >= 600) {
       trackConstraint = {
         width: { ideal: 960 },
-        height: { ideal: 576 },
+        height: { ideal: 540 },
         frameRate: { ideal: 15 },
       };
     } else {
       trackConstraint = {
         width: { ideal: 1280 },
-        height: { ideal: 768 },
+        height: { ideal: 720 },
         frameRate: { ideal: 15 },
       };
     }
