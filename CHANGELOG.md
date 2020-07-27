@@ -19,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix exception thrown in Safari when multiple startVideoPreviewForVideoInput() are made
-- Ensure all simulcast stream resolution are 16-aligned to avoid pixel3(XL) encoder issue
 
 ## [1.13.0] - 2020-07-21
 
