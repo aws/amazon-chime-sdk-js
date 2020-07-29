@@ -4,7 +4,7 @@
 
 ### What is the Amazon Chime SDK?
 
-The [Amazon Chime SDK](https://aws.amazon.com/chime/chime-sdk) is a set of real-time communications components that developers can use to quickly add audio calling, video calling, and screen sharing capabilities to their own web or mobile applications. Developers can leverage the same communication infrastructure and services that power Amazon Chime, an online meetings service from AWS, and deliver engaging experiences in their applications. 
+The [Amazon Chime SDK](https://aws.amazon.com/chime/chime-sdk) is a set of real-time communications components that developers can use to quickly add audio calling, video calling, and screen sharing capabilities to their own web or mobile applications. Developers can leverage the same communication infrastructure and services that power Amazon Chime, an online meetings service from AWS, and deliver engaging experiences in their applications.
 
 There are three client SDKs that can be used by applications based on the use case. Each of these repos have walkthroughs, and links to demos and sample code:
 
@@ -40,7 +40,7 @@ The meetings created by the Amazon Chime Application and the SDK are distinct. A
 
 You can find the complete list of browsers in this link: [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers). [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) support in a browser is a prerequisite for Amazon Chime SDK to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.
 
-### How can I learn about interruptions to the Amazon Chime service? 
+### How can I learn about interruptions to the Amazon Chime service?
 
 You can be notified about Amazon Chime service interruptions at the https://status.aws.amazon.com/ website. In addition you can set up [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) events via the [AWS Personal Health Dashboard](https://aws.amazon.com/premiumsupport/technology/personal-health-dashboard/) for the Amazon Chime service. You can find the Amazon Chime SLA on this [webpage](https://aws.amazon.com/chime/sla/).
 
@@ -72,7 +72,7 @@ AWS accounts have a soft limit of [250 concurrent meetings](https://docs.aws.ama
 
 ### How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?
 
-Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and up to 16 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using DeleteAttendee API call. Attendee limits cannot be changed. 
+Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and up to 16 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using DeleteAttendee API call. Attendee limits cannot be changed.
 
 If your use case requires more than 250 attendees, consider using a [broadcasting solution](https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo).
 
@@ -184,7 +184,7 @@ This is a known issue on iPhone that seems to happen in iPhone X and XR versions
 
 ### **I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari in iOS and frozen tile in Chrome in Android, is this a known issue?**
 
-This is the default behavior that is specific to each browser. In Android, the video stream is muted when in background and thus, the video will show the last frame. 
+This is the default behavior that is specific to each browser. In Android, the video stream is muted when in background and thus, the video will show the last frame.
 Note that for Android, if an attendee joins later after the video stream is in background, it will show as a blank tile since the last frame is blank.
 
 ### **When I join a meeting in Chrome in Android 8 or 9 with speakerphone, other people could not hear me. Switch to default mic fixes the issue.**
@@ -193,7 +193,7 @@ This seems to be a [bug](https://bugs.chromium.org/p/webrtc/issues/detail?id=116
 
 ### I see a slate which says "Your client does not support hardware acceleration" when I enable video on my device?
 
-This error indicates that the device you are using does not support hardware acceleration decoding. However this does not impact the ability of this user to participate in Amazon Chime SDK meetings as the device can render and transmit VP8 streams to other parties in the call. Specifically for Chrome, you will need to enable Unified Plan support by setting this [flag](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers) to true or enable [Simulcast](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers). 
+This error indicates that the device you are using does not support hardware acceleration decoding. However this does not impact the ability of this user to participate in Amazon Chime SDK meetings as the device can render and transmit VP8 streams to other parties in the call. Specifically for Chrome, you will need to enable Unified Plan support by setting this [flag](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers) to true or enable [Simulcast](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers).
 In some cases, H.264 may be missing from the initial SDP offer [tracking Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1047994)) causing this slate to appear. Rejoining the meeting can fix the videos to be rendered once again.
 
 ## Audio and video
@@ -207,7 +207,8 @@ Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke t
 Applications that show multiple video tiles on the screen will need to decide where to place the underlying video elements and how to apply CSS styling. Here are a few things to consider as you develop the tile layout for your application:
 
 * A video whose source is a mobile device in portrait mode will display quite differently compared to a video in landscape mode from a laptop camera. The CSS object-fit rule can be applied to the video element to change how the content scales to fit the parent video element.
-* Use the `VideoTileState` [videoStreamContentWidth and videoStreamContentHeight](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTileState.ts#L20) properties to determine the aspect ratio of the content.
+* Use the `VideoTileState` [videoStreamContentWidth and videoStreamContentHeight](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTileState.ts) properties to determine the aspect ratio of the content.
+* After calling [bindVideoElement](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade), set up `resize` [event listeners on the HTMLVideoElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/videoWidth) to listen to intrinsic resolution from the video content.
 * For landscape aspect ratios (width > height), apply the CSS rule `object-fit:cover` to the HTML element that will contain the video to crop and scale the video to the aspect ratio of the video element.
 * For portrait aspect ratios (height > width), apply the CSS rule `object-fit:contain` to the HTML element that will contain the video to ensure that all video content can be seen.
 
