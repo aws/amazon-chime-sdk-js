@@ -278,7 +278,8 @@
 					<p>Applications that show multiple video tiles on the screen will need to decide where to place the underlying video elements and how to apply CSS styling. Here are a few things to consider as you develop the tile layout for your application:</p>
 					<ul>
 						<li>A video whose source is a mobile device in portrait mode will display quite differently compared to a video in landscape mode from a laptop camera. The CSS object-fit rule can be applied to the video element to change how the content scales to fit the parent video element.</li>
-						<li>Use the <code>VideoTileState</code> <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTileState.ts#L20">videoStreamContentWidth and videoStreamContentHeight</a> properties to determine the aspect ratio of the content.</li>
+						<li>Use the <code>VideoTileState</code> <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTileState.ts">videoStreamContentWidth and videoStreamContentHeight</a> properties to determine the aspect ratio of the content.</li>
+						<li>After calling <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade">bindVideoElement</a>, set up <code>resize</code> <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/videoWidth">event listeners on the HTMLVideoElement</a> to listen to intrinsic resolution from the video content.</li>
 						<li>For landscape aspect ratios (width &gt; height), apply the CSS rule <code>object-fit:cover</code> to the HTML element that will contain the video to crop and scale the video to the aspect ratio of the video element.</li>
 						<li>For portrait aspect ratios (height &gt; width), apply the CSS rule <code>object-fit:contain</code> to the HTML element that will contain the video to ensure that all video content can be seen.</li>
 					</ul>
