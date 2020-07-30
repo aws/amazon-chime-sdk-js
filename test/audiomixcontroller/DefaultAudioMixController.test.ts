@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 
 import DefaultAudioMixController from '../../src/audiomixcontroller/DefaultAudioMixController';
+import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -72,13 +73,15 @@ describe('DefaultAudioMixController', () => {
     expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(true);
   });
 
-  it('can successfully bind and sink an audio stream in chromium based browser', () => {
+  it('can successfully bind and sink an audio stream in chromium based browser', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
     defaultAudioMixController = new DefaultAudioMixController();
     defaultAudioMixController.bindAudioDevice(device);
     defaultAudioMixController.bindAudioElement(element);
+    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
     expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(true);
+    expect(element.srcObject).to.equal(stream);
   });
 
   it('can bind an audio device, but not yet sink', () => {
@@ -93,6 +96,70 @@ describe('DefaultAudioMixController', () => {
     defaultAudioMixController.bindAudioStream(stream);
     defaultAudioMixController.bindAudioElement(element);
     expect(defaultAudioMixController.bindAudioDevice(device)).to.equal(true);
+  });
+
+  it('can successfully set audio element and unbind element', async () => {
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController();
+    defaultAudioMixController.bindAudioElement(element);
+    defaultAudioMixController.unbindAudioElement();
+    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
+    expect(element.srcObject).to.equal(null);
+  });
+
+  it('can switch between audio elements and streams', async () => {
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController();
+    const element2 = new HTMLAudioElement();
+    const stream2 = new MediaStream();
+    defaultAudioMixController.bindAudioElement(element);
+    defaultAudioMixController.bindAudioStream(stream);
+    defaultAudioMixController.bindAudioElement(element2);
+    defaultAudioMixController.bindAudioStream(stream2);
+    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
+    expect(element.srcObject).to.equal(stream);
+    expect(element2.srcObject).to.equal(stream2);
+  });
+
+  it('can bind and unbind between various audio elements and streams', async () => {
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController();
+    const element2 = new HTMLAudioElement();
+    const stream2 = new MediaStream();
+    defaultAudioMixController.bindAudioElement(element);
+    defaultAudioMixController.bindAudioStream(stream);
+    defaultAudioMixController.unbindAudioElement();
+    defaultAudioMixController.bindAudioElement(element2);
+    defaultAudioMixController.bindAudioStream(stream2);
+    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
+    expect(element.srcObject).to.equal(null);
+    expect(element2.srcObject).to.equal(stream2);
+  });
+
+  it('can execute calls to the 3 bind methods consecutively in chromium based browser', async () => {
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController();
+    defaultAudioMixController.bindAudioDevice(device);
+    defaultAudioMixController.bindAudioElement(element);
+    defaultAudioMixController.bindAudioStream(stream);
+    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
+    expect(element.srcObject).to.equal(stream);
+  });
+
+  it('can execute 3 bind and unbind methods consecutively in chromium based browser', async () => {
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController();
+    defaultAudioMixController.bindAudioDevice(device);
+    defaultAudioMixController.bindAudioElement(element);
+    defaultAudioMixController.bindAudioStream(stream);
+    defaultAudioMixController.unbindAudioElement();
+    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
+    expect(element.srcObject).to.equal(null);
   });
 
   it('can fail to bind an audio element when sinkId does not exist', () => {

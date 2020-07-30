@@ -3,7 +3,6 @@
 
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
-import AsyncScheduler from '../scheduler/AsyncScheduler';
 import AudioMixController from './AudioMixController';
 
 export default class DefaultAudioMixController implements AudioMixController {
@@ -56,13 +55,14 @@ export default class DefaultAudioMixController implements AudioMixController {
         const oldSinkId: string = this.audioElement.sinkId;
         if (newSinkId !== oldSinkId) {
           if (this.browserBehavior.hasChromiumWebRTC()) {
-            new AsyncScheduler().start(async () => {
-              const existingStream = await this.audioElement.srcObject;
-              this.audioElement.srcObject = null;
-              // @ts-ignore
-              await this.audioElement.setSinkId(newSinkId);
-              this.audioElement.srcObject = existingStream;
-              this.audioStream = existingStream as MediaStream;
+            const existingAudioElement = this.audioElement;
+            const existingstream = this.audioStream;
+            existingAudioElement.srcObject = null;
+            // @ts-ignore
+            existingAudioElement.setSinkId(newSinkId).then(() => {
+              if (this.audioElement === existingAudioElement) {
+                existingAudioElement.srcObject = existingstream;
+              }
             });
           } else {
             // @ts-ignore
