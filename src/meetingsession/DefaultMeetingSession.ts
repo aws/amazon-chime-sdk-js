@@ -91,7 +91,8 @@ export default class DefaultMeetingSession implements MeetingSession {
             DefaultMeetingSession.RECONNECT_LONG_BACKOFF_MS
           )
         )
-      )
+      ),
+      this.audioVideoController
     );
     this.audioVideoFacade = new DefaultAudioVideoFacade(
       this.audioVideoController,

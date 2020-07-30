@@ -243,7 +243,8 @@ export default class DefaultAudioVideoController implements AudioVideoController
       );
       this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
         this.logger,
-        this.meetingSessionContext.videoTileController
+        this.meetingSessionContext.videoTileController,
+        this.configuration.credentials.attendeeId
       );
       this.meetingSessionContext.videoStreamIndex = new SimulcastVideoStreamIndex(this.logger);
     } else {

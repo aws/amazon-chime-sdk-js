@@ -25,6 +25,7 @@ describe('VideoAdaptiveProbePolicy', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
   const logger = new NoOpDebugLogger();
+  const selfAttendeeId = 'attendee-0';
   let policy: VideoAdaptiveProbePolicy;
   let videoStreamIndex: VideoStreamIndex;
   let audioVideoController: AudioVideoTileController;
@@ -83,7 +84,7 @@ describe('VideoAdaptiveProbePolicy', () => {
   beforeEach(() => {
     audioVideoController = new NoOpAudioVideoTileController();
     tileController = audioVideoController.videoTileController;
-    policy = new VideoAdaptiveProbePolicy(logger, tileController);
+    policy = new VideoAdaptiveProbePolicy(logger, tileController, selfAttendeeId);
     videoStreamIndex = new SimulcastVideoStreamIndex(logger);
     prepareVideoStreamIndex(videoStreamIndex);
     policy.updateIndex(videoStreamIndex);

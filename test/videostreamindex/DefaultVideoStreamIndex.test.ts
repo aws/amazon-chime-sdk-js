@@ -146,6 +146,25 @@ describe('DefaultVideoStreamIndex', () => {
       ).to.deep.equal([]);
     });
 
+    it('ignores content share stream of self', () => {
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 1,
+              groupId: 1,
+              maxBitrateKbps: 100,
+              attendeeId: 'attendee-e618d153#content',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      expect(
+        index.highestQualityStreamFromEachGroupExcludingSelf('attendee-e618d153').array()
+      ).to.deep.equal([]);
+    });
+
     it('ignores non-video stream', () => {
       index.integrateIndexFrame(
         new SdkIndexFrame({

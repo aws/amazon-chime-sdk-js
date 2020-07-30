@@ -5,6 +5,7 @@ import Direction from '../clientmetricreport/ClientMetricReportDirection';
 import ClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
 import Logger from '../logger/Logger';
+import DefaultModality from '../modality/DefaultModality';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
@@ -67,7 +68,11 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
   private timeBeforeAllowProbeMs: number;
   private timeLastProbe: number;
 
-  constructor(private logger: Logger, private tileController: VideoTileController) {
+  constructor(
+    private logger: Logger,
+    private tileController: VideoTileController,
+    private selfAttendeeId: string
+  ) {
     this.optimalReceiveSet = new DefaultVideoStreamIdSet();
     this.subscribedReceiveSet = new DefaultVideoStreamIdSet();
     this.startupPeriod = true;
@@ -174,6 +179,15 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
     this.timeBeforeAllowSubscribeMs = VideoAdaptiveProbePolicy.MIN_TIME_BETWEEN_SUBSCRIBE;
 
     let chosenStreams: VideoStreamDescription[] = [];
+
+    // Filter out self content share video
+    remoteInfos.filter(info => {
+      const modality = new DefaultModality(info.attendeeId);
+      return (
+        modality.base() !== this.selfAttendeeId &&
+        modality.hasModality(DefaultModality.MODALITY_CONTENT)
+      );
+    });
 
     // Sort streams by bitrate asceending.
     remoteInfos.sort((a, b) => {

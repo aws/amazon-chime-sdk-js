@@ -103,6 +103,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="videoadaptiveprobepolicy.html#prevremoteinfos" class="tsd-kind-icon">prev<wbr>Remote<wbr>Infos</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="videoadaptiveprobepolicy.html#prevtargetratekbps" class="tsd-kind-icon">prev<wbr>Target<wbr>Rate<wbr>Kbps</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="videoadaptiveprobepolicy.html#rateprobestate" class="tsd-kind-icon">rate<wbr>Probe<wbr>State</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="videoadaptiveprobepolicy.html#selfattendeeid" class="tsd-kind-icon">self<wbr>Attendee<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="videoadaptiveprobepolicy.html#startupperiod" class="tsd-kind-icon">startup<wbr>Period</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="videoadaptiveprobepolicy.html#subscribedreceiveset" class="tsd-kind-icon">subscribed<wbr>Receive<wbr>Set</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="videoadaptiveprobepolicy.html#tilecontroller" class="tsd-kind-icon">tile<wbr>Controller</a></li>
@@ -153,13 +154,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Video<wbr>Adaptive<wbr>Probe<wbr>Policy<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, tileController<span class="tsd-signature-symbol">: </span><a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videoadaptiveprobepolicy.html" class="tsd-signature-type">VideoAdaptiveProbePolicy</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Video<wbr>Adaptive<wbr>Probe<wbr>Policy<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, tileController<span class="tsd-signature-symbol">: </span><a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a>, selfAttendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="videoadaptiveprobepolicy.html" class="tsd-signature-type">VideoAdaptiveProbePolicy</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L68">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L69">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:69</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -169,6 +170,9 @@
 								</li>
 								<li>
 									<h5>tileController: <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a></h5>
+								</li>
+								<li>
+									<h5>selfAttendeeId: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="videoadaptiveprobepolicy.html" class="tsd-signature-type">VideoAdaptiveProbePolicy</a></h4>
@@ -184,7 +188,7 @@
 					<div class="tsd-signature tsd-kind-icon">downlink<wbr>Stats<span class="tsd-signature-symbol">:</span> <a href="linkmediastats.html" class="tsd-signature-type">LinkMediaStats</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L54">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L55">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:55</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -194,7 +198,7 @@
 					<div class="tsd-signature tsd-kind-icon">last<wbr>Upgrade<wbr>Rate<wbr>Kbps<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L62">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:62</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L63">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:63</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -204,7 +208,7 @@
 					<div class="tsd-signature tsd-kind-icon">log<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L50">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L51">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:51</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -214,7 +218,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L70">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:70</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L72">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:72</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -224,7 +228,7 @@
 					<div class="tsd-signature tsd-kind-icon">optimal<wbr>Receive<wbr>Set<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L51">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L52">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:52</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -234,7 +238,7 @@
 					<div class="tsd-signature tsd-kind-icon">pre<wbr>Probe<wbr>Receive<wbr>Set<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L53">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L54">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:54</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -244,7 +248,7 @@
 					<div class="tsd-signature tsd-kind-icon">prev<wbr>Downlink<wbr>Stats<span class="tsd-signature-symbol">:</span> <a href="linkmediastats.html" class="tsd-signature-type">LinkMediaStats</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L55">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L56">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:56</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -254,7 +258,7 @@
 					<div class="tsd-signature tsd-kind-icon">prev<wbr>Remote<wbr>Infos<span class="tsd-signature-symbol">:</span> <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L56">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L57">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:57</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -264,7 +268,7 @@
 					<div class="tsd-signature tsd-kind-icon">prev<wbr>Target<wbr>Rate<wbr>Kbps<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L61">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L62">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:62</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -274,7 +278,17 @@
 					<div class="tsd-signature tsd-kind-icon">rate<wbr>Probe<wbr>State<span class="tsd-signature-symbol">:</span> <a href="../enums/rateprobestate.html" class="tsd-signature-type">RateProbeState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L58">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L59">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:59</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="selfattendeeid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> self<wbr>Attendee<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">self<wbr>Attendee<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L74">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:74</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -284,7 +298,7 @@
 					<div class="tsd-signature tsd-kind-icon">startup<wbr>Period<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L59">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L60">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:60</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -294,7 +308,7 @@
 					<div class="tsd-signature tsd-kind-icon">subscribed<wbr>Receive<wbr>Set<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L52">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L53">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:53</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -304,7 +318,7 @@
 					<div class="tsd-signature tsd-kind-icon">tile<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videotilecontroller.html" class="tsd-signature-type">VideoTileController</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L70">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:70</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L73">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:73</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -314,7 +328,7 @@
 					<div class="tsd-signature tsd-kind-icon">time<wbr>Before<wbr>Allow<wbr>Probe<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L67">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:67</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L68">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:68</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -324,7 +338,7 @@
 					<div class="tsd-signature tsd-kind-icon">time<wbr>Before<wbr>Allow<wbr>Subscribe<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L65">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L66">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:66</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -334,7 +348,7 @@
 					<div class="tsd-signature tsd-kind-icon">time<wbr>First<wbr>Estimate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L63">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L64">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:64</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -344,7 +358,7 @@
 					<div class="tsd-signature tsd-kind-icon">time<wbr>Last<wbr>Probe<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L68">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:68</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L69">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:69</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -354,7 +368,7 @@
 					<div class="tsd-signature tsd-kind-icon">time<wbr>Last<wbr>Subscribe<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L64">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L65">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:65</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -364,7 +378,7 @@
 					<div class="tsd-signature tsd-kind-icon">time<wbr>Probe<wbr>Pending<wbr>Start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L66">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L67">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:67</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -374,7 +388,7 @@
 					<div class="tsd-signature tsd-kind-icon">using<wbr>Prev<wbr>Target<wbr>Rate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L60">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L61">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:61</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -384,7 +398,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videostreamindex.html" class="tsd-signature-type">VideoStreamIndex</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L57">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L58">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:58</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -394,7 +408,7 @@
 					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>BANDWIDTH_<wbr>KBPS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">2800</span><span class="tsd-signature-symbol"> = 2800</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L42">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L43">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:43</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -404,7 +418,7 @@
 					<div class="tsd-signature tsd-kind-icon">LARGE_<wbr>RATE_<wbr>CHANGE_<wbr>TRIGGER_<wbr>PERCENT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">20</span><span class="tsd-signature-symbol"> = 20</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L44">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L45">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:45</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -414,7 +428,7 @@
 					<div class="tsd-signature tsd-kind-icon">MAX_<wbr>HOLD_<wbr>MS_<wbr>BEFORE_<wbr>PROBE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">60000</span><span class="tsd-signature-symbol"> = 60000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L48">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L49">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:49</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -424,7 +438,7 @@
 					<div class="tsd-signature tsd-kind-icon">MIN_<wbr>TIME_<wbr>BETWEEN_<wbr>PROBE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">5000</span><span class="tsd-signature-symbol"> = 5000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L46">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L47">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:47</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -434,7 +448,7 @@
 					<div class="tsd-signature tsd-kind-icon">MIN_<wbr>TIME_<wbr>BETWEEN_<wbr>SUBSCRIBE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">2000</span><span class="tsd-signature-symbol"> = 2000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L47">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L48">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:48</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -444,7 +458,7 @@
 					<div class="tsd-signature tsd-kind-icon">STARTUP_<wbr>PERIOD_<wbr>MS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">6000</span><span class="tsd-signature-symbol"> = 6000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L43">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L44">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:44</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -454,7 +468,7 @@
 					<div class="tsd-signature tsd-kind-icon">TARGET_<wbr>RATE_<wbr>CHANGE_<wbr>TRIGGER_<wbr>PERCENT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">15</span><span class="tsd-signature-symbol"> = 15</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L45">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L46">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:46</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -471,7 +485,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L652">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:652</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L666">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:666</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -494,7 +508,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L153">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:153</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L158">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:158</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></h4>
@@ -511,7 +525,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L590">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:590</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L604">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:604</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -537,7 +551,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L637">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:637</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L651">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:651</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -564,7 +578,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#choosesubscriptions">chooseSubscriptions</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L144">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:144</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L149">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:149</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></h4>
@@ -581,7 +595,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L672">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:672</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L686">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:686</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -607,7 +621,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L321">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:321</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L335">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:335</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -630,7 +644,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L606">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:606</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L620">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:620</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -659,7 +673,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L483">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:483</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L497">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:497</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -688,7 +702,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L516">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:516</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L530">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:530</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -726,7 +740,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L408">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:408</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L422">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:422</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -750,7 +764,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#updatecalculatedoptimalreceiveset">updateCalculatedOptimalReceiveSet</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L135">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:135</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L140">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:140</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -768,7 +782,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#updateindex">updateIndex</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L85">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L90">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:90</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -791,7 +805,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L89">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:89</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L94">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:94</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -814,7 +828,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L455">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:455</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L469">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:469</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -841,7 +855,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videodownlinkbandwidthpolicy.html">VideoDownlinkBandwidthPolicy</a>.<a href="../interfaces/videodownlinkbandwidthpolicy.html#wantsresubscribe">wantsResubscribe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L139">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:139</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L144">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:144</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -897,6 +911,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="videoadaptiveprobepolicy.html#rateprobestate" class="tsd-kind-icon">rate<wbr>Probe<wbr>State</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="videoadaptiveprobepolicy.html#selfattendeeid" class="tsd-kind-icon">self<wbr>Attendee<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="videoadaptiveprobepolicy.html#startupperiod" class="tsd-kind-icon">startup<wbr>Period</a>

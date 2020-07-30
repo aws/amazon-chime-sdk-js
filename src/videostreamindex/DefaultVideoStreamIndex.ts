@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
+import DefaultModality from '../modality/DefaultModality';
 import {
   ISdkBitrateFrame,
   ISdkStreamDescriptor,
@@ -177,6 +178,13 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       const maxes = new Map<number, ISdkStreamDescriptor>();
       for (const source of this.currentIndex.sources) {
         if (source.attendeeId === selfAttendeeId || source.mediaType !== SdkStreamMediaType.VIDEO) {
+          continue;
+        }
+        const modality = new DefaultModality(source.attendeeId);
+        if (
+          modality.base() === selfAttendeeId &&
+          modality.hasModality(DefaultModality.MODALITY_CONTENT)
+        ) {
           continue;
         }
         if (

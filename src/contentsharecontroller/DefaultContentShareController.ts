@@ -24,6 +24,7 @@ export default class DefaultContentShareController
     contentShareConfiguration.credentials = new MeetingSessionCredentials();
     contentShareConfiguration.credentials.attendeeId =
       configuration.credentials.attendeeId + ContentShareConstants.Modality;
+    contentShareConfiguration.credentials.externalUserId = configuration.credentials.externalUserId;
     contentShareConfiguration.credentials.joinToken =
       configuration.credentials.joinToken + ContentShareConstants.Modality;
     return contentShareConfiguration;
@@ -33,9 +34,10 @@ export default class DefaultContentShareController
 
   constructor(
     private mediaStreamBroker: ContentShareMediaStreamBroker,
-    private audioVideo: AudioVideoController
+    private contentAudioVideo: AudioVideoController,
+    private attendeeAudioVideo: AudioVideoController
   ) {
-    this.audioVideo.addObserver(this);
+    this.contentAudioVideo.addObserver(this);
   }
 
   async startContentShare(stream: MediaStream): Promise<void> {
@@ -48,10 +50,21 @@ export default class DefaultContentShareController
         this.stopContentShare();
       });
     }
-    this.audioVideo.start();
+    this.contentAudioVideo.start();
     if (this.mediaStreamBroker.mediaStream.getVideoTracks().length > 0) {
-      this.audioVideo.videoTileController.startLocalVideoTile();
+      this.contentAudioVideo.videoTileController.startLocalVideoTile();
     }
+
+    const tile = this.attendeeAudioVideo.videoTileController.addVideoTile();
+    tile.bindVideoStream(
+      this.contentAudioVideo.configuration.credentials.attendeeId,
+      false,
+      stream,
+      null,
+      null,
+      null,
+      this.contentAudioVideo.configuration.credentials.externalUserId
+    );
   }
 
   async startContentShareFromScreenCapture(
@@ -83,7 +96,7 @@ export default class DefaultContentShareController
   }
 
   stopContentShare(): void {
-    this.audioVideo.stop();
+    this.contentAudioVideo.stop();
     this.mediaStreamBroker.cleanup();
   }
 

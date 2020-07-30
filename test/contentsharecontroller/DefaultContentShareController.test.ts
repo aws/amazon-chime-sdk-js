@@ -29,7 +29,7 @@ describe('DefaultContentShareController', () => {
   let contentShareController: ContentShareController;
   let contentShareMediaStreamBroker: ContentShareMediaStreamBroker;
   let contentShareObserver: NoOpContentShareObserver;
-  let audioVideoController: AudioVideoController;
+  let contentAudioVideoController: AudioVideoController;
   let mediaStream: MediaStream;
   let domMockBuilder: DOMMockBuilder;
 
@@ -114,10 +114,12 @@ describe('DefaultContentShareController', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
       contentShareMediaStreamBroker = new ContentShareMediaStreamBrokerMock(new NoOpLogger());
-      audioVideoController = new TestAudioVideoController();
+      contentAudioVideoController = new TestAudioVideoController();
+      const attendeeAudioVideoController = new NoOpAudioVideoController();
       contentShareController = new DefaultContentShareController(
         contentShareMediaStreamBroker,
-        audioVideoController
+        contentAudioVideoController,
+        attendeeAudioVideoController
       );
       mediaStream = new MediaStream();
 
@@ -140,9 +142,9 @@ describe('DefaultContentShareController', () => {
     it('startContentShare with video track', async () => {
       // @ts-ignore
       mediaStream.addTrack(new MediaStreamTrack('video-track-id', 'video'));
-      const audioVideoSpy = sinon.spy(audioVideoController, 'start');
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
       const videoTileSpy = sinon.spy(
-        audioVideoController.videoTileController,
+        contentAudioVideoController.videoTileController,
         'startLocalVideoTile'
       );
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
@@ -154,9 +156,9 @@ describe('DefaultContentShareController', () => {
     });
 
     it('startContentShare without video track', async () => {
-      const audioVideoSpy = sinon.spy(audioVideoController, 'start');
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
       const videoTileSpy = sinon.spy(
-        audioVideoController.videoTileController,
+        contentAudioVideoController.videoTileController,
         'startLocalVideoTile'
       );
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
@@ -168,9 +170,9 @@ describe('DefaultContentShareController', () => {
     });
 
     it('startContentShare with null stream', async () => {
-      const audioVideoSpy = sinon.spy(audioVideoController, 'start');
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
       const videoTileSpy = sinon.spy(
-        audioVideoController.videoTileController,
+        contentAudioVideoController.videoTileController,
         'startLocalVideoTile'
       );
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
@@ -194,7 +196,7 @@ describe('DefaultContentShareController', () => {
     });
 
     it('stopContentShare', async () => {
-      const audioVideoSpy = sinon.spy(audioVideoController, 'stop');
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'stop');
       const mediaStreamBrokerSpy = sinon.spy(contentShareMediaStreamBroker, 'cleanup');
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStop');
       contentShareController.stopContentShare();
