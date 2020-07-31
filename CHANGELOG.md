@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Bump elliptic from 6.5.2 to 6.5.3 in /demos/device
+- Log info when stop pinging due to Websocket closed
 
 ### Removed
 
