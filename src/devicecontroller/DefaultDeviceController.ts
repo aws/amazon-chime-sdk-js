@@ -536,27 +536,26 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   private getDeviceIdStr(device: Device): string | null {
-    if (typeof device === 'string') {
-      return device;
-    }
     if (device === null) {
       return null;
-    }
-    const deviceMediaTrackConstraints = device as MediaTrackConstraints;
-    if ((device as MediaStream).id) {
+    } else if (typeof device === 'string') {
+      return device;
+    } else if ((device as MediaStream).id) {
       return (device as MediaStream).id;
-    } else if (deviceMediaTrackConstraints.deviceId) {
-      /* istanbul ignore else */
-      if ((deviceMediaTrackConstraints.deviceId as ConstrainDOMStringParameters).exact) {
-        /* istanbul ignore else */
-        if (
-          (deviceMediaTrackConstraints.deviceId as ConstrainDOMStringParameters).exact as string
-        ) {
-          return (deviceMediaTrackConstraints.deviceId as ConstrainDOMStringParameters)
-            .exact as string;
-        }
-      }
     }
+
+    const constraints: MediaTrackConstraints = device as MediaTrackConstraints;
+    if (!constraints.deviceId) {
+      return '';
+    } else if (typeof constraints.deviceId === 'string') {
+      return constraints.deviceId;
+    }
+
+    const deviceIdConstraint: ConstrainDOMStringParameters = constraints.deviceId as ConstrainDOMStringParameters;
+    if (typeof deviceIdConstraint.exact === 'string') {
+      return deviceIdConstraint.exact;
+    }
+
     return '';
   }
 
@@ -567,10 +566,15 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         this.activeDevices[kind].constraints.audio || this.activeDevices[kind].constraints.video;
       const activeDeviceConstrainDOMStringParameters = (activeDeviceMediaTrackConstraints as MediaTrackConstraints)
         .deviceId;
-      const activeDeviceId = (activeDeviceConstrainDOMStringParameters as ConstrainDOMStringParameters)
-        .exact;
-      /* istanbul ignore else */
-      if (activeDeviceId as string) return activeDeviceId as string;
+
+      let activeDeviceId: string;
+      if (typeof activeDeviceConstrainDOMStringParameters === 'string') {
+        activeDeviceId = activeDeviceConstrainDOMStringParameters as string;
+      } else {
+        activeDeviceId = (activeDeviceConstrainDOMStringParameters as ConstrainDOMStringParameters)
+          .exact as string;
+      }
+      return activeDeviceId;
     }
     /* istanbul ignore next */
     return null;
@@ -728,7 +732,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     if (device === null) {
       return null;
     } else if (typeof device === 'string') {
-      trackConstraints.deviceId = { exact: device };
+      if (this.browserBehavior.requiresNoExactMediaStreamConstraints()) {
+        trackConstraints.deviceId = device;
+      } else {
+        trackConstraints.deviceId = { exact: device };
+      }
     } else if (stream) {
       // @ts-ignore - create a fake track constraint using the stream id
       trackConstraints.streamId = stream.id;
