@@ -182,6 +182,12 @@ describe('DefaultDeviceController', () => {
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
     });
 
+    it('chooses an audio device', async () => {
+      const device: Device = { deviceId: 'string-device-id' };
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+    });
+
     it('restarts the local audio if the audio-video controller is bound', async () => {
       let called = false;
 
@@ -290,6 +296,45 @@ describe('DefaultDeviceController', () => {
 
       deviceController = new TestDeviceController(logger);
       domMockBehavior.asyncWaitMs = 100;
+      deviceController.chooseAudioInputDevice(stringDeviceIds[0]).then(async () => {
+        deviceController.chooseAudioInputDevice(stringDeviceIds[1]);
+        await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
+        deviceController.chooseAudioInputDevice(stringDeviceIds[2]);
+        await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
+        deviceController.chooseAudioInputDevice(stringDeviceIds[3]);
+      });
+      new TimeoutScheduler(500).start(() => {
+        expect(releasedDevices.size).to.equal(3);
+        done();
+      });
+    });
+
+    it('releases all previously-acquired audio streams with iOS 12', done => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.browserName = 'ios12.0';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const stringDeviceIds: Device[] = [
+        'device-id-1',
+        'device-id-2',
+        'device-id-3',
+        'device-id-4',
+      ];
+      let releasedDevices = new Set();
+      class TestDeviceControllerWithIOSSafari12 extends DefaultDeviceController {
+        releaseMediaStream(mediaStreamToRelease: MediaStream | null): void {
+          super.releaseMediaStream(mediaStreamToRelease);
+
+          if (!mediaStreamToRelease) {
+            return;
+          }
+          // @ts-ignore
+          if (mediaStreamToRelease.constraints && mediaStreamToRelease.constraints.audio) {
+            // @ts-ignore
+            releasedDevices.add(mediaStreamToRelease.constraints.audio.deviceId);
+          }
+        }
+      }
+      deviceController = new TestDeviceControllerWithIOSSafari12(logger);
       deviceController.chooseAudioInputDevice(stringDeviceIds[0]).then(async () => {
         deviceController.chooseAudioInputDevice(stringDeviceIds[1]);
         await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
@@ -487,6 +532,18 @@ describe('DefaultDeviceController', () => {
       const spy = sinon.spy(audioVideoController.videoTileController, 'stopLocalVideoTile');
       deviceController.bindToAudioVideoController(audioVideoController);
       await deviceController.chooseVideoInputDevice(stringDeviceId);
+      const stream = await deviceController.acquireVideoInputStream();
+      deviceController.releaseMediaStream(stream);
+      expect(spy.called).to.be.false;
+    });
+
+    it('does not need to stop the local video if no valid device is choosen', async () => {
+      const spy = sinon.spy(audioVideoController.videoTileController, 'stopLocalVideoTile');
+      deviceController.bindToAudioVideoController(audioVideoController);
+      const device: Device = {
+        deviceId: { exact: null },
+      };
+      await deviceController.chooseVideoInputDevice(device);
       const stream = await deviceController.acquireVideoInputStream();
       deviceController.releaseMediaStream(stream);
       expect(spy.called).to.be.false;
@@ -881,6 +938,7 @@ describe('DefaultDeviceController', () => {
       }
     });
   });
+
   describe('input stream ended event', () => {
     it('audio input stream ended', async () => {
       let audioInputStreamEndedCallCount = 0;

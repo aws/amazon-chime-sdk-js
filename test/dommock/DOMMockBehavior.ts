@@ -65,4 +65,5 @@ export default class DOMMockBehavior {
   createElementCaptureStream: MediaStream = undefined;
   audioContextDefaultSampleRate = 48000;
   audioContextCreateBufferSucceeds = true;
+  isUnifiedPlanSupported: boolean = true;
 }

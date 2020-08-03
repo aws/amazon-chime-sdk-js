@@ -431,11 +431,23 @@ export default class DOMMockBuilder {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
     const SAFARI_USERAGENT =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
+    const SAFARI12_USERAGENT =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15';
+    const SAFARI11_USERAGENT =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Safari/605.1.15';
+    const IOS_SAFARI12_0_USERAGENT =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1';
+    const IOS_SAFARI12_1_USERAGENT =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1';
 
     const USER_AGENTS = new Map<string, string>();
     USER_AGENTS.set('chrome', CHROME_USERAGENT);
     USER_AGENTS.set('firefox', FIREFOX_USERAGENT);
     USER_AGENTS.set('safari', SAFARI_USERAGENT);
+    USER_AGENTS.set('safari12', SAFARI12_USERAGENT);
+    USER_AGENTS.set('safari11', SAFARI11_USERAGENT);
+    USER_AGENTS.set('ios12.0', IOS_SAFARI12_0_USERAGENT);
+    USER_AGENTS.set('ios12.1', IOS_SAFARI12_1_USERAGENT);
 
     GlobalAny.navigator = {
       mediaDevices: mockBehavior.mediaDevicesSupported ? new mediaDevicesMaker() : undefined,
@@ -713,6 +725,7 @@ export default class DOMMockBuilder {
       readonly receiver: RTCRtpReceiver;
       readonly sender: RTCRtpSender;
       readonly mid: string;
+      currentDirection: string;
 
       constructor(trackOrKind: MediaStreamTrack | string, init?: RTCRtpTransceiverInit) {
         this.direction = init.direction;
@@ -735,6 +748,9 @@ export default class DOMMockBuilder {
         this.mid = 'mock-mid-id';
       }
     };
+    if (mockBehavior.isUnifiedPlanSupported) {
+      GlobalAny.RTCRtpTransceiver.prototype.currentDirection = 'sendrecv';
+    }
 
     GlobalAny.RTCRtpReceiver = class MockRTCRtpReceiver {
       readonly track: MediaStreamTrack;

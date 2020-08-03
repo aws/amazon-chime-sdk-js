@@ -67,7 +67,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresUnifiedPlan(): boolean {
-    let shouldEnable = this.isSafari() || this.isFirefox();
+    let shouldEnable = (this.isSafari() && this.isUnifiedPlanSupported()) || this.isFirefox();
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
       shouldEnable = shouldEnable || this.hasChromiumWebRTC();
     }
@@ -90,7 +90,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresUnifiedPlanMunging(): boolean {
-    let shouldRequire = this.isSafari();
+    let shouldRequire = this.isSafari() && this.isUnifiedPlanSupported();
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
       shouldRequire = shouldRequire || this.hasChromiumWebRTC();
     }
@@ -115,6 +115,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   requiresVideoElementWorkaround(): boolean {
     return this.isSafari();
+  }
+
+  requiresNoExactMediaStreamConstraints(): boolean {
+    return this.isIOSSafari() && (this.version() === '12.0.0' || this.version() === '12.1.0');
   }
 
   getDisplayMediaAudioCaptureSupport(): boolean {
@@ -187,5 +191,9 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   private isPixel3(): boolean {
     return /( pixel 3)/i.test(navigator.userAgent);
+  }
+
+  private isUnifiedPlanSupported(): boolean {
+    return RTCRtpTransceiver.prototype.hasOwnProperty('currentDirection');
   }
 }
