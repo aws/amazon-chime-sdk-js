@@ -78,13 +78,17 @@ If your use case requires more than 250 attendees, consider using a [broadcastin
 
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
-The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) is invoked and the meeting is created, the auto end policies will kick in and if no one joins the meeting, it will close within 5 minutes. The application can create the meeting when drawing closer to the meeting start time or when the the first attendee is ready to join.
+The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) or 
+[CreateMeetingWithAttendees](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html) is invoked and the meeting is created, the auto end
+ policies will kick in and if no one joins the meeting, it will close within 5 minutes. The application can create the meeting when drawing closer to the meeting start time or when the the first attendee is ready to join.
 
 ## Media
 
 ### Which media regions is the Amazon Chime SDK available in? How do I choose the best media region to place my meetings?
 
-You can find the full list of media regions that the Amazon Chime SDK supports [here](https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html), along with how you can determine the best region for a client. Each client application can query for the best region and return it back to the server application, which can use the collected nearest-region information from each client to select a region for the meeting. This region can then be passed as the [MediaRegion](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#chime-CreateMeeting-request-MediaRegion) parameter to [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#API_CreateMeeting_RequestBody).
+You can find the full list of media regions that the Amazon Chime SDK supports [here](https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html), along with how you can determine the best region for a client. Each client application can query for the best region and return it back to the server application, which can use the collected nearest-region information from each client to select a region for the meeting. This region can then be passed as the [MediaRegion](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#chime-CreateMeeting-request-MediaRegion) 
+parameter to [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#API_CreateMeeting_RequestBody) or 
+[CreateMeetingWithAttendees](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html#API_CreateMeetingWithAttendees_RequestBody).
 
 ### How do I choose video resolution, frame rate and bitrate?
 

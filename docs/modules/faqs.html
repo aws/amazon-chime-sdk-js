@@ -145,14 +145,18 @@
 					<a href="#can-i-schedule-amazon-chime-sdk-meetings-ahead-of-time" id="can-i-schedule-amazon-chime-sdk-meetings-ahead-of-time" style="color: inherit; text-decoration: none;">
 						<h3>Can I schedule Amazon Chime SDK meetings ahead of time?</h3>
 					</a>
-					<p>The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">CreateMeeting</a> is invoked and the meeting is created, the auto end policies will kick in and if no one joins the meeting, it will close within 5 minutes. The application can create the meeting when drawing closer to the meeting start time or when the the first attendee is ready to join.</p>
+					<p>The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">CreateMeeting</a> or
+						<a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html">CreateMeetingWithAttendees</a> is invoked and the meeting is created, the auto end
+					policies will kick in and if no one joins the meeting, it will close within 5 minutes. The application can create the meeting when drawing closer to the meeting start time or when the the first attendee is ready to join.</p>
 					<a href="#media" id="media" style="color: inherit; text-decoration: none;">
 						<h2>Media</h2>
 					</a>
 					<a href="#which-media-regions-is-the-amazon-chime-sdk-available-in-how-do-i-choose-the-best-media-region-to-place-my-meetings" id="which-media-regions-is-the-amazon-chime-sdk-available-in-how-do-i-choose-the-best-media-region-to-place-my-meetings" style="color: inherit; text-decoration: none;">
 						<h3>Which media regions is the Amazon Chime SDK available in? How do I choose the best media region to place my meetings?</h3>
 					</a>
-					<p>You can find the full list of media regions that the Amazon Chime SDK supports <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html">here</a>, along with how you can determine the best region for a client. Each client application can query for the best region and return it back to the server application, which can use the collected nearest-region information from each client to select a region for the meeting. This region can then be passed as the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#chime-CreateMeeting-request-MediaRegion">MediaRegion</a> parameter to <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#API_CreateMeeting_RequestBody">CreateMeeting</a>.</p>
+					<p>You can find the full list of media regions that the Amazon Chime SDK supports <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html">here</a>, along with how you can determine the best region for a client. Each client application can query for the best region and return it back to the server application, which can use the collected nearest-region information from each client to select a region for the meeting. This region can then be passed as the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#chime-CreateMeeting-request-MediaRegion">MediaRegion</a>
+						parameter to <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html#API_CreateMeeting_RequestBody">CreateMeeting</a> or
+					<a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html#API_CreateMeetingWithAttendees_RequestBody">CreateMeetingWithAttendees</a>.</p>
 					<a href="#how-do-i-choose-video-resolution-frame-rate-and-bitrate" id="how-do-i-choose-video-resolution-frame-rate-and-bitrate" style="color: inherit; text-decoration: none;">
 						<h3>How do I choose video resolution, frame rate and bitrate?</h3>
 					</a>
