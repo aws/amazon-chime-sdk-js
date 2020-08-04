@@ -23,6 +23,7 @@ class ContentShareJoinLaterTest extends SdkBaseTest {
     await test_window.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
     await TestUtils.waitAround(5000);
     await test_window.runCommands(async () => await RosterCheck.executeStep(this, session, 2));
+    await test_window.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
 
     await monitor_window.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, monitor_attendee_id, session));
     await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
