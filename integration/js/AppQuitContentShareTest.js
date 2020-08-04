@@ -28,6 +28,7 @@ class AppQuitContentShareTest extends SdkBaseTest {
     await test_window.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
     await TestUtils.waitAround(5000);
     await test_window.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
+    await test_window.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
     await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
     await monitor_window.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
 

@@ -1389,12 +1389,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     if (!tileState.boundAttendeeId) {
       return;
     }
-    const selfAttendeeId = this.meetingSession.configuration.credentials.attendeeId;
-    const modality = new DefaultModality(tileState.boundAttendeeId);
-    if (modality.base() === selfAttendeeId && modality.hasModality(DefaultModality.MODALITY_CONTENT)) {
-      // don't bind one's own content
-      return;
-    }
     const tileIndex = tileState.localTile
       ? 16
       : this.tileOrganizer.acquireTileIndex(tileState.tileId);
