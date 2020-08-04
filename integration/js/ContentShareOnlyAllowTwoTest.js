@@ -38,37 +38,40 @@ class ContentShareOnlyAllowTwoTest extends SdkBaseTest {
     //Turn on Content Share for first participant
     await test_window_1.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
     await TestUtils.waitAround(5000);
+    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
     await test_window_1.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
-    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
-    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
+    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
     await test_window_2.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
-    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
+    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
     await test_window_3.runCommands(async () => await RosterCheck.executeStep(this, session, 4));
 
     //Turn on Content Share for second participant
     await test_window_2.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
     await TestUtils.waitAround(5000);
     await test_window_2.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
-    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
-    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 2));
+    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
+    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
     await test_window_1.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
-    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
-    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 2));
+    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
+    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
     await test_window_3.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
-    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
-    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 2));
+    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
+    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
 
     //Turn on Content Share for third participant
     await test_window_3.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
     await TestUtils.waitAround(5000);
-    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
-    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 2));
+    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
+    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
+    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "OFF", test_attendee_id_3));
     await test_window_3.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
-    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
-    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 2));
+    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
+    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
+    await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "OFF", test_attendee_id_3));
     await test_window_1.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
-    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
-    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 2));
+    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
+    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
+    await test_window_2.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "OFF", test_attendee_id_3));
     await test_window_2.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
   }
 }
