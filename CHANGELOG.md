@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Log info when stop pinging due to Websocket closed
 - Change the demo app to show content share video back to sharer
 - Change bootstrap version for meeting demo to 4.5.0
+- Change content share video check to use attendee name instead of video element index
 
 ### Removed
 
