@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump elliptic from 6.5.2 to 6.5.3 in /demos/device
 - Log info when stop pinging due to Websocket closed
 - Change the demo app to show content share video back to sharer
+- Change bootstrap version for meeting demo to 4.5.0
 
 ### Removed
 
