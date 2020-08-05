@@ -21,10 +21,30 @@ describe('SimulcastVideoStreamIndex', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
   let index: SimulcastVideoStreamIndex;
+  interface DateNow {
+    (): number;
+  }
+  let originalDateNow: DateNow;
+  let startTime: number;
   let logger = new NoOpLogger(LogLevel.DEBUG);
 
+  function mockDateNow(): number {
+    return startTime;
+  }
+
+  function incrementTime(addMs: number): void {
+    startTime += addMs;
+  }
+
   beforeEach(() => {
+    startTime = Date.now();
+    originalDateNow = Date.now;
+    Date.now = mockDateNow;
     index = new SimulcastVideoStreamIndex(logger);
+  });
+
+  afterEach(() => {
+    Date.now = originalDateNow;
   });
 
   describe('construction', () => {
@@ -200,6 +220,8 @@ describe('SimulcastVideoStreamIndex', () => {
       expect(localDescs[2].disabledByUplinkPolicy).to.equal(false);
       expect(localDescs[2].disabledByWebRTC).to.equal(false);
       expect(localDescs[2].streamId).to.equal(3);
+
+      incrementTime(6100);
 
       index.integrateBitratesFrame(bitrateFrame);
       localDescs = index.localStreamDescriptions();

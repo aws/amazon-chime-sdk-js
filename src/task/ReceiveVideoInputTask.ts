@@ -48,11 +48,6 @@ export default class ReceiveVideoInputTask extends BaseTask {
     }
     if (this.context.enableSimulcast) {
       const encodingParams = this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
-      this.context.logger.info(
-        `simulcast: choose encoding parameter ${Array.from(
-          JSON.stringify(encodingParams.values())
-        )}`
-      );
       this.context.videoStreamIndex.integrateUplinkPolicyDecision(
         Array.from(encodingParams.values())
       );
