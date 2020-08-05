@@ -13,6 +13,7 @@ export default class VideoStreamDescription {
   // average bitrate is updated every 2 seconds via bitrates messages
   avgBitrateKbps: number = 0;
   maxFrameRate: number = 0;
+  timeEnabled: number = 0;
   disabledByWebRTC: boolean = false;
   disabledByUplinkPolicy: boolean = false;
 
@@ -40,6 +41,7 @@ export default class VideoStreamDescription {
     newInfo.maxBitrateKbps = this.maxBitrateKbps;
     newInfo.avgBitrateKbps = this.avgBitrateKbps;
     newInfo.maxFrameRate = this.maxFrameRate;
+    newInfo.timeEnabled = this.timeEnabled;
     newInfo.disabledByWebRTC = this.disabledByWebRTC;
     newInfo.disabledByUplinkPolicy = this.disabledByUplinkPolicy;
     return newInfo;

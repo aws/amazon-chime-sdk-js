@@ -70,6 +70,7 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
   constructor(private logger: Logger, private tileController: VideoTileController) {
     this.optimalReceiveSet = new DefaultVideoStreamIdSet();
     this.subscribedReceiveSet = new DefaultVideoStreamIdSet();
+    this.logCount = 0;
     this.startupPeriod = true;
     this.usingPrevTargetRate = false;
     this.rateProbeState = RateProbeState.kNotProbing;
@@ -275,21 +276,12 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
       this.lastUpgradeRateKbps = 0;
     }
 
-    let subscribedRate = this.calculateSubscribeRate(remoteInfos, this.optimalReceiveSet);
-    const optimalReceiveSet = {
-      targetBitrate: targetDownlinkBitrate,
-      subscribedRate: subscribedRate,
-      probeState: this.rateProbeState,
-      startupPeriod: this.startupPeriod,
-    };
+    let decisionLogStr = this.policyStateLogStr(remoteInfos, targetDownlinkBitrate);
     if (this.logCount % 15 === 0) {
-      this.logger.info('bwe: optimalReceiveSet ' + JSON.stringify(optimalReceiveSet));
-      this.logger.info('bwe:   prev ' + JSON.stringify(this.prevDownlinkStats));
-      this.logger.info('bwe:   now ' + JSON.stringify(this.downlinkStats));
-      this.logger.info('bwe:   remoteInfos: ' + JSON.stringify(remoteInfos));
+      this.logger.info(decisionLogStr);
       this.logCount = 0;
+      decisionLogStr = '';
     }
-
     this.logCount++;
 
     this.prevTargetRateKbps = targetDownlinkBitrate;
@@ -308,6 +300,9 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
       streamSelectionSet.add(chosenStream.streamId);
     }
     if (!this.optimalReceiveSet.equal(streamSelectionSet)) {
+      if (decisionLogStr.length > 0) {
+        this.logger.info(decisionLogStr);
+      }
       const subscribedRate = this.calculateSubscribeRate(remoteInfos, streamSelectionSet);
       this.logger.info(
         `bwe: new streamSelection: ${JSON.stringify(
@@ -684,5 +679,26 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
     }
 
     return true;
+  }
+
+  private policyStateLogStr(
+    remoteInfos: VideoStreamDescription[],
+    targetDownlinkBitrate: number
+  ): string {
+    const subscribedRate = this.calculateSubscribeRate(remoteInfos, this.optimalReceiveSet);
+    const optimalReceiveSet = {
+      targetBitrate: targetDownlinkBitrate,
+      subscribedRate: subscribedRate,
+      probeState: this.rateProbeState,
+      startupPeriod: this.startupPeriod,
+    };
+
+    let logString =
+      `bwe: optimalReceiveSet ${JSON.stringify(optimalReceiveSet)}\n` +
+      `bwe:   prev ${JSON.stringify(this.prevDownlinkStats)}\n` +
+      `bwe:   now  ${JSON.stringify(this.downlinkStats)}\n` +
+      `bwe:   remoteInfos: ${JSON.stringify(remoteInfos)}`;
+
+    return logString;
   }
 }

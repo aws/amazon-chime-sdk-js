@@ -58,9 +58,6 @@ export default class AttachMediaInputTask extends BaseTask {
         await transceiverController.setVideoInput(videoTrack);
         if (this.context.enableSimulcast && this.context.videoUplinkBandwidthPolicy) {
           const encodingParam = this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
-          this.context.logger.info(
-            `simulcast: uplink policy encodingParm ${JSON.stringify(encodingParam)}`
-          );
           transceiverController.setEncodingParameters(encodingParam);
         }
       } else {
