@@ -19,6 +19,8 @@ describe('DefaultBrowserBehavior', () => {
   const CHROMIUM_EDGE_USERAGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3729.48 Safari/537.36 Edg/79.1.96.24';
   const OPERA_USERAGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
+  const FIREFOX_ANDROID_USERAGENT =
+    'Mozilla/5.0 (Android 10; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -48,6 +50,14 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(false);
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
+    });
+
+    it('can detect Firefox on Android', () => {
+      setUserAgent(FIREFOX_ANDROID_USERAGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
+      expect(new DefaultBrowserBehavior().isSupported()).to.eq(false);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
+      expect(new DefaultBrowserBehavior().supportString()).to.eq('Google Chrome 78+');
     });
 
     it('can detect Chrome', () => {

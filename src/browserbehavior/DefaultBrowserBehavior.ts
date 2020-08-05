@@ -133,10 +133,22 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   isSupported(): boolean {
-    return this.majorVersion() >= this.browserSupport[this.browser.name];
+    if (
+      !this.browserSupport[this.browser.name] ||
+      this.majorVersion() < this.browserSupport[this.browser.name]
+    ) {
+      return false;
+    }
+    if (this.browser.name === 'firefox' && this.isAndroid()) {
+      return false;
+    }
+    return true;
   }
 
   supportString(): string {
+    if (this.isAndroid()) {
+      return `${this.browserName['chrome']} ${this.browserSupport['chrome']}+`;
+    }
     const s: string[] = [];
     for (const k in this.browserSupport) {
       s.push(`${this.browserName[k]} ${this.browserSupport[k]}+`);
