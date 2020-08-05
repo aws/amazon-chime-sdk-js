@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure all simulcast stream resolution are 16-aligned to avoid pixel3(XL) encoder issue
 - Fix race condition in Chromium browsers when consecutive audio bind operations take place 
 - Fix invalid constraints and disable Unified Plan in safari 12.0
+- Fix isSupported API in DefaultBrowserBehavior return true for Firefox on Android
 
 ## [1.14.0] - 2020-07-28
 
