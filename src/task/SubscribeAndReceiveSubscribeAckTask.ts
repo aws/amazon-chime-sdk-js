@@ -62,7 +62,9 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
         active: true,
       };
 
-      this.context.videoStreamIndex.integrateUplinkPolicyDecision([param]);
+      this.context.currentVideoSubscribeContext
+        .videoStreamIndexRef()
+        .integrateUplinkPolicyDecision([param]);
     }
 
     const isSendingStreams: boolean =
@@ -75,9 +77,9 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.meetingSessionConfiguration.urls.audioHostURL,
       this.context.realtimeController.realtimeIsLocalAudioMuted(),
       false,
-      this.context.videoSubscriptions,
+      this.context.currentVideoSubscribeContext.videoSubscriptions(),
       isSendingStreams,
-      this.context.videoStreamIndex.localStreamDescriptions(),
+      this.context.currentVideoSubscribeContext.videoStreamIndexRef().localStreamDescriptions(),
       // TODO: handle check-in mode, or remove this param
       true
     );
@@ -87,7 +89,9 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     const subscribeAckFrame = await this.receiveSubscribeAck();
     this.context.logger.info(`got subscribe ack: ${JSON.stringify(subscribeAckFrame)}`);
     this.context.sdpAnswer = subscribeAckFrame.sdpAnswer;
-    this.context.videoStreamIndex.integrateSubscribeAckFrame(subscribeAckFrame);
+    this.context.currentVideoSubscribeContext
+      .videoStreamIndexRef()
+      .integrateSubscribeAckFrame(subscribeAckFrame);
   }
 
   private receiveSubscribeAck(): Promise<SdkSubscribeAckFrame> {

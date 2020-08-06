@@ -14,6 +14,7 @@ import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import ReceiveVideoInputTask from '../../src/task/ReceiveVideoInputTask';
 import DefaultVideoCaptureAndEncodeParameters from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -67,15 +68,12 @@ describe('ReceiveVideoInputTask', () => {
     context.logger = context.audioVideoController.logger;
     context.videoTileController = context.audioVideoController.videoTileController;
     context.meetingSessionConfiguration = makeSessionConfiguration();
-    context.videoCaptureAndEncodeParameter = new DefaultVideoCaptureAndEncodeParameters(
-      1,
-      1,
-      1,
-      1,
-      false
-    );
+    context.videoCaptureAndEncodeParameter = new DefaultVideoCaptureAndEncodeParameters(1, 1, 1, 1);
     context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
-    context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+    context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.currentVideoSubscribeContext.updateVideoStreamIndex(
+      new SimulcastVideoStreamIndex(new NoOpLogger())
+    );
   });
 
   afterEach(() => {
@@ -97,7 +95,8 @@ describe('ReceiveVideoInputTask', () => {
     });
 
     it('will acquire the video input and query constraint', async () => {
-      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      const videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(videoStreamIndex);
       context.enableSimulcast = true;
       context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('attendee', new NoOpLogger());
       context.videoTileController.startLocalVideoTile();
@@ -111,7 +110,8 @@ describe('ReceiveVideoInputTask', () => {
 
     it('will acquire the video input and query constraint', async () => {
       domMockBehavior.applyConstraintSucceeds = false;
-      context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      const videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(videoStreamIndex);
       context.enableSimulcast = true;
       context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('attendee', new NoOpLogger());
       context.videoTileController.startLocalVideoTile();
@@ -171,7 +171,10 @@ describe('ReceiveVideoInputTask', () => {
     });
 
     it('will update video stream index if video is enabled', done => {
-      const spy = sinon.spy(context.videoStreamIndex, 'integrateUplinkPolicyDecision');
+      const spy = sinon.spy(
+        context.currentVideoSubscribeContext.videoStreamIndexRef(),
+        'integrateUplinkPolicyDecision'
+      );
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,

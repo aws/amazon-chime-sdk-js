@@ -87,6 +87,7 @@ import DefaultTransceiverController from './transceivercontroller/DefaultTransce
 import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIdSet from './videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from './videostreamindex/DefaultVideoStreamIndex';
+import DefaultVideoSubscribeContext from './videosubscribecontext/DefaultVideoSubscribeContext';
 import DefaultVideoTile from './videotile/DefaultVideoTile';
 import DefaultVideoTileController from './videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from './videotilefactory/DefaultVideoTileFactory';
@@ -284,6 +285,7 @@ import VideoLogEvent from './statscollector/VideoLogEvent';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
 import VideoStreamIdSet from './videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from './videostreamindex/VideoStreamIndex';
+import VideoSubscribeContext from './videosubscribecontext/VideoSubscribeContext';
 import VideoTile from './videotile/VideoTile';
 import VideoTileController from './videotilecontroller/VideoTileController';
 import VideoTileControllerFacade from './videotilecontroller/VideoTileControllerFacade';
@@ -387,6 +389,7 @@ export {
   DefaultVideoCaptureAndEncodeParameter,
   DefaultVideoStreamIdSet,
   DefaultVideoStreamIndex,
+  DefaultVideoSubscribeContext,
   DefaultVideoTile,
   DefaultVideoTileController,
   DefaultVideoTileFactory,
@@ -584,6 +587,7 @@ export {
   VideoStreamDescription,
   VideoStreamIdSet,
   VideoStreamIndex,
+  VideoSubscribeContext,
   VideoTile,
   VideoTileController,
   VideoTileControllerFacade,

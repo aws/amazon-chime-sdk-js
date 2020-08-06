@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import VideoCaptureAndEncodeParameter from './VideoCaptureAndEncodeParameter';
@@ -9,8 +9,7 @@ export default class DefaultVideoCaptureAndEncodeParameter
     private cameraWidth: number,
     private cameraHeight: number,
     private cameraFrameRate: number,
-    private maxEncodeBitrateKbps: number,
-    private isSimulcast: boolean
+    private maxEncodeBitrateKbps: number
   ) {}
 
   equal(other: DefaultVideoCaptureAndEncodeParameter): boolean {
@@ -43,8 +42,7 @@ export default class DefaultVideoCaptureAndEncodeParameter
       this.cameraWidth,
       this.cameraHeight,
       this.cameraFrameRate,
-      this.maxEncodeBitrateKbps,
-      this.isSimulcast
+      this.maxEncodeBitrateKbps
     );
   }
 

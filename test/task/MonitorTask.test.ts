@@ -45,6 +45,7 @@ import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpoli
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
@@ -154,8 +155,11 @@ describe('MonitorTask', () => {
       context.audioVideoController,
       logger
     );
+    context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
-    context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
+    context.currentVideoSubscribeContext.updateVideosToReceive(
+      context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone()
+    );
     context.statsCollector = new DefaultStatsCollector(
       context.audioVideoController,
       logger,
@@ -251,7 +255,9 @@ describe('MonitorTask', () => {
 
   describe('metricsDidReceive', () => {
     it('can only handle DefaultClientMetricReport with StreamMetricReport', () => {
-      context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(
+        new DefaultVideoStreamIndex(logger)
+      );
       task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
 
       class TestClientMetricReport implements ClientMetricReport {
@@ -289,7 +295,7 @@ describe('MonitorTask', () => {
           return 'attendee' + streamId.toString();
         }
       }
-      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(new TestVideoStreamIndex(logger));
       task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
@@ -328,7 +334,7 @@ describe('MonitorTask', () => {
           return 'attendeeId' + streamId.toString();
         }
       }
-      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(new TestVideoStreamIndex(logger));
       task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
@@ -357,7 +363,7 @@ describe('MonitorTask', () => {
           return '';
         }
       }
-      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(new TestVideoStreamIndex(logger));
       task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
@@ -378,7 +384,7 @@ describe('MonitorTask', () => {
           return 'attendeeid';
         }
       }
-      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(new TestVideoStreamIndex(logger));
       task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';
       const streamMetricReport = new StreamMetricReport();
@@ -442,7 +448,9 @@ describe('MonitorTask', () => {
         }
       }
       context.videoTileController.startLocalVideoTile();
-      context.videoStreamIndex = new SimulcastVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(
+        new SimulcastVideoStreamIndex(logger)
+      );
 
       context.videoUplinkBandwidthPolicy = new TestVideoUplinkPolicy('self', logger);
       context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger, null);
@@ -733,8 +741,10 @@ describe('MonitorTask', () => {
           done();
         }
       }
-      context.videoSubscriptions = [streamIdTestValue];
-      context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoSubscriptions([streamIdTestValue]);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(
+        new DefaultVideoStreamIndex(logger)
+      );
       context.audioVideoController.addObserver(new TestObserver());
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();
@@ -758,8 +768,10 @@ describe('MonitorTask', () => {
           assert.fail();
         }
       }
-      context.videoSubscriptions = [];
-      context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoSubscriptions([]);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(
+        new DefaultVideoStreamIndex(logger)
+      );
       context.audioVideoController.addObserver(new TestObserver());
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();
@@ -775,7 +787,7 @@ describe('MonitorTask', () => {
           message
         )
       );
-      context.videoSubscriptions = null;
+      context.currentVideoSubscribeContext.updateVideoSubscriptions(null);
       task.handleSignalingClientEvent(
         new SignalingClientEvent(
           new DefaultSignalingClient(webSocketAdapter, logger),

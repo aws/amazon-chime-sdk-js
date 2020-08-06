@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -22,6 +22,8 @@ import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandenco
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
+import VideoSubscribeContext from '../../src/videosubscribecontext/VideoSubscribeContext';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
@@ -72,11 +74,16 @@ describe('ReceiveVideoStreamIndexTask', () => {
       context.audioVideoController,
       logger
     );
-    context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
+    const videoStreamIndex = new DefaultVideoStreamIndex(logger);
+    context.previousVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.currentVideoSubscribeContext.updateVideoStreamIndex(videoStreamIndex);
     context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     context.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
     context.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
-    context.videosToReceive = context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone();
+    context.currentVideoSubscribeContext.updateVideosToReceive(
+      context.videoDownlinkBandwidthPolicy.chooseSubscriptions().clone()
+    );
 
     task = new ReceiveVideoStreamIndexTask(context);
 
@@ -112,37 +119,16 @@ describe('ReceiveVideoStreamIndexTask', () => {
         await new Promise(resolve =>
           new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
         );
-        expect(videoDownlinkBandwidthPolicySpy.calledWith(context.videoStreamIndex)).to.be.true;
-        expect(videoUplinkBandwidthPolicySpy.calledWith(context.videoStreamIndex)).to.be.true;
+        expect(videoDownlinkBandwidthPolicySpy.calledOnce).to.be.true;
+        expect(videoUplinkBandwidthPolicySpy.calledOnce).to.be.true;
         done();
       });
-
       task.run();
     });
-    //    it('does not update the index frame of the video stream index if policies do not exist in the context', done => {
-    //      context.videoDownlinkBandwidthPolicy = null;
-    //      context.videoUplinkBandwidthPolicy = null;
-    //
-    //      const videoStreamIndexSpy: sinon.SinonSpy = sinon.spy(
-    //        context.videoStreamIndex,
-    //        'integrateIndexFrame'
-    //      );
-    //
-    //      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
-    //        webSocketAdapter.send(createIndexSignalBuffer());
-    //        await new Promise(resolve =>
-    //          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-    //        );
-    //        expect(videoStreamIndexSpy.called).to.be.false;
-    //        done();
-    //      });
-    //
-    //      task.run();
-    //    });
   });
 
   describe('resubscribe', () => {
-    it('attemps to resubscribe if video downlink bandwidth policy wants to resubscribe', done => {
+    it('attempts to resubscribe if video downlink bandwidth policy wants to resubscribe', done => {
       const ids: number[] = [1, 2, 3];
       class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
         wantsResubscribe(): boolean {
@@ -152,21 +138,35 @@ describe('ReceiveVideoStreamIndexTask', () => {
           return new DefaultVideoStreamIdSet(ids);
         }
       }
-      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
 
+      const controllerUpdateArgMatcher = sinon.match(
+        (videoSubscribeContext: VideoSubscribeContext) => {
+          if (videoSubscribeContext.videosToReceive().equal(new DefaultVideoStreamIdSet(ids))) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        'true'
+      );
+
+      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+      const avControllerUpdateSpy: sinon.SinonSpy = sinon.spy(
+        context.audioVideoController,
+        'update'
+      );
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
         await new Promise(resolve =>
           new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
         );
-        expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(ids))).to.be.true;
+        expect(avControllerUpdateSpy.calledWithMatch(controllerUpdateArgMatcher)).to.be.true;
         done();
       });
-
       task.run();
     });
 
-    it('attemps to resubscribe if video uplink bandwidth policy wants to resubscribe', done => {
+    it('attempts to resubscribe if video uplink bandwidth policy wants to resubscribe', done => {
       const captureWidth = 400;
       const captureHeight = 300;
       const captureFrameRate = 30;
@@ -181,8 +181,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
             captureWidth,
             captureHeight,
             captureFrameRate,
-            maxEncodeBitrateKbps,
-            false
+            maxEncodeBitrateKbps
           );
         }
       }
@@ -200,8 +199,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
               captureWidth,
               captureHeight,
               captureFrameRate,
-              maxEncodeBitrateKbps,
-              false
+              maxEncodeBitrateKbps
             )
           )
         ).to.be.true;
@@ -267,20 +265,14 @@ describe('ReceiveVideoStreamIndexTask', () => {
       task.run();
     });
 
-    describe('no udpate', () => {
-      it('does not update video availability if videosToReceive does not exist in the context', () => {
-        context.videosToReceive = null;
-      });
-
+    describe('no update', () => {
       it('does not update video availability if new video availability equals last known video availability', () => {
+        context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
         const videoAvailability = new MeetingSessionVideoAvailability();
         videoAvailability.remoteVideoAvailable = false;
         videoAvailability.canStartLocalVideo = true;
         context.lastKnownVideoAvailability = videoAvailability;
       });
-
-      // it('does not update video availability if session does not exist', () => {
-      // });
 
       afterEach(done => {
         class TestAudioVideoObserver implements AudioVideoObserver {
@@ -379,7 +371,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
   describe('cancel', () => {
     it('can cancel using the context', done => {
       const videoStreamIndexSpy: sinon.SinonSpy = sinon.spy(
-        context.videoStreamIndex,
+        context.currentVideoSubscribeContext.videoStreamIndexRef(),
         'integrateIndexFrame'
       );
 

@@ -12,6 +12,7 @@ import CreateSDPTask from '../../src/task/CreateSDPTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -31,7 +32,8 @@ describe('CreateSDPTask', () => {
     context.transceiverController = new DefaultTransceiverController(context.logger, browser);
     context.videoTileController = context.audioVideoController.videoTileController;
     context.logger = context.audioVideoController.logger;
-    context.videosToReceive = new DefaultVideoStreamIdSet();
+    context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.currentVideoSubscribeContext.updateVideosToReceive(new DefaultVideoStreamIdSet());
     const peer: RTCPeerConnection = new RTCPeerConnection();
     context.peer = peer;
     task = new CreateSDPTask(context);

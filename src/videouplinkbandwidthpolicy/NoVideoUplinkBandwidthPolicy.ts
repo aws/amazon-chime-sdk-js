@@ -20,7 +20,7 @@ export default class NoVideoUplinkBandwidthPolicy implements VideoUplinkBandwidt
     return false;
   }
   chooseCaptureAndEncodeParameters(): VideoCaptureAndEncodeParameter {
-    return new DefaultVideoCaptureAndEncodeParameter(0, 0, 0, 0, false);
+    return new DefaultVideoCaptureAndEncodeParameter(0, 0, 0, 0);
   }
   maxBandwidthKbps(): number {
     return 0;

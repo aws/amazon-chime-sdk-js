@@ -17,12 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change the demo app to show content share video back to sharer
 - Change bootstrap version for meeting demo to 4.5.0
 - Change content share video check to use attendee name instead of video element index
+- Change AudioVideoController update function to take VideoSubscribeContext
 
 ### Removed
 
 ### Fixed
 - Ensure all simulcast stream resolution are 16-aligned to avoid pixel3(XL) encoder issue
-- Fix race condition in Chromium browsers when consecutive audio bind operations take place 
+- Fix race condition in Chromium browsers when consecutive audio bind operations take place
 - Fix invalid constraints and disable Unified Plan in safari 12.0
 - Fix isSupported API in DefaultBrowserBehavior return true for Firefox on Android
 
