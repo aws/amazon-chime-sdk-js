@@ -14,7 +14,8 @@ import AttachMediaInputTask from '../../src/task/AttachMediaInputTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
-import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
+// import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -64,9 +65,9 @@ describe('AttachMediaInputTask', () => {
     context.activeAudioInput.addTrack(audioTrack);
     context.activeVideoInput = new MediaStream();
     context.activeVideoInput.addTrack(videoTrack);
-    context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
-    context.videosToReceive = new DefaultVideoStreamIdSet();
-    context.videoSubscriptions = [];
+    context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.currentVideoSubscribeContext.updateVideosToReceive(new DefaultVideoStreamIdSet());
+    context.currentVideoSubscribeContext.updateVideoSubscriptions([]);
     context.statsCollector = new DefaultStatsCollector(
       context.audioVideoController,
       logger,

@@ -11,6 +11,7 @@ import SetRemoteDescriptionTask from '../../src/task/SetRemoteDescriptionTask';
 import Task from '../../src/task/Task';
 import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import FirefoxSDPMock from '../sdp/FirefoxSDPMock';
@@ -52,7 +53,8 @@ describe('SetRemoteDescriptionTask', () => {
     context.peer = peer;
     context.sdpAnswer = SDPMock.VIDEO_HOST_AUDIO_ANSWER;
     context.turnCredentials = turnCredentials;
-    context.videoCaptureAndEncodeParameter = new DefaultVideoAndCaptureParameter(0, 0, 0, 0, false);
+    context.videoCaptureAndEncodeParameter = new DefaultVideoAndCaptureParameter(0, 0, 0, 0);
+    context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
     context.browserBehavior = new DefaultBrowserBehavior();
     // @ts-ignore
     task = new SetRemoteDescriptionTask(context);
@@ -160,7 +162,7 @@ describe('SetRemoteDescriptionTask', () => {
         toJSON: null,
       };
       context.peer.setRemoteDescription(remoteDescription);
-      context.videosToReceive = new DefaultVideoStreamIdSet();
+      context.currentVideoSubscribeContext.updateVideosToReceive(new DefaultVideoStreamIdSet());
 
       task.run().then(() => {
         expect(context.peer.currentRemoteDescription.sdp).to.equal(
@@ -184,7 +186,7 @@ describe('SetRemoteDescriptionTask', () => {
         toJSON: null,
       };
       context.peer.setRemoteDescription(remoteDescription);
-      context.videosToReceive = new DefaultVideoStreamIdSet();
+      context.currentVideoSubscribeContext.updateVideosToReceive(new DefaultVideoStreamIdSet());
 
       task.run().then(() => {
         expect(context.peer.currentRemoteDescription.sdp).to.equal(context.sdpAnswer);
@@ -206,7 +208,7 @@ describe('SetRemoteDescriptionTask', () => {
         toJSON: null,
       };
       context.peer.setRemoteDescription(remoteDescription);
-      context.videosToReceive = new DefaultVideoStreamIdSet();
+      context.currentVideoSubscribeContext.updateVideosToReceive(new DefaultVideoStreamIdSet());
 
       task.run().then(() => {
         expect(context.peer.currentRemoteDescription.sdp).to.equal(context.sdpAnswer);
@@ -215,7 +217,7 @@ describe('SetRemoteDescriptionTask', () => {
     });
 
     it('uses the sdp answer if the remote description is not set before', done => {
-      context.videosToReceive = new DefaultVideoStreamIdSet();
+      context.currentVideoSubscribeContext.updateVideosToReceive(new DefaultVideoStreamIdSet());
 
       task.run().then(() => {
         expect(context.peer.currentRemoteDescription.sdp).to.equal(context.sdpAnswer);

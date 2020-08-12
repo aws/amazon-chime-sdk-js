@@ -33,6 +33,7 @@ import {
   Versioning,
   VideoTileState,
   ClientVideoStreamReceivingReport,
+  IntervalScheduler,
 } from '../../../../src/index';
 
 class DemoTileOrganizer {
@@ -154,6 +155,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   markdown = require('markdown-it')({linkify: true});
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
+
+  testToggleIsOn: boolean = false;
+  testToggleVideoTileStateChangeLists: VideoTileState[] = [];
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -865,8 +869,67 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     );
   }
 
+  // separate this into a quicktest driver
+  async testEnableVideoButtonToggleMode(testDurationInSeconds: number = 30, toggleIntevalMs: number = 4000, startStopLapse: number = 2000, testWithDeviceController: true): Promise<void> {
+    const toggleDispatch = new IntervalScheduler(toggleIntevalMs);
+    const videoDeviceLists = await this.audioVideo.listVideoInputDevices();
+    let device: Device;
+    if (testWithDeviceController) {
+      device = videoDeviceLists[0].deviceId;
+    } else {
+      // avoid alert
+      device = await navigator.mediaDevices.getUserMedia({"video": true});
+    }
+    this.testToggleIsOn = true;
 
-  async getStatsForOutbound(id: string): Promise<void> {
+    setTimeout(() => {
+      toggleDispatch.stop();
+    }, testDurationInSeconds * 1000);
+    toggleDispatch.start(async() => {
+      this.testToggleVideoTileStateChangeLists = [];
+      let stream: MediaStream;
+      if (testWithDeviceController) {
+        await this.audioVideo.chooseVideoInputDevice(device);
+      } else {
+        stream = await navigator.mediaDevices.getUserMedia({"video": true});
+        await this.audioVideo.chooseVideoInputDevice(stream);
+      }
+      this.audioVideo.startLocalVideoTile();
+      await new TimeoutScheduler(startStopLapse).start(() => {
+        this.audioVideo.stopLocalVideoTile();
+      });
+
+      await new TimeoutScheduler(startStopLapse).start(() => {
+        if (testWithDeviceController) {
+          if (stream.active) {
+            this.log("Test failed, stream is still active: might be due to timing");
+          }
+        }
+
+        if (this.testToggleVideoTileStateChangeLists.length < 1) {
+          this.log("Test failed, no enough videoTileDidUpdate was fired");
+        } else {
+          let atLeastOneCompleteTileState: boolean = false;
+          for (let i = 0; i < this.testToggleVideoTileStateChangeLists.length; i++) {
+            const tileState = this.testToggleVideoTileStateChangeLists[0];
+            if (tileState.active && tileState.boundAttendeeId && tileState.boundExternalUserId && tileState.videoStreamContentWidth && tileState.videoElementCSSWidthPixels) {
+              atLeastOneCompleteTileState = true;
+            }
+          }
+
+          if (!atLeastOneCompleteTileState) {
+            this.log("Test failed, not a single complete video tile state");
+          }
+        }
+      });
+      this.testToggleVideoTileStateChangeLists = [];
+    });
+
+    this.testToggleIsOn = false;
+    this.testToggleVideoTileStateChangeLists = [];
+  }
+
+  async testGetStatsForOutbound(id: string): Promise<void> {
     const videoElement = document.getElementById(id) as HTMLVideoElement;
     const stream = videoElement.srcObject as MediaStream;
     const track = stream.getVideoTracks()[0];
@@ -1386,6 +1449,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   videoTileDidUpdate(tileState: VideoTileState): void {
     this.log(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
+    if (this.testToggleIsOn) {
+      this.testToggleVideoTileStateChangeLists.push(tileState.clone());
+    }
     if (!tileState.boundAttendeeId) {
       return;
     }

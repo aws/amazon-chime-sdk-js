@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -14,7 +14,7 @@ describe('DefaultVideoCaptureAndEncodeParameter', () => {
   beforeEach(() => {
     expect = chai.expect;
     assert = chai.assert;
-    videoEncodeParameter = new DefaultVideoCaptureAndEncodeParameter(1280, 720, 30, 2400, false);
+    videoEncodeParameter = new DefaultVideoCaptureAndEncodeParameter(1280, 720, 30, 2400);
   });
 
   describe('construction', () => {
@@ -29,8 +29,7 @@ describe('DefaultVideoCaptureAndEncodeParameter', () => {
         1280,
         720,
         30,
-        2400,
-        false
+        2400
       );
       expect(videoEncodeParameter.equal(otherVideoEncodeParameter)).to.equal(true);
     });
@@ -40,8 +39,7 @@ describe('DefaultVideoCaptureAndEncodeParameter', () => {
         1280,
         720,
         30,
-        600,
-        false
+        600
       );
       expect(videoEncodeParameter.equal(otherVideoEncodeParameter)).to.equal(false);
     });
@@ -51,8 +49,7 @@ describe('DefaultVideoCaptureAndEncodeParameter', () => {
         640,
         360,
         30,
-        600,
-        false
+        600
       );
       expect(videoEncodeParameter.equal(otherVideoEncodeParameter)).to.equal(false);
     });

@@ -3,6 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import VideoLogEvent from '../statscollector/VideoLogEvent';
+import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
 import BaseTask from './BaseTask';
 
 /*
@@ -99,9 +100,14 @@ export default class AttachMediaInputTask extends BaseTask {
       }
     }
 
-    this.context.videoSubscriptions = transceiverController.updateVideoTransceivers(
-      this.context.videoStreamIndex,
-      this.context.videosToReceive
+    const currentVideoStreamIndex =
+      this.context.currentVideoSubscribeContext.videoStreamIndex() ||
+      new DefaultVideoStreamIndex(this.context.logger);
+    const currentVideosToReceive = this.context.currentVideoSubscribeContext.videosToReceive();
+    const videoSubscriptionArrays = transceiverController.updateVideoTransceivers(
+      currentVideoStreamIndex,
+      currentVideosToReceive
     );
+    this.context.currentVideoSubscribeContext.updateVideoSubscriptions(videoSubscriptionArrays);
   }
 }

@@ -23,6 +23,7 @@ import SignalingClientObserver from '../signalingclientobserver/SignalingClientO
 import { ISdkBitrateFrame } from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import VideoLogEvent from '../statscollector/VideoLogEvent';
+import VideoSubscribeContext from '../videosubscribecontext/VideoSubscribeContext';
 import BaseTask from './BaseTask';
 
 /*
@@ -78,7 +79,10 @@ export default class MonitorTask extends BaseTask
     );
 
     this.context.connectionMonitor.start();
-    this.context.statsCollector.start(this.context.signalingClient, this.context.videoStreamIndex);
+    this.context.statsCollector.start(
+      this.context.signalingClient,
+      this.context.currentVideoSubscribeContext.videoStreamIndexRef()
+    );
     this.context.signalingClient.registerObserver(this);
   }
 
@@ -125,10 +129,12 @@ export default class MonitorTask extends BaseTask
     this.currentVideoDownlinkBandwidthEstimationKbps = newBandwidthKbps;
   }
 
-  private checkResubscribe(clientMetricReport: ClientMetricReport): boolean {
+  private checkResubscribe(
+    clientMetricReport: ClientMetricReport
+  ): { result: boolean; videoContext: VideoSubscribeContext | null } {
     const metricReport = clientMetricReport.getObservableMetrics();
     if (!metricReport) {
-      return false;
+      return { result: false, videoContext: null };
     }
     const availableSendBandwidth =
       metricReport.availableSendBandwidth || metricReport.availableOutgoingBitrate;
@@ -140,11 +146,14 @@ export default class MonitorTask extends BaseTask
     this.context.videoDownlinkBandwidthPolicy.updateMetrics(clientMetricReport);
     const resubscribeForDownlink = this.context.videoDownlinkBandwidthPolicy.wantsResubscribe();
     needResubscribe = needResubscribe || resubscribeForDownlink;
+
+    const videoSubscribeContext = this.context.currentVideoSubscribeContext.clone();
     if (resubscribeForDownlink) {
-      this.context.videosToReceive = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
+      const videosToReceive = this.context.videoDownlinkBandwidthPolicy.chooseSubscriptions();
       this.logger.info(
-        `trigger resubscribe for down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}]`
+        `trigger resubscribe for down=${resubscribeForDownlink}; videosToReceive=[${videosToReceive.array()}]`
       );
+      videoSubscribeContext.updateVideosToReceive(videosToReceive);
     }
 
     if (this.context.videoTileController.hasStartedLocalVideoTile()) {
@@ -155,15 +164,18 @@ export default class MonitorTask extends BaseTask
       const resubscribeForUplink = this.context.videoUplinkBandwidthPolicy.wantsResubscribe();
       needResubscribe = needResubscribe || resubscribeForUplink;
       if (resubscribeForUplink) {
+        const newEncodingParams = this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
+        const newMediaConstraints = this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
         this.logger.info(
-          `trigger resubscribe for up=${resubscribeForUplink}; videosToReceive=[${this.context.videosToReceive.array()}]`
+          `trigger resubscribe for up=${resubscribeForUplink}; encoding parameters=${JSON.stringify(
+            newEncodingParams
+          )}; media constraints=${JSON.stringify(newMediaConstraints)}`
         );
-        this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
-        this.context.videoUplinkBandwidthPolicy.chooseMediaTrackConstraints();
+        // videoSubscribeContext.UPDATE
       }
     }
 
-    return needResubscribe;
+    return { result: needResubscribe, videoContext: videoSubscribeContext };
   }
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
@@ -172,8 +184,9 @@ export default class MonitorTask extends BaseTask
       return;
     }
 
-    if (this.checkResubscribe(clientMetricReport)) {
-      this.context.audioVideoController.update();
+    const result = this.checkResubscribe(clientMetricReport);
+    if (result.result) {
+      this.context.audioVideoController.update(result.videoContext);
     }
 
     if (!this.currentAvailableStreamAvgBitrates) {
@@ -205,9 +218,9 @@ export default class MonitorTask extends BaseTask
     for (const bitrate of this.currentAvailableStreamAvgBitrates.bitrates) {
       if (downlinkVideoStream.has(bitrate.sourceStreamId)) {
         const report = downlinkVideoStream.get(bitrate.sourceStreamId);
-        const attendeeId = this.context.videoStreamIndex.attendeeIdForStreamId(
-          bitrate.sourceStreamId
-        );
+        const attendeeId = this.context.currentVideoSubscribeContext
+          .videoStreamIndexRef()
+          .attendeeIdForStreamId(bitrate.sourceStreamId);
         if (!attendeeId) {
           continue;
         }
@@ -286,7 +299,8 @@ export default class MonitorTask extends BaseTask
   }
 
   private handleBitrateFrame(bitrates: ISdkBitrateFrame): void {
-    const videoSubscription: number[] = this.context.videoSubscriptions || [];
+    const videoSubscription: number[] =
+      this.context.currentVideoSubscribeContext.videoSubscriptions() || [];
 
     let requiredBandwidthKbps = 0;
     this.currentAvailableStreamAvgBitrates = bitrates;
@@ -324,8 +338,12 @@ export default class MonitorTask extends BaseTask
 
     if (!!event.message.bitrates) {
       const bitrateFrame: ISdkBitrateFrame = event.message.bitrates;
-      this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);
-      this.context.videoDownlinkBandwidthPolicy.updateIndex(this.context.videoStreamIndex);
+      this.context.currentVideoSubscribeContext
+        .videoStreamIndexRef()
+        .integrateBitratesFrame(bitrateFrame);
+      this.context.videoDownlinkBandwidthPolicy.updateIndex(
+        this.context.currentVideoSubscribeContext.videoStreamIndexRef()
+      );
       this.handleBitrateFrame(event.message.bitrates);
     }
     const status = MeetingSessionStatus.fromSignalFrame(event.message);

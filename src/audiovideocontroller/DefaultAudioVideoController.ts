@@ -58,9 +58,10 @@ import SimulcastTransceiverController from '../transceivercontroller/SimulcastTr
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
-import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../videostreamindex/SimulcastVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../videosubscribecontext/DefaultVideoSubscribeContext';
+import VideoSubscribeContext from '../videosubscribecontext/VideoSubscribeContext';
 import DefaultVideoTileController from '../videotilecontroller/DefaultVideoTileController';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
@@ -163,6 +164,14 @@ export default class DefaultAudioVideoController implements AudioVideoController
     return this._mediaStreamBroker;
   }
 
+  get videoSubscribeContext(): VideoSubscribeContext {
+    if (this.meetingSessionContext && this.meetingSessionContext.currentVideoSubscribeContext) {
+      return this.meetingSessionContext.currentVideoSubscribeContext.clone();
+    } else {
+      return new DefaultVideoSubscribeContext();
+    }
+  }
+
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport> {
     if (!this.rtcPeerConnection) {
       return null;
@@ -234,7 +243,8 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this.meetingSessionContext.videoTileController = this._videoTileController;
     this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;
     this.meetingSessionContext.videoUplinkBandwidthPolicy = this.configuration.videoUplinkBandwidthPolicy;
-
+    this.meetingSessionContext.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    this.meetingSessionContext.previousVideoSubscribeContext = new DefaultVideoSubscribeContext();
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
     if (this.enableSimulcast) {
       this.meetingSessionContext.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy(
@@ -245,10 +255,15 @@ export default class DefaultAudioVideoController implements AudioVideoController
         this.logger,
         this.meetingSessionContext.videoTileController
       );
-      this.meetingSessionContext.videoStreamIndex = new SimulcastVideoStreamIndex(this.logger);
+
+      this.meetingSessionContext.currentVideoSubscribeContext.updateVideoStreamIndex(
+        new SimulcastVideoStreamIndex(this.logger)
+      );
     } else {
       this.meetingSessionContext.enableSimulcast = false;
-      this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
+      this.meetingSessionContext.currentVideoSubscribeContext.updateVideoStreamIndex(
+        new DefaultVideoStreamIndex(this.logger)
+      );
       if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
         this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
           this.configuration.credentials.attendeeId
@@ -266,11 +281,9 @@ export default class DefaultAudioVideoController implements AudioVideoController
       0,
       0,
       0,
-      0,
-      false
+      0
     );
-    this.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet();
-    this.meetingSessionContext.videosPaused = new DefaultVideoStreamIdSet();
+
     this.meetingSessionContext.statsCollector = new DefaultStatsCollector(
       this,
       this.logger,
@@ -425,8 +438,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
     });
   }
 
-  update(): boolean {
+  update(videoSubscribeContext: VideoSubscribeContext): boolean {
+    const nextVideoSubscribeContext = videoSubscribeContext.clone();
     const result = this.sessionStateController.perform(SessionStateControllerAction.Update, () => {
+      this.meetingSessionContext.currentVideoSubscribeContext = nextVideoSubscribeContext;
       this.actionUpdate(true);
     });
     return (

@@ -39,8 +39,8 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
   private nextLocalDescriptions: VideoStreamDescription[] = [];
 
   constructor(private selfAttendeeId: string, private logger: Logger) {
-    this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, true);
-    this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, true);
+    this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0);
+    this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0);
 
     for (let i = 0; i < SimulcastUplinkPolicy.windowSize; i++) {
       this.uplinkMeasurementWindow.push(SimulcastUplinkPolicy.defaultUplinkBandwidthKbps);
@@ -159,8 +159,7 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
       this.captureWidth(),
       this.captureHeight(),
       this.captureFrameRate(),
-      this.maxBandwidthKbps(),
-      false
+      this.maxBandwidthKbps()
     );
     this.videoIndex = videoIndex;
     this.newQualityMap = this.calculateEncodingParameters();

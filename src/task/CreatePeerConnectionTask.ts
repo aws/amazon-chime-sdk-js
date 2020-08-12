@@ -161,7 +161,27 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       stream = new MediaStream([track]);
       trackId = track.id;
     }
-    const attendeeId = this.context.videoStreamIndex.attendeeIdForTrack(trackId);
+    let attendeeId = this.context.currentVideoSubscribeContext
+      .videoStreamIndexRef()
+      .attendeeIdForTrack(trackId);
+    let streamId = this.context.currentVideoSubscribeContext
+      .videoStreamIndexRef()
+      .streamIdForTrack(trackId);
+    if (!attendeeId || attendeeId === '') {
+      attendeeId = this.context.previousVideoSubscribeContext.videoStreamIndexRef()
+        ? this.context.previousVideoSubscribeContext
+            .videoStreamIndexRef()
+            .attendeeIdForTrack(trackId)
+        : '';
+      streamId = this.context.previousVideoSubscribeContext.videoStreamIndexRef()
+        ? this.context.previousVideoSubscribeContext.videoStreamIndexRef().streamIdForTrack(trackId)
+        : null;
+    }
+
+    if (attendeeId === '' || !!streamId) {
+      this.logger.warn(`trackId ${trackId} does not have corresponding attendeeId or streamId`);
+    }
+
     if (this.context.videoTileController.haveVideoTileForAttendeeId(attendeeId)) {
       this.context.logger.info(
         `Not adding remote track. Already have tile for attendeeId:  ${attendeeId}`
@@ -170,12 +190,6 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     }
 
     const tile = this.context.videoTileController.addVideoTile();
-    let streamId: number | null = this.context.videoStreamIndex.streamIdForTrack(trackId);
-    if (typeof streamId === 'undefined') {
-      this.logger.warn(`stream not found for tile=${tile.id()} track=${trackId}`);
-      streamId = null;
-    }
-
     for (let i = 0; i < this.trackEvents.length; i++) {
       const trackEvent: string = this.trackEvents[i];
       const videoTracks = stream.getVideoTracks();
@@ -212,7 +226,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       width = cap.width as number;
       height = cap.height as number;
     }
-    const externalUserId = this.context.videoStreamIndex.externalUserIdForTrack(trackId);
+    const externalUserId = this.context.currentVideoSubscribeContext
+      .videoStreamIndexRef()
+      .externalUserIdForTrack(trackId);
     tile.bindVideoStream(attendeeId, false, stream, width, height, streamId, externalUserId);
     this.logger.info(
       `video track added, created tile=${tile.id()} track=${trackId} streamId=${streamId}`
@@ -252,7 +268,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     );
 
     if (tileState.streamId) {
-      this.context.videosPaused.remove(tileState.streamId);
+      this.context.currentVideoSubscribeContext.videosPausedSetRef().remove(tileState.streamId);
     } else {
       this.logger.warn(`no stream found for tile=${tileState.tileId}`);
     }

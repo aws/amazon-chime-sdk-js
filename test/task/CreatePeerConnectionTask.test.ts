@@ -17,6 +17,7 @@ import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
 import VideoTile from '../../src/videotile/VideoTile';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
@@ -74,9 +75,13 @@ describe('CreatePeerConnectionTask', () => {
       context.audioVideoController,
       logger
     );
-    context.videosPaused = new DefaultVideoStreamIdSet();
-    context.videosToReceive = new DefaultVideoStreamIdSet();
-    context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
+    context.previousVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.currentVideoSubscribeContext.updateVideoPausedSet(new DefaultVideoStreamIdSet());
+    context.currentVideoSubscribeContext.updateVideosToReceive(new DefaultVideoStreamIdSet());
+    context.currentVideoSubscribeContext.updateVideoStreamIndex(
+      new DefaultVideoStreamIndex(logger)
+    );
     context.activeVideoInput = null;
     context.transceiverController = new DefaultTransceiverController(logger, browser);
     context.audioMixController = new DefaultAudioMixController();
@@ -295,7 +300,9 @@ describe('CreatePeerConnectionTask', () => {
             return attendeeIdForTrack;
           }
         }
-        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        context.currentVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndex(logger)
+        );
 
         class TestVideoTileController extends DefaultVideoTileController {
           haveVideoTileForAttendeeId(attendeeId: string): boolean {
@@ -331,7 +338,9 @@ describe('CreatePeerConnectionTask', () => {
             return attendeeIdForTrack;
           }
         }
-        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        context.currentVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndex(logger)
+        );
 
         class TestVideoTileController extends DefaultVideoTileController {
           addVideoTile(): VideoTile {
@@ -369,7 +378,9 @@ describe('CreatePeerConnectionTask', () => {
             return attendeeIdForTrack;
           }
         }
-        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        context.currentVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndex(logger)
+        );
         class TestVideoTileController extends DefaultVideoTileController {
           addVideoTile(): VideoTile {
             return (tile = super.addVideoTile());
@@ -413,7 +424,9 @@ describe('CreatePeerConnectionTask', () => {
             return attendeeIdForTrack;
           }
         }
-        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        context.currentVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndex(logger)
+        );
 
         class TestVideoTileController extends DefaultVideoTileController {
           addVideoTile(): VideoTile {
@@ -473,7 +486,9 @@ describe('CreatePeerConnectionTask', () => {
             return externalUserIdForTrack;
           }
         }
-        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        context.currentVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndex(logger)
+        );
 
         await task.run();
         context.peer.addEventListener('track', (event: RTCTrackEvent) => {
@@ -507,7 +522,9 @@ describe('CreatePeerConnectionTask', () => {
             return 'attendee-id';
           }
         }
-        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        context.currentVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndex(logger)
+        );
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
@@ -517,6 +534,54 @@ describe('CreatePeerConnectionTask', () => {
 
         expect(called1).to.be.true;
         expect(called2).to.be.true;
+      });
+
+      it('handles track event mapped to last negotiation', async () => {
+        const streamId = 3;
+        const attendeeIdForTrack = 'attendee-id';
+        let tile: VideoTile;
+        // the track comes from last round of negotiation
+        class TestVideoStreamIndexPrev extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+
+          streamIdForTrack(_trackId: string): number {
+            return streamId;
+          }
+        }
+        class TestVideoTileController extends DefaultVideoTileController {
+          addVideoTile(): VideoTile {
+            return (tile = super.addVideoTile());
+          }
+        }
+
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return undefined;
+          }
+        }
+
+        context.previousVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndexPrev(logger)
+        );
+        context.currentVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndex(logger)
+        );
+
+        context.videoTileController = new TestVideoTileController(
+          new DefaultVideoTileFactory(),
+          context.audioVideoController,
+          logger
+        );
+
+        await task.run();
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+        await new Promise(resolve =>
+          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
+        );
+        expect(tile.state().streamId).to.equal(streamId);
+        expect(tile.state().boundAttendeeId).to.equal(attendeeIdForTrack);
       });
     });
 
@@ -532,7 +597,9 @@ describe('CreatePeerConnectionTask', () => {
             return attendeeIdForTrack;
           }
         }
-        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+        context.currentVideoSubscribeContext.updateVideoStreamIndex(
+          new TestVideoStreamIndex(logger)
+        );
 
         let tile: VideoTile;
         class TestVideoTileController extends DefaultVideoTileController {
@@ -561,7 +628,7 @@ describe('CreatePeerConnectionTask', () => {
             called = true;
           }
         }
-        context.videosPaused = new TestVideoStreamIdSet();
+        context.currentVideoSubscribeContext.updateVideoPausedSet(new TestVideoStreamIdSet());
 
         task.run().then(() => {
           context.peer.addEventListener('track', (event: RTCTrackEvent) => {
@@ -662,7 +729,7 @@ describe('CreatePeerConnectionTask', () => {
           return 'attendee-id';
         }
       }
-      context.videoStreamIndex = new TestVideoStreamIndex(logger);
+      context.currentVideoSubscribeContext.updateVideoStreamIndex(new TestVideoStreamIndex(logger));
 
       await task.run();
       context.removableObservers[0].removeObserver();

@@ -16,6 +16,10 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
+import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
+import SimulcastVideoStreamIndex from '../videostreamindex/SimulcastVideoStreamIndex';
+import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import VideoSubscribeContext from '../videosubscribecontext/VideoSubscribeContext';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import BaseTask from './BaseTask';
 
@@ -59,29 +63,41 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
     }
 
     const {
-      videoStreamIndex,
       videoDownlinkBandwidthPolicy,
       videoUplinkBandwidthPolicy,
+      enableSimulcast,
     } = this.context;
 
-    videoStreamIndex.integrateIndexFrame(indexFrame);
-    videoDownlinkBandwidthPolicy.updateIndex(videoStreamIndex);
-    videoUplinkBandwidthPolicy.updateIndex(videoStreamIndex);
+    let newIndex: VideoStreamIndex;
+    if (enableSimulcast) {
+      newIndex = new SimulcastVideoStreamIndex(this.logger);
+    } else {
+      newIndex = new DefaultVideoStreamIndex(this.logger);
+    }
 
-    this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy);
-    this.updateVideoAvailability(indexFrame);
-    this.handleIndexVideosPausedAtSource();
+    newIndex.integrateIndexFrame(indexFrame);
+    const newVideoContext = this.context.currentVideoSubscribeContext.clone();
+    newVideoContext.updateVideoStreamIndex(newIndex);
+
+    videoDownlinkBandwidthPolicy.updateIndex(newIndex);
+    videoUplinkBandwidthPolicy.updateIndex(newIndex);
+
+    this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy, newVideoContext);
+    this.updateVideoAvailability(indexFrame, newVideoContext);
+    this.handleIndexVideosPausedAtSource(newVideoContext);
   }
 
   private resubscribe(
     videoDownlinkBandwidthPolicy: VideoDownlinkBandwidthPolicy,
-    videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy
+    videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy,
+    newVideoSubscribeContext: VideoSubscribeContext
   ): void {
     const resubscribeForDownlink: boolean = videoDownlinkBandwidthPolicy.wantsResubscribe();
     const resubscribeForUplink: boolean =
       (this.context.videoDuplexMode === SdkStreamServiceType.TX ||
         this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX) &&
       videoUplinkBandwidthPolicy.wantsResubscribe();
+
     const shouldResubscribe = resubscribeForDownlink || resubscribeForUplink;
     this.logger.info(
       `should resubscribe: ${shouldResubscribe} (downlink: ${resubscribeForDownlink} uplink: ${resubscribeForUplink})`
@@ -90,24 +106,26 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
       return;
     }
 
-    this.context.videosToReceive = videoDownlinkBandwidthPolicy.chooseSubscriptions();
+    const newVideosToReceive = videoDownlinkBandwidthPolicy.chooseSubscriptions();
     this.context.videoCaptureAndEncodeParameter = videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
+
+    newVideoSubscribeContext.updateVideosToReceive(newVideosToReceive);
+
     this.logger.info(
-      `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}] captureParams=${JSON.stringify(
+      `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; videosToReceive=[${newVideosToReceive.array()}] captureParams=${JSON.stringify(
         this.context.videoCaptureAndEncodeParameter
       )}`
     );
-    this.context.audioVideoController.update();
+
+    this.context.audioVideoController.update(newVideoSubscribeContext);
   }
 
-  private updateVideoAvailability(indexFrame: SdkIndexFrame): void {
-    if (!this.context.videosToReceive) {
-      this.logger.error('videosToReceive must be set in the meeting context.');
-      return;
-    }
-
+  private updateVideoAvailability(
+    indexFrame: SdkIndexFrame,
+    newVideoSubscribeContext: VideoSubscribeContext
+  ): void {
     const videoAvailability = new MeetingSessionVideoAvailability();
-    videoAvailability.remoteVideoAvailable = !this.context.videosToReceive.empty();
+    videoAvailability.remoteVideoAvailable = !newVideoSubscribeContext.videosToReceive().empty();
     videoAvailability.canStartLocalVideo = !indexFrame.atCapacity;
     if (
       !this.context.lastKnownVideoAvailability ||
@@ -122,8 +140,10 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
     }
   }
 
-  private handleIndexVideosPausedAtSource(): void {
-    const streamsPausedAtSource: VideoStreamIdSet = this.context.videoStreamIndex.streamsPausedAtSource();
+  private handleIndexVideosPausedAtSource(newVideoContext: VideoSubscribeContext): void {
+    const streamsPausedAtSource: VideoStreamIdSet = newVideoContext
+      .videoStreamIndexRef()
+      .streamsPausedAtSource();
     for (const tile of this.context.videoTileController.getAllVideoTiles()) {
       const tileState = tile.state();
       if (streamsPausedAtSource.contain(tileState.streamId)) {

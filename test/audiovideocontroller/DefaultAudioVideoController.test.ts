@@ -665,7 +665,7 @@ describe('DefaultAudioVideoController', () => {
       await delay(200);
       domMockBehavior.rtcPeerConnectionCustomOffer =
         ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV_2;
-      audioVideoController.update();
+      audioVideoController.update(audioVideoController.videoSubscribeContext.clone());
       await sendICEEventAndSubscribeAckFrame();
       await sendICEEventAndSubscribeAckFrame();
       await sendICEEventAndSubscribeAckFrame();
@@ -699,7 +699,7 @@ describe('DefaultAudioVideoController', () => {
 
       await start();
       configuration.connectionTimeoutMs = 100;
-      audioVideoController.update();
+      audioVideoController.update(audioVideoController.videoSubscribeContext.clone());
       configuration.connectionTimeoutMs = 15000;
       // At this point, the update operation failed, performing the Reconnect action.
       // Finish the reconnect operation by sending required frames and events.

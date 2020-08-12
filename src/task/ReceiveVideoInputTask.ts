@@ -53,9 +53,9 @@ export default class ReceiveVideoInputTask extends BaseTask {
           JSON.stringify(encodingParams.values())
         )}`
       );
-      this.context.videoStreamIndex.integrateUplinkPolicyDecision(
-        Array.from(encodingParams.values())
-      );
+      this.context.currentVideoSubscribeContext
+        .videoStreamIndexRef()
+        .integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
     }
 
     this.context.activeVideoInput = videoInput;

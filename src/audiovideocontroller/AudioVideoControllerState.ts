@@ -21,8 +21,7 @@ import StatsCollector from '../statscollector/StatsCollector';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
-import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
-import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import VideoSubscribeContext from '../videosubscribecontext/VideoSubscribeContext';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import VolumeIndicatorAdapter from '../volumeindicatoradapter/VolumeIndicatorAdapter';
@@ -79,8 +78,6 @@ export default class AudioVideoControllerState {
 
   removableObservers: RemovableObserver[] = [];
 
-  videoStreamIndex: VideoStreamIndex | null = null;
-
   videoDownlinkBandwidthPolicy: VideoDownlinkBandwidthPolicy | null = null;
 
   videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy | null = null;
@@ -93,11 +90,9 @@ export default class AudioVideoControllerState {
 
   videoCaptureAndEncodeParameter: VideoCaptureAndEncodeParameter | null = null;
 
-  videosToReceive: VideoStreamIdSet | null = null;
+  currentVideoSubscribeContext: VideoSubscribeContext;
 
-  videoSubscriptions: number[] | null = null;
-
-  videosPaused: VideoStreamIdSet | null = null;
+  previousVideoSubscribeContext: VideoSubscribeContext;
 
   videoDuplexMode: SdkStreamServiceType | null = null;
 

@@ -17,8 +17,8 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private hasBandwidthPriority: boolean = false;
 
   constructor(private selfAttendeeId: string) {
-    this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
-    this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
+    this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0);
+    this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0);
   }
 
   updateConnectionMetric({}): void {
@@ -42,8 +42,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       this.captureWidth(),
       this.captureHeight(),
       this.captureFrameRate(),
-      this.maxBandwidthKbps(),
-      false
+      this.maxBandwidthKbps()
     );
   }
 

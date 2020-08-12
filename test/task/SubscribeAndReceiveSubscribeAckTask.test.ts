@@ -21,6 +21,7 @@ import {
 import SubscribeAndReceiveSubscribeAckTask from '../../src/task/SubscribeAndReceiveSubscribeAckTask';
 import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import DefaultVideoSubscribeContext from '../../src/videosubscribecontext/DefaultVideoSubscribeContext';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -77,10 +78,11 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth')
     );
     context.browserBehavior = new DefaultBrowserBehavior();
-    const captureAndEncodeParameters = new DefaultVideoAndCaptureParameter(0, 0, 0, 0, false);
+    const captureAndEncodeParameters = new DefaultVideoAndCaptureParameter(0, 0, 0, 0);
     context.videoCaptureAndEncodeParameter = captureAndEncodeParameters;
     const videoStreamIndex = new DefaultVideoStreamIndex(context.logger);
-    context.videoStreamIndex = videoStreamIndex;
+    context.currentVideoSubscribeContext = new DefaultVideoSubscribeContext();
+    context.currentVideoSubscribeContext.updateVideoStreamIndex(videoStreamIndex);
     const frame = SdkSubscribeAckFrame.create();
     frame.sdpAnswer = sdpAnswer;
 
