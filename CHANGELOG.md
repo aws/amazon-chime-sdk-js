@@ -13,10 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Remove  `device` demo from demos
-
 ### Fixed
 - Fix and modify simulcast uplink policy to fix freezing and reduce switches
-
+- Exclude self content share video stream index
 ## [1.15.0] - 2020-08-10
 
 ### Added
