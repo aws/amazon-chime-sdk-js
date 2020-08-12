@@ -8,7 +8,9 @@ import Maybe from '../maybe/Maybe';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
+import DefaultModality from '../modality/DefaultModality';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import VideoTile from '../videotile/VideoTile';
 import ContentShareConstants from './ContentShareConstants';
 import ContentShareController from './ContentShareController';
 import ContentShareMediaStreamBroker from './ContentShareMediaStreamBroker';
@@ -24,18 +26,22 @@ export default class DefaultContentShareController
     contentShareConfiguration.credentials = new MeetingSessionCredentials();
     contentShareConfiguration.credentials.attendeeId =
       configuration.credentials.attendeeId + ContentShareConstants.Modality;
+    contentShareConfiguration.credentials.externalUserId = configuration.credentials.externalUserId;
     contentShareConfiguration.credentials.joinToken =
       configuration.credentials.joinToken + ContentShareConstants.Modality;
     return contentShareConfiguration;
   }
 
   private observerQueue: Set<ContentShareObserver> = new Set<ContentShareObserver>();
+  private contentShareTile: VideoTile;
 
   constructor(
     private mediaStreamBroker: ContentShareMediaStreamBroker,
-    private audioVideo: AudioVideoController
+    private contentAudioVideo: AudioVideoController,
+    private attendeeAudioVideo: AudioVideoController
   ) {
-    this.audioVideo.addObserver(this);
+    this.contentAudioVideo.addObserver(this);
+    this.setupContentShareEvents();
   }
 
   async startContentShare(stream: MediaStream): Promise<void> {
@@ -48,9 +54,9 @@ export default class DefaultContentShareController
         this.stopContentShare();
       });
     }
-    this.audioVideo.start();
+    this.contentAudioVideo.start();
     if (this.mediaStreamBroker.mediaStream.getVideoTracks().length > 0) {
-      this.audioVideo.videoTileController.startLocalVideoTile();
+      this.contentAudioVideo.videoTileController.startLocalVideoTile();
     }
   }
 
@@ -83,7 +89,7 @@ export default class DefaultContentShareController
   }
 
   stopContentShare(): void {
-    this.audioVideo.stop();
+    this.contentAudioVideo.stop();
     this.mediaStreamBroker.cleanup();
   }
 
@@ -105,18 +111,63 @@ export default class DefaultContentShareController
     }
   }
 
-  audioVideoDidStart(): void {
-    this.forEachContentShareObserver(observer => {
-      Maybe.of(observer.contentShareDidStart).map(f => f.bind(observer)());
-    });
-  }
-
   audioVideoDidStop(_sessionStatus: MeetingSessionStatus): void {
-    //If the content attendee got dropped or could not connect, stopContentShare will not be called
-    //So make sure to clean up the media stream.
+    // If the content attendee got dropped or could not connect, stopContentShare will not be called
+    // so make sure to clean up the media stream.
     this.mediaStreamBroker.cleanup();
+    if (this.contentShareTile) {
+      this.attendeeAudioVideo.videoTileController.removeVideoTile(this.contentShareTile.id());
+      this.contentShareTile = null;
+    }
     this.forEachContentShareObserver(observer => {
       Maybe.of(observer.contentShareDidStop).map(f => f.bind(observer)());
     });
+  }
+
+  private setupContentShareEvents(): void {
+    // We use realtimeSubscribeToAttendeeIdPresence instead of audioVideoDidStart because audioVideoDidStart fires
+    // before the capacity check in Tincan while when realtimeSubscribeToAttendeeIdPresence fires, we know the
+    // content attendee has been able to pass the capacity check and join the call so we can start the local
+    // content share video
+    this.attendeeAudioVideo.realtimeController.realtimeSubscribeToAttendeeIdPresence(
+      (attendeeId: string, present: boolean, _externalUserId: string, _dropped: boolean): void => {
+        const isContentAttendee = new DefaultModality(attendeeId).hasModality(
+          DefaultModality.MODALITY_CONTENT
+        );
+        const isSelfAttendee =
+          new DefaultModality(attendeeId).base() ===
+          this.attendeeAudioVideo.configuration.credentials.attendeeId;
+        if (!isContentAttendee || !isSelfAttendee || !present || this.contentShareTile) {
+          return;
+        }
+        const stream = this.mediaStreamBroker.mediaStream;
+        if (stream.getVideoTracks().length > 0) {
+          this.contentShareTile = this.attendeeAudioVideo.videoTileController.addVideoTile();
+          const track = stream.getVideoTracks()[0];
+          let width, height;
+          if (track.getSettings) {
+            const cap: MediaTrackSettings = track.getSettings();
+            width = cap.width as number;
+            height = cap.height as number;
+          } else {
+            const cap: MediaTrackCapabilities = track.getCapabilities();
+            width = cap.width as number;
+            height = cap.height as number;
+          }
+          this.contentShareTile.bindVideoStream(
+            this.contentAudioVideo.configuration.credentials.attendeeId,
+            false,
+            stream,
+            width,
+            height,
+            null,
+            this.contentAudioVideo.configuration.credentials.externalUserId
+          );
+        }
+        this.forEachContentShareObserver(observer => {
+          Maybe.of(observer.contentShareDidStart).map(f => f.bind(observer)());
+        });
+      }
+    );
   }
 }

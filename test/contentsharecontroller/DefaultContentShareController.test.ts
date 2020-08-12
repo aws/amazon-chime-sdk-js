@@ -29,7 +29,8 @@ describe('DefaultContentShareController', () => {
   let contentShareController: ContentShareController;
   let contentShareMediaStreamBroker: ContentShareMediaStreamBroker;
   let contentShareObserver: NoOpContentShareObserver;
-  let audioVideoController: AudioVideoController;
+  let contentAudioVideoController: AudioVideoController;
+  let attendeeAudioVideoController: AudioVideoController;
   let mediaStream: MediaStream;
   let domMockBuilder: DOMMockBuilder;
 
@@ -42,6 +43,7 @@ describe('DefaultContentShareController', () => {
     configuration.urls.signalingURL = 'https://signaling.test.example.com';
     configuration.credentials = new MeetingSessionCredentials();
     configuration.credentials.attendeeId = 'foo-attendee';
+    configuration.credentials.externalUserId = 'foo-external-id';
     configuration.credentials.joinToken = 'foo-join-token';
     return configuration;
   }
@@ -77,6 +79,13 @@ describe('DefaultContentShareController', () => {
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
       });
+      attendeeAudioVideoController.realtimeController.realtimeSetAttendeeIdPresence(
+        'foo-attendee#content',
+        true,
+        'foo-external-id',
+        null,
+        null
+      );
     }
 
     stop(): void {
@@ -85,6 +94,13 @@ describe('DefaultContentShareController', () => {
           f.bind(observer)(new MeetingSessionStatus(MeetingSessionStatusCode.Left))
         );
       });
+      attendeeAudioVideoController.realtimeController.realtimeSetAttendeeIdPresence(
+        'foo-attendee#content',
+        false,
+        'foo-external-id',
+        null,
+        null
+      );
     }
   }
 
@@ -113,11 +129,21 @@ describe('DefaultContentShareController', () => {
     beforeEach(() => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
+      const meetingSessionConfigure = makeSessionConfiguration();
+      const contentShareMeetingSessionConfigure = DefaultContentShareController.createContentShareMeetingSessionConfigure(
+        meetingSessionConfigure
+      );
+
       contentShareMediaStreamBroker = new ContentShareMediaStreamBrokerMock(new NoOpLogger());
-      audioVideoController = new TestAudioVideoController();
+      attendeeAudioVideoController = new NoOpAudioVideoController(meetingSessionConfigure);
+      contentAudioVideoController = new TestAudioVideoController(
+        contentShareMeetingSessionConfigure
+      );
+
       contentShareController = new DefaultContentShareController(
         contentShareMediaStreamBroker,
-        audioVideoController
+        contentAudioVideoController,
+        attendeeAudioVideoController
       );
       mediaStream = new MediaStream();
 
@@ -140,10 +166,14 @@ describe('DefaultContentShareController', () => {
     it('startContentShare with video track', async () => {
       // @ts-ignore
       mediaStream.addTrack(new MediaStreamTrack('video-track-id', 'video'));
-      const audioVideoSpy = sinon.spy(audioVideoController, 'start');
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
       const videoTileSpy = sinon.spy(
-        audioVideoController.videoTileController,
+        contentAudioVideoController.videoTileController,
         'startLocalVideoTile'
+      );
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
       );
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
@@ -151,13 +181,18 @@ describe('DefaultContentShareController', () => {
       expect(videoTileSpy.calledOnce).to.be.true;
       await delay();
       expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(selfVideoTileSpy.calledOnce).to.be.true;
     });
 
     it('startContentShare without video track', async () => {
-      const audioVideoSpy = sinon.spy(audioVideoController, 'start');
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
       const videoTileSpy = sinon.spy(
-        audioVideoController.videoTileController,
+        contentAudioVideoController.videoTileController,
         'startLocalVideoTile'
+      );
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
       );
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(mediaStream);
@@ -165,13 +200,18 @@ describe('DefaultContentShareController', () => {
       expect(videoTileSpy.notCalled).to.be.true;
       await delay();
       expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(selfVideoTileSpy.notCalled).to.be.true;
     });
 
     it('startContentShare with null stream', async () => {
-      const audioVideoSpy = sinon.spy(audioVideoController, 'start');
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
       const videoTileSpy = sinon.spy(
-        audioVideoController.videoTileController,
+        contentAudioVideoController.videoTileController,
         'startLocalVideoTile'
+      );
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
       );
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
       await contentShareController.startContentShare(null);
@@ -179,6 +219,80 @@ describe('DefaultContentShareController', () => {
       expect(videoTileSpy.notCalled).to.be.true;
       await delay();
       expect(contentShareObserverSpy.notCalled).to.be.true;
+      expect(selfVideoTileSpy.notCalled).to.be.true;
+    });
+
+    it('startContentShare does not bind local content share stream twice', async () => {
+      // @ts-ignore
+      mediaStream.addTrack(new MediaStreamTrack('video-track-id', 'video'));
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
+      const videoTileSpy = sinon.spy(
+        contentAudioVideoController.videoTileController,
+        'startLocalVideoTile'
+      );
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
+      );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
+      await contentShareController.startContentShare(mediaStream);
+      expect(audioVideoSpy.calledOnce).to.be.true;
+      expect(videoTileSpy.calledOnce).to.be.true;
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(selfVideoTileSpy.calledOnce).to.be.true;
+      attendeeAudioVideoController.realtimeController.realtimeSetAttendeeIdPresence(
+        'foo-attendee#content',
+        true,
+        'foo-external-id',
+        null,
+        null
+      );
+      expect(selfVideoTileSpy.calledOnce).to.be.true;
+    });
+
+    it('uses getCapabilities if getSettings is not available in the track', async () => {
+      // @ts-ignore
+      mediaStream.addTrack(new MediaStreamTrack('video-track-id', 'video'));
+      domMockBehavior.mediaStreamTrackCapabilities = {
+        width: 640,
+        height: 480,
+      };
+
+      // eslint-disable-next-line
+      delete MediaStreamTrack.prototype['getSettings'];
+
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'start');
+      const videoTileSpy = sinon.spy(
+        contentAudioVideoController.videoTileController,
+        'startLocalVideoTile'
+      );
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
+      );
+      const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStart');
+      await contentShareController.startContentShare(mediaStream);
+      expect(audioVideoSpy.calledOnce).to.be.true;
+      expect(videoTileSpy.calledOnce).to.be.true;
+      await delay();
+      expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(selfVideoTileSpy.calledOnce).to.be.true;
+    });
+
+    it(' did not add local video tile for other attendee presence events', async () => {
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
+      );
+      attendeeAudioVideoController.realtimeController.realtimeSetAttendeeIdPresence(
+        'foo-attendee2#content',
+        true,
+        'foo-external-id',
+        null,
+        null
+      );
+      expect(selfVideoTileSpy.notCalled).to.be.true;
     });
 
     it('startContentShareFromScreenCapture', async () => {
@@ -194,7 +308,7 @@ describe('DefaultContentShareController', () => {
     });
 
     it('stopContentShare', async () => {
-      const audioVideoSpy = sinon.spy(audioVideoController, 'stop');
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'stop');
       const mediaStreamBrokerSpy = sinon.spy(contentShareMediaStreamBroker, 'cleanup');
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStop');
       contentShareController.stopContentShare();
@@ -207,14 +321,19 @@ describe('DefaultContentShareController', () => {
     it('stopContentShare is called if stream ended', async () => {
       const contentShareControllerSpy = sinon.spy(contentShareController, 'stopContentShare');
       const contentShareObserverSpy = sinon.spy(contentShareObserver, 'contentShareDidStop');
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'removeVideoTile'
+      );
       // @ts-ignore
       const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
       mediaStream.addTrack(mediaVideoTrack);
-      contentShareController.startContentShare(mediaStream);
+      await contentShareController.startContentShare(mediaStream);
       mediaVideoTrack.stop();
       expect(contentShareControllerSpy.calledOnce).to.be.true;
       await delay();
       expect(contentShareObserverSpy.calledOnce).to.be.true;
+      expect(selfVideoTileSpy.calledOnce).to.be.true;
     });
 
     it('pauseContentShare and trigger pause event', async () => {
