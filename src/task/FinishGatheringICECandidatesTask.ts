@@ -39,7 +39,6 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
 
   cancel(): void {
     let error = new Error(`canceling ${this.name()}`);
-
     // TODO: Remove when the Chrome VPN reconnect bug is fixed.
     // In Chrome, SDK may fail to establish TURN session after VPN reconnect.
     // https://bugs.chromium.org/p/webrtc/issues/detail?id=9097
