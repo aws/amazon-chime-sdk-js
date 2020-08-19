@@ -134,7 +134,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
 
   // feature flags
   enableWebAudio = false;
-  enableUnifiedPlanForChromiumBasedBrowsers = false;
+  enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
 
   constructor() {
@@ -299,18 +299,13 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       const collections = optionalFeatures.selectedOptions;
       this.enableSimulcast = false;
       this.enableWebAudio = false;
-      this.enableUnifiedPlanForChromiumBasedBrowsers = false;
       for (let i = 0; i < collections.length; i++) {
         // hard code magic
         if (collections[i].label === 'simulcast') {
           this.enableSimulcast = true;
-          this.enableUnifiedPlanForChromiumBasedBrowsers = true;
         }
         if (collections[i].label === 'webaudio') {
           this.enableWebAudio = true;
-        }
-        if (collections[i].label === 'unifiedplan') {
-          this.enableUnifiedPlanForChromiumBasedBrowsers = true;
         }
       }
     });

@@ -585,6 +585,7 @@ describe('DefaultAudioVideoController', () => {
   describe('update', () => {
     it('can be started and then start and stop a local video tile for plan-b', async () => {
       setUserAgent('Chrome/77.0.3865.75');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -890,6 +891,7 @@ describe('DefaultAudioVideoController', () => {
 
     it('replaces audio track for Plan-B', async () => {
       setUserAgent('Chrome/77.0.3865.75');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
       class TestDeviceController extends NoOpDeviceController {
         async acquireAudioInputStream(): Promise<MediaStream> {
           const mediaStream = new MediaStream();
@@ -1016,7 +1018,7 @@ describe('DefaultAudioVideoController', () => {
 
     it('can reconnect in Plan B', async () => {
       setUserAgent('Chrome/77.0.3865.75');
-
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
       let startConnectingCalled = 0;
       let startCalled = 0;
       let stopCalled = 0;
@@ -1057,9 +1059,10 @@ describe('DefaultAudioVideoController', () => {
     // FinishGatheringICECandidatesTask does not throw the ICEGatheringTimeoutWorkaround error if
     // the session connection timeout is less than 5000ms.
     it('reconnects when the start operation fails with a non-Terminal meeting status such as ICEGatheringTimeoutWorkaround', function(done) {
-      this.timeout(10000);
+      this.timeout(20000);
 
-      setUserAgent('Chrome/77.0.3865.75');
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
       configuration.connectionTimeoutMs = 6000;
       const logger = new NoOpDebugLogger();
@@ -1083,9 +1086,10 @@ describe('DefaultAudioVideoController', () => {
           done();
         }
       }
+
       audioVideoController.addObserver(new TestObserver());
       audioVideoController.start();
-      delay().then(() => {
+      delay(200).then(() => {
         // Finish JoinAndReceiveIndexTask and then wait for the ICE event in FinishGatheringICECandidatesTask.
         webSocketAdapter.send(makeIndexFrame());
       });
@@ -1099,8 +1103,9 @@ describe('DefaultAudioVideoController', () => {
         // At this point, the start operation failed so attempted to connect the session again.
         // Finish the start operation by sending required frames and events.
         webSocketAdapter.send(makeIndexFrame());
+        await delay(100);
         await sendICEEventAndSubscribeAckFrame();
-        await delay();
+        await delay(100);
         await sendAudioStreamIdInfoFrame();
         await delay(300);
         // Finally, stop this test.

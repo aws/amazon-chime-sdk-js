@@ -71,7 +71,7 @@ export default class MeetingSessionConfiguration {
   /**
    * Feature flag to enable Chromium-based browsers
    */
-  enableUnifiedPlanForChromiumBasedBrowsers: boolean = false;
+  enableUnifiedPlanForChromiumBasedBrowsers: boolean = true;
 
   /**
    * Feature flag to enable Simulcast

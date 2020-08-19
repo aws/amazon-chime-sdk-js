@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Change WebRTC semantics to Unified Plan by default for Chromium-based browsers
+
 ## [1.16.0] - 2020-08-20
 
 ### Added
@@ -20,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix and modify simulcast uplink policy to fix freezing and reduce switches
 - Exclude self content share video stream index
+
 ## [1.15.0] - 2020-08-10
 
 ### Added
