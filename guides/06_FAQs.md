@@ -182,9 +182,9 @@ This is because Safari embedded [web view does not support WebRTC](https://forum
 
 This is a known issue and happens primarily due to this [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=951418). At present we do not have a workaround.
 
-### I am noticing a clipping sound on my iPhone during Amazon Chime meetings, is this a known issue?
+### I can hear clicking noise from an attendee using iPhone X devices (X, XS, and XR).
 
-This is a known issue on iPhone that seems to happen in iPhone X and XR versions that we are still investigating for which we do not have a mitigation to recommend yet. Please follow this [issue](https://github.com/aws/amazon-chime-sdk-js/issues/344).
+This is a known issue on iPhone X devices (X, XS, and XR) when using AudioContext-based APIs. For more information, see our comment in [the WebKit issue](https://bugs.webkit.org/show_bug.cgi?id=204625#c6).
 
 ### **I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari in iOS and frozen tile in Chrome in Android, is this a known issue?**
 

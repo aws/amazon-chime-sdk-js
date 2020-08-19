@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Update the dependency version for the singlejs demo
 
 ### Removed
 - Remove  `device` demo from demos
+
 ### Fixed
 - Fix and modify simulcast uplink policy to fix freezing and reduce switches
 - Exclude self content share video stream index
