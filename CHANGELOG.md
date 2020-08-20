@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added auth-token based npm login and logout scripts for package publishing
+- Added auth-token based npm login and logout scripts for npm package publishing
 
 ### Changed
 - Update the dependency version for the singlejs demo
