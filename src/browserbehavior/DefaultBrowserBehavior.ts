@@ -6,7 +6,7 @@ import { detect } from 'detect-browser';
 import BrowserBehavior from './BrowserBehavior';
 
 export default class DefaultBrowserBehavior implements BrowserBehavior {
-  private readonly browser = detect();
+  private readonly browser = detect() || {name: 'other', version: '0'};
 
   private browserSupport: { [id: string]: number } = {
     chrome: 78,

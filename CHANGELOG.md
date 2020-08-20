@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add meeting demo parameter for broadcasting user
 - Add simulcast guide link in README and Quality Bandwidth Connectivity doc
+- Prevent DefaultBrowserBehavior error when accessing browser.name or browser.version with a custom user agent
 
 ### Changed
 
