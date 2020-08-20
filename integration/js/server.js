@@ -3,13 +3,16 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const {emitMetric} = require('./utils/CloudWatch');
 const axios = require('axios').default;
+const { v4: uuidv4 } = require('uuid');
 
 let stepArray = [];
 let doneArray = [];
 let socketAttendeeMap = undefined;
 let capabilities = {};
 let attendeeJoined = new Set([]);
-let meetingMap = {};
+let meetingTitle = '';
+let meetingCreationStatus = undefined;
+let numberAttendeeReady = 0;
 
 const port = process.argv[2];
 const numberOfParticipant = parseInt(process.argv[3], 10);
@@ -17,9 +20,9 @@ const interval = 1000;
 let createMeetingPromise = undefined;
 let attendeeReadyMap = new Map();
 
-createMeeting = async (createMeetingUrl) => {
-  if (meetingMap[createMeetingUrl]) {
-    const message = meetingMap[createMeetingUrl] === "created" ? "Meeting already created" : "Meeting creation in progress";
+createMeeting = async (baseUrl) => {
+  if (meetingTitle) {
+    const message = meetingCreationStatus === "created" ? "Meeting already created" : "Meeting creation in progress";
     console.log(message);
     try {
       await createMeetingPromise;
@@ -28,7 +31,9 @@ createMeeting = async (createMeetingUrl) => {
     }
     return;
   }
-  meetingMap[createMeetingUrl] = "creating";
+  meetingCreationStatus = "creating";
+  meetingTitle = uuidv4();
+  const createMeetingUrl = `${baseUrl}join?title=${meetingTitle}&name=MeetingOwner&region=us-east-1`;
   let i = 0;
   let retryAttempts = 3;
   while (i < retryAttempts) {
@@ -38,15 +43,27 @@ createMeeting = async (createMeetingUrl) => {
       createMeetingPromise = axios.post(createMeetingUrl);
       const response = await createMeetingPromise;
       const data = await response.data;
-      meetingMap[createMeetingUrl] = "created";
+      meetingCreationStatus = "created";
       console.log("Meeting created");
-      console.log(`Chime meeting id : ${data.JoinInfo.Meeting.MeetingId}`);
+      console.log(`Chime meeting id : ${data.JoinInfo.Meeting.Meeting.MeetingId}`);
       return data;
     } catch (error) {
       console.log(`Unable to create meeting, server error: ${error}`);
     }
   }
 };
+
+cleanup = () => {
+  meetingTitle = '';
+  meetingCreationStatus = undefined;
+  createMeetingPromise = undefined;
+  attendeeReadyMap = new Map();
+  socketAttendeeMap = undefined;
+  capabilities = {};
+  attendeeJoined = new Set([]);
+  stepArray = [];
+  doneArray = [];
+}
 
 io.on('connection', function (socket) {
 
@@ -56,7 +73,6 @@ io.on('connection', function (socket) {
 
   socket.on('test_ready', isReady  => {
     attendeeReadyMap.set(socket, !!isReady);
-
     let numberAttendeeReady = 0;
     attendeeReadyMap.forEach(function(value, socket) {
       if (value === true) {
@@ -71,15 +87,15 @@ io.on('connection', function (socket) {
     }
   });
 
-  socket.on('setup_test', async (createMeetingUrl, id) => {
+  socket.on('setup_test', async (baseUrl, id) => {
     console.log(`Setting up test for attendee: ${id}`);
     if (socketAttendeeMap === undefined) {
       socketAttendeeMap = {};
     }
     attendeeId = id;
     socketAttendeeMap[id] = socket;
-    await createMeeting(createMeetingUrl);
-    socket.emit('meeting_created');
+    await createMeeting(baseUrl);
+    socket.emit('meeting_created', meetingTitle);
   });
 
   socket.on('test_name', name => {
@@ -181,8 +197,7 @@ io.on('connection', function (socket) {
 
   function isDone() {
     if (doneArray.length === numberOfParticipant) {
-      stepArray = [];
-      doneArray = [];
+      cleanup();
     }
   }
 

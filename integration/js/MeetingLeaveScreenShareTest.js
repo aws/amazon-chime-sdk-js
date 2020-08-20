@@ -4,7 +4,7 @@ const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {Window} = require('./utils/Window');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 class MeetingLeaveScreenShareTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
@@ -12,7 +12,6 @@ class MeetingLeaveScreenShareTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    this.url = this.baseUrl + '?m=' + uuidv4();
     this.numberOfParticipant = 2;
     const session = this.seleniumSessions[0];
 

@@ -67,11 +67,18 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresUnifiedPlan(): boolean {
-    let shouldEnable = this.isSafari() || this.isFirefox();
+    let shouldEnable = (this.isSafari() && this.isUnifiedPlanSupported()) || this.isFirefox();
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
       shouldEnable = shouldEnable || this.hasChromiumWebRTC();
     }
     return shouldEnable;
+  }
+
+  requiresResolutionAlignment(width: number, height: number): [number, number] {
+    if (this.isAndroid() && this.isPixel3()) {
+      return [Math.ceil(width / 64) * 64, Math.ceil(height / 64) * 64];
+    }
+    return [width, height];
   }
 
   requiresCheckForSdpConnectionAttributes(): boolean {
@@ -83,7 +90,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresUnifiedPlanMunging(): boolean {
-    let shouldRequire = this.isSafari();
+    let shouldRequire = this.isSafari() && this.isUnifiedPlanSupported();
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
       shouldRequire = shouldRequire || this.hasChromiumWebRTC();
     }
@@ -110,6 +117,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return this.isSafari();
   }
 
+  requiresNoExactMediaStreamConstraints(): boolean {
+    return this.isIOSSafari() && (this.version() === '12.0.0' || this.version() === '12.1.0');
+  }
+
   getDisplayMediaAudioCaptureSupport(): boolean {
     return this.isChrome() || this.isEdge();
   }
@@ -122,10 +133,22 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   isSupported(): boolean {
-    return this.majorVersion() >= this.browserSupport[this.browser.name];
+    if (
+      !this.browserSupport[this.browser.name] ||
+      this.majorVersion() < this.browserSupport[this.browser.name]
+    ) {
+      return false;
+    }
+    if (this.browser.name === 'firefox' && this.isAndroid()) {
+      return false;
+    }
+    return true;
   }
 
   supportString(): string {
+    if (this.isAndroid()) {
+      return `${this.browserName['chrome']} ${this.browserSupport['chrome']}+`;
+    }
     const s: string[] = [];
     for (const k in this.browserSupport) {
       s.push(`${this.browserName[k]} ${this.browserSupport[k]}+`);
@@ -172,5 +195,17 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   private isEdge(): boolean {
     return this.browser.name === 'edge-chromium';
+  }
+
+  private isAndroid(): boolean {
+    return /(android)/i.test(navigator.userAgent);
+  }
+
+  private isPixel3(): boolean {
+    return /( pixel 3)/i.test(navigator.userAgent);
+  }
+
+  private isUnifiedPlanSupported(): boolean {
+    return RTCRtpTransceiver.prototype.hasOwnProperty('currentDirection');
   }
 }

@@ -101,6 +101,7 @@
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html">Content Share</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html">Quality, Bandwidth, and Connectivity</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html">Simulcast</a></li>
+					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html">Frequently Asked Questions</a></li>
 				</ul>
 				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
 					<h2>Examples</h2>
@@ -113,6 +114,8 @@
 					<li><a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/singlejs">Single JS</a> - A script to bundle the SDK into a single <code>.js</code> file</li>
 					<li><a href="https://github.com/aws-samples/amazon-chime-sdk-recording-demo">Recording Demo</a> - Recording the meeting&#39;s audio, video and screen share in high definition</li>
 					<li><a href="https://github.com/aws-samples/amazon-chime-sdk-classroom-demo">Virtual Classroom</a> - An online classroom built with Electron and React</li>
+					<li><a href="https://github.com/aws-samples/amazon-chime-live-events">Live Events</a> - Interactive live events solution</li>
+					<li><a href="https://github.com/aws-samples/amazon-chime-voiceconnector-transcription">PSTN Integration</a> - Integrating PSTN callers with Amazon Chime SDK meetings</li>
 				</ul>
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h2>Installation</h2>
@@ -565,7 +568,10 @@ meetingSession.audioVideo.addContentShareObserver(observer);
 meetingSession.audioVideo.addObserver(observer);
 
 <span class="hljs-comment">// A browser will prompt the user to choose the screen.</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture();</code></pre>
+<span class="hljs-keyword">const</span> contentShareStream = <span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture();</code></pre>
+				<p>If you want to display the content share stream for the sharer, you can bind the returned content share stream to a
+				video element using <code>connectVideoStreamToVideoElement</code> from DefaultVideoTile.</p>
+				<pre><code class="language-js">DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, <span class="hljs-literal">false</span>);</code></pre>
 				<p><strong>Use case 17.</strong> Start sharing your screen in an environment that does not support a screen picker dialog. e.g. Electron</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> sourceId = <span class="hljs-comment">/* Window or screen ID e.g. the ID of a DesktopCapturerSource object in Electron */</span>;
 
@@ -580,7 +586,7 @@ inputElement.addEventListener(<span class="hljs-string">'change'</span>, <span c
   videoElement.src = url;
   <span class="hljs-keyword">await</span> videoElement.play();
 
-  <span class="hljs-keyword">const</span> mediaSream = videoElement.captureStream();
+  <span class="hljs-keyword">const</span> mediaSream = videoElement.captureStream(); <span class="hljs-comment">/* use mozCaptureStream for Firefox e.g. videoElement.mozCaptureStream(); */</span>
   <span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShare(mediaSream);
   inputElement.value = <span class="hljs-string">''</span>;
 });</code></pre>
@@ -802,6 +808,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-enum">
+						<a href="enums/activestreams.html" class="tsd-kind-icon">Active<wbr>Streams</a>
+					</li>
+					<li class=" tsd-kind-enum">
 						<a href="enums/audiologevent.html" class="tsd-kind-icon">Audio<wbr>Log<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-enum">
@@ -991,6 +1000,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/defaultjpegdecoderinstance.html" class="tsd-kind-icon">DefaultJPEGDecoder<wbr>Instance</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/defaultmediadevicefactory.html" class="tsd-kind-icon">Default<wbr>Media<wbr>Device<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/defaultmeetingsession.html" class="tsd-kind-icon">Default<wbr>Meeting<wbr>Session</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1154,6 +1166,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/maybe.html" class="tsd-kind-icon">Maybe</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/mediadeviceproxyhandler.html" class="tsd-kind-icon">Media<wbr>Device<wbr>Proxy<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/meetingsessionconfiguration.html" class="tsd-kind-icon">Meeting<wbr>Session<wbr>Configuration</a>
@@ -1481,6 +1496,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
 						<a href="interfaces/maybeprovider.html" class="tsd-kind-icon">Maybe<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/mediadevicefactory.html" class="tsd-kind-icon">Media<wbr>Device<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/mediarecording.html" class="tsd-kind-icon">Media<wbr>Recording</a>

@@ -123,6 +123,11 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       return;
     }
 
+    if (event.streams.length === 0) {
+      this.context.logger.warn(`Track event but no stream`);
+      return;
+    }
+
     const stream: MediaStream = event.streams[0];
     if (track.kind === 'audio') {
       this.context.audioMixController.bindAudioStream(stream);

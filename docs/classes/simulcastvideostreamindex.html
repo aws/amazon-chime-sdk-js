@@ -106,6 +106,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="simulcastvideostreamindex.html#_lastbitratemsgtime" class="tsd-kind-icon">_last<wbr>Bit<wbr>Rate<wbr>Msg<wbr>Time</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="simulcastvideostreamindex.html#_localstreaminfos" class="tsd-kind-icon">_local<wbr>Stream<wbr>Infos</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastvideostreamindex.html#currentindex" class="tsd-kind-icon">current<wbr>Index</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastvideostreamindex.html#currentsubscribeack" class="tsd-kind-icon">current<wbr>Subscribe<wbr>Ack</a></li>
@@ -115,6 +116,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastvideostreamindex.html#streamtoattendeemap" class="tsd-kind-icon">stream<wbr>ToAttendee<wbr>Map</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastvideostreamindex.html#streamtoexternaluseridmap" class="tsd-kind-icon">stream<wbr>ToExternal<wbr>User<wbr>IdMap</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="simulcastvideostreamindex.html#tracktostreammap" class="tsd-kind-icon">track<wbr>ToStream<wbr>Map</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="simulcastvideostreamindex.html#bitratesmsgfrequencyms" class="tsd-kind-icon">Bitrates<wbr>Msg<wbr>Frequency<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="simulcastvideostreamindex.html#not_sending_stream_bitrate" class="tsd-kind-icon">NOT_<wbr>SENDING_<wbr>STREAM_<wbr>BITRATE</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="simulcastvideostreamindex.html#recently_inactive_stream_bitrate" class="tsd-kind-icon">RECENTLY_<wbr>INACTIVE_<wbr>STREAM_<wbr>BITRATE</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="simulcastvideostreamindex.html#unseen_stream_bitrate" class="tsd-kind-icon">UNSEEN_<wbr>STREAM_<wbr>BITRATE</a></li>
@@ -161,7 +163,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a>.<a href="defaultvideostreamindex.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L28">src/videostreamindex/SimulcastVideoStreamIndex.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L32">src/videostreamindex/SimulcastVideoStreamIndex.ts:32</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -178,12 +180,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_lastbitratemsgtime" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _last<wbr>Bit<wbr>Rate<wbr>Msg<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">_last<wbr>Bit<wbr>Rate<wbr>Msg<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L32">src/videostreamindex/SimulcastVideoStreamIndex.ts:32</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="_localstreaminfos" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _local<wbr>Stream<wbr>Infos</h3>
 					<div class="tsd-signature tsd-kind-icon">_local<wbr>Stream<wbr>Infos<span class="tsd-signature-symbol">:</span> <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L28">src/videostreamindex/SimulcastVideoStreamIndex.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L30">src/videostreamindex/SimulcastVideoStreamIndex.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -271,6 +283,16 @@
 						<p>Inherited from <a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a>.<a href="defaultvideostreamindex.html#tracktostreammap">trackToStreamMap</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L23">src/videostreamindex/DefaultVideoStreamIndex.ts:23</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
+					<a name="bitratesmsgfrequencyms" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> Bitrates<wbr>Msg<wbr>Frequency<wbr>Ms</h3>
+					<div class="tsd-signature tsd-kind-icon">Bitrates<wbr>Msg<wbr>Frequency<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 4000</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L28">src/videostreamindex/SimulcastVideoStreamIndex.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -516,7 +538,7 @@
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integratebitratesframe">integrateBitratesFrame</a></p>
 								<p>Overrides <a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a>.<a href="defaultvideostreamindex.html#integratebitratesframe">integrateBitratesFrame</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L76">src/videostreamindex/SimulcastVideoStreamIndex.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L91">src/videostreamindex/SimulcastVideoStreamIndex.ts:91</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -541,7 +563,7 @@
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integrateindexframe">integrateIndexFrame</a></p>
 								<p>Overrides <a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a>.<a href="defaultvideostreamindex.html#integrateindexframe">integrateIndexFrame</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L145">src/videostreamindex/SimulcastVideoStreamIndex.ts:145</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L169">src/videostreamindex/SimulcastVideoStreamIndex.ts:169</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -566,7 +588,7 @@
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integratesubscribeackframe">integrateSubscribeAckFrame</a></p>
 								<p>Overrides <a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a>.<a href="defaultvideostreamindex.html#integratesubscribeackframe">integrateSubscribeAckFrame</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L172">src/videostreamindex/SimulcastVideoStreamIndex.ts:172</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L196">src/videostreamindex/SimulcastVideoStreamIndex.ts:196</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -591,7 +613,7 @@
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integrateuplinkpolicydecision">integrateUplinkPolicyDecision</a></p>
 								<p>Overrides <a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a>.<a href="defaultvideostreamindex.html#integrateuplinkpolicydecision">integrateUplinkPolicyDecision</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L42">src/videostreamindex/SimulcastVideoStreamIndex.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L47">src/videostreamindex/SimulcastVideoStreamIndex.ts:47</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -616,7 +638,7 @@
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#localstreamdescriptions">localStreamDescriptions</a></p>
 								<p>Overrides <a href="defaultvideostreamindex.html">DefaultVideoStreamIndex</a>.<a href="defaultvideostreamindex.html#localstreamdescriptions">localStreamDescriptions</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L34">src/videostreamindex/SimulcastVideoStreamIndex.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L39">src/videostreamindex/SimulcastVideoStreamIndex.ts:39</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></h4>
@@ -633,7 +655,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L135">src/videostreamindex/SimulcastVideoStreamIndex.ts:135</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/SimulcastVideoStreamIndex.ts#L159">src/videostreamindex/SimulcastVideoStreamIndex.ts:159</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -808,6 +830,9 @@
 								<a href="simulcastvideostreamindex.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="simulcastvideostreamindex.html#_lastbitratemsgtime" class="tsd-kind-icon">_last<wbr>Bit<wbr>Rate<wbr>Msg<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="simulcastvideostreamindex.html#_localstreaminfos" class="tsd-kind-icon">_local<wbr>Stream<wbr>Infos</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
@@ -833,6 +858,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 								<a href="simulcastvideostreamindex.html#tracktostreammap" class="tsd-kind-icon">track<wbr>ToStream<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
+								<a href="simulcastvideostreamindex.html#bitratesmsgfrequencyms" class="tsd-kind-icon">Bitrates<wbr>Msg<wbr>Frequency<wbr>Ms</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
 								<a href="simulcastvideostreamindex.html#not_sending_stream_bitrate" class="tsd-kind-icon">NOT_<wbr>SENDING_<wbr>STREAM_<wbr>BITRATE</a>

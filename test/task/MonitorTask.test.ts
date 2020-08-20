@@ -400,7 +400,7 @@ describe('MonitorTask', () => {
         fractionLoss: RawMetrics = null;
         videoPacketSentPerSecond: RawMetrics = 1000;
         videoUpstreamBitrate: RawMetrics = 100;
-        availableSendBandwidth: RawMetrics = 1000 * 1000;
+        availableSendBandwidth: RawMetrics = 1200 * 1000;
         availableReceiveBandwidth: RawMetrics = 1000 * 1000;
 
         getObservableMetrics(): { [id: string]: number } {
@@ -473,7 +473,7 @@ describe('MonitorTask', () => {
       task.metricsDidReceive(clientMetricReport);
       new TimeoutScheduler(100).start(() => {
         // @ts-ignore
-        expect(context.videoUplinkBandwidthPolicy.lastUplinkBandwidthKbps).to.equal(1000);
+        expect(context.videoUplinkBandwidthPolicy.lastUplinkBandwidthKbps).to.equal(1200);
         expect(spy.called).to.be.true;
         done();
       });

@@ -2,7 +2,7 @@ const {KiteTestError, Status} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class ContentShareVideoCheck extends AppTestStep {
-  constructor(kiteBaseTest, sessionInfo, testType, videoIndex) {
+  constructor(kiteBaseTest, sessionInfo, testType, attendeeName) {
     super(kiteBaseTest, sessionInfo);
     switch(testType) {
       case 'ON':
@@ -14,21 +14,21 @@ class ContentShareVideoCheck extends AppTestStep {
       default:
         this.expectedState = 'blank';
     }
-    this.videoIndex = videoIndex;
+    this.attendeeName = attendeeName;
   }
 
-  static async executeStep(KiteBaseTest, sessionInfo, testType, videoIndex) {
-    const step = new ContentShareVideoCheck(KiteBaseTest, sessionInfo, testType, videoIndex);
+  static async executeStep(KiteBaseTest, sessionInfo, testType, attendeeName) {
+    const step = new ContentShareVideoCheck(KiteBaseTest, sessionInfo, testType, attendeeName);
     await step.execute(KiteBaseTest);
   }
 
   stepDescription() {
-    return 'Check the content share video in video index ' + this.videoIndex + " is " + this.expectedState;
+    return 'Check the content share video with attendee name ' + this.attendeeName + " is " + this.expectedState;
   }
 
   async run() {
     try {
-      const result = await this.page.videoCheck(this, this.videoIndex, this.expectedState);
+      const result = await this.page.videoCheckByAttendeeName(this, this.attendeeName, this.expectedState);
       if (result !== this.expectedState) {
         this.testReporter.textAttachment(this.report, 'Content share video', result, 'plain');
         throw new KiteTestError(Status.FAILED, 'The content share video is ' + result);

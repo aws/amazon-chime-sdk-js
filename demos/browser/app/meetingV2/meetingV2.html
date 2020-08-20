@@ -45,10 +45,11 @@
       <div class="row mt-3">
         <div class="col-12">
           <label for="optional-features">Optional Features</label>
-          <select id="optional-features" class="custom-select" style="width:100%" multiple>
-            <option value="">--Please choose an option--</option>
+          <select id="optional-features" class="custom-select" style="width:100%">
+            <option value="" selected>None</option>
             <option value="simulcast">Enable Simulcast For Chrome</option>
             <option value="webaudio">Use WebAudio</option>
+            <option value="unifiedplan">Use Unified Plan For Chrome</option>
           </select>
         </div>
       </div>
@@ -302,7 +303,7 @@
           </div>
         </div>
       </div>
-      <div id="tile-container" class="col-12 col-sm-6 col-md-7 col-lg-8 my-4 my-sm-0 h-100">
+      <div id="tile-container" class="col-12 col-sm-6 col-md-7 col-lg-8 my-4 my-sm-0 h-100" style="overflow-y: scroll">
         <div id="tile-area" class="w-100 h-100">
           <div id="tile-0" style="display:none">
             <video id="video-0" class="w-100 h-100"></video>

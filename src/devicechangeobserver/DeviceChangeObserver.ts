@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /**
@@ -19,4 +19,14 @@ export default interface DeviceChangeObserver {
    * Called when video inputs are changed.
    */
   videoInputsChanged?(freshVideoInputDeviceList?: MediaDeviceInfo[]): void;
+
+  /**
+   * Called when the current audio input media stream ended event triggers.
+   */
+  audioInputStreamEnded?(deviceId?: string): void;
+
+  /**
+   * Called when the current video input media stream ended event triggers.
+   */
+  videoInputStreamEnded?(deviceId?: string): void;
 }

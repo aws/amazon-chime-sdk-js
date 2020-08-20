@@ -15,7 +15,7 @@ role with a policy that allows
 [chime:CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html):
 
 ```javascript
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
 const chime = new AWS.Chime({region: 'us-east-1'});
 ```
@@ -23,7 +23,7 @@ const chime = new AWS.Chime({region: 'us-east-1'});
 Create a meeting using the `chime` object:
 
 ```javascript
-const requestId = uuid();
+const requestId = uuidv4();
 const region = 'us-west-2'; // specify media placement region
 try {
   const meeting = await chime.createMeeting({
@@ -39,7 +39,7 @@ const meetingId = meeting.Meeting.MeetingId; // meeting ID of the new meeting
 Now create an attendee on the meeting:
 
 ```javascript
-const externalUserId = uuid(); // or string ID you want to associate with the user
+const externalUserId = uuidv4(); // or string ID you want to associate with the user
 try {
   const attendee = await chime.createAttendee({
     MeetingId: meetingId,

@@ -14,6 +14,8 @@ const elements = {
   screenShareButton: By.id('button-screen-share'),
   screenViewButton: By.id('button-screen-view'),
   contentShareButton: By.id('button-content-share'),
+  contentShareDropButton: By.id('button-content-share-drop'),
+  contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
   contentSharePauseButton: By.id('button-pause-content-share'),
   dataMessageSendInput: By.id('send-message'),
   sipAuthenticateButton: By.id('button-sip-authenticate'),
@@ -107,6 +109,16 @@ class AppPage {
   async clickContentShareButton() {
     const contentShareButton = await this.driver.findElement(elements.contentShareButton);
     await contentShareButton.click();
+  }
+
+  async clickContentShareDropButton() {
+    const contentShareDropButton = await this.driver.findElement(elements.contentShareDropButton);
+    await contentShareDropButton.click();
+  }
+
+  async clickContentShareVideoTestButton() {
+    const contentShareVideoTestButton = await this.driver.findElement(elements.contentShareVideoTestButton);
+    await contentShareVideoTestButton.click();
   }
 
   async clickContentSharePauseButton() {
@@ -297,34 +309,32 @@ class AppPage {
     return checked.result;
   }
 
-  async videoCheckLong(stepInfo, index, expectedState) {
-    let checked; // Result of the verification
-    let i = 0; // iteration indicator
-    let timeout = 10;
-    checked = await TestUtils.verifyVideoDisplayByIndex(stepInfo.driver, index);
-    while ((checked.result !== expectedState) && i < timeout) {
-      checked = await TestUtils.verifyVideoDisplayByIndex(stepInfo.driver, index);
-      i++;
-      await TestUtils.waitAround(1000);
-    }
-    // after the video is in desired state, monitor it for 30 secs to check if it stays in that state.
-    i = 0;
-    timeout = 60;
-    let success = 0;
-    let total = 0;
-    while (i < timeout) {
-      checked = await TestUtils.verifyVideoDisplayByIndex(stepInfo.driver, index);
-      i++;
-      if (checked.result === expectedState) {
-        success++;
+  async videoCheckByAttendeeName(stepInfo, attendeeName, expectedState = 'video') {
+    let checked;
+    let videos = await this.driver.findElements(By.css('video[id^="video-"]'));
+    for (let i = 0; i < videos.length; i++) {
+      const videoElementId = await videos[i].getAttribute('id');
+      const seperatorIndex = videoElementId.lastIndexOf("-");
+      if (seperatorIndex >= -1) {
+        const tileIndex = parseInt(videoElementId.slice(seperatorIndex+1))
+        if (tileIndex != NaN && tileIndex >= 0) {
+          const nameplate = await this.driver.findElement(By.id(`nameplate-${tileIndex}`));
+          const nameplateText = await nameplate.getText();
+          if (nameplate && nameplateText === attendeeName) {
+            let numRetries = 10;
+            let retry = 0;
+            let checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
+            while ((checked.result !== expectedState) && retry < numRetries) {
+              checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
+              retry++;
+              await TestUtils.waitAround(1000);
+            }
+            return checked.result;
+          }
+        }
       }
-      total++;
-      await TestUtils.waitAround(1000);
     }
-    if (success / total > 0.75) {
-      return true
-    }
-    return false;
+    return 'blank';
   }
 
   async audioCheck(stepInfo, expectedState) {

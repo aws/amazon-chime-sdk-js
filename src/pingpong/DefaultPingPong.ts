@@ -116,9 +116,12 @@ export default class DefaultPingPong implements SignalingClientObserver, PingPon
         break;
       case SignalingClientEventType.WebSocketFailed:
       case SignalingClientEventType.WebSocketError:
+        this.logger.warn(`stopped pinging (${SignalingClientEventType[event.type]})`);
+        this.stopPingInterval();
+        break;
       case SignalingClientEventType.WebSocketClosing:
       case SignalingClientEventType.WebSocketClosed:
-        this.logger.warn(`stopped pinging (${SignalingClientEventType[event.type]})`);
+        this.logger.info(`stopped pinging (${SignalingClientEventType[event.type]})`);
         this.stopPingInterval();
         break;
       case SignalingClientEventType.ReceivedSignalFrame:
