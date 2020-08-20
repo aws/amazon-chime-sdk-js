@@ -9,7 +9,7 @@ const { exec } = require('child_process');
 
 process.cwd(path.join(__dirname, '..'));
 
-exec('npm logout', (err, _, _) => {
+exec('npm logout', (err, _stdout, _stderr) => {
   if (err) {
     console.error(err);
     process.exit(1);
