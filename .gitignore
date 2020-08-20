@@ -3,6 +3,7 @@
 .DS_Store
 .idea
 .nyc_output
+.npmrc
 build
 coverage
 demos/browser/logs/

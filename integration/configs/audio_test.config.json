@@ -12,6 +12,7 @@
       "testImpl": "AudioTest.js",
       "payload": {
         "url": "http://localhost:8080/",
+        "port": 30001,
         "retry": 2
       }
     }
@@ -20,6 +21,11 @@
     {
       "browserName": "chrome",
       "version": "78",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "76",
       "platform": "MAC"
     }
   ]

@@ -5,6 +5,7 @@ import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControl
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import Maybe from '../maybe/Maybe';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
+import DefaultModality from '../modality/DefaultModality';
 import RemovableObserver from '../removableobserver/RemovableObserver';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
@@ -57,6 +58,15 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
     if (!indexFrame) {
       return;
     }
+
+    // Filter out self content share video
+    const selfAttendeeId = this.context.audioVideoController.configuration.credentials.attendeeId;
+    indexFrame.sources = indexFrame.sources.filter(source => {
+      const modality = new DefaultModality(source.attendeeId);
+      return !(
+        modality.base() === selfAttendeeId && modality.hasModality(DefaultModality.MODALITY_CONTENT)
+      );
+    });
 
     const {
       videoStreamIndex,

@@ -94,6 +94,28 @@ describe('DefaultTransceiverController', () => {
     });
   });
 
+  describe('hasVideoInput', () => {
+    it('return false if video input doesnt exist', () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      expect(tc.hasVideoInput()).to.equal(false);
+    });
+
+    it('return true if video input exists', done => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      const newVideoTrack = new MediaStreamTrack();
+      tc.setVideoInput(newVideoTrack);
+
+      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
+        expect(tc.hasVideoInput()).to.equal(true);
+        done();
+      });
+    });
+  });
+
   describe('trackIsVideoInput', () => {
     it('can check whether the given track is a video input', () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();

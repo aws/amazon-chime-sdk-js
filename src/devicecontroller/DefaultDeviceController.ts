@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
+import DefaultMediaDeviceFactory from '../mediadevicefactory/DefaultMediaDeviceFactory';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
@@ -23,6 +25,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private static defaultSampleRate = 48000;
   private static defaultSampleSize = 16;
   private static defaultChannelCount = 1;
+  private static audioContext: AudioContext | null = null;
+
   private deviceInfoCache: MediaDeviceInfo[] | null = null;
   private activeDevices: { [kind: string]: DeviceSelection | null } = { audio: null, video: null };
   private audioOutputDeviceId: string | null = null;
@@ -31,7 +35,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private deviceLabelTrigger = (): Promise<MediaStream> => {
     return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
   };
-  private audioInputContext: AudioContext | null = null;
   private audioInputDestinationNode: MediaStreamAudioDestinationNode | null = null;
   private audioInputSourceNode: MediaStreamAudioSourceNode | null = null;
 
@@ -42,26 +45,34 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   private useWebAudio: boolean = false;
 
-  private isAndroid: boolean = false;
-  private isPixel3: boolean = false;
-
   private inputDeviceCount: number = 0;
   private lastNoVideoInputDeviceCount: number;
 
+  private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
+
   constructor(private logger: Logger) {
-    this.isAndroid = /(android)/i.test(navigator.userAgent);
-    this.isPixel3 = /( pixel 3)/i.test(navigator.userAgent);
-    if (this.isAndroid && this.isPixel3) {
-      this.videoWidth = Math.ceil(this.videoWidth / 32) * 32;
-      this.videoHeight = Math.ceil(this.videoHeight / 32) * 32;
-    }
+    let dimension = this.browserBehavior.requiresResolutionAlignment(
+      this.videoWidth,
+      this.videoHeight
+    );
+    this.videoWidth = dimension[0];
+    this.videoHeight = dimension[1];
     this.logger.info(
       `DefaultDeviceController video dimension ${this.videoWidth} x ${this.videoHeight}`
     );
-    // @ts-ignore
-    navigator.mediaDevices.addEventListener('devicechange', async () => {
-      await this.handleDeviceChange();
-    });
+
+    try {
+      const mediaDeviceWrapper = new DefaultMediaDeviceFactory().create();
+      mediaDeviceWrapper.addEventListener('devicechange', () => {
+        this.handleDeviceChange();
+      });
+      const supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+      this.logger.info(
+        `Supported Constraints in this browser ${JSON.stringify(supportedConstraints)}`
+      );
+    } catch (error) {
+      logger.error(error.message);
+    }
   }
 
   async listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
@@ -123,7 +134,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     if (!this.activeDevices['audio']) {
       return null;
     }
-    const audioContext = DefaultDeviceController.createAudioContext();
+    const audioContext = DefaultDeviceController.getAudioContext();
     const analyser = audioContext.createAnalyser();
     audioContext.createMediaStreamSource(this.activeDevices['audio'].stream).connect(analyser);
     this.trace('createAnalyserNodeForAudioInput');
@@ -174,9 +185,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   mixIntoAudioInput(stream: MediaStream): MediaStreamAudioSourceNode {
     let node: MediaStreamAudioSourceNode | null = null;
     if (this.useWebAudio) {
-      this.ensureAudioInputContext();
-      node = this.audioInputContext.createMediaStreamSource(stream);
-      node.connect(this.audioInputDestinationNode);
+      node = DefaultDeviceController.getAudioContext().createMediaStreamSource(stream);
+      node.connect(this.getMediaStreamDestinationNode());
     } else {
       this.logger.warn('WebAudio is not enabled, mixIntoAudioInput will not work');
     }
@@ -191,13 +201,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     frameRate: number,
     maxBandwidthKbps: number
   ): void {
-    if (this.isAndroid && this.isPixel3) {
-      this.videoWidth = Math.ceil(width / 32) * 32;
-      this.videoHeight = Math.ceil(height / 32) * 32;
-    } else {
-      this.videoWidth = width;
-      this.videoHeight = height;
-    }
+    let dimension = this.browserBehavior.requiresResolutionAlignment(width, height);
+    this.videoWidth = dimension[0];
+    this.videoHeight = dimension[1];
     this.videoFrameRate = frameRate;
     this.videoMaxBandwidthKbps = maxBandwidthKbps;
     this.updateMaxBandwidthKbps();
@@ -233,7 +239,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       return;
     }
     let tracksToStop: MediaStreamTrack[] | null = null;
-
     if (
       !!this.audioInputDestinationNode &&
       mediaStreamToRelease === this.audioInputDestinationNode.stream
@@ -252,6 +257,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     for (const kind in this.activeDevices) {
       if (this.activeDevices[kind] && this.activeDevices[kind].stream === mediaStreamToRelease) {
         this.activeDevices[kind] = null;
+        if (
+          kind === 'video' &&
+          this.boundAudioVideoController &&
+          this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
+        ) {
+          this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
+        }
       }
     }
   }
@@ -270,15 +282,32 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   static synthesizeAudioDevice(toneHz: number): Device {
-    const audioContext = DefaultDeviceController.createAudioContext();
+    const audioContext = DefaultDeviceController.getAudioContext();
     const outputNode = audioContext.createMediaStreamDestination();
     if (!toneHz) {
       const source = audioContext.createBufferSource();
-      source.buffer = audioContext.createBuffer(
-        1,
-        audioContext.sampleRate * 5,
-        audioContext.sampleRate
-      );
+
+      // The AudioContext object uses the sample rate of the default output device
+      // if not specified. Creating an AudioBuffer object with the output device's
+      // sample rate fails in some browsers, e.g. Safari with a Bluetooth headphone.
+      try {
+        source.buffer = audioContext.createBuffer(
+          1,
+          audioContext.sampleRate * 5,
+          audioContext.sampleRate
+        );
+      } catch (error) {
+        if (error && error.name === 'NotSupportedError') {
+          source.buffer = audioContext.createBuffer(
+            1,
+            DefaultDeviceController.defaultSampleRate * 5,
+            DefaultDeviceController.defaultSampleRate
+          );
+        } else {
+          throw error;
+        }
+      }
+
       // Some browsers will not play audio out the MediaStreamDestination
       // unless there is actually audio to play, so we add a small amount of
       // noise here to ensure that audio is played out.
@@ -295,9 +324,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       oscillatorNode.connect(gainNode);
       oscillatorNode.start();
     }
-    outputNode.addEventListener('ended', () => {
-      audioContext.close();
-    });
     return outputNode.stream;
   }
 
@@ -453,9 +479,23 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.alreadyHandlingDeviceChange = false;
   }
 
+  private async handleDeviceStreamEnded(kind: string, deviceId: string): Promise<void> {
+    await this.chooseInputDevice(kind, null, false);
+    if (kind === 'audio') {
+      this.forEachObserver((observer: DeviceChangeObserver) => {
+        Maybe.of(observer.audioInputStreamEnded).map(f => f.bind(observer)(deviceId));
+      });
+    } else {
+      this.forEachObserver((observer: DeviceChangeObserver) => {
+        Maybe.of(observer.videoInputStreamEnded).map(f => f.bind(observer)(deviceId));
+      });
+    }
+  }
+
   private forEachObserver(observerFunc: (observer: DeviceChangeObserver) => void): void {
     for (const observer of this.deviceChangeObservers) {
       new AsyncScheduler().start(() => {
+        /* istanbul ignore else */
         if (this.deviceChangeObservers.has(observer)) {
           observerFunc(observer);
         }
@@ -473,6 +513,71 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private deviceAsMediaStream(device: Device): MediaStream | null {
     // @ts-ignore
     return device && device.id ? device : null;
+  }
+
+  private hasSameGroupId(groupId: string, kind: string, device: Device): boolean {
+    device = this.getDeviceIdStr(device);
+    if (groupId === this.getGroupIdFromDeviceId(kind, device) || groupId === '') {
+      return true;
+    }
+    return false;
+  }
+
+  private getGroupIdFromDeviceId(kind: string, device: string): string {
+    if (this.deviceInfoCache !== null) {
+      const cachedDeviceInfo = this.listCachedDevicesOfKind(`${kind}input`).find(
+        (cachedDevice: MediaDeviceInfo) => cachedDevice.deviceId === device
+      );
+      if (cachedDeviceInfo && cachedDeviceInfo.groupId) {
+        return cachedDeviceInfo.groupId;
+      }
+    }
+    return '';
+  }
+
+  private getDeviceIdStr(device: Device): string | null {
+    if (device === null) {
+      return null;
+    } else if (typeof device === 'string') {
+      return device;
+    } else if ((device as MediaStream).id) {
+      return (device as MediaStream).id;
+    }
+
+    const constraints: MediaTrackConstraints = device as MediaTrackConstraints;
+    if (!constraints.deviceId) {
+      return '';
+    } else if (typeof constraints.deviceId === 'string') {
+      return constraints.deviceId;
+    }
+
+    const deviceIdConstraint: ConstrainDOMStringParameters = constraints.deviceId as ConstrainDOMStringParameters;
+    if (typeof deviceIdConstraint.exact === 'string') {
+      return deviceIdConstraint.exact;
+    }
+
+    return '';
+  }
+
+  private getActiveDeviceId(kind: string): string | null {
+    /* istanbul ignore else */
+    if (this.activeDevices[kind] && this.activeDevices[kind].constraints) {
+      const activeDeviceMediaTrackConstraints =
+        this.activeDevices[kind].constraints.audio || this.activeDevices[kind].constraints.video;
+      const activeDeviceConstrainDOMStringParameters = (activeDeviceMediaTrackConstraints as MediaTrackConstraints)
+        .deviceId;
+
+      let activeDeviceId: string;
+      if (typeof activeDeviceConstrainDOMStringParameters === 'string') {
+        activeDeviceId = activeDeviceConstrainDOMStringParameters as string;
+      } else {
+        activeDeviceId = (activeDeviceConstrainDOMStringParameters as ConstrainDOMStringParameters)
+          .exact as string;
+      }
+      return activeDeviceId;
+    }
+    /* istanbul ignore next */
+    return null;
   }
 
   private async chooseInputDevice(
@@ -496,15 +601,20 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       kind,
       device
     );
+
     if (
       this.activeDevices[kind] &&
       this.activeDevices[kind].matchesConstraints(proposedConstraints) &&
-      this.activeDevices[kind].stream.active
+      this.activeDevices[kind].stream.active &&
+      this.activeDevices[kind].groupId !== null &&
+      this.hasSameGroupId(this.activeDevices[kind].groupId, kind, device)
     ) {
       this.logger.info(`reusing existing ${kind} device`);
       return DevicePermission.PermissionGrantedPreviously;
     }
-
+    if (kind === 'audio' && this.activeDevices[kind] && this.activeDevices[kind].stream) {
+      this.releaseMediaStream(this.activeDevices[kind].stream);
+    }
     const startTimeMs = Date.now();
     const newDevice: DeviceSelection = new DeviceSelection();
     try {
@@ -522,7 +632,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       } else {
         newDevice.stream = await navigator.mediaDevices.getUserMedia(proposedConstraints);
         newDevice.constraints = proposedConstraints;
-
         if (kind === 'video' && this.lastNoVideoInputDeviceCount > callCount) {
           this.logger.warn(
             `ignored to get video device for constraints ${JSON.stringify(
@@ -535,26 +644,20 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
         await this.handleDeviceChange();
         newDevice.stream.getTracks()[0].addEventListener('ended', () => {
-          if (this.activeDevices[kind].stream === newDevice.stream) {
+          if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
             this.logger.warn(
               `${kind} input device which was active is no longer available, resetting to null device`
             );
-            this.chooseInputDevice(kind, null, false);
-            if (
-              kind === 'video' &&
-              this.boundAudioVideoController &&
-              this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
-            ) {
-              this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
-            }
+            this.handleDeviceStreamEnded(kind, this.getActiveDeviceId(kind));
           }
         });
       }
+      newDevice.groupId = this.getGroupIdFromDeviceId(kind, this.getDeviceIdStr(device));
     } catch (error) {
       this.logger.error(
         `failed to get ${kind} device for constraints ${JSON.stringify(proposedConstraints)}: ${
-          error.message
-        }`
+          error.name
+        }: ${error.message}`
       );
       return Date.now() - startTimeMs <
         DefaultDeviceController.permissionDeniedOriginDetectionThresholdMs
@@ -629,7 +732,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     if (device === null) {
       return null;
     } else if (typeof device === 'string') {
-      trackConstraints.deviceId = { exact: device };
+      if (this.browserBehavior.requiresNoExactMediaStreamConstraints()) {
+        trackConstraints.deviceId = device;
+      } else {
+        trackConstraints.deviceId = { exact: device };
+      }
     } else if (stream) {
       // @ts-ignore - create a fake track constraint using the stream id
       trackConstraints.streamId = stream.id;
@@ -638,9 +745,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       trackConstraints = device;
     }
     if (kind === 'video') {
-      trackConstraints.width = trackConstraints.width || this.videoWidth;
-      trackConstraints.height = trackConstraints.height || this.videoHeight;
-      trackConstraints.frameRate = trackConstraints.frameRate || this.videoFrameRate;
+      trackConstraints.width = trackConstraints.width || { ideal: this.videoWidth };
+      trackConstraints.height = trackConstraints.height || { ideal: this.videoHeight };
+      trackConstraints.frameRate = trackConstraints.frameRate || { ideal: this.videoFrameRate };
       // TODO: try to replace hard-code value related to videos into quality-level presets
       // The following configs relaxes CPU overuse detection threshold to offer better encoding quality
       // @ts-ignore
@@ -700,8 +807,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private async acquireInputStream(kind: string): Promise<MediaStream> {
     if (kind === 'audio') {
       if (this.useWebAudio) {
-        this.ensureAudioInputContext();
-        return this.audioInputDestinationNode.stream;
+        return this.getMediaStreamDestinationNode().stream;
       }
     }
     let existingConstraints: MediaTrackConstraints | null = null;
@@ -730,30 +836,42 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     return this.activeDevices[kind].stream;
   }
 
-  private ensureAudioInputContext(): void {
-    if (this.audioInputContext) {
-      return;
-    }
-    this.audioInputContext = DefaultDeviceController.createAudioContext();
-    this.audioInputDestinationNode = this.audioInputContext.createMediaStreamDestination();
-  }
-
   private attachAudioInputStreamToAudioContext(stream: MediaStream): void {
-    this.ensureAudioInputContext();
     if (this.audioInputSourceNode) {
       this.audioInputSourceNode.disconnect();
     }
-    this.audioInputSourceNode = this.audioInputContext.createMediaStreamSource(stream);
-    this.audioInputSourceNode.connect(this.audioInputDestinationNode);
+    this.audioInputSourceNode = DefaultDeviceController.getAudioContext().createMediaStreamSource(
+      stream
+    );
+    this.audioInputSourceNode.connect(this.getMediaStreamDestinationNode());
   }
 
-  static createAudioContext(): AudioContext {
-    const options: AudioContextOptions = {};
-    if (navigator.mediaDevices.getSupportedConstraints().sampleRate) {
-      options.sampleRate = DefaultDeviceController.defaultSampleRate;
+  private getMediaStreamDestinationNode(): MediaStreamAudioDestinationNode {
+    if (!this.audioInputDestinationNode) {
+      this.audioInputDestinationNode = DefaultDeviceController.getAudioContext().createMediaStreamDestination();
     }
-    // @ts-ignore
-    return new (window.AudioContext || window.webkitAudioContext)(options);
+    return this.audioInputDestinationNode;
+  }
+
+  static getAudioContext(): AudioContext {
+    if (!DefaultDeviceController.audioContext) {
+      const options: AudioContextOptions = {};
+      if (navigator.mediaDevices.getSupportedConstraints().sampleRate) {
+        options.sampleRate = DefaultDeviceController.defaultSampleRate;
+      }
+      // @ts-ignore
+      DefaultDeviceController.audioContext = new (window.AudioContext || window.webkitAudioContext)(
+        options
+      );
+    }
+    return DefaultDeviceController.audioContext;
+  }
+
+  static closeAudioContext(): void {
+    if (DefaultDeviceController.audioContext) {
+      DefaultDeviceController.audioContext.close();
+    }
+    DefaultDeviceController.audioContext = null;
   }
 
   private supportSampleRateConstraint(): boolean {

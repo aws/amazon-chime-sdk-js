@@ -88,11 +88,11 @@
 						role with a policy that allows
 						<a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">chime:CreateMeeting</a> and
 					<a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">chime:CreateAttendee</a>:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> uuid = <span class="hljs-built_in">require</span>(<span class="hljs-string">'uuid/v4'</span>);
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> { <span class="hljs-attr">v4</span>: uuidv4 } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'uuid'</span>);
 <span class="hljs-keyword">const</span> AWS = <span class="hljs-built_in">require</span>(<span class="hljs-string">'aws-sdk'</span>);
 <span class="hljs-keyword">const</span> chime = <span class="hljs-keyword">new</span> AWS.Chime({<span class="hljs-attr">region</span>: <span class="hljs-string">'us-east-1'</span>});</code></pre>
 					<p>Create a meeting using the <code>chime</code> object:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> requestId = uuid();
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> requestId = uuidv4();
 <span class="hljs-keyword">const</span> region = <span class="hljs-string">'us-west-2'</span>; <span class="hljs-comment">// specify media placement region</span>
 <span class="hljs-keyword">try</span> {
   <span class="hljs-keyword">const</span> meeting = <span class="hljs-keyword">await</span> chime.createMeeting({
@@ -104,7 +104,7 @@
 }
 <span class="hljs-keyword">const</span> meetingId = meeting.Meeting.MeetingId; <span class="hljs-comment">// meeting ID of the new meeting</span></code></pre>
 					<p>Now create an attendee on the meeting:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> externalUserId = uuid(); <span class="hljs-comment">// or string ID you want to associate with the user</span>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> externalUserId = uuidv4(); <span class="hljs-comment">// or string ID you want to associate with the user</span>
 <span class="hljs-keyword">try</span> {
   <span class="hljs-keyword">const</span> attendee = <span class="hljs-keyword">await</span> chime.createAttendee({
     <span class="hljs-attr">MeetingId</span>: meetingId,

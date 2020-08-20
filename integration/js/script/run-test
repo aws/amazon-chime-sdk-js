@@ -84,6 +84,7 @@ case $1 in
       r content_share_join_later_test.config.json
       r app_quit_content_share_test.config.json
       r meeting_leave_content_share_test.config.json
+      r content_share_video_test.config.json
       ;;
    data_message)
       r data_message_test.config.json

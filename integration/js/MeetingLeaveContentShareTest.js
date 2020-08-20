@@ -4,7 +4,7 @@ const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {SdkTestUtils} = require('./utils/SdkTestUtils');
 const {Window} = require('./utils/Window');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 class MeetingLeaveContentShareTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
@@ -28,13 +28,14 @@ class MeetingLeaveContentShareTest extends SdkBaseTest {
     await test_window.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
     await TestUtils.waitAround(5000);
     await test_window.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
+    await test_window.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id));
     await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, session, 3));
-    await monitor_window.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", 1));
+    await monitor_window.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id));
 
     await test_window.runCommands(async () => await LeaveMeetingStep.executeStep(this, session));
     await TestUtils.waitAround(5000);
     await monitor_window.runCommands(async () => await RosterCheck.executeStep(this, session, 1));
-    await monitor_window.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "OFF", 1));
+    await monitor_window.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "OFF", test_attendee_id));
   }
 }
 

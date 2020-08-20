@@ -18,6 +18,7 @@ import {
   DefaultMeetingSession,
   DefaultModality,
   Device,
+  DefaultBrowserBehavior,
   DeviceChangeObserver,
   LogLevel,
   Logger,
@@ -111,7 +112,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/').replace('/v2', '')].join('');
   static testVideo: string = 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
   static readonly LOGGER_BATCH_SIZE: number = 85;
-  static readonly LOGGER_INTERVAL_MS: number = 1150;
+  static readonly LOGGER_INTERVAL_MS: number = 2000;
   static readonly DATA_MESSAGE_TOPIC: string = "chat";
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300000;
 
@@ -126,6 +127,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   audioVideo: AudioVideoFacade | null = null;
   tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
   canStartLocalVideo: boolean = true;
+  defaultBrowserBehaviour: DefaultBrowserBehavior;
   // eslint-disable-next-line
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
@@ -184,6 +186,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     } else {
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
     }
+    this.defaultBrowserBehaviour = new DefaultBrowserBehavior();
   }
 
   initEventListeners(): void {
@@ -314,6 +317,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       const collections = optionalFeatures.selectedOptions;
       this.enableSimulcast = false;
       this.enableWebAudio = false;
+      this.enableUnifiedPlanForChromiumBasedBrowsers = false;
       this.log("Feature lists:");
       for (let i = 0; i < collections.length; i++) {
         // hard code magic
@@ -321,10 +325,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           this.enableSimulcast = true;
           this.enableUnifiedPlanForChromiumBasedBrowsers = true;
           this.log('attempt to enable simulcast');
-        } else if (collections[i].value === 'webaudio') {
+        }
+        if (collections[i].value === 'webaudio') {
           this.enableWebAudio = true;
           this.log('attempt to enable webaudio');
-        } else if (collections[i].value === 'unifiedplan') {
+        }
+        if (collections[i].value === 'unifiedplan') {
           this.enableUnifiedPlanForChromiumBasedBrowsers = true;
           this.log('attempt to enable unified plan');
         }
@@ -524,7 +530,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   async getNearestMediaRegion(): Promise<string> {
-     const nearestMediaRegionResponse = await fetch(
+    const nearestMediaRegionResponse = await fetch(
       `https://nearest-media-region.l.chime.aws`,
       {
         method: 'GET',
@@ -622,6 +628,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   audioOutputsChanged(_freshAudioOutputDeviceList: MediaDeviceInfo[]): void {
     this.populateAudioOutputList();
+  }
+
+  audioInputStreamEnded(deviceId: string): void {
+    this.log(`Current audio input stream from device id ${deviceId} ended.`);
+  }
+
+  videoInputStreamEnded(deviceId: string): void {
+    this.log(`Current video input stream from device id ${deviceId} ended.`);
   }
 
   estimatedDownlinkBandwidthLessThanRequired(estimatedDownlinkBandwidthKbps: number, requiredVideoDownlinkBandwidthKbps: number ): void {
@@ -849,6 +863,46 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       },
       this.showActiveSpeakerScores ? 100 : 0,
     );
+  }
+
+
+  async getStatsForOutbound(id: string): Promise<void> {
+    const videoElement = document.getElementById(id) as HTMLVideoElement;
+    const stream = videoElement.srcObject as MediaStream;
+    const track = stream.getVideoTracks()[0];
+    let basicReports: {[id: string]: number} =  {};
+
+    let reports = await this.audioVideo.getRTCPeerConnectionStats(track);
+    let duration: number;
+
+    reports.forEach(report => {
+      if (report.type === 'outbound-rtp') {
+        // remained to be calculated
+        this.log(`${id} is bound to ssrc ${report.ssrc}`);
+        basicReports['bitrate'] = report.bytesSent;
+        basicReports['width'] = report.frameWidth;
+        basicReports['height'] = report.frameHeight;
+        basicReports['fps'] = report.framesEncoded;
+        duration = report.timestamp;
+      }
+    });
+
+    await new TimeoutScheduler(1000).start(() => {
+      this.audioVideo.getRTCPeerConnectionStats(track).then((reports) => {
+        reports.forEach(report => {
+          if (report.type === 'outbound-rtp') {
+            duration = report.timestamp - duration;
+            duration = duration / 1000;
+            // remained to be calculated
+            basicReports['bitrate'] =  Math.trunc((report.bytesSent - basicReports['bitrate']) * 8 / duration);
+            basicReports['width'] = report.frameWidth;
+            basicReports['height'] = report.frameHeight;
+            basicReports['fps'] = Math.trunc((report.framesEncoded - basicReports['fps']) / duration);
+            this.log(JSON.stringify(basicReports));
+          }
+        });
+      });
+    });
   }
 
   dataMessageHandler(dataMessage: DataMessage): void {
@@ -1265,8 +1319,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           videoFile.src = videoUrl;
         }
         await videoFile.play();
-        // @ts-ignore
-        const mediaStream: MediaStream = videoFile.captureStream();
+        let mediaStream: MediaStream;
+        if(this.defaultBrowserBehaviour.hasFirefoxWebRTC()) {
+          // @ts-ignore
+          mediaStream = videoFile.mozCaptureStream();
+        } else {
+          // @ts-ignore
+          mediaStream = videoFile.captureStream();
+        }
         this.audioVideo.startContentShare(mediaStream);
         break;
     }
@@ -1327,12 +1387,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   videoTileDidUpdate(tileState: VideoTileState): void {
     this.log(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
     if (!tileState.boundAttendeeId) {
-      return;
-    }
-    const selfAttendeeId = this.meetingSession.configuration.credentials.attendeeId;
-    const modality = new DefaultModality(tileState.boundAttendeeId);
-    if (modality.base() === selfAttendeeId && modality.hasModality(DefaultModality.MODALITY_CONTENT)) {
-      // don't bind one's own content
       return;
     }
     const tileIndex = tileState.localTile
@@ -1404,11 +1458,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       return false;
     }
     const tile = this.audioVideo.getVideoTile(tileId);
-    const state = tile.state();
-    if (state.isContent) {
-      return true;
+    if (!tile) {
+      return false;
     }
-    return false;
+    return tile.state().isContent;
   }
 
   activeTileId(): number | null {

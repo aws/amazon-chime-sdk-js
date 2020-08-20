@@ -39,6 +39,9 @@ const getFirefoxCapabilities = (capabilities) => {
       prefs: {
         'media.navigator.streams.fake': true,
         'media.navigator.permission.disabled': true,
+        'media.peerconnection.video.h264_enabled': true,
+        'media.webrtc.hw.h264.enabled': true,
+        'media.webrtc.platformencoder': true,
         'devtools.chrome.enabled': true,
         'devtools.debugger.prompt-connection': false,
         'devtools.debugger.remote-enabled': true
@@ -130,6 +133,7 @@ const getChromeAndroidConfig = capabilities => {
     deviceOrientation: 'portrait',
     chromeOptions: {
       'args': ['use-fake-device-for-media-stream', 'use-fake-ui-for-media-stream'],
+      'w3c': false
     },
     name: capabilities.name,
   };
@@ -202,6 +206,22 @@ class SaucelabsSession {
       this.sessionId = session.getId();
     }
     return this.sessionId
+  }
+
+  async getDeviceName() {
+    if (isMobileDomain(this.domain) && this.deviceName === undefined) {
+      const session = await this.driver.getSession();
+      this.deviceName = session.getCapability('testobject_device_name');
+    }
+    return this.deviceName;
+  }
+
+  async getMobileTestRunURL() {
+    if (isMobileDomain(this.domain) && this.mobileTestRunURL === undefined) {
+      const session = await this.driver.getSession();
+      this.mobileTestRunURL = session.getCapability('testobject_test_report_url');
+    }
+    return this.mobileTestRunURL;
   }
 
   setSessionName(inName) {

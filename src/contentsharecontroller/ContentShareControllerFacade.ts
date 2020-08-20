@@ -12,7 +12,7 @@ export default interface ContentShareControllerFacade {
   /**
    * Start screen sharing
    */
-  startContentShareFromScreenCapture(sourceId?: string, frameRate?: number): Promise<void>;
+  startContentShareFromScreenCapture(sourceId?: string, frameRate?: number): Promise<MediaStream>;
 
   /**
    * Pause content sharing

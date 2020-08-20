@@ -38,18 +38,20 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
     }
 
     const options: RequestInit = {
-      method: 'GET',
+      method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
       credentials: 'omit',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Chime-Auth-Token': '_aws_wt_session=' + new DefaultModality(this.joinToken).base(),
+      },
       redirect: 'follow',
       referrer: 'no-referrer',
+      body: JSON.stringify({ meetingId: this.meetingId }),
     };
 
     this.context.logger.info(`requesting TURN credentials from ${this.url}`);
-
-    const url: string =
-      this.url + `?m=${this.meetingId}&t=${new DefaultModality(this.joinToken).base()}`;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const responseBodyJson = await new Promise<any>(async (resolve, reject) => {
@@ -58,7 +60,7 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
       };
 
       try {
-        const responseBody = await fetch(Versioning.urlWithVersion(url), options);
+        const responseBody = await fetch(Versioning.urlWithVersion(this.url), options);
         this.context.logger.info(`received TURN credentials`);
         if (responseBody.status && responseBody.status === 403) {
           reject(

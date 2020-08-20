@@ -3,7 +3,7 @@ const {UserJoinedMeetingCheck, UserAuthenticationCheck, RosterCheck, MeetingJoin
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 /*
 * 1. Starts a meeting
@@ -17,7 +17,6 @@ class MeetingEndTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    this.url = this.baseUrl + '?m=' + uuidv4();
     const session = this.seleniumSessions[0];
     let attendee_id = uuidv4();
     await OpenAppStep.executeStep(this, session);

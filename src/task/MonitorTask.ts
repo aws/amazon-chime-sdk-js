@@ -257,7 +257,8 @@ export default class MonitorTask extends BaseTask
       this.logger.info(`reconnection health is now: ${reconnectionValue}`);
       if (reconnectionValue === 0) {
         this.context.audioVideoController.handleMeetingSessionStatus(
-          new MeetingSessionStatus(MeetingSessionStatusCode.ConnectionHealthReconnect)
+          new MeetingSessionStatus(MeetingSessionStatusCode.ConnectionHealthReconnect),
+          null
         );
       }
     }
@@ -329,7 +330,7 @@ export default class MonitorTask extends BaseTask
     }
     const status = MeetingSessionStatus.fromSignalFrame(event.message);
     if (status.statusCode() !== MeetingSessionStatusCode.OK) {
-      this.context.audioVideoController.handleMeetingSessionStatus(status);
+      this.context.audioVideoController.handleMeetingSessionStatus(status, null);
     }
   }
 
@@ -354,7 +355,8 @@ export default class MonitorTask extends BaseTask
   private realtimeFatalErrorCallback = (error: Error): void => {
     this.logger.error(`realtime error: ${error}: ${error.stack}`);
     this.context.audioVideoController.handleMeetingSessionStatus(
-      new MeetingSessionStatus(MeetingSessionStatusCode.RealtimeApiFailed)
+      new MeetingSessionStatus(MeetingSessionStatusCode.RealtimeApiFailed),
+      error
     );
   };
 }

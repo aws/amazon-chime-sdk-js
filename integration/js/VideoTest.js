@@ -3,7 +3,7 @@ const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteVideoCheck, UserAuthentica
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 class VideoTest extends SdkBaseTest {
   constructor(name, kiteConfig) {

@@ -359,7 +359,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
           this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
         );
         await this.actionDisconnect(status, true);
-        if (!this.handleMeetingSessionStatus(status)) {
+        if (!this.handleMeetingSessionStatus(status, error)) {
           this.forEachObserver(observer => {
             Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
           });
@@ -528,7 +528,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
         if (status.statusCode() !== MeetingSessionStatusCode.IncompatibleSDP) {
           this.logger.info('failed to update audio-video session');
         }
-        this.handleMeetingSessionStatus(status);
+        this.handleMeetingSessionStatus(status, error);
       });
     }
   }
@@ -559,7 +559,6 @@ export default class DefaultAudioVideoController implements AudioVideoController
         this.logger.info('canceled retry');
       }
     );
-
     if (!willRetry) {
       this.sessionStateController.perform(SessionStateControllerAction.Fail, () => {
         this.actionDisconnect(status, false);
@@ -618,11 +617,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
       // To perform the "Reconnect" action again, the session should be in the "Connected" state.
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         this.logger.info('failed to reconnect audio-video session');
-        this.handleMeetingSessionStatus(
-          new MeetingSessionStatus(
-            this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
-          )
+        const status = new MeetingSessionStatus(
+          this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
         );
+        this.handleMeetingSessionStatus(status, error);
       });
     }
     this.connectionHealthData.setConnectionStartTime();
@@ -655,7 +653,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
   }
 
-  handleMeetingSessionStatus(status: MeetingSessionStatus): boolean {
+  handleMeetingSessionStatus(status: MeetingSessionStatus, error: Error | null): boolean {
     this.logger.info(`handling status: ${MeetingSessionStatusCode[status.statusCode()]}`);
     if (!status.isTerminal()) {
       if (this.meetingSessionContext.statsCollector) {
@@ -675,20 +673,29 @@ export default class DefaultAudioVideoController implements AudioVideoController
       });
       return false;
     }
-    if (status.isFailure()) {
-      this.logger.error(
-        `connection failed with status code: ${MeetingSessionStatusCode[status.statusCode()]}`
-      );
-    }
     if (status.isTerminal()) {
-      this.logger.info('session will not be reconnected');
+      this.logger.error('session will not be reconnected');
       if (this.meetingSessionContext.reconnectController) {
         this.meetingSessionContext.reconnectController.disableReconnect();
       }
     }
     if (status.isFailure() || status.isTerminal()) {
       if (this.meetingSessionContext.reconnectController) {
-        return this.reconnect(status);
+        const willRetry = this.reconnect(status);
+        if (willRetry) {
+          this.logger.warn(
+            `will retry due to status code ${MeetingSessionStatusCode[status.statusCode()]}${
+              error ? ` and error: ${error.message}` : ``
+            }`
+          );
+        } else {
+          this.logger.error(
+            `failed with status code ${MeetingSessionStatusCode[status.statusCode()]}${
+              error ? ` and error: ${error.message}` : ``
+            }`
+          );
+        }
+        return willRetry;
       }
     }
     return false;

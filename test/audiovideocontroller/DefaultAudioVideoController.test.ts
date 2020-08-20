@@ -137,6 +137,7 @@ describe('DefaultAudioVideoController', () => {
     audioStreamIdInfoBuffer.set(buffer, 1);
     return audioStreamIdInfoBuffer;
   }
+
   // For ListenForVolumeIndicatorsTask
   function makeAudioMetadataFrame(): Uint8Array {
     const frame = SdkAudioMetadataFrame.create();
@@ -413,7 +414,8 @@ describe('DefaultAudioVideoController', () => {
       await delay();
       configuration.connectionTimeoutMs = 15000;
       audioVideoController.handleMeetingSessionStatus(
-        new MeetingSessionStatus(MeetingSessionStatusCode.Left)
+        new MeetingSessionStatus(MeetingSessionStatusCode.Left),
+        null
       );
       await stop();
       expect(spy.called).to.be.true;
@@ -475,9 +477,12 @@ describe('DefaultAudioVideoController', () => {
 
     it('can fail but does not reconnect', done => {
       configuration.connectionTimeoutMs = 100;
+      const logger = new NoOpDebugLogger();
+      const spy = sinon.spy(logger, 'error');
+
       audioVideoController = new DefaultAudioVideoController(
         configuration,
-        new NoOpDebugLogger(),
+        logger,
         webSocketAdapter,
         new NoOpMediaStreamBroker(),
         reconnectController
@@ -485,6 +490,8 @@ describe('DefaultAudioVideoController', () => {
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
+          expect(spy.calledWith(sinon.match('failed with status code TaskFailed'))).to.be.true;
+          spy.restore();
           done();
         }
       }
@@ -1055,9 +1062,12 @@ describe('DefaultAudioVideoController', () => {
       setUserAgent('Chrome/77.0.3865.75');
 
       configuration.connectionTimeoutMs = 6000;
+      const logger = new NoOpDebugLogger();
+      const spy = sinon.spy(logger, 'warn');
+
       audioVideoController = new DefaultAudioVideoController(
         configuration,
-        new NoOpDebugLogger(),
+        logger,
         webSocketAdapter,
         new NoOpMediaStreamBroker(),
         reconnectController
@@ -1065,6 +1075,11 @@ describe('DefaultAudioVideoController', () => {
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
+          expect(
+            spy.calledWith(
+              sinon.match('will retry due to status code ICEGatheringTimeoutWorkaround')
+            )
+          ).to.be.true;
           done();
         }
       }
@@ -1095,9 +1110,12 @@ describe('DefaultAudioVideoController', () => {
 
     it('reconnects when the start operation fails with a task failed meeting status', function(done) {
       configuration.connectionTimeoutMs = 100;
+      const logger = new NoOpDebugLogger();
+      const spy = sinon.spy(logger, 'warn');
+
       audioVideoController = new DefaultAudioVideoController(
         configuration,
-        new NoOpDebugLogger(),
+        logger,
         webSocketAdapter,
         new NoOpMediaStreamBroker(),
         reconnectController
@@ -1105,6 +1123,8 @@ describe('DefaultAudioVideoController', () => {
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
+          expect(spy.calledWith(sinon.match('will retry due to status code TaskFailed'))).to.be
+            .true;
           done();
         }
       }
@@ -1133,9 +1153,12 @@ describe('DefaultAudioVideoController', () => {
     });
 
     it('reconnects when the reconnect operation itself fails', done => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'warn');
+
       audioVideoController = new DefaultAudioVideoController(
         configuration,
-        new NoOpDebugLogger(),
+        logger,
         webSocketAdapter,
         new NoOpMediaStreamBroker(),
         reconnectController
@@ -1143,6 +1166,9 @@ describe('DefaultAudioVideoController', () => {
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
+          expect(loggerSpy.calledWith(sinon.match('will retry due to status code TaskFailed'))).to
+            .be.true;
+          loggerSpy.restore();
           done();
         }
       }
@@ -1204,7 +1230,7 @@ describe('DefaultAudioVideoController', () => {
       this.timeout(15000);
 
       const logger = new NoOpDebugLogger();
-      const spy = sinon.spy(logger, 'error');
+      const spy = sinon.spy(logger, 'warn');
       const noAttendeeTimeout = configuration.attendeePresenceTimeoutMs;
 
       class TestMediaStreamBroker extends NoOpMediaStreamBroker {
@@ -1224,8 +1250,8 @@ describe('DefaultAudioVideoController', () => {
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
-          expect(spy.calledWith('connection failed with status code: NoAttendeePresent')).to.be
-            .true;
+          expect(spy.calledWith(sinon.match('will retry due to status code NoAttendeePresent'))).to
+            .be.true;
           spy.restore();
           done();
         }
@@ -1263,7 +1289,7 @@ describe('DefaultAudioVideoController', () => {
       this.timeout(15000);
 
       const logger = new NoOpDebugLogger();
-      const spy = sinon.spy(logger, 'error');
+      const spy = sinon.spy(logger, 'warn');
 
       class TestMediaStreamBroker extends NoOpMediaStreamBroker {
         requestAudioInputStream(): Promise<void> {
@@ -1283,8 +1309,8 @@ describe('DefaultAudioVideoController', () => {
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
-          expect(spy.calledWith('connection failed with status code: NoAttendeePresent')).to.be
-            .false;
+          expect(spy.calledWith(sinon.match('will retry due to status code NoAttendeePresent'))).to
+            .be.false;
           spy.restore();
           done();
         }
@@ -1355,7 +1381,8 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.addObserver(new TestObserver());
       await start();
       audioVideoController.handleMeetingSessionStatus(
-        new MeetingSessionStatus(MeetingSessionStatusCode.VideoCallSwitchToViewOnly)
+        new MeetingSessionStatus(MeetingSessionStatusCode.VideoCallSwitchToViewOnly),
+        null
       );
       await delay();
       expect(spy.called).to.be.true;
@@ -1377,7 +1404,8 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.addObserver(new TestObserver());
       await start();
       audioVideoController.handleMeetingSessionStatus(
-        new MeetingSessionStatus(MeetingSessionStatusCode.IncompatibleSDP)
+        new MeetingSessionStatus(MeetingSessionStatusCode.IncompatibleSDP),
+        null
       );
       await delay();
       await sendICEEventAndSubscribeAckFrame();
@@ -1400,11 +1428,13 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.addObserver(new TestObserver());
       await start();
       audioVideoController.handleMeetingSessionStatus(
-        new MeetingSessionStatus(MeetingSessionStatusCode.Left)
+        new MeetingSessionStatus(MeetingSessionStatusCode.Left),
+        null
       );
       await delay();
       audioVideoController.handleMeetingSessionStatus(
-        new MeetingSessionStatus(MeetingSessionStatusCode.AudioDisconnectAudio)
+        new MeetingSessionStatus(MeetingSessionStatusCode.AudioDisconnectAudio),
+        null
       );
       expect(called).to.be.false;
       await stop();
@@ -1413,7 +1443,8 @@ describe('DefaultAudioVideoController', () => {
     it('does not reconnect if the reconnectController is not set in the context', async () => {
       const spy = sinon.spy(reconnectController, 'disableReconnect');
       audioVideoController.handleMeetingSessionStatus(
-        new MeetingSessionStatus(MeetingSessionStatusCode.Left)
+        new MeetingSessionStatus(MeetingSessionStatusCode.Left),
+        null
       );
       await delay();
       expect(spy.called).to.be.false;

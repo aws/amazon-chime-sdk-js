@@ -29,7 +29,12 @@ export default class CreateSDPTask extends BaseTask {
 
   sessionUsesVideo(): boolean {
     const enabled = true;
-    const sending = this.context.videoTileController.hasStartedLocalVideoTile();
+    let sending: boolean;
+    if (this.context.transceiverController.useTransceivers()) {
+      sending = this.context.transceiverController.hasVideoInput();
+    } else {
+      sending = this.context.videoTileController.hasStartedLocalVideoTile();
+    }
     const receiving = !!this.context.videosToReceive && !this.context.videosToReceive.empty();
     const usesVideo = enabled && (sending || receiving);
     this.context.logger.info(
@@ -52,10 +57,7 @@ export default class CreateSDPTask extends BaseTask {
 
       try {
         this.context.sdpOfferInit = await this.context.peer.createOffer(offerOptions);
-        this.context.logger.info(
-          `peer connection created offer ${JSON.stringify(this.context.sdpOfferInit)}`
-        );
-
+        this.context.logger.info('peer connection created offer');
         if (this.context.previousSdpOffer) {
           if (
             new DefaultSDP(this.context.sdpOfferInit.sdp).videoSendSectionHasDifferentSSRC(

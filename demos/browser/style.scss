@@ -353,3 +353,52 @@ svg {
 .progress-hidden {
   visibility: hidden;
 }
+
+@media (max-width: 575px) {
+  #tile-area {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #tile-area > div {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    height: auto !important;
+
+    width: 50% !important;
+    padding-bottom: 33% !important;
+  }
+
+  #tile-area > div > video {
+    object-fit: cover;
+  }
+
+  #tile-area > div > div,
+  #tile-area > div > button {
+    display: none !important;
+  }
+
+  #meeting-container {
+    height: auto !important;
+  }
+
+  #roster-tile-container {
+    height: auto !important;
+  }
+
+  #roster-container {
+    height: auto !important;
+  }
+
+  .bs-component {
+    max-height: 210px;
+    height: auto !important;
+  }
+
+  #tile-container {
+    height: auto !important;
+  }
+}

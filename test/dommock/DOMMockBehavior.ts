@@ -23,6 +23,7 @@ export default class DOMMockBehavior {
   setLocalDescriptionSucceeds: boolean = true;
   setRemoteDescriptionStreamId: string = 'bc20510c2a134aa798f4dc9982f7c4a3adk';
   setRemoteDescriptionNumberOfTracks: number = 1;
+  hasStreamForTrack: boolean = true;
   setRemoteDescriptionAddTrackSucceeds: boolean = true;
   applyConstraintSucceeds: boolean = true;
   mediaStreamTrackCapabilities: { width: number; height: number } = {
@@ -45,8 +46,10 @@ export default class DOMMockBehavior {
   enumerateDevicesSupported: boolean = true;
   enumerateAudioOutputDeviceSupported: boolean = true;
   enumerateDeviceList: MediaDeviceInfo[] = undefined;
+  mediaDevicesSupported: boolean = true;
   mediaDeviceInfoSupported: boolean = true;
   mediaDeviceHasSupportedConstraints: boolean = true;
+  mediaDeviceOnDeviceChangeSupported: boolean = true;
   rtcPeerConnectionGetStatsSucceeds: boolean = true;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rtcPeerConnectionGetStatsReport: { [name: string]: any } = {};
@@ -60,4 +63,7 @@ export default class DOMMockBehavior {
   responseStatusCode: number = 200;
   hasInactiveTransceiver: boolean = false;
   createElementCaptureStream: MediaStream = undefined;
+  audioContextDefaultSampleRate = 48000;
+  audioContextCreateBufferSucceeds = true;
+  isUnifiedPlanSupported: boolean = true;
 }

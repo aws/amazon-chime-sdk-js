@@ -73,6 +73,11 @@ export default interface BrowserBehavior {
   requiresSortCodecPreferencesForSdpAnswer(): boolean;
 
   /**
+   * Returns whether the keyword "exact" should be omitted in a MediaStreamConstraints object
+   */
+  requiresNoExactMediaStreamConstraints(): boolean;
+
+  /**
    * Returns whether screen share is unsupported by the browser
    */
   screenShareUnsupported(): boolean;

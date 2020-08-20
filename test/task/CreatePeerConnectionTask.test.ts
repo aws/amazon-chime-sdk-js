@@ -243,6 +243,29 @@ describe('CreatePeerConnectionTask', () => {
         expect(addVideoTileSpy.called).to.be.true;
       });
 
+      it('does not handle a track event with no streams', async () => {
+        const addVideoTileSpy: sinon.SinonSpy = sinon.spy(
+          context.videoTileController,
+          'addVideoTile'
+        );
+
+        domMockBehavior.hasStreamForTrack = false;
+
+        class TestTransceiverController extends DefaultTransceiverController {
+          useTransceivers(): boolean {
+            return true;
+          }
+        }
+        context.transceiverController = new TestTransceiverController(logger, browser);
+
+        await task.run();
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+        await new Promise(resolve =>
+          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
+        );
+        expect(addVideoTileSpy.called).to.be.false;
+      });
+
       it('ignore a m-line which is inactive', async () => {
         const addVideoTileSpy: sinon.SinonSpy = sinon.spy(
           context.videoTileController,

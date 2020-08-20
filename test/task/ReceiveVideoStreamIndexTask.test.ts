@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -15,6 +15,7 @@ import SignalingClientConnectionRequest from '../../src/signalingclient/Signalin
 import {
   SdkIndexFrame,
   SdkSignalFrame,
+  SdkStreamDescriptor,
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import ReceiveVideoStreamIndexTask from '../../src/task/ReceiveVideoStreamIndexTask';
@@ -43,11 +44,13 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
   const createIndexSignalBuffer = (
     atCapacity: boolean = false,
-    pausedAtSourceIds: number[] | null = null
+    pausedAtSourceIds: number[] | null = null,
+    sources: SdkStreamDescriptor[] | null = null
   ): Uint8Array => {
     const indexFrame = SdkIndexFrame.create();
     indexFrame.atCapacity = atCapacity;
     indexFrame.pausedAtSourceIds = pausedAtSourceIds;
+    indexFrame.sources = sources;
     const indexSignal = SdkSignalFrame.create();
     indexSignal.type = SdkSignalFrame.Type.INDEX;
     indexSignal.index = indexFrame;
@@ -56,6 +59,22 @@ describe('ReceiveVideoStreamIndexTask', () => {
     indexSignalBuffer[0] = 0x5;
     indexSignalBuffer.set(buffer, 1);
     return indexSignalBuffer;
+  };
+
+  const createStreamDescriptor = (
+    attendeeId: string,
+    groupId: number,
+    streamId: number,
+    maxBitrateKbps: number,
+    avgBitrateBps: number
+  ): SdkStreamDescriptor => {
+    const streamDescriptor = SdkStreamDescriptor.create();
+    streamDescriptor.attendeeId = attendeeId;
+    streamDescriptor.groupId = groupId;
+    streamDescriptor.streamId = streamId;
+    streamDescriptor.maxBitrateKbps = maxBitrateKbps;
+    streamDescriptor.avgBitrateBps = avgBitrateBps;
+    return streamDescriptor;
   };
 
   beforeEach(async () => {
@@ -396,6 +415,33 @@ describe('ReceiveVideoStreamIndexTask', () => {
         expect(context.removableObservers.length).to.equal(1);
         context.removableObservers[0].removeObserver();
       });
+    });
+  });
+
+  describe('process input index frame', () => {
+    it('filter self content share video index', done => {
+      context.audioVideoController.configuration.credentials.attendeeId = 'attendee-1';
+      const streamDescriptor1 = createStreamDescriptor('attendee-1#content', 1, 1, 48, 24000);
+      const streamDescriptor2 = createStreamDescriptor('attendee-2#content', 2, 2, 48, 24000);
+      const indexSignalBuffer = createIndexSignalBuffer(false, null, [
+        streamDescriptor1,
+        streamDescriptor2,
+      ]);
+      const videoStreamIndexSpy = sinon.spy(context.videoStreamIndex, 'integrateIndexFrame');
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(indexSignalBuffer);
+        await new Promise(resolve =>
+          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+        );
+        expect(videoStreamIndexSpy.calledOnce).to.be.true;
+        const inputIndexFrame = videoStreamIndexSpy.getCall(0).args[0];
+        expect(inputIndexFrame.sources.length).to.be.eq(1);
+        expect(inputIndexFrame.sources[0].attendeeId).to.be.eq('attendee-2#content');
+        context.audioVideoController.configuration.credentials.attendeeId = '';
+        done();
+      });
+
+      task.run();
     });
   });
 });

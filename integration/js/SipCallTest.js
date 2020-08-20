@@ -3,7 +3,7 @@ const {UserJoinedMeetingCheck, UserAuthenticationCheck, RemoteAudioCheck, Roster
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const {Window} = require('./utils/Window');
 const {SipCallClient} = require('./utils/SipCallClient');
 
@@ -17,8 +17,6 @@ class SipCallTest extends SdkBaseTest {
 
   async runIntegrationTest() {
     const session = this.seleniumSessions[0];
-    const meetingId = uuidv4();
-    this.url = this.baseUrl + '?m=' + meetingId;
     let attendee_id = uuidv4();
     const test_window = await Window.openNew(session.driver, "SipCall");
     await test_window.runCommands(async () => {

@@ -36,6 +36,7 @@ And review the following guides:
 * [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html)
 * [Quality, Bandwidth, and Connectivity](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html)
 * [Simulcast](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html)
+* [Frequently Asked Questions](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
 
 ## Examples
 
@@ -46,6 +47,8 @@ And review the following guides:
 - [Single JS](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/singlejs) - A script to bundle the SDK into a single `.js` file
 - [Recording Demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) - Recording the meeting's audio, video and screen share in high definition
 - [Virtual Classroom](https://github.com/aws-samples/amazon-chime-sdk-classroom-demo) - An online classroom built with Electron and React
+- [Live Events](https://github.com/aws-samples/amazon-chime-live-events) - Interactive live events solution
+- [PSTN Integration](https://github.com/aws-samples/amazon-chime-voiceconnector-transcription) - Integrating PSTN callers with Amazon Chime SDK meetings
 
 ## Installation
 
@@ -568,7 +571,14 @@ meetingSession.audioVideo.addContentShareObserver(observer);
 meetingSession.audioVideo.addObserver(observer);
 
 // A browser will prompt the user to choose the screen.
-await meetingSession.audioVideo.startContentShareFromScreenCapture();
+const contentShareStream = await meetingSession.audioVideo.startContentShareFromScreenCapture();
+```
+
+If you want to display the content share stream for the sharer, you can bind the returned content share stream to a
+ video element using `connectVideoStreamToVideoElement` from DefaultVideoTile.
+ 
+```js
+DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, false);
 ```
 
 **Use case 17.** Start sharing your screen in an environment that does not support a screen picker dialog. e.g. Electron
@@ -591,7 +601,7 @@ inputElement.addEventListener('change', async () => {
   videoElement.src = url;
   await videoElement.play();
 
-  const mediaSream = videoElement.captureStream();
+  const mediaSream = videoElement.captureStream(); /* use mozCaptureStream for Firefox e.g. videoElement.mozCaptureStream(); */
   await meetingSession.audioVideo.startContentShare(mediaSream);
   inputElement.value = '';
 });

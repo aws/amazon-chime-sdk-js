@@ -1,12 +1,15 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import BrowserBehavior from '../browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import AudioMixController from './AudioMixController';
 
 export default class DefaultAudioMixController implements AudioMixController {
   private audioDevice: MediaDeviceInfo | null = null;
   private audioElement: HTMLAudioElement | null = null;
   private audioStream: MediaStream | null = null;
+  private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior();
 
   bindAudioElement(element: HTMLAudioElement): boolean {
     if (element) {
@@ -51,8 +54,20 @@ export default class DefaultAudioMixController implements AudioMixController {
         // @ts-ignore
         const oldSinkId: string = this.audioElement.sinkId;
         if (newSinkId !== oldSinkId) {
-          // @ts-ignore
-          this.audioElement.setSinkId(newSinkId);
+          if (this.browserBehavior.hasChromiumWebRTC()) {
+            const existingAudioElement = this.audioElement;
+            const existingstream = this.audioStream;
+            existingAudioElement.srcObject = null;
+            // @ts-ignore
+            existingAudioElement.setSinkId(newSinkId).then(() => {
+              if (this.audioElement === existingAudioElement) {
+                existingAudioElement.srcObject = existingstream;
+              }
+            });
+          } else {
+            // @ts-ignore
+            this.audioElement.setSinkId(newSinkId);
+          }
         }
         return true;
       }

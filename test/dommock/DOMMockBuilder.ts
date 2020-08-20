@@ -290,8 +290,16 @@ export default class DOMMockBuilder {
       : null;
 
     GlobalAny.MediaDevices = class MockMediaDevices {
+      constructor() {
+        if (!mockBehavior.mediaDeviceOnDeviceChangeSupported) {
+          delete this.ondevicechange;
+        }
+      }
+
       eventListeners: EventListenerObjectWrapper[] = [];
       gotLabels: boolean = false;
+      // ondevicechange is set to null if supported
+      ondevicechange: null = null;
 
       getDisplayMedia(
         _constraints: MockMediaStreamConstraints
@@ -423,14 +431,26 @@ export default class DOMMockBuilder {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
     const SAFARI_USERAGENT =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
+    const SAFARI12_USERAGENT =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15';
+    const SAFARI11_USERAGENT =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Safari/605.1.15';
+    const IOS_SAFARI12_0_USERAGENT =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1';
+    const IOS_SAFARI12_1_USERAGENT =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1';
 
     const USER_AGENTS = new Map<string, string>();
     USER_AGENTS.set('chrome', CHROME_USERAGENT);
     USER_AGENTS.set('firefox', FIREFOX_USERAGENT);
     USER_AGENTS.set('safari', SAFARI_USERAGENT);
+    USER_AGENTS.set('safari12', SAFARI12_USERAGENT);
+    USER_AGENTS.set('safari11', SAFARI11_USERAGENT);
+    USER_AGENTS.set('ios12.0', IOS_SAFARI12_0_USERAGENT);
+    USER_AGENTS.set('ios12.1', IOS_SAFARI12_1_USERAGENT);
 
     GlobalAny.navigator = {
-      mediaDevices: new mediaDevicesMaker(),
+      mediaDevices: mockBehavior.mediaDevicesSupported ? new mediaDevicesMaker() : undefined,
       userAgent: USER_AGENTS.get(mockBehavior.browserName),
       sendBeacon(
         _url: string,
@@ -540,13 +560,15 @@ export default class DOMMockBuilder {
               if (mockBehavior.hasInactiveTransceiver) {
                 addTrackEvent.transceiver = { currentDirection: 'inactive' };
               }
-              const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
-              const mediaStream = new mediaStreamMaker();
-              mediaStream.id = mockBehavior.setRemoteDescriptionStreamId;
-              if (mockBehavior.setRemoteDescriptionAddTrackSucceeds) {
-                mediaStream.addTrack(mediaStreamTrack);
+              if (mockBehavior.hasStreamForTrack) {
+                const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
+                const mediaStream = new mediaStreamMaker();
+                mediaStream.id = mockBehavior.setRemoteDescriptionStreamId;
+                if (mockBehavior.setRemoteDescriptionAddTrackSucceeds) {
+                  mediaStream.addTrack(mediaStreamTrack);
+                }
+                addTrackEvent.streams = [mediaStream];
               }
-              addTrackEvent.streams = [mediaStream];
               this.dispatchEvent(addTrackEvent);
             }
 
@@ -703,6 +725,7 @@ export default class DOMMockBuilder {
       readonly receiver: RTCRtpReceiver;
       readonly sender: RTCRtpSender;
       readonly mid: string;
+      currentDirection: string;
 
       constructor(trackOrKind: MediaStreamTrack | string, init?: RTCRtpTransceiverInit) {
         this.direction = init.direction;
@@ -725,6 +748,9 @@ export default class DOMMockBuilder {
         this.mid = 'mock-mid-id';
       }
     };
+    if (mockBehavior.isUnifiedPlanSupported) {
+      GlobalAny.RTCRtpTransceiver.prototype.currentDirection = 'sendrecv';
+    }
 
     GlobalAny.RTCRtpReceiver = class MockRTCRtpReceiver {
       readonly track: MediaStreamTrack;
@@ -845,8 +871,9 @@ export default class DOMMockBuilder {
 
     GlobalAny.HTMLAudioElement = class MockHTMLAudioElement {
       sinkId = 'fakeSinkId';
-      setSinkId(deviceId: string): Promise<undefined> {
+      async setSinkId(deviceId: string): Promise<undefined> {
         this.sinkId = deviceId;
+        await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs * 10));
         return undefined;
       }
     };
@@ -893,7 +920,15 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.AudioContext = class MockAudioContext {
-      constructor(_contextOptions?: AudioContextOptions) {}
+      sampleRate: number = 48000;
+
+      constructor(contextOptions?: AudioContextOptions) {
+        if (contextOptions && contextOptions.sampleRate) {
+          this.sampleRate = contextOptions.sampleRate;
+        } else {
+          this.sampleRate = mockBehavior.audioContextDefaultSampleRate;
+        }
+      }
 
       createMediaStreamDestination(): MediaStreamAudioDestinationNode {
         return new GlobalAny.MediaStreamAudioDestinationNode();
@@ -938,7 +973,17 @@ export default class DOMMockBuilder {
         };
       }
 
-      createBuffer(_numberOfChannels: number, _length: number, _sampleRate: number): AudioBuffer {
+      createBuffer(_numberOfChannels: number, _length: number, sampleRate: number): AudioBuffer {
+        if (!mockBehavior.audioContextCreateBufferSucceeds) {
+          throw new Error('Unknown error');
+        }
+
+        if (sampleRate < 8000 || sampleRate > 96000) {
+          const error = new Error('The operation is not supported');
+          error.name = 'NotSupportedError';
+          throw error;
+        }
+
         return new GlobalAny.AudioBuffer();
       }
 

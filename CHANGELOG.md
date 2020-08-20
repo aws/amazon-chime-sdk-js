@@ -6,17 +6,119 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Added
-- Add meeting demo parameter for broadcasting user
-- Add simulcast guide link in README and Quality Bandwidth Connectivity doc
+- Added auth-token based npm login and logout scripts for npm package publishing
 - Prevent DefaultBrowserBehavior error when accessing browser.name or browser.version with a custom user agent
 
 ### Changed
+- Update the dependency version for the singlejs demo
+
+### Removed
+- Remove  `device` demo from demos
+
+### Fixed
+- Fix and modify simulcast uplink policy to fix freezing and reduce switches
+- Exclude self content share video stream index
+## [1.15.0] - 2020-08-10
+
+### Added
+- Add comments for VideoTileState class and instructions in FAQ document
+- Add reference to CreateMeetingWithAttendees in FAQ
+
+### Changed
+- Bump elliptic from 6.5.2 to 6.5.3 in /demos/device
+- Log info when stop pinging due to Websocket closed
+- Change the demo app to show content share video back to sharer
+- Change bootstrap version for meeting demo to 4.5.0
+- Change content share video check to use attendee name instead of video element index
 
 ### Removed
 
 ### Fixed
+- Ensure all simulcast stream resolution are 16-aligned to avoid pixel3(XL) encoder issue
+- Fix race condition in Chromium browsers when consecutive audio bind operations take place
+- Fix invalid constraints and disable Unified Plan in safari 12.0
+- Fix isSupported API in DefaultBrowserBehavior return true for Firefox on Android
+
+## [1.14.0] - 2020-07-28
+
+### Added
+- Add content share video test integration test
+- Add function to query outbound WebRTC video stats in browser demo
+- Add error message for TaskFailed errors
+
+### Changed
+- Return the screen capture media stream for startContentShareFromScreenCapture
+
+### Removed
+
+### Fixed
+- Fix exception thrown in Safari when multiple startVideoPreviewForVideoInput() are made
+
+## [1.13.0] - 2020-07-21
+
+### Added
+
+### Changed
+- Use POST instead of GET for TURN control endpoint
+
+### Removed
+
+### Fixed
+- Fix demo app responsiveness issue
+- Fix content share test video in Firefox
+- Marking `TURNMeetingEnded` error as terminal to prevent session from reconnecting
+
+## [1.12.0] - 2020-07-17
+
+### Added
+- Add device name for mobile integration tests
+- Added new FAQs and updated Readme to include new demos for PSTN calling and live events
+- Add test report URL for mobile integration tests
+- Add Firefox to Travis integration tests
+- Add README for integration tests
+- Add log to list the set of constraints supported by the browser
+- Add device change observer events when the current audio/video input stream ended
+
+### Changed
+- Fix title for FAQ guide
+- Change DefaultDeviceController video MediaTrackConstraint parameters to be "ideal" explicitly
+- Use a single instance of AudioContext
+- Use the SDK default sample rate 48,000 Hz for an AudioBuffer object if the AudioContext sample rate doesn't work
+
+### Removed
+
+### Fixed
+- Fix typo in VideoStreamDescription when stream is disabled by WebRTC
+- Fix issue where audio input is not able to switch in Firefox
+- Fix handling WebRTC Track event with no associated streams
+- Increase log interval to avoid multiple Cloudwatch requests at once
+- Fix incorrect log level for terminal error code
+- Catch exceptions taking place when putLogEvents fails
+- Fix content share test video in Firefox
+
+## [1.11.0] - 2020-06-30
+
+### Added
+- Add meeting demo parameter for broadcasting user
+- Add simulcast guide link in README and Quality Bandwidth Connectivity doc
+- Add a MediaDevices proxy to support the devicechange event in some Android Chrome browsers
+
+### Changed
+
+### Removed
+- Remove browser demo optional feature HTMLSelectElement multiple attribute
+
+### Fixed
 - Fix CloudWatch metrics for Linux and Android integration tests
+- Fix create meeting request for audio and video e2e integration tests
+- Fix multiple issues with integration tests
+- Fix uuidv4 import
+- Fix missing uuidv4 import in integration test
+- Disable w3c check for Chrome Android webdriver integration tests
+- Fix setSinkId() from throwing DOMException in Chromium browsers
+- Fixing the ability to choose default input in browsers when default changes
 
 ## [1.10.0] - 2020-06-23
 
