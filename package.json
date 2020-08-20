@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "1.15.3",
+  "version": "1.15.4",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -11,6 +11,8 @@
     "clean": "rm -rf .nyc_output build node_modules",
     "copy": "node script/copy-protocol.js",
     "check": "node script/check-code-style.js",
+    "login": "node script/login.js",
+    "logout": "node script/logout.js",
     "prepublishOnly": "script/publish",
     "postpublish": "script/postpublish",
     "lint": "eslint . --ext .ts,.tsx,.js --fix",
