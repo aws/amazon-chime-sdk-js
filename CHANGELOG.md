@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added auth-token based npm login and logout scripts for npm package publishing
+- Update demo app with new regions CPT, MXP, BOM and ICN
 
 ### Changed
 - Update the dependency version for the singlejs demo
