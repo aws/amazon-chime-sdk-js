@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
 require 'json'
 
+def verbose command
+  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
+end
+
+verbose("npm run logout")
+
 Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
 
 puts
@@ -17,10 +23,6 @@ puts "Type 'yes' to continue"
 x = STDIN.gets
 exit(1) unless x.strip == 'yes'
 puts
-
-def verbose command
-  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
-end
 
 verbose('git fetch origin')
 verbose('git reset --hard origin/master')
