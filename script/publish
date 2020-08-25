@@ -96,3 +96,5 @@ puts
 
 verbose("git push origin")
 verbose("git push origin -f #{tag}")
+
+verbose("npm run login")

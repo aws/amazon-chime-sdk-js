@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Change WebRTC semantics to Unified Plan by default for Chromium-based browsers
+- Add npm login and logout as part of publish script
 
 ## [1.16.0] - 2020-08-20
 
