@@ -6,9 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add npm login and logout as part of publish script
+
 ### Changed
 - Change WebRTC semantics to Unified Plan by default for Chromium-based browsers
-- Add npm login and logout as part of publish script
+
+### Removed
+
+### Fixed
+- Fixed removeLocalVideoTile so that the video tile is removed correctly for the user and attendees
 
 ## [1.16.0] - 2020-08-20
 

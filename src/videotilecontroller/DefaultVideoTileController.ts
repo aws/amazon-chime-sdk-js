@@ -75,6 +75,7 @@ export default class DefaultVideoTileController implements VideoTileController {
   removeLocalVideoTile(): void {
     if (this.currentLocalTile) {
       this.removeVideoTile(this.currentLocalTile.id());
+      this.audioVideoController.update();
     }
   }
 

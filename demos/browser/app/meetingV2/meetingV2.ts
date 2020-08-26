@@ -38,10 +38,11 @@ import {
 class DemoTileOrganizer {
   // this is index instead of length
   static MAX_TILES = 17;
+  static LOCAL_VIDEO_INDEX = 16;
   private tiles: { [id: number]: number } = {};
   public tileStates: {[id: number]: boolean } = {};
 
-  acquireTileIndex(tileId: number): number {
+  acquireTileIndex(tileId: number, isLocalTile: boolean): number {
     for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
       if (this.tiles[index] === tileId) {
         return index;
@@ -49,6 +50,10 @@ class DemoTileOrganizer {
     }
     for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
       if (!(index in this.tiles)) {
+        if (isLocalTile) {
+          this.tiles[DemoTileOrganizer.LOCAL_VIDEO_INDEX] = tileId;
+          return DemoTileOrganizer.LOCAL_VIDEO_INDEX;
+        }
         this.tiles[index] = tileId;
         return index;
       }
@@ -410,7 +415,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
-          this.hideTile(DemoTileOrganizer.MAX_TILES);
+          this.hideTile(DemoTileOrganizer.LOCAL_VIDEO_INDEX);
         }
       });
     });
@@ -1384,9 +1389,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     if (!tileState.boundAttendeeId) {
       return;
     }
-    const tileIndex = tileState.localTile
-      ? 16
-      : this.tileOrganizer.acquireTileIndex(tileState.tileId);
+    const tileIndex = this.tileOrganizer.acquireTileIndex(tileState.tileId, tileState.localTile) ;
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
@@ -1412,8 +1415,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   videoTileWasRemoved(tileId: number): void {
-    this.log(`video tile removed: ${tileId}`);
-    this.hideTile(this.tileOrganizer.releaseTileIndex(tileId));
+    const tileIndex = this.tileOrganizer.releaseTileIndex(tileId)
+    this.log(`video tileId removed: ${tileId} from tile-${tileIndex}`);
+    this.hideTile(tileIndex);
   }
 
   videoAvailabilityDidChange(availability: MeetingSessionVideoAvailability): void {
