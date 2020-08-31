@@ -5,6 +5,7 @@ import './styleV2.scss';
 import 'bootstrap';
 
 import {
+  MeetingReadinessChecker,
   AsyncScheduler,
   AudioVideoFacade,
   AudioVideoObserver,
@@ -14,6 +15,7 @@ import {
   DataMessage,
   DefaultActiveSpeakerPolicy,
   DefaultAudioMixController,
+  DefaultMeetingReadinessChecker,
   DefaultDeviceController,
   DefaultMeetingSession,
   DefaultModality,
@@ -130,6 +132,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   region: string | null = null;
   meetingSession: MeetingSession | null = null;
   audioVideo: AudioVideoFacade | null = null;
+  meetingReadinessChecker: MeetingReadinessChecker | null = null;
   tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
   canStartLocalVideo: boolean = true;
   defaultBrowserBehaviour: DefaultBrowserBehavior;
@@ -697,6 +700,10 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
     this.audioVideo = this.meetingSession.audioVideo;
+
+    this.meetingReadinessChecker = new DefaultMeetingReadinessChecker(logger, new DefaultMeetingSession(configuration, logger, new DefaultDeviceController(logger)));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (global as any).meetingReadinessChecker = this.meetingReadinessChecker;
 
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();

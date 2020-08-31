@@ -1,8 +1,13 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import DisplayMediaState from './DisplayMediaState';
+import UserMediaState from './UserMediaState';
+
 export default class DOMMockBehavior {
   asyncWaitMs: number = 10;
+  getDisplayMediaResult: DisplayMediaState = DisplayMediaState.Success;
+  getUserMediaResult: UserMediaState = UserMediaState.Success;
   getUserMediaSucceeds: boolean = true;
   getUserMediaAudioLabel: string = 'Default';
   webSocketOpenSucceeds: boolean = true;
