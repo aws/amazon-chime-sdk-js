@@ -108,11 +108,14 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#currentindex" class="tsd-kind-icon">current<wbr>Index</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#currentsubscribeack" class="tsd-kind-icon">current<wbr>Subscribe<wbr>Ack</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#indexforsubscribe" class="tsd-kind-icon">index<wbr>For<wbr>Subscribe</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#logger" class="tsd-kind-icon">logger</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#ssrctostreammap" class="tsd-kind-icon">ssrc<wbr>ToStream<wbr>Map</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#streamtoattendeemap" class="tsd-kind-icon">stream<wbr>ToAttendee<wbr>Map</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#streamtoexternaluseridmap" class="tsd-kind-icon">stream<wbr>ToExternal<wbr>User<wbr>IdMap</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#tracktostreammap" class="tsd-kind-icon">track<wbr>ToStream<wbr>Map</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#subscribessrctostreammap" class="tsd-kind-icon">subscribe<wbr>Ssrc<wbr>ToStream<wbr>Map</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#subscribestreamtoattendeemap" class="tsd-kind-icon">subscribe<wbr>Stream<wbr>ToAttendee<wbr>Map</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#subscribestreamtoexternaluseridmap" class="tsd-kind-icon">subscribe<wbr>Stream<wbr>ToExternal<wbr>User<wbr>IdMap</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="defaultvideostreamindex.html#subscribetracktostreammap" class="tsd-kind-icon">subscribe<wbr>Track<wbr>ToStream<wbr>Map</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#videostreamdescription" class="tsd-kind-icon">video<wbr>Stream<wbr>Description</a></li>
 							</ul>
 						</section>
@@ -143,6 +146,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#streamidfortrack" class="tsd-kind-icon">stream<wbr>IdFor<wbr>Track</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#streamselectionunderbandwidthconstraint" class="tsd-kind-icon">stream<wbr>Selection<wbr>Under<wbr>Bandwidth<wbr>Constraint</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#streamspausedatsource" class="tsd-kind-icon">streams<wbr>Paused<wbr>AtSource</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultvideostreamindex.html#subscribeframesent" class="tsd-kind-icon">subscribe<wbr>Frame<wbr>Sent</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultvideostreamindex.html#tryselecthighbitrateforattendees" class="tsd-kind-icon">try<wbr>Select<wbr>High<wbr>Bitrate<wbr>For<wbr>Attendees</a></li>
 							</ul>
 						</section>
@@ -161,7 +165,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L28">src/videostreamindex/DefaultVideoStreamIndex.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L35">src/videostreamindex/DefaultVideoStreamIndex.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -193,6 +197,16 @@
 					<div class="tsd-signature tsd-kind-icon">current<wbr>Subscribe<wbr>Ack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SdkSubscribeAckFrame</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L23">src/videostreamindex/DefaultVideoStreamIndex.ts:23</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="indexforsubscribe" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> index<wbr>For<wbr>Subscribe</h3>
+					<div class="tsd-signature tsd-kind-icon">index<wbr>For<wbr>Subscribe<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SdkIndexFrame</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L22">src/videostreamindex/DefaultVideoStreamIndex.ts:22</a></li>
 						</ul>
 					</aside>
@@ -203,17 +217,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L29">src/videostreamindex/DefaultVideoStreamIndex.ts:29</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-					<a name="ssrctostreammap" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> ssrc<wbr>ToStream<wbr>Map</h3>
-					<div class="tsd-signature tsd-kind-icon">ssrc<wbr>ToStream<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L26">src/videostreamindex/DefaultVideoStreamIndex.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L36">src/videostreamindex/DefaultVideoStreamIndex.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -223,7 +227,7 @@
 					<div class="tsd-signature tsd-kind-icon">stream<wbr>ToAttendee<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L24">src/videostreamindex/DefaultVideoStreamIndex.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L32">src/videostreamindex/DefaultVideoStreamIndex.ts:32</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -233,17 +237,47 @@
 					<div class="tsd-signature tsd-kind-icon">stream<wbr>ToExternal<wbr>User<wbr>IdMap<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L25">src/videostreamindex/DefaultVideoStreamIndex.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L33">src/videostreamindex/DefaultVideoStreamIndex.ts:33</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-					<a name="tracktostreammap" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> track<wbr>ToStream<wbr>Map</h3>
-					<div class="tsd-signature tsd-kind-icon">track<wbr>ToStream<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<a name="subscribessrctostreammap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> subscribe<wbr>Ssrc<wbr>ToStream<wbr>Map</h3>
+					<div class="tsd-signature tsd-kind-icon">subscribe<wbr>Ssrc<wbr>ToStream<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L23">src/videostreamindex/DefaultVideoStreamIndex.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L29">src/videostreamindex/DefaultVideoStreamIndex.ts:29</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="subscribestreamtoattendeemap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> subscribe<wbr>Stream<wbr>ToAttendee<wbr>Map</h3>
+					<div class="tsd-signature tsd-kind-icon">subscribe<wbr>Stream<wbr>ToAttendee<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L27">src/videostreamindex/DefaultVideoStreamIndex.ts:27</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="subscribestreamtoexternaluseridmap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> subscribe<wbr>Stream<wbr>ToExternal<wbr>User<wbr>IdMap</h3>
+					<div class="tsd-signature tsd-kind-icon">subscribe<wbr>Stream<wbr>ToExternal<wbr>User<wbr>IdMap<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L28">src/videostreamindex/DefaultVideoStreamIndex.ts:28</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="subscribetracktostreammap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> subscribe<wbr>Track<wbr>ToStream<wbr>Map</h3>
+					<div class="tsd-signature tsd-kind-icon">subscribe<wbr>Track<wbr>ToStream<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L26">src/videostreamindex/DefaultVideoStreamIndex.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -253,7 +287,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Stream<wbr>Description<span class="tsd-signature-symbol">:</span> <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol"> = new VideoStreamDescription()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L28">src/videostreamindex/DefaultVideoStreamIndex.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L35">src/videostreamindex/DefaultVideoStreamIndex.ts:35</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -271,7 +305,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#streamidsinsamegroup">StreamIdsInSameGroup</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L271">src/videostreamindex/DefaultVideoStreamIndex.ts:271</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L275">src/videostreamindex/DefaultVideoStreamIndex.ts:275</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -298,7 +332,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#allstreams">allStreams</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L91">src/videostreamindex/DefaultVideoStreamIndex.ts:91</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L109">src/videostreamindex/DefaultVideoStreamIndex.ts:109</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></h4>
@@ -316,7 +350,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#allvideosendingattendeesexcludingself">allVideoSendingAttendeesExcludingSelf</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L101">src/videostreamindex/DefaultVideoStreamIndex.ts:101</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L119">src/videostreamindex/DefaultVideoStreamIndex.ts:119</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -340,7 +374,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#attendeeidforstreamid">attendeeIdForStreamId</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L246">src/videostreamindex/DefaultVideoStreamIndex.ts:246</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L250">src/videostreamindex/DefaultVideoStreamIndex.ts:250</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -364,7 +398,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#attendeeidfortrack">attendeeIdForTrack</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L200">src/videostreamindex/DefaultVideoStreamIndex.ts:200</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L218">src/videostreamindex/DefaultVideoStreamIndex.ts:218</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -410,7 +444,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L321">src/videostreamindex/DefaultVideoStreamIndex.ts:321</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L317">src/videostreamindex/DefaultVideoStreamIndex.ts:317</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -433,7 +467,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L340">src/videostreamindex/DefaultVideoStreamIndex.ts:340</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L338">src/videostreamindex/DefaultVideoStreamIndex.ts:338</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -456,7 +490,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L332">src/videostreamindex/DefaultVideoStreamIndex.ts:332</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L328">src/videostreamindex/DefaultVideoStreamIndex.ts:328</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -479,7 +513,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L310">src/videostreamindex/DefaultVideoStreamIndex.ts:310</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L306">src/videostreamindex/DefaultVideoStreamIndex.ts:306</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -503,7 +537,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#externaluseridfortrack">externalUserIdForTrack</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L223">src/videostreamindex/DefaultVideoStreamIndex.ts:223</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L234">src/videostreamindex/DefaultVideoStreamIndex.ts:234</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -527,7 +561,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#groupidforstreamid">groupIdForStreamId</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L262">src/videostreamindex/DefaultVideoStreamIndex.ts:262</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L266">src/videostreamindex/DefaultVideoStreamIndex.ts:266</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -551,7 +585,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#highestqualitystreamfromeachgroupexcludingself">highestQualityStreamFromEachGroupExcludingSelf</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L174">src/videostreamindex/DefaultVideoStreamIndex.ts:174</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L192">src/videostreamindex/DefaultVideoStreamIndex.ts:192</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -575,7 +609,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integratebitratesframe">integrateBitratesFrame</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L78">src/videostreamindex/DefaultVideoStreamIndex.ts:78</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L96">src/videostreamindex/DefaultVideoStreamIndex.ts:96</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -599,7 +633,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integrateindexframe">integrateIndexFrame</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L66">src/videostreamindex/DefaultVideoStreamIndex.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L73">src/videostreamindex/DefaultVideoStreamIndex.ts:73</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -623,7 +657,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integratesubscribeackframe">integrateSubscribeAckFrame</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L73">src/videostreamindex/DefaultVideoStreamIndex.ts:73</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L84">src/videostreamindex/DefaultVideoStreamIndex.ts:84</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -647,7 +681,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#integrateuplinkpolicydecision">integrateUplinkPolicyDecision</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L58">src/videostreamindex/DefaultVideoStreamIndex.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L65">src/videostreamindex/DefaultVideoStreamIndex.ts:65</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -671,7 +705,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#localstreamdescriptions">localStreamDescriptions</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L35">src/videostreamindex/DefaultVideoStreamIndex.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L42">src/videostreamindex/DefaultVideoStreamIndex.ts:42</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></h4>
@@ -689,7 +723,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#numberofvideopublishingparticipantsexcludingself">numberOfVideoPublishingParticipantsExcludingSelf</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L196">src/videostreamindex/DefaultVideoStreamIndex.ts:196</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L214">src/videostreamindex/DefaultVideoStreamIndex.ts:214</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -713,7 +747,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#remotestreamdescriptions">remoteStreamDescriptions</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L41">src/videostreamindex/DefaultVideoStreamIndex.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L48">src/videostreamindex/DefaultVideoStreamIndex.ts:48</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="videostreamdescription.html" class="tsd-signature-type">VideoStreamDescription</a><span class="tsd-signature-symbol">[]</span></h4>
@@ -755,7 +789,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#streamidfortrack">streamIdForTrack</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L278">src/videostreamindex/DefaultVideoStreamIndex.ts:278</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L282">src/videostreamindex/DefaultVideoStreamIndex.ts:282</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -779,7 +813,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#streamselectionunderbandwidthconstraint">streamSelectionUnderBandwidthConstraint</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L119">src/videostreamindex/DefaultVideoStreamIndex.ts:119</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L137">src/videostreamindex/DefaultVideoStreamIndex.ts:137</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -812,10 +846,28 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#streamspausedatsource">streamsPausedAtSource</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L300">src/videostreamindex/DefaultVideoStreamIndex.ts:300</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L296">src/videostreamindex/DefaultVideoStreamIndex.ts:296</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="defaultvideostreamidset.html" class="tsd-signature-type">DefaultVideoStreamIdSet</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="subscribeframesent" class="tsd-anchor"></a>
+					<h3>subscribe<wbr>Frame<wbr>Sent</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">subscribe<wbr>Frame<wbr>Sent<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videostreamindex.html">VideoStreamIndex</a>.<a href="../interfaces/videostreamindex.html#subscribeframesent">subscribeFrameSent</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/DefaultVideoStreamIndex.ts#L79">src/videostreamindex/DefaultVideoStreamIndex.ts:79</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -881,10 +933,10 @@
 								<a href="defaultvideostreamindex.html#currentsubscribeack" class="tsd-kind-icon">current<wbr>Subscribe<wbr>Ack</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-								<a href="defaultvideostreamindex.html#logger" class="tsd-kind-icon">logger</a>
+								<a href="defaultvideostreamindex.html#indexforsubscribe" class="tsd-kind-icon">index<wbr>For<wbr>Subscribe</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-								<a href="defaultvideostreamindex.html#ssrctostreammap" class="tsd-kind-icon">ssrc<wbr>ToStream<wbr>Map</a>
+								<a href="defaultvideostreamindex.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 								<a href="defaultvideostreamindex.html#streamtoattendeemap" class="tsd-kind-icon">stream<wbr>ToAttendee<wbr>Map</a>
@@ -893,7 +945,16 @@
 								<a href="defaultvideostreamindex.html#streamtoexternaluseridmap" class="tsd-kind-icon">stream<wbr>ToExternal<wbr>User<wbr>IdMap</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-								<a href="defaultvideostreamindex.html#tracktostreammap" class="tsd-kind-icon">track<wbr>ToStream<wbr>Map</a>
+								<a href="defaultvideostreamindex.html#subscribessrctostreammap" class="tsd-kind-icon">subscribe<wbr>Ssrc<wbr>ToStream<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="defaultvideostreamindex.html#subscribestreamtoattendeemap" class="tsd-kind-icon">subscribe<wbr>Stream<wbr>ToAttendee<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="defaultvideostreamindex.html#subscribestreamtoexternaluseridmap" class="tsd-kind-icon">subscribe<wbr>Stream<wbr>ToExternal<wbr>User<wbr>IdMap</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="defaultvideostreamindex.html#subscribetracktostreammap" class="tsd-kind-icon">subscribe<wbr>Track<wbr>ToStream<wbr>Map</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultvideostreamindex.html#videostreamdescription" class="tsd-kind-icon">video<wbr>Stream<wbr>Description</a>
@@ -969,6 +1030,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultvideostreamindex.html#streamspausedatsource" class="tsd-kind-icon">streams<wbr>Paused<wbr>AtSource</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultvideostreamindex.html#subscribeframesent" class="tsd-kind-icon">subscribe<wbr>Frame<wbr>Sent</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultvideostreamindex.html#tryselecthighbitrateforattendees" class="tsd-kind-icon">try<wbr>Select<wbr>High<wbr>Bitrate<wbr>For<wbr>Attendees</a>

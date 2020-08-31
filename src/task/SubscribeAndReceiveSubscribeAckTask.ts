@@ -65,6 +65,8 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.videoStreamIndex.integrateUplinkPolicyDecision([param]);
     }
 
+    this.context.videoStreamIndex.subscribeFrameSent();
+
     const isSendingStreams: boolean =
       this.context.videoDuplexMode === SdkStreamServiceType.TX ||
       this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX;

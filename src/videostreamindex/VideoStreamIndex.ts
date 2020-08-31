@@ -19,6 +19,11 @@ export default interface VideoStreamIndex {
   integrateIndexFrame(indexFrame: SdkIndexFrame): void;
 
   /**
+   * Subscribe frame sent
+   */
+  subscribeFrameSent(): void;
+
+  /**
    * Saves [[SdkSubscribeAckFrame]] in [[VideoStreamIndex]]
    */
   integrateSubscribeAckFrame(subscribeAck: SdkSubscribeAckFrame): void;
