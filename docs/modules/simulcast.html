@@ -102,31 +102,43 @@
 							</tr>
 						</thead>
 						<tbody><tr>
-								<td align="right">&lt;= 2 and</td>
-								<td align="center">&gt;= 1600 kbps</td>
+								<td align="right">&lt;= 4 and</td>
+								<td align="center">&gt;= 1000 kbps</td>
 								<td align="center">1280x720@15fps 1200 kbps</td>
 								<td align="center">320x180@15fps 300 kbps</td>
 							</tr>
 							<tr>
-								<td align="right">&lt;= 2 and</td>
-								<td align="center">&gt;= 1100 kbps</td>
-								<td align="center">960x540@15fps 900 kbps</td>
-								<td align="center">240x140@15fps 200 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">&lt;= 4 and</td>
-								<td align="center">&gt;= 600 kbps</td>
-								<td align="center">960x540@15fps 600 kbps</td>
-								<td align="center">240x140@15fps 200 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">&gt; 4 or</td>
-								<td align="center">&lt; 600 kbps</td>
-								<td align="center">640x360@15fps 400 kbps</td>
+								<td align="right">&lt;= 6 and</td>
+								<td align="center">&gt;= 350 kbps</td>
+								<td align="center">640x360@15fps 600 kbps</td>
 								<td align="center">320x180@15fps 200 kbps</td>
 							</tr>
+							<tr>
+								<td align="right">&lt;= 6 and</td>
+								<td align="center">&gt; 300 kbps</td>
+								<td align="center">640x360@15fps 600 kbps</td>
+								<td align="center">320x180@15fps 150 kbps</td>
+							</tr>
+							<tr>
+								<td align="right">&gt; 6  and</td>
+								<td align="center">&gt;= 350 kbps</td>
+								<td align="center">640x360@15fps 350 kbps</td>
+								<td align="center">320x180@15fps 200 kbps</td>
+							</tr>
+							<tr>
+								<td align="right">&gt; 6  and</td>
+								<td align="center">&gt;= 300 kbps</td>
+								<td align="center">640x360@15fps 350 kbps</td>
+								<td align="center">320x180@15fps 150 kbps</td>
+							</tr>
+							<tr>
+								<td align="right">Any</td>
+								<td align="center">&lt; 300 kbps</td>
+								<td align="center">Not used</td>
+								<td align="center">320x180@15fps 300 kbps</td>
+							</tr>
 					</tbody></table>
-					<p>When CPU and bandwidth consumption is overused, WebRTC can disable a layer or scale down resolution dynamically. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.</p>
+					<p>The table entries represent the maximum configuration.  When CPU and bandwidth consumption is overused, WebRTC will dynamically adjust bitrate, disable a layer or scale down resolution. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.</p>
 					<a href="#downlink--bandwidth-policy" id="downlink--bandwidth-policy" style="color: inherit; text-decoration: none;">
 						<h3>Downlink  Bandwidth Policy</h3>
 					</a>

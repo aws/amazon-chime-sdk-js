@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed removeLocalVideoTile so that the video tile is removed correctly for the user and attendees
 - Handle timing issue of receiving index during resubscribe
+- Update video simulcast guide doc
 
 ## [1.16.0] - 2020-08-20
 
