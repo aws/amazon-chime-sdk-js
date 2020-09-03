@@ -110,15 +110,15 @@ class SdkBaseTest extends KiteBaseTest {
 
   async createSeleniumSession(capabilities) {
     if (process.env.SELENIUM_GRID_PROVIDER === "browserstack") {
-      const session = await BrowserStackSession.createSession(capabilities);
+      const session = await BrowserStackSession.createSession(capabilities, this.getAppName());
       return session;
     } else if (process.env.SELENIUM_GRID_PROVIDER === "local") {
-      const session = await LocalSession.createSession(capabilities, this.remoteUrl);
+      const session = await LocalSession.createSession(capabilities, this.remoteUrl, this.getAppName());
       return session;
     } else {
       const invalidSessionIdRegEx = new RegExp(/^new_request:/);
       for (let i =0; i< 3; i++) {
-        const session = await SaucelabsSession.createSession(capabilities);
+        const session = await SaucelabsSession.createSession(capabilities, this.getAppName());
         const sessionId = await session.getSessionId();
         if (invalidSessionIdRegEx.test(sessionId)) {
           console.log(`Invalid Saucelabs session id : ${sessionId}. Retrying: ${i+1}`);
@@ -274,6 +274,14 @@ class SdkBaseTest extends KiteBaseTest {
 
   isMobilePlatform() {
     return this.capabilities.platform === 'ANDROID' || this.capabilities.platform === 'IOS';
+  }
+
+  getAppName() {
+    if(this.testName && this.testName.toLowerCase().includes('meetingreadinesschecker')) {
+      return 'meetingReadinessChecker';
+    } else {
+      return 'meeting';
+    }
   }
 }
 

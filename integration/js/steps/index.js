@@ -25,3 +25,8 @@ exports.WaitForRemoteParticipantsToTurnAudioOn = require('./WaitForRemotePartici
 exports.WaitForRemoteParticipantsToTurnAudioOff = require('./WaitForRemoteParticipantsToTurnAudioOff');
 exports.WaitForRemoteParticipantsToJoinMeeting = require('./WaitForRemoteParticipantsToJoinMeeting');
 exports.WaitForMeetingToBeCreated = require('./WaitForMeetingToBeCreated');
+
+exports.OpenMeetingReadinessCheckerAppStep = require('./OpenMeetingReadinessCheckerAppStep');
+exports.StartMeetingReadinessCheckerStep = require('./StartMeetingReadinessCheckerStep');
+exports.StartContentShareConnectivityCheckStep = require('./StartContentShareConnectivityCheckStep');
+exports.WaitForContentShareTestToBeReady = require('./WaitForContentShareTestToBeReady');

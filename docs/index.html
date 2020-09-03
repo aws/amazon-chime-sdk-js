@@ -794,6 +794,64 @@ meetingSession.audioVideo.stop();</code></pre>
 };
 
 meetingSession.audioVideo.addObserver(observer);</code></pre>
+				<a href="#meeting-readiness-checker" id="meeting-readiness-checker" style="color: inherit; text-decoration: none;">
+					<h3>Meeting readiness checker</h3>
+				</a>
+				<p><strong>Use case 27.</strong> Initialize the meeting readiness checker.</p>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> { DefaultMeetingReadinessChecker } <span class="hljs-keyword">from</span> <span class="hljs-string">'amazon-chime-sdk-js'</span>;
+
+<span class="hljs-comment">// In the usage examples below, you will use this meetingReadinessChecker object.</span>
+<span class="hljs-keyword">const</span> meetingReadinessChecker = <span class="hljs-keyword">new</span> DefaultMeetingReadinessChecker(logger, meetingSession);</code></pre>
+				<p><strong>Use case 28.</strong> Use the meeting readiness checker to perform local checks.</p>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> { CheckAudioInputFeedback } <span class="hljs-keyword">from</span> <span class="hljs-string">'amazon-chime-sdk-js'</span>;
+
+<span class="hljs-keyword">const</span> audioInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioInputDevices */</span>;
+<span class="hljs-keyword">const</span> audioInputFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkAudioInput(audioInputDeviceInfo.deviceId);
+
+<span class="hljs-keyword">switch</span> (audioInputFeedback) {
+  <span class="hljs-keyword">case</span> CheckAudioInputFeedback.Succeeded:
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Succeeded'</span>);
+    <span class="hljs-keyword">break</span>;
+  <span class="hljs-keyword">case</span> CheckAudioInputFeedback.Failed:
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Failed'</span>);
+    <span class="hljs-keyword">break</span>;
+  <span class="hljs-keyword">case</span> CheckAudioInputFeedback.PermissionDenied:
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Permission denied'</span>);
+    <span class="hljs-keyword">break</span>;
+}</code></pre>
+				<p><strong>Use case 29.</strong> Use the meeting readiness checker to perform end-to-end checks, e.g. audio, video, and content share.</p>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> {
+  CheckAudioConnectivityFeedback,
+  CheckContentShareConnectivityFeedback,
+  CheckVideoConnectivityFeedback
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'amazon-chime-sdk-js'</span>;
+
+<span class="hljs-comment">// Tests audio connection</span>
+<span class="hljs-keyword">const</span> audioDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioInputDevices */</span>;
+<span class="hljs-keyword">const</span> audioFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkAudioConnectivity(audioDeviceInfo.deviceId);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckAudioConnectivityFeedback[audioFeedback]}</span>`</span>);
+
+<span class="hljs-comment">// Test video connection</span>
+<span class="hljs-keyword">const</span> videoInputInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listVideoInputDevices */</span>;
+<span class="hljs-keyword">const</span> videoFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkVideoConnectivity(videoInputInfo.deviceId);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckVideoConnectivityFeedback[videoFeedback]}</span>`</span>);
+
+<span class="hljs-comment">// Tests content share connectivity</span>
+<span class="hljs-keyword">const</span> contentShareFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkContentShareConnectivity();
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckContentShareConnectivityFeedback[contentShareFeedback]}</span>`</span>);</code></pre>
+				<p><strong>Use case 30.</strong> Use the meeting readiness checker to perform network checks, e.g. TCP and UDP.</p>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> {
+  CheckNetworkUDPConnectivityFeedback,
+  CheckNetworkTCPConnectivityFeedback
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'amazon-chime-sdk-js'</span>;
+
+<span class="hljs-comment">// Tests for UDP network connectivity</span>
+<span class="hljs-keyword">const</span> networkUDPFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkNetworkUDPConnectivity();
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkUDPConnectivityFeedback[networkUDPFeedback]}</span>`</span>);
+
+<span class="hljs-comment">// Tests for TCP network connectivity</span>
+<span class="hljs-keyword">const</span> networkUDPFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkNetworkTCPConnectivity();
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkTCPConnectivityFeedback[networkUDPFeedback]}</span>`</span>);</code></pre>
 				<p>Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.</p>
 			</div>
 		</div>
@@ -812,6 +870,33 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/audiologevent.html" class="tsd-kind-icon">Audio<wbr>Log<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checkaudioconnectivityfeedback.html" class="tsd-kind-icon">Check<wbr>Audio<wbr>Connectivity<wbr>Feedback</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checkaudioinputfeedback.html" class="tsd-kind-icon">Check<wbr>Audio<wbr>Input<wbr>Feedback</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checkaudiooutputfeedback.html" class="tsd-kind-icon">Check<wbr>Audio<wbr>Output<wbr>Feedback</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checkcameraresolutionfeedback.html" class="tsd-kind-icon">Check<wbr>Camera<wbr>Resolution<wbr>Feedback</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checkcontentshareconnectivityfeedback.html" class="tsd-kind-icon">Check<wbr>Content<wbr>Share<wbr>Connectivity<wbr>Feedback</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checknetworktcpconnectivityfeedback.html" class="tsd-kind-icon">Check<wbr>NetworkTCPConnectivity<wbr>Feedback</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checknetworkudpconnectivityfeedback.html" class="tsd-kind-icon">Check<wbr>NetworkUDPConnectivity<wbr>Feedback</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checkvideoconnectivityfeedback.html" class="tsd-kind-icon">Check<wbr>Video<wbr>Connectivity<wbr>Feedback</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/checkvideoinputfeedback.html" class="tsd-kind-icon">Check<wbr>Video<wbr>Input<wbr>Feedback</a>
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/clientmetricreportdirection.html" class="tsd-kind-icon">Client<wbr>Metric<wbr>Report<wbr>Direction</a>
@@ -1001,6 +1086,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultmediadevicefactory.html" class="tsd-kind-icon">Default<wbr>Media<wbr>Device<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/defaultmeetingreadinesschecker.html" class="tsd-kind-icon">Default<wbr>Meeting<wbr>Readiness<wbr>Checker</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultmeetingsession.html" class="tsd-kind-icon">Default<wbr>Meeting<wbr>Session</a>
@@ -1511,6 +1599,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/mediastreambroker.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/meetingreadinesschecker.html" class="tsd-kind-icon">Meeting<wbr>Readiness<wbr>Checker</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/meetingsession.html" class="tsd-kind-icon">Meeting<wbr>Session</a>

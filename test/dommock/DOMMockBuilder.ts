@@ -5,7 +5,11 @@ import { Substitute } from '@fluffy-spoon/substitute';
 
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import SafariSDPMock from '../sdp/SafariSDPMock';
+import DisplayMediaState from './DisplayMediaState';
 import DOMMockBehavior from './DOMMockBehavior';
+import NotAllowedError from './NotAllowedError';
+import Overconstrainerd from './OverconstrainedError';
+import UserMediaState from './UserMediaState';
 
 // eslint-disable-next-line
 const GlobalAny = global as any;
@@ -304,8 +308,15 @@ export default class DOMMockBuilder {
       getDisplayMedia(
         _constraints: MockMediaStreamConstraints
       ): Promise<typeof GlobalAny.MediaStream> {
-        const mediaStream = Substitute.for<typeof GlobalAny.MediaStream>();
-        return Promise.resolve(mediaStream);
+        if (mockBehavior.getDisplayMediaResult === DisplayMediaState.Success) {
+          const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
+          const mediaStream = new mediaStreamMaker();
+          return Promise.resolve(mediaStream);
+        } else if (mockBehavior.getDisplayMediaResult === DisplayMediaState.PermissionDenied) {
+          return Promise.reject(new NotAllowedError('Permission denied'));
+        } else {
+          return Promise.reject(new Error('failed to get display media'));
+        }
       }
 
       async getUserMedia(
@@ -341,6 +352,17 @@ export default class DOMMockBuilder {
             mediaStream.active = true;
             resolve(mediaStream);
           } else {
+            if (
+              mockBehavior.getUserMediaResult &&
+              mockBehavior.getUserMediaResult === UserMediaState.OverConstrained
+            ) {
+              reject(new Overconstrainerd('Resolution not supported'));
+            } else if (
+              mockBehavior.getUserMediaResult &&
+              mockBehavior.getUserMediaResult === UserMediaState.PermissionDenied
+            ) {
+              reject(new NotAllowedError('Permission denied'));
+            }
             reject(new Error('failed to get media device'));
           }
         });
@@ -476,6 +498,10 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.window = GlobalAny;
+
+    GlobalAny.Audio = class MockAudio {
+      constructor(public src?: string) {}
+    };
 
     GlobalAny.Event = class MockEvent {
       track: typeof GlobalAny.MediaStreamTrack;
@@ -931,7 +957,9 @@ export default class DOMMockBuilder {
       }
 
       createMediaStreamDestination(): MediaStreamAudioDestinationNode {
-        return new GlobalAny.MediaStreamAudioDestinationNode();
+        return mockBehavior.createMediaStreamDestinationSuccess
+          ? new GlobalAny.MediaStreamAudioDestinationNode()
+          : null;
       }
 
       createMediaStreamSource(mediaStream: MediaStream): MediaStreamAudioSourceNode {
@@ -955,7 +983,15 @@ export default class DOMMockBuilder {
           // @ts-ignore
           connect(_destinationParam: AudioParam, _output?: number): void {},
           // @ts-ignore
-          gain: {},
+          disconnect(_destinationParam: AudioParam): void {},
+          // @ts-ignore
+          gain: {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            linearRampToValueAtTime(value: number, endTime: number): AudioParam {
+              // @ts-ignore
+              return {};
+            },
+          },
         };
       }
 
@@ -964,10 +1000,13 @@ export default class DOMMockBuilder {
         return {
           // @ts-ignore
           start(_when?: number): void {},
+          stop(): void {},
           // @ts-ignore
           connect(destinationNode: AudioNode, _output?: number, _input?: number): AudioNode {
             return destinationNode;
           },
+          // @ts-ignore
+          disconnect(_destinationNode: AudioNode): void {},
           // @ts-ignore
           frequency: {},
         };
@@ -1066,6 +1105,7 @@ export default class DOMMockBuilder {
     delete GlobalAny.matchMedia;
     delete GlobalAny.document;
     delete GlobalAny.requestAnimationFrame;
+    delete GlobalAny.Audio;
     delete GlobalAny.AudioContext;
     delete GlobalAny.AudioBufferSourceNode;
     delete GlobalAny.AudioBuffer;

@@ -30,7 +30,6 @@ verbose('git clean -ffxd .')
 
 verbose("git checkout tags/amazon-chime-sdk-js@#{npm_version} -b deploy-to-prod")
 
-
 Dir.chdir('demos/browser/')
 verbose('npm uninstall amazon-chime-sdk-js')
 verbose("npm install amazon-chime-sdk-js@#{npm_version}")
@@ -44,10 +43,16 @@ end
 
 meeting_app = 'app/meeting/meeting.ts'
 meetingV2_app = 'app/meetingV2/meetingV2.ts'
+meetingReadinessChecker_app = 'app/meetingReadinessChecker/meetingReadinessChecker.ts'
 
 File.write(meeting_app, File.read(meeting_app).gsub("'../../../../src/index'", "'amazon-chime-sdk-js'"))
 File.write(meetingV2_app, File.read(meetingV2_app).gsub("'../../../../src/index'", "'amazon-chime-sdk-js'"))
+File.write(meetingReadinessChecker_app, File.read(meetingReadinessChecker_app).gsub("'../../../../src/index'", "'amazon-chime-sdk-js'"))
+
 verbose('npm run build --app=meeting')
 verbose('npm run build')
+verbose('npm run build --app=meetingReadinessChecker')
+
 Dir.chdir('../serverless/')
 verbose('npm run deploy -- -b chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary')
+verbose('npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary -s chime-sdk-meeting-readiness-checker-prod-canary -a meetingReadinessChecker')

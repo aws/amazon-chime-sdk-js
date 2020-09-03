@@ -18,6 +18,7 @@ And install aws and sam command line tools:
 
 ### Run deployment script
 
+#### Meeting app
 The following will create a CloudFormation stack containing a Lambda and
 API Gateway deployment that runs the `meeting` demo.
 
@@ -27,7 +28,17 @@ npm install
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
-The script will create an S3 bucket and CloudFormation stack
+#### Meeting Readiness Checker app
+The following will create a CloudFormation stack containing a Lambda and
+API Gateway deployment that runs the `meetingReadinessChecker` demo.
+
+```
+cd demos/serverless
+npm install
+npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meetingReadinessChecker
+```
+
+These script will create an S3 bucket and CloudFormation stack
 with Lambda and API Gateway resources required to run the demo. After the script
 finishes, it will output a URL that can be opened in a browser.
 
