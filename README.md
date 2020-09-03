@@ -49,6 +49,7 @@ And review the following guides:
 - [Virtual Classroom](https://github.com/aws-samples/amazon-chime-sdk-classroom-demo) - An online classroom built with Electron and React
 - [Live Events](https://github.com/aws-samples/amazon-chime-live-events) - Interactive live events solution
 - [PSTN Integration](https://github.com/aws-samples/amazon-chime-voiceconnector-transcription) - Integrating PSTN callers with Amazon Chime SDK meetings
+- [React Components and Demo](https://github.com/aws/amazon-chime-sdk-component-library-react) - A component library for building meetings
 
 ## Installation
 
