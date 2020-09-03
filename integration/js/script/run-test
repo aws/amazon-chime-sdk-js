@@ -4,12 +4,18 @@ function start_demo_meeting {
     cd ~/build/aws/amazon-chime-sdk-js/demos/browser
     uuid=$(uuidgen)
     mkdir -p logs
-    if [[ $1 == 'v1' ]]
+    if [[ $1 == 'meetingReadinessChecker' ]]
     then
-      extra_args='--app=meeting'
-      echo "Starting the demo v1"
+      extra_args='--app=meetingReadinessChecker'
+      echo "Starting meeting readiness checker"
     else
-      echo "Starting the demo v2"
+      if [[ $1 == 'v1' ]]
+      then
+        extra_args='--app=meeting'
+        echo "Starting the demo v1"
+      else
+        echo "Starting the demo v2"
+      fi
     fi
     npm run start $extra_args &> logs/$uuid.log &
 }
@@ -44,11 +50,16 @@ function wait_for_demo_to_start {
 
 curr=`pwd`
 
-if [[ $1 == screen_share ]]
+if [[ $1 == meeting_readiness_checker ]]
 then
-  start_demo_meeting 'v1'
+  start_demo_meeting 'meetingReadinessChecker'
 else
-  start_demo_meeting
+  if [[ $1 == screen_share ]]
+  then
+    start_demo_meeting 'v1'
+  else
+    start_demo_meeting
+  fi
 fi
 
 wait_for_demo_to_start 8080
@@ -88,6 +99,9 @@ case $1 in
       ;;
    data_message)
       r data_message_test.config.json
+      ;;
+   meeting_readiness_checker)
+      r meeting_readiness_checker_test.config.json
       ;;
    *)
       r audio_test.config.json

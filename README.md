@@ -840,4 +840,77 @@ const observer = {
 meetingSession.audioVideo.addObserver(observer);
 ```
 
+### Meeting readiness checker
+
+**Use case 27.** Initialize the meeting readiness checker.
+
+```js
+import { DefaultMeetingReadinessChecker } from 'amazon-chime-sdk-js';
+ 
+// In the usage examples below, you will use this meetingReadinessChecker object.
+const meetingReadinessChecker = new DefaultMeetingReadinessChecker(logger, meetingSession);
+```
+
+**Use case 28.** Use the meeting readiness checker to perform local checks.
+
+```js
+import { CheckAudioInputFeedback } from 'amazon-chime-sdk-js';
+ 
+const audioInputDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioInputDevices */;
+const audioInputFeedback = await meetingReadinessChecker.checkAudioInput(audioInputDeviceInfo.deviceId);
+ 
+switch (audioInputFeedback) {
+  case CheckAudioInputFeedback.Succeeded:
+    console.log('Succeeded');
+    break;
+  case CheckAudioInputFeedback.Failed:
+    console.log('Failed');
+    break;
+  case CheckAudioInputFeedback.PermissionDenied:
+    console.log('Permission denied');
+    break;
+}
+```
+
+**Use case 29.** Use the meeting readiness checker to perform end-to-end checks, e.g. audio, video, and content share.
+
+```js
+import {
+  CheckAudioConnectivityFeedback,
+  CheckContentShareConnectivityFeedback,
+  CheckVideoConnectivityFeedback
+} from 'amazon-chime-sdk-js';
+ 
+// Tests audio connection
+const audioDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioInputDevices */;
+const audioFeedback = await meetingReadinessChecker.checkAudioConnectivity(audioDeviceInfo.deviceId);
+console.log(`Feedback result: ${CheckAudioConnectivityFeedback[audioFeedback]}`);
+ 
+// Test video connection
+const videoInputInfo = /* An array item from meetingSession.audioVideo.listVideoInputDevices */;
+const videoFeedback = await meetingReadinessChecker.checkVideoConnectivity(videoInputInfo.deviceId);
+console.log(`Feedback result: ${CheckVideoConnectivityFeedback[videoFeedback]}`);
+ 
+// Tests content share connectivity
+const contentShareFeedback = await meetingReadinessChecker.checkContentShareConnectivity();
+console.log(`Feedback result: ${CheckContentShareConnectivityFeedback[contentShareFeedback]}`);
+```
+
+**Use case 30.** Use the meeting readiness checker to perform network checks, e.g. TCP and UDP.
+
+```js
+import {
+  CheckNetworkUDPConnectivityFeedback,
+  CheckNetworkTCPConnectivityFeedback
+} from 'amazon-chime-sdk-js';
+ 
+// Tests for UDP network connectivity
+const networkUDPFeedback = await meetingReadinessChecker.checkNetworkUDPConnectivity();
+console.log(`Feedback result: ${CheckNetworkUDPConnectivityFeedback[networkUDPFeedback]}`);
+ 
+// Tests for TCP network connectivity
+const networkUDPFeedback = await meetingReadinessChecker.checkNetworkTCPConnectivity();
+console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkUDPFeedback]}`);
+```
+ 
 Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
