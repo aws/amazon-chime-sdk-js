@@ -261,7 +261,9 @@ import SignalingClientJoin from './signalingclient/SignalingClientJoin';
 import SignalingClientObserver from './signalingclientobserver/SignalingClientObserver';
 import SignalingClientSubscribe from './signalingclient/SignalingClientSubscribe';
 import SignalingSession from './screenviewing/signalingsession/SignalingSession';
+import SimulcastLayers from './simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from './transceivercontroller/SimulcastTransceiverController';
+import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplinkObserver';
 import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
 import Some from './maybe/Some';
@@ -289,6 +291,7 @@ import VideoTileController from './videotilecontroller/VideoTileController';
 import VideoTileControllerFacade from './videotilecontroller/VideoTileControllerFacade';
 import VideoTileFactory from './videotilefactory/VideoTileFactory';
 import VideoTileState from './videotile/VideoTileState';
+import VideoTileStatusCode from './videotile/VideoTileStatusCode';
 import VideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import VolumeIndicatorAdapter from './volumeindicatoradapter/VolumeIndicatorAdapter';
 import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
@@ -561,7 +564,9 @@ export {
   SignalingClientObserver,
   SignalingClientSubscribe,
   SignalingSession,
+  SimulcastLayers,
   SimulcastTransceiverController,
+  SimulcastUplinkObserver,
   SimulcastUplinkPolicy,
   SimulcastVideoStreamIndex,
   Some,
@@ -589,6 +594,7 @@ export {
   VideoTileControllerFacade,
   VideoTileFactory,
   VideoTileState,
+  VideoTileStatusCode,
   VideoUplinkBandwidthPolicy,
   VolumeIndicatorAdapter,
   WaitForAttendeePresenceTask,

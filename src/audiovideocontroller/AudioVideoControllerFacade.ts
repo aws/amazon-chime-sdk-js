@@ -9,4 +9,5 @@ export default interface AudioVideoControllerFacade {
   start(): void;
   stop(): void;
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport>;
+  getRemoteVideosAvailable(): { attendeeId: string; externalUserId: string }[];
 }

@@ -3,6 +3,7 @@
 
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import SimulcastUplinkObserver from './SimulcastUplinkObserver';
 
 /**
  * A [[VideoUplinkBandwidthPolicy]] makes decisions about uplink video
@@ -56,4 +57,14 @@ export default interface VideoUplinkBandwidthPolicy {
    * Returns the selected [[MediaTrackConstraints]] to update
    */
   chooseMediaTrackConstraints(): MediaTrackConstraints;
+
+  /**
+   * Adds SimulcastUplinkObserver to observe simulcast uplink changes
+   */
+  addObserver?(observer: SimulcastUplinkObserver): void;
+
+  /**
+   * Removes SimulcastUplinkObserver
+   */
+  removeObserver?(observer: SimulcastUplinkObserver): void;
 }

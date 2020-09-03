@@ -74,6 +74,7 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
       videoUplinkBandwidthPolicy,
     } = this.context;
 
+    const oldAttendees = videoStreamIndex.allVideoSendingAttendeesExcludingSelf(selfAttendeeId);
     videoStreamIndex.integrateIndexFrame(indexFrame);
     videoDownlinkBandwidthPolicy.updateIndex(videoStreamIndex);
     videoUplinkBandwidthPolicy.updateIndex(videoStreamIndex);
@@ -81,6 +82,18 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
     this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy);
     this.updateVideoAvailability(indexFrame);
     this.handleIndexVideosPausedAtSource();
+    const newAttendees = videoStreamIndex.allVideoSendingAttendeesExcludingSelf(selfAttendeeId);
+    if (oldAttendees.length !== newAttendees.length) {
+      this.publishRemoteVideoAttendees(newAttendees);
+    }
+  }
+
+  private publishRemoteVideoAttendees(
+    attendees: { attendeeId: string; externalUserId: string }[]
+  ): void {
+    this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
+      Maybe.of(observer.remoteVideosAvailableDidChange).map(f => f.bind(observer)(attendees));
+    });
   }
 
   private resubscribe(

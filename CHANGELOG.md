@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add npm login and logout as part of publish script
+- Add simulcast change notification methods and observers
+- Add remote videos available observer and method
 
 ### Changed
 - Change WebRTC semantics to Unified Plan by default for Chromium-based browsers

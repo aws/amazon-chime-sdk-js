@@ -39,9 +39,12 @@ export default interface VideoStreamIndex {
   allStreams(): VideoStreamIdSet;
 
   /**
-   * Returns the attendee ids of attendees who are publishing videos excluding self
+   * Returns the attendee id and external user ids of attendees who are publishing videos excluding self
+   * @returns { attendeeId: string; externalUserId: string }[]
    */
-  allVideoSendingAttendeesExcludingSelf(selfAttendeeId: string): Set<string>;
+  allVideoSendingAttendeesExcludingSelf(
+    selfAttendeeId: string
+  ): { attendeeId: string; externalUserId: string }[];
 
   /**
    * Return a selection set of streams for subscription based on self attendee id, size information of tiles, bandwidth limitation

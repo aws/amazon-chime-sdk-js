@@ -7,6 +7,7 @@ import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
 import VideoTileState from '../videotile/VideoTileState';
+import VideoTileStatusCode from '../videotile/VideoTileStatusCode';
 
 export default interface AudioVideoObserver {
   /**
@@ -33,7 +34,7 @@ export default interface AudioVideoObserver {
   /**
    * Called whenever a tile has been removed.
    */
-  videoTileWasRemoved?(tileId: number): void;
+  videoTileWasRemoved?(tileId: number, status?: VideoTileStatusCode): void;
 
   /**
    * Called when video availability has changed. This information can be used to decide whether to
@@ -107,4 +108,11 @@ export default interface AudioVideoObserver {
    * trigger a message to the user about the situation.
    */
   videoSendDidBecomeUnavailable?(): void;
+
+  /**
+   * Called when a remote client starts/stops video
+   */
+  remoteVideosAvailableDidChange?(
+    attendees: { attendeeId: string; externalUserId: string }[]
+  ): void;
 }

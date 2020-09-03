@@ -52,6 +52,12 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     return this.audioVideoController.getRTCPeerConnectionStats(selector);
   }
 
+  getRemoteVideosAvailable(): { attendeeId: string; externalUserId: string }[] {
+    const result = this.audioVideoController.getRemoteVideosAvailable();
+    this.trace('getRemoteVideosAvailable', null, result);
+    return result;
+  }
+
   bindAudioElement(element: HTMLAudioElement): boolean {
     const result = this.audioMixController.bindAudioElement(element);
     this.trace('bindAudioElement', element.id, result);

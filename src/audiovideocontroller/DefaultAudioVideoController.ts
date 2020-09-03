@@ -170,6 +170,20 @@ export default class DefaultAudioVideoController implements AudioVideoController
     return this.rtcPeerConnection.getStats(selector);
   }
 
+  getRemoteVideosAvailable(): { attendeeId: string; externalUserId: string }[] {
+    if (!this.meetingSessionContext) {
+      this.logger.info('meeting session context is not initialized');
+      return [];
+    }
+    if (!this.meetingSessionContext.videoStreamIndex) {
+      this.logger.info('meeting session context has no video stream index');
+      return [];
+    }
+    const selfAttendeeId = this._configuration.credentials.attendeeId;
+    const videoStreamIndex = this.meetingSessionContext.videoStreamIndex;
+    return videoStreamIndex.allVideoSendingAttendeesExcludingSelf(selfAttendeeId);
+  }
+
   addObserver(observer: AudioVideoObserver): void {
     this.logger.info('adding meeting observer');
     this.observerQueue.add(observer);
@@ -237,10 +251,14 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
     if (this.enableSimulcast) {
-      this.meetingSessionContext.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy(
-        this.configuration.credentials.attendeeId,
-        this.meetingSessionContext.logger
-      );
+      if (
+        !(this.meetingSessionContext.videoUplinkBandwidthPolicy instanceof SimulcastUplinkPolicy)
+      ) {
+        this.meetingSessionContext.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy(
+          this.configuration.credentials.attendeeId,
+          this.meetingSessionContext.logger
+        );
+      }
       this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
         this.logger,
         this.meetingSessionContext.videoTileController

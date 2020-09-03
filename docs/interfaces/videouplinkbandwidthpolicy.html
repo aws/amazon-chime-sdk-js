@@ -97,10 +97,12 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#choosecaptureandencodeparameters" class="tsd-kind-icon">choose<wbr>Capture<wbr>And<wbr>Encode<wbr>Parameters</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#chooseencodingparameters" class="tsd-kind-icon">choose<wbr>Encoding<wbr>Parameters</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#choosemediatrackconstraints" class="tsd-kind-icon">choose<wbr>Media<wbr>Track<wbr>Constraints</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#maxbandwidthkbps" class="tsd-kind-icon">max<wbr>Bandwidth<wbr>Kbps</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#sethasbandwidthpriority" class="tsd-kind-icon">set<wbr>Has<wbr>Bandwidth<wbr>Priority</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#setidealmaxbandwidthkbps" class="tsd-kind-icon">set<wbr>Ideal<wbr>Max<wbr>Bandwidth<wbr>Kbps</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videouplinkbandwidthpolicy.html#updateconnectionmetric" class="tsd-kind-icon">update<wbr>Connection<wbr>Metric</a></li>
@@ -114,6 +116,34 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="addobserver" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> add<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="simulcastuplinkobserver.html" class="tsd-signature-type">SimulcastUplinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L64">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:64</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds SimulcastUplinkObserver to observe simulcast uplink changes</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="simulcastuplinkobserver.html" class="tsd-signature-type">SimulcastUplinkObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="choosecaptureandencodeparameters" class="tsd-anchor"></a>
 					<h3>choose<wbr>Capture<wbr>And<wbr>Encode<wbr>Parameters</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -123,7 +153,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L28">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L29">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:29</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -146,7 +176,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L48">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L49">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -168,7 +198,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L58">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L59">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -190,7 +220,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L33">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L34">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -199,6 +229,34 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="removeobserver" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> remove<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="simulcastuplinkobserver.html" class="tsd-signature-type">SimulcastUplinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L69">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:69</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Removes SimulcastUplinkObserver</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="simulcastuplinkobserver.html" class="tsd-signature-type">SimulcastUplinkObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -212,7 +270,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L43">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L44">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:44</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -240,7 +298,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L38">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L39">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -268,7 +326,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L53">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L54">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:54</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -298,7 +356,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L16">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L17">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -327,7 +385,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L22">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L23">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -358,6 +416,9 @@
 						<a href="videouplinkbandwidthpolicy.html" class="tsd-kind-icon">Video<wbr>Uplink<wbr>Bandwidth<wbr>Policy</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videouplinkbandwidthpolicy.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videouplinkbandwidthpolicy.html#choosecaptureandencodeparameters" class="tsd-kind-icon">choose<wbr>Capture<wbr>And<wbr>Encode<wbr>Parameters</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
@@ -368,6 +429,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videouplinkbandwidthpolicy.html#maxbandwidthkbps" class="tsd-kind-icon">max<wbr>Bandwidth<wbr>Kbps</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videouplinkbandwidthpolicy.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videouplinkbandwidthpolicy.html#sethasbandwidthpriority" class="tsd-kind-icon">set<wbr>Has<wbr>Bandwidth<wbr>Priority</a>

@@ -1,6 +1,8 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
+
 /**
  * [[VideoTileState]] encapsulates the state of a [[VideoTile]]
  */
@@ -108,6 +110,11 @@ export default class VideoTileState {
    */
   streamId: number | null = null;
 
+  /**
+   * Simulcast layer being received
+   */
+  simulcastLayer: SimulcastLayers = SimulcastLayers.High;
+
   clone(): VideoTileState {
     const cloned = new VideoTileState();
     cloned.tileId = this.tileId;
@@ -129,6 +136,7 @@ export default class VideoTileState {
     cloned.videoElementPhysicalWidthPixels = this.videoElementPhysicalWidthPixels;
     cloned.videoElementPhysicalHeightPixels = this.videoElementPhysicalHeightPixels;
     cloned.streamId = this.streamId;
+    cloned.simulcastLayer = this.simulcastLayer;
     return cloned;
   }
 }

@@ -2,11 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
+import Maybe from '../maybe/Maybe';
+import AsyncScheduler from '../scheduler/AsyncScheduler';
+import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import BitrateParameters from './BitrateParameters';
+import SimulcastUplinkObserver from './SimulcastUplinkObserver';
 import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 
 const enum ActiveStreams {
@@ -46,6 +50,9 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
 
   private currLocalDescriptions: VideoStreamDescription[] = [];
   private nextLocalDescriptions: VideoStreamDescription[] = [];
+
+  private activeSimulcastLayers: SimulcastLayers;
+  private observerQueue: Set<SimulcastUplinkObserver> = new Set<SimulcastUplinkObserver>();
 
   constructor(private selfAttendeeId: string, private logger: Logger) {
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, true);
@@ -177,9 +184,11 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
     };
     return trackConstraint;
   }
+
   chooseEncodingParameters(): Map<string, RTCRtpEncodingParameters> {
     this.currentQualityMap = this.newQualityMap;
     this.currentActiveStreams = this.newActiveStreams;
+    this.publishEncodingSimulcastLayers();
     return this.currentQualityMap;
   }
 
@@ -326,5 +335,54 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
       });
     }
     return qualityString;
+  }
+
+  getEncodingSimulcastLayers(): SimulcastLayers {
+    switch (this.currentActiveStreams) {
+      case ActiveStreams.kHiAndLow:
+        this.activeSimulcastLayers = SimulcastLayers.LowAndHigh;
+        break;
+      case ActiveStreams.kMidAndLow:
+        this.activeSimulcastLayers = SimulcastLayers.LowAndMedium;
+        break;
+      case ActiveStreams.kLow:
+        this.activeSimulcastLayers = SimulcastLayers.Low;
+        break;
+      default:
+        this.logger.debug(
+          () =>
+            `currentActiveStreams: ${this.currentActiveStreams}  did not match any enum values of ActiveStreams`
+        );
+    }
+    return this.activeSimulcastLayers;
+  }
+
+  private publishEncodingSimulcastLayers(): void {
+    this.activeSimulcastLayers = this.getEncodingSimulcastLayers();
+    this.forEachObserver(observer => {
+      Maybe.of(observer.encodingSimulcastLayersDidChange).map(f =>
+        f.bind(observer)(this.activeSimulcastLayers)
+      );
+    });
+  }
+
+  addObserver(observer: SimulcastUplinkObserver): void {
+    this.logger.info('adding simulcast uplink observer');
+    this.observerQueue.add(observer);
+  }
+
+  removeObserver(observer: SimulcastUplinkObserver): void {
+    this.logger.info('removing simulcast uplink observer');
+    this.observerQueue.delete(observer);
+  }
+
+  private forEachObserver(observerFunc: (observer: SimulcastUplinkObserver) => void): void {
+    for (const observer of this.observerQueue) {
+      new AsyncScheduler().start(() => {
+        if (this.observerQueue.has(observer)) {
+          observerFunc(observer);
+        }
+      });
+    }
   }
 }
