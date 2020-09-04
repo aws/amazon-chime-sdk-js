@@ -12,13 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Change WebRTC semantics to Unified Plan by default for Chromium-based browsers
+- Update video simulcast guide doc
 
 ### Removed
 
 ### Fixed
 - Fixed removeLocalVideoTile so that the video tile is removed correctly for the user and attendees
 - Handle timing issue of receiving index during resubscribe
-- Update video simulcast guide doc
+- Mitigate Brew Sam installation issue
 
 ## [1.16.0] - 2020-08-20
 
