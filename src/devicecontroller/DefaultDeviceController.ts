@@ -18,8 +18,8 @@ import DeviceSelection from './DeviceSelection';
 export default class DefaultDeviceController implements DeviceControllerBasedMediaStreamBroker {
   private static permissionGrantedOriginDetectionThresholdMs = 1000;
   private static permissionDeniedOriginDetectionThresholdMs = 500;
-  private static defaultVideoWidth = 1280;
-  private static defaultVideoHeight = 720;
+  private static defaultVideoWidth = 960;
+  private static defaultVideoHeight = 540;
   private static defaultVideoFrameRate = 15;
   private static defaultVideoMaxBandwidthKbps = 1400;
   private static defaultSampleRate = 48000;
