@@ -329,6 +329,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         if (collections[i].value === 'simulcast') {
           this.enableSimulcast = true;
           this.log('attempt to enable simulcast');
+          const videoInputQuality = document.getElementById('video-input-quality') as HTMLSelectElement;
+          videoInputQuality.value = '720p';
         }
         if (collections[i].value === 'webaudio') {
           this.enableWebAudio = true;
