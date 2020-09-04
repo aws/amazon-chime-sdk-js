@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle timing issue of receiving index during resubscribe
 - Mitigate Brew Sam installation issue
 - Remove set command in travis awscli installation script
+- Add `--no-fail-on-empty-changeset` flag in deploy script to not fail for empty changeset
 
 ## [1.16.0] - 2020-08-20
 

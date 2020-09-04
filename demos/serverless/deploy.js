@@ -158,7 +158,7 @@ spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
 console.log('Deploying serverless application');
 spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--stack-name', `${stack}`,
                     '--parameter-overrides', `UseEventBridge=${useEventBridge}`,
-                    '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`]);
+                    '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`, '--no-fail-on-empty-changeset']);
 console.log("Amazon Chime SDK Meeting Demo URL: ");
 const output=spawnOrFail('aws', ['cloudformation', 'describe-stacks', '--stack-name', `${stack}`,
                     '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`]);
