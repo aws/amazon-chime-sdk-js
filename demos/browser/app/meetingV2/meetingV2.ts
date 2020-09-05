@@ -343,6 +343,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     videoInputQuality.addEventListener('change', async (_ev: Event) => {
       this.log('Video input quality is changed');
       switch (videoInputQuality.value) {
+        case 'default':
+          break;
         case '360p':
           this.audioVideo.chooseVideoInputQuality(640, 360, 15, 600);
           break;

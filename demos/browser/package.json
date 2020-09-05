@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "amazon-chime-sdk-js": "file:../..",
-    "aws-sdk": "^2.740.0",
+    "aws-sdk": "^2.747.0",
     "bootstrap": "4.5.0",
     "compression": "^1.7.4",
     "jquery": "^3.4.1",

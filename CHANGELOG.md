@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Make demo not calling chooseVideoInputQuality by default
 - Change default encode resolution back to 960x540
 
 ## [1.17.0] - 2020-09-04
