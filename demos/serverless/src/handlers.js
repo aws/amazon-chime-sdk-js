@@ -58,6 +58,11 @@ exports.join = async(event, context) => {
       // Any meeting ID you wish to associate with the meeting.
       // For simplicity here, we use the meeting title.
       ExternalMeetingId: query.title.substring(0, 64),
+
+      // Tags associated with the meeting. They can be used in cost allocation console
+      Tags: [
+        { Key: 'Department', Value: 'RND'}
+      ]
     };
     console.info('Creating new meeting: ' + JSON.stringify(request));
     meeting = await chime.createMeeting(request).promise();

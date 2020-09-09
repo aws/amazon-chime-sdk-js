@@ -30,6 +30,8 @@ Resources:
           - Effect: Allow
             Action:
               - 'chime:CreateMeeting'
+              - 'chime:TagMeeting'
+              - 'chime:TagResource'
               - 'chime:DeleteMeeting'
               - 'chime:GetMeeting'
               - 'chime:ListMeetings'
