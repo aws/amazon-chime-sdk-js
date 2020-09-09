@@ -31,7 +31,7 @@ function ensureBucket() {
     console.log(`Creating S3 bucket ${bucket}`);
     const s3 = spawnSync('aws', ['s3', 'mb', `s3://${bucket}`, '--region', `${region}`]);
     if (s3.status !== 0) {
-      console.log(`Failed to create bucket: ${JSON.stringify(s3)}`);
+      console.log(`Failed to create bucket: ${s3.status}`);
       console.log((s3.stderr || s3.stdout).toString());
       process.exit(s3.status)
     }
