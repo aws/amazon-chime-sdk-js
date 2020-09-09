@@ -181,7 +181,14 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
 
   bindVideoElement(videoElement: HTMLVideoElement | null): void {
     let tileUpdated = false;
+    // If videoElement is null, we are doing an unbinding
     if (this.tileState.boundVideoElement !== videoElement) {
+      if (videoElement === null) {
+        DefaultVideoTile.disconnectVideoStreamFromVideoElement(
+          this.tileState.boundVideoElement,
+          false
+        );
+      }
       this.tileState.boundVideoElement = videoElement;
       tileUpdated = true;
     }
