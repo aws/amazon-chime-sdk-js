@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Use pip to install aws sam cli for deployment script
 - Added meetings tags to serverless demo
+- Update PR template to add question about protocol and API change
 
 ### Removed
 
