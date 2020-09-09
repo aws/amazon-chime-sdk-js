@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Fixed bug related to unbinding a video element
 
 ## [1.17.2] - 2020-09-08
 ### Added
