@@ -206,7 +206,9 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     return trackConstraints;
   }
 
-  async checkContentShareConnectivity(): Promise<CheckContentShareConnectivityFeedback> {
+  async checkContentShareConnectivity(
+    sourceId?: string
+  ): Promise<CheckContentShareConnectivityFeedback> {
     let isContentShareStarted = false;
     let isAudioVideoStarted = false;
 
@@ -226,7 +228,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       this.meetingSession.audioVideo.start();
 
       this.meetingSession.audioVideo.addContentShareObserver(contentShareObserver);
-      await this.meetingSession.audioVideo.startContentShareFromScreenCapture();
+      await this.meetingSession.audioVideo.startContentShareFromScreenCapture(sourceId);
 
       await this.executeTimeoutTask(async () => {
         return isAudioVideoStarted && isContentShareStarted;

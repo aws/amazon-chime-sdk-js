@@ -492,6 +492,15 @@ describe('DefaultMeetingReadinessChecker', () => {
       expect(result).to.equal(CheckContentShareConnectivityFeedback.Succeeded);
     }).timeout(10000);
 
+    it('start content share success with source id', async () => {
+      domMockBehavior.getDisplayMediaResult = DisplayMediaState.Success;
+      domMockBehavior.triggeredEndedEventForStopStreamTrack = false;
+      const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity(
+        'sourceId'
+      );
+      expect(result).to.equal(CheckContentShareConnectivityFeedback.Succeeded);
+    }).timeout(10000);
+
     it('connection failure', async () => {
       attendeeAudioVideoController.skipStart = true;
       const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();

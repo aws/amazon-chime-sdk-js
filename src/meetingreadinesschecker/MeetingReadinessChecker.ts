@@ -44,7 +44,7 @@ export default interface MeetingReadinessChecker {
   /*
    * Tests content share connectivity
    */
-  checkContentShareConnectivity(): Promise<CheckContentShareConnectivityFeedback>;
+  checkContentShareConnectivity(sourceId?: string): Promise<CheckContentShareConnectivityFeedback>;
 
   /**
    * Tests audio connection

@@ -7,6 +7,7 @@ import UserMediaState from './UserMediaState';
 export default class DOMMockBehavior {
   asyncWaitMs: number = 10;
   getDisplayMediaResult: DisplayMediaState = DisplayMediaState.Success;
+  triggeredEndedEventForStopStreamTrack: boolean = true;
   getUserMediaResult: UserMediaState = UserMediaState.Success;
   getUserMediaSucceeds: boolean = true;
   getUserMediaAudioLabel: string = 'Default';
