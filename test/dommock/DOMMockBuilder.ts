@@ -175,7 +175,10 @@ export default class DOMMockBuilder {
       stop(): void {
         if (this.readyState === 'live') {
           this.readyState = 'ended';
-          if (this.listeners.hasOwnProperty('ended')) {
+          if (
+            this.listeners.hasOwnProperty('ended') &&
+            mockBehavior.triggeredEndedEventForStopStreamTrack
+          ) {
             this.listeners.ended.forEach((listener: MockListener) =>
               listener({
                 ...Substitute.for(),
