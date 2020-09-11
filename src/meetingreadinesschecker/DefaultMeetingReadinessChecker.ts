@@ -94,6 +94,9 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     const rampSec = 0.1;
     const maxGainValue = 0.1;
 
+    if (this.oscillatorNode) {
+      this.stopTone();
+    }
     this.audioContext = DefaultDeviceController.getAudioContext();
     this.gainNode = this.audioContext.createGain();
     this.gainNode.gain.value = 0;
@@ -127,6 +130,9 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     this.oscillatorNode.stop();
     this.oscillatorNode.disconnect(this.gainNode);
     this.gainNode.disconnect(this.destinationStream);
+    this.oscillatorNode = null;
+    this.gainNode = null;
+    this.destinationStream = null;
   }
 
   async checkVideoInput(videoInputDeviceInfo: MediaDeviceInfo): Promise<CheckVideoInputFeedback> {

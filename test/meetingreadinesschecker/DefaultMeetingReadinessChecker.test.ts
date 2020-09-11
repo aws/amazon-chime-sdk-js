@@ -33,6 +33,7 @@ import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCr
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
+import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultScreenShareFacade from '../../src/screensharefacade/DefaultScreenShareFacade';
 import ScreenShareFacade from '../../src/screensharefacade/ScreenShareFacade';
 import DefaultScreenShareViewFacade from '../../src/screenshareviewfacade/DefaultScreenShareViewFacade';
@@ -87,6 +88,10 @@ describe('DefaultMeetingReadinessChecker', () => {
       label,
       groupId,
     };
+  }
+
+  async function delay(timeoutMs: number): Promise<void> {
+    await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
   }
 
   class TestAudioVideoController extends NoOpAudioVideoController {
@@ -275,6 +280,28 @@ describe('DefaultMeetingReadinessChecker', () => {
         successCallback
       );
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
+    });
+
+    it('can be called multiple time', async () => {
+      const successCallback = (): Promise<boolean> => {
+        return new Promise(resolve => {
+          delay(100);
+          resolve(true);
+        });
+      };
+
+      const audioOutputFeedback1Promise = meetingReadinessCheckerController.checkAudioOutput(
+        getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
+        successCallback
+      );
+      const audioOutputFeedback2Promise = meetingReadinessCheckerController.checkAudioOutput(
+        getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
+        successCallback
+      );
+      const audioOutputFeedback1 = await audioOutputFeedback1Promise;
+      const audioOutputFeedback2 = await audioOutputFeedback2Promise;
+      expect(audioOutputFeedback1).to.equal(CheckAudioOutputFeedback.Succeeded);
+      expect(audioOutputFeedback2).to.equal(CheckAudioOutputFeedback.Succeeded);
     });
 
     it('use null device id if unavailable', async () => {
