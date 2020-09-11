@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update PR template to add question about protocol and API change
 - Add demos/browser package-lock to git, update webpack and jquery versions
 - Update integration-watchlist to include demos/browser with no exception for package.json
+- Change error to warn for logging Cloudwatch errors
 
 ### Removed
 
