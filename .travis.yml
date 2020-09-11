@@ -59,6 +59,13 @@ jobs:
         - source script/travis-awscli-installation
         - integration/js/script/install-kite
       script: npm run test:integration-data-message
+    - stage: integ_meeting_readiness_checker
+      if: (type = pull_request) OR (type = push AND branch != master)
+      before_install: script/needs-integration-test || travis_terminate 0
+      install:
+        - source script/travis-awscli-installation
+        - integration/js/script/install-kite
+      script: npm run test:integration-meeting-readiness-checker
     #Deploy
     - stage: deploy
       script: skip
