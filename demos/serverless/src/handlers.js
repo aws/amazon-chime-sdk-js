@@ -135,7 +135,12 @@ exports.logs = async (event, context) => {
   try {
     await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
   } catch (error) {
-    console.error(`Failed to put CloudWatch log events with error ${error.message} and params ${JSON.stringify(putLogEventsInput)}`);
+    const errorMessage = `Failed to put CloudWatch log events with error ${error} and params ${JSON.stringify(putLogEventsInput)}`;
+    if (error.code === 'DataAlreadyAcceptedException') {
+      console.warn(errorMessage);
+    } else {
+      console.error(errorMessage);
+    }
   }
   return response(200, 'application/json', JSON.stringify({}));
 };
