@@ -35,7 +35,7 @@
     "aws-sdk": "^2.750.0",
     "bootstrap": "4.5.0",
     "compression": "^1.7.4",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "popper.js": "^1.15.0"
   },
   "license": "Apache-2.0",
