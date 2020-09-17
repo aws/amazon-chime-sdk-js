@@ -211,11 +211,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           try {
             chimeMeetingId = await this.authenticate();
           } catch (error) {
+            const httpErrorMessage = 'UserMedia is not allowed in HTTP sites. Either use HTTPS or enable media capture on insecure sites.';
             (document.getElementById(
               'failed-meeting'
             ) as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
             (document.getElementById('failed-meeting-error') as HTMLDivElement).innerText =
-              error.message;
+              window.location.protocol === 'http:' ? httpErrorMessage : error.message;
             this.switchToFlow('flow-failed-meeting');
             return;
           }

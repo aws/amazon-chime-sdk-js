@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update integration-watchlist to include demos/browser with no exception for package.json
 - Change error to warn for logging Cloudwatch errors
 - Update README with use case to handle `realtimeSubscribeToVolumeIndicator` updates efficiently
+- Change error messaging for getUserMedia error
 
 ### Removed
 
