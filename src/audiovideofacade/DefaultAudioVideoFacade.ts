@@ -13,6 +13,7 @@ import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Device from '../devicecontroller/Device';
 import DeviceController from '../devicecontroller/DeviceController';
 import DevicePermission from '../devicecontroller/DevicePermission';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
@@ -392,6 +393,12 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
       frameRate: frameRate,
       maxBandwidthKbps: maxBandwidthKbps,
     });
+  }
+
+  getVideoInputQualitySettings(): VideoQualitySettings | null {
+    const result = this.deviceController.getVideoInputQualitySettings();
+    this.trace('getVideoInputQualitySettings');
+    return result;
   }
 
   enableWebAudio(flag: boolean): void {

@@ -175,6 +175,30 @@ describe('DefaultDeviceController', () => {
     });
   });
 
+  describe('getVideoInputQuality', () => {
+    it('get video input quality settings', async () => {
+      const width = 640;
+      const height = 360;
+      const frameRate = 15;
+      const maxBandwidthKbps = 600;
+      deviceController.chooseVideoInputQuality(width, height, frameRate, maxBandwidthKbps);
+
+      const videoInputQualitySettings = deviceController.getVideoInputQualitySettings();
+      expect(videoInputQualitySettings.videoWidth).to.equal(width);
+      expect(videoInputQualitySettings.videoHeight).to.equal(height);
+      expect(videoInputQualitySettings.videoFrameRate).to.equal(frameRate);
+      expect(videoInputQualitySettings.videoMaxBandwidthKbps).to.equal(maxBandwidthKbps);
+    });
+
+    it('get default video input quality settings', async () => {
+      const videoInputQualitySettings = deviceController.getVideoInputQualitySettings();
+      expect(videoInputQualitySettings.videoWidth).to.equal(960);
+      expect(videoInputQualitySettings.videoHeight).to.equal(540);
+      expect(videoInputQualitySettings.videoFrameRate).to.equal(15);
+      expect(videoInputQualitySettings.videoMaxBandwidthKbps).to.equal(1400);
+    });
+  });
+
   describe('chooseAudioInputDevice', () => {
     it('chooses no device', async () => {
       const device: Device = null;

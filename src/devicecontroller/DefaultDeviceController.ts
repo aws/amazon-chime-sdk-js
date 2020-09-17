@@ -14,6 +14,7 @@ import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import Device from './Device';
 import DevicePermission from './DevicePermission';
 import DeviceSelection from './DeviceSelection';
+import VideoQualitySettings from './VideoQualitySettings';
 
 export default class DefaultDeviceController implements DeviceControllerBasedMediaStreamBroker {
   private static permissionGrantedOriginDetectionThresholdMs = 1000;
@@ -38,10 +39,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private audioInputDestinationNode: MediaStreamAudioDestinationNode | null = null;
   private audioInputSourceNode: MediaStreamAudioSourceNode | null = null;
 
-  private videoWidth: number = DefaultDeviceController.defaultVideoWidth;
-  private videoHeight: number = DefaultDeviceController.defaultVideoHeight;
-  private videoFrameRate: number = DefaultDeviceController.defaultVideoFrameRate;
-  private videoMaxBandwidthKbps: number = DefaultDeviceController.defaultVideoMaxBandwidthKbps;
+  private videoInputQualitySettings: VideoQualitySettings = null;
 
   private useWebAudio: boolean = false;
 
@@ -51,14 +49,21 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
 
   constructor(private logger: Logger) {
-    let dimension = this.browserBehavior.requiresResolutionAlignment(
-      this.videoWidth,
-      this.videoHeight
+    this.videoInputQualitySettings = new VideoQualitySettings(
+      DefaultDeviceController.defaultVideoWidth,
+      DefaultDeviceController.defaultVideoHeight,
+      DefaultDeviceController.defaultVideoFrameRate,
+      DefaultDeviceController.defaultVideoMaxBandwidthKbps
     );
-    this.videoWidth = dimension[0];
-    this.videoHeight = dimension[1];
+
+    let dimension = this.browserBehavior.requiresResolutionAlignment(
+      this.videoInputQualitySettings.videoWidth,
+      this.videoInputQualitySettings.videoHeight
+    );
+    this.videoInputQualitySettings.videoWidth = dimension[0];
+    this.videoInputQualitySettings.videoHeight = dimension[1];
     this.logger.info(
-      `DefaultDeviceController video dimension ${this.videoWidth} x ${this.videoHeight}`
+      `DefaultDeviceController video dimension ${this.videoInputQualitySettings.videoWidth} x ${this.videoInputQualitySettings.videoHeight}`
     );
 
     try {
@@ -202,11 +207,17 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     maxBandwidthKbps: number
   ): void {
     let dimension = this.browserBehavior.requiresResolutionAlignment(width, height);
-    this.videoWidth = dimension[0];
-    this.videoHeight = dimension[1];
-    this.videoFrameRate = frameRate;
-    this.videoMaxBandwidthKbps = maxBandwidthKbps;
+    this.videoInputQualitySettings = new VideoQualitySettings(
+      dimension[0],
+      dimension[1],
+      frameRate,
+      maxBandwidthKbps
+    );
     this.updateMaxBandwidthKbps();
+  }
+
+  getVideoInputQualitySettings(): VideoQualitySettings | null {
+    return this.videoInputQualitySettings;
   }
 
   async acquireAudioInputStream(): Promise<MediaStream> {
@@ -396,7 +407,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   private updateMaxBandwidthKbps(): void {
     if (this.boundAudioVideoController) {
-      this.boundAudioVideoController.setVideoMaxBandwidthKbps(this.videoMaxBandwidthKbps);
+      this.boundAudioVideoController.setVideoMaxBandwidthKbps(
+        this.videoInputQualitySettings.videoMaxBandwidthKbps
+      );
     }
   }
 
@@ -745,9 +758,15 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       trackConstraints = device;
     }
     if (kind === 'video') {
-      trackConstraints.width = trackConstraints.width || { ideal: this.videoWidth };
-      trackConstraints.height = trackConstraints.height || { ideal: this.videoHeight };
-      trackConstraints.frameRate = trackConstraints.frameRate || { ideal: this.videoFrameRate };
+      trackConstraints.width = trackConstraints.width || {
+        ideal: this.videoInputQualitySettings.videoWidth,
+      };
+      trackConstraints.height = trackConstraints.height || {
+        ideal: this.videoInputQualitySettings.videoHeight,
+      };
+      trackConstraints.frameRate = trackConstraints.frameRate || {
+        ideal: this.videoInputQualitySettings.videoFrameRate,
+      };
       // TODO: try to replace hard-code value related to videos into quality-level presets
       // The following configs relaxes CPU overuse detection threshold to offer better encoding quality
       // @ts-ignore

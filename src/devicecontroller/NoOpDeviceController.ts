@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
@@ -6,6 +6,7 @@ import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceC
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
 import Device from './Device';
 import DevicePermission from './DevicePermission';
+import VideoQualitySettings from './VideoQualitySettings';
 
 export default class NoOpDeviceController extends NoOpMediaStreamBroker
   implements DeviceControllerBasedMediaStreamBroker {
@@ -57,6 +58,10 @@ export default class NoOpDeviceController extends NoOpMediaStreamBroker
     _frameRate: number,
     _maxBandwidthKbps: number
   ): void {}
+
+  getVideoInputQualitySettings(): VideoQualitySettings | null {
+    return null;
+  }
 
   enableWebAudio(_flag: boolean): void {}
 }

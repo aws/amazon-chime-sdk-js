@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add meeting readiness checker integ tests to travis config
 - Add optional parameter `sourceId` to checkContentShareConnectivity API
-- Update README with use case to handle `realtimeSubscribeToVolumeIndicator` updates efficiently
+- Add getVideoInputQualitySettings to retrieve the current video settings
 
 ### Changed
 - Use pip to install aws sam cli for deployment script
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add demos/browser package-lock to git, update webpack and jquery versions
 - Update integration-watchlist to include demos/browser with no exception for package.json
 - Change error to warn for logging Cloudwatch errors
+- Update README with use case to handle `realtimeSubscribeToVolumeIndicator` updates efficiently
 
 ### Removed
 
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed bug related to unbinding a video element
 - Fix tone does not stop when calling MeetingReadinessChecker.checkAudioOutput multiple times
 - Fixed demo css format issue from updating to bootstrap 4.5.1
+- Fix a minor syntax in DefaultSessionStateController
 
 ## [1.17.2] - 2020-09-08
 ### Added
