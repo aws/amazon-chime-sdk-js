@@ -292,6 +292,7 @@ import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/Vid
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoLogEvent from './statscollector/VideoLogEvent';
+import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
 import VideoStreamIdSet from './videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from './videostreamindex/VideoStreamIndex';
@@ -603,6 +604,7 @@ export {
   VideoDownlinkBandwidthPolicy,
   VideoElementFactory,
   VideoLogEvent,
+  VideoQualitySettings,
   VideoStreamDescription,
   VideoStreamIdSet,
   VideoStreamIndex,

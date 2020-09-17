@@ -4,6 +4,7 @@
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Device from './Device';
 import DevicePermission from './DevicePermission';
+import VideoQualitySettings from './VideoQualitySettings';
 
 /**
  * [[DeviceController]] keeps track of the devices being used for audio input
@@ -130,6 +131,11 @@ export default interface DeviceController {
     frameRate: number,
     maxBandwidthKbps: number
   ): void;
+
+  /**
+   * Get the current video input quality settings to request when enabling video.
+   */
+  getVideoInputQualitySettings(): VideoQualitySettings | null;
 
   /**
    * Sets the flag in [[DeviceController]] on whether to enable WebAudio-based device management.

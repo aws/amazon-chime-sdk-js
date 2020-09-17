@@ -473,6 +473,12 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(arg1, arg2, arg3, arg4));
     });
 
+    it('will call getVideoInputQualitySettings', () => {
+      const spy = sinon.spy(deviceController, 'getVideoInputQualitySettings');
+      facade.getVideoInputQualitySettings();
+      assert(spy.calledOnce);
+    });
+
     it('will call chooseAudioOutputDevice', () => {
       const spy = sinon.spy(deviceController, 'chooseAudioOutputDevice');
       const arg1 = '';
