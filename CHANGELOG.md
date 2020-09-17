@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed bug related to unbinding a video element
 - Fix tone does not stop when calling MeetingReadinessChecker.checkAudioOutput multiple times
+- Fixed demo css format issue from updating to bootstrap 4.5.1
 
 ## [1.17.2] - 2020-09-08
 ### Added
