@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add meeting readiness checker integ tests to travis config
 - Add optional parameter `sourceId` to checkContentShareConnectivity API
+- Update README with use case to handle `realtimeSubscribeToVolumeIndicator` updates efficiently
 
 ### Changed
 - Use pip to install aws sam cli for deployment script
