@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Demo] Adjust demo css to prevent unecessary scrollbars on windows and stretching in video grid
 - Update dependencies to TypeScript 4, `ts-loader`, and modern linting
 - [Demo] Update dependencies, too.
+- Remove unnecessary startAudioPreview in meeting demo
 
 ### Removed
 
