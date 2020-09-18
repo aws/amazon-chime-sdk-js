@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add meeting readiness checker integ tests to travis config
 - Add optional parameter `sourceId` to checkContentShareConnectivity API
 - Add getVideoInputQualitySettings to retrieve the current video settings
+- Add documentation for DefaultActiveSpeakerPolicy constructor
 
 ### Changed
 - Use pip to install aws sam cli for deployment script
