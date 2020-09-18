@@ -48,7 +48,7 @@ And review the following guides:
 - [Recording Demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) - Recording the meeting's audio, video and screen share in high definition
 - [Virtual Classroom](https://github.com/aws-samples/amazon-chime-sdk-classroom-demo) - An online classroom built with Electron and React
 - [Live Events](https://github.com/aws-samples/amazon-chime-live-events) - Interactive live events solution
-- [PSTN Integration](https://github.com/aws-samples/amazon-chime-voiceconnector-transcription) - Integrating PSTN callers with Amazon Chime SDK meetings
+- [PSTN Integration](https://github.com/aws-samples/amazon-chime-sdk-pstn-integration) - Integrating PSTN callers with Amazon Chime SDK meetings
 - [React Components and Demo](https://github.com/aws/amazon-chime-sdk-component-library-react) - A component library for building meetings
 
 ## Installation
@@ -413,7 +413,8 @@ meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
 > Note: In Chime SDK terms, a video tile is an object containing an attendee ID,
 a video stream, etc. To view a video in your application, you must bind a tile to a `<video>` element.
 > - Make sure you bind a tile to the same video element until the tile is removed.
-> - A tile is created with a new tile ID when the same attendee restarts the video.
+> - A local video tile can be identified using `localTile` property. 
+> - A tile is created with a new tile ID when the same remote attendee restarts the video.
 
 **Use case 13.** Start sharing your video. The local video element is flipped horizontally (mirrored mode).
 
