@@ -597,9 +597,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
       e => ((e as HTMLDivElement).style.display = 'none')
     );
     (document.getElementById(flow) as HTMLDivElement).style.display = 'block';
-    if (flow === 'flow-devices') {
-      this.startAudioPreview();
-    }
   }
 
   audioInputsChanged(_freshAudioInputDeviceList: MediaDeviceInfo[]): void {
