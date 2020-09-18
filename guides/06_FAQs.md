@@ -34,15 +34,39 @@ If you have feature requests or feedback, please fill out the [customer question
 
 The meetings created by the Amazon Chime Application and the SDK are distinct. Amazon Chime SDK is meant for customers who would like to build the experience into their existing applications and it is **NOT** a means to create an Amazon Chime meeting (with a PIN) that can be joined using our client application. You cannot use the Amazon Chime SDK to build a custom client to join an Amazon Chime meeting with a PIN.
 
+### Does the MeetingsNotificationsConfiguration only support SQS queues in us-east-1?
+
+Yes, we currently support SNS topics or SQS queues located in us-east-1 region only. For more details, please refer
+ to [Meeting Notification Configuration API](https://docs.aws.amazon.com/chime/latest/APIReference/API_MeetingNotificationConfiguration.html).
+
+### How can I learn about interruptions to the Amazon Chime service?
+
+You can be notified about Amazon Chime service interruptions at the https://status.aws.amazon.com/ website. In addition you can set up [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) events via the [AWS Personal Health Dashboard](https://aws.amazon.com/premiumsupport/technology/personal-health-dashboard/) for the Amazon Chime service. You can find the Amazon Chime SLA on this [webpage](https://aws.amazon.com/chime/sla/).
+
 ## Browser support
 
 ### What browsers are supported by the Amazon Chime SDK for JavaScript?
 
 You can find the complete list of browsers in this link: [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers). [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) support in a browser is a prerequisite for Amazon Chime SDK to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.
 
-### How can I learn about interruptions to the Amazon Chime service?
+### I am unable to select an audio output device in some browsers, is this a known issue?
 
-You can be notified about Amazon Chime service interruptions at the https://status.aws.amazon.com/ website. In addition you can set up [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) events via the [AWS Personal Health Dashboard](https://aws.amazon.com/premiumsupport/technology/personal-health-dashboard/) for the Amazon Chime service. You can find the Amazon Chime SLA on this [webpage](https://aws.amazon.com/chime/sla/).
+[Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.
+
+### My video disappears in Safari browsers, is this a known issue?
+
+macOS and iOS Safari browsers have limitations when you use a camera in more than one apps or tab. 
+For example, if you enable a video in two macOS Safari tabs, one video will go black. 
+Make sure to close all other apps and tabs that are using the camera.
+
+### I cannot join meeting in Firefox with no audio and video permission due to `no ice candidates were gathered` error, is this a known issue?
+
+In Firefox, if access to camera or microphone has been granted to the site — either by currently having a video or audio input, or as a result of the user choosing to always allow access — and the profile has not been configured with media.peerconnection.ice.default_address_only, then ICE will gather all interface addresses. If the user has not granted the appropriate permissions, or if that preference has been set, then the ICE stack will limit ICE candidates to a default interface only. The default interface is the one that was used to load the page. This is a privacy mechanism in Firefox to stop sites from de-anonymizing VPN users via WebRTC leakage.
+
+If the page itself is loaded via a different network interface than the one that is intended to be used by the Chime SDK to connect to Chime media resources, e.g., in a split-tunneling VPN where browser traffic uses the VPN interface but Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.
+
+Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.
+ 
 
 ### Is the Amazon Chime SDK supported on mobile browsers?
 
@@ -162,10 +186,6 @@ The Amazon Chime SDK has URL [rewriter hooks](https://aws.github.io/amazon-chime
 
 ## Mobile browser
 
-### I am unable to select audio output device in some browsers, is this a known issue?
-
-[Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.
-
 ### Is screen capture supported on mobile browsers?
 
 Amazon Chime SDK for JavaScript applications do not support content sharing on mobile browsers because a key dependency, WebRTC's [getDisplayMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia) is not available on these browsers. Clients joining from these devices can still view content shared by other participants in the call.
@@ -182,14 +202,27 @@ This is because Safari embedded [web view does not support WebRTC](https://forum
 
 This is a known issue and happens primarily due to this [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=951418). At present we do not have a workaround.
 
+### I only see iPhone or iPad microphone as audio input in iOS device, is that a known issue?
+
+iOS Safari has a known issue where it only lists one audio input device even when there are multiple. For example
+, if you plug in a wired headset to your iPhone, it will show up as iPhone microphone replacing the internal mic. For
+ more information, please refer to [the Webkit issue](https://bugs.webkit.org/show_bug.cgi?id=174833). 
+
 ### I can hear clicking noise from an attendee using iPhone X devices (X, XS, and XR).
 
 This is a known issue on iPhone X devices (X, XS, and XR) when using AudioContext-based APIs. For more information, see our comment in [the WebKit issue](https://bugs.webkit.org/show_bug.cgi?id=204625#c6).
+
+### I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.
+
+iOS Safari has a known issue where it does not automatically switch to the iOS internal speaker after users unplug
+ their wired headset. For more information, please refer to [the Webkit issue](https://bugs.webkit.org/show_bug.cgi?id=216389).
 
 ### **I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari in iOS and frozen tile in Chrome in Android, is this a known issue?**
 
 This is the default behavior that is specific to each browser. In Android, the video stream is muted when in background and thus, the video will show the last frame.
 Note that for Android, if an attendee joins later after the video stream is in background, it will show as a blank tile since the last frame is blank.
+For better user experience, we recommend considering [Chime SDK iOS](https://github.com/aws/amazon-chime-sdk-ios) and 
+[Chime SDK Android](https://github.com/aws/amazon-chime-sdk-android).
 
 ### **When I join a meeting in Chrome in Android 8 or 9 with speakerphone, other people could not hear me. Switch to default mic fixes the issue.**
 

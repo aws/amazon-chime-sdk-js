@@ -21,6 +21,8 @@ role with a policy allowing `chime:CreateMeeting`, `chime:DeleteMeeting`, and
 
 3. Open http://localhost:8080 in your browser.
 
+The meeting created with a local server is only available within your browser.
+
 ### Demo applications
 
 Browser demo applications are located in the `app` folder. Current demos are:
