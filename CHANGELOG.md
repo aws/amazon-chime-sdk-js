@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add MeetingReadinessCheckerConfiguration to allow custom configuration for meeting readiness checker
+- Create log stream before logging begins
 
 ### Changed
 - Update Travis config to improve PR build speed
-- Disable saucelab capabilities
+- Disable configs in saucelab capabilities
 - Use credentials sent via signaling connection JOIN_ACK to improve audio-video startup time.
 - [Demo] Adjust demo css to prevent unecessary scrollbars on windows and stretching in video grid
 - Update dependencies to TypeScript 4, `ts-loader`, and modern linting
