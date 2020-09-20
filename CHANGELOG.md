@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional parameter `sourceId` to checkContentShareConnectivity API
 - Add getVideoInputQualitySettings to retrieve the current video settings
 - Add documentation for DefaultActiveSpeakerPolicy constructor
+- Create log stream before logging begins
 
 ### Changed
 - Use pip to install aws sam cli for deployment script
