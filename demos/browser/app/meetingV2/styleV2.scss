@@ -9,16 +9,16 @@ $gray-700: #7b8a8b;
 $gray-800: #343a40;
 $gray-900: #212529;
 $black: #000;
-$blue: #2C3E50;
+$blue: #2c3e50;
 $indigo: #6610f2;
 $purple: #6f42c1;
 $pink: #e83e8c;
-$red: #E74C3C;
+$red: #e74c3c;
 $orange: #fd7e14;
-$yellow: #F39C12;
-$green: #18BC9C;
+$yellow: #f39c12;
+$green: #18bc9c;
 $teal: #20c997;
-$cyan: #3498DB;
+$cyan: #3498db;
 $primary: $blue;
 $secondary: $gray-600;
 $success: $green;
@@ -29,7 +29,8 @@ $light: $gray-200;
 $dark: $gray-700;
 $yiq-contrasted-threshold: 175;
 $link-color: $success;
-$font-family-sans-serif: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+$font-family-sans-serif: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 $font-size-base: 0.9375rem;
 $h1-font-size: 3rem;
 $h2-font-size: 2.5rem;
@@ -38,9 +39,9 @@ $table-accent-bg: $gray-200;
 $dropdown-link-color: $gray-700;
 $dropdown-link-hover-color: $white;
 $dropdown-link-hover-bg: $primary;
-$nav-link-padding-y: .5rem  !default;
+$nav-link-padding-y: 0.5rem !default;
 $nav-link-padding-x: 2rem;
-$nav-link-disabled-color: $gray-600  !default;
+$nav-link-disabled-color: $gray-600 !default;
 $nav-tabs-border-color: $gray-200;
 $navbar-padding-y: 1rem;
 $navbar-dark-color: $white;
@@ -64,11 +65,10 @@ $list-group-disabled-bg: $gray-200;
 $close-color: $white;
 $close-text-shadow: none;
 
-@import "node_modules/bootstrap/scss/bootstrap";
+@import 'node_modules/bootstrap/scss/bootstrap';
 
 // Flatly 4.3.1
 // Bootswatch
-
 
 // Variables ===================================================================
 
@@ -107,7 +107,6 @@ $close-text-shadow: none;
 // Tables ======================================================================
 
 .table {
-
   &-primary,
   &-secondary,
   &-success,
@@ -118,115 +117,149 @@ $close-text-shadow: none;
   }
 
   &-primary {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $primary;
     }
   }
 
   &-secondary {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $secondary;
     }
   }
 
   &-light {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $light;
     }
   }
 
   &-dark {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $dark;
     }
   }
 
   &-success {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $success;
     }
   }
 
   &-info {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $info;
     }
   }
 
   &-danger {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $danger;
     }
   }
 
   &-warning {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $warning;
     }
   }
 
   &-active {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $table-active-bg;
     }
   }
 
   &-hover {
-
     .table-primary:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($primary, 5%);
       }
     }
 
     .table-secondary:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($secondary, 5%);
       }
     }
 
     .table-light:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($light, 5%);
       }
     }
 
     .table-dark:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($dark, 5%);
       }
     }
 
     .table-success:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($success, 5%);
       }
     }
 
     .table-info:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($info, 5%);
       }
     }
 
     .table-danger:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($danger, 5%);
       }
     }
 
     .table-warning:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($warning, 5%);
       }
     }
 
     .table-active:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: $table-active-bg;
       }
     }
-
   }
 }
 
@@ -302,7 +335,7 @@ $close-text-shadow: none;
 // Progress bars ===============================================================
 
 // Containers ==================================================================
-.modal .close{
+.modal .close {
   color: $black;
 
   &:not(:disabled):not(.disabled):hover,
@@ -490,4 +523,277 @@ a.markdown:active {
   margin-right: 1rem;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
+}
+
+.v-grid {
+  display: grid;
+  height: 100%;
+  width: 100%;
+}
+
+.v-grid.size-1 {
+  grid-template: 1fr / 1fr;
+
+  .video-tile {
+    height: 0;
+    padding-bottom: calc(100% / (16 / 9));
+  }
+}
+
+.v-grid.size-2 {
+  grid-template: repeat(2, 1fr) / 1fr;
+}
+
+.v-grid.size-3,
+.v-grid.size-4 {
+  grid-template: repeat(2, 1fr) / repeat(2, 1fr);
+}
+
+.v-grid.size-5,
+.v-grid.size-6 {
+  grid-template: repeat(3, 1fr) / repeat(2, 1fr);
+}
+
+.v-grid.size-7,
+.v-grid.size-8 {
+  grid-template: repeat(4, 1fr) / repeat(2, 1fr);
+}
+
+.v-grid.size-9,
+.v-grid.size-10 {
+  grid-template: repeat(4, 1fr) / repeat(3, 1fr);
+}
+
+.v-grid.size-11,
+.v-grid.size-12 {
+  grid-template: repeat(4, 1fr) / repeat(3, 1fr);
+}
+
+.v-grid.size-13,
+.v-grid.size-14,
+.v-grid.size-15,
+.v-grid.size-16 {
+  grid-template: repeat(4, 1fr) / repeat(4, 1fr);
+}
+
+.v-grid.featured {
+  grid-template: 1fr / 1fr;
+  grid-template-areas: 'ft';
+}
+
+.v-grid.featured.size-2,
+.v-grid.featured.size-3 {
+  grid-template: repeat(4, 1fr) / repeat(2, 1fr);
+  grid-template-areas: 'ft ft' 'ft ft' 'ft ft';
+}
+
+.v-grid.featured.size-4 {
+  grid-template: repeat(4, 1fr) / repeat(3, 1fr);
+  grid-template-areas:
+    'ft ft ft'
+    'ft ft ft'
+    'ft ft ft';
+}
+
+.v-grid.featured.size-5,
+.v-grid.featured.size-6,
+.v-grid.featured.size-7 {
+  grid-template: repeat(6, 1fr) / repeat(3, 1fr);
+  grid-template-areas:
+    'ft ft ft'
+    'ft ft ft'
+    'ft ft ft'
+    'ft ft ft';
+}
+
+.v-grid.featured.size-8,
+.v-grid.featured.size-9 {
+  grid-template: repeat(6, 1fr) / repeat(4, 1fr);
+  grid-template-areas:
+    'ft ft ft ft'
+    'ft ft ft ft'
+    'ft ft ft ft'
+    'ft ft ft ft';
+}
+
+.v-grid.featured.size-10,
+.v-grid.featured.size-11,
+.v-grid.featured.size-12,
+.v-grid.featured.size-13 {
+  grid-template: repeat(7, 1fr) / repeat(6, 1fr);
+  grid-template-areas:
+    'ft ft ft ft ft ft'
+    'ft ft ft ft ft ft'
+    'ft ft ft ft ft ft'
+    'ft ft ft ft ft ft'
+    'ft ft ft ft ft ft';
+}
+
+.v-grid.featured.size-14,
+.v-grid.featured.size-15,
+.v-grid.featured.size-16,
+.v-grid.featured.size-17 {
+  grid-template: repeat(7, 1fr) / repeat(8, 1fr);
+  grid-template-areas:
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft';
+}
+
+@media screen and (max-width: 1200px) {
+  .v-grid.size-2 {
+    grid-template: repeat(2, 1fr) / 1fr;
+  }
+
+  .v-grid.size-3 {
+    grid-template: repeat(3, 1fr) / 1fr;
+  }
+
+  .v-grid.size-4 {
+    grid-template: repeat(4, 1fr) / 1fr;
+  }
+
+  .v-grid.size-5,
+  .v-grid.size-6,
+  .v-grid.size-7,
+  .v-grid.size-8 {
+    grid-template: repeat(4, 1fr) / repeat(2, 1fr);
+  }
+
+  .v-grid.size-9,
+  .v-grid.size-10,
+  .v-grid.size-11,
+  .v-grid.size-12 {
+    grid-template: repeat(6, 1fr) / repeat(2, 1fr);
+  }
+
+  .v-grid.size-13,
+  .v-grid.size-14,
+  .v-grid.size-15,
+  .v-grid.size-16 {
+    grid-template: repeat(8, 1fr) / repeat(2, 1fr);
+  }
+
+  .v-grid.featured.size-1 {
+    grid-template: 1fr / 1fr;
+    grid-template-areas: 'ft';
+  }
+
+  .v-grid.featured.size-2,
+  .v-grid.featured.size-3,
+  .v-grid.featured.size-4,
+  .v-grid.featured.size-5 {
+    grid-template: repeat(4, 1fr) / repeat(2, 1fr);
+    grid-template-areas:
+      'ft ft'
+      'ft ft';
+  }
+
+  .v-grid.featured.size-6,
+  .v-grid.featured.size-7 {
+    grid-template: repeat(4, 1fr) / repeat(3, 1fr);
+    grid-template-areas:
+      'ft ft ft'
+      'ft ft ft';
+  }
+
+  .v-grid.featured.size-8,
+  .v-grid.featured.size-9 {
+    grid-template: repeat(6, 1fr) / repeat(4, 1fr);
+    grid-template-areas:
+      'ft ft ft ft ft'
+      'ft ft ft ft ft'
+      'ft ft ft ft ft'
+      'ft ft ft ft ft';
+  }
+
+  .v-grid.featured.size-10,
+  .v-grid.featured.size-11,
+  .v-grid.featured.size-12,
+  .v-grid.featured.size-13 {
+    grid-template: repeat(8, 1fr) / repeat(4, 1fr);
+    grid-template-areas:
+      'ft ft ft ft ft'
+      'ft ft ft ft ft'
+      'ft ft ft ft ft'
+      'ft ft ft ft ft'
+      'ft ft ft ft ft';
+  }
+
+  .v-grid.featured.size-12,
+  .v-grid.featured.size-13,
+  .v-grid.featured.size-14,
+  .v-grid.featured.size-15,
+  .v-grid.featured.size-16,
+  .v-grid.featured.size-17 {
+    grid-template: repeat(8, 1fr) / repeat(4, 1fr);
+    grid-template-areas:
+      'ft ft ft ft'
+      'ft ft ft ft'
+      'ft ft ft ft'
+      'ft ft ft ft';
+  }
+}
+
+.video-tile {
+  position: relative;
+  display: none;
+  font-size: 18px;
+  overflow: hidden;
+}
+
+.video-tile.active {
+  display: block;
+}
+
+.video-tile.featured {
+  grid-area: ft;
+}
+
+.video-tile.content {
+  grid-area: ft;
+
+  .video-tile-video {
+    object-fit: contain !important;
+    background-color: #313030;
+  }
+}
+
+.video-tile.primary {
+  border: 5px solid pink;
+}
+
+.video-tile-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.video-tile-nameplate {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: #fff;
+  text-shadow: 0px 0px 5px black;
+  letter-spacing: 0.1em;
+}
+
+.video-tile-pause {
+  position: absolute;
+  display: inline-block;
+  bottom: 10px;
+  right: 10px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  color: #fff;
+  text-shadow: 0px 0px 5px black;
+  letter-spacing: 0.1em;
+  outline: none;
+  background: none;
 }
