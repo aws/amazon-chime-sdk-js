@@ -39,8 +39,9 @@ class DemoTileOrganizer {
   // this is index instead of length
   static MAX_TILES = 17;
   static LOCAL_VIDEO_INDEX = 16;
-  private tiles: { [id: number]: number } = {};
+  public tiles: { [id: number]: number } = {};
   public tileStates: {[id: number]: boolean } = {};
+  public remoteTileCount = 0;
 
   acquireTileIndex(tileId: number, isLocalTile: boolean): number {
     for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
@@ -55,6 +56,7 @@ class DemoTileOrganizer {
           return DemoTileOrganizer.LOCAL_VIDEO_INDEX;
         }
         this.tiles[index] = tileId;
+        this.remoteTileCount++;
         return index;
       }
     }
@@ -64,6 +66,7 @@ class DemoTileOrganizer {
   releaseTileIndex(tileId: number): number {
     for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
       if (this.tiles[index] === tileId) {
+        this.remoteTileCount--;
         delete this.tiles[index];
         return index;
       }
@@ -137,6 +140,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
   tileIdToTileIndex: { [id: number]: number } = {};
+  tileArea = document.getElementById('tile-area') as HTMLDivElement;
 
   cameraDeviceIds: string[] = [];
   microphoneDeviceIds: string[] = [];
@@ -195,10 +199,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   initEventListeners(): void {
-    window.addEventListener('resize', () => {
-      this.layoutVideoTiles();
-    });
-
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
       this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
@@ -851,7 +851,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           break; // only show the most active speaker
         }
       }
-      this.layoutVideoTiles();
+      this.layoutFeaturedTile();
     };
     this.audioVideo.subscribeToActiveSpeakerDetector(
       new DefaultActiveSpeakerPolicy(),
@@ -1392,7 +1392,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     if (!tileState.boundAttendeeId) {
       return;
     }
-    const tileIndex = this.tileOrganizer.acquireTileIndex(tileState.tileId, tileState.localTile) ;
+    const tileIndex = this.tileOrganizer.acquireTileIndex(tileState.tileId, tileState.localTile);
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
@@ -1413,14 +1413,17 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
     this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#')[1]);
-    tileElement.style.display = 'block';
-    this.layoutVideoTiles();
+
+    this.showTile(tileElement, tileState);
+    this.updateGridClasses();
+    this.layoutFeaturedTile();
   }
 
   videoTileWasRemoved(tileId: number): void {
-    const tileIndex = this.tileOrganizer.releaseTileIndex(tileId)
+    const tileIndex = this.tileOrganizer.releaseTileIndex(tileId);
     this.log(`video tileId removed: ${tileId} from tile-${tileIndex}`);
     this.hideTile(tileIndex);
+    this.updateGridClasses();
   }
 
   videoAvailabilityDidChange(availability: MeetingSessionVideoAvailability): void {
@@ -1428,10 +1431,17 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.log(`video availability changed: canStartLocalVideo  ${availability.canStartLocalVideo}`);
   }
 
+  showTile(tileElement: HTMLDivElement, tileState: VideoTileState) {
+    tileElement.classList.add(`active`);
+
+    if (tileState.isContent) {
+      tileElement.classList.add('content');
+    }
+  }
+
   hideTile(tileIndex: number): void {
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
-    tileElement.style.display = 'none';
-    this.layoutVideoTiles();
+    tileElement.classList.remove('active', 'featured', 'content');
   }
 
   tileIdForAttendeeId(attendeeId: string): number | null {
@@ -1454,18 +1464,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     return null;
   }
 
-  isContentTile(tileIndex: number): boolean {
-    const tileId = this.tileIndexToTileId[tileIndex];
-    if (!tileId) {
-      return false;
-    }
-    const tile = this.audioVideo.getVideoTile(tileId);
-    if (!tile) {
-      return false;
-    }
-    return tile.state().isContent;
-  }
-
   activeTileId(): number | null {
     let contentTileId = this.findContentTileId();
     if (contentTileId !== null) {
@@ -1479,40 +1477,54 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     return null;
   }
 
-  layoutVideoTiles(): void {
+  layoutFeaturedTile(): void {
     if (!this.meetingSession) {
       return;
     }
-    const selfAttendeeId = this.meetingSession.configuration.credentials.attendeeId;
-    const selfTileId = this.tileIdForAttendeeId(selfAttendeeId);
-    const visibleTileIndices = this.visibleTileIndices();
-    let activeTileId = this.activeTileId();
-    const selfIsVisible = visibleTileIndices.includes(this.tileIdToTileIndex[selfTileId]);
-    if (visibleTileIndices.length === 2 && selfIsVisible) {
-      activeTileId = this.tileIndexToTileId[
-        visibleTileIndices[0] === selfTileId ? visibleTileIndices[1] : visibleTileIndices[0]
-        ];
-    }
-    const hasVisibleActiveTile = visibleTileIndices.includes(
-      this.tileIdToTileIndex[activeTileId]
-    );
+    const tilesIndices = this.visibleTileIndices();
+    const localTileId = this.localTileId();
+    const activeTile = this.activeTileId();
 
-    if (this.activeSpeakerLayout && hasVisibleActiveTile) {
-      this.layoutVideoTilesActiveSpeaker(visibleTileIndices, activeTileId);
+    for (let i = 0; i < tilesIndices.length; i++) {
+      const tileIndex = tilesIndices[i];
+      const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
+      const tileId = this.tileIndexToTileId[tileIndex];
+
+      if (tileId === activeTile && tileId !== localTileId) {
+        tileElement.classList.add('featured');
+      } else {
+        tileElement.classList.remove('featured');
+      }
+    }
+
+    this.updateGridClasses();
+  }
+
+  updateGridClasses() {
+    const localTileId = this.localTileId();
+    const activeTile = this.activeTileId();
+
+    this.tileArea.className = `v-grid size-${this.availablelTileSize()}`;
+
+    if (activeTile && activeTile !== localTileId) {
+      this.tileArea.classList.add('featured')
     } else {
-      this.layoutVideoTilesGrid(visibleTileIndices);
+      this.tileArea.classList.remove('featured');
     }
   }
 
+  availablelTileSize(): number {
+    return this.tileOrganizer.remoteTileCount +
+    (this.audioVideo.hasStartedLocalVideoTile() ? 1 : 0);
+  }
+
+  localTileId(): number | null {
+    return this.audioVideo.hasStartedLocalVideoTile() ? this.audioVideo.getLocalVideoTile().state().tileId : null;
+  }
+
   visibleTileIndices(): number[] {
-    let tiles: number[] = [];
-    const localTileIndex = DemoTileOrganizer.MAX_TILES;
-    for (let tileIndex = 0; tileIndex <= localTileIndex; tileIndex++) {
-      const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
-      if (tileElement.style.display === 'block') {
-        tiles.push(tileIndex);
-      }
-    }
+    const tileKeys = Object.keys(this.tileOrganizer.tiles);
+    const tiles = tileKeys.map(tileId => parseInt(tileId));
     return tiles;
   }
 
@@ -1528,145 +1540,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           videoElem.style.objectFit = 'cover';
         }
       };
-    }
-  }
-
-  layoutVideoTilesActiveSpeaker(visibleTileIndices: number[], activeTileId: number): void {
-    const tileArea = document.getElementById('tile-area') as HTMLDivElement;
-    const width = tileArea.clientWidth;
-    const height = tileArea.clientHeight;
-    const widthToHeightAspectRatio = 16 / 9;
-    const maximumRelativeHeightOfOthers = 0.3;
-
-    const activeWidth = width;
-    const activeHeight = width / widthToHeightAspectRatio;
-    const othersCount = visibleTileIndices.length - 1;
-    let othersWidth = width / othersCount;
-    let othersHeight = width / widthToHeightAspectRatio;
-    if (othersHeight / activeHeight > maximumRelativeHeightOfOthers) {
-      othersHeight = activeHeight * maximumRelativeHeightOfOthers;
-      othersWidth = othersHeight * widthToHeightAspectRatio;
-    }
-    if (othersCount === 0) {
-      othersHeight = 0;
-    }
-    const totalHeight = activeHeight + othersHeight;
-    const othersTotalWidth = othersWidth * othersCount;
-    const othersXOffset = width / 2 - othersTotalWidth / 2;
-    const activeYOffset = height / 2 - totalHeight / 2;
-    const othersYOffset = activeYOffset + activeHeight;
-
-    let othersIndex = 0;
-    for (let i = 0; i < visibleTileIndices.length; i++) {
-      const tileIndex = visibleTileIndices[i];
-      const tileId = this.tileIndexToTileId[tileIndex];
-      let x = 0,
-        y = 0,
-        w = 0,
-        h = 0;
-      if (tileId === activeTileId) {
-        x = 0;
-        y = activeYOffset;
-        w = activeWidth;
-        h = activeHeight;
-      } else {
-        x = othersXOffset + othersIndex * othersWidth;
-        y = othersYOffset;
-        w = othersWidth;
-        h = othersHeight;
-        othersIndex += 1;
-      }
-      this.updateTilePlacement(tileIndex, x, y, w, h);
-    }
-  }
-
-  updateTilePlacement(tileIndex: number, x: number, y: number, w: number, h: number): void {
-    const tile = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
-    if (this.isContentTile(tileIndex)) {
-      tile.classList.remove('video-tile');
-      tile.classList.add('content-share-tile');
-    } else {
-      tile.classList.remove('content-share-tile');
-      tile.classList.add('video-tile');
-    }
-    const insetWidthSize = 4;
-    const insetHeightSize = insetWidthSize / (16 / 9);
-    tile.style.position = 'absolute';
-    tile.style.left = `${x + insetWidthSize}px`;
-    tile.style.top = `${y + insetHeightSize}px`;
-    tile.style.width = `${w - insetWidthSize * 2}px`;
-    tile.style.height = `${h - insetHeightSize * 2}px`;
-    tile.style.margin = '0';
-    tile.style.padding = '0';
-    tile.style.visibility = 'visible';
-    const video = document.getElementById(`video-${tileIndex}`) as HTMLDivElement;
-    if (video) {
-      video.style.position = 'absolute';
-      video.style.left = '0';
-      video.style.top = '0';
-      video.style.width = `${w}px`;
-      video.style.height = `${h}px`;
-      video.style.margin = '0';
-      video.style.padding = '0';
-      video.style.borderRadius = '8px';
-    }
-    const nameplate = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
-    const nameplateSize = 24;
-    const nameplatePadding = 10;
-    nameplate.style.position = 'absolute';
-    nameplate.style.left = '0px';
-    nameplate.style.top = `${h - nameplateSize - nameplatePadding}px`;
-    nameplate.style.height = `${nameplateSize}px`;
-    nameplate.style.width = `${w}px`;
-    nameplate.style.margin = '0';
-    nameplate.style.padding = '0';
-    nameplate.style.paddingLeft = `${nameplatePadding}px`;
-    nameplate.style.color = '#fff';
-    nameplate.style.backgroundColor = 'rgba(0,0,0,0)';
-    nameplate.style.textShadow = '0px 0px 5px black';
-    nameplate.style.letterSpacing = '0.1em';
-    nameplate.style.fontSize = `${nameplateSize - 6}px`;
-
-    let button = document.getElementById(`video-pause-${tileIndex}`) as HTMLButtonElement;
-
-    button.style.position = 'absolute';
-    button.style.display = 'inline-block';
-    button.style.right = '0px';
-    button.style.top = `${h - nameplateSize - nameplatePadding}px`;
-    button.style.height = `${nameplateSize}px`;
-    button.style.margin = '0';
-    button.style.padding = '0';
-    button.style.border = 'none';
-    button.style.paddingRight = `${nameplatePadding}px`;
-    button.style.color = '#fff';
-    button.style.backgroundColor = 'rgba(0,0,0,0)';
-    button.style.textShadow = '0px 0px 5px black';
-    button.style.letterSpacing = '0.1em';
-    button.style.fontSize = `${nameplateSize - 6}px`;
-  }
-
-  layoutVideoTilesGrid(visibleTileIndices: number[]): void {
-    const tileArea = document.getElementById('tile-area') as HTMLDivElement;
-    const width = tileArea.clientWidth;
-    const height = tileArea.clientHeight;
-    const widthToHeightAspectRatio = 16 / 9;
-    let columns = 1;
-    let totalHeight = 0;
-    let rowHeight = 0;
-    for (; columns < 18; columns++) {
-      const rows = Math.ceil(visibleTileIndices.length / columns);
-      rowHeight = width / columns / widthToHeightAspectRatio;
-      totalHeight = rowHeight * rows;
-      if (totalHeight <= height) {
-        break;
-      }
-    }
-    for (let i = 0; i < visibleTileIndices.length; i++) {
-      const w = Math.floor(width / columns);
-      const h = Math.floor(rowHeight);
-      const x = (i % columns) * w;
-      const y = Math.floor(i / columns) * h; // + (height / 2 - totalHeight / 2);
-      this.updateTilePlacement(visibleTileIndices[i], x, y, w, h);
     }
   }
 
