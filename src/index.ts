@@ -202,6 +202,7 @@ import ReconnectController from './reconnectcontroller/ReconnectController';
 import ReconnectingPromisedWebSocket from './promisedwebsocket/ReconnectingPromisedWebSocket';
 import ReconnectingPromisedWebSocketFactory from './promisedwebsocket/ReconnectingPromisedWebSocketFactory';
 import ReconnectionHealthPolicy from './connectionhealthpolicy/ReconnectionHealthPolicy';
+import ReleaseMediaInputTask from './task/ReleaseMediaInputTask';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import ResizeObserverAdapter from './resizeobserveradapter/ResizeObserverAdapter';
 import ResizeObserverAdapterFactory from './resizeobserveradapter/ResizeObserverAdapterFactory';
@@ -514,6 +515,7 @@ export {
   ReconnectingPromisedWebSocket,
   ReconnectingPromisedWebSocketFactory,
   ReconnectionHealthPolicy,
+  ReleaseMediaInputTask,
   RemovableObserver,
   ResizeObserverAdapter,
   ResizeObserverAdapterFactory,

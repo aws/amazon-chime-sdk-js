@@ -46,6 +46,7 @@ import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
 import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from '../task/ReceiveVideoStreamIndexTask';
+import ReleaseMediaInputTask from '../task/ReleaseMediaInputTask';
 import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from '../task/SerialGroupTask';
 import SetLocalDescriptionTask from '../task/SetLocalDescriptionTask';
@@ -416,6 +417,21 @@ export default class DefaultAudioVideoController implements AudioVideoController
     } catch (error) {
       this.logger.info('fail to clean');
     }
+
+    if (!reconnecting) {
+      try {
+        await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoReleaseMedia'), [
+          new TimeoutTask(
+            this.logger,
+            new ReleaseMediaInputTask(this.meetingSessionContext),
+            this.configuration.connectionTimeoutMs
+          ),
+        ]).run();
+      } catch (error) {
+        this.logger.info('fail to release audio and video inputs');
+      }
+    }
+
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
         this.forEachObserver(observer => {

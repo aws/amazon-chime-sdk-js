@@ -548,10 +548,10 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.stop();
     });
 
-    it('performs the FinishDisconnecting action even when stopping and cleaning fail', async () => {
+    it('performs the FinishDisconnecting action even when AudioVideoStop, AudioVideoClean, and AudioVideoReleaseMedia fail', async () => {
       class MockDeviceController extends NoOpMediaStreamBroker {
         releaseMediaStream(_mediaStreamToRelease: MediaStream): void {
-          throw new Error('Force CleanStoppedSessionTask to fail');
+          throw new Error('Force ReleaseMediaInputTask to fail');
         }
       }
 
@@ -563,6 +563,7 @@ describe('DefaultAudioVideoController', () => {
         new MockDeviceController(),
         reconnectController
       );
+
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(): void {
           called = true;
@@ -571,6 +572,10 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.addObserver(new TestObserver());
       expect(audioVideoController.configuration).to.equal(configuration);
       await start();
+
+      audioVideoController.rtcPeerConnection.close = () => {
+        throw new Error('Force CleanStoppedSessionTask to fail');
+      };
 
       configuration.connectionTimeoutMs = 100;
 
@@ -1117,12 +1122,14 @@ describe('DefaultAudioVideoController', () => {
       configuration.connectionTimeoutMs = 100;
       const logger = new NoOpDebugLogger();
       const spy = sinon.spy(logger, 'warn');
+      const mediaStreamBroker = new NoOpMediaStreamBroker();
+      const mediaStreamBrokerSpy = sinon.spy(mediaStreamBroker, 'releaseMediaStream');
 
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         logger,
         webSocketAdapter,
-        new NoOpMediaStreamBroker(),
+        mediaStreamBroker,
         reconnectController
       );
       class TestObserver implements AudioVideoObserver {
@@ -1145,6 +1152,9 @@ describe('DefaultAudioVideoController', () => {
       });
 
       delay(configuration.connectionTimeoutMs + 100).then(async () => {
+        // Make sure that the device is not released during the initial connection.
+        expect(mediaStreamBrokerSpy.callCount).to.equal(0);
+
         // Finish the start operation and stop this test.
         await delay(300);
         webSocketAdapter.send(makeIndexFrame());
@@ -1154,6 +1164,9 @@ describe('DefaultAudioVideoController', () => {
         await sendAudioStreamIdInfoFrame();
         await delay(300);
         await stop();
+
+        // Stopping the session will release audio and video inputs.
+        expect(mediaStreamBrokerSpy.callCount).to.equal(2);
       });
     });
 
