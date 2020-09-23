@@ -95,12 +95,7 @@ const getSauceLabsConfig = (capabilities) => {
     name: capabilities.name,
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
-    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
-    ...(capabilities.platform.toUpperCase() !== 'LINUX' && {
-      extendedDebugging: true,
-      capturePerformance: true,
-      crmuxdriverVersion: 'beta'
-    })
+    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
   }
 };
 
