@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add MeetingReadinessCheckerConfiguration to allow custom configuration for meeting readiness checker
 
 ### Changed
 - Update Travis config to improve PR build speed
