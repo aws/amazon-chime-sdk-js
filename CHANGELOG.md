@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [Unreleased]
 ### Added
 - Add MeetingReadinessCheckerConfiguration to allow custom configuration for meeting readiness checker
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix Maven installation script
 - Fix SIP integration test
+- Fixed v1 meeting bug related to bootstrap row class
 
 ## [1.18.0] - 2020-09-22
 ### Added
