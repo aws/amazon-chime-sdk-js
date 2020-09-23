@@ -541,7 +541,7 @@ a.markdown:active {
 }
 
 .v-grid.size-2 {
-  grid-template: repeat(2, 1fr) / 1fr;
+  grid-template: repeat(2, 1fr) / repeat(2, 1fr);
 }
 
 .v-grid.size-3,
