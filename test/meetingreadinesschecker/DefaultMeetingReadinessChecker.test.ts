@@ -27,6 +27,7 @@ import CheckNetworkUDPConnectivityFeedback from '../../src/meetingreadinesscheck
 import CheckVideoConnectivityFeedback from '../../src/meetingreadinesschecker/CheckVideoConnectivityFeedback';
 import CheckVideoInputFeedback from '../../src/meetingreadinesschecker/CheckVideoInputFeedback';
 import DefaultMeetingReadinessChecker from '../../src/meetingreadinesschecker/DefaultMeetingReadinessChecker';
+import MeetingReadinessCheckerConfiguration from '../../src/meetingreadinesschecker/MeetingReadinessCheckerConfiguration';
 import MeetingSession from '../../src/meetingsession/MeetingSession';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
@@ -51,6 +52,7 @@ describe('DefaultMeetingReadinessChecker', () => {
   let deviceController: DefaultDeviceController;
   let meetingSession: MeetingSession;
   let meetingReadinessCheckerController: DefaultMeetingReadinessChecker;
+  let meetingReadinessCheckerConfiguration: MeetingReadinessCheckerConfiguration;
   let attendeeAudioVideoController: TestAudioVideoController;
   let contentAudioVideoController: TestAudioVideoController;
 
@@ -212,7 +214,14 @@ describe('DefaultMeetingReadinessChecker', () => {
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     deviceController = new DefaultDeviceController(logger);
     meetingSession = new TestMeetingSession(makeSessionConfiguration(), logger, deviceController);
-    meetingReadinessCheckerController = new DefaultMeetingReadinessChecker(logger, meetingSession);
+    meetingReadinessCheckerConfiguration = new MeetingReadinessCheckerConfiguration();
+    meetingReadinessCheckerConfiguration.timeoutMs = 10;
+    meetingReadinessCheckerConfiguration.waitDurationMs = 3;
+    meetingReadinessCheckerController = new DefaultMeetingReadinessChecker(
+      logger,
+      meetingSession,
+      meetingReadinessCheckerConfiguration
+    );
   });
 
   afterEach(() => {
@@ -478,19 +487,19 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.PermissionDenied;
       const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.PermissionDenied);
-    }).timeout(5000);
+    });
 
     it('failure', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.Failure;
       const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.Failed);
-    }).timeout(5000);
+    });
 
     it('start content share success', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.Success;
       const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.Succeeded);
-    }).timeout(10000);
+    });
 
     it('start content share success with source id', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.Success;
@@ -499,19 +508,19 @@ describe('DefaultMeetingReadinessChecker', () => {
         'sourceId'
       );
       expect(result).to.equal(CheckContentShareConnectivityFeedback.Succeeded);
-    }).timeout(10000);
+    });
 
     it('connection failure', async () => {
       attendeeAudioVideoController.skipStart = true;
       const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.ConnectionFailed);
-    }).timeout(15000);
+    });
 
     it('start content share timed out', async () => {
       contentAudioVideoController.attendeePresenceId = 'attendeeId2';
       const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity();
       expect(result).to.equal(CheckContentShareConnectivityFeedback.TimedOut);
-    }).timeout(20000);
+    });
   });
 
   describe('checks audio connection', () => {
@@ -526,7 +535,8 @@ describe('DefaultMeetingReadinessChecker', () => {
     it('fail to get audio input', async () => {
       meetingReadinessCheckerController = new DefaultMeetingReadinessChecker(
         logger,
-        new TestMeetingSession(makeSessionConfiguration(), logger, new NoOpDeviceController())
+        new TestMeetingSession(makeSessionConfiguration(), logger, new NoOpDeviceController()),
+        meetingReadinessCheckerConfiguration
       );
       const result = await meetingReadinessCheckerController.checkAudioConnectivity(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
@@ -540,7 +550,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
       );
       expect(result).to.equal(CheckAudioConnectivityFeedback.ConnectionFailed);
-    }).timeout(15000);
+    });
 
     it('time out with no audio presence', async () => {
       attendeeAudioVideoController.attendeePresenceId = 'attendeeId2';
@@ -548,14 +558,14 @@ describe('DefaultMeetingReadinessChecker', () => {
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
       );
       expect(result).to.equal(CheckAudioConnectivityFeedback.AudioNotReceived);
-    }).timeout(20000);
+    });
 
     it('success', async () => {
       const result = await meetingReadinessCheckerController.checkAudioConnectivity(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
       );
       expect(result).to.equal(CheckAudioConnectivityFeedback.Succeeded);
-    }).timeout(10000);
+    });
   });
 
   describe('check video connection', () => {
@@ -570,7 +580,8 @@ describe('DefaultMeetingReadinessChecker', () => {
     it('fail to get video input', async () => {
       meetingReadinessCheckerController = new DefaultMeetingReadinessChecker(
         logger,
-        new TestMeetingSession(makeSessionConfiguration(), logger, new NoOpDeviceController())
+        new TestMeetingSession(makeSessionConfiguration(), logger, new NoOpDeviceController()),
+        meetingReadinessCheckerConfiguration
       );
       const result = await meetingReadinessCheckerController.checkVideoConnectivity(
         new MediaDeviceInfo()
@@ -584,7 +595,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         new MediaDeviceInfo()
       );
       expect(result).to.equal(CheckVideoConnectivityFeedback.ConnectionFailed);
-    }).timeout(15000);
+    });
 
     it('no rtc connection', async () => {
       attendeeAudioVideoController.noRTCConnection = true;
@@ -592,7 +603,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         new MediaDeviceInfo()
       );
       expect(result).to.equal(CheckVideoConnectivityFeedback.VideoNotSent);
-    }).timeout(20000);
+    });
 
     it('no outbound-rtp info', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
@@ -605,7 +616,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         new MediaDeviceInfo()
       );
       expect(result).to.equal(CheckVideoConnectivityFeedback.VideoNotSent);
-    }).timeout(20000);
+    });
 
     it('success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
@@ -620,7 +631,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         new MediaDeviceInfo()
       );
       expect(result).to.equal(CheckVideoConnectivityFeedback.Succeeded);
-    }).timeout(10000);
+    });
   });
 
   describe('check TCP connection', () => {
@@ -634,13 +645,13 @@ describe('DefaultMeetingReadinessChecker', () => {
       attendeeAudioVideoController.skipStart = true;
       const result = await meetingReadinessCheckerController.checkNetworkTCPConnectivity();
       expect(result).to.equal(CheckNetworkTCPConnectivityFeedback.ConnectionFailed);
-    }).timeout(15000);
+    });
 
     it('no rtc connection', async () => {
       attendeeAudioVideoController.noRTCConnection = true;
       const result = await meetingReadinessCheckerController.checkNetworkTCPConnectivity();
       expect(result).to.equal(CheckNetworkTCPConnectivityFeedback.ICENegotiationFailed);
-    }).timeout(20000);
+    });
 
     it('no candidate-pair info', async () => {
       domMockBehavior.rtcPeerConnectionGetStatsReport = {
@@ -650,7 +661,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       };
       const result = await meetingReadinessCheckerController.checkNetworkTCPConnectivity();
       expect(result).to.equal(CheckNetworkTCPConnectivityFeedback.ICENegotiationFailed);
-    }).timeout(20000);
+    });
 
     it('success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
@@ -660,7 +671,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       };
       const result = await meetingReadinessCheckerController.checkNetworkTCPConnectivity();
       expect(result).to.equal(CheckNetworkTCPConnectivityFeedback.Succeeded);
-    }).timeout(10000);
+    });
   });
 
   describe('check UDP connection', () => {
@@ -674,13 +685,13 @@ describe('DefaultMeetingReadinessChecker', () => {
       attendeeAudioVideoController.skipStart = true;
       const result = await meetingReadinessCheckerController.checkNetworkUDPConnectivity();
       expect(result).to.equal(CheckNetworkUDPConnectivityFeedback.ConnectionFailed);
-    }).timeout(15000);
+    });
 
     it('no rtc connection', async () => {
       attendeeAudioVideoController.noRTCConnection = true;
       const result = await meetingReadinessCheckerController.checkNetworkUDPConnectivity();
       expect(result).to.equal(CheckNetworkUDPConnectivityFeedback.ICENegotiationFailed);
-    }).timeout(20000);
+    });
 
     it('no candidate-pair info', async () => {
       domMockBehavior.rtcPeerConnectionGetStatsReport = {
@@ -690,7 +701,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       };
       const result = await meetingReadinessCheckerController.checkNetworkUDPConnectivity();
       expect(result).to.equal(CheckNetworkUDPConnectivityFeedback.ICENegotiationFailed);
-    }).timeout(20000);
+    });
 
     it('success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
@@ -700,6 +711,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       };
       const result = await meetingReadinessCheckerController.checkNetworkUDPConnectivity();
       expect(result).to.equal(CheckNetworkUDPConnectivityFeedback.Succeeded);
-    }).timeout(10000);
+    });
   });
 });

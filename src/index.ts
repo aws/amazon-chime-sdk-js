@@ -146,6 +146,7 @@ import MediaRecordingFactory from './mediarecording/MediaRecordingFactory';
 import MediaRecordingOptions from './mediarecording/MediaRecordingOptions';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
 import MeetingReadinessChecker from './meetingreadinesschecker/MeetingReadinessChecker';
+import MeetingReadinessCheckerConfiguration from './meetingreadinesschecker/MeetingReadinessCheckerConfiguration';
 import MeetingSession from './meetingsession/MeetingSession';
 import MeetingSessionConfiguration from './meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from './meetingsession/MeetingSessionCredentials';
@@ -458,6 +459,7 @@ export {
   MediaRecordingOptions,
   MediaStreamBroker,
   MeetingReadinessChecker,
+  MeetingReadinessCheckerConfiguration,
   MeetingSession,
   MeetingSessionConfiguration,
   MeetingSessionCredentials,

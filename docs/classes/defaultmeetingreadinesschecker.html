@@ -95,13 +95,13 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#audiocontext" class="tsd-kind-icon">audio<wbr>Context</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#browserbehavior" class="tsd-kind-icon">browser<wbr>Behavior</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#configuration" class="tsd-kind-icon">configuration</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#destinationstream" class="tsd-kind-icon">destination<wbr>Stream</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#gainnode" class="tsd-kind-icon">gain<wbr>Node</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#meetingsession" class="tsd-kind-icon">meeting<wbr>Session</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#originalurlrewriter" class="tsd-kind-icon">originalURLRewriter</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultmeetingreadinesschecker.html#oscillatornode" class="tsd-kind-icon">oscillator<wbr>Node</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="defaultmeetingreadinesschecker.html#timeout_ms" class="tsd-kind-icon">TIMEOUT_<wbr>MS</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -134,13 +134,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Meeting<wbr>Readiness<wbr>Checker<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, meetingSession<span class="tsd-signature-symbol">: </span><a href="../interfaces/meetingsession.html" class="tsd-signature-type">MeetingSession</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultmeetingreadinesschecker.html" class="tsd-signature-type">DefaultMeetingReadinessChecker</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Meeting<wbr>Readiness<wbr>Checker<span class="tsd-signature-symbol">(</span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, meetingSession<span class="tsd-signature-symbol">: </span><a href="../interfaces/meetingsession.html" class="tsd-signature-type">MeetingSession</a>, configuration<span class="tsd-signature-symbol">?: </span><a href="meetingreadinesscheckerconfiguration.html" class="tsd-signature-type">MeetingReadinessCheckerConfiguration</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultmeetingreadinesschecker.html" class="tsd-signature-type">DefaultMeetingReadinessChecker</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L40">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L39">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:39</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -150,6 +150,9 @@
 								</li>
 								<li>
 									<h5>meetingSession: <a href="../interfaces/meetingsession.html" class="tsd-signature-type">MeetingSession</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> configuration: <a href="meetingreadinesscheckerconfiguration.html" class="tsd-signature-type">MeetingReadinessCheckerConfiguration</a><span class="tsd-signature-symbol"> = new MeetingReadinessCheckerConfiguration()</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="defaultmeetingreadinesschecker.html" class="tsd-signature-type">DefaultMeetingReadinessChecker</a></h4>
@@ -165,7 +168,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AudioContext</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L34">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L33">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:33</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -175,7 +178,17 @@
 					<div class="tsd-signature tsd-kind-icon">browser<wbr>Behavior<span class="tsd-signature-symbol">:</span> <a href="defaultbrowserbehavior.html" class="tsd-signature-type">DefaultBrowserBehavior</a><span class="tsd-signature-symbol"> = new DefaultBrowserBehavior()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L40">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L39">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:39</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="configuration" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> configuration</h3>
+					<div class="tsd-signature tsd-kind-icon">configuration<span class="tsd-signature-symbol">:</span> <a href="meetingreadinesscheckerconfiguration.html" class="tsd-signature-type">MeetingReadinessCheckerConfiguration</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L44">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:44</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -185,7 +198,7 @@
 					<div class="tsd-signature tsd-kind-icon">destination<wbr>Stream<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaStreamAudioDestinationNode</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L37">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L36">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -195,7 +208,7 @@
 					<div class="tsd-signature tsd-kind-icon">gain<wbr>Node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">GainNode</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L35">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L34">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:34</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -215,7 +228,7 @@
 					<div class="tsd-signature tsd-kind-icon">meeting<wbr>Session<span class="tsd-signature-symbol">:</span> <a href="../interfaces/meetingsession.html" class="tsd-signature-type">MeetingSession</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L42">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L43">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:43</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -225,7 +238,7 @@
 					<div class="tsd-signature tsd-kind-icon">originalURLRewriter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L38">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L37">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:37</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -256,17 +269,7 @@
 					<div class="tsd-signature tsd-kind-icon">oscillator<wbr>Node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">OscillatorNode</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L36">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:36</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<a name="timeout_ms" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> TIMEOUT_<wbr>MS</h3>
-					<div class="tsd-signature tsd-kind-icon">TIMEOUT_<wbr>MS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">10000</span><span class="tsd-signature-symbol"> = 10000</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L28">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L35">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:35</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -283,7 +286,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L190">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:190</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L193">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:193</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -313,7 +316,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkaudioconnectivity">checkAudioConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L258">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:258</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L261">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:261</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -337,7 +340,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkaudioinput">checkAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L44">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L47">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:47</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -360,7 +363,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L64">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:64</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L67">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:67</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -402,7 +405,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkcameraresolution">checkCameraResolution</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L158">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:158</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L161">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:161</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -432,7 +435,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkcontentshareconnectivity">checkContentShareConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L209">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:209</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L212">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:212</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -456,7 +459,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checknetworktcpconnectivity">checkNetworkTCPConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L391">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:391</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L394">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:394</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworktcpconnectivityfeedback.html" class="tsd-signature-type">CheckNetworkTCPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -474,7 +477,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checknetworkudpconnectivity">checkNetworkUDPConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L349">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:349</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L352">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:352</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/checknetworkudpconnectivityfeedback.html" class="tsd-signature-type">CheckNetworkUDPConnectivityFeedback</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -492,7 +495,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkvideoconnectivity">checkVideoConnectivity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L304">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:304</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L307">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:307</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -516,7 +519,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/meetingreadinesschecker.html">MeetingReadinessChecker</a>.<a href="../interfaces/meetingreadinesschecker.html#checkvideoinput">checkVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L138">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:138</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L141">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:141</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -539,7 +542,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L467">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:467</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L470">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:470</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -574,7 +577,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L89">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:89</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L92">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:92</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -603,7 +606,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L435">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:435</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L438">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:438</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -620,7 +623,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L451">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:451</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L454">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:454</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -637,7 +640,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L120">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:120</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L123">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:123</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -654,7 +657,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L30">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts#L29">src/meetingreadinesschecker/DefaultMeetingReadinessChecker.ts:29</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -694,6 +697,9 @@
 								<a href="defaultmeetingreadinesschecker.html#browserbehavior" class="tsd-kind-icon">browser<wbr>Behavior</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultmeetingreadinesschecker.html#configuration" class="tsd-kind-icon">configuration</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultmeetingreadinesschecker.html#destinationstream" class="tsd-kind-icon">destination<wbr>Stream</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
@@ -710,9 +716,6 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultmeetingreadinesschecker.html#oscillatornode" class="tsd-kind-icon">oscillator<wbr>Node</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
-								<a href="defaultmeetingreadinesschecker.html#timeout_ms" class="tsd-kind-icon">TIMEOUT_<wbr>MS</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultmeetingreadinesschecker.html#calculatevideoconstraint" class="tsd-kind-icon">calculate<wbr>Video<wbr>Constraint</a>

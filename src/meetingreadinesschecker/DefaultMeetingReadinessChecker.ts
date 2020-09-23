@@ -23,10 +23,9 @@ import CheckNetworkUDPConnectivityFeedback from './CheckNetworkUDPConnectivityFe
 import CheckVideoConnectivityFeedback from './CheckVideoConnectivityFeedback';
 import CheckVideoInputFeedback from './CheckVideoInputFeedback';
 import MeetingReadinessChecker from './MeetingReadinessChecker';
+import MeetingReadinessCheckerConfiguration from './MeetingReadinessCheckerConfiguration';
 
 export default class DefaultMeetingReadinessChecker implements MeetingReadinessChecker {
-  private static readonly TIMEOUT_MS = 10000;
-
   private static async delay(timeoutMs: number): Promise<void> {
     await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
   }
@@ -39,7 +38,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
 
-  constructor(private logger: Logger, private meetingSession: MeetingSession) {}
+  constructor(
+    private logger: Logger,
+    private meetingSession: MeetingSession,
+    private configuration: MeetingReadinessCheckerConfiguration = new MeetingReadinessCheckerConfiguration()
+  ) {}
 
   async checkAudioInput(audioInputDeviceInfo: MediaDeviceInfo): Promise<CheckAudioInputFeedback> {
     try {
@@ -469,6 +472,10 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     class CheckForConditionTask extends BaseTask {
       private isCancelled = false;
 
+      constructor(logger: Logger, private waitDurationMs: number) {
+        super(logger);
+      }
+
       cancel(): void {
         this.isCancelled = true;
       }
@@ -479,14 +486,14 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
             isSuccess = true;
             break;
           }
-          await DefaultMeetingReadinessChecker.delay(3000);
+          await DefaultMeetingReadinessChecker.delay(this.waitDurationMs);
         }
       }
     }
     const timeoutTask = new TimeoutTask(
       this.logger,
-      new CheckForConditionTask(this.logger),
-      DefaultMeetingReadinessChecker.TIMEOUT_MS
+      new CheckForConditionTask(this.logger, this.configuration.waitDurationMs),
+      this.configuration.timeoutMs
     );
     await timeoutTask.run();
     return isSuccess;
