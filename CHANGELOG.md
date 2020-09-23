@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update Travis config to improve PR build speed
 - Disable saucelab capabilities
 - Use credentials sent via signaling connection JOIN_ACK to improve audio-video startup time.
+- [Demo] Adjust demo css to prevent unecessary scrollbars on windows and stretching in video grid
 
 ### Removed
 
