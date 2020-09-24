@@ -63,6 +63,7 @@ class MeetingReadinessCheckerPage {
     } else {
       await this.speakerCheckFeedbackNo();
     }
+    await TestUtils.waitAround(3000);
     let checkSpeakerFeedback = await this.driver.findElement(elements.speakerTest).getAttribute('class');
     return checkSpeakerFeedback.includes(badgeSuccessLabel);
   }
@@ -186,6 +187,11 @@ class MeetingReadinessCheckerPage {
   async isTestContentShareConnectivityButtonEnabled() {
     let button = await this.driver.findElement(elements.contentShareConnectivityTestButton);
     return await button.isEnabled();
+  }
+
+  async isStartMeetingReadinessCheckerButtonEnabled() {
+    let authenticateButton = await this.driver.findElement(elements.authenticateButton);
+    return await authenticateButton.isEnabled();
   }
 }
 

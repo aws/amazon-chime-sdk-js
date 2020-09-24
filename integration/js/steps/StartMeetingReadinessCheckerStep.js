@@ -1,4 +1,4 @@
-const {KiteTestError, Status} = require('kite-common');
+const {KiteTestError, Status, TestUtils} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class StartMeetingReadinessCheckerStep extends AppTestStep {
@@ -20,12 +20,8 @@ class StartMeetingReadinessCheckerStep extends AppTestStep {
   }
 
   async run() {
-    const sleep = (milliseconds) => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds))
-    };
-
     await this.page.startCheck();
-    await sleep(10000);
+    await TestUtils.waitAround(5000);
   }
 }
 

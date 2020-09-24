@@ -100,6 +100,8 @@ export class DemoMeetingApp {
         try {
           chimeMeetingId = await this.authenticate();
           this.log(`chimeMeetingId: ${chimeMeetingId}`);
+          const button = document.getElementById("authenticate") as HTMLButtonElement;
+          button.disabled = false;
         } catch (error) {
           return error;
         }
