@@ -57,12 +57,16 @@ class MeetingReadinessCheckerPage {
   }
 
   async checkSpeakerTestSucceed() {
+    const sleep = (milliseconds) => {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
+    };
     let audioFrequencyCheckResult = await this.audioFrequencyCheck();
     if(audioFrequencyCheckResult) {
       await this.speakerCheckFeedbackYes();
     } else {
       await this.speakerCheckFeedbackNo();
     }
+    await sleep(3000);
     let checkSpeakerFeedback = await this.driver.findElement(elements.speakerTest).getAttribute('class');
     return checkSpeakerFeedback.includes(badgeSuccessLabel);
   }
