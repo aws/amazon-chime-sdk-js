@@ -64,8 +64,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
 
   async run(): Promise<void> {
     this.context.removableObservers.push(this);
-
-    const configuration: RTCConfiguration = this.context.turnCredentials
+    const hasTurnCredentials =
+      this.context.turnCredentials && this.context.turnCredentials.uris.length > 0;
+    const configuration: RTCConfiguration = hasTurnCredentials
       ? {
           iceServers: [
             {

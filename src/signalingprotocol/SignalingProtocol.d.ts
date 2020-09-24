@@ -567,6 +567,9 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
 /** Properties of a SdkJoinAckFrame. */
 export interface ISdkJoinAckFrame {
+
+    /** SdkJoinAckFrame turnCredentials */
+    turnCredentials?: (ISdkTurnCredentials|null);
 }
 
 /** Represents a SdkJoinAckFrame. */
@@ -577,6 +580,9 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
      * @param [properties] Properties to set
      */
     constructor(properties?: ISdkJoinAckFrame);
+
+    /** SdkJoinAckFrame turnCredentials. */
+    public turnCredentials?: (ISdkTurnCredentials|null);
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.
@@ -1075,6 +1081,9 @@ export interface ISdkIndexFrame {
 
     /** SdkIndexFrame pausedAtSourceIds */
     pausedAtSourceIds?: (number[]|null);
+
+    /** SdkIndexFrame numParticipants */
+    numParticipants?: (number|null);
 }
 
 /** Represents a SdkIndexFrame. */
@@ -1094,6 +1103,9 @@ export class SdkIndexFrame implements ISdkIndexFrame {
 
     /** SdkIndexFrame pausedAtSourceIds. */
     public pausedAtSourceIds: number[];
+
+    /** SdkIndexFrame numParticipants. */
+    public numParticipants: number;
 
     /**
      * Creates a new SdkIndexFrame instance using the specified properties.
@@ -3023,6 +3035,114 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
 
     /**
      * Converts this SdkDataMessagePayload to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkTurnCredentials. */
+export interface ISdkTurnCredentials {
+
+    /** SdkTurnCredentials username */
+    username?: (string|null);
+
+    /** SdkTurnCredentials password */
+    password?: (string|null);
+
+    /** SdkTurnCredentials ttl */
+    ttl?: (number|null);
+
+    /** SdkTurnCredentials uris */
+    uris?: (string[]|null);
+}
+
+/** Represents a SdkTurnCredentials. */
+export class SdkTurnCredentials implements ISdkTurnCredentials {
+
+    /**
+     * Constructs a new SdkTurnCredentials.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTurnCredentials);
+
+    /** SdkTurnCredentials username. */
+    public username: string;
+
+    /** SdkTurnCredentials password. */
+    public password: string;
+
+    /** SdkTurnCredentials ttl. */
+    public ttl: number;
+
+    /** SdkTurnCredentials uris. */
+    public uris: string[];
+
+    /**
+     * Creates a new SdkTurnCredentials instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTurnCredentials instance
+     */
+    public static create(properties?: ISdkTurnCredentials): SdkTurnCredentials;
+
+    /**
+     * Encodes the specified SdkTurnCredentials message. Does not implicitly {@link SdkTurnCredentials.verify|verify} messages.
+     * @param message SdkTurnCredentials message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTurnCredentials, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTurnCredentials message, length delimited. Does not implicitly {@link SdkTurnCredentials.verify|verify} messages.
+     * @param message SdkTurnCredentials message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTurnCredentials, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTurnCredentials message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTurnCredentials
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTurnCredentials;
+
+    /**
+     * Decodes a SdkTurnCredentials message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTurnCredentials
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTurnCredentials;
+
+    /**
+     * Verifies a SdkTurnCredentials message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTurnCredentials message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTurnCredentials
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTurnCredentials;
+
+    /**
+     * Creates a plain object from a SdkTurnCredentials message. Also converts values to other types if specified.
+     * @param message SdkTurnCredentials
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTurnCredentials, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTurnCredentials to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };

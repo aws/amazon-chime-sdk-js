@@ -317,16 +317,14 @@ export default class DefaultAudioVideoController implements AudioVideoController
         new TimeoutTask(
           this.logger,
           new SerialGroupTask(this.logger, 'Media', [
-            new ParallelGroupTask(this.logger, 'Setup', [
+            new SerialGroupTask(this.logger, 'Signaling', [
+              new OpenSignalingConnectionTask(this.meetingSessionContext),
+              new ListenForVolumeIndicatorsTask(this.meetingSessionContext),
+              new SendAndReceiveDataMessagesTask(this.meetingSessionContext),
+              new JoinAndReceiveIndexTask(this.meetingSessionContext),
               new ReceiveTURNCredentialsTask(this.meetingSessionContext),
-              new SerialGroupTask(this.logger, 'Signaling', [
-                new OpenSignalingConnectionTask(this.meetingSessionContext),
-                new ListenForVolumeIndicatorsTask(this.meetingSessionContext),
-                new SendAndReceiveDataMessagesTask(this.meetingSessionContext),
-                new JoinAndReceiveIndexTask(this.meetingSessionContext),
-                // TODO: ensure index handler does not race with incoming index update
-                new ReceiveVideoStreamIndexTask(this.meetingSessionContext),
-              ]),
+              // TODO: ensure index handler does not race with incoming index update
+              new ReceiveVideoStreamIndexTask(this.meetingSessionContext),
             ]),
             new SerialGroupTask(this.logger, 'Peer', [
               new CreatePeerConnectionTask(this.meetingSessionContext),
@@ -583,12 +581,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
           this.logger,
           new SerialGroupTask(this.logger, 'Media', [
             new CleanRestartedSessionTask(this.meetingSessionContext),
-            new ParallelGroupTask(this.logger, 'Setup', [
+            new SerialGroupTask(this.logger, 'Signaling', [
+              new OpenSignalingConnectionTask(this.meetingSessionContext),
+              new JoinAndReceiveIndexTask(this.meetingSessionContext),
               new ReceiveTURNCredentialsTask(this.meetingSessionContext),
-              new SerialGroupTask(this.logger, 'Signaling', [
-                new OpenSignalingConnectionTask(this.meetingSessionContext),
-                new JoinAndReceiveIndexTask(this.meetingSessionContext),
-              ]),
             ]),
             new CreatePeerConnectionTask(this.meetingSessionContext),
           ]),

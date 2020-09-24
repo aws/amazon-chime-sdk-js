@@ -326,11 +326,17 @@ export default class DefaultSignalingClient implements SignalingClient {
       );
       this.receiveMessage(this.stripFrameTypeRTC(new Uint8Array(event.data)));
     });
-    this.webSocket.addEventListener('close', () => {
+    this.webSocket.addEventListener('close', (event: CloseEvent) => {
       this.deactivatePageUnloadHandler();
       this.resetConnection();
       this.sendEvent(
-        new SignalingClientEvent(this, SignalingClientEventType.WebSocketClosed, null)
+        new SignalingClientEvent(
+          this,
+          SignalingClientEventType.WebSocketClosed,
+          null,
+          event.code,
+          event.reason
+        )
       );
       this.serviceConnectionRequestQueue();
     });

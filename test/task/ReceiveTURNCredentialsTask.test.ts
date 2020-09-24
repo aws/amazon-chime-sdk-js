@@ -93,7 +93,7 @@ describe('ReceiveTURNCredentialsTask', () => {
         throw new Error('This line should not be reached.');
       } catch (error) {
         expect(error.message).includes(
-          `the meeting status code: ${MeetingSessionStatusCode.TURNMeetingEnded}`
+          `the meeting status code: ${MeetingSessionStatusCode.MeetingEnded}`
         );
       }
     });
