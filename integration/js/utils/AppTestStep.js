@@ -12,9 +12,11 @@ class AppTestStep extends TestStep {
     this.testReporter = kiteBaseTest.reporter;
 
     // this is different if we have multiple sessions
-    this.logger = sessionInfo.logger;
-    this.page = sessionInfo.page;
-    this.driver = sessionInfo.driver;
+    if (sessionInfo) {
+      this.logger = sessionInfo.logger;
+      this.page = sessionInfo.page;
+      this.driver = sessionInfo.driver;
+    }
   }
 
   async step() {

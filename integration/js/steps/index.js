@@ -31,3 +31,4 @@ exports.StartMeetingReadinessCheckerStep = require('./StartMeetingReadinessCheck
 exports.StartContentShareConnectivityCheckStep = require('./StartContentShareConnectivityCheckStep');
 exports.WaitForContentShareTestToBeReady = require('./WaitForContentShareTestToBeReady');
 exports.WaitForStartMeetingReadinessCheckerButtonToBeEnabled = require('./WaitForStartMeetingReadinessCheckerButtonToBeEnabled');
+exports.SetTestBrokenStep = require('./SetTestBrokenStep');
