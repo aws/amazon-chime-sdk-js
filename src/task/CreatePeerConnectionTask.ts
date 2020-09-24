@@ -114,7 +114,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     this.context.peer.addEventListener('track', this.trackAddedHandler);
   }
 
-  private trackAddedHandler = (event: RTCTrackEvent) => {
+  private trackAddedHandler = (event: RTCTrackEvent): void => {
     const track: MediaStreamTrack = event.track;
     this.context.logger.info(
       `received track event: kind=${track.kind} id=${track.id} label=${track.label}`

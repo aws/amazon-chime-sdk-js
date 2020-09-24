@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -47,14 +47,14 @@ describe('NoOpDeviceController', () => {
 
   describe('listAudioOutputDevices', () => {
     it('returns empty list', async () => {
-      let devices = await deviceController.listAudioOutputDevices();
+      const devices = await deviceController.listAudioOutputDevices();
       expect(devices.length).to.equal(0);
     });
   });
 
   describe('listVideoInputDevices', () => {
     it('returns empty list', async () => {
-      let devices = await deviceController.listVideoInputDevices();
+      const devices = await deviceController.listVideoInputDevices();
       expect(devices.length).to.equal(0);
     });
   });

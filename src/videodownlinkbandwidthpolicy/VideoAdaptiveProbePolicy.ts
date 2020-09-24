@@ -153,7 +153,7 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
 
   private calculateOptimalReceiveSet(): VideoStreamIdSet {
     const streamSelectionSet = new DefaultVideoStreamIdSet();
-    let remoteInfos: VideoStreamDescription[] = this.videoIndex.remoteStreamDescriptions();
+    const remoteInfos: VideoStreamDescription[] = this.videoIndex.remoteStreamDescriptions();
     if (remoteInfos.length === 0) {
       return streamSelectionSet;
     }
@@ -174,7 +174,7 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
     // reset time before allow subscribe to default
     this.timeBeforeAllowSubscribeMs = VideoAdaptiveProbePolicy.MIN_TIME_BETWEEN_SUBSCRIBE;
 
-    let chosenStreams: VideoStreamDescription[] = [];
+    const chosenStreams: VideoStreamDescription[] = [];
 
     // Sort streams by bitrate asceending.
     remoteInfos.sort((a, b) => {
@@ -185,7 +185,7 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
     });
 
     // Convert 0 avg bitrates to max and handle special cases
-    for (let info of remoteInfos) {
+    for (const info of remoteInfos) {
       if (info.avgBitrateKbps === 0 || info.avgBitrateKbps > info.maxBitrateKbps) {
         // Content can be a special case
         if (info.attendeeId.endsWith(ContentShareConstants.Modality) && info.maxBitrateKbps < 100) {
@@ -196,7 +196,7 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
       }
     }
 
-    let targetDownlinkBitrate = this.determineTargetRate(remoteInfos);
+    const targetDownlinkBitrate = this.determineTargetRate(remoteInfos);
     let deltaToNextUpgrade = 0;
     let chosenTotalBitrate = 0;
     let upgradeStream: VideoStreamDescription;
@@ -453,7 +453,7 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
   ): number {
     for (let i = 0; i < chosenStreams.length; i++) {
       if (chosenStreams[i].groupId === upgradeStream.groupId) {
-        let diffRate = upgradeStream.avgBitrateKbps - chosenStreams[i].avgBitrateKbps;
+        const diffRate = upgradeStream.avgBitrateKbps - chosenStreams[i].avgBitrateKbps;
         this.logger.info(
           'bwe: upgradeStream from ' +
             JSON.stringify(chosenStreams[i]) +
@@ -516,14 +516,14 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
     deltaToNextUpgrade: number,
     upgradeStream: VideoStreamDescription
   ): UseReceiveSet {
-    let sameSubscriptions = this.chosenStreamsSameAsLast(chosenStreams, pausedStreamIds);
+    const sameSubscriptions = this.chosenStreamsSameAsLast(chosenStreams, pausedStreamIds);
     let useLastSubscriptions = UseReceiveSet.kNewOptimal;
     const now = Date.now();
 
     // We want to minimize thrashing between between low res and high res of different
     // participants due to avg bitrate fluctuations. If there hasn't been much of a change in estimated bandwidth
     // and the number of streams and their max rates are the same, then reuse the previous subscription
-    let minTargetBitrateDelta =
+    const minTargetBitrateDelta =
       (targetDownlinkBitrate * VideoAdaptiveProbePolicy.TARGET_RATE_CHANGE_TRIGGER_PERCENT) / 100;
     if (
       !sameSubscriptions &&
@@ -693,7 +693,7 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
       startupPeriod: this.startupPeriod,
     };
 
-    let logString =
+    const logString =
       `bwe: optimalReceiveSet ${JSON.stringify(optimalReceiveSet)}\n` +
       `bwe:   prev ${JSON.stringify(this.prevDownlinkStats)}\n` +
       `bwe:   now  ${JSON.stringify(this.downlinkStats)}\n` +

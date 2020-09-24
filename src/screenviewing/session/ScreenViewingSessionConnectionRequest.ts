@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /**
@@ -7,9 +7,9 @@
 export default class ScreenViewingSessionConnectionRequest {
   constructor(
     private screenViewingURLWithOptionalSessionToken: string,
-    readonly screenDataURL: string,
-    readonly sessionToken: string,
-    readonly timeoutMs: number
+    public readonly screenDataURL: string,
+    public readonly sessionToken: string,
+    public readonly timeoutMs: number
   ) {}
 
   get screenViewingURL(): string {

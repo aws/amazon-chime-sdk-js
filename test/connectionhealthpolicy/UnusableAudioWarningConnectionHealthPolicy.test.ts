@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -39,7 +39,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
+    const loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
     expect(loss).to.equal(0);
   });
   it('can return zero fractional loss due to insufficient number of samples', () => {
@@ -49,7 +49,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
+    const loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
     expect(loss).to.equal(0);
   });
   it('can return zero packet loss due to packets received being greater than packets expected', () => {
@@ -58,7 +58,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
+    const loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
     expect(loss).to.equal(0);
   });
   it('can return 1 due to complete packet loss', () => {
@@ -67,7 +67,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
+    const loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
     expect(loss).to.equal(1);
   });
   it('can return some packet loss', () => {
@@ -76,7 +76,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
+    const loss = unusableAudioWarningConnectionHealthPolicy.calculateFractionalLoss();
     expect(loss).to.equal(0.5);
   });
   it('can simulate no warning needed', () => {
@@ -84,7 +84,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let health = unusableAudioWarningConnectionHealthPolicy.health();
+    const health = unusableAudioWarningConnectionHealthPolicy.health();
     expect(health).to.equal(1);
   });
   it('can simulate no warning needed due to being warned recently', () => {
@@ -95,7 +95,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let health = unusableAudioWarningConnectionHealthPolicy.health();
+    const health = unusableAudioWarningConnectionHealthPolicy.health();
     expect(health).to.equal(1);
   });
   it('can simulate no warning needed due to excessive previous warnings', () => {
@@ -107,7 +107,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let health = unusableAudioWarningConnectionHealthPolicy.health();
+    const health = unusableAudioWarningConnectionHealthPolicy.health();
     expect(health).to.equal(1);
   });
   it('can simulate warning needed due to recent high packet loss', () => {
@@ -117,7 +117,7 @@ describe('UnusableAudioWarningConnectionHealthPolicy', () => {
       configuration,
       data
     );
-    let health = unusableAudioWarningConnectionHealthPolicy.health();
+    const health = unusableAudioWarningConnectionHealthPolicy.health();
     expect(health).to.equal(0);
   });
 });

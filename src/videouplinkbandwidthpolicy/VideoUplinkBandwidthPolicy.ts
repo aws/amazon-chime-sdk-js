@@ -3,6 +3,7 @@
 
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import ConnectionMetrics from './ConnectionMetrics';
 
 /**
  * A [[VideoUplinkBandwidthPolicy]] makes decisions about uplink video
@@ -50,7 +51,7 @@ export default interface VideoUplinkBandwidthPolicy {
   /**
    * Updates VideoUplinkPolicy with connection metrics
    */
-  updateConnectionMetric({}): void;
+  updateConnectionMetric(metrics: ConnectionMetrics): void;
 
   /**
    * Returns the selected [[MediaTrackConstraints]] to update

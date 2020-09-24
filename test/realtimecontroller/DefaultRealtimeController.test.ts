@@ -61,7 +61,7 @@ describe('DefaultRealtimeController', () => {
 
     it('calls fatal error callback if there is an error', () => {
       let fatalErrorOccurred = false;
-      let errMsg = 'this is a test';
+      const errMsg = 'this is a test';
       const rt: RealtimeController = new DefaultRealtimeController();
       rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
         expect(muted).to.equal(true);
@@ -78,7 +78,7 @@ describe('DefaultRealtimeController', () => {
     it('recovers if fatal error callback also throws an error', () => {
       let fatalErrorOccurred = false;
       let fatalErrorObject = null;
-      let errMsg = 'this is a test';
+      const errMsg = 'this is a test';
       const oldConsoleError = console.error;
       console.error = (object: Error) => {
         fatalErrorObject = object;
@@ -101,7 +101,7 @@ describe('DefaultRealtimeController', () => {
 
     it('recovers if console.error also throws an error', () => {
       let fatalErrorOccurred = false;
-      let errMsg = 'this is a test';
+      const errMsg = 'this is a test';
       const rt: RealtimeController = new DefaultRealtimeController();
       rt.realtimeSubscribeToMuteAndUnmuteLocalAudio((muted: boolean) => {
         expect(muted).to.equal(true);
@@ -120,7 +120,7 @@ describe('DefaultRealtimeController', () => {
     });
 
     it('has the correct this object for events', () => {
-      let errMsg = 'this is a test';
+      const errMsg = 'this is a test';
       let muteFired = false;
       let unmuteFired = false;
       let setCanUnmuteFired = false;
@@ -1062,20 +1062,20 @@ describe('DefaultRealtimeController', () => {
       // subscribe to callbacks
       let callbacksRemoved = true;
       let fatalErrorCallbackRemoved = true;
-      let AttendeeIdPresenceCallback = (_attendeeId: string, _present: boolean): void => {
+      const AttendeeIdPresenceCallback = (_attendeeId: string, _present: boolean): void => {
         callbacksRemoved = false;
         throw new Error('fake error');
       };
-      let SetCanUnmuteLocalAudioCallback = (_canUnmute: boolean): void => {
+      const SetCanUnmuteLocalAudioCallback = (_canUnmute: boolean): void => {
         callbacksRemoved = false;
       };
-      let MuteAndUnmuteLocalAudioCallback = (_muted: boolean): void => {
+      const MuteAndUnmuteLocalAudioCallback = (_muted: boolean): void => {
         callbacksRemoved = false;
       };
-      let LocalSignalStrengthChangeCallback = (_signalStrength: number): void => {
+      const LocalSignalStrengthChangeCallback = (_signalStrength: number): void => {
         callbacksRemoved = false;
       };
-      let SendDataMessageCallback = (
+      const SendDataMessageCallback = (
         _topic: string,
         _data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
         _lifetimeMs?: number
@@ -1083,10 +1083,10 @@ describe('DefaultRealtimeController', () => {
         callbacksRemoved = false;
       };
 
-      let ReceiveDataMessageCallback = (_dataMessage: DataMessage): void => {
+      const ReceiveDataMessageCallback = (_dataMessage: DataMessage): void => {
         callbacksRemoved = false;
       };
-      let fatalErrorCallback = (_error: Error): void => {
+      const fatalErrorCallback = (_error: Error): void => {
         fatalErrorCallbackRemoved = false;
       };
       rt.realtimeSubscribeToAttendeeIdPresence(AttendeeIdPresenceCallback);
@@ -1147,7 +1147,7 @@ describe('DefaultRealtimeController', () => {
     it('can get correct position in frame', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       let index = 0;
-      let attendeesInFrame = 5;
+      const attendeesInFrame = 5;
       rt.realtimeSubscribeToAttendeeIdPresence(
         (
           _attendeeId: string,

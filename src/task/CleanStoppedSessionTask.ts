@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -33,7 +33,7 @@ export default class CleanStoppedSessionTask extends BaseTask {
     } catch (error) {
       throw error;
     } finally {
-      for (let observer of this.context.removableObservers) {
+      for (const observer of this.context.removableObservers) {
         observer.removeObserver();
       }
 

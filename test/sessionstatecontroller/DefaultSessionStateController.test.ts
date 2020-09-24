@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -224,7 +224,7 @@ describe('DefaultSessionStateController', () => {
     it('will defer disconnecting until after finishing connecting', () => {
       const controller: SessionStateController = new DefaultSessionStateController(logger);
       expect(controller.state()).to.equal(SessionStateControllerState.NotConnected);
-      let sequence: string[] = [];
+      const sequence: string[] = [];
 
       expect(
         controller.perform(SessionStateControllerAction.Connect, () => {
@@ -253,7 +253,7 @@ describe('DefaultSessionStateController', () => {
     it('will pick the highest priority deferred action', () => {
       const controller: SessionStateController = new DefaultSessionStateController(logger);
       expect(controller.state()).to.equal(SessionStateControllerState.NotConnected);
-      let sequence: string[] = [];
+      const sequence: string[] = [];
 
       expect(
         controller.perform(SessionStateControllerAction.Connect, () => {

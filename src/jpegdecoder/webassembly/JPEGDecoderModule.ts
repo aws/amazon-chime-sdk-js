@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../../logger/Logger';
@@ -24,7 +24,6 @@ https://github.com/kaksmet/jpeg-decoder
   async init(): Promise<void> {
     const imports = {
       wbg: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
         __wbindgen_throw: (ptr: number, len: number): void => {
           const messageBytes = new Uint8Array(this.wasm().memory.buffer).subarray(ptr, ptr + len);
           const message = String.fromCharCode.apply(null, messageBytes);

@@ -56,7 +56,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       DefaultDeviceController.defaultVideoMaxBandwidthKbps
     );
 
-    let dimension = this.browserBehavior.requiresResolutionAlignment(
+    const dimension = this.browserBehavior.requiresResolutionAlignment(
       this.videoInputQualitySettings.videoWidth,
       this.videoInputQualitySettings.videoHeight
     );
@@ -206,7 +206,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     frameRate: number,
     maxBandwidthKbps: number
   ): void {
-    let dimension = this.browserBehavior.requiresResolutionAlignment(width, height);
+    const dimension = this.browserBehavior.requiresResolutionAlignment(width, height);
     this.videoInputQualitySettings = new VideoQualitySettings(
       dimension[0],
       dimension[1],

@@ -1,0 +1,13 @@
+{
+  "COMMENT": "This file exists because typescript-eslint/parser needs every file to be explicitly included in a project.",
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./test-build"
+  },
+  "references": [{
+    "path": "../tsconfig.json"
+  }],
+  "include": [
+    "./**/*",
+  ]
+}

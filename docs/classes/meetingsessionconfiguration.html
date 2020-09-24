@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>MeetingSessionConfiguration | amazon-chime-sdk-js</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -126,7 +126,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L91">src/meetingsession/MeetingSessionConfiguration.ts:91</a></li>
+									<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:91</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -137,38 +137,39 @@
 									root-level fields. Examples:</p>
 								</div>
 								<pre><code><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration({
-  <span class="hljs-string">"Meeting"</span>: {
-     <span class="hljs-string">"MeetingId"</span>: <span class="hljs-string">"..."</span>,
-     <span class="hljs-string">"MediaPlacement"</span>: {
-       <span class="hljs-string">"AudioHostUrl"</span>: <span class="hljs-string">"..."</span>,
-       <span class="hljs-string">"ScreenDataUrl"</span>: <span class="hljs-string">"..."</span>,
-       <span class="hljs-string">"ScreenSharingUrl"</span>: <span class="hljs-string">"..."</span>,
-       <span class="hljs-string">"ScreenViewingUrl"</span>: <span class="hljs-string">"..."</span>,
-       <span class="hljs-string">"SignalingUrl"</span>: <span class="hljs-string">"..."</span>,
-       <span class="hljs-string">"TurnControlUrl"</span>: <span class="hljs-string">"..."</span>
+  <span class="hljs-string">&quot;Meeting&quot;</span>: {
+     <span class="hljs-string">&quot;MeetingId&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+     <span class="hljs-string">&quot;MediaPlacement&quot;</span>: {
+       <span class="hljs-string">&quot;AudioHostUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+       <span class="hljs-string">&quot;ScreenDataUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+       <span class="hljs-string">&quot;ScreenSharingUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+       <span class="hljs-string">&quot;ScreenViewingUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+       <span class="hljs-string">&quot;SignalingUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+       <span class="hljs-string">&quot;TurnControlUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>
      }
    }
   }
 }, {
-  <span class="hljs-string">"Attendee"</span>: {
-    <span class="hljs-string">"ExternalUserId"</span>: <span class="hljs-string">"..."</span>,
-    <span class="hljs-string">"AttendeeId"</span>: <span class="hljs-string">"..."</span>,
-    <span class="hljs-string">"JoinToken"</span>: <span class="hljs-string">"..."</span>
+  <span class="hljs-string">&quot;Attendee&quot;</span>: {
+    <span class="hljs-string">&quot;ExternalUserId&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+    <span class="hljs-string">&quot;AttendeeId&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+    <span class="hljs-string">&quot;JoinToken&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>
   }
-});</code></pre><pre><code><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration({
-  <span class="hljs-string">"MeetingId"</span>: <span class="hljs-string">"..."</span>,
-  <span class="hljs-string">"MediaPlacement"</span>: {
-    <span class="hljs-string">"AudioHostUrl"</span>: <span class="hljs-string">"..."</span>,
-    <span class="hljs-string">"ScreenDataUrl"</span>: <span class="hljs-string">"..."</span>,
-    <span class="hljs-string">"ScreenSharingUrl"</span>: <span class="hljs-string">"..."</span>,
-    <span class="hljs-string">"ScreenViewingUrl"</span>: <span class="hljs-string">"..."</span>,
-    <span class="hljs-string">"SignalingUrl"</span>: <span class="hljs-string">"..."</span>,
-    <span class="hljs-string">"TurnControlUrl"</span>: <span class="hljs-string">"..."</span>
+});</code></pre>
+								<pre><code><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration({
+  <span class="hljs-string">&quot;MeetingId&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+  <span class="hljs-string">&quot;MediaPlacement&quot;</span>: {
+    <span class="hljs-string">&quot;AudioHostUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+    <span class="hljs-string">&quot;ScreenDataUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+    <span class="hljs-string">&quot;ScreenSharingUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+    <span class="hljs-string">&quot;ScreenViewingUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+    <span class="hljs-string">&quot;SignalingUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+    <span class="hljs-string">&quot;TurnControlUrl&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>
   }
 }, {
-  <span class="hljs-string">"ExternalUserId"</span>: <span class="hljs-string">"..."</span>,
-  <span class="hljs-string">"AttendeeId"</span>: <span class="hljs-string">"..."</span>,
-  <span class="hljs-string">"JoinToken"</span>: <span class="hljs-string">"..."</span>
+  <span class="hljs-string">&quot;ExternalUserId&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+  <span class="hljs-string">&quot;AttendeeId&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>,
+  <span class="hljs-string">&quot;JoinToken&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>
 });</code></pre>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -193,7 +194,7 @@
 					<div class="tsd-signature tsd-kind-icon">attendee<wbr>Presence<wbr>Timeout<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L53">src/meetingsession/MeetingSessionConfiguration.ts:53</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:53</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -209,7 +210,7 @@
 					<div class="tsd-signature tsd-kind-icon">connection<wbr>Health<wbr>Policy<wbr>Configuration<span class="tsd-signature-symbol">:</span> <a href="connectionhealthpolicyconfiguration.html" class="tsd-signature-type">ConnectionHealthPolicyConfiguration</a><span class="tsd-signature-symbol"> = new ConnectionHealthPolicyConfiguration()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L64">src/meetingsession/MeetingSessionConfiguration.ts:64</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:64</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -225,7 +226,7 @@
 					<div class="tsd-signature tsd-kind-icon">connection<wbr>Timeout<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 15000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L37">src/meetingsession/MeetingSessionConfiguration.ts:37</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:37</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -240,7 +241,7 @@
 					<div class="tsd-signature tsd-kind-icon">credentials<span class="tsd-signature-symbol">:</span> <a href="meetingsessioncredentials.html" class="tsd-signature-type">MeetingSessionCredentials</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L27">src/meetingsession/MeetingSessionConfiguration.ts:27</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:27</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -255,7 +256,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Simulcast<wbr>For<wbr>Unified<wbr>Plan<wbr>Chromium<wbr>Based<wbr>Browsers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L79">src/meetingsession/MeetingSessionConfiguration.ts:79</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:79</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -270,7 +271,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Unified<wbr>Plan<wbr>For<wbr>Chromium<wbr>Based<wbr>Browsers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L74">src/meetingsession/MeetingSessionConfiguration.ts:74</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:74</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -285,7 +286,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Web<wbr>Audio<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L69">src/meetingsession/MeetingSessionConfiguration.ts:69</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:69</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -300,7 +301,7 @@
 					<div class="tsd-signature tsd-kind-icon">meeting<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L22">src/meetingsession/MeetingSessionConfiguration.ts:22</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:22</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -315,7 +316,7 @@
 					<div class="tsd-signature tsd-kind-icon">screen<wbr>Sharing<wbr>Session<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/screensharingsessionoptions.html" class="tsd-signature-type">ScreenSharingSessionOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L58">src/meetingsession/MeetingSessionConfiguration.ts:58</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:58</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -330,7 +331,7 @@
 					<div class="tsd-signature tsd-kind-icon">screen<wbr>Sharing<wbr>Timeout<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 5000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L42">src/meetingsession/MeetingSessionConfiguration.ts:42</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:42</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -345,7 +346,7 @@
 					<div class="tsd-signature tsd-kind-icon">screen<wbr>Viewing<wbr>Timeout<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 5000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L47">src/meetingsession/MeetingSessionConfiguration.ts:47</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:47</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -360,7 +361,7 @@
 					<div class="tsd-signature tsd-kind-icon">urls<span class="tsd-signature-symbol">:</span> <a href="meetingsessionurls.html" class="tsd-signature-type">MeetingSessionURLs</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L32">src/meetingsession/MeetingSessionConfiguration.ts:32</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:32</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -375,7 +376,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Downlink<wbr>Bandwidth<wbr>Policy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videodownlinkbandwidthpolicy.html" class="tsd-signature-type">VideoDownlinkBandwidthPolicy</a><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L85">src/meetingsession/MeetingSessionConfiguration.ts:85</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:85</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -391,7 +392,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Uplink<wbr>Bandwidth<wbr>Policy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videouplinkbandwidthpolicy.html" class="tsd-signature-type">VideoUplinkBandwidthPolicy</a><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L91">src/meetingsession/MeetingSessionConfiguration.ts:91</a></li>
+							<li>Defined in src/meetingsession/MeetingSessionConfiguration.ts:91</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -477,57 +478,30 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
 			</ul>
 		</div>
 	</div>
@@ -537,6 +511,5 @@
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

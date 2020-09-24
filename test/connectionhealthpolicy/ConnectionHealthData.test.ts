@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -25,57 +25,57 @@ describe('ConnectionHealthData', () => {
   });
   it('returns connection is recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isConnectionStartRecent = connectionHealthData.isConnectionStartRecent(Infinity);
+    const isConnectionStartRecent = connectionHealthData.isConnectionStartRecent(Infinity);
     expect(isConnectionStartRecent).to.equal(true);
   });
   it('returns connection is not recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isConnectionStartRecent = connectionHealthData.isConnectionStartRecent(0);
+    const isConnectionStartRecent = connectionHealthData.isConnectionStartRecent(0);
     expect(isConnectionStartRecent).to.equal(false);
   });
   it('returns packet loss is recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isLastPacketLossRecent = connectionHealthData.isLastPacketLossRecent(Infinity);
+    const isLastPacketLossRecent = connectionHealthData.isLastPacketLossRecent(Infinity);
     expect(isLastPacketLossRecent).to.equal(true);
   });
   it('returns packet loss is not recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isLastPacketLossRecent = connectionHealthData.isLastPacketLossRecent(0);
+    const isLastPacketLossRecent = connectionHealthData.isLastPacketLossRecent(0);
     expect(isLastPacketLossRecent).to.equal(false);
   });
   it('returns good signal is recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isGoodSignalRecent = connectionHealthData.isGoodSignalRecent(Infinity);
+    const isGoodSignalRecent = connectionHealthData.isGoodSignalRecent(Infinity);
     expect(isGoodSignalRecent).to.equal(true);
   });
   it('returns good signal is not recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isGoodSignalRecent = connectionHealthData.isGoodSignalRecent(0);
+    const isGoodSignalRecent = connectionHealthData.isGoodSignalRecent(0);
     expect(isGoodSignalRecent).to.equal(false);
   });
   it('returns weak signal is recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isWeakSignalRecent = connectionHealthData.isWeakSignalRecent(Infinity);
+    const isWeakSignalRecent = connectionHealthData.isWeakSignalRecent(Infinity);
     expect(isWeakSignalRecent).to.equal(true);
   });
   it('returns weak signal is not recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isWeakSignalRecent = connectionHealthData.isWeakSignalRecent(0);
+    const isWeakSignalRecent = connectionHealthData.isWeakSignalRecent(0);
     expect(isWeakSignalRecent).to.equal(false);
   });
   it('returns no signal is recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isNoSignalRecent = connectionHealthData.isNoSignalRecent(Infinity);
+    const isNoSignalRecent = connectionHealthData.isNoSignalRecent(Infinity);
     expect(isNoSignalRecent).to.equal(true);
   });
   it('returns no signal is not recent', () => {
     connectionHealthData = new ConnectionHealthData();
-    let isNoSignalRecent = connectionHealthData.isNoSignalRecent(0);
+    const isNoSignalRecent = connectionHealthData.isNoSignalRecent(0);
     expect(isNoSignalRecent).to.equal(false);
   });
   it('can be cloned', () => {
     connectionHealthData = new ConnectionHealthData();
-    let clonedConnectionHealthData = connectionHealthData.clone();
+    const clonedConnectionHealthData = connectionHealthData.clone();
     expect(clonedConnectionHealthData).to.deep.equal(connectionHealthData);
   });
   it('can set consecutive missed pongs', () => {

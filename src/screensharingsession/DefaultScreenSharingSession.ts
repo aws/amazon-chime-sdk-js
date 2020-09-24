@@ -187,6 +187,7 @@ export default class DefaultScreenSharingSession implements ScreenSharingSession
 
   /* istanbul ignore next */
   async ping(timeoutMs: number): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const promise = new Promise<void>(resolve => {
       const observer: ScreenSharingSessionObserver = {

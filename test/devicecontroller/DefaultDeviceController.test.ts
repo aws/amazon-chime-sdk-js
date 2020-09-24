@@ -301,7 +301,7 @@ describe('DefaultDeviceController', () => {
         'device-id-3',
         'device-id-4',
       ];
-      let releasedDevices = new Set();
+      const releasedDevices = new Set();
 
       class TestDeviceController extends DefaultDeviceController {
         releaseMediaStream(mediaStreamToRelease: MediaStream | null): void {
@@ -343,7 +343,7 @@ describe('DefaultDeviceController', () => {
         'device-id-3',
         'device-id-4',
       ];
-      let releasedDevices = new Set();
+      const releasedDevices = new Set();
       class TestDeviceControllerWithIOSSafari12 extends DefaultDeviceController {
         releaseMediaStream(mediaStreamToRelease: MediaStream | null): void {
           super.releaseMediaStream(mediaStreamToRelease);
@@ -674,6 +674,7 @@ describe('DefaultDeviceController', () => {
       // @ts-ignore
       await deviceController.acquireDisplayInputStream(constraints as MediaStreamConstraints);
       await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      // @ts-ignore
       expect(spy.calledOnceWith(constraints as MediaStreamConstraints)).to.be.true;
     });
   });

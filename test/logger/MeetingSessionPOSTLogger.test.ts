@@ -12,8 +12,7 @@ import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('MeetingSessionPOSTLogger', () => {
-  let expect: Chai.ExpectStatic;
-  expect = chai.expect;
+  const expect: Chai.ExpectStatic = chai.expect;
   let domMockBuilder: DOMMockBuilder | null = null;
   let domMockBehavior: DOMMockBehavior | null = null;
   const BASE_URL = 'base_url';
@@ -277,7 +276,7 @@ describe('MeetingSessionPOSTLogger', () => {
         expect(type).to.equal('unload');
       };
       new TimeoutScheduler(200).start(() => {
-        let logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+        const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
           'testLogger',
           configuration,
           batchSize,

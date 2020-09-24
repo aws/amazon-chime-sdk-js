@@ -117,6 +117,7 @@ describe('ContentShareMediaStreamBroker', () => {
       // @ts-ignore
       const getDisplayMediaSpy = sinon.spy(mediaDevices, 'getDisplayMedia');
       await contentShareMediaStreamBroker.acquireDisplayInputStream(defaultStreamConstraints);
+      // @ts-ignore
       expect(getDisplayMediaSpy.calledWith(sinon.match(defaultStreamConstraints))).to.be.true;
     });
 

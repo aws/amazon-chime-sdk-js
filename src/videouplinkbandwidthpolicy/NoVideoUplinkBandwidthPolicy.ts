@@ -5,10 +5,11 @@ import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparam
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
+import ConnectionMetrics from './ConnectionMetrics';
 
 export default class NoVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
   constructor() {}
-  updateConnectionMetric({}): void {}
+  updateConnectionMetric(_metrics: ConnectionMetrics): void {}
   chooseMediaTrackConstraints(): MediaTrackConstraints {
     return {};
   }

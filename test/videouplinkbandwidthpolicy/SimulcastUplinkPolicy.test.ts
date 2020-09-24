@@ -111,7 +111,7 @@ describe('SimulcastUplinkPolicy', () => {
     });
 
     it('Send Mid and Low res', () => {
-      let index = new SimulcastVideoStreamIndex(logger);
+      const index = new SimulcastVideoStreamIndex(logger);
       let encodingParams = policy.chooseEncodingParameters();
       index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
       updateIndexFrame(index, 2);
@@ -135,7 +135,7 @@ describe('SimulcastUplinkPolicy', () => {
     });
 
     it('Send Mid and Low res at low rate', () => {
-      let index = new SimulcastVideoStreamIndex(logger);
+      const index = new SimulcastVideoStreamIndex(logger);
       let encodingParams = policy.chooseEncodingParameters();
       index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
       updateIndexFrame(index, 2);
@@ -161,7 +161,7 @@ describe('SimulcastUplinkPolicy', () => {
     });
 
     it('Send only low res when bitrate low', () => {
-      let index = new SimulcastVideoStreamIndex(logger);
+      const index = new SimulcastVideoStreamIndex(logger);
       let encodingParams = policy.chooseEncodingParameters();
       index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
       updateIndexFrame(index, 2);
@@ -174,7 +174,7 @@ describe('SimulcastUplinkPolicy', () => {
       let shouldResub = policy.wantsResubscribe();
       expect(shouldResub).to.equal(true);
       encodingParams = policy.chooseEncodingParameters();
-      let param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
+      const param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(300000);
       incrementTime(8100);
       policy.updateConnectionMetric({ uplinkKbps: 280 });
@@ -185,7 +185,7 @@ describe('SimulcastUplinkPolicy', () => {
 
   describe('encoding change with num clients', () => {
     it('encoding for 1 to 4', () => {
-      let index = new SimulcastVideoStreamIndex(logger);
+      const index = new SimulcastVideoStreamIndex(logger);
       let encodingParams = policy.chooseEncodingParameters();
       index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
       updateIndexFrame(index, 14);
@@ -204,7 +204,7 @@ describe('SimulcastUplinkPolicy', () => {
     });
 
     it('encoding for 5 to 6', () => {
-      let index = new SimulcastVideoStreamIndex(logger);
+      const index = new SimulcastVideoStreamIndex(logger);
       updateIndexFrame(index, 6);
       policy.updateIndex(index);
       let encodingParams = policy.chooseEncodingParameters();
@@ -225,7 +225,7 @@ describe('SimulcastUplinkPolicy', () => {
     });
 
     it('encoding for more than 6', () => {
-      let index = new SimulcastVideoStreamIndex(logger);
+      const index = new SimulcastVideoStreamIndex(logger);
       let encodingParams = policy.chooseEncodingParameters();
       index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
       updateIndexFrame(index, 1);

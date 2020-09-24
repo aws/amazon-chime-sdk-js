@@ -355,7 +355,7 @@ describe('SimulcastTransceiverController', () => {
       tc.setupLocalTransceivers();
 
       const videoStreamIndex = prepareIndex([7, 8]);
-      let videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([7, 8]);
+      const videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([7, 8]);
       let videoSubscriptions: number[] = tc.updateVideoTransceivers(
         videoStreamIndex,
         videosToReceive
@@ -377,7 +377,7 @@ describe('SimulcastTransceiverController', () => {
       });
       videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
 
-      let videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([streamId, 8]);
+      const videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([streamId, 8]);
       let videoSubscriptions: number[] = tc.updateVideoTransceivers(
         videoStreamIndex,
         videosToReceive

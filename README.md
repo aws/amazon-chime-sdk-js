@@ -133,7 +133,7 @@ npm run test
 After running `npm run test` the first time, you can use `npm run test:fast` to
 speed up the test suite.
 
-To view code coverage results open `build/coverage/index.html` in your browser
+To view code coverage results open `coverage/index.html` in your browser
 after running `npm run test`.
 
 ## Generating the documentation
@@ -621,7 +621,7 @@ const contentShareStream = await meetingSession.audioVideo.startContentShareFrom
 
 If you want to display the content share stream for the sharer, you can bind the returned content share stream to a
  video element using `connectVideoStreamToVideoElement` from DefaultVideoTile.
- 
+
 ```js
 DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, false);
 ```
@@ -891,7 +891,7 @@ meetingSession.audioVideo.addObserver(observer);
 
 ```js
 import { DefaultMeetingReadinessChecker } from 'amazon-chime-sdk-js';
- 
+
 // In the usage examples below, you will use this meetingReadinessChecker object.
 const meetingReadinessChecker = new DefaultMeetingReadinessChecker(logger, meetingSession);
 ```
@@ -900,10 +900,10 @@ const meetingReadinessChecker = new DefaultMeetingReadinessChecker(logger, meeti
 
 ```js
 import { CheckAudioInputFeedback } from 'amazon-chime-sdk-js';
- 
+
 const audioInputDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioInputDevices */;
 const audioInputFeedback = await meetingReadinessChecker.checkAudioInput(audioInputDeviceInfo.deviceId);
- 
+
 switch (audioInputFeedback) {
   case CheckAudioInputFeedback.Succeeded:
     console.log('Succeeded');
@@ -925,17 +925,17 @@ import {
   CheckContentShareConnectivityFeedback,
   CheckVideoConnectivityFeedback
 } from 'amazon-chime-sdk-js';
- 
+
 // Tests audio connection
 const audioDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioInputDevices */;
 const audioFeedback = await meetingReadinessChecker.checkAudioConnectivity(audioDeviceInfo.deviceId);
 console.log(`Feedback result: ${CheckAudioConnectivityFeedback[audioFeedback]}`);
- 
+
 // Test video connection
 const videoInputInfo = /* An array item from meetingSession.audioVideo.listVideoInputDevices */;
 const videoFeedback = await meetingReadinessChecker.checkVideoConnectivity(videoInputInfo.deviceId);
 console.log(`Feedback result: ${CheckVideoConnectivityFeedback[videoFeedback]}`);
- 
+
 // Tests content share connectivity
 const contentShareFeedback = await meetingReadinessChecker.checkContentShareConnectivity();
 console.log(`Feedback result: ${CheckContentShareConnectivityFeedback[contentShareFeedback]}`);
@@ -948,14 +948,14 @@ import {
   CheckNetworkUDPConnectivityFeedback,
   CheckNetworkTCPConnectivityFeedback
 } from 'amazon-chime-sdk-js';
- 
+
 // Tests for UDP network connectivity
 const networkUDPFeedback = await meetingReadinessChecker.checkNetworkUDPConnectivity();
 console.log(`Feedback result: ${CheckNetworkUDPConnectivityFeedback[networkUDPFeedback]}`);
- 
+
 // Tests for TCP network connectivity
 const networkUDPFeedback = await meetingReadinessChecker.checkNetworkTCPConnectivity();
 console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkUDPFeedback]}`);
 ```
- 
+
 Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.

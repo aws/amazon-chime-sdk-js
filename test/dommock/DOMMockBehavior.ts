@@ -16,8 +16,10 @@ export default class DOMMockBehavior {
   webSocketCloseSucceeds: boolean = true;
   webSocketSendEcho: boolean = true;
   iceConnectionStates: string[] = ['completed'];
+
+  // eslint-disable-next-line @typescript-eslint/ban-types
   FakeTURNCredentialsBody: Promise<object> = new Promise((resolve, _reject) => {
-    let obj: object = new Object({
+    const obj = new Object({
       username: 'fakeUsername',
       password: 'fakeTURNCredentials',
       ttl: Infinity,
