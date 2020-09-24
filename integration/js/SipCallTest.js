@@ -29,7 +29,7 @@ class SipCallTest extends SdkBaseTest {
 
     const sip_call_window = await Window.openNew(session.driver, "SipCall");
     await sip_call_window.runCommands(async () => await OpenAppStep.executeStep(this, session));
-    await sip_call_window.runCommands(async () => await GetSipUriForCallStep.executeStep(this, session, meetingId));
+    await sip_call_window.runCommands(async () => await GetSipUriForCallStep.executeStep(this, session, this.meetingTitle));
 
     const sipCallClient = new SipCallClient(this.payload.sipTestAssetPath, this.payload.resultPath);
     const sipCall = sipCallClient.call(this.payload.voiceConnectorId, this.sipUri);
