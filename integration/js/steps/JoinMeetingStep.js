@@ -28,7 +28,7 @@ class JoinMeetingStep extends AppTestStep {
     await this.page.joinMeeting();
     let joinState = await this.page.waitToJoinTheMeeting();
     if (joinState === 'failed') {
-      throw new KiteTestError(Status.ERROR, 'Timeout while joining the meeting');
+      throw new KiteTestError(Status.BROKEN, 'Timeout while joining the meeting');
     }
   }
 }

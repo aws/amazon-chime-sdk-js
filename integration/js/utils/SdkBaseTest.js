@@ -1,5 +1,6 @@
 const {KiteBaseTest, TestUtils} = require('../node_modules/kite-common');
 const {AllureTestReport} = require('../node_modules/kite-common/report');
+const {SetTestBrokenStep} = require('../steps');
 const {SaucelabsSession} = require('./WebdriverSauceLabs');
 const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {LocalSession} = require('./WebdriverLocal');
@@ -145,16 +146,18 @@ class SdkBaseTest extends KiteBaseTest {
       try {
         const session = await this.createSeleniumSession(this.capabilities);
         await session.init();
-        this.seleniumSessions.push(session)
+        this.seleniumSessions.push(session);
       } catch (e) {
         console.log('Failed to initialize');
         console.log(e);
-        await emitMetric(this.testName, this.capabilities, 'E2E', 0);
         await this.updateSeleniumTestResult(false);
         await this.quitSeleniumSessions();
-        return;
+        await emitMetric('Common', this.capabilities, 'SeleniumInit', 0);
+        return false;
       }
     }
+    await emitMetric('Common', this.capabilities, 'SeleniumInit', 1);
+    return true;
   }
 
   numberOfSessions() {
@@ -186,7 +189,12 @@ class SdkBaseTest extends KiteBaseTest {
       if (retryCount !== 0) {
         console.log(`Retrying : ${retryCount}`);
       }
-      await this.initializeSeleniumSession(numberOfSeleniumSessions);
+
+      if (!await this.initializeSeleniumSession(numberOfSeleniumSessions)) {
+        await emitMetric(this.testName, this.capabilities, 'E2E', 0);
+        return;
+      }
+
       //Wait for other to be ready
       if (this.numberOfParticipant > 1 && this.io) {
         this.io.emit('test_ready', true);
@@ -204,7 +212,9 @@ class SdkBaseTest extends KiteBaseTest {
         console.log("Running test on: " + process.env.SELENIUM_GRID_PROVIDER);
         await this.runIntegrationTest();
       } catch (e) {
-        console.log(e);
+        console.error(e);
+        this.failedTest = true;
+        await SetTestBrokenStep.executeStep(this, 'Error exception when runing test');
       } finally {
         await this.closeCurrentTest(!this.failedTest && !this.remoteFailed);
       }
@@ -262,8 +272,8 @@ class SdkBaseTest extends KiteBaseTest {
 
   async closeCurrentTest(testResult) {
     try {
-      await emitMetric(this.testName, this.capabilities, 'E2E', testResult? 1 : 0);
       await this.updateSeleniumTestResult(testResult);
+      await emitMetric(this.testName, this.capabilities, 'E2E', testResult? 1 : 0);
       await this.printRunDetails(testResult);
     } catch (e) {
       console.log(e);

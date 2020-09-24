@@ -8,12 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add a Travis check to make sure version update
+- Add metrics for Selenium initialization metrics for integration tests
 
 ### Changed
+- Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests
 
 ### Removed
 
 ### Fixed
+- Make sure integration test returns FAILED if there is error
 
 ## [1.19.0] - 2020-09-29
 ### Added

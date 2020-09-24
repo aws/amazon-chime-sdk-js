@@ -25,7 +25,7 @@ class GetSipUriForCallStep extends AppTestStep {
     await this.page.authenticateSipCall(this.meetingId, this.test.payload.voiceConnectorId);
     let authState = await this.page.waitForSipAuthentication();
     if (authState === 'failed') {
-      throw new KiteTestError(Status.ERROR, 'Timeout while getting sip call uri');
+      throw new KiteTestError(Status.BROKEN, 'Timeout while getting sip call uri');
     }
     let sipUri = await this.page.getSipUri();
     this.test.sipUri = sipUri;
