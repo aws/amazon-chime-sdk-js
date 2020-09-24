@@ -32,8 +32,15 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
   }
 
   async run(): Promise<void> {
+    if (this.context.turnCredentials) {
+      this.context.logger.info('TURN credentials available, skipping credentials fetch');
+      return;
+    }
+
+    this.context.logger.error('missing TURN credentials - falling back to fetch');
+
     if (!this.url) {
-      this.context.logger.info('skipping TURN credentials');
+      this.context.logger.info('TURN control url not supplied, skipping credentials fetch');
       return;
     }
 
@@ -75,7 +82,7 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
           reject(
             new Error(
               `canceling ${this.name()} due to the meeting status code: ${
-                MeetingSessionStatusCode.TURNMeetingEnded
+                MeetingSessionStatusCode.MeetingEnded
               }`
             )
           );
@@ -94,7 +101,7 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
         return this.context.meetingSessionConfiguration.urls.urlRewriter(uri);
       })
       .filter((uri: string) => {
-        return uri !== '';
+        return !!uri;
       });
     this.context.turnCredentials.username = responseBodyJson.username;
   }

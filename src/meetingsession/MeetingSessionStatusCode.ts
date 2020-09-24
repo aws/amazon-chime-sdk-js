@@ -24,19 +24,31 @@ export enum MeetingSessionStatusCode {
   AudioDisconnectAudio = 3,
 
   /**
-   * Authentication was rejected. The client is not allowed on this call.
+   * Authentication was rejected. The client is not allowed on this meeting.
    */
   AudioAuthenticationRejected = 4,
 
   /**
-   * The client can not join because the call is at capacity.
+   * The client can not join because the meeting is at capacity.
    */
   AudioCallAtCapacity = 5,
 
   /**
-   * The call was ended.
+   * Deprecated. The meeting has ended. This is a legacy alias for MeetingEnded and will
+   * be removed in v2.0.0.
    */
   AudioCallEnded = 6,
+
+  /**
+   * Deprecated. The meeting has ended. This is a legacy alias for MeetingEnded and will
+   * be removed in v2.0.0.
+   */
+  TURNMeetingEnded = 6,
+
+  /**
+   * The meeting has ended.
+   */
+  MeetingEnded = 6,
 
   /**
    * There was an internal server error with the audio leg.
@@ -60,7 +72,7 @@ export enum MeetingSessionStatusCode {
    */
   VideoCallSwitchToViewOnly = 10,
 
-  /** This can happen when you attempt to join a video call in "send only" mode
+  /** This can happen when you attempt to join a video meeting in "send only" mode
   (transmitting your camera, but not receiving anything -- this isn't something
   we ever do in practice, but it is supported on the server). It should be
   treated as "fatal" and probably should not be retried (despite the 5xx nature). */
@@ -128,11 +140,6 @@ export enum MeetingSessionStatusCode {
    * The attendee is not present.
    */
   NoAttendeePresent = 23,
-
-  /**
-   *  This can happen when you attempt to join a meeting which has ended
-   */
-  TURNMeetingEnded = 24,
 }
 
 export default MeetingSessionStatusCode;

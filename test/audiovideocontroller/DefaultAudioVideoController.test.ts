@@ -23,9 +23,11 @@ import {
   SdkAudioStreamIdInfo,
   SdkAudioStreamIdInfoFrame,
   SdkIndexFrame,
+  SdkJoinAckFrame,
   SdkLeaveAckFrame,
   SdkSignalFrame,
   SdkSubscribeAckFrame,
+  SdkTurnCredentials,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
@@ -81,6 +83,25 @@ describe('DefaultAudioVideoController', () => {
   }
 
   // For JoinAndReceiveIndexTask
+  function makeJoinAckFrame(withTurnCreds: boolean = true): Uint8Array {
+    const joinAckFrame = SdkJoinAckFrame.create();
+    joinAckFrame.turnCredentials = SdkTurnCredentials.create();
+    joinAckFrame.turnCredentials.username = 'fake-username';
+    joinAckFrame.turnCredentials.password = 'fake-password';
+    joinAckFrame.turnCredentials.ttl = 300;
+    joinAckFrame.turnCredentials.uris = ['fake-turn', 'fake-turns'];
+    const joinAckSignal = SdkSignalFrame.create();
+    joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
+    if (withTurnCreds) {
+      joinAckSignal.joinack = joinAckFrame;
+    }
+    const buffer = SdkSignalFrame.encode(joinAckSignal).finish();
+    const joinAckSignalBuffer = new Uint8Array(buffer.length + 1);
+    joinAckSignalBuffer[0] = 0x5;
+    joinAckSignalBuffer.set(buffer, 1);
+    return joinAckSignalBuffer;
+  }
+
   function makeIndexFrame(): Uint8Array {
     const indexFrame = SdkIndexFrame.create();
     const indexSignal = SdkSignalFrame.create();
@@ -188,6 +209,8 @@ describe('DefaultAudioVideoController', () => {
     await delay();
     audioVideoController.start();
     await delay();
+    webSocketAdapter.send(makeJoinAckFrame());
+    await delay();
     webSocketAdapter.send(makeIndexFrame());
     await delay(300);
     await sendICEEventAndSubscribeAckFrame();
@@ -208,6 +231,10 @@ describe('DefaultAudioVideoController', () => {
     await delay();
     audioVideoController.reconnect(new MeetingSessionStatus(MeetingSessionStatusCode.OK));
     await delay();
+    webSocketAdapter.send(makeJoinAckFrame());
+    await delay();
+    await delay();
+    webSocketAdapter.send(makeJoinAckFrame());
     webSocketAdapter.send(makeIndexFrame());
     await delay(300);
     await sendICEEventAndSubscribeAckFrame();
@@ -266,6 +293,8 @@ describe('DefaultAudioVideoController', () => {
 
       await delay();
       // use this opportunity to test volume indicators
+      webSocketAdapter.send(makeJoinAckFrame());
+      await delay();
       webSocketAdapter.send(makeIndexFrame());
       webSocketAdapter.send(makeAudioStreamIdInfoFrame());
       webSocketAdapter.send(makeAudioMetadataFrame());
@@ -273,6 +302,46 @@ describe('DefaultAudioVideoController', () => {
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
 
+      await stop();
+    });
+
+    it('can be started without a join ack frame containing turn credentials', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          // use this opportunity to verify that start is idempotent
+          audioVideoController.start();
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+
+      await delay();
+      audioVideoController.start();
+      await delay();
+      webSocketAdapter.send(makeJoinAckFrame(false));
+      await delay();
+      webSocketAdapter.send(makeIndexFrame());
+      await delay(300);
+      await sendICEEventAndSubscribeAckFrame();
+      await delay();
+      await sendAudioStreamIdInfoFrame();
+      await delay();
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
       await stop();
     });
 
@@ -316,6 +385,8 @@ describe('DefaultAudioVideoController', () => {
 
       await delay();
       // use this opportunity to test volume indicators
+      webSocketAdapter.send(makeJoinAckFrame());
+      await delay();
       webSocketAdapter.send(makeIndexFrame());
       webSocketAdapter.send(makeAudioStreamIdInfoFrame());
       webSocketAdapter.send(makeAudioMetadataFrame());
@@ -705,6 +776,8 @@ describe('DefaultAudioVideoController', () => {
       // At this point, the update operation failed, performing the Reconnect action.
       // Finish the reconnect operation by sending required frames and events.
       await delay(200);
+      webSocketAdapter.send(makeJoinAckFrame());
+      await delay(100);
       webSocketAdapter.send(makeIndexFrame());
       await delay(200);
       await sendICEEventAndSubscribeAckFrame();
@@ -1091,6 +1164,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.start();
       delay(200).then(() => {
         // Finish JoinAndReceiveIndexTask and then wait for the ICE event in FinishGatheringICECandidatesTask.
+        webSocketAdapter.send(makeJoinAckFrame());
         webSocketAdapter.send(makeIndexFrame());
       });
 
@@ -1102,6 +1176,8 @@ describe('DefaultAudioVideoController', () => {
       delay(configuration.connectionTimeoutMs + 200).then(async () => {
         // At this point, the start operation failed so attempted to connect the session again.
         // Finish the start operation by sending required frames and events.
+        webSocketAdapter.send(makeJoinAckFrame());
+        await delay();
         webSocketAdapter.send(makeIndexFrame());
         await delay(100);
         await sendICEEventAndSubscribeAckFrame();
@@ -1147,6 +1223,8 @@ describe('DefaultAudioVideoController', () => {
       delay(configuration.connectionTimeoutMs + 100).then(async () => {
         // Finish the start operation and stop this test.
         await delay(300);
+        webSocketAdapter.send(makeJoinAckFrame());
+        await delay(100);
         webSocketAdapter.send(makeIndexFrame());
         await delay(300);
         await sendICEEventAndSubscribeAckFrame();
@@ -1222,6 +1300,8 @@ describe('DefaultAudioVideoController', () => {
         expect(reconnectSpy.called).to.be.true;
 
         // Finish the reconnect operation and stop this test.
+        webSocketAdapter.send(makeJoinAckFrame());
+        await delay();
         webSocketAdapter.send(makeIndexFrame());
         await delay(200);
         await sendICEEventAndSubscribeAckFrame();
@@ -1268,6 +1348,8 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.start();
       delay().then(async () => {
         await delay(300);
+        webSocketAdapter.send(makeJoinAckFrame());
+        await delay();
         webSocketAdapter.send(makeIndexFrame());
         await delay(300);
         await sendICEEventAndSubscribeAckFrame();
@@ -1280,6 +1362,8 @@ describe('DefaultAudioVideoController', () => {
         await delay(300);
 
         // Finish the start operation and stop this test.
+        webSocketAdapter.send(makeJoinAckFrame());
+        await delay();
         webSocketAdapter.send(makeIndexFrame());
         await delay(300);
         await sendICEEventAndSubscribeAckFrame();
@@ -1327,6 +1411,8 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.start();
       delay().then(async () => {
         await delay(300);
+        webSocketAdapter.send(makeJoinAckFrame());
+        await delay();
         webSocketAdapter.send(makeIndexFrame());
         await delay(300);
         await sendICEEventAndSubscribeAckFrame();
@@ -1339,6 +1425,8 @@ describe('DefaultAudioVideoController', () => {
         await delay(300);
 
         // Finish the start operation and stop this test.
+        webSocketAdapter.send(makeJoinAckFrame());
+        await delay();
         webSocketAdapter.send(makeIndexFrame());
         await delay(300);
         await sendICEEventAndSubscribeAckFrame();
@@ -1640,6 +1728,8 @@ describe('DefaultAudioVideoController', () => {
 
       await delay();
       // use this opportunity to test volume indicators
+      webSocketAdapter.send(makeJoinAckFrame());
+      await delay();
       webSocketAdapter.send(makeIndexFrame());
       webSocketAdapter.send(makeAudioStreamIdInfoFrame());
       webSocketAdapter.send(makeAudioMetadataFrame());

@@ -830,7 +830,7 @@ describe('MonitorTask', () => {
       expect(spy.called).to.be.true;
     });
 
-    it('stops audio and video if the error status code is 410 (AudioCallEnded)', () => {
+    it('stops audio and video if the error status code is 410 (MeetingEnded)', () => {
       const spy = sinon.spy(context.audioVideoController, 'handleMeetingSessionStatus');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();

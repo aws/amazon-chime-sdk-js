@@ -73,7 +73,9 @@ message SdkJoinFrame {
     optional SdkClientDetails client_details = 4;
 }
 
-message SdkJoinAckFrame {}
+message SdkJoinAckFrame {
+    optional SdkTurnCredentials turn_credentials = 1;
+}
 
 message SdkLeaveFrame {}
 
@@ -111,6 +113,7 @@ message SdkIndexFrame {
     optional bool at_capacity = 1;
     repeated SdkStreamDescriptor sources = 2;
     repeated uint32 paused_at_source_ids = 3;
+    optional uint32 num_participants = 4;
 }
 
 message SdkPauseResumeFrame {
@@ -269,4 +272,11 @@ message SdkDataMessagePayload {
     optional string sender_attendee_id = 4;
     optional int64 ingest_time_ns = 5;
     optional string sender_external_user_id = 6;
+}
+
+message SdkTurnCredentials {
+    optional string username = 1;
+    optional string password = 2;
+    optional uint32 ttl = 3;
+    repeated string uris = 4;
 }

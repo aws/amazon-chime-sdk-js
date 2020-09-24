@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import WebSocketReadyState from './WebSocketReadyState';
@@ -25,7 +25,7 @@ export default interface WebSocketAdapter {
   /**
    * Close the WebSocket connection.
    */
-  close(): void;
+  close(code?: number, reason?: string): void;
 
   /**
    * Destroys internal reference to the WebSocket.
