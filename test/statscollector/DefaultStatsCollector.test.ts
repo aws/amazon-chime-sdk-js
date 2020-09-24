@@ -1,8 +1,6 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-/* eslint-disable @typescript-eslint/camelcase */
-
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 

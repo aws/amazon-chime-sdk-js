@@ -36,6 +36,7 @@ import ClientVideoStreamReceivingReport from './clientmetricreport/ClientVideoSt
 import ConnectionHealthData from './connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicy from './connectionhealthpolicy/ConnectionHealthPolicy';
 import ConnectionHealthPolicyConfiguration from './connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
+import ConnectionMetrics from './videouplinkbandwidthpolicy/ConnectionMetrics';
 import ConnectionMonitor from './connectionmonitor/ConnectionMonitor';
 import ConsoleLogger from './logger/ConsoleLogger';
 import ContentShareConstants from './contentsharecontroller/ContentShareConstants';
@@ -349,6 +350,7 @@ export {
   ConnectionHealthData,
   ConnectionHealthPolicy,
   ConnectionHealthPolicyConfiguration,
+  ConnectionMetrics,
   ConnectionMonitor,
   ConsoleLogger,
   ContentShareConstants,

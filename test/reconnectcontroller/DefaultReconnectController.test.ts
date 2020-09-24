@@ -10,7 +10,7 @@ import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 describe('DefaultReconnectController', () => {
   let expect: Chai.ExpectStatic;
   let timeout: number;
-  let defaultController = (): DefaultReconnectController => {
+  const defaultController = (): DefaultReconnectController => {
     return new DefaultReconnectController(50, new FullJitterBackoff(10, 0, 0));
   };
 

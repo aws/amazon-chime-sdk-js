@@ -381,7 +381,7 @@ export default class DOMMockBuilder {
           if (mockBehavior.enumerateDeviceList) {
             deviceLists = mockBehavior.enumerateDeviceList;
           } else {
-            let label = this.gotLabels ? 'fakeLabel' : '';
+            const label = this.gotLabels ? 'fakeLabel' : '';
             deviceLists = [
               { deviceId: ++mockBehavior.deviceCounter + '', kind: 'audioinput', label: label },
               { deviceId: ++mockBehavior.deviceCounter + '', kind: 'videoinput', label: label },
@@ -794,7 +794,6 @@ export default class DOMMockBuilder {
       parameter: RTCRtpSendParameters;
       constructor(track: MediaStreamTrack) {
         this.track = track;
-        // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
         this.parameter = {
           degradationPreference: null,
           encodings: [],
@@ -881,13 +880,13 @@ export default class DOMMockBuilder {
     GlobalAny.MediaQueryList = class MockMediaQueryList {
       constructor() {}
 
-      addEventListener(_type: string, listener: () => {}): void {
+      addEventListener(_type: string, listener: () => void): void {
         asyncWait(() => {
           listener();
         });
       }
 
-      addListener(listener: () => {}): void {
+      addListener(listener: () => void): void {
         asyncWait(() => {
           listener();
         });

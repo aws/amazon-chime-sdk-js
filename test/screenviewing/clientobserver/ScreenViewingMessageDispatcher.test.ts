@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ScreenViewingMessageDispatcher from '../../../src/screenviewing/clientobserver/ScreenViewingMessageDispatcher';
@@ -28,7 +28,7 @@ describe('ScreenViewingMessageDispatcher', () => {
         },
       });
 
-      const event: {} = { data: Uint8Array.of(ScreenPacketType.ECHO_REQUEST).buffer };
+      const event = { data: Uint8Array.of(ScreenPacketType.ECHO_REQUEST).buffer };
       dispatcher.didReceiveWebSocketMessage(event as MessageEvent);
     });
 
@@ -40,7 +40,7 @@ describe('ScreenViewingMessageDispatcher', () => {
         },
       });
 
-      const event: {} = { data: Uint8Array.of(ScreenPacketType.SETUP).buffer };
+      const event = { data: Uint8Array.of(ScreenPacketType.SETUP).buffer };
       dispatcher.didReceiveWebSocketMessage(event as MessageEvent);
     });
 
@@ -52,7 +52,7 @@ describe('ScreenViewingMessageDispatcher', () => {
         },
       });
 
-      const event: {} = { data: Uint8Array.of(ScreenPacketType.DELTA).buffer };
+      const event = { data: Uint8Array.of(ScreenPacketType.DELTA).buffer };
       dispatcher.didReceiveWebSocketMessage(event as MessageEvent);
     });
 
@@ -64,7 +64,7 @@ describe('ScreenViewingMessageDispatcher', () => {
         },
       });
 
-      const event: {} = { data: Uint8Array.of(ScreenPacketType.SYNC).buffer };
+      const event = { data: Uint8Array.of(ScreenPacketType.SYNC).buffer };
       dispatcher.didReceiveWebSocketMessage(event as MessageEvent);
     });
 
@@ -76,7 +76,7 @@ describe('ScreenViewingMessageDispatcher', () => {
         },
       });
 
-      const event: {} = { data: Uint8Array.of(ScreenPacketType.NOSCREEN).buffer };
+      const event = { data: Uint8Array.of(ScreenPacketType.NOSCREEN).buffer };
       dispatcher.didReceiveWebSocketMessage(event as MessageEvent);
     });
 
@@ -88,7 +88,7 @@ describe('ScreenViewingMessageDispatcher', () => {
         },
       });
 
-      const event: {} = { data: Uint8Array.of(ScreenPacketType.ENDSCREEN).buffer };
+      const event = { data: Uint8Array.of(ScreenPacketType.ENDSCREEN).buffer };
       dispatcher.didReceiveWebSocketMessage(event as MessageEvent);
     });
 
@@ -100,7 +100,7 @@ describe('ScreenViewingMessageDispatcher', () => {
         },
       });
 
-      const event: {} = { data: Uint8Array.of(0x00).buffer };
+      const event = { data: Uint8Array.of(0x00).buffer };
       dispatcher.didReceiveWebSocketMessage(event as MessageEvent);
     });
   });

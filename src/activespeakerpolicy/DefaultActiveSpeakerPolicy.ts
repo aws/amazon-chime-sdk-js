@@ -58,7 +58,7 @@ export default class DefaultActiveSpeakerPolicy implements ActiveSpeakerPolicy {
     } else {
       volume = 0.0;
     }
-    let score = this.volumes[attendeeId] * this.speakerWeight + volume * (1 - this.speakerWeight);
+    const score = this.volumes[attendeeId] * this.speakerWeight + volume * (1 - this.speakerWeight);
     this.volumes[attendeeId] = score;
     for (const otherAttendeeId in this.volumes) {
       if (otherAttendeeId !== attendeeId) {

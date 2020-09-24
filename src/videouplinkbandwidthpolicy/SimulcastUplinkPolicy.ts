@@ -7,6 +7,7 @@ import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/De
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import BitrateParameters from './BitrateParameters';
+import ConnectionMetrics from './ConnectionMetrics';
 import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 
 const enum ActiveStreams {
@@ -57,11 +58,7 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
     this.newQualityMap = this.fillEncodingParamWithBitrates([300, 0, 1200]);
   }
 
-  updateConnectionMetric({
-    uplinkKbps = 0,
-  }: {
-    uplinkKbps?: number;
-  } = {}): void {
+  updateConnectionMetric({ uplinkKbps = 0 }: ConnectionMetrics): void {
     if (isNaN(uplinkKbps)) {
       return;
     }
@@ -102,7 +99,7 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
     numParticipantsChanged: boolean
   ): Map<string, RTCRtpEncodingParameters> {
     // bitrates parameter min is not used for now
-    let newBitrates: BitrateParameters[] = [
+    const newBitrates: BitrateParameters[] = [
       new BitrateParameters(),
       new BitrateParameters(),
       new BitrateParameters(),
@@ -169,14 +166,14 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
   chooseMediaTrackConstraints(): MediaTrackConstraints {
     // Changing MediaTrackConstraints causes a restart of video input and possible small
     // scaling changes.  Always use 720p for now
-    let trackConstraint: MediaTrackConstraints;
-    trackConstraint = {
+    const trackConstraint: MediaTrackConstraints = {
       width: { ideal: 1280 },
       height: { ideal: 768 },
       frameRate: { ideal: 15 },
     };
     return trackConstraint;
   }
+
   chooseEncodingParameters(): Map<string, RTCRtpEncodingParameters> {
     this.currentQualityMap = this.newQualityMap;
     this.currentActiveStreams = this.newActiveStreams;
@@ -268,7 +265,7 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
 
   private captureHeight(): number {
     // should deprecate in this policy
-    let height = 768;
+    const height = 768;
     return height;
   }
 

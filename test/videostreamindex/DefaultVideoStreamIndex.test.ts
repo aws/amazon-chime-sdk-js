@@ -20,7 +20,7 @@ describe('DefaultVideoStreamIndex', () => {
   let expect: Chai.ExpectStatic;
   let assert: Chai.AssertStatic;
   let index: DefaultVideoStreamIndex;
-  let logger = new NoOpLogger(LogLevel.DEBUG);
+  const logger = new NoOpLogger(LogLevel.DEBUG);
 
   beforeEach(() => {
     expect = chai.expect;

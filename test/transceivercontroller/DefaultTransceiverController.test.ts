@@ -371,7 +371,7 @@ describe('DefaultTransceiverController', () => {
       tc.setupLocalTransceivers();
 
       const videoStreamIndex = prepareIndex([7, 8]);
-      let videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([7, 8]);
+      const videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([7, 8]);
       let videoSubscriptions: number[] = tc.updateVideoTransceivers(
         videoStreamIndex,
         videosToReceive
@@ -393,7 +393,7 @@ describe('DefaultTransceiverController', () => {
       });
       videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
 
-      let videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([streamId, 8]);
+      const videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([streamId, 8]);
       let videoSubscriptions: number[] = tc.updateVideoTransceivers(
         videoStreamIndex,
         videosToReceive
@@ -422,7 +422,6 @@ describe('DefaultTransceiverController', () => {
         expect(videoTransceiver.direction).to.equal('sendrecv');
         expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
 
-        // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
         const parameter = {
           degradationPreference: null,
           transactionId: '',

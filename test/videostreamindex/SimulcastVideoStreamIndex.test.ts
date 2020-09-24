@@ -26,7 +26,7 @@ describe('SimulcastVideoStreamIndex', () => {
   }
   let originalDateNow: DateNow;
   let startTime: number;
-  let logger = new NoOpLogger(LogLevel.DEBUG);
+  const logger = new NoOpLogger(LogLevel.DEBUG);
 
   function mockDateNow(): number {
     return startTime;

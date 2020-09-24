@@ -59,7 +59,7 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
     if (!this.needUpdate(attendeeId)) {
       return;
     }
-    let sortedSpeakers: { attendeeId: string; activeScore: number }[] = [];
+    const sortedSpeakers: { attendeeId: string; activeScore: number }[] = [];
 
     const attendeeIds = Object.keys(this.speakerScores);
     for (let i = 0; i < attendeeIds.length; i++) {
@@ -67,7 +67,7 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
       sortedSpeakers.push({ attendeeId: attendeeId, activeScore: this.speakerScores[attendeeId] });
     }
 
-    let sortedAttendeeIds = sortedSpeakers
+    const sortedAttendeeIds = sortedSpeakers
       .sort((s1, s2) => s2.activeScore - s1.activeScore)
       .filter(function(s) {
         return s.activeScore > 0;
@@ -109,7 +109,7 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
     scoresCallback?: (scores: { [attendeeId: string]: number }) => void,
     scoresCallbackIntervalMs?: number
   ): void {
-    let handler = (attendeeId: string, present: boolean): void => {
+    const handler = (attendeeId: string, present: boolean): void => {
       if (!present) {
         this.speakerScores[attendeeId] = 0;
         this.mostRecentUpdateTimestamp[attendeeId] = Date.now();

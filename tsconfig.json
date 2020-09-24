@@ -1,15 +1,8 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./build",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "module": "commonjs",
-    "target": "es5",
-    "lib": ["es6", "dom"],
-    "declaration": true
+    "composite": true,
+    "outDir": "./build"
   },
   "include": [
     "./src/**/*",

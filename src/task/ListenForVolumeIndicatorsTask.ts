@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -52,7 +52,7 @@ export default class ListenForVolumeIndicatorsTask extends BaseTask
     }
   }
 
-  realtimeMuteAndUnmuteHandler = (muted: boolean) => {
+  realtimeMuteAndUnmuteHandler = (muted: boolean): void => {
     this.context.signalingClient.mute(muted);
   };
 }

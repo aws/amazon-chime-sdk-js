@@ -95,7 +95,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('sendrecv');
         expect(audioTransceiver.sender.track).to.equal(context.activeAudioInput.getTracks()[0]);
         done();
@@ -107,7 +107,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('inactive');
         expect(audioTransceiver.sender.track).to.equal(null);
         done();
@@ -118,7 +118,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('sendrecv');
         expect(videoTransceiver.sender.track).to.equal(context.activeVideoInput.getTracks()[0]);
         done();
@@ -130,7 +130,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('inactive');
         expect(videoTransceiver.sender.track).to.equal(null);
         done();
@@ -142,7 +142,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('inactive');
         expect(audioTransceiver.sender.track).to.equal(null);
         done();
@@ -154,7 +154,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('inactive');
         expect(videoTransceiver.sender.track).to.equal(null);
         done();

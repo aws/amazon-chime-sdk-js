@@ -289,7 +289,7 @@ describe('DefaultPingPong', () => {
       pong.pingPong.pingId = 1;
       pong.timestampMs = pingTimestampLocalMs + 1000;
 
-      let pongEvent = new SignalingClientEvent(
+      const pongEvent = new SignalingClientEvent(
         signalingClient,
         SignalingClientEventType.ReceivedSignalFrame,
         pong

@@ -25,7 +25,7 @@ export default class DefaultScreenShareViewFacade implements ScreenShareViewFaca
     window: Window,
     callback: (dragEvent: DragEvent) => void,
     element: HTMLElement
-  ) => new DefaultDragObserver(window, element, callback);
+  ): DefaultDragObserver => new DefaultDragObserver(window, element, callback);
 
   constructor(private configuration: MeetingSessionConfiguration, private logger: Logger) {
     const reconnectingWSFactory = new ReconnectingPromisedWebSocketFactory(
