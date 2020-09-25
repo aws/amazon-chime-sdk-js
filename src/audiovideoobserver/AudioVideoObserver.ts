@@ -107,4 +107,10 @@ export default interface AudioVideoObserver {
    * trigger a message to the user about the situation.
    */
   videoSendDidBecomeUnavailable?(): void;
+
+  /**
+   * Called when specific events occur during the meeting and includes attributes of the event. This can be used to
+   * create analytics around meeting metric.
+   */
+  eventDidReceive?(name: string, attributes: { [attributeName: string]: string | string[] }): void;
 }

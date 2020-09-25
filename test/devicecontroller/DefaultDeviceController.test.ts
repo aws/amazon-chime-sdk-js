@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
 import Device from '../../src/devicecontroller/Device';
@@ -427,12 +428,18 @@ describe('DefaultDeviceController', () => {
     });
 
     it('denies the permission by browser', async () => {
+      deviceController.bindToAudioVideoController(audioVideoController);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
       domMockBehavior.getUserMediaSucceeds = false;
       const permission = await deviceController.chooseVideoInputDevice(stringDeviceId);
       expect(permission).to.equal(DevicePermission.PermissionDeniedByBrowser);
     });
 
     it('denies the permission by user', async () => {
+      deviceController.bindToAudioVideoController(audioVideoController);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.asyncWaitMs = 1500;
       const permission = await deviceController.chooseVideoInputDevice(stringDeviceId);
@@ -440,6 +447,9 @@ describe('DefaultDeviceController', () => {
     });
 
     it('cannot choose the device of an empty string ID', async () => {
+      deviceController.bindToAudioVideoController(audioVideoController);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
       const device: Device = '';
       const permission = await deviceController.chooseVideoInputDevice(device);
       expect(permission).to.equal(DevicePermission.PermissionDeniedByBrowser);
@@ -629,6 +639,9 @@ describe('DefaultDeviceController', () => {
     });
 
     it('cannot acquire a video input stream if the permission is denied by user', async () => {
+      deviceController.bindToAudioVideoController(audioVideoController);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
       // Choose the video input device.
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       domMockBehavior.getUserMediaSucceeds = false;

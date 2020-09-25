@@ -7,6 +7,8 @@ import AudioVideoController from '../../src/audiovideocontroller/AudioVideoContr
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
 import DefaultAudioVideoFacade from '../../src/audiovideofacade/DefaultAudioVideoFacade';
+import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import ContentShareController from '../../src/contentsharecontroller/ContentShareController';
 import ContentShareMediaStreamBroker from '../../src/contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../../src/contentsharecontroller/DefaultContentShareController';
@@ -157,6 +159,16 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     getRTCPeerConnectionStats(_selector?: MediaStreamTrack): Promise<RTCStatsReport> {
       return !this.noRTCConnection ? new RTCPeerConnection().getStats() : null;
+    }
+
+    getAttributes(
+      browserBehavior: BrowserBehavior = new DefaultBrowserBehavior(),
+      configuration: MeetingSessionConfiguration = this.configuration
+    ): { [attributeName: string]: string | string[] } {
+      return {
+        browserName: browserBehavior.name(),
+        meetingId: configuration.meetingId,
+      };
     }
   }
 

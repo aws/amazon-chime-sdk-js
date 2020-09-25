@@ -7,6 +7,7 @@ import AudioMixController from '../audiomixcontroller/AudioMixController';
 import DefaultAudioMixController from '../audiomixcontroller/DefaultAudioMixController';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
@@ -55,6 +56,7 @@ import TimeoutTask from '../task/TimeoutTask';
 import WaitForAttendeePresenceTask from '../task/WaitForAttendeePresenceTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
+import Versioning from '../versioning/Versioning';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
@@ -349,6 +351,9 @@ export default class DefaultAudioVideoController implements AudioVideoController
         ),
       ]).run();
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
+        if (!reconnecting) {
+          this.sendEvent('ConnectionSucceeded', this.getAttributes());
+        }
         this.actionFinishConnecting();
       });
     } catch (error) {
@@ -358,6 +363,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
         );
         await this.actionDisconnect(status, true);
         if (!this.handleMeetingSessionStatus(status, error)) {
+          this.sendEvent('MeetingEndedWithError', this.getAttributes());
           this.forEachObserver(observer => {
             Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
           });
@@ -416,6 +422,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
+        this.sendEvent('MeetingEnded', this.getAttributes());
         this.forEachObserver(observer => {
           Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
         });
@@ -685,6 +692,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
             }`
           );
         } else {
+          this.sendEvent('ConnectionFailed', this.getAttributes());
           this.logger.error(
             `failed with status code ${MeetingSessionStatusCode[status.statusCode()]}${
               error ? ` and error: ${error.message}` : ``
@@ -738,5 +746,34 @@ export default class DefaultAudioVideoController implements AudioVideoController
     if (!!this.meetingSessionContext && this.meetingSessionContext.signalingClient) {
       this.meetingSessionContext.signalingClient.resume([streamId]);
     }
+  }
+
+  sendEvent(name: string, attribute: { [attributeName: string]: string | string[] }): void {
+    this.forEachObserver((observer: AudioVideoObserver) => {
+      Maybe.of(observer.eventDidReceive).map(f => f.bind(observer)(name, attribute));
+    });
+  }
+
+  getAttributes(
+    browserBehavior: BrowserBehavior = this.meetingSessionContext.browserBehavior,
+    configuration: MeetingSessionConfiguration = this.configuration
+  ): { [attributeName: string]: string | string[] } {
+    return {
+      sdkName: Versioning.sdkName,
+      sdkVersion: Versioning.sdkVersion,
+      browserName: browserBehavior.name(),
+      browserVersion: browserBehavior.version(),
+      browserMajorVersion: `${browserBehavior.majorVersion()}`,
+      meetingId: configuration.meetingId,
+      attendeeId: configuration.credentials.attendeeId,
+      // TODO: Retrieve remaining attributes
+      // deviceName:
+      // audioInputDevice:
+      // meetingDuration:
+      // retryCount:
+      // poorConnectionCount:
+      // meetingSessionStatusCode:
+      // meetingHistory:
+    };
   }
 }

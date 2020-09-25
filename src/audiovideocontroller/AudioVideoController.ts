@@ -65,6 +65,18 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   resumeReceivingStream(streamId: number): void;
 
   /**
+   * Send an event related to the meeting along with attributes of the event
+   * @param name Name of the event
+   * @param attribute Map of attributes related to the environment
+   */
+  sendEvent(name: string, attribute: { [attributeName: string]: string | string[] }): void;
+
+  /**
+   * Get attributes of the meeting, OS, and device.
+   */
+  getAttributes(): { [attributeName: string]: string | string[] };
+
+  /**
    * Returns the session configuration for this audio-video controller.
    */
   readonly configuration: MeetingSessionConfiguration;
