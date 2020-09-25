@@ -381,13 +381,12 @@ export class DemoMeetingApp {
         )
       );
     }
-    this.deviceController = new DefaultDeviceController(logger);
+    this.deviceController = new DefaultDeviceController(logger, { enableWebAudio: this.enableWebAudio });
     await this.populateAllDeviceLists();
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     await this.initializeLoggerAndDeviceController(configuration);
-    configuration.enableWebAudio = this.enableWebAudio;
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.attendeePresenceTimeoutMs = 15000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;

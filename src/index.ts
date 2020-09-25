@@ -5,9 +5,12 @@ import AllHighestVideoBandwidthPolicy from './videodownlinkbandwidthpolicy/AllHi
 import AsyncScheduler from './scheduler/AsyncScheduler';
 import AttachMediaInputTask from './task/AttachMediaInputTask';
 import Attendee from './attendee/Attendee';
+import AudioInputDevice from './devicecontroller/AudioInputDevice';
 import AudioLogEvent from './statscollector/AudioLogEvent';
 import AudioMixController from './audiomixcontroller/AudioMixController';
 import AudioMixControllerFacade from './audiomixcontroller/AudioMixControllerFacade';
+import AudioNodeSubgraph from './devicecontroller/AudioNodeSubgraph';
+import AudioTransformDevice from './devicecontroller/AudioTransformDevice';
 import AudioVideoController from './audiovideocontroller/AudioVideoController';
 import AudioVideoControllerFacade from './audiovideocontroller/AudioVideoControllerFacade';
 import AudioVideoControllerState from './audiovideocontroller/AudioVideoControllerState';
@@ -304,6 +307,7 @@ import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdapti
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
+import VideoInputDevice from './devicecontroller/VideoInputDevice';
 import VideoLogEvent from './statscollector/VideoLogEvent';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
 import VideoSource from './videosource/VideoSource';
@@ -322,6 +326,7 @@ import WebMMediaRecording from './mediarecording/WebMMediaRecording';
 import WebMMediaRecordingFactory from './mediarecording/WebMMediaRecordingFactory';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
+import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
 
 export {
   ActiveSpeakerDetector,
@@ -331,9 +336,12 @@ export {
   AsyncScheduler,
   AttachMediaInputTask,
   Attendee,
+  AudioInputDevice,
   AudioLogEvent,
   AudioMixController,
   AudioMixControllerFacade,
+  AudioNodeSubgraph,
+  AudioTransformDevice,
   AudioVideoController,
   AudioVideoControllerFacade,
   AudioVideoControllerState,
@@ -630,6 +638,7 @@ export {
   VideoCaptureAndEncodeParameter,
   VideoDownlinkBandwidthPolicy,
   VideoElementFactory,
+  VideoInputDevice,
   VideoLogEvent,
   VideoQualitySettings,
   VideoSource,
@@ -648,4 +657,5 @@ export {
   WebMMediaRecordingFactory,
   WebSocketAdapter,
   WebSocketReadyState,
+  isAudioTransformDevice,
 }

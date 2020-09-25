@@ -75,6 +75,7 @@
 								<li class="tsd-kind-namespace"><a href="modules/faqs.html" class="tsd-kind-icon">FAQs</a></li>
 								<li class="tsd-kind-namespace"><a href="modules/gettingstarted.html" class="tsd-kind-icon">Getting<wbr>Started</a></li>
 								<li class="tsd-kind-namespace"><a href="modules/meetingevents.html" class="tsd-kind-icon">Meeting<wbr>Events</a></li>
+								<li class="tsd-kind-namespace"><a href="modules/migrationto_2_0.html" class="tsd-kind-icon">Migrationto_<wbr>2_0</a></li>
 								<li class="tsd-kind-namespace"><a href="modules/qualitybandwidth_connectivity.html" class="tsd-kind-icon">Quality<wbr>Bandwidth_<wbr><wbr>Connectivity</a></li>
 								<li class="tsd-kind-namespace"><a href="modules/simulcast.html" class="tsd-kind-icon">Simulcast</a></li>
 							</ul>
@@ -309,6 +310,8 @@
 								<li class="tsd-kind-interface"><a href="interfaces/activespeakerpolicy.html" class="tsd-kind-icon">Active<wbr>Speaker<wbr>Policy</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/audiomixcontroller.html" class="tsd-kind-icon">Audio<wbr>Mix<wbr>Controller</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/audiomixcontrollerfacade.html" class="tsd-kind-icon">Audio<wbr>Mix<wbr>Controller<wbr>Facade</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/audionodesubgraph.html" class="tsd-kind-icon">Audio<wbr>Node<wbr>Subgraph</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/audiotransformdevice.html" class="tsd-kind-icon">Audio<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/audiovideocontroller.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Controller</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/audiovideocontrollerfacade.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Controller<wbr>Facade</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/audiovideoeventattributes.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Event<wbr>Attributes</a></li>
@@ -428,6 +431,7 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias"><a href="globals.html#audioinputdevice" class="tsd-kind-icon">Audio<wbr>Input<wbr>Device</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#detectorcallback" class="tsd-kind-icon">Detector<wbr>Callback</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#detectorhandler" class="tsd-kind-icon">Detector<wbr>Handler</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#device" class="tsd-kind-icon">Device</a></li>
@@ -437,6 +441,7 @@
 								<li class="tsd-kind-type-alias"><a href="globals.html#meetinghistorystate" class="tsd-kind-icon">Meeting<wbr>History<wbr>State</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#rawmetricreport" class="tsd-kind-icon">Raw<wbr>Metric<wbr>Report</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#statsreportitem" class="tsd-kind-icon">Stats<wbr>Report<wbr>Item</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#videoinputdevice" class="tsd-kind-icon">Video<wbr>Input<wbr>Device</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -447,11 +452,27 @@
 								<li class="tsd-kind-variable"><a href="globals.html#css_position_relative" class="tsd-kind-icon">CSS_<wbr>POSITION_<wbr>RELATIVE</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function"><a href="globals.html#isaudiotransformdevice" class="tsd-kind-icon">is<wbr>Audio<wbr>Transform<wbr>Device</a></li>
+							</ul>
+						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="audioinputdevice" class="tsd-anchor"></a>
+					<h3>Audio<wbr>Input<wbr>Device</h3>
+					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Input<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audiotransformdevice.html" class="tsd-signature-type">AudioTransformDevice</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/AudioInputDevice.ts#L7">src/devicecontroller/AudioInputDevice.ts:7</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="detectorcallback" class="tsd-anchor"></a>
 					<h3>Detector<wbr>Callback</h3>
@@ -528,9 +549,16 @@
 					<div class="tsd-signature tsd-kind-icon">Device<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaTrackConstraints</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/Device.ts#L4">src/devicecontroller/Device.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/Device.ts#L9">src/devicecontroller/Device.ts:9</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A specifier for how to obtain a media stream from the browser. This
+								can be a <code>MediaStream</code> itself, a set of constraints, a device ID,
+							or <code>null</code> to use the null device.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="dragobserverfactory" class="tsd-anchor"></a>
@@ -670,6 +698,16 @@
 						</ul>
 					</aside>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="videoinputdevice" class="tsd-anchor"></a>
+					<h3>Video<wbr>Input<wbr>Device</h3>
+					<div class="tsd-signature tsd-kind-icon">Video<wbr>Input<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="globals.html#device" class="tsd-signature-type">Device</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoInputDevice.ts#L8">src/devicecontroller/VideoInputDevice.ts:8</a></li>
+						</ul>
+					</aside>
+				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Variables</h2>
@@ -702,6 +740,40 @@
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/presentation/DefaultPresentation.ts#L19">src/presentation/DefaultPresentation.ts:19</a></li>
 						</ul>
 					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="isaudiotransformdevice" class="tsd-anchor"></a>
+					<h3>is<wbr>Audio<wbr>Transform<wbr>Device</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Audio<wbr>Transform<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">device</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">AudioTransformDevice</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/AudioTransformDevice.ts#L58">src/devicecontroller/AudioTransformDevice.ts:58</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p><code>isAudioTransformDevice</code> is a type guard for <a href="interfaces/audiotransformdevice.html">AudioTransformDevice</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>device: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the value to check.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">device</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">AudioTransformDevice</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -1367,6 +1439,12 @@
 						<a href="interfaces/audiomixcontrollerfacade.html" class="tsd-kind-icon">Audio<wbr>Mix<wbr>Controller<wbr>Facade</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/audionodesubgraph.html" class="tsd-kind-icon">Audio<wbr>Node<wbr>Subgraph</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/audiotransformdevice.html" class="tsd-kind-icon">Audio<wbr>Transform<wbr>Device</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/audiovideocontroller.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1709,6 +1787,9 @@
 						<a href="interfaces/zoomevent.html" class="tsd-kind-icon">Zoom<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#audioinputdevice" class="tsd-kind-icon">Audio<wbr>Input<wbr>Device</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#detectorcallback" class="tsd-kind-icon">Detector<wbr>Callback</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
@@ -1735,6 +1816,9 @@
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#statsreportitem" class="tsd-kind-icon">Stats<wbr>Report<wbr>Item</a>
 					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#videoinputdevice" class="tsd-kind-icon">Video<wbr>Input<wbr>Device</a>
+					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#css_overflow_hidden" class="tsd-kind-icon">CSS_<wbr>OVERFLOW_<wbr>HIDDEN</a>
 					</li>
@@ -1743,6 +1827,9 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#css_position_relative" class="tsd-kind-icon">CSS_<wbr>POSITION_<wbr>RELATIVE</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isaudiotransformdevice" class="tsd-kind-icon">is<wbr>Audio<wbr>Transform<wbr>Device</a>
 					</li>
 				</ul>
 			</nav>
