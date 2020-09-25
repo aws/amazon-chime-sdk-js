@@ -110,6 +110,60 @@ export enum ContentShareType {
   VideoFile,
 };
 
+enum StreamType {
+  'Downstream',
+  'Upstream'
+};
+
+type MetricsDataType = {[key: string]: number};
+
+interface CurrentAndPreviousMetrics {
+  current: MetricsDataType;
+  previous: MetricsDataType;
+}
+
+type SSRCToMetricsDataType = {[key: string]: CurrentAndPreviousMetrics};
+
+const getCurrentUpstreamMetrics = (report: any, timestamp: number): MetricsDataType => {
+  const currentMetrics: {[key: string]: number} = {};
+  currentMetrics['frameHeight'] = report.frameHeight;
+  currentMetrics['frameWidth'] = report.frameWidth;
+  currentMetrics['framesPerSecond'] = report.framesPerSecond || 0;
+  currentMetrics['bytesSent'] = report.bytesSent;
+  currentMetrics['packetsSent'] = report.packetsSent;
+  currentMetrics['timestamp'] = timestamp;
+  return currentMetrics;
+}
+
+const getCurrentDownstreamMetrics = (report: any, timestamp: number): MetricsDataType => {
+  const currentMetrics: {[key: string]: number} = {};
+  const { bytesReceived, packetsLost, packetsReceived } = report;
+  currentMetrics['bytesReceived'] = bytesReceived;
+  currentMetrics['packetsLost'] = packetsLost;
+  currentMetrics['packetsReceived'] = packetsReceived;
+  currentMetrics['packetLossPercent'] = Math.trunc(packetsLost * 100 / (packetsReceived + packetsLost));
+  currentMetrics['timestamp'] = timestamp;
+  return currentMetrics;
+}
+
+const bitsPerSecond = (currentTimestampMs: number, metricName: string, metricMap: CurrentAndPreviousMetrics): number => {
+  const previousTimestampMs = metricMap.previous.timestamp;
+  let intervalSeconds = (currentTimestampMs - previousTimestampMs) / 1000;
+  if (intervalSeconds <= 0) {
+    return 0;
+  }
+  if (previousTimestampMs <= 0) {
+    intervalSeconds = 1;
+  }
+  const diff =
+    (metricMap.current[metricName] - (metricMap.previous[metricName] || 0)) *
+    8;
+  if (diff <= 0) {
+    return 0;
+  }
+  return Math.trunc((diff / intervalSeconds) / 1000);
+};
+
 export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver {
   static readonly DID: string = '+17035550122';
   static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/').replace('/v2', '')].join('');
@@ -146,6 +200,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     'button-speaker': true,
     'button-content-share': false,
     'button-pause-content-share': false,
+    'button-video-stats': false,
   };
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
@@ -158,6 +213,21 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   markdown = require('markdown-it')({linkify: true});
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
+
+  upstreamMetrics: SSRCToMetricsDataType = {};
+  upstreamMetricsKeyStatsToShow: {[key: string]: string} = {
+    'resolution': 'Resolution',
+    'framesPerSecond': 'Frame Rate',
+    'bitrate': 'Bitrate (kbps)',
+    'packetsSent': 'Packets Sent',
+  };
+  
+  downstreamMetrics: {[key: string]: SSRCToMetricsDataType} = {};
+  downstreamMetricsKeyStatsToShow: {[key: string]: string} = {
+    'resolution': 'Resolution',
+    'bitrate': 'Bitrate (kbps)',
+    'packetLossPercent': 'Packet Loss (%)'
+  };
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -456,6 +526,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       });
     });
 
+    const buttonVideoStats = document.getElementById('button-video-stats');
+    buttonVideoStats.addEventListener('click', () => {
+      if (this.isButtonOn('button-video-stats')) {
+        document.querySelectorAll('.stats-info').forEach(e => e.remove());
+      }
+      this.toggleButton('button-video-stats');
+    });
+
     const sendMessage = () => {
       new AsyncScheduler().start(() => {
         const textArea = document.getElementById('send-message') as HTMLTextAreaElement;
@@ -664,6 +742,182 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
         'Available Downlink Bandwidth: Unknown';
     }
+
+    this.buttonStates['button-video-stats'] &&
+    this.defaultBrowserBehaviour.hasChromiumWebRTC() && 
+    this.getAndShowWebRTCStats();
+  }
+
+  getAndShowWebRTCStats() {
+    const videoTiles = this.audioVideo.getAllVideoTiles();
+    if (videoTiles.length === 0) {
+      return ;
+    }
+    for (const videoTile of videoTiles) {
+      const tileState = videoTile.state();
+      if (tileState.paused || tileState.isContent) {
+        continue ;
+      }
+      const tileId = videoTile.id();
+      const tileIndex = this.tileIdToTileIndex[tileId];
+      this.getStats(tileIndex);
+      if (tileState.localTile) {
+        this.showUpstreamStats(tileIndex);
+      } else {
+        this.showDownstreamStats(tileIndex);
+      }
+    }
+    
+  }
+
+  async getStats(tileIndex: number) {
+    const id = `video-${tileIndex}`;
+    const timestamp = Date.now();
+    const videoElement = document.getElementById(id) as HTMLVideoElement;
+    if (!videoElement || !videoElement.srcObject) {                        
+      return ;
+    }
+
+    const stream = videoElement.srcObject as MediaStream;
+    const tracks = stream.getVideoTracks();
+    if (tracks.length === 0) {
+      return ;
+    }
+    const reports = await this.audioVideo.getRTCPeerConnectionStats(tracks[0]);
+    let ssrcNum = 0;
+    reports.forEach((report) => {
+      if (report.ssrc) {
+        ssrcNum = Number(report.ssrc);
+      }
+
+      if (report.kind && report.kind === 'video') {
+        if (report.type === 'outbound-rtp' && report.bytesSent > 0) {
+          if (!this.upstreamMetrics.hasOwnProperty(ssrcNum)) {
+            this.upstreamMetrics[ssrcNum] = {
+              current: {},
+              previous: {}
+            };
+            this.upstreamMetrics[ssrcNum].current = getCurrentUpstreamMetrics(report, timestamp);
+          } else {
+            this.upstreamMetrics[ssrcNum].previous = this.upstreamMetrics[ssrcNum].current;
+            this.upstreamMetrics[ssrcNum].current = getCurrentUpstreamMetrics(report, timestamp);
+          }
+          this.upstreamMetrics[ssrcNum].current['bitrate'] = bitsPerSecond(timestamp, 'bytesSent', this.upstreamMetrics[ssrcNum]);
+        } else {
+          if (report.type === 'inbound-rtp' && report.bytesReceived > 0) {
+            const { trackId } = report;
+            if (!this.downstreamMetrics.hasOwnProperty(tileIndex)) {
+              this.downstreamMetrics[tileIndex] = {};
+            }
+            if (!this.downstreamMetrics[tileIndex].hasOwnProperty(ssrcNum)) {
+              this.downstreamMetrics[tileIndex][ssrcNum] = {
+                current: {},
+                previous: {}
+              };
+              this.downstreamMetrics[tileIndex]['trackId'] = trackId;
+              this.downstreamMetrics[tileIndex][ssrcNum].current = getCurrentDownstreamMetrics(report, timestamp);
+            } else {
+              this.downstreamMetrics[tileIndex][ssrcNum].previous = this.downstreamMetrics[tileIndex][ssrcNum].current;
+              this.downstreamMetrics[tileIndex][ssrcNum].current = getCurrentDownstreamMetrics(report, timestamp);
+            }
+            this.downstreamMetrics[tileIndex][ssrcNum].current['bitrate'] = bitsPerSecond(timestamp, 'bytesReceived', this.downstreamMetrics[tileIndex][ssrcNum]);
+          } else if (report.type === 'track' && this.downstreamMetrics[tileIndex] && this.downstreamMetrics[tileIndex]['trackId'] === report.id) {
+            const { frameHeight, frameWidth } = report;
+            this.downstreamMetrics[tileIndex][ssrcNum].current.frameHeight = frameHeight;
+            this.downstreamMetrics[tileIndex][ssrcNum].current.frameWidth = frameWidth;
+          }
+        }
+      }
+    });
+  }
+
+  showUpstreamStats(tileIndex: number) {
+    this.showStats(tileIndex,
+      Object.keys(this.upstreamMetrics),
+      StreamType.Upstream,
+      this.upstreamMetricsKeyStatsToShow,
+      this.upstreamMetrics
+    );
+  }
+
+  showDownstreamStats(tileIndex: number) {
+    if (!this.downstreamMetrics[tileIndex]) {
+      return ;
+    }
+    const {trackId, ...ssrcKeys} = this.downstreamMetrics[tileIndex];
+    this.showStats(
+      tileIndex,
+      Object.keys(ssrcKeys),
+      StreamType.Downstream,
+      this.downstreamMetricsKeyStatsToShow,
+      this.downstreamMetrics[tileIndex]
+    );
+  }
+
+  showStats = (
+    tileIndex: number,
+    streams: Array<string>,
+    streamType: StreamType,
+    keyStatstoShow: {[key: string]: string},
+    metricsData: SSRCToMetricsDataType) => {
+    const totalStreams = streams.length;
+    if (totalStreams === 0) {
+      return ;
+    }
+
+    const stream = streamType === StreamType.Downstream ? 'downstream' : 'upstream';
+
+    let statsInfo: HTMLDivElement = document.getElementById(`stats-info-${tileIndex}`) as HTMLDivElement;
+    if (!statsInfo) {
+      statsInfo = document.createElement('div');
+      statsInfo.setAttribute('id', `stats-info-${tileIndex}`);
+      statsInfo.setAttribute('class', `stats-info`);
+    }
+
+    const statsInfoTableId = `stats-table-${tileIndex}`;
+    let statsInfoTable = document.getElementById(statsInfoTableId) as HTMLTableElement;
+    if (statsInfoTable) {
+      statsInfo.removeChild(statsInfoTable);
+    }
+    statsInfoTable = document.createElement('table') as HTMLTableElement;
+    statsInfoTable.setAttribute('id', statsInfoTableId);
+    statsInfoTable.setAttribute('class', 'stats-table');
+    statsInfo.appendChild(statsInfoTable);
+
+    const videoEl = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
+    videoEl.insertAdjacentElement('afterend', statsInfo);
+    const header = statsInfoTable.insertRow(-1);
+    let cell = header.insertCell(-1);
+    cell.innerHTML = 'Video Metrics';
+    let cnt = 0;
+    while (cnt < totalStreams ) {
+      cell = header.insertCell(-1);
+      cell.innerHTML = `${stream} ${cnt + 1}`;
+      cnt++;
+    }
+
+    for (const [key, value] of Object.entries(keyStatstoShow)) {
+      const row = statsInfoTable.insertRow(-1);
+      row.setAttribute('id', `${stream}-${key}-${tileIndex}`);
+      cell = row.insertCell(-1);
+      cell.innerHTML = value;
+    }
+
+    for (const ssrc of streams) {
+      const { frameHeight, frameWidth, ...restStatsToShow} = metricsData[ssrc].current;
+      if (frameHeight && frameWidth) {
+        const row = document.getElementById(`${stream}-resolution-${tileIndex}`) as HTMLTableRowElement;
+        cell = row.insertCell(-1);
+        cell.innerHTML = `${frameWidth} &#x2715; ${frameHeight}`;
+      }
+      for (const [metricName, value] of Object.entries(restStatsToShow)) {
+        if (keyStatstoShow[metricName]) {
+          const row = document.getElementById(`${stream}-${metricName}-${tileIndex}`) as HTMLTableRowElement;
+          cell = row.insertCell(-1);
+          cell.innerHTML = `${value}`;
+        }
+      }
+    }
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
@@ -721,6 +975,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   }
 
   leave(): void {
+    this.upstreamMetrics = {};
+    this.downstreamMetrics = {};
     this.audioVideo.stop();
     this.roster = {};
   }
@@ -1390,6 +1646,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
+    const attendeeIdElement = document.getElementById(`attendeeid-${tileIndex}`) as HTMLDivElement;
     const pauseButtonElement = document.getElementById(`video-pause-${tileIndex}`) as HTMLButtonElement;
 
     pauseButtonElement.addEventListener('click', () => {
@@ -1407,7 +1664,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
     this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#')[1]);
-
+    this.updateProperty(attendeeIdElement, 'innerText', tileState.boundAttendeeId);
     this.showTile(tileElement, tileState);
     this.updateGridClasses();
     this.layoutFeaturedTile();
