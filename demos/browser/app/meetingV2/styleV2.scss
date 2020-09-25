@@ -64,6 +64,7 @@ $list-group-hover-bg: $gray-200;
 $list-group-disabled-bg: $gray-200;
 $close-color: $white;
 $close-text-shadow: none;
+$overlay-z-index: 10;
 
 @import 'node_modules/bootstrap/scss/bootstrap';
 
@@ -796,4 +797,39 @@ a.markdown:active {
   letter-spacing: 0.1em;
   outline: none;
   background: none;
+}
+
+.stats-info {
+  position: absolute;
+  background-color: rgba($color: #000000, $alpha: 0.5);
+  color: white;
+  font-size: 10px;
+  bottom: 3rem;
+  left: 0;
+  z-index: $overlay-z-index;
+  padding: 0.5rem;
+  transition: display 0.5s;
+  display: none;
+
+  .stats-table {
+    width: 15rem;
+    & tr:first-child {
+      border-bottom: 1px dotted $white;
+    }
+  }
+}
+
+#tile-area video[id^='video-']:hover + .stats-info {
+  display: block;
+}
+
+.video-tile-attendeeid {
+  display: none;
+  position: absolute;
+  color: $white;
+  padding: 1rem;
+}
+
+.video-tile.active:hover .video-tile-attendeeid {
+  display: block;
 }

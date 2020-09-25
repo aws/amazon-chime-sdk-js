@@ -38,6 +38,7 @@ import {
   SimulcastLayers,
   VideoSource
 } from '../../../../src/index';
+import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
 
 class DemoTileOrganizer {
   // this is index instead of length
@@ -163,6 +164,7 @@ export class DemoMeetingApp implements
     'button-speaker': true,
     'button-content-share': false,
     'button-pause-content-share': false,
+    'button-video-stats': false,
   };
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
@@ -176,6 +178,9 @@ export class DemoMeetingApp implements
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   meetingEventPOSTLogger: MeetingSessionPOSTLogger;
+
+  hasChromiumWebRTC: boolean = this.defaultBrowserBehaviour.hasChromiumWebRTC();
+  statsCollector: WebRTCStatsCollector = new WebRTCStatsCollector();
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -465,6 +470,14 @@ export class DemoMeetingApp implements
       });
     });
 
+    const buttonVideoStats = document.getElementById('button-video-stats');
+    buttonVideoStats.addEventListener('click', () => {
+      if (this.isButtonOn('button-video-stats')) {
+        document.querySelectorAll('.stats-info').forEach(e => e.remove());
+      }
+      this.toggleButton('button-video-stats');
+    });
+
     const sendMessage = () => {
       new AsyncScheduler().start(() => {
         const textArea = document.getElementById('send-message') as HTMLTextAreaElement;
@@ -669,6 +682,48 @@ export class DemoMeetingApp implements
       (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
         'Available Downlink Bandwidth: Unknown';
     }
+
+    this.hasChromiumWebRTC &&
+    this.isButtonOn('button-video-stats') &&
+    this.getAndShowWebRTCStats();
+  }
+
+  getAndShowWebRTCStats() {
+    const videoTiles = this.audioVideo.getAllVideoTiles();
+    if (videoTiles.length === 0) {
+      return;
+    }
+    for (const videoTile of videoTiles) {
+      const tileState = videoTile.state();
+      if (tileState.paused || tileState.isContent) {
+        continue;
+      }
+      const tileId = videoTile.id();
+      const tileIndex = this.tileIdToTileIndex[tileId];
+      this.getStats(tileIndex);
+      if (tileState.localTile) {
+        this.statsCollector.showUpstreamStats(tileIndex);
+      } else {
+        this.statsCollector.showDownstreamStats(tileIndex);
+      }
+    }
+
+  }
+
+  async getStats(tileIndex: number) {
+    const id = `video-${tileIndex}`;
+    const videoElement = document.getElementById(id) as HTMLVideoElement;
+    if (!videoElement || !videoElement.srcObject) {
+      return;
+    }
+
+    const stream = videoElement.srcObject as MediaStream;
+    const tracks = stream.getVideoTracks();
+    if (tracks.length === 0) {
+      return;
+    }
+    const report = await this.audioVideo.getRTCPeerConnectionStats(tracks[0]);
+    this.statsCollector.processWebRTCStatReportForTileIndex(report, tileIndex);
   }
 
   async createLogStream(configuration: MeetingSessionConfiguration, pathname: string): Promise<void> {
@@ -688,7 +743,7 @@ export class DemoMeetingApp implements
       this.log(error.message);
     }
   }
-  
+
   eventDidReceive(name: EventName, attributes: EventAttributes): void {
     this.log(`Received an event: ${JSON.stringify({ name, attributes })}`);
     const { meetingHistory, ...otherAttributes } = attributes;
@@ -790,6 +845,7 @@ export class DemoMeetingApp implements
   }
 
   leave(): void {
+    this.statsCollector.resetStats();
     this.audioVideo.stop();
     this.roster = {};
   }
@@ -1442,6 +1498,8 @@ export class DemoMeetingApp implements
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
+    this.log(`resetting stats in WebRTCStatsCollector`);
+    this.statsCollector.resetStats();
     if (sessionStatus.statusCode() === MeetingSessionStatusCode.AudioCallEnded) {
       this.log(`meeting ended`);
       // @ts-ignore
@@ -1465,6 +1523,7 @@ export class DemoMeetingApp implements
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
+    const attendeeIdElement = document.getElementById(`attendeeid-${tileIndex}`) as HTMLDivElement;
     const pauseButtonElement = document.getElementById(`video-pause-${tileIndex}`) as HTMLButtonElement;
 
     pauseButtonElement.addEventListener('click', () => {
@@ -1482,7 +1541,7 @@ export class DemoMeetingApp implements
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
     this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#')[1]);
-
+    this.updateProperty(attendeeIdElement, 'innerText', tileState.boundAttendeeId);
     this.showTile(tileElement, tileState);
     this.updateGridClasses();
     this.layoutFeaturedTile();
