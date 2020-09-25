@@ -123,10 +123,9 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulttransceivercontroller.html#setvideoinput" class="tsd-kind-icon">set<wbr>Video<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulttransceivercontroller.html#setvideosendingbitratekbps" class="tsd-kind-icon">set<wbr>Video<wbr>Sending<wbr>Bitrate<wbr>Kbps</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulttransceivercontroller.html#setuplocaltransceivers" class="tsd-kind-icon">setup<wbr>Local<wbr>Transceivers</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaulttransceivercontroller.html#subscribetransceivers" class="tsd-kind-icon">subscribe<wbr>Transceivers</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulttransceivercontroller.html#trackisvideoinput" class="tsd-kind-icon">track<wbr>IsVideo<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaulttransceivercontroller.html#transceiverisvideo" class="tsd-kind-icon">transceiver<wbr>IsVideo</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaulttransceivercontroller.html#unsubscribetransceivers" class="tsd-kind-icon">unsubscribe<wbr>Transceivers</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaulttransceivercontroller.html#updatetransceivers" class="tsd-kind-icon">update<wbr>Transceivers</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulttransceivercontroller.html#updatevideotransceivers" class="tsd-kind-icon">update<wbr>Video<wbr>Transceivers</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulttransceivercontroller.html#usetransceivers" class="tsd-kind-icon">use<wbr>Transceivers</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaulttransceivercontroller.html#replaceaudiotrackforsender" class="tsd-kind-icon">replace<wbr>Audio<wbr>Track<wbr>For<wbr>Sender</a></li>
@@ -250,7 +249,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:263</li>
+									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:244</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -435,7 +434,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:277</li>
+									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:258</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -517,32 +516,6 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="subscribetransceivers" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> subscribe<wbr>Transceivers</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">subscribe<wbr>Transceivers<span class="tsd-signature-symbol">(</span>transceivers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCRtpTransceiver</span><span class="tsd-signature-symbol">[]</span>, videosToReceive<span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:211</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>transceivers: <span class="tsd-signature-type">RTCRtpTransceiver</span><span class="tsd-signature-symbol">[]</span></h5>
-								</li>
-								<li>
-									<h5>videosToReceive: <a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="trackisvideoinput" class="tsd-anchor"></a>
 					<h3>track<wbr>IsVideo<wbr>Input</h3>
@@ -577,7 +550,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:254</li>
+									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:235</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -591,16 +564,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="unsubscribetransceivers" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> unsubscribe<wbr>Transceivers</h3>
+					<a name="updatetransceivers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> update<wbr>Transceivers</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">unsubscribe<wbr>Transceivers<span class="tsd-signature-symbol">(</span>transceivers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCRtpTransceiver</span><span class="tsd-signature-symbol">[]</span>, videoStreamIndex<span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamindex.html" class="tsd-signature-type">VideoStreamIndex</a>, videosToReceive<span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Transceivers<span class="tsd-signature-symbol">(</span>transceivers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCRtpTransceiver</span><span class="tsd-signature-symbol">[]</span>, videoStreamIndex<span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamindex.html" class="tsd-signature-type">VideoStreamIndex</a>, videosToReceive<span class="tsd-signature-symbol">: </span><a href="../interfaces/videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:176</li>
+									<li>Defined in src/transceivercontroller/DefaultTransceiverController.ts:175</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -799,9 +772,6 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaulttransceivercontroller.html#setuplocaltransceivers" class="tsd-kind-icon">setup<wbr>Local<wbr>Transceivers</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="defaulttransceivercontroller.html#subscribetransceivers" class="tsd-kind-icon">subscribe<wbr>Transceivers</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaulttransceivercontroller.html#trackisvideoinput" class="tsd-kind-icon">track<wbr>IsVideo<wbr>Input</a>
 							</li>
@@ -809,7 +779,7 @@
 								<a href="defaulttransceivercontroller.html#transceiverisvideo" class="tsd-kind-icon">transceiver<wbr>IsVideo</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="defaulttransceivercontroller.html#unsubscribetransceivers" class="tsd-kind-icon">unsubscribe<wbr>Transceivers</a>
+								<a href="defaulttransceivercontroller.html#updatetransceivers" class="tsd-kind-icon">update<wbr>Transceivers</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaulttransceivercontroller.html#updatevideotransceivers" class="tsd-kind-icon">update<wbr>Video<wbr>Transceivers</a>

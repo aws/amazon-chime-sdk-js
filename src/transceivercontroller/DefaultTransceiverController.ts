@@ -165,58 +165,18 @@ export default class DefaultTransceiverController implements TransceiverControll
     // We mark inactive slots with 0 in the subscription array.
     this.videoSubscriptions = [0];
     videosToReceive = videosToReceive.clone();
-    this.unsubscribeTransceivers(transceivers, videoStreamIndex, videosToReceive);
-    this.subscribeTransceivers(transceivers, videosToReceive);
+    this.updateTransceivers(transceivers, videoStreamIndex, videosToReceive);
     this.logger.debug(() => {
       return this.debugDumpTransceivers();
     });
     return this.videoSubscriptions;
   }
 
-  private unsubscribeTransceivers(
+  private updateTransceivers(
     transceivers: RTCRtpTransceiver[],
     videoStreamIndex: VideoStreamIndex,
     videosToReceive: VideoStreamIdSet
   ): void {
-    // disable transceivers which are no longer going to subscribe
-    for (const transceiver of transceivers) {
-      if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
-        continue;
-      }
-      // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
-      // we use this to get the streamId for the track
-      let stillSubscribed = false;
-      let streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
-      if (streamId !== undefined) {
-        for (const recvStreamId of videosToReceive.array()) {
-          if (videoStreamIndex.StreamIdsInSameGroup(streamId, recvStreamId)) {
-            stillSubscribed = true;
-            streamId = recvStreamId;
-            break;
-          }
-        }
-      }
-      if (stillSubscribed) {
-        transceiver.direction = 'recvonly';
-        this.videoSubscriptions.push(streamId);
-        videosToReceive.remove(streamId);
-      } else {
-        transceiver.direction = 'inactive';
-        // mark this slot inactive with a 0 in the subscription array
-        this.videoSubscriptions.push(0);
-      }
-    }
-  }
-
-  private subscribeTransceivers(
-    transceivers: RTCRtpTransceiver[],
-    videosToReceive: VideoStreamIdSet
-  ): void {
-    if (videosToReceive.size() === 0) {
-      return;
-    }
-
-    // Handle remaining subscriptions using existing inactive transceivers.
     const videosRemaining = videosToReceive.array();
 
     // Begin counting out index in the the subscription array at 1 since the camera.
@@ -226,12 +186,33 @@ export default class DefaultTransceiverController implements TransceiverControll
       if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
         continue;
       }
-      if (transceiver.direction === 'inactive') {
+
+      if (transceiver.direction === 'inactive' && videosRemaining.length > 0) {
+        // Fill available slot
         transceiver.direction = 'recvonly';
         const streamId = videosRemaining.shift();
         this.videoSubscriptions[n] = streamId;
-        if (videosRemaining.length === 0) {
-          break;
+      } else {
+        // See if we want this existing transceiver
+        // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
+        // we use this to get the streamId for the track
+        let stillSubscribed = false;
+        const streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
+        if (streamId !== undefined) {
+          for (const [index, recvStreamId] of videosRemaining.entries()) {
+            if (videoStreamIndex.StreamIdsInSameGroup(streamId, recvStreamId)) {
+              stillSubscribed = true;
+              transceiver.direction = 'recvonly';
+              this.videoSubscriptions[n] = recvStreamId;
+              videosRemaining.splice(index, 1);
+              break;
+            }
+          }
+        }
+        if (stillSubscribed === false) {
+          transceiver.direction = 'inactive';
+          // mark this slot inactive with a 0 in the subscription array
+          this.videoSubscriptions[n] = 0;
         }
       }
       n += 1;

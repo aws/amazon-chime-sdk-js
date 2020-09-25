@@ -240,6 +240,27 @@ describe('SimulcastTransceiverController', () => {
       return index;
     }
 
+    type Writable<T> = {
+      -readonly [K in keyof T]: T[K];
+    };
+
+    function setTransceiverStreamId(videoStreamIds: VideoStreamIdSet): void {
+      const streamIds = videoStreamIds.array();
+      const transceivers: RTCRtpTransceiver[] = peer.getTransceivers();
+      let transStartIndex = 0;
+      // Look for first recvonly transceiver
+      for (const [index, transceiver] of transceivers.entries()) {
+        if (transceiver.direction === 'recvonly') {
+          transStartIndex = index;
+          break;
+        }
+      }
+      for (const [index, streamId] of streamIds.entries()) {
+        const transceiver = transceivers[transStartIndex + index];
+        (transceiver as Writable<RTCRtpTransceiver>).mid = streamId.toString();
+      }
+    }
+
     function verifyTransceiverDirections(directions: string[]): void {
       const transceivers: RTCRtpTransceiver[] = peer.getTransceivers();
       const actualDirections = transceivers.map(transceiver => transceiver.direction);
@@ -313,6 +334,14 @@ describe('SimulcastTransceiverController', () => {
       );
       expect(videoSubscriptions).to.deep.equal([0, 7, 8]);
       verifyTransceiverDirections(['recvonly', 'recvonly']);
+      const subackFrame = new SdkSubscribeAckFrame({
+        tracks: [
+          new SdkTrackMapping({ streamId: 7, trackLabel: 'v_7' }),
+          new SdkTrackMapping({ streamId: 8, trackLabel: 'v_8' }),
+        ],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
 
       videosToReceive = new DefaultVideoStreamIdSet([7]);
       videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
@@ -329,22 +358,44 @@ describe('SimulcastTransceiverController', () => {
       );
       expect(videoSubscriptions).to.deep.equal([0, 7, 8]);
       verifyTransceiverDirections(['recvonly', 'recvonly']);
+      let subackFrame = new SdkSubscribeAckFrame({
+        tracks: [
+          new SdkTrackMapping({ streamId: 7, trackLabel: 'v_7' }),
+          new SdkTrackMapping({ streamId: 8, trackLabel: 'v_8' }),
+        ],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
 
       videosToReceive = new DefaultVideoStreamIdSet([7]);
       videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
       expect(videoSubscriptions).to.deep.equal([0, 7, 0]);
       verifyTransceiverDirections(['recvonly', 'inactive']);
+      subackFrame = new SdkSubscribeAckFrame({
+        tracks: [new SdkTrackMapping({ streamId: 7, trackLabel: 'v_7' })],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
 
       videosToReceive = new DefaultVideoStreamIdSet([]);
       videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
       expect(videoSubscriptions).to.deep.equal([0, 0, 0]);
       verifyTransceiverDirections(['inactive', 'inactive']);
+      subackFrame = new SdkSubscribeAckFrame({
+        tracks: [],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
 
       videosToReceive = new DefaultVideoStreamIdSet([7]);
       videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
       expect(videoSubscriptions).to.deep.equal([0, 7, 0]);
       verifyTransceiverDirections(['recvonly', 'inactive']);
-
+      subackFrame = new SdkSubscribeAckFrame({
+        tracks: [new SdkTrackMapping({ streamId: 7, trackLabel: 'v_7' })],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
       videosToReceive = new DefaultVideoStreamIdSet([7, 8]);
       videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
       expect(videoSubscriptions).to.deep.equal([0, 7, 8]);
@@ -360,6 +411,15 @@ describe('SimulcastTransceiverController', () => {
         videoStreamIndex,
         videosToReceive
       );
+      const subackFrame = new SdkSubscribeAckFrame({
+        tracks: [
+          new SdkTrackMapping({ streamId: 7, trackLabel: 'v_7' }),
+          new SdkTrackMapping({ streamId: 8, trackLabel: 'v_8' }),
+        ],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
+
       videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
       expect(videoSubscriptions).to.deep.equal([0, 7, 8]);
       verifyTransceiverDirections(['inactive', 'inactive', 'recvonly', 'recvonly']);
@@ -368,20 +428,20 @@ describe('SimulcastTransceiverController', () => {
     it('will use a transceiver\'s mid prefixed with "v_" to get the streamId for the track', () => {
       const streamId = 4;
       const videoStreamIndex = prepareIndex([streamId, 8]);
-      const subackFrame = new SdkSubscribeAckFrame({
-        tracks: [
-          new SdkTrackMapping({ streamId: 2, trackLabel: 'b18b9db2' }),
-          new SdkTrackMapping({ streamId: streamId, trackLabel: 'v_mock-mid-id' }),
-          new SdkTrackMapping({ streamId: 9, trackLabel: '9318' }),
-        ],
-      });
-      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
-
       const videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([streamId, 8]);
       let videoSubscriptions: number[] = tc.updateVideoTransceivers(
         videoStreamIndex,
         videosToReceive
       );
+      const subackFrame = new SdkSubscribeAckFrame({
+        tracks: [
+          new SdkTrackMapping({ streamId: 2, trackLabel: 'b18b9db2' }),
+          new SdkTrackMapping({ streamId: streamId, trackLabel: 'v_4' }),
+          new SdkTrackMapping({ streamId: 8, trackLabel: 'v_8' }),
+        ],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
       videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
       expect(videoSubscriptions).to.deep.equal([0, streamId, 8]);
       verifyTransceiverDirections(['recvonly', 'recvonly']);
