@@ -14,7 +14,6 @@ import {
   DefaultAudioMixController,
   DefaultDeviceController,
   DefaultMeetingSession,
-  Device,
   DeviceChangeObserver,
   LogLevel,
   Logger,
@@ -30,6 +29,8 @@ import {
   Versioning,
   VideoTileState,
   ClientVideoStreamReceivingReport,
+  AudioInputDevice,
+  VideoInputDevice,
 } from '../../../../src/index';
 
 class DemoTileOrganizer {
@@ -677,8 +678,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
         LogLevel.INFO
       );
     }
-    const deviceController = new DefaultDeviceController(logger);
-    configuration.enableWebAudio = this.enableWebAudio;
+    const deviceController = new DefaultDeviceController(logger, { enableWebAudio: this.enableWebAudio });
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
@@ -1144,7 +1144,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     }
   }
 
-  private audioInputSelectionToDevice(value: string): Device {
+  private audioInputSelectionToDevice(value: string): AudioInputDevice {
     if (value === '440 Hz') {
       return DefaultDeviceController.synthesizeAudioDevice(440);
     } else if (value === 'None') {
@@ -1153,7 +1153,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver 
     return value;
   }
 
-  private videoInputSelectionToDevice(value: string): Device {
+  private videoInputSelectionToDevice(value: string): VideoInputDevice {
     if (value === 'Blue') {
       return DefaultDeviceController.synthesizeVideoDevice('blue');
     } else if (value === 'SMPTE Color Bars') {

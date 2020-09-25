@@ -39,15 +39,17 @@ walk('src')
     ) {
       return;
     }
-    let importLine = [
-      'import',
-      typeToImport,
-      'from',
-      "'" + pathToImport + '/' + typeToImport + "'",
-    ];
-    let exportLine = '  ' + typeToImport + ',';
-    importStrings.push(importLine.join(' ') + ';');
+    const importLine = `import ${typeToImport} from '${pathToImport}/${typeToImport}';`;
+    const exportLine = `  ${typeToImport},`;
+    importStrings.push(importLine);
     exportStrings.push(exportLine);
+
+    // It's hard to add type guard functions to this Java-ish class model, so
+    // forgive the hack.
+    if (typeToImport === 'AudioTransformDevice') {
+      importStrings.push(`import { isAudioTransformDevice } from '${pathToImport}/AudioTransformDevice';`);
+      exportStrings.push(`  isAudioTransformDevice,`);
+    }
   });
 
 importStrings.sort();

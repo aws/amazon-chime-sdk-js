@@ -69,11 +69,6 @@ export default class MeetingSessionConfiguration {
   connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
 
   /**
-   * Feature flag to enable WebAudio processing
-   */
-  enableWebAudio: boolean = false;
-
-  /**
    * Feature flag to enable Chromium-based browsers
    */
   enableUnifiedPlanForChromiumBasedBrowsers: boolean = true;

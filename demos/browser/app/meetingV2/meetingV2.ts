@@ -6,9 +6,13 @@ import 'bootstrap';
 
 import {
   AsyncScheduler,
+  AudioInputDevice,
+  AudioNodeSubgraph,
+  AudioTransformDevice,
   AudioVideoFacade,
   AudioVideoObserver,
   ClientMetricReport,
+  ClientVideoStreamReceivingReport,
   ConsoleLogger,
   ContentShareObserver,
   DataMessage,
@@ -17,8 +21,8 @@ import {
   DefaultDeviceController,
   DefaultMeetingSession,
   DefaultModality,
-  Device,
   DefaultBrowserBehavior,
+  Device,
   DeviceChangeObserver,
   EventName,
   EventAttributes,
@@ -31,14 +35,39 @@ import {
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
+  SimulcastLayers,
   TimeoutScheduler,
   Versioning,
+  VideoInputDevice,
+  VideoSource,
   VideoTileState,
-  ClientVideoStreamReceivingReport,
-  SimulcastLayers,
-  VideoSource
 } from '../../../../src/index';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
+
+class DelayTransformDevice implements AudioTransformDevice {
+  constructor(private inner: Device, private delaySeconds: number) {}
+
+  async intrinsicDevice(): Promise<Device> {
+    console.log('[DEMO] Returning inner device', this.inner);
+    return this.inner;
+  }
+
+  async mute(muted: boolean): Promise<void> {
+    console.info('[DEMO] Changing to mute state', muted);
+  }
+
+  async stop(): Promise<void> {
+    console.info('[DEMO] Stop called');
+  }
+
+  async createAudioNode(context: AudioContext): Promise<AudioNodeSubgraph> {
+    console.log('[DEMO] Creating audio node for context', context);
+    const node = context.createDelay(this.delaySeconds);
+    node.delayTime.value = this.delaySeconds;
+    console.log('[DEMO] Created audio node', node);
+    return { start: node, end: node };
+  }
+}
 
 class DemoTileOrganizer {
   // this is index instead of length
@@ -124,6 +153,12 @@ const SimulcastLayerMapping = {
   [SimulcastLayers.High]: 'High'
 };
 
+interface Toggle {
+  name: string,
+  checked: () => boolean,
+  action: () => void,
+}
+
 export class DemoMeetingApp implements
   AudioVideoObserver,
   DeviceChangeObserver,
@@ -148,7 +183,8 @@ export class DemoMeetingApp implements
   audioVideo: AudioVideoFacade | null = null;
   tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
   canStartLocalVideo: boolean = true;
-  defaultBrowserBehaviour: DefaultBrowserBehavior = new DefaultBrowserBehavior();;
+  defaultBrowserBehaviour: DefaultBrowserBehavior = new DefaultBrowserBehavior();
+
   // eslint-disable-next-line
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
@@ -157,6 +193,7 @@ export class DemoMeetingApp implements
 
   cameraDeviceIds: string[] = [];
   microphoneDeviceIds: string[] = [];
+  currentAudioInputDevice: AudioInputDevice | undefined;
 
   buttonStates: { [key: string]: boolean } = {
     'button-microphone': true,
@@ -220,7 +257,7 @@ export class DemoMeetingApp implements
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('planB') as HTMLInputElement).disabled = true;
     }
-    
+
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
       this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
@@ -400,6 +437,10 @@ export class DemoMeetingApp implements
           document.getElementById('failed-join-error').innerText = `Error: ${error.message}`;
         }
       });
+    });
+
+    (document.getElementById('add-delay') as HTMLInputElement).addEventListener('change', e => {
+      this.onDelaySettingChanged();
     });
 
     const buttonMute = document.getElementById('button-microphone');
@@ -629,6 +670,14 @@ export class DemoMeetingApp implements
       e => ((e as HTMLDivElement).style.display = 'none')
     );
     (document.getElementById(flow) as HTMLDivElement).style.display = 'block';
+
+    // This can only work if Web Audio is enabled, so hide it otherwise.
+    if (this.enableWebAudio) {
+      document.getElementById('delay-setting').style.display = 'block';
+      (document.getElementById('add-delay') as HTMLInputElement).checked = false;
+    } else {
+      document.getElementById('delay-setting').style.display = 'none';
+    }
   }
 
   audioInputsChanged(_freshAudioInputDeviceList: MediaDeviceInfo[]): void {
@@ -737,7 +786,7 @@ export class DemoMeetingApp implements
         body
       });
       if (response.status === 200) {
-        this.log('Log stream created');
+        console.log('[DEMO] Log stream created');
       }
     } catch (error) {
       this.log(error.message);
@@ -809,8 +858,7 @@ export class DemoMeetingApp implements
         logLevel
       );
     }
-    const deviceController = new DefaultDeviceController(logger);
-    configuration.enableWebAudio = this.enableWebAudio;
+    const deviceController = new DefaultDeviceController(logger, { enableWebAudio: this.enableWebAudio });
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.attendeePresenceTimeoutMs = 5000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
@@ -827,12 +875,6 @@ export class DemoMeetingApp implements
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
     this.initContentShareDropDownItems();
-  }
-
-  setClickHandler(elementId: string, f: () => void): void {
-    document.getElementById(elementId).addEventListener('click', () => {
-      f();
-    });
   }
 
   async join(): Promise<void> {
@@ -1164,6 +1206,7 @@ export class DemoMeetingApp implements
     genericName: string,
     devices: MediaDeviceInfo[],
     additionalOptions: string[],
+    additionalToggles: Toggle[] | undefined,
     callback: (name: string) => void
   ): void {
     const menu = document.getElementById(elementId) as HTMLDivElement;
@@ -1175,7 +1218,7 @@ export class DemoMeetingApp implements
         callback(devices[i].deviceId);
       });
     }
-    if (additionalOptions.length > 0) {
+    if (additionalOptions.length) {
       this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
       for (const additionalOption of additionalOptions) {
         this.createDropdownMenuItem(
@@ -1187,6 +1230,28 @@ export class DemoMeetingApp implements
           `${elementId}-${additionalOption.replace(/\s/g, '-')}`
         );
       }
+    }
+    if (additionalToggles?.length) {
+      this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
+      for (const { name, checked, action } of additionalToggles) {
+        const id = `${elementId}-${name.replace(/\s/g, '-')}`;
+        const computeName = () => {
+          const state = checked() ? '✓' : ' ';
+          return `${state} ${name}`;
+        };
+        const onclick = () => {
+          action();
+          (document.getElementById(id) as HTMLButtonElement).innerText = computeName();
+        };
+
+        this.createDropdownMenuItem(
+          menu,
+          computeName(),
+          onclick,
+          id
+        );
+      }
+
     }
     if (!menu.firstElementChild) {
       this.createDropdownMenuItem(menu, 'Device selection unavailable', () => {});
@@ -1219,22 +1284,50 @@ export class DemoMeetingApp implements
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
     const additionalDevices = ['None', '440 Hz'];
+    const additionalToggles = [];
+
+    // This can't work unless Web Audio is enabled.
+    if (this.enableWebAudio) {
+      additionalToggles.push({
+        name: 'Delay',
+        checked: () => this.isDelayEnabled(),
+        action: () => this.toggleDelay(),
+      });
+    }
+
     this.populateDeviceList(
       'audio-input',
       genericName,
       await this.audioVideo.listAudioInputDevices(),
       additionalDevices
     );
+
     this.populateInMeetingDeviceList(
       'dropdown-menu-microphone',
       genericName,
       await this.audioVideo.listAudioInputDevices(),
       additionalDevices,
+      additionalToggles,
       async (name: string) => {
-        const device = await this.audioInputSelectionToDevice(name);
-        await this.audioVideo.chooseAudioInputDevice(device);
+        await this.selectAudioInputDeviceByName(name);
       }
     );
+  }
+
+  private isDelayEnabled(): boolean {
+    return (document.getElementById('add-delay') as HTMLInputElement).checked;
+  }
+
+  private onDelaySettingChanged(): void {
+    this.log('Delay setting toggled.');
+    this.openAudioInputFromSelection();
+  }
+
+  private toggleDelay(): void {
+    const elem = (document.getElementById('add-delay') as HTMLInputElement);
+    elem.checked = !elem.checked;      // toggleAttribute is sometimes flaky.
+    this.log('Delay toggle is now', elem.checked);
+    this.onDelaySettingChanged();
   }
 
   async populateVideoInputList(): Promise<void> {
@@ -1251,6 +1344,7 @@ export class DemoMeetingApp implements
       genericName,
       await this.audioVideo.listVideoInputDevices(),
       additionalDevices,
+      undefined,
       async (name: string) => {
         try {
           await this.openVideoInputFromSelection(name, false);
@@ -1279,6 +1373,7 @@ export class DemoMeetingApp implements
       genericName,
       await this.audioVideo.listAudioOutputDevices(),
       additionalDevices,
+      undefined,
       async (name: string) => {
         await this.audioVideo.chooseAudioOutputDevice(name);
       }
@@ -1287,10 +1382,27 @@ export class DemoMeetingApp implements
 
   private analyserNodeCallback = () => {};
 
-  async openAudioInputFromSelection(): Promise<void> {
+  async selectedAudioInput(): Promise<AudioInputDevice> {
     const audioInput = document.getElementById('audio-input') as HTMLSelectElement;
     const device = await this.audioInputSelectionToDevice(audioInput.value);
+    return device;
+  }
+
+  async selectAudioInputDevice(device: AudioInputDevice): Promise<void> {
+    this.currentAudioInputDevice = device;
+    this.log('Selecting audio input', device);
     await this.audioVideo.chooseAudioInputDevice(device);
+  }
+
+  async selectAudioInputDeviceByName(name: string): Promise<void> {
+    const device = await this.audioInputSelectionToDevice(name);
+    return this.selectAudioInputDevice(device);
+  }
+
+  async openAudioInputFromSelection(): Promise<void> {
+    const device = await this.selectedAudioInput();
+    await this.selectAudioInputDevice(device);
+    this.log('Starting audio preview.');
     this.startAudioPreview();
   }
 
@@ -1368,20 +1480,27 @@ export class DemoMeetingApp implements
     }
   }
 
-  private async audioInputSelectionToDevice(value: string): Promise<Device> {
+  private async audioInputSelectionToDevice(value: string): Promise<AudioInputDevice> {
+    let inner: Device;
     if (this.isRecorder() || this.isBroadcaster()) {
-      return null;
+      inner = null;
+    } else if (value === '440 Hz') {
+      inner = DefaultDeviceController.synthesizeAudioDevice(440);
+    } else if (value === 'None') {
+      inner = null;
+    } else {
+      inner = value;
+    };
+
+    if (this.isDelayEnabled()) {
+      this.log('Enabling delay.');
+      return new DelayTransformDevice(inner, 2);
     }
-    if (value === '440 Hz') {
-      return DefaultDeviceController.synthesizeAudioDevice(440);
-    }
-    if (value === 'None') {
-      return null;
-    }
-    return value;
+
+    return inner;
   }
 
-  private videoInputSelectionToDevice(value: string): Device {
+  private videoInputSelectionToDevice(value: string): VideoInputDevice {
     if (this.isRecorder() || this.isBroadcaster()) {
       return null;
     }
@@ -1484,8 +1603,8 @@ export class DemoMeetingApp implements
     return configuration.meetingId;
   }
 
-  log(str: string): void {
-    console.log(`[DEMO] ${str}`);
+  log(str: string, ...args: any[]): void {
+    console.log.apply(console, [`[DEMO] ${str}`, ...args]);
   }
 
   audioVideoDidStartConnecting(reconnecting: boolean): void {

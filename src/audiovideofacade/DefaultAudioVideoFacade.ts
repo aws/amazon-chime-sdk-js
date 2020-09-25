@@ -10,9 +10,10 @@ import ContentShareController from '../contentsharecontroller/ContentShareContro
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import DataMessage from '../datamessage/DataMessage';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
-import Device from '../devicecontroller/Device';
+import AudioInputDevice from '../devicecontroller/AudioInputDevice';
 import DeviceController from '../devicecontroller/DeviceController';
 import DevicePermission from '../devicecontroller/DevicePermission';
+import VideoInputDevice from '../devicecontroller/VideoInputDevice';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import VideoSource from '../videosource/VideoSource';
@@ -326,13 +327,13 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     return result;
   }
 
-  chooseAudioInputDevice(device: Device): Promise<DevicePermission> {
+  chooseAudioInputDevice(device: AudioInputDevice): Promise<DevicePermission> {
     const result = this.deviceController.chooseAudioInputDevice(device);
     this.trace('chooseAudioInputDevice', device);
     return result;
   }
 
-  chooseVideoInputDevice(device: Device): Promise<DevicePermission> {
+  chooseVideoInputDevice(device: VideoInputDevice): Promise<DevicePermission> {
     const result = this.deviceController.chooseVideoInputDevice(device);
     this.trace('chooseVideoInputDevice', device);
     return result;
@@ -400,11 +401,6 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     const result = this.deviceController.getVideoInputQualitySettings();
     this.trace('getVideoInputQualitySettings');
     return result;
-  }
-
-  enableWebAudio(flag: boolean): void {
-    this.deviceController.enableWebAudio(flag);
-    this.trace('enableWebAudio', flag);
   }
 
   startContentShare(stream: MediaStream): Promise<void> {

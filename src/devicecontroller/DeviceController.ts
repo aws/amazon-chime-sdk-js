@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
-import Device from './Device';
+import AudioInputDevice from './AudioInputDevice';
 import DevicePermission from './DevicePermission';
+import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
 
 /**
@@ -57,19 +58,22 @@ export default interface DeviceController {
 
   /**
    * Selects an audio input device to use. The constraint may be a device id,
-   * MediaTrackConstraint, MediaStream (containing audio track), or null to
-   * indicate no device. The promise always resolves with a DevicePermission
-   * result indicating whether access was granted or denied.
+   * `MediaTrackConstraint`, `MediaStream` (containing audio track), or `null` to
+   * indicate no device. It may also be an {@link AudioTransformDevice} to customize the
+   * constraints used or to apply Web Audio transforms.
+   *
+   * The promise always resolves with a {@link DevicePermission} result indicating whether access
+   * was * granted or denied.
    */
-  chooseAudioInputDevice(device: Device): Promise<DevicePermission>;
+  chooseAudioInputDevice(device: AudioInputDevice): Promise<DevicePermission>;
 
   /**
-   * Selects an video input device to use. The constraint may be a device id,
-   * MediaTrackConstraint, MediaStream (containing video track), or null to
-   * indicate no device. The promise always resolves with a DevicePermission
+   * Selects a video input device to use. The constraint may be a device id,
+   * `MediaTrackConstraint`, `MediaStream` (containing video track), or `null` to
+   * indicate no device. The promise always resolves with a {@link DevicePermission}
    * result indicating whether access was granted or denied.
    */
-  chooseVideoInputDevice(device: Device): Promise<DevicePermission>;
+  chooseVideoInputDevice(device: VideoInputDevice): Promise<DevicePermission>;
 
   /**
    * Selects an audio output device for use. Null specifies the default device.
@@ -136,12 +140,4 @@ export default interface DeviceController {
    * Get the current video input quality settings to request when enabling video.
    */
   getVideoInputQualitySettings(): VideoQualitySettings | null;
-
-  /**
-   * Deprecated. enableWebAudio will be removed in v2.0.0.
-   * This API method will removed entirely, along with the corresponding field on MeetingSessionConfiguration.
-   * The MeetingSession will no longer call enableWebAudio on the corresponding DeviceController.
-   * Sets the flag in [[DeviceController]] on whether to enable WebAudio-based device management.
-   */
-  enableWebAudio(flag: boolean): void;
 }
