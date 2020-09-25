@@ -175,6 +175,11 @@ components().forEach(component => {
     return;
   }
 
+  if (component === 'voicefocus') {
+    // This rule does not make sense for Voice Focus.
+    return;
+  }
+
   let hasMatchingInterface = false;
   const componentDir = path.join('src', component);
   walk(componentDir).forEach(file => {
