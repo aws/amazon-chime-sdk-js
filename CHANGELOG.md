@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update dependencies to TypeScript 4, `ts-loader`, and modern linting
 - [Demo] Update dependencies, too.
 - Remove unnecessary startAudioPreview in meeting demo
+- Fix video tile with incorrect bound attendee ID and external User ID
 
 ### Removed
 - Revert the "Create log stream before logging begins" commit
