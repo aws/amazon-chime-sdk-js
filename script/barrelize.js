@@ -23,6 +23,19 @@ const walk = function(dir) {
 const importStrings = [];
 const exportStrings = [];
 
+const ignoredTypes = [
+  // These are @internal Voice Focus types.
+  'VoiceFocusTransformDeviceDelegate',
+  'LoggerAdapter',
+
+  // Generated versioning data.
+  'version',
+
+  'SignalingProtocol',
+  'index',
+  'ScreenSignalingProtocol',
+];
+
 walk('src')
   .filter(fn => fn.endsWith('.ts'))
   .forEach(file => {
@@ -31,14 +44,10 @@ walk('src')
     }
     let typeToImport = path.basename(file).replace(new RegExp('[.].*'), '');
     let pathToImport = './' + path.dirname(file).replace('src/', '');
-    if (
-      typeToImport === 'version' ||
-      typeToImport === 'SignalingProtocol' ||
-      typeToImport === 'index' ||
-      typeToImport === 'ScreenSignalingProtocol'
-    ) {
+    if (ignoredTypes.includes(typeToImport)) {
       return;
     }
+
     const importLine = `import ${typeToImport} from '${pathToImport}/${typeToImport}';`;
     const exportLine = `  ${typeToImport},`;
     importStrings.push(importLine);
