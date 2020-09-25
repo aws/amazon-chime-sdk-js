@@ -24,7 +24,7 @@
     "build:publish": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
     "postbuild:publish": "script/postbuild",
     "predoc": "rm -rf docs && node script/build-guides.js",
-    "doc": "node node_modules/typedoc/bin/typedoc --options typedoc.json --gitRemote https://github.com/aws/amazon-chime-sdk-js",
+    "doc": "script/generate-docs",
     "postdoc": "node script/update-typedoc-link.js",
     "test": "npm run test:fast",
     "test:fast": "cross-env TS_NODE_CACHE=false nyc mocha -rv ts-node/register \"test/**/*.test.ts\"",
