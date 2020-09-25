@@ -9,11 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add MeetingReadinessCheckerConfiguration to allow custom configuration for meeting readiness checker
-- Create log stream before logging begins
 
 ### Changed
 - Update Travis config to improve PR build speed
-- Disable configs in saucelab capabilities
+- Disable saucelab capabilities
 - Use credentials sent via signaling connection JOIN_ACK to improve audio-video startup time.
 - [Demo] Adjust demo css to prevent unecessary scrollbars on windows and stretching in video grid
 - Update dependencies to TypeScript 4, `ts-loader`, and modern linting
@@ -21,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove unnecessary startAudioPreview in meeting demo
 
 ### Removed
+- Revert the "Create log stream before logging begins" commit
 
 ### Fixed
 - Fix Maven installation script

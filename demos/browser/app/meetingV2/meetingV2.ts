@@ -671,24 +671,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     }
   }
 
-  async createLogStream(): Promise<void> {
-    const body = JSON.stringify({
-      meetingId: this.meetingSession.configuration.meetingId,
-      attendeeId: this.meetingSession.configuration.credentials.attendeeId,
-    });
-    try {
-      const response = await fetch(`${DemoMeetingApp.BASE_URL}create_log_stream`, {
-        method: 'POST',
-        body
-      });
-      if (response.status === 200) {
-        console.log('Log stream created');
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     let logger: Logger;
     const logLevel = LogLevel.INFO;
@@ -696,7 +678,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       logger = consoleLogger;
     } else {
-      await this.createLogStream();
       logger = new MultiLogger(
         consoleLogger,
         new MeetingSessionPOSTLogger(

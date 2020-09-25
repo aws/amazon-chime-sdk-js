@@ -59,7 +59,6 @@ Resources:
             Resource: '*'
       Roles:
         - Ref: ChimeSdkBrowserLogsLambdaRole
-        - Ref: ChimeSdkBrowserCreateLogStreamLambdaRole
   Meetings:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -175,17 +174,6 @@ Resources:
           Type: Api
           Properties:
             Path: /logs
-            Method: POST
-  ChimeSdkBrowserCreateLogStreamLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers.create_log_stream
-      CodeUri: src/
-      Events:
-        Api1:
-          Type: Api
-          Properties:
-            Path: /create_log_stream
             Method: POST
   ChimeNotificationsQueuePolicy:
     Type: AWS::SQS::QueuePolicy
