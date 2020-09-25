@@ -66,9 +66,9 @@ export default class AudioVideoControllerState {
 
   iceCandidates: RTCIceCandidate[] = [];
 
-  iceCandidateHandler: (event: RTCPeerConnectionIceEvent) => void | null = null;
+  iceCandidateHandler: ((event: RTCPeerConnectionIceEvent) => void) | null = null;
 
-  iceGatheringStateEventHandler: () => void | null = null;
+  iceGatheringStateEventHandler: (() => void) | null = null;
 
   screenSharingSession: ScreenSharingSession | null = null;
 

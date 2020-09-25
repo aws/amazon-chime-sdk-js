@@ -1,7 +1,9 @@
+import AGCOptions from './voicefocus/AGCOptions';
 import ActiveSpeakerDetector from './activespeakerdetector/ActiveSpeakerDetector';
 import ActiveSpeakerDetectorFacade from './activespeakerdetector/ActiveSpeakerDetectorFacade';
 import ActiveSpeakerPolicy from './activespeakerpolicy/ActiveSpeakerPolicy';
 import AllHighestVideoBandwidthPolicy from './videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
+import AssetSpec from './voicefocus/AssetSpec';
 import AsyncScheduler from './scheduler/AsyncScheduler';
 import AttachMediaInputTask from './task/AttachMediaInputTask';
 import Attendee from './attendee/Attendee';
@@ -320,6 +322,13 @@ import VideoTileControllerFacade from './videotilecontroller/VideoTileController
 import VideoTileFactory from './videotilefactory/VideoTileFactory';
 import VideoTileState from './videotile/VideoTileState';
 import VideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
+import VoiceFocusConfig from './voicefocus/VoiceFocusConfig';
+import VoiceFocusDeviceOptions from './voicefocus/VoiceFocusDeviceOptions';
+import VoiceFocusDeviceTransformer from './voicefocus/VoiceFocusDeviceTransformer';
+import VoiceFocusPaths from './voicefocus/VoiceFocusPaths';
+import VoiceFocusSpec from './voicefocus/VoiceFocusSpec';
+import VoiceFocusTransformDevice from './voicefocus/VoiceFocusTransformDevice';
+import VoiceFocusTransformDeviceObserver from './voicefocus/VoiceFocusTransformDeviceObserver';
 import VolumeIndicatorAdapter from './volumeindicatoradapter/VolumeIndicatorAdapter';
 import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebMMediaRecording from './mediarecording/WebMMediaRecording';
@@ -329,10 +338,12 @@ import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
 import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
 
 export {
+  AGCOptions,
   ActiveSpeakerDetector,
   ActiveSpeakerDetectorFacade,
   ActiveSpeakerPolicy,
   AllHighestVideoBandwidthPolicy,
+  AssetSpec,
   AsyncScheduler,
   AttachMediaInputTask,
   Attendee,
@@ -651,6 +662,13 @@ export {
   VideoTileFactory,
   VideoTileState,
   VideoUplinkBandwidthPolicy,
+  VoiceFocusConfig,
+  VoiceFocusDeviceOptions,
+  VoiceFocusDeviceTransformer,
+  VoiceFocusPaths,
+  VoiceFocusSpec,
+  VoiceFocusTransformDevice,
+  VoiceFocusTransformDeviceObserver,
   VolumeIndicatorAdapter,
   WaitForAttendeePresenceTask,
   WebMMediaRecording,

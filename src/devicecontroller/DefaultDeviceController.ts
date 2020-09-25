@@ -148,7 +148,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   async chooseAudioInputDevice(device: AudioInputDevice): Promise<DevicePermission> {
     if (isAudioTransformDevice(device)) {
-      this.logger.info(`Choosing transform input device ${JSON.stringify(device)}`);
+      // N.B., do not JSON.stringify here — for some kinds of devices this
+      // will cause a cyclic object reference error.
+      this.logger.info(`Choosing transform input device ${device}`);
       const result = await this.chooseAudioTransformInputDevice(device);
       return this.pushAudioMeetingStateForPermissions(device, result);
     }
