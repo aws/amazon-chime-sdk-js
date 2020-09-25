@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2.0
 ### Added
+- A constructor argument to `DefaultDeviceController` to specify whether Web Audio should be
+  supported. Use this instead of `enableWebAudio`.
+- Add an `AudioTransformDevice` type that can be supplied to `chooseAudioInputDevice`, allowing the
+  injection of custom device constraints and Web Audio nodes as pseudo-devices.
 
 ### Changed
 - The project now produces ES2015 output, rather than ES5 output that refers to ES2015
@@ -29,10 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   If you need your built application bundle to target browsers that do not
   support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code
   using a transpiler like Babel, or split your application bundle into multiple files that can
-  be conditionally loaded. Note that transpiling some parts of the SDK, e.g., Voice Focus, might
-  result in ES5 code that does not work when run.
+  be conditionally loaded. Note that transpiling some parts of the SDK might result in ES5 code
+  that does not work when run.
 
 ### Removed
+- Remove `enableWebAudio` from `DeviceController` and related types. Use the constructor argument
+  instead.
 
 ### Fixed
 

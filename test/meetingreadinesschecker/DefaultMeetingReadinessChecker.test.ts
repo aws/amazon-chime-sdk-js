@@ -58,7 +58,6 @@ describe('DefaultMeetingReadinessChecker', () => {
 
   function makeSessionConfiguration(): MeetingSessionConfiguration {
     const configuration = new MeetingSessionConfiguration();
-    configuration.enableWebAudio = false;
     configuration.meetingId = 'foo-meeting';
     configuration.urls = new MeetingSessionURLs();
     configuration.urls.audioHostURL = 'https://audiohost.test.example.com';
@@ -170,7 +169,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       this.logger = logger;
 
       this.deviceController = deviceController;
-      this.deviceController.enableWebAudio(configuration.enableWebAudio);
       attendeeAudioVideoController = new TestAudioVideoController(this.configuration);
       this.audioVideoController = attendeeAudioVideoController;
       deviceController.bindToAudioVideoController(this.audioVideoController);

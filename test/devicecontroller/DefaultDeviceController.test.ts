@@ -6,9 +6,11 @@ import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
+import AudioInputDevice from '../../src/devicecontroller/AudioInputDevice';
+import AudioTransformDevice from '../../src/devicecontroller/AudioTransformDevice';
 import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
-import Device from '../../src/devicecontroller/Device';
 import DevicePermission from '../../src/devicecontroller/DevicePermission';
+import VideoInputDevice from '../../src/devicecontroller/VideoInputDevice';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventName from '../../src/eventcontroller/EventName';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -19,19 +21,32 @@ import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import NotAllowedError from '../dommock/NotAllowedError';
+import UserMediaState from '../dommock/UserMediaState';
+import {
+  MockNodeTransformDevice,
+  MockPassthroughTransformDevice,
+  MockThrowingTransformDevice,
+  MutingTransformDevice,
+} from '../transformdevicemock/MockTransformDevice';
+import WatchingLogger from './WatchingLogger';
 
 describe('DefaultDeviceController', () => {
+  const assert: Chai.AssertStatic = chai.assert;
   const expect: Chai.ExpectStatic = chai.expect;
   const logger = new NoOpLogger();
-  const stringDeviceId: Device = 'string-device-id';
+  const stringDeviceId = 'string-device-id';
 
   let deviceController: DefaultDeviceController;
   let audioVideoController: NoOpAudioVideoController;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
 
-  function getMediaStreamDevice(id: string): Device {
-    const device: Device = new MediaStream();
+  function enableWebAudio(enabled = true): void {
+    deviceController = new DefaultDeviceController(logger, { enableWebAudio: enabled });
+  }
+
+  function getMediaStreamDevice(id: string): MediaStream {
+    const device = new MediaStream();
     // @ts-ignore
     device.id = id;
     // @ts-ignore
@@ -57,7 +72,7 @@ describe('DefaultDeviceController', () => {
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
-    deviceController = new DefaultDeviceController(logger);
+    deviceController = new DefaultDeviceController(logger, { enableWebAudio: false });
     audioVideoController = new NoOpAudioVideoController();
   });
 
@@ -149,7 +164,7 @@ describe('DefaultDeviceController', () => {
       deviceController.chooseVideoInputQuality(width, height, frameRate, maxBandwidthKbps);
 
       // @ts-ignore
-      const constraints: Device = {};
+      const constraints: MediaTrackConstraints = {};
       await deviceController.chooseVideoInputDevice(constraints);
 
       expect(JSON.stringify(constraints.width)).to.equal(JSON.stringify({ ideal: width }));
@@ -170,7 +185,7 @@ describe('DefaultDeviceController', () => {
       deviceController.chooseVideoInputQuality(width, height, 15, 600);
 
       // @ts-ignore
-      const constraints: Device = {};
+      const constraints: MediaTrackConstraints = {};
       await deviceController.chooseVideoInputDevice(constraints);
 
       expect(JSON.stringify(constraints.width)).to.equal(JSON.stringify({ ideal: 576 }));
@@ -202,21 +217,320 @@ describe('DefaultDeviceController', () => {
     });
   });
 
+  describe('transform mute subscription', () => {
+    it('does nothing if there is no device', async () => {
+      enableWebAudio(true);
+
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        mute(): void {
+          this.realtimeController.realtimeMuteLocalAudio();
+        }
+
+        unmute(): void {
+          this.realtimeController.realtimeUnmuteLocalAudio();
+        }
+      }
+
+      const av = new TestAudioVideoController();
+      deviceController.bindToAudioVideoController(av);
+
+      await deviceController.chooseAudioInputDevice('foobar');
+
+      av.mute();
+      av.mute();
+      av.unmute();
+    });
+
+    it('works if there is no bound AV controller', async () => {
+      deviceController.bindToAudioVideoController(undefined);
+      deviceController.bindToAudioVideoController(undefined);
+    });
+
+    it('subscribes to mute', async () => {
+      enableWebAudio(true);
+
+      const device = new MutingTransformDevice('foo');
+
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        mute(): void {
+          this.realtimeController.realtimeMuteLocalAudio();
+        }
+
+        unmute(): void {
+          this.realtimeController.realtimeUnmuteLocalAudio();
+        }
+      }
+
+      const av = new TestAudioVideoController();
+      const unsub = sinon.spy(
+        av.realtimeController,
+        'realtimeUnsubscribeToMuteAndUnmuteLocalAudio'
+      );
+
+      deviceController.bindToAudioVideoController(av);
+
+      expect(unsub.notCalled).to.be.true;
+
+      await deviceController.chooseAudioInputDevice(device);
+
+      av.mute();
+      av.mute();
+      av.unmute();
+
+      expect(device.muted).to.deep.equal([true, false]);
+
+      // Binding again is OK.
+      const av2 = new TestAudioVideoController();
+
+      deviceController.bindToAudioVideoController(av2);
+
+      expect(unsub.calledOnce).to.be.true;
+
+      av2.mute();
+      av2.unmute();
+
+      expect(device.muted).to.deep.equal([true, false, true, false]);
+    });
+  });
+
+  describe('chooseAudioInputDevice transform device permissions', () => {
+    it('handles user permission errors', async () => {
+      enableWebAudio(true);
+
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDenied;
+      domMockBehavior.asyncWaitMs = 1500;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const device = new MockNodeTransformDevice('user-permission-id-foo');
+
+      const createAudioNodeSpy = sinon.spy(device, 'createAudioNode');
+      const intrinsicDeviceSpy = sinon.spy(device, 'intrinsicDevice');
+      const stopSpy = sinon.spy(device, 'stop');
+
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionDeniedByUser);
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+
+      expect(createAudioNodeSpy.calledOnce).to.be.true;
+      expect(intrinsicDeviceSpy.calledOnce).to.be.true;
+      expect(stopSpy.notCalled).to.be.true;
+    });
+
+    it('handles browser permission errors', async () => {
+      enableWebAudio(true);
+
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDenied;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const device = new MockNodeTransformDevice('user-permission-id-bar');
+
+      const createAudioNodeSpy = sinon.spy(device, 'createAudioNode');
+      const intrinsicDeviceSpy = sinon.spy(device, 'intrinsicDevice');
+      const stopSpy = sinon.spy(device, 'stop');
+
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionDeniedByBrowser);
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+
+      expect(createAudioNodeSpy.calledOnce).to.be.true;
+      expect(intrinsicDeviceSpy.calledOnce).to.be.true;
+      expect(stopSpy.notCalled).to.be.true;
+    });
+  });
+
+  describe('chooseAudioInputDevice handling an OverconstrainedError', () => {
+    it('logs appropriately', async () => {
+      const watcher = new WatchingLogger('Over-constrained by constraint: testconstraint');
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverConstrained;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(watcher);
+
+      await deviceController.chooseAudioInputDevice('whatever');
+      expect(watcher.matches.length).to.equal(1);
+    });
+  });
+
+  describe('chooseAudioInputDevice with transform', () => {
+    it('rejects a transform device with Web Audio disabled', async () => {
+      enableWebAudio(false);
+      const device: AudioTransformDevice = new MockPassthroughTransformDevice(null);
+      try {
+        await deviceController.chooseAudioInputDevice(device);
+        assert.fail();
+      } catch (e) {
+        expect(e.message).to.equal('Cannot apply transform device without enabling Web Audio.');
+        expect(deviceController.hasAppliedTransform()).to.be.false;
+      }
+    });
+
+    it('passes through the thrown exception if the transform device cannot instantiate a node', async () => {
+      enableWebAudio(true);
+      const device: AudioTransformDevice = new MockThrowingTransformDevice(null);
+      const createAudioNodeSpy = sinon.spy(device, 'createAudioNode');
+      const intrinsicDeviceSpy = sinon.spy(device, 'intrinsicDevice');
+      const stopSpy = sinon.spy(device, 'stop');
+
+      try {
+        await deviceController.chooseAudioInputDevice(device);
+        assert.fail();
+      } catch (e) {
+        expect(e.message).to.equal('Cannot create audio node.');
+      }
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+      expect(createAudioNodeSpy.calledOnce).to.be.true;
+      expect(intrinsicDeviceSpy.notCalled).to.be.true;
+      expect(stopSpy.notCalled).to.be.true;
+    });
+
+    it('chooses a transform device that does not return a node', async () => {
+      enableWebAudio(true);
+      const device: AudioTransformDevice = new MockPassthroughTransformDevice(null);
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+    });
+
+    it('chooses a transform device that does return a node', async () => {
+      enableWebAudio(true);
+      const device: AudioTransformDevice = new MockNodeTransformDevice(null);
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+    });
+
+    it('does nothing on re-selection', async () => {
+      enableWebAudio(true);
+      const device: AudioTransformDevice = new MockNodeTransformDevice(null);
+      const createAudioNodeSpy = sinon.spy(device, 'createAudioNode');
+      const intrinsicDeviceSpy = sinon.spy(device, 'intrinsicDevice');
+      const stopSpy = sinon.spy(device, 'stop');
+
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      const again = await deviceController.chooseAudioInputDevice(device);
+
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(again).to.equal(DevicePermission.PermissionGrantedPreviously);
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+
+      expect(createAudioNodeSpy.calledOnce).to.be.true;
+      expect(intrinsicDeviceSpy.calledOnce).to.be.true;
+      expect(stopSpy.notCalled).to.be.true;
+    });
+
+    it('applying two transform devices simultaneously will not fail', async () => {
+      enableWebAudio(true);
+
+      // Try some async trickery to get these two to collide.
+      // `first` will win because everything will apply after 200ms.
+      const first = new MockNodeTransformDevice('first', 200);
+      const second = new MockNodeTransformDevice('second', 0);
+      const results = await Promise.all([
+        deviceController.chooseAudioInputDevice(first).catch(e => e),
+        deviceController.chooseAudioInputDevice(second).catch(e => e),
+      ]);
+
+      expect(results.length).to.equal(2);
+
+      const errors = results.filter(val => val instanceof Error);
+
+      expect(errors.length).to.equal(0);
+
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+    });
+  });
+
+  describe('chooseAudioInputDevice twice', () => {
+    it('allows replacement no-node -> node', async () => {
+      enableWebAudio(true);
+
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+      const passthrough: AudioTransformDevice = new MockPassthroughTransformDevice('passthrough');
+      const stopSpy = sinon.spy(passthrough, 'stop');
+
+      const permission = await deviceController.chooseAudioInputDevice(passthrough);
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(stopSpy.notCalled).to.be.true;
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+
+      const noded: AudioTransformDevice = new MockNodeTransformDevice('noded');
+      const replace = await deviceController.chooseAudioInputDevice(noded);
+      expect(replace).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(stopSpy.notCalled).to.be.true;
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+    });
+
+    it('allows replacement node -> node', async () => {
+      enableWebAudio(true);
+
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+      const device: AudioTransformDevice = new MockNodeTransformDevice('foo');
+      const stopSpy = sinon.spy(device, 'stop');
+
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(stopSpy.notCalled).to.be.true;
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+
+      const noded: AudioTransformDevice = new MockNodeTransformDevice('noded');
+      const replace = await deviceController.chooseAudioInputDevice(noded);
+      expect(replace).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(stopSpy.notCalled).to.be.true;
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+    });
+
+    it('allows replacement no-node -> non-transform', async () => {
+      enableWebAudio(true);
+
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+      const device: AudioTransformDevice = new MockPassthroughTransformDevice('foo');
+      const stopSpy = sinon.spy(device, 'stop');
+
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(stopSpy.notCalled).to.be.true;
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+
+      const replace = await deviceController.chooseAudioInputDevice('simple');
+      expect(replace).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(stopSpy.notCalled).to.be.true;
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+    });
+
+    it('allows replacement node -> non-transform', async () => {
+      enableWebAudio(true);
+
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+      const device: AudioTransformDevice = new MockNodeTransformDevice('foo');
+      const stopSpy = sinon.spy(device, 'stop');
+
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(stopSpy.notCalled).to.be.true;
+      expect(deviceController.hasAppliedTransform()).to.be.true;
+
+      const replace = await deviceController.chooseAudioInputDevice('simple');
+      expect(replace).to.equal(DevicePermission.PermissionGrantedByBrowser);
+      expect(stopSpy.notCalled).to.be.true;
+      expect(deviceController.hasAppliedTransform()).to.be.false;
+    });
+  });
+
   describe('chooseAudioInputDevice', () => {
     it('chooses no device', async () => {
-      const device: Device = null;
+      const device: AudioInputDevice = null;
       const permission = await deviceController.chooseAudioInputDevice(device);
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
     });
 
     it('chooses an audio device', async () => {
-      const device: Device = { deviceId: 'string-device-id' };
+      const device: AudioInputDevice = { deviceId: 'string-device-id' };
       const permission = await deviceController.chooseAudioInputDevice(device);
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
     });
 
     it('when denied permission by browser, it defaults to null device', async () => {
-      let device: Device = { deviceId: 'string-device-id-1' };
+      let device: AudioInputDevice = { deviceId: 'string-device-id-1' };
       let permission = await deviceController.chooseAudioInputDevice(device);
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
       const audioStream1 = await deviceController.acquireAudioInputStream();
@@ -271,7 +585,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('attaches the audio input stream to the audio context', async () => {
-      deviceController.enableWebAudio(true);
+      enableWebAudio(true);
       let permission = await deviceController.chooseAudioInputDevice(stringDeviceId);
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
 
@@ -281,7 +595,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('releases audio media stream when requesting default device and default is already active in chromium based browser', async () => {
-      deviceController.enableWebAudio(true);
+      enableWebAudio(true);
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       deviceController = new DefaultDeviceController(logger);
@@ -303,7 +617,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('sets to null device when an external device disconnects', async () => {
-      deviceController.enableWebAudio(true);
+      enableWebAudio(true);
       let permission = await deviceController.chooseAudioInputDevice(stringDeviceId);
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
 
@@ -313,7 +627,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('releases all previously-acquired audio streams', done => {
-      const stringDeviceIds: Device[] = [
+      const stringDeviceIds: AudioInputDevice[] = [
         'device-id-1',
         'device-id-2',
         'device-id-3',
@@ -355,7 +669,7 @@ describe('DefaultDeviceController', () => {
       domMockBehavior = new DOMMockBehavior();
       domMockBehavior.browserName = 'ios12.0';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      const stringDeviceIds: Device[] = [
+      const stringDeviceIds: AudioInputDevice[] = [
         'device-id-1',
         'device-id-2',
         'device-id-3',
@@ -393,7 +707,7 @@ describe('DefaultDeviceController', () => {
 
   describe('chooseVideoInputDevice', () => {
     it('chooses no device', async () => {
-      const device: Device = null;
+      const device: VideoInputDevice = null;
       const permission = await deviceController.chooseVideoInputDevice(device);
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
     });
@@ -410,7 +724,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('chooses the device as a media stream', async () => {
-      const device: Device = getMediaStreamDevice('device-id');
+      const device: VideoInputDevice = getMediaStreamDevice('device-id');
       await deviceController.chooseVideoInputDevice(device);
       const stream = await deviceController.acquireVideoInputStream();
       expect(stream).to.equal(device);
@@ -464,7 +778,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('cannot choose the device of an empty string ID', async () => {
-      const device: Device = '';
+      const device: VideoInputDevice = '';
       deviceController.bindToAudioVideoController(audioVideoController);
       const handleEventSpy = sinon.spy(audioVideoController.eventController, 'publishEvent');
       const permission = await deviceController.chooseVideoInputDevice(device);
@@ -528,7 +842,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('releases all previously-acquired video streams', done => {
-      const stringDeviceIds: Device[] = [
+      const stringDeviceIds: VideoInputDevice[] = [
         'device-id-1',
         'device-id-2',
         'device-id-3',
@@ -591,7 +905,7 @@ describe('DefaultDeviceController', () => {
     it('does not need to stop the local video if no valid device is choosen', async () => {
       const spy = sinon.spy(audioVideoController.videoTileController, 'stopLocalVideoTile');
       deviceController.bindToAudioVideoController(audioVideoController);
-      const device: Device = {
+      const device: VideoInputDevice = {
         deviceId: { exact: null },
       };
       await deviceController.chooseVideoInputDevice(device);
@@ -601,7 +915,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it("disconnects the audio input source node instead of the given stream's tracks", async () => {
-      deviceController.enableWebAudio(true);
+      enableWebAudio(true);
       await deviceController.chooseAudioInputDevice(stringDeviceId);
       const stream = await deviceController.acquireAudioInputStream();
 
@@ -643,14 +957,14 @@ describe('DefaultDeviceController', () => {
     });
 
     it('acquires the existing audio input stream', async () => {
-      const device: Device = getMediaStreamDevice('device-id');
+      const device: AudioInputDevice = getMediaStreamDevice('device-id');
       await deviceController.chooseAudioInputDevice(device);
       const stream = await deviceController.acquireAudioInputStream();
       expect(stream).to.equal(device);
     });
 
     it('acquires an non-empty stream when the web audio is enabled', async () => {
-      deviceController.enableWebAudio(true);
+      enableWebAudio(true);
       const stream = await deviceController.acquireAudioInputStream();
       expect(stream).to.exist;
     });
@@ -801,9 +1115,35 @@ describe('DefaultDeviceController', () => {
       expect(deviceController.createAnalyserNodeForAudioInput()).to.equal(null);
     });
 
-    it('can create the analyser node if no active audio exists', async () => {
+    it('cannot create the raw input analyser node if no active audio exists', async () => {
+      expect(deviceController.createAnalyserNodeForRawAudioInput()).to.equal(null);
+    });
+
+    it('can create the analyser node if active audio exists', async () => {
       await deviceController.chooseAudioInputDevice(stringDeviceId);
       expect(deviceController.createAnalyserNodeForAudioInput()).to.exist;
+    });
+
+    it('can create the analyser node for raw input if Web Audio is enabled', async () => {
+      enableWebAudio(true);
+      await deviceController.chooseAudioInputDevice(stringDeviceId);
+      const node = deviceController.createAnalyserNodeForRawAudioInput();
+      expect(node).to.exist;
+    });
+
+    it('can create the analyser node if Web Audio is enabled', async () => {
+      enableWebAudio(true);
+      await deviceController.chooseAudioInputDevice(stringDeviceId);
+      const node = deviceController.createAnalyserNodeForAudioInput();
+      expect(node).to.exist;
+    });
+
+    it('can create the analyser node for the end of a transform', async () => {
+      enableWebAudio(true);
+      const transform = new MockNodeTransformDevice(stringDeviceId, 1);
+      await deviceController.chooseAudioInputDevice(transform);
+      const node = deviceController.createAnalyserNodeForAudioInput();
+      expect(node).to.exist;
     });
 
     it('can create an audio context without sampleRate', async () => {
@@ -822,7 +1162,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('mixes the audio stream into the audio input when the web audio is enabled', async () => {
-      deviceController.enableWebAudio(true);
+      enableWebAudio(true);
       let stream = new MediaStream();
       let node = deviceController.mixIntoAudioInput(stream);
       expect(node.mediaStream).to.equal(stream);
@@ -833,7 +1173,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('does not create an audio source node if the web audio is disabled', async () => {
-      deviceController.enableWebAudio(false);
+      enableWebAudio(false);
       const stream = new MediaStream();
       const node = deviceController.mixIntoAudioInput(stream);
       expect(node).to.equal(null);
@@ -937,7 +1277,7 @@ describe('DefaultDeviceController', () => {
       stream.addTrack(track);
 
       domMockBehavior.createElementCaptureStream = stream;
-      const device: Device = DefaultDeviceController.createEmptyVideoDevice();
+      const device: VideoInputDevice = DefaultDeviceController.createEmptyVideoDevice();
       expect(device).to.equal(stream);
       await new Promise(resolve => new TimeoutScheduler(1500).start(resolve));
 
@@ -951,7 +1291,7 @@ describe('DefaultDeviceController', () => {
       stream.addTrack(track);
 
       domMockBehavior.createElementCaptureStream = stream;
-      const device: Device = DefaultDeviceController.synthesizeVideoDevice('smpte');
+      const device: VideoInputDevice = DefaultDeviceController.synthesizeVideoDevice('smpte');
       await new Promise(resolve => new TimeoutScheduler(1500).start(resolve));
       expect(device).to.equal(stream);
 
@@ -961,7 +1301,7 @@ describe('DefaultDeviceController', () => {
 
     it('cannot create an empty video device if the stream is not available in the canvas', () => {
       domMockBehavior.createElementCaptureStream = undefined;
-      const device: Device = DefaultDeviceController.synthesizeVideoDevice('smpte');
+      const device: VideoInputDevice = DefaultDeviceController.synthesizeVideoDevice('smpte');
       expect(device).to.equal(null);
     });
 

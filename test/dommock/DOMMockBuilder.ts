@@ -8,7 +8,7 @@ import SafariSDPMock from '../sdp/SafariSDPMock';
 import DisplayMediaState from './DisplayMediaState';
 import DOMMockBehavior from './DOMMockBehavior';
 import NotAllowedError from './NotAllowedError';
-import Overconstrainerd from './OverconstrainedError';
+import OverconstrainedError from './OverconstrainedError';
 import UserMediaState from './UserMediaState';
 
 // eslint-disable-next-line
@@ -364,7 +364,7 @@ export default class DOMMockBuilder {
               mockBehavior.getUserMediaResult &&
               mockBehavior.getUserMediaResult === UserMediaState.OverConstrained
             ) {
-              reject(new Overconstrainerd('Resolution not supported'));
+              reject(new OverconstrainedError('Resolution not supported', 'testconstraint'));
             } else if (
               mockBehavior.getUserMediaResult &&
               mockBehavior.getUserMediaResult === UserMediaState.PermissionDenied

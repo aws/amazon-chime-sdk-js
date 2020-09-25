@@ -54,11 +54,8 @@ describe('DefaultAudioVideoFacade', () => {
     contentShareDidStop(): void {}
   }
 
-  beforeEach(() => {
-    domMockBuilder = new DOMMockBuilder();
-    controller = new NoOpAudioVideoController();
-    deviceController = new NoOpDeviceController();
-    contentShareController = new NoOpContentShareController();
+  function enableWebAudio(enabled = true): void {
+    deviceController = new NoOpDeviceController({ enableWebAudio: enabled });
     facade = new DefaultAudioVideoFacade(
       controller,
       controller.videoTileController,
@@ -67,6 +64,13 @@ describe('DefaultAudioVideoFacade', () => {
       deviceController,
       contentShareController
     );
+  }
+
+  beforeEach(() => {
+    domMockBuilder = new DOMMockBuilder();
+    controller = new NoOpAudioVideoController();
+    contentShareController = new NoOpContentShareController();
+    enableWebAudio(false);
   });
 
   afterEach(() => {
@@ -532,17 +536,10 @@ describe('DefaultAudioVideoFacade', () => {
     });
 
     it('will call mixIntoAudioInput if WebAudio feature is enabled', () => {
-      facade.enableWebAudio(true);
+      enableWebAudio(true);
       const spy = sinon.spy(deviceController, 'mixIntoAudioInput');
       const arg1 = new MediaStream();
       facade.mixIntoAudioInput(arg1);
-      assert(spy.calledOnceWith(arg1));
-    });
-
-    it('will call enableWebAudio', () => {
-      const spy = sinon.spy(deviceController, 'enableWebAudio');
-      const arg1 = false;
-      facade.enableWebAudio(arg1);
       assert(spy.calledOnceWith(arg1));
     });
 
