@@ -40,6 +40,7 @@ export default class DefaultSignalingClient implements SignalingClient {
   private isClosing: boolean;
   private connectionRequestQueue: SignalingClientConnectionRequest[];
   private unloadHandler: () => void | null = null;
+  private audioSessionId: number = Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER);
 
   constructor(private webSocket: WebSocketAdapter, private logger: Logger) {
     this.observerQueue = new Set<SignalingClientObserver>();
@@ -91,6 +92,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       clientSource: Versioning.sdkName,
       chimeSdkVersion: Versioning.sdkVersion,
     });
+    joinFrame.audioSessionId = this.audioSessionId;
 
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
