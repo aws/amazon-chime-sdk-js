@@ -1,5 +1,5 @@
 const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, GetSipUriForCallStep} = require('./steps');
-const {UserJoinedMeetingCheck, UserAuthenticationCheck, RemoteAudioCheck, RosterCheck} = require('./checks');
+const {UserJoinedMeetingCheck, UserAuthenticationCheck, RemoteAudioCheck, RosterCheck, RosterCheckConfig} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
@@ -34,7 +34,7 @@ class SipCallTest extends SdkBaseTest {
     const sipCallClient = new SipCallClient(this.payload.sipTestAssetPath, this.payload.resultPath);
     const sipCall = sipCallClient.call(this.payload.voiceConnectorId, this.sipUri);
 
-    await test_window.runCommands(async () => await await RosterCheck.executeStep(this, session, 2));
+    await test_window.runCommands(async () => await await RosterCheck.executeStep(this, session, 2, new RosterCheckConfig(60, 500)));
     await test_window.runCommands(async () => await RemoteAudioCheck.executeStep(this, session, 'AUDIO_ON'));
 
     sipCallClient.end(sipCall);
