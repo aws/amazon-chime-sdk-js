@@ -1,5 +1,6 @@
 const {By, Key} = require('selenium-webdriver');
 const {TestUtils} = require('kite-common');
+const {performance} = require('perf_hooks');
 
 const elements = {
   meetingIdInput: By.id('inputMeeting'),
@@ -279,20 +280,24 @@ class AppPage {
     return await this.driver.findElement(elements.failedMeetingFlow).isDisplayed();
   }
 
-  async rosterCheck(numberOfParticipants) {
+  async rosterCheck(numberOfParticipants, checkCount = 10, waitTimeMs = 100) {
     let i = 0;
-    let timeout = 10;
-    while (i < timeout) {
+    let start = performance.now();
+    while (i < checkCount) {
       try {
         const participantCountOnRoster = await this.getNumberOfParticipantsOnRoster();
         if (participantCountOnRoster === numberOfParticipants) {
+          let end = performance.now();
+          console.log("Roster check completed successfully in : %i secs", (end - start)/1000);
           return true;
         }
       } catch (err) {
       }
-      await TestUtils.waitAround(10);
+      await TestUtils.waitAround(waitTimeMs);
       i++;
     }
+    let end = performance.now();
+    console.log("Roster check failed in : %i secs", (end - start)/1000);
     return false;
   }
 
