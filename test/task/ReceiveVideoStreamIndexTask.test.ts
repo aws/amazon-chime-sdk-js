@@ -16,16 +16,22 @@ import {
   SdkIndexFrame,
   SdkSignalFrame,
   SdkStreamDescriptor,
+  SdkStreamMediaType,
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import ReceiveVideoStreamIndexTask from '../../src/task/ReceiveVideoStreamIndexTask';
 import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
+import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
+import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
+import VideoSource from '../../src/videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
+import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
+import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -72,6 +78,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
     streamDescriptor.attendeeId = attendeeId;
     streamDescriptor.groupId = groupId;
     streamDescriptor.streamId = streamId;
+    streamDescriptor.mediaType = SdkStreamMediaType.VIDEO;
     streamDescriptor.maxBitrateKbps = maxBitrateKbps;
     streamDescriptor.avgBitrateBps = avgBitrateBps;
     return streamDescriptor;
@@ -442,6 +449,213 @@ describe('ReceiveVideoStreamIndexTask', () => {
       });
 
       task.run();
+    });
+  });
+
+  describe('observer on remote sending videos change', () => {
+    const compare = (videoSourceA: VideoSource, videoSourceB: VideoSource): number =>
+      videoSourceA.attendee.attendeeId.localeCompare(videoSourceB.attendee.attendeeId);
+
+    describe('NScaleVideoUplinkBandwidthPolicy (uplink) and AllHighestVideoBandwidthPolicy (downlink)', () => {
+      it('deep compare received video sources', done => {
+        const selfAttendeeId = 'attendee-1';
+        context.audioVideoController.configuration.credentials.attendeeId = selfAttendeeId;
+        context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId);
+        context.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(selfAttendeeId);
+        let calledTimes = 0;
+        class TestObserver implements AudioVideoObserver {
+          remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
+            calledTimes += 1;
+            expect([...videoSources].sort(compare)).to.deep.equal(
+              [
+                { attendee: { attendeeId: 'attendee-2', externalUserId: '' } },
+                { attendee: { attendeeId: 'attendee-3', externalUserId: '' } },
+              ].sort(compare)
+            );
+          }
+        }
+        context.audioVideoController.addObserver(new TestObserver());
+        const streamDescriptor1 = createStreamDescriptor('attendee-1', 1, 1, 48, 24000);
+        const streamDescriptor2 = createStreamDescriptor('attendee-2', 2, 2, 48, 24000);
+        const streamDescriptor3 = createStreamDescriptor('attendee-3', 3, 3, 48, 24000);
+        const indexSignalBuffer = createIndexSignalBuffer(false, null, [
+          streamDescriptor1,
+          streamDescriptor2,
+          streamDescriptor3,
+        ]);
+        new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+          webSocketAdapter.send(indexSignalBuffer);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          expect(calledTimes).to.equal(1);
+          done();
+        });
+        task.run();
+      });
+
+      it('remoteVideoSourcesDidChange call count check', done => {
+        const selfAttendeeId = 'attendee-1';
+        context.audioVideoController.configuration.credentials.attendeeId = selfAttendeeId;
+        context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId);
+        context.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(selfAttendeeId);
+        let calledTimes = 0;
+        class TestObserver implements AudioVideoObserver {
+          remoteVideoSourcesDidChange(_videoSources: VideoSource[]): void {
+            calledTimes += 1;
+          }
+        }
+        context.audioVideoController.addObserver(new TestObserver());
+        const streamDescriptor1 = createStreamDescriptor('attendee-1', 1, 1, 48, 24000);
+        const streamDescriptor2 = createStreamDescriptor('attendee-2', 2, 2, 48, 24000);
+        const streamDescriptor3 = createStreamDescriptor('attendee-3', 3, 3, 48, 24000);
+        const streamDescriptor4 = createStreamDescriptor('attendee-4', 4, 4, 48, 24000);
+
+        const indexSignalBuffer1 = createIndexSignalBuffer(false, null, [
+          streamDescriptor1,
+          streamDescriptor2,
+          streamDescriptor3,
+        ]);
+        const indexSignalBuffer2 = createIndexSignalBuffer(false, null, [
+          streamDescriptor1,
+          streamDescriptor2,
+          streamDescriptor4,
+        ]);
+        const indexSignalBuffer3 = createIndexSignalBuffer(false, null, [
+          streamDescriptor1,
+          streamDescriptor2,
+          streamDescriptor3,
+          streamDescriptor4,
+        ]);
+        new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+          webSocketAdapter.send(indexSignalBuffer1);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          webSocketAdapter.send(indexSignalBuffer2);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          webSocketAdapter.send(indexSignalBuffer2);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          webSocketAdapter.send(indexSignalBuffer3);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          expect(calledTimes).to.equal(3);
+          done();
+        });
+        task.run();
+      });
+    });
+
+    describe('SimulcastUplinkPolicy (uplink) and VideoAdaptiveProbePolicy (downlink)', () => {
+      it('deep compare received video sources', done => {
+        const selfAttendeeId = 'attendee-1';
+        context.audioVideoController.configuration.credentials.attendeeId = selfAttendeeId;
+        context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+          selfAttendeeId,
+          logger
+        );
+        context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
+          logger,
+          context.videoTileController
+        );
+        let calledTimes = 0;
+        class TestObserver implements AudioVideoObserver {
+          remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
+            calledTimes += 1;
+            expect([...videoSources].sort(compare)).to.deep.equal(
+              [
+                { attendee: { attendeeId: 'attendee-2', externalUserId: '' } },
+                { attendee: { attendeeId: 'attendee-3', externalUserId: '' } },
+              ].sort(compare)
+            );
+          }
+        }
+        context.audioVideoController.addObserver(new TestObserver());
+        const streamDescriptor1 = createStreamDescriptor('attendee-1', 1, 1, 48, 24000);
+        const streamDescriptor2 = createStreamDescriptor('attendee-2', 2, 2, 48, 24000);
+        const streamDescriptor3 = createStreamDescriptor('attendee-3', 3, 3, 48, 24000);
+        const indexSignalBuffer = createIndexSignalBuffer(false, null, [
+          streamDescriptor1,
+          streamDescriptor2,
+          streamDescriptor3,
+        ]);
+        new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+          webSocketAdapter.send(indexSignalBuffer);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          expect(calledTimes).to.equal(1);
+          done();
+        });
+        task.run();
+      });
+
+      it('remoteVideoSourcesDidChange call count check', done => {
+        const selfAttendeeId = 'attendee-1';
+        context.audioVideoController.configuration.credentials.attendeeId = selfAttendeeId;
+        context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+          selfAttendeeId,
+          logger
+        );
+        context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
+          logger,
+          context.videoTileController
+        );
+        let calledTimes = 0;
+        class TestObserver implements AudioVideoObserver {
+          remoteVideoSourcesDidChange(_videoSources: VideoSource[]): void {
+            calledTimes += 1;
+          }
+        }
+        context.audioVideoController.addObserver(new TestObserver());
+        const streamDescriptor1 = createStreamDescriptor('attendee-1', 1, 1, 48, 24000);
+        const streamDescriptor2 = createStreamDescriptor('attendee-2', 2, 2, 48, 24000);
+        const streamDescriptor3 = createStreamDescriptor('attendee-3', 3, 3, 48, 24000);
+        const streamDescriptor4 = createStreamDescriptor('attendee-4', 4, 4, 48, 24000);
+
+        const indexSignalBuffer1 = createIndexSignalBuffer(false, null, [
+          streamDescriptor1,
+          streamDescriptor2,
+          streamDescriptor3,
+        ]);
+        const indexSignalBuffer2 = createIndexSignalBuffer(false, null, [
+          streamDescriptor1,
+          streamDescriptor2,
+          streamDescriptor4,
+        ]);
+        const indexSignalBuffer3 = createIndexSignalBuffer(false, null, [
+          streamDescriptor1,
+          streamDescriptor2,
+          streamDescriptor3,
+          streamDescriptor4,
+        ]);
+        new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+          webSocketAdapter.send(indexSignalBuffer1);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          webSocketAdapter.send(indexSignalBuffer2);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          webSocketAdapter.send(indexSignalBuffer2);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          webSocketAdapter.send(indexSignalBuffer3);
+          await new Promise(resolve =>
+            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
+          );
+          expect(calledTimes).to.equal(3);
+          done();
+        });
+        task.run();
+      });
     });
   });
 });

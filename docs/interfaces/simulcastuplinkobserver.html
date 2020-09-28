@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ActiveStreams | amazon-chime-sdk-js</title>
+	<title>SimulcastUplinkObserver | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,62 +56,73 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="activestreams.html">ActiveStreams</a>
+					<a href="simulcastuplinkobserver.html">SimulcastUplinkObserver</a>
 				</li>
 			</ul>
-			<h1>Enumeration ActiveStreams</h1>
+			<h1>Interface SimulcastUplinkObserver</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">SimulcastUplinkObserver</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implemented by</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../classes/defaultaudiovideocontroller.html" class="tsd-signature-type">DefaultAudioVideoController</a></li>
+					<li><a href="../classes/noopaudiovideocontroller.html" class="tsd-signature-type">NoOpAudioVideoController</a></li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Enumeration members</h3>
+							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="activestreams.html#khiandlow" class="tsd-kind-icon">k<wbr>HiAnd<wbr>Low</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="activestreams.html#klow" class="tsd-kind-icon">k<wbr>Low</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="activestreams.html#kmidandlow" class="tsd-kind-icon">k<wbr>Mid<wbr>And<wbr>Low</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="simulcastuplinkobserver.html#encodingsimulcastlayersdidchange" class="tsd-kind-icon">encoding<wbr>Simulcast<wbr>Layers<wbr>Did<wbr>Change</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Enumeration members</h2>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="khiandlow" class="tsd-anchor"></a>
-					<h3>k<wbr>HiAnd<wbr>Low</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>HiAnd<wbr>Low<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy.ts#L18">src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy.ts:18</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="klow" class="tsd-anchor"></a>
-					<h3>k<wbr>Low</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>Low<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy.ts#L20">src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy.ts:20</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="kmidandlow" class="tsd-anchor"></a>
-					<h3>k<wbr>Mid<wbr>And<wbr>Low</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>Mid<wbr>And<wbr>Low<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy.ts#L19">src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy.ts:19</a></li>
-						</ul>
-					</aside>
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="encodingsimulcastlayersdidchange" class="tsd-anchor"></a>
+					<h3>encoding<wbr>Simulcast<wbr>Layers<wbr>Did<wbr>Change</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">encoding<wbr>Simulcast<wbr>Layers<wbr>Did<wbr>Change<span class="tsd-signature-symbol">(</span>simulcastLayers<span class="tsd-signature-symbol">: </span><a href="../enums/simulcastlayers.html" class="tsd-signature-type">SimulcastLayers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/SimulcastUplinkObserver.ts#L10">src/videouplinkbandwidthpolicy/SimulcastUplinkObserver.ts:10</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when simulcast is enabled and simulcast uplink encoding layers get changed.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>simulcastLayers: <a href="../enums/simulcastlayers.html" class="tsd-signature-type">SimulcastLayers</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -127,17 +138,11 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-enum">
-						<a href="activestreams.html" class="tsd-kind-icon">Active<wbr>Streams</a>
+					<li class="current tsd-kind-interface">
+						<a href="simulcastuplinkobserver.html" class="tsd-kind-icon">Simulcast<wbr>Uplink<wbr>Observer</a>
 						<ul>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="activestreams.html#khiandlow" class="tsd-kind-icon">k<wbr>HiAnd<wbr>Low</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="activestreams.html#klow" class="tsd-kind-icon">k<wbr>Low</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="activestreams.html#kmidandlow" class="tsd-kind-icon">k<wbr>Mid<wbr>And<wbr>Low</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="simulcastuplinkobserver.html#encodingsimulcastlayersdidchange" class="tsd-kind-icon">encoding<wbr>Simulcast<wbr>Layers<wbr>Did<wbr>Change</a>
 							</li>
 						</ul>
 					</li>

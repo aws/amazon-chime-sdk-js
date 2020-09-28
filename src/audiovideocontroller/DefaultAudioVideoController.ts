@@ -29,6 +29,7 @@ import SessionStateControllerState from '../sessionstatecontroller/SessionStateC
 import SessionStateControllerTransitionResult from '../sessionstatecontroller/SessionStateControllerTransitionResult';
 import DefaultSignalingClient from '../signalingclient/DefaultSignalingClient';
 import { SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
+import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
 import DefaultStatsCollector from '../statscollector/DefaultStatsCollector';
 import AttachMediaInputTask from '../task/AttachMediaInputTask';
 import CleanRestartedSessionTask from '../task/CleanRestartedSessionTask';
@@ -58,19 +59,22 @@ import SimulcastTransceiverController from '../transceivercontroller/SimulcastTr
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
+import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../videotilecontroller/DefaultVideoTileController';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory';
+import DefaultSimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
-import SimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
+import SimulcastUplinkObserver from '../videouplinkbandwidthpolicy/SimulcastUplinkObserver';
 import DefaultVolumeIndicatorAdapter from '../volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
 
-export default class DefaultAudioVideoController implements AudioVideoController {
+export default class DefaultAudioVideoController
+  implements AudioVideoController, SimulcastUplinkObserver {
   private _logger: Logger;
   private _configuration: MeetingSessionConfiguration;
   private _webSocketAdapter: WebSocketAdapter;
@@ -237,10 +241,12 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
     if (this.enableSimulcast) {
-      this.meetingSessionContext.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy(
+      const simulcastPolicy = new DefaultSimulcastUplinkPolicy(
         this.configuration.credentials.attendeeId,
         this.meetingSessionContext.logger
       );
+      simulcastPolicy.addObserver(this);
+      this.meetingSessionContext.videoUplinkBandwidthPolicy = simulcastPolicy;
       this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
         this.logger,
         this.meetingSessionContext.videoTileController
@@ -738,5 +744,23 @@ export default class DefaultAudioVideoController implements AudioVideoController
     if (!!this.meetingSessionContext && this.meetingSessionContext.signalingClient) {
       this.meetingSessionContext.signalingClient.resume([streamId]);
     }
+  }
+
+  getRemoteVideoSources(): VideoSource[] {
+    const { videoStreamIndex } = this.meetingSessionContext;
+    if (!videoStreamIndex) {
+      this.logger.info('meeting has not started');
+      return [];
+    }
+    const selfAttendeeId = this.configuration.credentials.attendeeId;
+    return videoStreamIndex.allVideoSendingSourcesExcludingSelf(selfAttendeeId);
+  }
+
+  encodingSimulcastLayersDidChange(simulcastLayers: SimulcastLayers): void {
+    this.forEachObserver(observer => {
+      Maybe.of(observer.encodingSimulcastLayersDidChange).map(f =>
+        f.bind(observer)(simulcastLayers)
+      );
+    });
   }
 }

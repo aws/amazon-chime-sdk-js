@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import { TimeoutScheduler } from '../../src';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import {
@@ -15,12 +16,19 @@ import {
   SdkSubscribeAckFrame,
   SdkTrackMapping,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from '../../src/transceivercontroller/SimulcastTransceiverController';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
+import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
+import SimulcastUplinkObserver from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkObserver';
 import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import VideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 
-describe('SimulcastUplinkPolicy', () => {
+const delay = async (timeoutMs: number = 100): Promise<void> => {
+  await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
+};
+
+describe('DefaultSimulcastUplinkPolicy', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
   const logger = new NoOpLogger(LogLevel.DEBUG);
@@ -72,7 +80,7 @@ describe('SimulcastUplinkPolicy', () => {
     startTime = Date.now();
     originalDateNow = Date.now;
     Date.now = mockDateNow;
-    policy = new SimulcastUplinkPolicy(selfAttendeeId, logger);
+    policy = new DefaultSimulcastUplinkPolicy(selfAttendeeId, logger);
   });
 
   afterEach(() => {
@@ -87,7 +95,7 @@ describe('SimulcastUplinkPolicy', () => {
     it('initializes default uplink parameter', () => {
       const constraint = policy.chooseMediaTrackConstraints();
       expect(JSON.stringify(constraint.frameRate)).to.equal(
-        JSON.stringify({ ideal: SimulcastUplinkPolicy.defaultMaxFrameRate })
+        JSON.stringify({ ideal: DefaultSimulcastUplinkPolicy.defaultMaxFrameRate })
       );
       expect(JSON.stringify(constraint.width)).to.equal(JSON.stringify({ ideal: 1280 }));
       expect(JSON.stringify(constraint.height)).to.equal(JSON.stringify({ ideal: 768 }));
@@ -434,6 +442,82 @@ describe('SimulcastUplinkPolicy', () => {
   describe('chooseCaptureAndEncodeParameters', () => {
     it('is no-op', () => {
       policy.chooseCaptureAndEncodeParameters();
+    });
+  });
+
+  describe('SimulcastUplinkObserver', () => {
+    it('observer should get called only when added', async () => {
+      let event = 0;
+      let called = 0;
+      class TestObserver implements SimulcastUplinkObserver {
+        encodingSimulcastLayersDidChange(_simulcastLayer: SimulcastLayers): void {
+          if (event !== 1 && event !== 3 && event !== 5) {
+            assert.fail();
+          }
+          called += 1;
+        }
+      }
+      const observer = new TestObserver();
+      await delay();
+      (policy as SimulcastUplinkPolicy).addObserver(observer);
+      event += 1;
+      (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
+        observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
+      });
+      await delay();
+      (policy as SimulcastUplinkPolicy).removeObserver(observer);
+      event += 1;
+      (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
+        observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
+      });
+      await delay();
+      (policy as SimulcastUplinkPolicy).addObserver(observer);
+      event += 1;
+      (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
+        observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
+      });
+      await delay();
+      event += 1;
+      (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
+        observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
+      });
+      (policy as SimulcastUplinkPolicy).removeObserver(observer);
+      await delay();
+      (policy as SimulcastUplinkPolicy).addObserver(observer);
+      event += 1;
+      (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
+        observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
+      });
+      await delay();
+      expect(event).to.equal(5);
+      expect(called).to.equal(3);
+    });
+
+    it('observer should get called only when simulcast encoding layers change', async () => {
+      let called = 0;
+      class TestObserver implements SimulcastUplinkObserver {
+        encodingSimulcastLayersDidChange(_simulcastLayer: SimulcastLayers): void {
+          called += 1;
+        }
+      }
+      const observer = new TestObserver();
+      await delay();
+      (policy as SimulcastUplinkPolicy).addObserver(observer);
+      policy.chooseEncodingParameters();
+      await delay();
+      const index = new SimulcastVideoStreamIndex(logger);
+      let encodingParams = policy.chooseEncodingParameters();
+      await delay();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      updateIndexFrame(index, 1);
+      policy.updateIndex(index);
+      encodingParams = policy.chooseEncodingParameters();
+      index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
+      updateIndexFrame(index, 8);
+      policy.updateIndex(index);
+      encodingParams = policy.chooseEncodingParameters();
+      await delay();
+      expect(called).to.equal(2);
     });
   });
 });

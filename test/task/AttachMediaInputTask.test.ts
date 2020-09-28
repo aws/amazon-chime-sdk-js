@@ -15,8 +15,8 @@ import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
-import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -178,7 +178,10 @@ describe('AttachMediaInputTask', () => {
   describe('Simulcast', () => {
     it('could change transceiver encoding parameter', done => {
       context.enableSimulcast = true;
-      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('self-attendee', logger);
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+        'self-attendee',
+        logger
+      );
       // @ts-ignore
       navigator.userAgent = 'Chrome/77.0.3865.75';
       context.browserBehavior = new DefaultBrowserBehavior({

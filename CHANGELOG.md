@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add extended debugging for saucelab sessions
 - Add data message throttle limits to documentation
 - Add audioSessionId to join frame to always drop when reconnecting
+- Add simulcast uplink policy layer change notification methods and observers
+- Add observer and method to get remote video sources
 
 ### Changed
 - Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests

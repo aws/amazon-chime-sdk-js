@@ -9,6 +9,7 @@ import {
   SdkStreamMediaType,
   SdkSubscribeAckFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
+import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoStreamDescription from './VideoStreamDescription';
@@ -116,22 +117,23 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     return set;
   }
 
-  allVideoSendingAttendeesExcludingSelf(selfAttendeeId: string): Set<string> {
-    const attendees = new Set<string>();
+  allVideoSendingSourcesExcludingSelf(selfAttendeeId: string): VideoSource[] {
+    const videoSources: VideoSource[] = [];
+    const attendeeSet = new Set<string>();
     if (this.currentIndex) {
-      if (this.currentIndex.sources.length) {
+      if (this.currentIndex.sources && this.currentIndex.sources.length) {
         for (const stream of this.currentIndex.sources) {
-          if (
-            stream.attendeeId !== selfAttendeeId &&
-            stream.mediaType === SdkStreamMediaType.VIDEO
-          ) {
-            attendees.add(stream.attendeeId);
+          const { attendeeId, externalUserId, mediaType } = stream;
+          if (attendeeId !== selfAttendeeId && mediaType === SdkStreamMediaType.VIDEO) {
+            if (!attendeeSet.has(attendeeId)) {
+              videoSources.push({ attendee: { attendeeId, externalUserId } });
+              attendeeSet.add(attendeeId);
+            }
           }
         }
       }
     }
-
-    return attendees;
+    return videoSources;
   }
 
   streamSelectionUnderBandwidthConstraint(

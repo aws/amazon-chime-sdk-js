@@ -6,6 +6,8 @@ import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoS
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
+import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
+import VideoSource from '../videosource/VideoSource';
 import VideoTileState from '../videotile/VideoTileState';
 
 export default interface AudioVideoObserver {
@@ -70,7 +72,7 @@ export default interface AudioVideoObserver {
   ): void;
 
   /**
-   * Called when one or more remote video streams do not meet expected average bitrate
+   * Called when one or more remote video streams do not meet expected average bitrate.
    */
   videoNotReceivingEnoughData?(receivingDataMap: ClientVideoStreamReceivingReport[]): void;
 
@@ -107,4 +109,14 @@ export default interface AudioVideoObserver {
    * trigger a message to the user about the situation.
    */
   videoSendDidBecomeUnavailable?(): void;
+
+  /**
+   * Called when the remote video sending sources get changed.
+   */
+  remoteVideoSourcesDidChange?(videoSources: VideoSource[]): void;
+
+  /**
+   * Called when simulcast is enabled and simulcast uplink encoding layers get changed.
+   */
+  encodingSimulcastLayersDidChange?(simulcastLayers: SimulcastLayers): void;
 }

@@ -590,5 +590,11 @@ describe('DefaultAudioVideoFacade', () => {
       facade.removeContentShareObserver(observer);
       expect(spy.withArgs(observer).calledOnce).to.be.true;
     });
+
+    it('will call getRemoteVideoSources', () => {
+      const spy = sinon.spy(controller, 'getRemoteVideoSources');
+      facade.getRemoteVideoSources();
+      assert(spy.calledOnceWith());
+    });
   });
 });
