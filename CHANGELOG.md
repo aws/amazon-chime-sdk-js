@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Revert the "Create log stream before logging begins" commit
 - Revert "Fix unbinding video tile bug" commit
+- Revert "Fix issue with removeLocalVideoTile not removing video tile for remote attendees" commit
 
 ### Fixed
 - Fix Maven installation script
