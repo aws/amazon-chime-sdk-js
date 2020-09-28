@@ -38,12 +38,11 @@ import {
 class DemoTileOrganizer {
   // this is index instead of length
   static MAX_TILES = 17;
-  static LOCAL_VIDEO_INDEX = 16;
   public tiles: { [id: number]: number } = {};
   public tileStates: {[id: number]: boolean } = {};
   public remoteTileCount = 0;
 
-  acquireTileIndex(tileId: number, isLocalTile: boolean): number {
+  acquireTileIndex(tileId: number): number {
     for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
       if (this.tiles[index] === tileId) {
         return index;
@@ -51,10 +50,6 @@ class DemoTileOrganizer {
     }
     for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
       if (!(index in this.tiles)) {
-        if (isLocalTile) {
-          this.tiles[DemoTileOrganizer.LOCAL_VIDEO_INDEX] = tileId;
-          return DemoTileOrganizer.LOCAL_VIDEO_INDEX;
-        }
         this.tiles[index] = tileId;
         this.remoteTileCount++;
         return index;
@@ -418,7 +413,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
-          this.hideTile(DemoTileOrganizer.LOCAL_VIDEO_INDEX);
+          this.hideTile(DemoTileOrganizer.MAX_TILES);
         }
       });
     });
@@ -1389,7 +1384,9 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     if (!tileState.boundAttendeeId) {
       return;
     }
-    const tileIndex = this.tileOrganizer.acquireTileIndex(tileState.tileId, tileState.localTile);
+    const tileIndex = tileState.localTile
+      ? 16
+      : this.tileOrganizer.acquireTileIndex(tileState.tileId);
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
