@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+
+base = File.read('.base-branch').strip
+commits = `git rev-list #{base}..`.strip.split("\n")
+
+if commits.size == 1
+  commit = commits[0]
+elsif commits.size == 2
+  commit = commits[1]
+end
+
+commit_files = `git diff-tree --no-commit-id --name-only -r #{commit}`.strip.split("\n")
+
+if commit_files.include?('src/versioning/Versioning.ts') and
+  commit_files.include?('package.json') and
+  commit_files.include?('package-lock.json')
+  puts "OK: branch contains version update"
+else
+  STDERR.puts "Error: Does not contain version update in the commit #{commit}"
+  exit 1
+end
