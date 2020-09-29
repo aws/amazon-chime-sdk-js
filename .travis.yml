@@ -17,7 +17,9 @@ jobs:
     #Build and unit tests
     - stage: build
       if: type = pull_request
-      script: npm run build:release
+      script:
+        - script/travis-pr-check || travis_terminate 1;
+        - npm run build:release
       addons: skip
     #Integration tests
     - stage: integ_group_1
