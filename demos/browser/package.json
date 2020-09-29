@@ -12,6 +12,7 @@
   "devDependencies": {
     "@types/jquery": "^3.5.1",
     "autoprefixer": "^9.6.4",
+    "awesome-typescript-loader": "^5.2.1",
     "css-loader": "^4.3.0",
     "file-loader": "^6.1.0",
     "html-webpack-inline-source-plugin": "^0.0.10",
@@ -32,7 +33,7 @@
   },
   "dependencies": {
     "amazon-chime-sdk-js": "file:../..",
-    "aws-sdk": "^2.760.0",
+    "aws-sdk": "^2.762.0",
     "bootstrap": "^4.5.2",
     "compression": "^1.7.4",
     "jquery": "^3.5.1",
