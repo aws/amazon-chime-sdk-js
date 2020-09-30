@@ -25,6 +25,33 @@ describe('AllHighestVideoBandwidthPolicy', () => {
     policy = new AllHighestVideoBandwidthPolicy(selfAttendeeId);
   });
 
+  describe('reset', () => {
+    it('can be reset', () => {
+      const index = new DefaultVideoStreamIndex(logger);
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 3,
+              groupId: 3,
+              maxBitrateKbps: 400,
+              attendeeId: 'xy2',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      policy.updateIndex(index);
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([3]);
+      policy.reset();
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([]);
+    });
+  });
+
   describe('wantsResubscribe', () => {
     it('returns false if policy is just initialized', () => {
       expect(policy.wantsResubscribe()).to.equal(false);

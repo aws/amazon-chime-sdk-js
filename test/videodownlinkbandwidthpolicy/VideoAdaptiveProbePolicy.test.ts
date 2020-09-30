@@ -95,6 +95,18 @@ describe('VideoAdaptiveProbePolicy', () => {
     });
   });
 
+  describe('reset', () => {
+    it('can be reset', () => {
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1, 3, 11, 22]);
+      policy.reset();
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([]);
+    });
+  });
+
   describe('updateIndex', () => {
     it('can update VideoStreamIndex', () => {
       videoStreamIndex = new SimulcastVideoStreamIndex(logger);

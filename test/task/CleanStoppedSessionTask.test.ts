@@ -22,6 +22,7 @@ import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollecto
 import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
+import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoTile from '../../src/videotile/VideoTile';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
@@ -82,6 +83,7 @@ describe('CleanStoppedSessionTask', () => {
       context.logger,
       browserBehavior
     );
+    context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
     context.videoTileController = new DefaultVideoTileController(
       new DefaultVideoTileFactory(),
       context.audioVideoController,

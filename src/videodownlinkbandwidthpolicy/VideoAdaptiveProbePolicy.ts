@@ -68,6 +68,10 @@ export default class VideoAdaptiveProbePolicy implements VideoDownlinkBandwidthP
   private timeLastProbe: number;
 
   constructor(private logger: Logger, private tileController: VideoTileController) {
+    this.reset();
+  }
+
+  reset(): void {
     this.optimalReceiveSet = new DefaultVideoStreamIdSet();
     this.subscribedReceiveSet = new DefaultVideoStreamIdSet();
     this.logCount = 0;
