@@ -384,6 +384,10 @@ svg {
   display: none;
 }
 
+.hidden {
+  display: none;
+}
+
 .progress-hidden {
   visibility: hidden;
 }
@@ -832,4 +836,8 @@ a.markdown:active {
 
 .video-tile.active:hover .video-tile-attendeeid {
   display: block;
+}
+
+.vf-active::before {
+  content: "✓ "
 }
