@@ -7,8 +7,6 @@ import 'bootstrap';
 import {
   AsyncScheduler,
   AudioInputDevice,
-  AudioNodeSubgraph,
-  AudioTransformDevice,
   AudioVideoFacade,
   AudioVideoObserver,
   ClientMetricReport,
@@ -41,33 +39,12 @@ import {
   VideoInputDevice,
   VideoSource,
   VideoTileState,
+  VoiceFocusDeviceTransformer,
+  VoiceFocusPaths,
+  VoiceFocusTransformDevice,
+  isAudioTransformDevice,
 } from '../../../../src/index';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
-
-class DelayTransformDevice implements AudioTransformDevice {
-  constructor(private inner: Device, private delaySeconds: number) {}
-
-  async intrinsicDevice(): Promise<Device> {
-    console.log('[DEMO] Returning inner device', this.inner);
-    return this.inner;
-  }
-
-  async mute(muted: boolean): Promise<void> {
-    console.info('[DEMO] Changing to mute state', muted);
-  }
-
-  async stop(): Promise<void> {
-    console.info('[DEMO] Stop called');
-  }
-
-  async createAudioNode(context: AudioContext): Promise<AudioNodeSubgraph> {
-    console.log('[DEMO] Creating audio node for context', context);
-    const node = context.createDelay(this.delaySeconds);
-    node.delayTime.value = this.delaySeconds;
-    console.log('[DEMO] Created audio node', node);
-    return { start: node, end: node };
-  }
-}
 
 class DemoTileOrganizer {
   // this is index instead of length
@@ -103,6 +80,27 @@ class DemoTileOrganizer {
     return DemoTileOrganizer.MAX_TILES;
   }
 }
+
+// Support a set of query parameters to allow for testing pre-release versions of
+// Amazon Voice Focus. If none of these parameters are supplied, the SDK default
+// values will be used.
+const search = new URLSearchParams(document.location.search);
+const VOICE_FOCUS_CDN = search.get('voiceFocusCDN') || undefined;
+const VOICE_FOCUS_ASSET_GROUP = search.get('voiceFocusAssetGroup') || undefined;
+const VOICE_FOCUS_REVISION_ID = search.get('voiceFocusRevisionID') || undefined;
+
+const VOICE_FOCUS_PATHS: VoiceFocusPaths | undefined = VOICE_FOCUS_CDN && {
+  processors: `${VOICE_FOCUS_CDN}processors/`,
+  wasm: `${VOICE_FOCUS_CDN}wasm/`,
+  workers: `${VOICE_FOCUS_CDN}workers/`,
+  models: `${VOICE_FOCUS_CDN}wasm/`,
+};
+
+const VOICE_FOCUS_SPEC = {
+  assetGroup: VOICE_FOCUS_ASSET_GROUP,
+  revisionID: VOICE_FOCUS_REVISION_ID,
+  paths: VOICE_FOCUS_PATHS,
+};
 
 class TestSound {
   constructor(
@@ -155,7 +153,7 @@ const SimulcastLayerMapping = {
 
 interface Toggle {
   name: string,
-  checked: () => boolean,
+  oncreate: (elem: HTMLElement) => void,
   action: () => void,
 }
 
@@ -211,13 +209,24 @@ export class DemoMeetingApp implements
   enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
 
+  supportsVoiceFocus = false;
+  enableVoiceFocus = false;
+  voiceFocusIsActive = false;
+
   markdown = require('markdown-it')({linkify: true});
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   meetingEventPOSTLogger: MeetingSessionPOSTLogger;
 
   hasChromiumWebRTC: boolean = this.defaultBrowserBehaviour.hasChromiumWebRTC();
+
   statsCollector: WebRTCStatsCollector = new WebRTCStatsCollector();
+  voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
+  voiceFocusDevice: VoiceFocusTransformDevice | undefined;
+
+  // This is an extremely minimal reactive programming approach: these elements
+  // will be updated when the Amazon Voice Focus display state changes.
+  voiceFocusDisplayables: HTMLElement[] = [];
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -250,6 +259,40 @@ export class DemoMeetingApp implements
     } else {
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
     }
+  }
+
+  async initVoiceFocus(): Promise<void> {
+    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    if (!this.enableWebAudio) {
+      logger.info('[DEMO] Web Audio not enabled. Not checking for Amazon Voice Focus support.');
+      return;
+    }
+
+    try {
+      this.supportsVoiceFocus = await VoiceFocusDeviceTransformer.isSupported(VOICE_FOCUS_SPEC, { logger });
+      if (this.supportsVoiceFocus) {
+        this.voiceFocusTransformer = await this.getVoiceFocusDeviceTransformer();
+        this.supportsVoiceFocus = this.voiceFocusTransformer && this.voiceFocusTransformer.isSupported();
+        if (this.supportsVoiceFocus) {
+          logger.info('[DEMO] Amazon Voice Focus is supported.');
+          document.getElementById('voice-focus-setting').classList.remove('hidden');
+          await this.populateAllDeviceLists();
+          return;
+        }
+      }
+    } catch (e) {
+      // Fall through.
+      logger.warn(`[DEMO] Does not support Amazon Voice Focus: ${e.message}`);
+    }
+    logger.warn('[DEMO] Does not support Amazon Voice Focus.');
+    this.supportsVoiceFocus = false;
+    document.getElementById('voice-focus-setting').classList.toggle('hidden', true);
+    await this.populateAllDeviceLists();
+  }
+
+  private onVoiceFocusSettingChanged(): void {
+    this.log('[DEMO] Amazon Voice Focus setting toggled to', this.enableVoiceFocus);
+    this.openAudioInputFromSelection();
   }
 
   initEventListeners(): void {
@@ -305,6 +348,9 @@ export class DemoMeetingApp implements
           ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
           (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
+
+          await this.initVoiceFocus();
+
           this.switchToFlow('flow-devices');
           await this.openAudioInputFromSelection();
           try {
@@ -439,8 +485,9 @@ export class DemoMeetingApp implements
       });
     });
 
-    (document.getElementById('add-delay') as HTMLInputElement).addEventListener('change', e => {
-      this.onDelaySettingChanged();
+    (document.getElementById('add-voice-focus') as HTMLInputElement).addEventListener('change', e => {
+      this.enableVoiceFocus = (e.target as HTMLInputElement).checked;
+      this.onVoiceFocusSettingChanged();
     });
 
     const buttonMute = document.getElementById('button-microphone');
@@ -670,14 +717,6 @@ export class DemoMeetingApp implements
       e => ((e as HTMLDivElement).style.display = 'none')
     );
     (document.getElementById(flow) as HTMLDivElement).style.display = 'block';
-
-    // This can only work if Web Audio is enabled, so hide it otherwise.
-    if (this.enableWebAudio) {
-      document.getElementById('delay-setting').style.display = 'block';
-      (document.getElementById('add-delay') as HTMLInputElement).checked = false;
-    } else {
-      document.getElementById('delay-setting').style.display = 'none';
-    }
   }
 
   audioInputsChanged(_freshAudioInputDeviceList: MediaDeviceInfo[]): void {
@@ -889,6 +928,8 @@ export class DemoMeetingApp implements
   leave(): void {
     this.statsCollector.resetStats();
     this.audioVideo.stop();
+    this.voiceFocusDevice?.stop();
+    this.voiceFocusDevice = undefined;
     this.roster = {};
   }
 
@@ -1233,23 +1274,15 @@ export class DemoMeetingApp implements
     }
     if (additionalToggles?.length) {
       this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
-      for (const { name, checked, action } of additionalToggles) {
-        const id = `${elementId}-${name.replace(/\s/g, '-')}`;
-        const computeName = () => {
-          const state = checked() ? '✓' : ' ';
-          return `${state} ${name}`;
-        };
-        const onclick = () => {
-          action();
-          (document.getElementById(id) as HTMLButtonElement).innerText = computeName();
-        };
-
-        this.createDropdownMenuItem(
+      for (const { name, oncreate, action } of additionalToggles) {
+        const id = `toggle-${elementId}-${name.replace(/\s/g, '-')}`;
+        const elem = this.createDropdownMenuItem(
           menu,
-          computeName(),
-          onclick,
+          name,
+          action,
           id
         );
+        oncreate(elem);
       }
 
     }
@@ -1287,11 +1320,13 @@ export class DemoMeetingApp implements
     const additionalToggles = [];
 
     // This can't work unless Web Audio is enabled.
-    if (this.enableWebAudio) {
+    if (this.enableWebAudio && this.supportsVoiceFocus) {
       additionalToggles.push({
-        name: 'Delay',
-        checked: () => this.isDelayEnabled(),
-        action: () => this.toggleDelay(),
+        name: 'Amazon Voice Focus',
+        oncreate: (elem: HTMLElement) => {
+          this.voiceFocusDisplayables.push(elem);
+        },
+        action: () => this.toggleVoiceFocusInMeeting(),
       });
     }
 
@@ -1314,20 +1349,51 @@ export class DemoMeetingApp implements
     );
   }
 
-  private isDelayEnabled(): boolean {
-    return (document.getElementById('add-delay') as HTMLInputElement).checked;
+  private isVoiceFocusActive(): boolean {
+    return this.currentAudioInputDevice instanceof VoiceFocusTransformDevice;
   }
 
-  private onDelaySettingChanged(): void {
-    this.log('Delay setting toggled.');
-    this.openAudioInputFromSelection();
+  private updateVoiceFocusDisplayState() {
+    const active = this.isVoiceFocusActive();
+    this.log('Updating Amazon Voice Focus display state:', active);
+    for (const elem of this.voiceFocusDisplayables) {
+      elem.classList.toggle('vf-active', active);
+    }
   }
 
-  private toggleDelay(): void {
-    const elem = (document.getElementById('add-delay') as HTMLInputElement);
-    elem.checked = !elem.checked;      // toggleAttribute is sometimes flaky.
-    this.log('Delay toggle is now', elem.checked);
-    this.onDelaySettingChanged();
+  private isVoiceFocusEnabled(): boolean {
+    this.log('VF supported:', this.supportsVoiceFocus);
+    this.log('VF enabled:', this.enableVoiceFocus);
+    return this.supportsVoiceFocus && this.enableVoiceFocus;
+  }
+
+  private async reselectAudioInputDevice(): Promise<void> {
+    let current = this.currentAudioInputDevice;
+
+    if (current instanceof VoiceFocusTransformDevice) {
+      // Unwrap and rewrap if Amazon Voice Focus is selected.
+      const intrinsic = current.getInnerDevice();
+      const device = await this.audioInputSelectionWithOptionalVoiceFocus(intrinsic);
+      return this.selectAudioInputDevice(device);
+    }
+
+    // If it's another kind of transform device, just reselect it.
+    if (isAudioTransformDevice(current)) {
+      return this.selectAudioInputDevice(current);
+    }
+
+    // Otherwise, apply Amazon Voice Focus if needed.
+    const device = await this.audioInputSelectionWithOptionalVoiceFocus(current);
+    return this.selectAudioInputDevice(device);
+  }
+
+  private async toggleVoiceFocusInMeeting(): Promise<void> {
+    const elem = (document.getElementById('add-voice-focus') as HTMLInputElement);
+    this.enableVoiceFocus = this.supportsVoiceFocus && !this.enableVoiceFocus;
+    elem.checked = this.enableVoiceFocus;
+    this.log('Amazon Voice Focus toggle is now', elem.checked);
+
+    await this.reselectAudioInputDevice();
   }
 
   async populateVideoInputList(): Promise<void> {
@@ -1392,9 +1458,11 @@ export class DemoMeetingApp implements
     this.currentAudioInputDevice = device;
     this.log('Selecting audio input', device);
     await this.audioVideo.chooseAudioInputDevice(device);
+    this.updateVoiceFocusDisplayState();
   }
 
   async selectAudioInputDeviceByName(name: string): Promise<void> {
+    this.log('Selecting audio input device by name:', name);
     const device = await this.audioInputSelectionToDevice(name);
     return this.selectAudioInputDevice(device);
   }
@@ -1480,37 +1548,95 @@ export class DemoMeetingApp implements
     }
   }
 
-  private async audioInputSelectionToDevice(value: string): Promise<AudioInputDevice> {
-    let inner: Device;
+  private async audioInputSelectionToIntrinsicDevice(value: string): Promise<Device> {
     if (this.isRecorder() || this.isBroadcaster()) {
-      inner = null;
-    } else if (value === '440 Hz') {
-      inner = DefaultDeviceController.synthesizeAudioDevice(440);
-    } else if (value === 'None') {
-      inner = null;
-    } else {
-      inner = value;
-    };
-
-    if (this.isDelayEnabled()) {
-      this.log('Enabling delay.');
-      return new DelayTransformDevice(inner, 2);
+      return null;
     }
 
+    if (value === '440 Hz') {
+      return DefaultDeviceController.synthesizeAudioDevice(440);
+    }
+
+    if (value === 'None') {
+      return null;
+    }
+
+    return value;
+  }
+
+  private async getVoiceFocusDeviceTransformer(): Promise<VoiceFocusDeviceTransformer> {
+    if (this.voiceFocusTransformer) {
+      return this.voiceFocusTransformer;
+    }
+    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    const transformer = await VoiceFocusDeviceTransformer.create(VOICE_FOCUS_SPEC, { logger });
+    this.voiceFocusTransformer = transformer;
+    return transformer;
+  }
+
+  private async createVoiceFocusDevice(inner: Device): Promise<VoiceFocusTransformDevice | Device> {
+    if (!this.supportsVoiceFocus) {
+      return inner;
+    }
+
+    if (this.voiceFocusDevice) {
+      // Dismantle the old one.
+      return this.voiceFocusDevice = await this.voiceFocusDevice.chooseNewInnerDevice(inner);
+    }
+
+    try {
+      const transformer = await this.getVoiceFocusDeviceTransformer();
+      const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner);
+      if (vf) {
+        return this.voiceFocusDevice = vf;
+      }
+    } catch (e) {
+      // Fall through.
+    }
     return inner;
+  }
+
+
+
+  private async audioInputSelectionWithOptionalVoiceFocus(device: Device): Promise<Device | VoiceFocusTransformDevice> {
+    if (this.isVoiceFocusEnabled()) {
+      if (!this.voiceFocusDevice) {
+        return this.createVoiceFocusDevice(device);
+      }
+
+      // Switch out the inner if needed.
+      // The reuse of the Voice Focus device is more efficient, particularly if
+      // reselecting the same inner -- no need to modify the Web Audio graph.
+      // Allowing the Voice Focus device to manage toggling Voice Focus on and off
+      // also
+      return this.voiceFocusDevice = await this.voiceFocusDevice.chooseNewInnerDevice(device);
+    }
+
+    return device;
+  }
+
+  private async audioInputSelectionToDevice(value: string): Promise<Device | VoiceFocusTransformDevice> {
+    const inner = await this.audioInputSelectionToIntrinsicDevice(value);
+    return this.audioInputSelectionWithOptionalVoiceFocus(inner);
   }
 
   private videoInputSelectionToDevice(value: string): VideoInputDevice {
     if (this.isRecorder() || this.isBroadcaster()) {
       return null;
     }
+
     if (value === 'Blue') {
       return DefaultDeviceController.synthesizeVideoDevice('blue');
-    } else if (value === 'SMPTE Color Bars') {
+    }
+
+    if (value === 'SMPTE Color Bars') {
       return DefaultDeviceController.synthesizeVideoDevice('smpte');
-    } else if (value === 'None') {
+    }
+
+    if (value === 'None') {
       return null;
     }
+
     return value;
   }
 
