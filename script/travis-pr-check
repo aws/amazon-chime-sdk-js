@@ -1,8 +1,21 @@
 #!/usr/bin/env ruby
 
+# Check that the commits in this PR either do not affect versioned
+# assets, or update the necessary files.
+
 Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
 
 base = File.read('.base-branch').strip
+
+# Check whether there have been any material changes.
+material = 'src protocol *.json script/barrelize.js script/*protocol*'
+changed = `git diff --name-only #{base}.. #{material}`
+
+if changed.empty?
+  STDERR.puts "No changed files in << #{material} >>."
+  exit 0
+end
+
 commits = `git rev-list #{base}..`.strip.split("\n")
 
 if commits.size == 1
