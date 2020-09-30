@@ -65,7 +65,7 @@ module.exports = env => {
         },
         {
           test: /\.tsx?$/,
-          loader: 'awesome-typescript-loader',
+          loader: 'ts-loader',
         },
       ],
     },
