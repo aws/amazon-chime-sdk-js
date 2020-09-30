@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests
+- Mark `AudioInternalServerError` and `SignalingInternalServerError` as non-teminal errors
 
 ### Removed
 

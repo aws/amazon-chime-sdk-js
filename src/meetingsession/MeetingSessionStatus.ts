@@ -44,11 +44,9 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.AudioAuthenticationRejected:
       case MeetingSessionStatusCode.AudioCallAtCapacity:
       case MeetingSessionStatusCode.MeetingEnded:
-      case MeetingSessionStatusCode.AudioInternalServerError:
       case MeetingSessionStatusCode.AudioDisconnected:
       case MeetingSessionStatusCode.TURNCredentialsForbidden:
       case MeetingSessionStatusCode.SignalingBadRequest:
-      case MeetingSessionStatusCode.SignalingInternalServerError:
       case MeetingSessionStatusCode.SignalingRequestFailed:
       case MeetingSessionStatusCode.VideoCallAtSourceCapacity:
       case MeetingSessionStatusCode.RealtimeApiFailed:
