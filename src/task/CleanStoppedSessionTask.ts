@@ -50,6 +50,7 @@ export default class CleanStoppedSessionTask extends BaseTask {
       this.context.sdpAnswer = null;
       this.context.sdpOfferInit = null;
       this.context.indexFrame = null;
+      this.context.videoDownlinkBandwidthPolicy.reset();
       this.context.iceCandidateHandler = null;
       this.context.iceCandidates = [];
       this.context.turnCredentials = null;

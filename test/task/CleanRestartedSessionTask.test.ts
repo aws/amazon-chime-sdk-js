@@ -16,6 +16,7 @@ import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollecto
 import CleanRestartedSessionTask from '../../src/task/CleanRestartedSessionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
+import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -64,6 +65,7 @@ describe('CleanRestartedSessionTask', () => {
         browserBehavior
       )
     );
+    context.videoDownlinkBandwidthPolicy = new NoVideoDownlinkBandwidthPolicy();
 
     task = new CleanRestartedSessionTask(context);
   });

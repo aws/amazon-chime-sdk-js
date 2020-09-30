@@ -11,6 +11,11 @@ import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
  */
 export default interface VideoDownlinkBandwidthPolicy {
   /**
+   * Reset back to initial state
+   */
+  reset(): void;
+
+  /**
    * Potentially update the desired set of video streams to receive
    * based on the given [[VideoStreamIndex]].
    */

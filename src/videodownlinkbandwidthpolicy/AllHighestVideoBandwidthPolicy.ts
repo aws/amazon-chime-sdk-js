@@ -17,6 +17,10 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   private subscribedReceiveSet: VideoStreamIdSet;
 
   constructor(private selfAttendeeId: string) {
+    this.reset();
+  }
+
+  reset(): void {
     this.optimalReceiveSet = new DefaultVideoStreamIdSet();
     this.subscribedReceiveSet = new DefaultVideoStreamIdSet();
   }

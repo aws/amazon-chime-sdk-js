@@ -20,6 +20,12 @@ describe('NoVideoDownlinkBandwidthPolicy', () => {
     emptyVideoStreamIndex = new DefaultVideoStreamIndex(logger);
   });
 
+  describe('reset', () => {
+    it('resets', () => {
+      policy.reset();
+    });
+  });
+
   describe('wantsResubscribe', () => {
     it('always returns false', () => {
       expect(policy.wantsResubscribe()).to.be.false;

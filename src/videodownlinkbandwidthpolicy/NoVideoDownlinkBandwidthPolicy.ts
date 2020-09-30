@@ -7,6 +7,7 @@ import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex
 import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
 
 export default class NoVideoDownlinkBandwidthPolicy implements VideoDownlinkBandwidthPolicy {
+  reset(): void {}
   updateIndex(_videoIndex: DefaultVideoStreamIndex): void {}
   updateMetrics(_clientMetricReport: ClientMetricReport): void {}
   updateCalculatedOptimalReceiveSet(): void {}
