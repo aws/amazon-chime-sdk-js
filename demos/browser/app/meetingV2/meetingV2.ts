@@ -1106,7 +1106,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       await this.audioVideo.listAudioInputDevices(),
       additionalDevices,
       async (name: string) => {
-        await this.audioVideo.chooseAudioInputDevice(this.audioInputSelectionToDevice(name));
+        const device = await this.audioInputSelectionToDevice(name);
+        await this.audioVideo.chooseAudioInputDevice(device);
       }
     );
   }
@@ -1163,9 +1164,8 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   async openAudioInputFromSelection(): Promise<void> {
     const audioInput = document.getElementById('audio-input') as HTMLSelectElement;
-    await this.audioVideo.chooseAudioInputDevice(
-      this.audioInputSelectionToDevice(audioInput.value)
-    );
+    const device = await this.audioInputSelectionToDevice(audioInput.value);
+    await this.audioVideo.chooseAudioInputDevice(device);
     this.startAudioPreview();
   }
 
@@ -1243,13 +1243,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     }
   }
 
-  private audioInputSelectionToDevice(value: string): Device {
+  private async audioInputSelectionToDevice(value: string): Promise<Device> {
     if (this.isRecorder() || this.isBroadcaster()) {
       return null;
     }
     if (value === '440 Hz') {
       return DefaultDeviceController.synthesizeAudioDevice(440);
-    } else if (value === 'None') {
+    }
+    if (value === 'None') {
       return null;
     }
     return value;
