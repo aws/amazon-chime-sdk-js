@@ -12,7 +12,6 @@
   "devDependencies": {
     "@types/jquery": "^3.5.1",
     "autoprefixer": "^9.6.4",
-    "awesome-typescript-loader": "^5.2.1",
     "css-loader": "^4.3.0",
     "file-loader": "^6.1.0",
     "html-webpack-inline-source-plugin": "^0.0.10",
