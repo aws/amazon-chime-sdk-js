@@ -35,6 +35,10 @@
           <option value="us-east-1" selected>United States (N. Virginia)</option>
           <option value="ap-northeast-1">Japan (Tokyo)</option>
           <option value="ap-southeast-1">Singapore</option>
+          <option value="af-south-1">South Africa (Cape Town)</option>
+          <option value="eu-south-1">Italy (Milan)</option>
+          <option value="ap-south-1">India (Mumbai)</option>
+          <option value="ap-northeast-2">South Korea (Seoul)</option>
           <option value="ap-southeast-2">Australia (Sydney)</option>
           <option value="ca-central-1">Canada</option>
           <option value="eu-central-1">Germany (Frankfurt)</option>
@@ -140,5 +144,24 @@
     </table>
   </div>
 </div>
+
+<!-- Failure card if meeting is invalid -->
+
+<div id="flow-failed-meeting" class="flow">
+  <div class="container">
+    <form id="form-failed-meeting">
+      <div class="card border-warning mb-3" style="max-width: 20rem;">
+        <div id="failed-meeting" class="card-header"></div>
+        <div class="card-body">
+          <h4 class="card-title">Unable to find meeting</h4>
+          <p class="card-text">There was an issue finding that meeting. The meeting may have already ended, or your authorization may have expired.</p>
+          <small id="failed-meeting-error" class="text-muted"></small>
+        </div>
+      </div>
+      <button class="btn btn-lg btn-outline-warning btn-block" type="submit">OK</button>
+    </form>
+  </div>
+</div>
+
 </body>
 </html>

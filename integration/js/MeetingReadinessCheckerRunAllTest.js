@@ -1,4 +1,4 @@
-const {OpenMeetingReadinessCheckerAppStep, StartMeetingReadinessCheckerStep, WaitForContentShareTestToBeReady, WaitForStartMeetingReadinessCheckerButtonToBeEnabled, StartContentShareConnectivityCheckStep} = require('./steps');
+const {OpenMeetingReadinessCheckerAppStep, StartMeetingReadinessCheckerStep, WaitForContentShareTestToBeReady, WaitForStartMeetingReadinessCheckerButtonToBeEnabled, WaitForMeetingCreationAndMeetingReadinessCheckerInitializationStep, StartContentShareConnectivityCheckStep} = require('./steps');
 const {MeetingReadinessCheckerNetworkTcpCheck, MeetingReadinessCheckerAudioOutputCheck, MeetingReadinessCheckerVideoConnectivityCheck, MeetingReadinessCheckerContentShareConnectivityCheck, MeetingReadinessCheckerAudioConnectivityCheck, MeetingReadinessCheckerNetworkUdpCheck} = require('./checks');
 const {MeetingReadinessCheckerPage} = require('./pages/MeetingReadinessCheckerPage');
 const {TestUtils} = require('./node_modules/kite-common');
@@ -19,6 +19,7 @@ class MeetingReadinessCheckerRunAllTest extends SdkBaseTest {
     await OpenMeetingReadinessCheckerAppStep.executeStep(this, session);
     await WaitForStartMeetingReadinessCheckerButtonToBeEnabled.executeStep(this, session);
     await StartMeetingReadinessCheckerStep.executeStep(this, session);
+    await WaitForMeetingCreationAndMeetingReadinessCheckerInitializationStep.executeStep(this, session);
     await MeetingReadinessCheckerAudioOutputCheck.executeStep(this, session);
     await WaitForContentShareTestToBeReady.executeStep(this, session);
     await StartContentShareConnectivityCheckStep.executeStep(this, session);

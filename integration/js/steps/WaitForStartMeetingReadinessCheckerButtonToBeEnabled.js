@@ -11,8 +11,12 @@ class WaitForStartMeetingReadinessCheckerButtonToBeEnabled extends AsyncAppWaitT
     await step.execute(KiteBaseTest);
   }
 
+  timeoutThresholdInMilliSeconds() {
+    return 10000
+  }
+
   stepDescription() {
-    return 'Waiting for meeting to be created and start button to be ready';
+    return 'Waiting for logger and device controller to be initialized and start button to be ready';
   }
 
   async waitCompleteCondition() {
@@ -20,7 +24,7 @@ class WaitForStartMeetingReadinessCheckerButtonToBeEnabled extends AsyncAppWaitT
   }
 
   waitCompleteMessage() {
-    this.logger('Meeting is created and start button is enabled');
+    this.logger('Logger and device controller is created and start button is enabled');
   }
 }
 
