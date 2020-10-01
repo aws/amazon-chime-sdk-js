@@ -139,26 +139,28 @@ export default class MeetingSessionConfiguration {
    */
   constructor(createMeetingResponse?: any, createAttendeeResponse?: any) { // eslint-disable-line
     if (createMeetingResponse) {
-      if (createMeetingResponse.Meeting) {
-        createMeetingResponse = createMeetingResponse.Meeting;
+      createMeetingResponse = this.toLowerCasePropertyNames(createMeetingResponse);
+      if (createMeetingResponse.meeting) {
+        createMeetingResponse = createMeetingResponse.meeting;
       }
-      this.meetingId = createMeetingResponse.MeetingId;
+      this.meetingId = createMeetingResponse.meetingid;
       this.urls = new MeetingSessionURLs();
-      this.urls.audioHostURL = createMeetingResponse.MediaPlacement.AudioHostUrl;
-      this.urls.screenDataURL = createMeetingResponse.MediaPlacement.ScreenDataUrl;
-      this.urls.screenSharingURL = createMeetingResponse.MediaPlacement.ScreenSharingUrl;
-      this.urls.screenViewingURL = createMeetingResponse.MediaPlacement.ScreenViewingUrl;
-      this.urls.signalingURL = createMeetingResponse.MediaPlacement.SignalingUrl;
-      this.urls.turnControlURL = createMeetingResponse.MediaPlacement.TurnControlUrl;
+      this.urls.audioHostURL = createMeetingResponse.mediaplacement.audiohosturl;
+      this.urls.screenDataURL = createMeetingResponse.mediaplacement.screendataurl;
+      this.urls.screenSharingURL = createMeetingResponse.mediaplacement.screensharingurl;
+      this.urls.screenViewingURL = createMeetingResponse.mediaplacement.screenviewingurl;
+      this.urls.signalingURL = createMeetingResponse.mediaplacement.signalingurl;
+      this.urls.turnControlURL = createMeetingResponse.mediaplacement.turncontrolurl;
     }
     if (createAttendeeResponse) {
-      if (createAttendeeResponse.Attendee) {
-        createAttendeeResponse = createAttendeeResponse.Attendee;
+      createAttendeeResponse = this.toLowerCasePropertyNames(createAttendeeResponse);
+      if (createAttendeeResponse.attendee) {
+        createAttendeeResponse = createAttendeeResponse.attendee;
       }
       this.credentials = new MeetingSessionCredentials();
-      this.credentials.attendeeId = createAttendeeResponse.AttendeeId;
-      this.credentials.externalUserId = createAttendeeResponse.ExternalUserId;
-      this.credentials.joinToken = createAttendeeResponse.JoinToken;
+      this.credentials.attendeeId = createAttendeeResponse.attendeeid;
+      this.credentials.externalUserId = createAttendeeResponse.externaluserid;
+      this.credentials.joinToken = createAttendeeResponse.jointoken;
     }
     if (new DefaultBrowserBehavior().screenShareSendsOnlyKeyframes()) {
       this.screenSharingSessionOptions = { bitRate: 384000 };
@@ -171,5 +173,21 @@ export default class MeetingSessionConfiguration {
     this.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
       this.credentials ? this.credentials.attendeeId : null
     );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private toLowerCasePropertyNames(input: any): any {
+    if (typeof input !== 'object') {
+      return input;
+    } else if (Array.isArray(input)) {
+      return input.map(this.toLowerCasePropertyNames);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return Object.keys(input).reduce((result: any, key: string) => {
+      const value = input[key];
+      const newValue = typeof value === 'object' ? this.toLowerCasePropertyNames(value) : value;
+      result[key.toLowerCase()] = newValue;
+      return result;
+    }, {});
   }
 }
