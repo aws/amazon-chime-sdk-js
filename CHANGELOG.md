@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a Travis check to make sure version update
 - Add metrics for Selenium initialization metrics for integration tests
 - Create log stream before logging begins
+- Make AWS SDK for Java camelCased meeting-attendee response compatible with Chime SDK for JavaScript
 
 ### Changed
 - Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests
