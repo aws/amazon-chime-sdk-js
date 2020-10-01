@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mark `AudioInternalServerError` and `SignalingInternalServerError` as non-terminal errors
 - Replace `awesome-typescript-loader` with `ts-loader`
 - Alter the API signature for `Logger.debug` to accept strings, not just functions
+- Update meeting readiness checker demo app with new regions CPT, MXP, BOM and ICN
+- Update meeting readiness checker demo app to create meeting after the checker starts
 
 ### Removed
 

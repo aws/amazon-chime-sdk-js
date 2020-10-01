@@ -18,6 +18,7 @@ const elements = {
   videoConnectivityTest: By.id('videoconnectivity-test'),
   contentShareConnectivityTest: By.id('contentshare-test'),
   contentShareConnectivityTestButton: By.id('contentshare-button'),
+  readinessCheckerFlow: By.id('flow-readinesstest'),
 };
 
 const badgeSuccessLabel = 'badge-success';
@@ -192,6 +193,10 @@ class MeetingReadinessCheckerPage {
   async isStartMeetingReadinessCheckerButtonEnabled() {
     let authenticateButton = await this.driver.findElement(elements.authenticateButton);
     return await authenticateButton.isEnabled();
+  }
+
+  async checkIfMeetingAuthenticatedAndMeetingReadinessCheckerInitialized() {
+    return await this.driver.findElement(elements.readinessCheckerFlow).isDisplayed();
   }
 }
 

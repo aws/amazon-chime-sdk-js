@@ -21,7 +21,6 @@ class StartMeetingReadinessCheckerStep extends AppTestStep {
 
   async run() {
     await this.page.startCheck();
-    await TestUtils.waitAround(5000);
   }
 }
 
