@@ -170,7 +170,7 @@ You can use our [bug template](https://github.com/aws/amazon-chime-sdk-js/issues
 
 ### What are the subnets and ports used by an application using the AWS SDK?
 
-An application which calls Amazon Chime APIs via the [AWS SDK](https://aws.amazon.com/tools/), like [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html), connects to the global service endpoint in the us-east-1 region: [service.chime.aws.amazon.com](http://service.chime.aws.amazon.com/), or [service-fips.chime.aws.amazon.com](http://service.chime.aws.amazon.com/) with TCP:443.
+An application which calls Amazon Chime APIs via the [AWS SDK](https://aws.amazon.com/tools/), like [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html), connects to the global service endpoint in the us-east-1 region: [service.chime.aws.amazon.com](https://service.chime.aws.amazon.com/), or [service-fips.chime.aws.amazon.com](https://service-fips.chime.aws.amazon.com/) with TCP:443.
 
 The URIs resolve to IP addresses in the AMAZON subnets for us-east-1, as published in the [AWS ip-ranges.json](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html).
 

@@ -14,7 +14,7 @@ const ddb = new AWS.DynamoDB();
 const chime = new AWS.Chime({ region: 'us-east-1' });
 
 // Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
-chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com');
+chime.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT);
 
 // Read resource names from the environment
 const meetingsTableName = process.env.MEETINGS_TABLE_NAME;

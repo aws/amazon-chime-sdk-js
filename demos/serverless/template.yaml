@@ -7,6 +7,10 @@ Parameters:
     Default: false
     Type: String
     AllowedValues: [true, false]
+  ChimeEndpoint:
+    Description: The AWS SDK Chime endpoint
+    Default: "https://service.chime.aws.amazon.com"
+    Type: String
 Conditions:
   ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
 Globals:
@@ -19,6 +23,7 @@ Globals:
         MEETINGS_TABLE_NAME: !Ref Meetings
         SQS_QUEUE_ARN: !GetAtt MeetingNotificationsQueue.Arn
         BROWSER_LOG_GROUP_NAME: !Ref ChimeBrowserLogs
+        CHIME_ENDPOINT: !Ref ChimeEndpoint
 Resources:
   ChimeMeetingsAccessPolicy:
     Type: AWS::IAM::Policy
