@@ -284,15 +284,15 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.bindAudioOutput();
   }
 
-  static createEmptyAudioDevice(): Device {
+  static createEmptyAudioDevice(): MediaStream {
     return DefaultDeviceController.synthesizeAudioDevice(0);
   }
 
-  static createEmptyVideoDevice(): Device {
+  static createEmptyVideoDevice(): MediaStream | null {
     return DefaultDeviceController.synthesizeVideoDevice('black');
   }
 
-  static synthesizeAudioDevice(toneHz: number): Device {
+  static synthesizeAudioDevice(toneHz: number): MediaStream {
     const audioContext = DefaultDeviceController.getAudioContext();
     const outputNode = audioContext.createMediaStreamDestination();
     if (!toneHz) {
@@ -338,7 +338,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     return outputNode.stream;
   }
 
-  static synthesizeVideoDevice(colorOrPattern: string): Device {
+  static synthesizeVideoDevice(colorOrPattern: string): MediaStream | null {
     const canvas = document.createElement('canvas') as HTMLCanvasElement;
     canvas.width = 480;
     canvas.height = (canvas.width / 16) * 9;
@@ -593,11 +593,44 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     return null;
   }
 
+  private restartLocalVideoAfterSelection(oldStream: MediaStream, fromAcquire: boolean): void {
+    if (
+      !fromAcquire &&
+      this.boundAudioVideoController &&
+      this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
+    ) {
+      this.logger.info('restarting local video to switch to new device');
+      this.boundAudioVideoController.restartLocalVideo(() => {
+        // TODO: implement MediaStreamDestroyer
+        // tracks of oldStream should be stopped when video tile is disconnected from MediaStream
+        // otherwise, camera is still being accessed and we need to stop it here.
+        if (oldStream && oldStream.active) {
+          this.logger.warn('previous media stream is not stopped during restart video');
+          this.releaseMediaStream(oldStream);
+        }
+      });
+    } else {
+      this.releaseMediaStream(oldStream);
+    }
+  }
+
   private async chooseInputDevice(
     kind: string,
     device: Device,
     fromAcquire: boolean
   ): Promise<DevicePermission> {
+    function grantedForDuration(start: number, end: number): DevicePermission {
+      return end - start < DefaultDeviceController.permissionGrantedOriginDetectionThresholdMs
+        ? DevicePermission.PermissionGrantedByBrowser
+        : DevicePermission.PermissionGrantedByUser;
+    }
+
+    function deniedForDuration(start: number, end: number): DevicePermission {
+      return end - start < DefaultDeviceController.permissionDeniedOriginDetectionThresholdMs
+        ? DevicePermission.PermissionDeniedByBrowser
+        : DevicePermission.PermissionDeniedByUser;
+    }
+
     this.inputDeviceCount += 1;
     const callCount = this.inputDeviceCount;
 
@@ -672,11 +705,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
           error.name
         }: ${error.message}`
       );
-      return Date.now() - startTimeMs <
-        DefaultDeviceController.permissionDeniedOriginDetectionThresholdMs
-        ? DevicePermission.PermissionDeniedByBrowser
-        : DevicePermission.PermissionDeniedByUser;
+      return deniedForDuration(startTimeMs, Date.now());
     }
+
     this.logger.info(`got ${kind} device for constraints ${JSON.stringify(proposedConstraints)}`);
 
     const oldStream: MediaStream | null = this.activeDevices[kind]
@@ -685,24 +716,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.activeDevices[kind] = newDevice;
 
     if (kind === 'video') {
-      if (
-        !fromAcquire &&
-        this.boundAudioVideoController &&
-        this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
-      ) {
-        this.logger.info('restarting local video to switch to new device');
-        this.boundAudioVideoController.restartLocalVideo(() => {
-          // TODO: implement MediaStreamDestroyer
-          // tracks of oldStream should be stopped when video tile is disconnected from MediaStream
-          // otherwise, camera is still being accessed and we need to stop it here.
-          if (oldStream && oldStream.active) {
-            this.logger.warn('previous media stream is not stopped during restart video');
-            this.releaseMediaStream(oldStream);
-          }
-        });
-      } else {
-        this.releaseMediaStream(oldStream);
-      }
+      this.restartLocalVideoAfterSelection(oldStream, fromAcquire);
     } else {
       this.releaseMediaStream(oldStream);
 
@@ -718,10 +732,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         this.logger.info('no audio-video controller is bound to the device controller');
       }
     }
-    return Date.now() - startTimeMs <
-      DefaultDeviceController.permissionGrantedOriginDetectionThresholdMs
-      ? DevicePermission.PermissionGrantedByBrowser
-      : DevicePermission.PermissionGrantedByUser;
+    return grantedForDuration(startTimeMs, Date.now());
   }
 
   private async bindAudioOutput(): Promise<void> {

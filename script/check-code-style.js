@@ -266,8 +266,13 @@ allFiles().forEach(file => {
 
   for (let i = 0; i < fileLines.length; i++) {
     const pos = `${file}:${i + 1}`;
-    if (fileLines[i].includes('console.log') && !file.includes('demos/')) {
-      failed(pos, 'contains console.log', 'Ensure that source does not contain console.log');
+
+    // Exclude demos and comment lines. Some of our block comments
+    // include code examples that refer to console.log.
+    if (fileLines[i].includes('console.log') &&
+        !fileLines[i].match(/^\s+(?:\*|\/[\*\/])/) &&
+        !file.includes('demos/')) {
+      failed(pos, 'contains console.log: ' + fileLines[i], 'Ensure that source does not contain console.log');
     }
   }
 });
