@@ -44,11 +44,11 @@ export default class ConsoleLogger implements Logger {
     this.log(LogLevel.ERROR, msg);
   }
 
-  debug(debugFunction: () => string): void {
+  debug(debugFunction: string | (() => string)): void {
     if (LogLevel.DEBUG < this.level) {
       return;
     }
-    this.log(LogLevel.DEBUG, debugFunction());
+    this.log(LogLevel.DEBUG, typeof debugFunction === 'string' ? debugFunction : debugFunction());
   }
 
   setLogLevel(level: LogLevel): void {

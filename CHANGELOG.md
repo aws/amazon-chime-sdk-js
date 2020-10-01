@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests
 - Mark `AudioInternalServerError` and `SignalingInternalServerError` as non-terminal errors
 - Replace `awesome-typescript-loader` with `ts-loader`
+- Alter the API signature for `Logger.debug` to accept strings, not just functions
 
 ### Removed
 

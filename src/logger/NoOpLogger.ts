@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from './Logger';
@@ -20,11 +20,13 @@ export default class NoOpLogger implements Logger {
 
   error(_msg: string): void {}
 
-  debug(debugFunction: () => string): void {
+  debug(debugFunction: string | (() => string)): void {
     if (LogLevel.DEBUG < this.level) {
       return;
     }
-    debugFunction();
+    if (typeof debugFunction !== 'string') {
+      debugFunction();
+    }
   }
 
   setLogLevel(level: LogLevel): void {
