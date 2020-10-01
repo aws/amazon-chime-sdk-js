@@ -32,9 +32,20 @@ export default class MultiLogger implements Logger {
     }
   }
 
-  debug(debugFunction: () => string): void {
+  debug(debugFunction: string | (() => string)): void {
+    let message: string;
+    const memoized =
+      typeof debugFunction === 'string'
+        ? debugFunction
+        : () => {
+            if (!message) {
+              message = debugFunction();
+            }
+            return message;
+          };
+
     for (const logger of this._loggers) {
-      logger.debug(debugFunction);
+      logger.debug(memoized);
     }
   }
 

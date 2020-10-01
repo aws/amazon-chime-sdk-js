@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import LogLevel from './LogLevel';
@@ -12,7 +12,7 @@ export default interface Logger {
    * resulting string. Use the debug level to dump large or verbose messages
    * that could slow down performance.
    */
-  debug(debugFunction: () => string): void;
+  debug(debugFunction: string | (() => string)): void;
 
   /**
    * Emits an info message if the log level is equal to or lower than info level.
