@@ -136,7 +136,7 @@ exports.logs = async (event, context) => {
     await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
   } catch (error) {
     const errorMessage = `Failed to put CloudWatch log events with error ${error} and params ${JSON.stringify(putLogEventsInput)}`;
-    if (error.code === 'DataAlreadyAcceptedException' || error.code === 'InvalidSequenceToken') {
+    if (error.code === 'InvalidSequenceTokenException' || error.code === 'DataAlreadyAcceptedException') {
       console.warn(errorMessage);
     } else {
       console.error(errorMessage);
