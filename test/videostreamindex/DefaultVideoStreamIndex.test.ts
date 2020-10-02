@@ -1263,4 +1263,80 @@ describe('DefaultVideoStreamIndex', () => {
       expect(index.groupIdForStreamId(6)).to.equal(undefined);
     });
   });
+
+  describe('streamIdInSameGroup', () => {
+    it('Basic functionality', () => {
+      const indexFrame = new SdkIndexFrame({
+        sources: [
+          new SdkStreamDescriptor({
+            streamId: 1,
+            groupId: 1,
+            maxBitrateKbps: 1400,
+            avgBitrateBps: 1111 * 1000,
+            attendeeId: '688c',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 2,
+            groupId: 1,
+            maxBitrateKbps: 200,
+            attendeeId: '4d82',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 4,
+            groupId: 5,
+            maxBitrateKbps: 800,
+            attendeeId: 'a0ff',
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+        ],
+      });
+      index.integrateIndexFrame(indexFrame);
+      expect(index.StreamIdsInSameGroup(1, 2)).to.equal(true);
+      expect(index.StreamIdsInSameGroup(1, 4)).to.equal(false);
+    });
+
+    it('Recognizes groupId across subscribes', () => {
+      let indexFrame = new SdkIndexFrame({
+        sources: [
+          new SdkStreamDescriptor({
+            streamId: 3,
+            groupId: 2,
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 4,
+            groupId: 2,
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+        ],
+      });
+      index.integrateIndexFrame(indexFrame);
+      expect(index.StreamIdsInSameGroup(3, 4)).to.equal(true);
+      index.subscribeFrameSent();
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [new SdkTrackMapping({ streamId: 4, trackLabel: 'track_v2' })],
+        })
+      );
+
+      indexFrame = new SdkIndexFrame({
+        sources: [
+          new SdkStreamDescriptor({
+            streamId: 3,
+            groupId: 2,
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+          new SdkStreamDescriptor({
+            streamId: 5,
+            groupId: 2,
+            mediaType: SdkStreamMediaType.VIDEO,
+          }),
+        ],
+      });
+      index.integrateIndexFrame(indexFrame);
+      expect(index.StreamIdsInSameGroup(3, 4)).to.equal(true);
+    });
+  });
 });

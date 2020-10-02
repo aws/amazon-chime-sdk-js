@@ -269,6 +269,15 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
         return source.groupId;
       }
     }
+
+    // If wasn't found in current index, then it could be in index used in last subscribe
+    if (!!this.indexForSubscribe) {
+      for (const source of this.indexForSubscribe.sources) {
+        if (source.streamId === streamId) {
+          return source.groupId;
+        }
+      }
+    }
     return undefined;
   }
 
