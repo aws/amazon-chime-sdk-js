@@ -265,6 +265,7 @@ describe('DefaultAudioVideoController', () => {
         new NoOpMediaStreamBroker(),
         reconnectController
       );
+      const handleEventSpy = sinon.spy(audioVideoController, 'handleEvent');
       let sessionStarted = false;
       let sessionConnecting = false;
       class TestObserver implements AudioVideoObserver {
@@ -301,6 +302,7 @@ describe('DefaultAudioVideoController', () => {
 
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+      expect(handleEventSpy.calledWith('ConnectionSucceeded')).to.be.true;
 
       await stop();
     });
@@ -558,10 +560,13 @@ describe('DefaultAudioVideoController', () => {
         new NoOpMediaStreamBroker(),
         reconnectController
       );
+      const handleEventSpy = sinon.spy(audioVideoController, 'handleEvent');
+
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
           expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
           expect(spy.calledWith(sinon.match('failed with status code TaskFailed'))).to.be.true;
+          expect(handleEventSpy.calledWith('ConnectionFailed')).to.be.true;
           spy.restore();
           done();
         }
@@ -596,6 +601,8 @@ describe('DefaultAudioVideoController', () => {
         new NoOpMediaStreamBroker(),
         reconnectController
       );
+      const handleEventSpy = sinon.spy(audioVideoController, 'handleEvent');
+
       class TestObserver implements AudioVideoObserver {
         audioVideoDidStop(): void {
           called = true;
@@ -606,6 +613,7 @@ describe('DefaultAudioVideoController', () => {
       await start();
       await stop();
       expect(called).to.be.true;
+      expect(handleEventSpy.calledWith('MeetingEnded')).to.be.true;
     });
 
     it('can be stopped without having been started', () => {
@@ -1743,6 +1751,98 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.videoTileController.stopLocalVideoTile();
       await sendICEEventAndSubscribeAckFrame();
 
+      await stop();
+    });
+  });
+
+  describe('handleEvent', () => {
+    it('handleEvent', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      let handleEvent = false;
+
+      class TestObserver implements AudioVideoObserver {
+        eventDidReceive(
+          name: string,
+          attributes: { [attributeName: string]: string | string[] }
+        ): void {
+          expect(name).to.equal('event-name');
+          expect(attributes).to.not.be.null;
+          handleEvent = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      audioVideoController.handleEvent('event-name');
+      await delay();
+      expect(handleEvent).to.equal(true);
+    });
+  });
+
+  describe('notifyStop ', () => {
+    it('calls MeetingEndedWithError with a failure status code', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStop(): void {
+          expect(handleEventSpy.calledWith('MeetingEndedWithError')).to.be.true;
+        }
+      }
+      const handleEventSpy = sinon.spy(audioVideoController, 'handleEvent');
+      audioVideoController.addObserver(new TestObserver());
+      await start();
+      // @ts-ignore
+      audioVideoController.notifyStop(MeetingSessionStatusCode.AudioAuthenticationRejected);
+      await stop();
+    });
+  });
+
+  describe('getAttributes before meeting starts', () => {
+    it('getAttributes', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      const stub = sinon
+        // @ts-ignore
+        .stub(audioVideoController._reconnectController, 'getRetryCount')
+        .callsFake(() => {
+          return 1;
+        });
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.poorConnectionCount = 1;
+
+      const attributes = audioVideoController.getAttributes();
+      expect(attributes).to.not.be.null;
+      stub.restore();
+    });
+  });
+
+  describe('getAttributes after meeting starts', () => {
+    it('getAttributes', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+
+      await start();
+      const attributes = audioVideoController.getAttributes();
+      expect(attributes).to.not.be.null;
       await stop();
     });
   });

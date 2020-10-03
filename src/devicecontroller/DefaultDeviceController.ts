@@ -700,6 +700,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       }
       newDevice.groupId = this.getGroupIdFromDeviceId(kind, this.getDeviceIdStr(device));
     } catch (error) {
+      if (this.boundAudioVideoController) {
+        this.boundAudioVideoController.handleEvent('DeviceSetupFailed');
+      }
       this.logger.error(
         `failed to get ${kind} device for constraints ${JSON.stringify(proposedConstraints)}: ${
           error.name

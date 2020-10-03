@@ -268,6 +268,7 @@ export default class MonitorTask extends BaseTask
     if (unusableAudioWarningValue !== null) {
       this.logger.info(`unusable audio warning is now: ${unusableAudioWarningValue}`);
       if (unusableAudioWarningValue === 0) {
+        this.context.poorConnectionCount += 1;
         if (this.context.videoTileController.haveVideoTilesWithStreams()) {
           this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
             Maybe.of(observer.connectionDidSuggestStopVideo).map(f => f.bind(observer)());

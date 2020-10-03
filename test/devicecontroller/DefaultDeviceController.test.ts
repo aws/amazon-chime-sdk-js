@@ -443,21 +443,30 @@ describe('DefaultDeviceController', () => {
 
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      deviceController.bindToAudioVideoController(audioVideoController);
+      const handleEventSpy = sinon.spy(audioVideoController, 'handleEvent');
       const permission = await deviceController.chooseVideoInputDevice(stringDeviceId);
       expect(permission).to.equal(DevicePermission.PermissionDeniedByBrowser);
+      expect(handleEventSpy.calledWith('DeviceSetupFailed')).to.be.true;
     });
 
     it('denies the permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.asyncWaitMs = 1500;
+      deviceController.bindToAudioVideoController(audioVideoController);
+      const handleEventSpy = sinon.spy(audioVideoController, 'handleEvent');
       const permission = await deviceController.chooseVideoInputDevice(stringDeviceId);
       expect(permission).to.equal(DevicePermission.PermissionDeniedByUser);
+      expect(handleEventSpy.calledWith('DeviceSetupFailed')).to.be.true;
     });
 
     it('cannot choose the device of an empty string ID', async () => {
       const device: Device = '';
+      deviceController.bindToAudioVideoController(audioVideoController);
+      const handleEventSpy = sinon.spy(audioVideoController, 'handleEvent');
       const permission = await deviceController.chooseVideoInputDevice(device);
       expect(permission).to.equal(DevicePermission.PermissionDeniedByBrowser);
+      expect(handleEventSpy.calledWith('DeviceSetupFailed')).to.be.true;
     });
   });
 

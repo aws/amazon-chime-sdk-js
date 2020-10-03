@@ -42,14 +42,17 @@ describe('DefaultReconnectController', () => {
 
   describe('retryWithBackoff', () => {
     it('calls the retry func', done => {
+      const controller = defaultController();
+      expect(controller.getRetryCount()).to.equal(0);
       expect(
-        defaultController().retryWithBackoff(
+        controller.retryWithBackoff(
           () => {
             done();
           },
           () => {}
         )
       ).to.equal(true);
+      expect(controller.getRetryCount()).to.equal(1);
     });
 
     it('calls the cancel func if canceled after starting retry', done => {

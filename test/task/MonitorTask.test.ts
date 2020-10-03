@@ -603,6 +603,7 @@ describe('MonitorTask', () => {
 
       // connectionDidBecomePoor() should not be called again.
       task.connectionHealthDidChange(connectionHealthData);
+      expect(context.poorConnectionCount).to.eq(1);
     });
 
     it('notifies the connection is good when changed from poor', done => {
@@ -720,6 +721,7 @@ describe('MonitorTask', () => {
         0,
       ];
       task.connectionHealthDidChange(connectionHealthData);
+      expect(context.poorConnectionCount).to.eq(1);
     });
   });
 
