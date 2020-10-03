@@ -114,4 +114,10 @@ export default class AudioVideoControllerState {
   videoDeviceInformation: { [id: string]: string } = {};
 
   enableSimulcast: boolean = false;
+
+  openSignalingConnectionDuration: number | null = null;
+
+  meetingDuration: number | null = null;
+
+  poorConnectionCount: number | null = null;
 }

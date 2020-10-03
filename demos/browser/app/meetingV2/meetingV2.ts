@@ -502,8 +502,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         await this.endMeeting();
         this.leave();
         (buttonMeetingEnd as HTMLButtonElement).disabled = false;
-        // @ts-ignore
-        window.location = window.location.pathname;
       });
     });
 
@@ -513,8 +511,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         (buttonMeetingLeave as HTMLButtonElement).disabled = true;
         this.leave();
         (buttonMeetingLeave as HTMLButtonElement).disabled = false;
-        // @ts-ignore
-        window.location = window.location.pathname;
       });
     });
   }
@@ -683,6 +679,12 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     } catch (error) {
       console.error(error.message);
     }
+  }
+  
+  eventDidReceive(name: string, attributes: { [attributeName: string]: string | string [] }): void {
+    // TODO: Implement this observer function
+    console.log("Event name: " + name);
+    console.log("Attributes: " + JSON.stringify(attributes));
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
@@ -1395,6 +1397,11 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
     if (sessionStatus.statusCode() === MeetingSessionStatusCode.AudioCallEnded) {
       this.log(`meeting ended`);
+      // @ts-ignore
+      window.location = window.location.pathname;
+    } else if (sessionStatus.statusCode() === MeetingSessionStatusCode.Left) {
+      this.log('left meeting');
+
       // @ts-ignore
       window.location = window.location.pathname;
     }

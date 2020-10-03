@@ -55,6 +55,7 @@ import TimeoutTask from '../task/TimeoutTask';
 import WaitForAttendeePresenceTask from '../task/WaitForAttendeePresenceTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
+import Versioning from '../versioning/Versioning';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
@@ -102,6 +103,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this._logger = logger;
     this.sessionStateController = new DefaultSessionStateController(this._logger);
     this._configuration = configuration;
+    this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior({
+      enableUnifiedPlanForChromiumBasedBrowsers: this.configuration
+        .enableUnifiedPlanForChromiumBasedBrowsers,
+    });
     this.enableSimulcast =
       configuration.enableUnifiedPlanForChromiumBasedBrowsers &&
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
@@ -349,6 +354,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
         ),
       ]).run();
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
+        if (!reconnecting) {
+          this.handleEvent('ConnectionSucceeded');
+          this.meetingSessionContext.meetingDuration = Date.now();
+        }
         this.actionFinishConnecting();
       });
     } catch (error) {
@@ -358,9 +367,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
         );
         await this.actionDisconnect(status, true);
         if (!this.handleMeetingSessionStatus(status, error)) {
-          this.forEachObserver(observer => {
-            Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
-          });
+          this.notifyStop(status.statusCode());
         }
       });
     }
@@ -416,9 +423,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
-        this.forEachObserver(observer => {
-          Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
-        });
+        this.notifyStop(status.statusCode());
       }
     });
   }
@@ -529,6 +534,24 @@ export default class DefaultAudioVideoController implements AudioVideoController
         this.handleMeetingSessionStatus(status, error);
       });
     }
+  }
+
+  private notifyStop(statusCode: MeetingSessionStatusCode): void {
+    const status = new MeetingSessionStatus(statusCode);
+    if (!this.meetingSessionContext.meetingDuration) {
+      this.handleEvent('ConnectionFailed', {
+        meetingSessionStatusCode: `${MeetingSessionStatusCode[statusCode]}`,
+      });
+    } else if (status.isFailure() || status.isAudioConnectionFailure()) {
+      this.handleEvent('MeetingEndedWithError', {
+        meetingSessionStatusCode: `${MeetingSessionStatusCode[statusCode]}`,
+      });
+    } else {
+      this.handleEvent('MeetingEnded');
+    }
+    this.forEachObserver(observer => {
+      Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
+    });
   }
 
   private actionFinishUpdating(): void {
@@ -738,5 +761,50 @@ export default class DefaultAudioVideoController implements AudioVideoController
     if (!!this.meetingSessionContext && this.meetingSessionContext.signalingClient) {
       this.meetingSessionContext.signalingClient.resume([streamId]);
     }
+  }
+
+  handleEvent(name: string, attributes?: { [attributeName: string]: string | string[] }): void {
+    this.forEachObserver((observer: AudioVideoObserver) => {
+      Maybe.of(observer.eventDidReceive).map(f =>
+        f.bind(observer)(name, {
+          ...this.getAttributes(),
+          ...attributes,
+        })
+      );
+    });
+  }
+
+  getAttributes(): { [attributeName: string]: string | string[] } {
+    const browserBehavior = this.meetingSessionContext.browserBehavior;
+    return {
+      sdkName: Versioning.sdkName,
+      sdkVersion: Versioning.sdkVersion,
+      browserName: browserBehavior.name(),
+      browserVersion: browserBehavior.version(),
+      browserMajorVersion: `${browserBehavior.majorVersion()}`,
+      meetingId: this.configuration.meetingId,
+      attendeeId: this.configuration.credentials.attendeeId,
+      operatingSystem: browserBehavior.os(),
+      operatingSystemVersion: browserBehavior.osVersion(),
+      deviceName: browserBehavior.deviceName(),
+      openSignalingConnectionDuration: `${this.meetingSessionContext.openSignalingConnectionDuration}`,
+      ...(typeof this.meetingSessionContext.meetingDuration === 'number'
+        ? {
+            meetingDuration: `${this.meetingSessionContext.meetingDuration}`,
+          }
+        : {}),
+      ...(this._reconnectController.getRetryCount()
+        ? {
+            retryCount: `${this._reconnectController.getRetryCount()}`,
+          }
+        : {}),
+      ...(this.meetingSessionContext.poorConnectionCount
+        ? {
+            poorConnectionCount: `${this.meetingSessionContext.poorConnectionCount}`,
+          }
+        : {}),
+      // TODO: Add the following attributes
+      // meetingHistory:
+    };
   }
 }

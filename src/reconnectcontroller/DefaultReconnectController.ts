@@ -13,6 +13,7 @@ export default class DefaultReconnectController implements ReconnectController {
   private lastActiveTimestampMs: number = Infinity;
   private _isFirstConnection: boolean = true;
   private backoffTimer: TimeoutScheduler | null = null;
+  private retryCount: number | null = null;
   private backoffCancel: () => void = null;
 
   constructor(private reconnectTimeoutMs: number, private backoffPolicy: BackoffPolicy) {
@@ -41,6 +42,7 @@ export default class DefaultReconnectController implements ReconnectController {
     this.firstConnectionAttempted = false;
     this.firstConnectionAttemptTimestampMs = 0;
     this.lastActiveTimestampMs = Infinity;
+    this.retryCount = 0;
     this.backoffPolicy.reset();
   }
 
@@ -50,6 +52,10 @@ export default class DefaultReconnectController implements ReconnectController {
       this.firstConnectionAttempted = true;
       this.firstConnectionAttemptTimestampMs = Date.now();
     }
+  }
+
+  getRetryCount(): number {
+    return this.retryCount;
   }
 
   hasStartedConnectionAttempt(): boolean {
@@ -82,6 +88,7 @@ export default class DefaultReconnectController implements ReconnectController {
   retryWithBackoff(retryFunc: () => void, cancelFunc: () => void): boolean {
     const willRetry = this.shouldReconnect && !this.hasPastReconnectDeadline();
     if (willRetry) {
+      this.retryCount += 1;
       this.backoffCancel = cancelFunc;
       this.backoffTimer = new TimeoutScheduler(this.backoffPolicy.nextBackoffAmountMs());
       this.backoffTimer.start(() => {

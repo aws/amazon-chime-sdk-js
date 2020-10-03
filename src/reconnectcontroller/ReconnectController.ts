@@ -19,6 +19,11 @@ export default interface ReconnectController {
   startedConnectionAttempt(isFirstConnection: boolean): void;
 
   /**
+   * Returns the count of retries for the session
+   */
+  getRetryCount(): number;
+
+  /**
    * Indicates whether a connection attempt is already in progress.
    */
   hasStartedConnectionAttempt(): boolean;

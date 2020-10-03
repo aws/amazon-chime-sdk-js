@@ -18,6 +18,21 @@ export default interface BrowserBehavior {
   name(): string;
 
   /**
+   * Returns the name of the operation system
+   */
+  os(): string;
+
+  /**
+   * Returns the version of the operation system
+   */
+  osVersion(): string;
+
+  /**
+   * Returns the model of the device
+   */
+  deviceName(): string;
+
+  /**
    * Returns whether the browser has a Chromium WebRTC implementation
    */
   hasChromiumWebRTC(): boolean;
