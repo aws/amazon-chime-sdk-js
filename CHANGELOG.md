@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Test] Make sure to reset ready status between retries
 - No video after connection failure
 - Fix video track sometimes being removed and added on simulcast receive stream switch
+- Enabled termination protection for serverless demo cloudformation stack
 
 ## [1.19.0] - 2020-09-29
 ### Added

@@ -24,7 +24,7 @@ export default class Versioning {
     // to generate `version.ts` is absent, and will be until someone runs
     // `publish` in this new world.
     /* istanbul ignore next */
-    return VERSION.semverString || '1.19.14';
+    return VERSION.semverString || '1.19.15';
   }
 
   /**

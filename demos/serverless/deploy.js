@@ -8,6 +8,7 @@ let bucket = ``;
 let stack = ``;
 let app = `meeting`;
 let useEventBridge = false;
+let enableTerminationProtection = false;
 let chimeEndpoint = 'https://service.chime.aws.amazon.com'
 
 const packages = [
@@ -18,12 +19,13 @@ const packages = [
 
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
-  console.log(`  -r, --region         Target region, default '${region}'`);
-  console.log(`  -b, --s3-bucket      S3 bucket for deployment, required`);
-  console.log(`  -s, --stack-name     CloudFormation stack name, required`);
-  console.log(`  -a, --application    Browser application to deploy, default '${app}'`);
-  console.log(`  -e, --event-bridge   Enable EventBridge integration, default is no integration`);
-  console.log(`  -c, --chime-endpoint AWS SDK Chime endpoint, default is '${chimeEndpoint}'`);
+  console.log(`  -r, --region                         Target region, default '${region}'`);
+  console.log(`  -b, --s3-bucket                      S3 bucket for deployment, required`);
+  console.log(`  -s, --stack-name                     CloudFormation stack name, required`);
+  console.log(`  -a, --application                    Browser application to deploy, default '${app}'`);
+  console.log(`  -e, --event-bridge                   Enable EventBridge integration, default is no integration`);
+  console.log(`  -c, --chime-endpoint                 AWS SDK Chime endpoint, default is '${chimeEndpoint}'`);
+  console.log(`  -t, --enable-termination-protection  Enable termination protection for the Cloudformation stack, default is false`);
   console.log(`  -h, --help           Show help and exit`);
 }
 
@@ -76,6 +78,9 @@ function parseArgs() {
       case '-c': case '--chime-endpoint':
         chimeEndpoint = getArgOrExit(++i, args)
         break;
+      case '-t': case '--enable-termination-protection':
+        enableTerminationProtection = true;
+        break;
       default:
         console.log(`Invalid argument ${args[i]}`);
         usage();
@@ -90,7 +95,7 @@ function parseArgs() {
   }
 }
 
-function spawnOrFail(command, args, options) {
+function spawnOrFail(command, args, options, printOutput = true) {
   options = {
     ...options,
     shell: true
@@ -101,7 +106,9 @@ function spawnOrFail(command, args, options) {
     process.exit(255);
   }
   const output = cmd.stdout.toString();
-  console.log(output);
+  if (printOutput) {
+    console.log(output);
+  }
   if (cmd.status !== 0) {
     console.log(`Command ${command} failed with exit code ${cmd.status} signal ${cmd.signal}`);
     console.log(cmd.stderr.toString());
@@ -143,7 +150,7 @@ if (!fs.existsSync('build')) {
   fs.mkdirSync('build');
 }
 
-console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}`);
+console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}`);
 ensureBucket();
 
 for (const package of packages) {
@@ -164,6 +171,9 @@ console.log('Deploying serverless application');
 spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--stack-name', `${stack}`,
                     '--parameter-overrides', `UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint}`,
                     '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`, '--no-fail-on-empty-changeset']);
+if (enableTerminationProtection) {
+  spawnOrFail('aws', ['cloudformation', 'update-termination-protection', '--enable-termination-protection', '--stack-name', `${stack}`], null, false);
+}
 console.log("Amazon Chime SDK Meeting Demo URL: ");
 const output=spawnOrFail('aws', ['cloudformation', 'describe-stacks', '--stack-name', `${stack}`,
                     '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`]);
