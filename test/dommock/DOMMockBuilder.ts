@@ -972,7 +972,9 @@ export default class DOMMockBuilder {
 
       createAnalyser(): AnalyserNode {
         // @ts-ignore
-        return {};
+        return {
+          context: (this as unknown) as BaseAudioContext,
+        };
       }
 
       createBufferSource(): AudioBufferSourceNode {
@@ -982,6 +984,7 @@ export default class DOMMockBuilder {
       createGain(): GainNode {
         // @ts-ignore
         return {
+          context: (this as unknown) as BaseAudioContext,
           // @ts-ignore
           connect(_destinationParam: AudioParam, _output?: number): void {},
           // @ts-ignore
@@ -1000,6 +1003,7 @@ export default class DOMMockBuilder {
       createOscillator(): OscillatorNode {
         // @ts-ignore
         return {
+          context: (this as unknown) as BaseAudioContext,
           // @ts-ignore
           start(_when?: number): void {},
           stop(): void {},
