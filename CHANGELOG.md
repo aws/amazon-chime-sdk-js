@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mark InvalidSequenceTokenExceptions as warning
 - Add an optional parameter to the serverless demo deployment script to specify Chime endpoint, and deploy to a new devo stage that talks to gamma Chime endpoint for canary
 - Add extended debugging for saucelab sessions
+- Add data message throttle limits to documentation
 
 ### Changed
 - Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests
