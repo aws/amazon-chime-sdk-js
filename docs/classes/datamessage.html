@@ -117,7 +117,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/datamessage/DataMessage.ts#L35">src/datamessage/DataMessage.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/datamessage/DataMessage.ts#L37">src/datamessage/DataMessage.ts:37</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -199,13 +199,15 @@
 					<div class="tsd-signature tsd-kind-icon">throttled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/datamessage/DataMessage.ts#L35">src/datamessage/DataMessage.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/datamessage/DataMessage.ts#L37">src/datamessage/DataMessage.ts:37</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>true if server throttled or rejected message
-							false if server has posted the message to its recipients</p>
+								false if server has posted the message to its recipients
+								Throttling soft limit: Rate:100, Burst:200
+							Throttling hard limit: Rate: 100 * 5, Burst: 200 * 50 (i.e Rate: 500, Burst: 10000)</p>
 						</div>
 					</div>
 				</section>
@@ -252,7 +254,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/datamessage/DataMessage.ts#L63">src/datamessage/DataMessage.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/datamessage/DataMessage.ts#L65">src/datamessage/DataMessage.ts:65</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -274,7 +276,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/datamessage/DataMessage.ts#L56">src/datamessage/DataMessage.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/datamessage/DataMessage.ts#L58">src/datamessage/DataMessage.ts:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
