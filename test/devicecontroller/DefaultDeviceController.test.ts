@@ -212,6 +212,13 @@ describe('DefaultDeviceController', () => {
       expect(permission).to.equal(DevicePermission.PermissionGrantedByBrowser);
     });
 
+    it('denies the permission by browser', async () => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      const device: Device = { deviceId: 'string-device-id' };
+      const permission = await deviceController.chooseAudioInputDevice(device);
+      expect(permission).to.equal(DevicePermission.PermissionDeniedByBrowser);
+    });
+
     it('restarts the local audio if the audio-video controller is bound', async () => {
       let called = false;
 

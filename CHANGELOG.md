@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mark `AudioInternalServerError` and `SignalingInternalServerError` as non-terminal errors
 - Replace `awesome-typescript-loader` with `ts-loader`
 - Alter the API signature for `Logger.debug` to accept strings, not just functions
+- Fall back to `null` device if there is any error while acquiring the audio device
 
 ### Removed
 

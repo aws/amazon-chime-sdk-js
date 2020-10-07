@@ -705,6 +705,17 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
           error.name
         }: ${error.message}`
       );
+      /*
+       * If there is any error while acquiring the audio device, we fall back to null device.
+       * Reason: If device selection fails (e.g. NotReadableError), the peer connection is left hanging
+       * with no active audio track since we release the previously attached track.
+       * If no audio packet has yet been sent to the server, the server will not emit the joined event.
+       */
+      if (kind === 'audio') {
+        this.logger.info(`choosing null ${kind} device instead`);
+        newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
+        newDevice.constraints = null;
+      }
       return deniedForDuration(startTimeMs, Date.now());
     }
 
