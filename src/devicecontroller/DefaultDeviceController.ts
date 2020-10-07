@@ -705,14 +705,41 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
           error.name
         }: ${error.message}`
       );
+      /*
+       * If there is any error while acquiring the audio device, we fall back to null device.
+       * Reason: If device selection fails (e.g. NotReadableError), the peer connection is left hanging
+       * with no active audio track since we release the previously attached track.
+       * If no audio packet has yet been sent to the server, the server will not emit the joined event.
+       */
+      if (kind === 'audio') {
+        this.logger.info(`choosing null ${kind} device instead`);
+        try {
+          newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
+          newDevice.constraints = null;
+          await this.handleNewInputDevice(kind, newDevice, fromAcquire);
+        } catch (error) {
+          this.logger.error(
+            `failed to choose null ${kind} device. ${error.name}: ${error.message}`
+          );
+        }
+      }
       return deniedForDuration(startTimeMs, Date.now());
     }
 
     this.logger.info(`got ${kind} device for constraints ${JSON.stringify(proposedConstraints)}`);
+    await this.handleNewInputDevice(kind, newDevice, fromAcquire);
+    return grantedForDuration(startTimeMs, Date.now());
+  }
 
+  private async handleNewInputDevice(
+    kind: string,
+    newDevice: DeviceSelection,
+    fromAcquire: boolean
+  ): Promise<void> {
     const oldStream: MediaStream | null = this.activeDevices[kind]
       ? this.activeDevices[kind].stream
       : null;
+
     this.activeDevices[kind] = newDevice;
 
     if (kind === 'video') {
@@ -732,7 +759,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         this.logger.info('no audio-video controller is bound to the device controller');
       }
     }
-    return grantedForDuration(startTimeMs, Date.now());
   }
 
   private async bindAudioOutput(): Promise<void> {

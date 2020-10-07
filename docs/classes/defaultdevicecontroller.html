@@ -149,6 +149,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#getvideoinputqualitysettings" class="tsd-kind-icon">get<wbr>Video<wbr>Input<wbr>Quality<wbr>Settings</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#handledevicechange" class="tsd-kind-icon">handle<wbr>Device<wbr>Change</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#handledevicestreamended" class="tsd-kind-icon">handle<wbr>Device<wbr>Stream<wbr>Ended</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#handlenewinputdevice" class="tsd-kind-icon">handle<wbr>New<wbr>Input<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#hassamegroupid" class="tsd-kind-icon">has<wbr>Same<wbr>Group<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#listaudioinputdevices" class="tsd-kind-icon">list<wbr>Audio<wbr>Input<wbr>Devices</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#listaudiooutputdevices" class="tsd-kind-icon">list<wbr>Audio<wbr>Output<wbr>Devices</a></li>
@@ -499,7 +500,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L837">src/devicecontroller/DefaultDeviceController.ts:837</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L863">src/devicecontroller/DefaultDeviceController.ts:863</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -590,7 +591,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L869">src/devicecontroller/DefaultDeviceController.ts:869</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L895">src/devicecontroller/DefaultDeviceController.ts:895</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -613,7 +614,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L738">src/devicecontroller/DefaultDeviceController.ts:738</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L764">src/devicecontroller/DefaultDeviceController.ts:764</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -654,7 +655,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L747">src/devicecontroller/DefaultDeviceController.ts:747</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L773">src/devicecontroller/DefaultDeviceController.ts:773</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -855,7 +856,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L822">src/devicecontroller/DefaultDeviceController.ts:822</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L848">src/devicecontroller/DefaultDeviceController.ts:848</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1035,7 +1036,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L879">src/devicecontroller/DefaultDeviceController.ts:879</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L905">src/devicecontroller/DefaultDeviceController.ts:905</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MediaStreamAudioDestinationNode</span></h4>
@@ -1097,6 +1098,35 @@
 								</li>
 								<li>
 									<h5>deviceId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="handlenewinputdevice" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> handle<wbr>New<wbr>Input<wbr>Device</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>New<wbr>Input<wbr>Device<span class="tsd-signature-symbol">(</span>kind<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newDevice<span class="tsd-signature-symbol">: </span><a href="deviceselection.html" class="tsd-signature-type">DeviceSelection</a>, fromAcquire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L734">src/devicecontroller/DefaultDeviceController.ts:734</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>kind: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>newDevice: <a href="deviceselection.html" class="tsd-signature-type">DeviceSelection</a></h5>
+								</li>
+								<li>
+									<h5>fromAcquire: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1422,7 +1452,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L915">src/devicecontroller/DefaultDeviceController.ts:915</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L941">src/devicecontroller/DefaultDeviceController.ts:941</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1439,7 +1469,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L907">src/devicecontroller/DefaultDeviceController.ts:907</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L933">src/devicecontroller/DefaultDeviceController.ts:933</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1456,7 +1486,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L911">src/devicecontroller/DefaultDeviceController.ts:911</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L937">src/devicecontroller/DefaultDeviceController.ts:937</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1473,7 +1503,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L920">src/devicecontroller/DefaultDeviceController.ts:920</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L946">src/devicecontroller/DefaultDeviceController.ts:946</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1536,7 +1566,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L900">src/devicecontroller/DefaultDeviceController.ts:900</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L926">src/devicecontroller/DefaultDeviceController.ts:926</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1613,7 +1643,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L886">src/devicecontroller/DefaultDeviceController.ts:886</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L912">src/devicecontroller/DefaultDeviceController.ts:912</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AudioContext</span></h4>
@@ -1871,6 +1901,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#handledevicestreamended" class="tsd-kind-icon">handle<wbr>Device<wbr>Stream<wbr>Ended</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#handlenewinputdevice" class="tsd-kind-icon">handle<wbr>New<wbr>Input<wbr>Device</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#hassamegroupid" class="tsd-kind-icon">has<wbr>Same<wbr>Group<wbr>Id</a>
