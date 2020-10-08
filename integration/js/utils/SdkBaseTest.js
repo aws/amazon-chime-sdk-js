@@ -98,6 +98,7 @@ class SdkBaseTest extends KiteBaseTest {
     this.report = new AllureTestReport(this.name);
     if (this.io !== undefined) {
       this.attendeeId = uuidv4();
+      console.log("attendee id generated: " + this.attendee_id);
       this.io.emit("setup_test", this.baseUrl, this.attendeeId);
     } else {
       this.meetingTitle = uuidv4();
@@ -189,26 +190,25 @@ class SdkBaseTest extends KiteBaseTest {
       if (retryCount !== 0) {
         console.log(`Retrying : ${retryCount}`);
       }
-
-      if (!await this.initializeSeleniumSession(numberOfSeleniumSessions)) {
-        await emitMetric(this.testName, this.capabilities, 'E2E', 0);
-        return;
-      }
-
-      //Wait for other to be ready
-      if (this.numberOfParticipant > 1 && this.io) {
-        this.io.emit('test_ready', true);
-        await this.waitForTestReady();
-        if (!this.testReady) {
-          this.io.emit('test_ready', false);
-          console.log('[OTHER_PARTICIPANT] failed to be ready');
-          await this.closeCurrentTest(false);
+      try {
+        if (!await this.initializeSeleniumSession(numberOfSeleniumSessions)) {
+          await emitMetric(this.testName, this.capabilities, 'E2E', 0);
           return;
         }
-      }
-      this.testFinish = false;
-      this.initializeState();
-      try {
+
+        //Wait for other to be ready
+        if (this.numberOfParticipant > 1 && this.io) {
+          this.io.emit('test_ready', true);
+          await this.waitForTestReady();
+          if (!this.testReady) {
+            this.io.emit('test_ready', false);
+            console.log('[OTHER_PARTICIPANT] failed to be ready');
+            await this.closeCurrentTest(false);
+            return;
+          }
+        }
+        this.testFinish = false;
+        this.initializeState();
         console.log("Running test on: " + process.env.SELENIUM_GRID_PROVIDER);
         await this.runIntegrationTest();
       } catch (e) {
@@ -225,10 +225,10 @@ class SdkBaseTest extends KiteBaseTest {
       if (!this.failedTest && !this.remoteFailed) {
         break;
       }
+      this.io.emit('test_ready', false);
       // If the other participant did not reach finish state then dont retry
       if (this.numberOfParticipant > 1 && this.io && !this.testFinish) {
         console.log('[OTHER_PARTICIPANT] timed out')
-        this.io.emit('test_ready', false);
         break;
       }
       retryCount++;

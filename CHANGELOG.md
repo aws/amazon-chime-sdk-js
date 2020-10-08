@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Make sure integration test returns FAILED if there is error
+- [Test] Make sure to reset ready status between retries
 - No video after connection failure
 - Fix video track sometimes being removed and added on simulcast receive stream switch
 
