@@ -162,6 +162,8 @@ export default class DOMMockBuilder {
       private listeners: { [type: string]: MockListener[] } = {};
       private readyState: string = 'live';
 
+      enabled: boolean = false;
+
       readonly id: string;
       readonly kind: string = '';
       readonly constraints: MockMediaStreamConstraints = {};

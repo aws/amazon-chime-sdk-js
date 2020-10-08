@@ -144,28 +144,6 @@ describe('CleanStoppedSessionTask', () => {
       });
     });
 
-    it('sets audio and video input to null', done => {
-      task.run().then(() => {
-        expect(context.activeAudioInput).to.be.null;
-        expect(context.activeVideoInput).to.be.null;
-        done();
-      });
-    });
-
-    it('releases audio and video device', done => {
-      let releaseFunctionCalled = false;
-      class MockMediaStreamBroker extends NoOpMediaStreamBroker {
-        releaseMediaStream(_mediaStream: MediaStream): void {
-          releaseFunctionCalled = true;
-        }
-      }
-      context.mediaStreamBroker = new MockMediaStreamBroker();
-      task.run().then(() => {
-        expect(releaseFunctionCalled).to.equal(true);
-        done();
-      });
-    });
-
     it('clears local video if exists', done => {
       context.activeAudioInput = null;
       const videoInput = new MediaStream();
@@ -200,16 +178,6 @@ describe('CleanStoppedSessionTask', () => {
       task.run().then(() => {
         const localTile = context.videoTileController.getLocalVideoTile();
         expect(localTile.state().boundVideoStream).to.equal(null);
-        done();
-      });
-    });
-
-    it('clears local audio only', done => {
-      context.activeAudioInput = new MediaStream();
-      context.activeVideoInput = null;
-      task.run().then(() => {
-        expect(context.activeAudioInput).to.be.null;
-        expect(context.activeVideoInput).to.be.null;
         done();
       });
     });

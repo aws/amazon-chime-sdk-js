@@ -56,11 +56,6 @@ export default class CleanStoppedSessionTask extends BaseTask {
       this.context.turnCredentials = null;
       this.context.videoSubscriptions = null;
       this.context.transceiverController.reset();
-      this.context.mediaStreamBroker.releaseMediaStream(this.context.activeAudioInput);
-      this.context.activeAudioInput = null;
-      this.context.mediaStreamBroker.releaseMediaStream(this.context.activeVideoInput);
-      this.context.activeVideoInput = null;
-      this.context.realtimeController.realtimeSetLocalAudioInput(null);
 
       const tile = this.context.videoTileController.getLocalVideoTile();
       if (tile) {
