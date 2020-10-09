@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import VERSION from './version';
 
 export default class Versioning {
   static X_AMZN_VERSION = 'X-Amzn-Version';
@@ -18,7 +19,20 @@ export default class Versioning {
    * Return string representation of SDK version
    */
   static get sdkVersion(): string {
-    return '1.19.14';
+    // This is a temporary hack to make the PR that adds this code build
+    // before we do our first tagged release -- the Git tag that we read
+    // to generate `version.ts` is absent, and will be until someone runs
+    // `publish` in this new world.
+    /* istanbul ignore next */
+    return VERSION.semverString || '1.19.14';
+  }
+
+  /**
+   * Return the SHA-1 of the Git commit from which this build was created.
+   */
+  static get buildSHA(): string {
+    // Skip the leading 'g'.
+    return VERSION.hash.substr(1);
   }
 
   /**

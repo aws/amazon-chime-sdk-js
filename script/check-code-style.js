@@ -9,12 +9,30 @@ const exec = require('child_process').execSync;
 
 let exitCode = 0;
 
-let walk = function(dir) {
+const ignoreMemo = {};
+const isIgnored = (file) => {
+  if (file in ignoreMemo) {
+    return ignoreMemo[file];
+  }
+  try {
+    // If this returns zero, it means the file is ignored by git; skip it.
+    exec(`git check-ignore -q '${file}'`);
+    ignoreMemo[file] = true;
+    return true;
+  } catch (e) {
+    // It's tracked by git.
+    ignoreMemo[file] = false;
+    return false;
+  }
+};
+
+const walk = (dir) => {
   let results = [];
   if (dir.includes('.DS_Store')) {
     return results;
   }
-  let list = fs.readdirSync(dir);
+
+  const list = fs.readdirSync(dir);
   list.forEach(function(file) {
     file = dir + '/' + file;
     let stat = fs.statSync(file);
@@ -27,7 +45,7 @@ let walk = function(dir) {
   return results;
 };
 
-let failed = function(file, reason, description) {
+const failed = (file, reason, description) => {
   console.error('Failed:', file, reason);
   if (description) {
     console.error(description);
@@ -35,7 +53,7 @@ let failed = function(file, reason, description) {
   exitCode = 1;
 };
 
-let components = function() {
+const components = () => {
   return fs
     .readdirSync('src')
     .filter(
@@ -47,13 +65,13 @@ let components = function() {
     );
 };
 
-let tests = function() {
+const tests = () => {
   return walk('test')
     .filter(file => file.endsWith('.test.ts'))
     .sort();
 };
 
-let allFiles = function() {
+const allFiles = () => {
   const srcFiles = walk('src').filter(
     file => file.endsWith('.ts') && path.basename(file) !== 'index.ts'
   );
@@ -64,11 +82,7 @@ let allFiles = function() {
   return srcFiles.concat(testFiles).concat(demosFiles);
 };
 
-let execute = function(command) {
-  return exec(command);
-};
-
-let joinYears = function(years) {
+const joinYears = (years) => {
   let prevYear = null;
   let rangeEnd = null;
   let out = '';
@@ -94,7 +108,7 @@ let joinYears = function(years) {
   return out;
 };
 
-let unique = function(value, index, self) {
+const unique = (value, index, self) => {
   return self.indexOf(value) === index;
 };
 
@@ -102,9 +116,11 @@ tests().forEach(file => {
   if (file === 'test/global/Global.test.ts') {
     return;
   }
-  if (file.includes(`.DS_Store`)) {
+
+  if (isIgnored(file)) {
     return;
   }
+
   const fileText = fs.readFileSync(file, 'utf-8').toString();
   if (fileText.includes('sinon.stub')) {
     failed(
@@ -155,11 +171,12 @@ tests().forEach(file => {
 });
 
 components().forEach(component => {
-  if (component.includes('.DS_Store')) {
+  if (isIgnored(component)) {
     return;
   }
+
   let hasMatchingInterface = false;
-  let componentDir = path.join('src', component);
+  const componentDir = path.join('src', component);
   walk(componentDir).forEach(file => {
     if (
       path.basename(file, '.ts').toLowerCase() === path.basename(componentDir) ||
@@ -180,10 +197,11 @@ components().forEach(component => {
 });
 
 components().forEach(component => {
-  if (component.includes('.DS_Store')) {
+  if (isIgnored(component)) {
     return;
   }
-  let componentDir = path.join('src', component);
+
+  const componentDir = path.join('src', component);
   fs.readdirSync(componentDir).forEach(file => {
     let filePath = path.join(componentDir, file);
     if (path.basename(filePath, '.ts').toLowerCase() !== path.basename(componentDir)) {
@@ -214,11 +232,12 @@ const spdx = '// SPDX-License-Identifier: Apache-2.0';
 let allYears = [];
 
 allFiles().forEach(file => {
-  if (file.endsWith('.d.ts') || file.includes('.DS_Store')) {
+  if (file.endsWith('.d.ts') || isIgnored(file)) {
     return;
   }
+
   let yearsForFileInGitHistory = [];
-  const stdout = execute(`git log --pretty=format:'%ad' --date=short '${file}'`);
+  const stdout = exec(`git log --pretty=format:'%ad' --date=short '${file}'`);
 
   const dates = [];
   for (const line of stdout

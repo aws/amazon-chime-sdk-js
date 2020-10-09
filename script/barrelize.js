@@ -32,6 +32,7 @@ walk('src')
     let typeToImport = path.basename(file).replace(new RegExp('[.].*'), '');
     let pathToImport = './' + path.dirname(file).replace('src/', '');
     if (
+      typeToImport === 'version' ||
       typeToImport === 'SignalingProtocol' ||
       typeToImport === 'index' ||
       typeToImport === 'ScreenSignalingProtocol'

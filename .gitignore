@@ -20,3 +20,4 @@ integration/js/temp
 integration/kite-allure-reports
 integration/logs
 node_modules
+src/versioning/version.ts
