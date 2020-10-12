@@ -13,7 +13,7 @@ const SHORT_SHA_RE = /^[a-f0-9]{5,40}$/;
 // * Released versions:                       1.19.14
 // * Unreleased versions:                     1.19.14+2.abcdefff
 // * Unreleased versions with local changes:  1.19.14+2.abcdefff.dirty.
-const VERSION_RE = /^[1-9]+\.[0-9]+\.[0-9]+(?:\+[1-9]+\.g[a-f0-9]{5,40}(?:\.dirty)?)?$/;
+const VERSION_RE = /^[1-9]+\.[0-9]+\.[0-9]+(?:\+[1-9][0-9]*\.g[a-f0-9]{5,40}(?:\.dirty)?)?$/;
 
 describe('Versioning', () => {
   describe('#buildSHA', () => {
