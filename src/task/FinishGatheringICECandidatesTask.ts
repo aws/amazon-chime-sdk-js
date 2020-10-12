@@ -76,9 +76,14 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       );
     }
 
-    // To bypass waiting for events, it is required that "icegatheringstate" to be complete and sdp to have candidate
+    /*
+     * To bypass waiting for events, it is required that "icegatheringstate" to be complete and sdp to have candidate
+     * For Firefox, it takes long for iceGatheringState === 'complete'
+     * Ref: https://github.com/aws/amazon-chime-sdk-js/issues/609
+     */
     if (
-      this.context.peer.iceGatheringState === 'complete' &&
+      (this.context.browserBehavior.hasFirefoxWebRTC() ||
+        this.context.peer.iceGatheringState === 'complete') &&
       new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidates()
     ) {
       this.context.logger.info(
