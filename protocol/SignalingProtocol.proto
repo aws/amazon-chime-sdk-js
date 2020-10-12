@@ -71,6 +71,7 @@ message SdkJoinFrame {
     optional uint32 max_num_of_videos = 2 [default=8];
     optional uint32 flags = 3;
     optional SdkClientDetails client_details = 4;
+    optional uint64 audio_session_id = 6;
 }
 
 message SdkJoinAckFrame {

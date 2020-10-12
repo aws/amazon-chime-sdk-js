@@ -1088,6 +1088,15 @@ export default class DOMMockBuilder {
 
       disconnect(): void {}
     };
+
+    GlobalAny.crypto = {
+      getRandomValues(_data: Uint32Array): Uint32Array {
+        return new Uint32Array([
+          Math.trunc(Math.random() * 2 ** 32),
+          Math.trunc(Math.random() * 2 ** 32),
+        ]);
+      },
+    };
   }
 
   cleanup(): void {

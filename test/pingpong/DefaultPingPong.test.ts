@@ -19,13 +19,26 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
+import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultPingPong', () => {
   let expect: Chai.ExpectStatic;
   const defaultIntervalMs = 10000;
   const logger = new NoOpLogger(LogLevel.DEBUG);
+  let domMockBuilder: DOMMockBuilder | null = null;
   before(() => {
     expect = chai.expect;
+  });
+
+  beforeEach(() => {
+    domMockBuilder = new DOMMockBuilder();
+  });
+
+  afterEach(() => {
+    if (domMockBuilder) {
+      domMockBuilder.cleanup();
+      domMockBuilder = null;
+    }
   });
 
   describe('construction', () => {

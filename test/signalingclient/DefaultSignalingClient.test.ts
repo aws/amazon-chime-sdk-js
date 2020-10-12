@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as Long from 'long';
 
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -709,6 +710,33 @@ describe('DefaultSignalingClient', () => {
       }
       testObjects.signalingClient.registerObserver(new TestObserver());
       testObjects.signalingClient.openConnection(testObjects.request);
+    });
+  });
+
+  describe('generateNewAudioSessionId', () => {
+    it('will generate a random audio session id', done => {
+      const randomNumSet = new Set();
+      let average = Long.fromNumber(0, true);
+      const iterations = 1000;
+      const testObjects = createTestObjects();
+
+      for (let i = 0; i < iterations; i++) {
+        // @ts-ignore
+        const id = testObjects.signalingClient.generateNewAudioSessionId();
+
+        if (randomNumSet.has(id.toString())) {
+          expect.fail('audioSessionId was not unique');
+        }
+        randomNumSet.add(id.toString());
+        const roundedRemainder = Math.round(id.mod(iterations).toNumber() / iterations);
+        average = average.add(id.div(iterations).add(roundedRemainder));
+      }
+      // average should be near the midpoint of the 64-bit range
+      const passed =
+        average.greaterThan(Long.fromString('0x7000000000000000', true, 16)) &&
+        average.lessThan(Long.fromString('0x9000000000000000', true, 16));
+      expect(passed).to.be.true;
+      done();
     });
   });
 });

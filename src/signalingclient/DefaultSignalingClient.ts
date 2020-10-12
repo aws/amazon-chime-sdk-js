@@ -1,6 +1,8 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import * as Long from 'long';
+
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
@@ -40,12 +42,14 @@ export default class DefaultSignalingClient implements SignalingClient {
   private isClosing: boolean;
   private connectionRequestQueue: SignalingClientConnectionRequest[];
   private unloadHandler: () => void | null = null;
+  private audioSessionId: Long;
 
   constructor(private webSocket: WebSocketAdapter, private logger: Logger) {
     this.observerQueue = new Set<SignalingClientObserver>();
     this.connectionRequestQueue = [];
     this.resetConnection();
     this.logger.debug(() => 'signaling client init');
+    this.audioSessionId = this.generateNewAudioSessionId();
   }
 
   registerObserver(observer: SignalingClientObserver): void {
@@ -91,6 +95,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       clientSource: Versioning.sdkName,
       chimeSdkVersion: Versioning.sdkVersion,
     });
+    joinFrame.audioSessionId = this.audioSessionId;
 
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
@@ -377,5 +382,11 @@ export default class DefaultSignalingClient implements SignalingClient {
       GlobalAny['window']['addEventListener'] &&
       window.removeEventListener('unload', this.unloadHandler);
     this.unloadHandler = null;
+  }
+
+  private generateNewAudioSessionId(): Long {
+    const nums = new Uint32Array(2);
+    const randomNums = window.crypto.getRandomValues(nums);
+    return new Long(randomNums[0], randomNums[1], true);
   }
 }

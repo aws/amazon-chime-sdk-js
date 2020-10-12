@@ -471,6 +471,9 @@ export interface ISdkJoinFrame {
 
     /** SdkJoinFrame clientDetails */
     clientDetails?: (ISdkClientDetails|null);
+
+    /** SdkJoinFrame audioSessionId */
+    audioSessionId?: (number|Long|null);
 }
 
 /** Represents a SdkJoinFrame. */
@@ -493,6 +496,9 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
     /** SdkJoinFrame clientDetails. */
     public clientDetails?: (ISdkClientDetails|null);
+
+    /** SdkJoinFrame audioSessionId. */
+    public audioSessionId: (number|Long);
 
     /**
      * Creates a new SdkJoinFrame instance using the specified properties.

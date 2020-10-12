@@ -1402,6 +1402,7 @@ $root.SdkJoinFrame = (function() {
      * @property {number|null} [maxNumOfVideos] SdkJoinFrame maxNumOfVideos
      * @property {number|null} [flags] SdkJoinFrame flags
      * @property {ISdkClientDetails|null} [clientDetails] SdkJoinFrame clientDetails
+     * @property {number|Long|null} [audioSessionId] SdkJoinFrame audioSessionId
      */
 
     /**
@@ -1452,6 +1453,14 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.prototype.clientDetails = null;
 
     /**
+     * SdkJoinFrame audioSessionId.
+     * @member {number|Long} audioSessionId
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.audioSessionId = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+    /**
      * Creates a new SdkJoinFrame instance using the specified properties.
      * @function create
      * @memberof SdkJoinFrame
@@ -1483,6 +1492,8 @@ $root.SdkJoinFrame = (function() {
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.flags);
         if (message.clientDetails != null && message.hasOwnProperty("clientDetails"))
             $root.SdkClientDetails.encode(message.clientDetails, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
+            writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.audioSessionId);
         return writer;
     };
 
@@ -1528,6 +1539,9 @@ $root.SdkJoinFrame = (function() {
                 break;
             case 4:
                 message.clientDetails = $root.SdkClientDetails.decode(reader, reader.uint32());
+                break;
+            case 6:
+                message.audioSessionId = reader.uint64();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -1578,6 +1592,9 @@ $root.SdkJoinFrame = (function() {
             if (error)
                 return "clientDetails." + error;
         }
+        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
+            if (!$util.isInteger(message.audioSessionId) && !(message.audioSessionId && $util.isInteger(message.audioSessionId.low) && $util.isInteger(message.audioSessionId.high)))
+                return "audioSessionId: integer|Long expected";
         return null;
     };
 
@@ -1604,6 +1621,15 @@ $root.SdkJoinFrame = (function() {
                 throw TypeError(".SdkJoinFrame.clientDetails: object expected");
             message.clientDetails = $root.SdkClientDetails.fromObject(object.clientDetails);
         }
+        if (object.audioSessionId != null)
+            if ($util.Long)
+                (message.audioSessionId = $util.Long.fromValue(object.audioSessionId)).unsigned = true;
+            else if (typeof object.audioSessionId === "string")
+                message.audioSessionId = parseInt(object.audioSessionId, 10);
+            else if (typeof object.audioSessionId === "number")
+                message.audioSessionId = object.audioSessionId;
+            else if (typeof object.audioSessionId === "object")
+                message.audioSessionId = new $util.LongBits(object.audioSessionId.low >>> 0, object.audioSessionId.high >>> 0).toNumber(true);
         return message;
     };
 
@@ -1625,6 +1651,11 @@ $root.SdkJoinFrame = (function() {
             object.maxNumOfVideos = 8;
             object.flags = 0;
             object.clientDetails = null;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, true);
+                object.audioSessionId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.audioSessionId = options.longs === String ? "0" : 0;
         }
         if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
             object.protocolVersion = message.protocolVersion;
@@ -1634,6 +1665,11 @@ $root.SdkJoinFrame = (function() {
             object.flags = message.flags;
         if (message.clientDetails != null && message.hasOwnProperty("clientDetails"))
             object.clientDetails = $root.SdkClientDetails.toObject(message.clientDetails, options);
+        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
+            if (typeof message.audioSessionId === "number")
+                object.audioSessionId = options.longs === String ? String(message.audioSessionId) : message.audioSessionId;
+            else
+                object.audioSessionId = options.longs === String ? $util.Long.prototype.toString.call(message.audioSessionId) : options.longs === Number ? new $util.LongBits(message.audioSessionId.low >>> 0, message.audioSessionId.high >>> 0).toNumber(true) : message.audioSessionId;
         return object;
     };
 
