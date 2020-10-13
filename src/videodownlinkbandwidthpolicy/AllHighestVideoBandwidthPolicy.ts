@@ -31,8 +31,6 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
 
   updateMetrics(_clientMetricReport: ClientMetricReport): void {}
 
-  updateCalculatedOptimalReceiveSet(): void {}
-
   wantsResubscribe(): boolean {
     return !this.subscribedReceiveSet.equal(this.optimalReceiveSet);
   }

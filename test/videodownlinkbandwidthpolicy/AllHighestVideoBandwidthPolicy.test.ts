@@ -226,7 +226,6 @@ describe('AllHighestVideoBandwidthPolicy', () => {
 
       policy.updateIndex(index);
       policy.updateMetrics(metricReport);
-      policy.updateCalculatedOptimalReceiveSet();
       const subscriptions = policy.chooseSubscriptions();
       expect(subscriptions.array()).to.deep.equal([2, 4, 6]);
     });

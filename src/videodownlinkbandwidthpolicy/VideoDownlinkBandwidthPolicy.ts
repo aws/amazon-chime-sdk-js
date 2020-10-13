@@ -27,11 +27,6 @@ export default interface VideoDownlinkBandwidthPolicy {
   updateMetrics(clientMetricReport: ClientMetricReport): void;
 
   /**
-   * Triggers a round of calculation of the optimal receive set.
-   */
-  updateCalculatedOptimalReceiveSet(): void;
-
-  /**
    * Returns true if the policy has decided that a change to subscribed
    * set of video streams to receive would be beneficial.
    */

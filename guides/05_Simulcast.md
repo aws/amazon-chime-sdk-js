@@ -25,14 +25,15 @@ The estimated available bandwidth reveals some information of the health of the 
 
 The SimulcastUplinkPolicy implements the following logic:
 
-| Publishers | Estimated Uplink Bandwidth |     Simulcast stream 1   |    Simulcast stream 2    |
-|-----------:|:--------------------------:|:------------------------:|:------------------------:|
-|   <= 4 and |        >= 1000 kbps        | 1280x720@15fps 1200 kbps | 320x180@15fps 300 kbps   |
-|   <= 6 and |        >= 350 kbps         |  640x360@15fps 600 kbps  | 320x180@15fps 200 kbps   |
-|   <= 6 and |        > 300 kbps          |  640x360@15fps 600 kbps  | 320x180@15fps 150 kbps   |
-|   > 6  and |        >= 350 kbps         |  640x360@15fps 350 kbps  | 320x180@15fps 200 kbps   |
-|   > 6  and |        >= 300 kbps         |  640x360@15fps 350 kbps  | 320x180@15fps 150 kbps   |
-|    Any     |        < 300 kbps          |         Not used         | 320x180@15fps 300 kbps   |
+|  Publishers/Attendees  | Estimated Uplink Bandwidth |     Simulcast stream 1   |    Simulcast stream 2    |
+|-----------------------:|:--------------------------:|:------------------------:|:------------------------:|
+|  Attendees <= 2        |           Any              | 1280x720@15fps 1200 kbps |         Not used         |
+|  Publishers <= 4 and   |        >= 1000 kbps        | 1280x720@15fps 1200 kbps | 320x180@15fps 300 kbps   |
+|  Publishers  <= 6 and  |        >= 350 kbps         |  640x360@15fps 600 kbps  | 320x180@15fps 200 kbps   |
+|  Publishers  <= 6 and  |        > 300 kbps          |  640x360@15fps 600 kbps  | 320x180@15fps 150 kbps   |
+|  Publishers > 6  and   |        >= 350 kbps         |  640x360@15fps 350 kbps  | 320x180@15fps 200 kbps   |
+|  Publishers > 6  and   |        >= 300 kbps         |  640x360@15fps 350 kbps  | 320x180@15fps 150 kbps   |
+|  Any number publishers |        < 300 kbps          |         Not used         | 320x180@15fps 300 kbps   |
 
 The table entries represent the maximum configuration.  When CPU and bandwidth consumption is overused, WebRTC will dynamically adjust bitrate, disable a layer or scale down resolution. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.
 

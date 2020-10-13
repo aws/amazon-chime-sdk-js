@@ -215,6 +215,14 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     return this.highestQualityStreamFromEachGroupExcludingSelf(selfAttendeeId).array().length;
   }
 
+  numberOfParticipants(): number {
+    if (!!this.currentIndex.numParticipants) {
+      return this.currentIndex.numParticipants;
+    }
+
+    return -1;
+  }
+
   attendeeIdForTrack(trackId: string): string {
     const streamId: number = this.streamIdForTrack(trackId);
     if (streamId === undefined || !this.subscribeStreamToAttendeeMap) {
