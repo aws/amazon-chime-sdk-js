@@ -10,7 +10,6 @@ export default class NoVideoDownlinkBandwidthPolicy implements VideoDownlinkBand
   reset(): void {}
   updateIndex(_videoIndex: DefaultVideoStreamIndex): void {}
   updateMetrics(_clientMetricReport: ClientMetricReport): void {}
-  updateCalculatedOptimalReceiveSet(): void {}
   wantsResubscribe(): boolean {
     return false;
   }

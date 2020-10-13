@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No video after connection failure
 - Fix video track sometimes being removed and added on simulcast receive stream switch
 - Enabled termination protection for serverless demo cloudformation stack
+- Simulcast optimizations
 
 ## [1.19.0] - 2020-09-29
 ### Added

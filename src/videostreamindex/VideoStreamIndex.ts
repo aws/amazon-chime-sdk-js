@@ -64,6 +64,11 @@ export default interface VideoStreamIndex {
   numberOfVideoPublishingParticipantsExcludingSelf(selfAttendeeId: string): number;
 
   /**
+   * Returns the number of video participants
+   */
+  numberOfParticipants(): number;
+
+  /**
    * Returns attendee id for a track id
    */
   attendeeIdForTrack(trackId: string): string;

@@ -11,6 +11,7 @@ import ConnectionMetrics from './ConnectionMetrics';
 import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 
 const enum ActiveStreams {
+  kHi,
   kHiAndLow,
   kMidAndLow,
   kLow,
@@ -30,7 +31,8 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
   static readonly kHiDisabledRate = 700;
   static readonly kMidDisabledRate = 240;
 
-  private numParticipants: number = 0;
+  private numSenders: number = 0;
+  private numParticipants: number = -1;
   private optimalParameters: DefaultVideoAndEncodeParameter;
   private parametersInEffect: DefaultVideoAndEncodeParameter;
 
@@ -96,7 +98,7 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
   }
 
   private calculateEncodingParameters(
-    numParticipantsChanged: boolean
+    numSendersChanged: boolean
   ): Map<string, RTCRtpEncodingParameters> {
     // bitrates parameter min is not used for now
     const newBitrates: BitrateParameters[] = [
@@ -107,7 +109,11 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
 
     let hysteresisIncrease = 0,
       hysteresisDecrease = 0;
-    if (this.currentActiveStreams === ActiveStreams.kHiAndLow) {
+    if (this.currentActiveStreams === ActiveStreams.kHi) {
+      // Don't trigger redetermination based on rate if only one simulcast stream
+      hysteresisIncrease = this.lastUplinkBandwidthKbps + 1;
+      hysteresisDecrease = 0;
+    } else if (this.currentActiveStreams === ActiveStreams.kHiAndLow) {
       hysteresisIncrease = 2400;
       hysteresisDecrease = SimulcastUplinkPolicy.kHiDisabledRate;
     } else if (this.currentActiveStreams === ActiveStreams.kMidAndLow) {
@@ -119,12 +125,18 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
     }
 
     if (
-      numParticipantsChanged ||
+      numSendersChanged ||
       this.lastUplinkBandwidthKbps >= hysteresisIncrease ||
       this.lastUplinkBandwidthKbps <= hysteresisDecrease
     ) {
-      if (
-        this.numParticipants <= 4 &&
+      if (this.numParticipants >= 0 && this.numParticipants <= 2) {
+        // Simulcast disabled
+        this.newActiveStreams = ActiveStreams.kHi;
+        newBitrates[0].maxBitrateKbps = 0;
+        newBitrates[1].maxBitrateKbps = 0;
+        newBitrates[2].maxBitrateKbps = 1200;
+      } else if (
+        this.numSenders <= 4 &&
         this.lastUplinkBandwidthKbps >= SimulcastUplinkPolicy.kHiDisabledRate
       ) {
         // 320x192+ (640x384)  + 1280x768
@@ -136,7 +148,7 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
         // 320x192 + 640x384 + (1280x768)
         this.newActiveStreams = ActiveStreams.kMidAndLow;
         newBitrates[0].maxBitrateKbps = this.lastUplinkBandwidthKbps >= 350 ? 200 : 150;
-        newBitrates[1].maxBitrateKbps = this.numParticipants <= 6 ? 600 : 350;
+        newBitrates[1].maxBitrateKbps = this.numSenders <= 6 ? 600 : 350;
         newBitrates[2].maxBitrateKbps = 0;
       } else {
         // 320x192 + 640x384 + (1280x768)
@@ -154,9 +166,9 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
         this.logger.info(
           `simulcast: policy:calculateEncodingParameters bw:${
             this.lastUplinkBandwidthKbps
-          } numSources:${this.numParticipants} newQualityMap: ${this.getQualityMapString(
-            this.newQualityMap
-          )}`
+          } numSources:${this.numSenders} numClients:${
+            this.numParticipants
+          } newQualityMap: ${this.getQualityMapString(this.newQualityMap)}`
         );
       }
     }
@@ -183,9 +195,14 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
   updateIndex(videoIndex: VideoStreamIndex): void {
     // the +1 for self is assuming that we intend to send video, since
     // the context here is VideoUplinkBandwidthPolicy
-    const numParticipants =
+    const numSenders =
       videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) + 1;
-    const numParticipantsChanged = numParticipants !== this.numParticipants;
+    const numParticipants = videoIndex.numberOfParticipants();
+    const numSendersChanged = numSenders !== this.numSenders;
+    const numParticipantsChanged =
+      (numParticipants > 2 && this.numParticipants <= 2) ||
+      (numParticipants <= 2 && this.numParticipants > 2);
+    this.numSenders = numSenders;
     this.numParticipants = numParticipants;
     this.optimalParameters = new DefaultVideoAndEncodeParameter(
       this.captureWidth(),
@@ -195,7 +212,9 @@ export default class SimulcastUplinkPolicy implements VideoUplinkBandwidthPolicy
       false
     );
     this.videoIndex = videoIndex;
-    this.newQualityMap = this.calculateEncodingParameters(numParticipantsChanged);
+    this.newQualityMap = this.calculateEncodingParameters(
+      numSendersChanged || numParticipantsChanged
+    );
   }
 
   wantsResubscribe(): boolean {
