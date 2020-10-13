@@ -15,6 +15,7 @@ describe('MeetingSessionConfiguration', () => {
       expect(configuration.credentials).to.be.null;
       expect(configuration.meetingId).to.be.null;
       expect(configuration.urls).to.be.null;
+      expect(configuration.maxVideoStreamsSubscribeTo).to.equal(16);
     });
 
     it('can take a CreateMeeting and CreateAttendee response object', () => {

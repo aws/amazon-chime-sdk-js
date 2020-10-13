@@ -98,5 +98,22 @@ describe('DefaultMeetingSession', () => {
       expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
       mockBuilder.cleanup();
     });
+
+    it('can set maxVideos in JoinFrame with meeting session configuration', () => {
+      const domBehavior = new DOMMockBehavior();
+      const mockBuilder = new DOMMockBuilder(domBehavior);
+
+      const config = new NoOpAudioVideoController().configuration;
+
+      config.maxVideoStreamsSubscribeTo = 25;
+      const session = new DefaultMeetingSession(
+        config,
+        new NoOpLogger(),
+        new NoOpDeviceController()
+      );
+      expect(session).to.exist;
+      expect(session.configuration.maxVideoStreamsSubscribeTo).to.equal(25);
+      mockBuilder.cleanup();
+    });
   });
 });

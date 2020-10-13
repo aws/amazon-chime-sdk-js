@@ -91,6 +91,11 @@ export default class MeetingSessionConfiguration {
   videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy = null;
 
   /**
+   * Maximum number of video streams the current attendee want to subscribe.
+   */
+  maxVideoStreamsSubscribeTo: number = 16;
+
+  /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
    * chime:CreateAttendee response. You can pass in either a JSON object containing the
    * responses, or a JSON object containing the information in the Meeting and Attendee

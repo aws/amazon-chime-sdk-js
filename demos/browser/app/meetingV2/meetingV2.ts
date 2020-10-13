@@ -709,6 +709,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.attendeePresenceTimeoutMs = 5000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
+    configuration.maxVideoStreamsSubscribeTo = DemoTileOrganizer.MAX_TILES;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
     this.audioVideo = this.meetingSession.audioVideo;
 
