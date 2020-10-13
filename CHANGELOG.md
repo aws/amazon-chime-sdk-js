@@ -25,7 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update meeting readiness checker demo app with new regions CPT, MXP, BOM and ICN
 - Update meeting readiness checker demo app to create meeting after the checker starts
 - Alter the versioning script to require less ritual
-- Correct TypeScript build to generate correct artifacts in `build/`
 
 ### Removed
 
@@ -36,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix video track sometimes being removed and added on simulcast receive stream switch
 - Enabled termination protection for serverless demo cloudformation stack
 - Simulcast optimizations
+- Correct TypeScript build to generate correct artifacts in `build/`
+- Correct TypeScript configuration for demo app
 
 ## [1.19.0] - 2020-09-29
 ### Added
