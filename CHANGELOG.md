@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update meeting readiness checker demo app with new regions CPT, MXP, BOM and ICN
 - Update meeting readiness checker demo app to create meeting after the checker starts
 - Alter the versioning script to require less ritual
+- Correct TypeScript build to generate correct artifacts in `build/`
+- Fall back to `null` device if there is any error while acquiring the audio device
 
 ### Removed
 

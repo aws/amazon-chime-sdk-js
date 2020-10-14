@@ -1052,6 +1052,7 @@ export default class DOMMockBuilder {
 
       constructor() {
         this.stream = new GlobalAny.MediaStream();
+        this.stream.id = 'destination-stream-id';
 
         // For testing the "ended" event handler, dispatch the "ended" event right after
         // initialization.
