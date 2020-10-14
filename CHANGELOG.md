@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Test] Make sure to reset ready status between retries
 - No video after connection failure
 - Fix video track sometimes being removed and added on simulcast receive stream switch
-- Enabled termination protection for serverless demo cloudformation stack
+- Enabled termination protection for serverless demo CloudFormation stack
 - Simulcast optimizations
 - Correct TypeScript build to generate correct artifacts in `build/`
 - Correct TypeScript configuration for demo app
