@@ -19,3 +19,7 @@ if changelog.length == 0
   STDERR.puts "No CHANGELOG.md entries since #{base}."
   exit 1
 end
+
+# Pull in package fixes automatically.
+verbose('npm audit fix')
+
