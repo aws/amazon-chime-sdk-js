@@ -954,8 +954,8 @@ const networkUDPFeedback = await meetingReadinessChecker.checkNetworkUDPConnecti
 console.log(`Feedback result: ${CheckNetworkUDPConnectivityFeedback[networkUDPFeedback]}`);
 
 // Tests for TCP network connectivity
-const networkUDPFeedback = await meetingReadinessChecker.checkNetworkTCPConnectivity();
-console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkUDPFeedback]}`);
+const networkTCPFeedback = await meetingReadinessChecker.checkNetworkTCPConnectivity();
+console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}`);
 ```
 
 Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
