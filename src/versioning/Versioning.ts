@@ -19,12 +19,7 @@ export default class Versioning {
    * Return string representation of SDK version
    */
   static get sdkVersion(): string {
-    // This is a temporary hack to make the PR that adds this code build
-    // before we do our first tagged release -- the Git tag that we read
-    // to generate `version.ts` is absent, and will be until someone runs
-    // `publish` in this new world.
-    /* istanbul ignore next */
-    return VERSION.semverString || '1.19.15';
+    return VERSION.semverString;
   }
 
   /**
