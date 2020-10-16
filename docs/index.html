@@ -165,7 +165,7 @@
 
 <span class="hljs-comment">// You must use &quot;us-east-1&quot; as the region for Chime API and set the endpoint.</span>
 <span class="hljs-keyword">const</span> chime = <span class="hljs-keyword">new</span> AWS.Chime({ <span class="hljs-attr">region</span>: <span class="hljs-string">&#x27;us-east-1&#x27;</span> });
-chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class="hljs-string">&#x27;https://service.chime.aws.amazon.com/console&#x27;</span>);
+chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class="hljs-string">&#x27;https://service.chime.aws.amazon.com&#x27;</span>);
 
 <span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-keyword">await</span> chime.createMeeting({
   <span class="hljs-attr">ClientRequestToken</span>: uuid(),
@@ -465,6 +465,7 @@ meetingSession.audioVideo.startLocalVideoTile();</code></pre>
     }
 
     <span class="hljs-comment">// videoTileDidUpdate is also invoked when you call startLocalVideoTile or tileState changes.</span>
+    <span class="hljs-comment">// The tileState.active can be false in poor Internet connection, when the user paused the video tile, or when the video tile first arrived.</span>
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`If you called stopLocalVideoTile, <span class="hljs-subst">${tileState.active}</span> is false.`</span>);
     meetingSession.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     localTileId = tileState.tileId;
@@ -893,8 +894,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkUDPConnectivityFeedback[networkUDPFeedback]}</span>`</span>);
 
 <span class="hljs-comment">// Tests for TCP network connectivity</span>
-<span class="hljs-keyword">const</span> networkUDPFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkNetworkTCPConnectivity();
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkTCPConnectivityFeedback[networkUDPFeedback]}</span>`</span>);</code></pre>
+<span class="hljs-keyword">const</span> networkTCPFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkNetworkTCPConnectivity();
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}</span>`</span>);</code></pre>
 				<p>Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.</p>
 			</div>
 		</div>
