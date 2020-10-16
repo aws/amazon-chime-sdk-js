@@ -104,7 +104,7 @@ const { v4: uuid } = require('uuid');
 
 // You must use "us-east-1" as the region for Chime API and set the endpoint.
 const chime = new AWS.Chime({ region: 'us-east-1' });
-chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com/console');
+chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com');
 
 const meetingResponse = await chime.createMeeting({
   ClientRequestToken: uuid(),
@@ -459,6 +459,7 @@ const observer = {
     }
 
     // videoTileDidUpdate is also invoked when you call startLocalVideoTile or tileState changes.
+    // The tileState.active can be false in poor Internet connection, when the user paused the video tile, or when the video tile first arrived.
     console.log(`If you called stopLocalVideoTile, ${tileState.active} is false.`);
     meetingSession.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     localTileId = tileState.tileId;
@@ -954,8 +955,8 @@ const networkUDPFeedback = await meetingReadinessChecker.checkNetworkUDPConnecti
 console.log(`Feedback result: ${CheckNetworkUDPConnectivityFeedback[networkUDPFeedback]}`);
 
 // Tests for TCP network connectivity
-const networkUDPFeedback = await meetingReadinessChecker.checkNetworkTCPConnectivity();
-console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkUDPFeedback]}`);
+const networkTCPFeedback = await meetingReadinessChecker.checkNetworkTCPConnectivity();
+console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}`);
 ```
 
 Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
