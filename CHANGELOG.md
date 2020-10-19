@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - [Documentation] Update README to add information about `tileState.active`
+- Update PR template to ask demo testing question
 
 ### Removed
 
