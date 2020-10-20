@@ -72,7 +72,7 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
             break;
           }
         }
-        if (!attendeeHasNewStreamId) {
+        if (!attendeeHasNewStreamId && !!attendeeId) {
           this.realtimeController.realtimeSetAttendeeIdPresence(
             attendeeId,
             false,
