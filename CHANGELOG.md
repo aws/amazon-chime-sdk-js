@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Reduced sessionId resolution to 32 bits and removed Long dependency
 
 ## [1.20.0] - 2020-10-15
 ### Added
