@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "1.20.1",
+  "version": "1.20.2",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -73,8 +73,7 @@
     "@types/dom-mediacapture-record": "^1.0.4",
     "detect-browser": "^5.1.0",
     "protobufjs": "~6.8.8",
-    "resize-observer": "^1.0.0",
-    "long": "^4.0.0"
+    "resize-observer": "^1.0.0"
   },
   "license": "Apache-2.0",
   "repository": {
