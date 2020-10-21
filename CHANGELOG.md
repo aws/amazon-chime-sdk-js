@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Reduced sessionId resolution to 32 bits and removed Long dependency
+- Handle case where meeting or attendee response properties can accept null or undefined
+
 
 ## [1.20.0] - 2020-10-15
 ### Added

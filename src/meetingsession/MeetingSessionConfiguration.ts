@@ -177,7 +177,9 @@ export default class MeetingSessionConfiguration {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private toLowerCasePropertyNames(input: any): any {
-    if (typeof input !== 'object') {
+    if (input === null) {
+      return null;
+    } else if (typeof input !== 'object') {
       return input;
     } else if (Array.isArray(input)) {
       return input.map(this.toLowerCasePropertyNames);
