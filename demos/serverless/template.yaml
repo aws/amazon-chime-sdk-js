@@ -89,6 +89,8 @@ Resources:
         Enabled: true
   MeetingNotificationsQueue:
     Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: 'alias/aws/sqs'
   ChimeSdkIndexLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
