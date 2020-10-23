@@ -70,11 +70,11 @@ const getBrowserStackOptions = (capabilities) => {
 
 const getBrowserStackUrl = () => {
   return (
-    'http://' +
+    'https://' +
     process.env.BROWSER_STACK_USERNAME +
     ':' +
     process.env.BROWSER_STACK_ACCESSKEY +
-    '@hub.browserstack.com/wd/hub'
+    '@hub-cloud.browserstack.com/wd/hub'
   );
 };
 
