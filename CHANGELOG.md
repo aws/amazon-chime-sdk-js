@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Demo] Add default SSE to meeting notifications queue in CF template
 
 ### Changed
+- Removed check for iceGatheringState to be complete for bypassing gathering ice candidate again
 
 ### Removed
 
