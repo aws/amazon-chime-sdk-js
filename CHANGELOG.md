@@ -16,6 +16,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Update the clicking sound answer in FAQs
 
+## 2.0
+### Added
+
+### Changed
+- The project now produces ES2015 output, rather than ES5 output that refers to ES2015
+  features. The SDK supports only modern browsers, and is increasingly dependent on ES2015
+  features. This change leads to more compact bundles and aligns the supported JavaScript
+  language variant with the supported runtime features.
+
+  If you need your built application bundle to target browsers that do not
+  support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code
+  using a transpiler like Babel, or split your application bundle into multiple files that can
+  be conditionally loaded. Note that transpiling some parts of the SDK, e.g., Voice Focus, might
+  result in ES5 code that does not work when run.
+
+### Removed
+
+### Fixed
+
 ## [1.22.0] - 2020-11-10
 ### Added
 - Add github actions continuous integration workflow and deploy workflow
