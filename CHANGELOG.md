@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [Documentation] Updated HTTP to HTTPS in README URL links
 - [Test] Updated browserstack URL formation to use HTTPS
+- [Demo] change optional feature selection to be list of input box to allow combination
 
 ### Removed
 

@@ -133,7 +133,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   audioVideo: AudioVideoFacade | null = null;
   tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
   canStartLocalVideo: boolean = true;
-  defaultBrowserBehaviour: DefaultBrowserBehavior;
+  defaultBrowserBehaviour: DefaultBrowserBehavior = new DefaultBrowserBehavior();;
   // eslint-disable-next-line
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
@@ -194,15 +194,23 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     } else {
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
     }
-    this.defaultBrowserBehaviour = new DefaultBrowserBehavior();
   }
 
   initEventListeners(): void {
+    if (!this.defaultBrowserBehaviour.hasChromiumWebRTC()) {
+      (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
+      (document.getElementById('planB') as HTMLInputElement).disabled = true;
+    }
+    
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
       this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
       this.name = (document.getElementById('inputName') as HTMLInputElement).value;
       this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
+      this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
+      this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
+      // js sdk default to enable unified plan, equivalent to "Disable Unified Plan" default unchecked
+      this.enableUnifiedPlanForChromiumBasedBrowsers = !(document.getElementById('planB') as HTMLInputElement).checked;
       new AsyncScheduler().start(
         async (): Promise<void> => {
           let chimeMeetingId: string = '';
@@ -315,28 +323,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
         await this.openVideoInputFromSelection(videoInput.value, true);
       } catch (err) {
         this.log('no video input device selected');
-      }
-    });
-
-    const optionalFeatures = document.getElementById('optional-features') as HTMLSelectElement;
-    optionalFeatures.addEventListener('change', async (_ev: Event) => {
-      const collections = optionalFeatures.selectedOptions;
-      this.enableSimulcast = false;
-      this.enableWebAudio = false;
-      this.enableUnifiedPlanForChromiumBasedBrowsers = true;
-      this.log("Feature lists:");
-      for (let i = 0; i < collections.length; i++) {
-        // hard code magic
-        if (collections[i].value === 'simulcast') {
-          this.enableSimulcast = true;
-          this.log('attempt to enable simulcast');
-          const videoInputQuality = document.getElementById('video-input-quality') as HTMLSelectElement;
-          videoInputQuality.value = '720p';
-        }
-        if (collections[i].value === 'webaudio') {
-          this.enableWebAudio = true;
-          this.log('attempt to enable webaudio');
-        }
       }
     });
 
