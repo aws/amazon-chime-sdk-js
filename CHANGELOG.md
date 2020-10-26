@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add simulcast uplink policy layer change notification methods and observer
 - Add `getRemoteVideoSources` method and `remoteVideoSourcesDidChange` observer
 - [Documentation] Add question to FAQ about android chrome bluetooth audio devices
+- Add verddacio script to automate verdaccio workflow
 
 ### Changed
 - [Documentation] Updated HTTP to HTTPS in README URL links
