@@ -54,13 +54,17 @@ And review the following guides:
 
 ## Installation
 
-Make sure you have Node.js version 10 and higher.
+Make sure you have Node.js version 10 or higher. Node 14 is recommended and supported.
+
 To add the Amazon Chime SDK for JavaScript into an existing application,
 install the package directly from npm:
 
 ```
 npm install amazon-chime-sdk-js --save
 ```
+
+Note that the Amazon Chime SDK for JavaScript targets ES2015, which is fully compatible with
+all supported browsers.
 
 ## Setup
 
@@ -417,7 +421,7 @@ meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
 > Note: In Chime SDK terms, a video tile is an object containing an attendee ID,
 a video stream, etc. To view a video in your application, you must bind a tile to a `<video>` element.
 > - Make sure you bind a tile to the same video element until the tile is removed.
-> - A local video tile can be identified using `localTile` property. 
+> - A local video tile can be identified using `localTile` property.
 > - A tile is created with a new tile ID when the same remote attendee restarts the video.
 
 **Use case 13.** Start sharing your video. The local video element is flipped horizontally (mirrored mode).

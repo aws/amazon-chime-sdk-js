@@ -49,6 +49,10 @@ You can be notified about Amazon Chime service interruptions at the https://stat
 
 You can find the complete list of browsers in this link: [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers). [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) support in a browser is a prerequisite for Amazon Chime SDK to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.
 
+The SDK is built to target ES2015, both syntax and features. If you need your built application bundle to target legacy browsers that do not support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code using a transpiler like Babel, split your application bundle into multiple files that can be built with different targets and conditionally loaded, or generate multiple versions of your application to target specific browsers.
+
+Note that due to limitations in transpilers, requirements of the web platform might result in transpiled ES5 code that raises an error when run, such as "Please use the 'new' operator, this DOM object constructor cannot be called as a function". Prefer using ES2015 code on supported platforms.
+
 ### I am unable to select an audio output device in some browsers, is this a known issue?
 
 [Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.
