@@ -24,7 +24,7 @@ import ScreenSharingSessionObserver from '../../src/screensharingsession/ScreenS
 import PromisedWebSocketMock from '../promisedwebsocketmock/PromisedWebSocketMock';
 import ScreenShareStreamingMock from '../screensharestreamingmock/ScreenShareStreamingMock';
 
-describe('DefaultScreenSharingSession', function() {
+describe('DefaultScreenSharingSession', function () {
   const timeSliceMs = 100;
   const messageSerialization = Substitute.for<ScreenSharingMessageSerialization>();
   const logging = new NoOpLogger(LogLevel.DEBUG);

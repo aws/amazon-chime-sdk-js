@@ -1,8 +1,9 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import * as chai from 'chai';
 import 'mocha';
+
+import * as chai from 'chai';
 
 import DefaultDOMWebSocket from '../../src/domwebsocket/DefaultDOMWebSocket';
 import DefaultDOMWebSocketFactory from '../../src/domwebsocket/DefaultDOMWebSocketFactory';

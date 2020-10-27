@@ -29,7 +29,8 @@ import BaseTask from './BaseTask';
 /*
  * [[MonitorTask]] monitors connections using SignalingAndMetricsConnectionMonitor.
  */
-export default class MonitorTask extends BaseTask
+export default class MonitorTask
+  extends BaseTask
   implements AudioVideoObserver, RemovableObserver, SignalingClientObserver {
   protected taskName = 'MonitorTask';
 
