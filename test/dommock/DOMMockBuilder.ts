@@ -867,7 +867,7 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.fetch = function fetch(_input: RequestInfo, _init?: RequestInit): Promise<Response> {
-      return new Promise<Response>(function(resolve, reject) {
+      return new Promise<Response>(function (resolve, reject) {
         asyncWait(() => {
           if (mockBehavior.fetchSucceeds) {
             resolve(new Response());

@@ -23,7 +23,8 @@ import BaseTask from './BaseTask';
 /*
  * [[ReceiveVideoStreamIndexTask]] receives [[SdkIndexFrame]] and updates [[VideoUplinkBandwidthPolicy]] and [[VideoDownlinkBandwidthPolicy]].
  */
-export default class ReceiveVideoStreamIndexTask extends BaseTask
+export default class ReceiveVideoStreamIndexTask
+  extends BaseTask
   implements SignalingClientObserver, RemovableObserver {
   protected taskName = 'ReceiveVideoStreamIndexTask';
 
