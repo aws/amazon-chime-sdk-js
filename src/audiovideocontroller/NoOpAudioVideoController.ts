@@ -15,6 +15,7 @@ export default class NoOpAudioVideoController extends DefaultAudioVideoControlle
   constructor(configuration?: MeetingSessionConfiguration) {
     const emptyConfiguration = new MeetingSessionConfiguration();
     emptyConfiguration.meetingId = '';
+    emptyConfiguration.externalMeetingId = '';
     emptyConfiguration.credentials = new MeetingSessionCredentials();
     emptyConfiguration.credentials.attendeeId = '';
     emptyConfiguration.credentials.joinToken = '';

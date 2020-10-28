@@ -71,9 +71,11 @@
   },
   "dependencies": {
     "@types/dom-mediacapture-record": "^1.0.4",
+    "@types/ua-parser-js": "^0.7.33",
     "detect-browser": "^5.1.0",
     "protobufjs": "~6.8.8",
-    "resize-observer": "^1.0.0"
+    "resize-observer": "^1.0.0",
+    "ua-parser-js": "^0.7.22"
   },
   "license": "Apache-2.0",
   "repository": {

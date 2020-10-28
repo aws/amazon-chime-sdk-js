@@ -5,6 +5,7 @@ import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetecto
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioVideoControllerFacade from '../audiovideocontroller/AudioVideoControllerFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -42,7 +43,7 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   /**
    * Restarts the peer connection and/or the session.
    */
-  reconnect(status: MeetingSessionStatus): boolean;
+  reconnect(status: MeetingSessionStatus, error: Error | null): boolean;
 
   /**
    * Handles the meeting session status and returns true if it will restart the session.
@@ -63,11 +64,6 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
    * Resumes receiving stream on peer connection by streamId
    */
   resumeReceivingStream(streamId: number): void;
-
-  /**
-   * Handle an event related to the meeting along with attributes of the event
-   */
-  handleEvent(name: string, attributes?: { [attributeName: string]: string | string[] }): void;
 
   /**
    * Returns the session configuration for this audio-video controller.
@@ -109,4 +105,9 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
    * Returns the [[AudioMixController]] for this audio-video controller.
    */
   readonly audioMixController: AudioMixController;
+
+  /**
+   * Returns the [[EventController]] for this audio-video controller.
+   */
+  readonly eventController: EventController;
 }

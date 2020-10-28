@@ -5,6 +5,7 @@ import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import ConnectionMonitor from '../connectionmonitor/ConnectionMonitor';
+import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -115,9 +116,13 @@ export default class AudioVideoControllerState {
 
   enableSimulcast: boolean = false;
 
-  openSignalingConnectionDuration: number | null = null;
+  eventController: EventController | null = null;
 
-  meetingDuration: number | null = null;
+  signalingOpenDurationMs: number | null = null;
 
-  poorConnectionCount: number | null = null;
+  poorConnectionCount: number = 0;
+
+  maxVideoTileCount: number = 0;
+
+  startTimeMs: number | null = null;
 }

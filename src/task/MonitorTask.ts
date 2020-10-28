@@ -23,6 +23,7 @@ import SignalingClientObserver from '../signalingclientobserver/SignalingClientO
 import { ISdkBitrateFrame } from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import VideoLogEvent from '../statscollector/VideoLogEvent';
+import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
 
 /*
@@ -40,6 +41,7 @@ export default class MonitorTask extends BaseTask
   private static DEFAULT_DOWNLINK_CALLRATE_UNDERSHOOT_FACTOR: number = 0.5;
   private currentVideoDownlinkBandwidthEstimationKbps: number = 10000;
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
+  private hasSignalingError: boolean = false;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -80,6 +82,13 @@ export default class MonitorTask extends BaseTask
     this.context.connectionMonitor.start();
     this.context.statsCollector.start(this.context.signalingClient, this.context.videoStreamIndex);
     this.context.signalingClient.registerObserver(this);
+  }
+
+  videoTileDidUpdate(_tileState: VideoTileState): void {
+    this.context.maxVideoTileCount = Math.max(
+      this.context.maxVideoTileCount,
+      this.context.videoTileController.getAllVideoTiles().length
+    );
   }
 
   videoSendHealthDidChange(bitrateKbps: number, packetsPerSecond: number): void {
@@ -269,6 +278,7 @@ export default class MonitorTask extends BaseTask
       this.logger.info(`unusable audio warning is now: ${unusableAudioWarningValue}`);
       if (unusableAudioWarningValue === 0) {
         this.context.poorConnectionCount += 1;
+        this.context.eventController?.pushMeetingState('receivingAudioDropped');
         if (this.context.videoTileController.haveVideoTilesWithStreams()) {
           this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
             Maybe.of(observer.connectionDidSuggestStopVideo).map(f => f.bind(observer)());
@@ -319,19 +329,32 @@ export default class MonitorTask extends BaseTask
   }
 
   handleSignalingClientEvent(event: SignalingClientEvent): void {
-    if (event.type !== SignalingClientEventType.ReceivedSignalFrame) {
-      return;
+    // Don't add two or more consecutive "signalingDropped" states.
+    if (
+      (event.type === SignalingClientEventType.WebSocketClosed &&
+        (event.closeCode === 4410 || (event.closeCode >= 4500 && event.closeCode < 4600))) ||
+      event.type === SignalingClientEventType.WebSocketError ||
+      event.type === SignalingClientEventType.WebSocketFailed
+    ) {
+      if (!this.hasSignalingError) {
+        this.context.eventController?.pushMeetingState('signalingDropped');
+        this.hasSignalingError = true;
+      }
+    } else if (event.type === SignalingClientEventType.WebSocketOpen) {
+      this.hasSignalingError = false;
     }
 
-    if (!!event.message.bitrates) {
-      const bitrateFrame: ISdkBitrateFrame = event.message.bitrates;
-      this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);
-      this.context.videoDownlinkBandwidthPolicy.updateIndex(this.context.videoStreamIndex);
-      this.handleBitrateFrame(event.message.bitrates);
-    }
-    const status = MeetingSessionStatus.fromSignalFrame(event.message);
-    if (status.statusCode() !== MeetingSessionStatusCode.OK) {
-      this.context.audioVideoController.handleMeetingSessionStatus(status, null);
+    if (event.type === SignalingClientEventType.ReceivedSignalFrame) {
+      if (!!event.message.bitrates) {
+        const bitrateFrame: ISdkBitrateFrame = event.message.bitrates;
+        this.context.videoStreamIndex.integrateBitratesFrame(bitrateFrame);
+        this.context.videoDownlinkBandwidthPolicy.updateIndex(this.context.videoStreamIndex);
+        this.handleBitrateFrame(event.message.bitrates);
+      }
+      const status = MeetingSessionStatus.fromSignalFrame(event.message);
+      if (status.statusCode() !== MeetingSessionStatusCode.OK) {
+        this.context.audioVideoController.handleMeetingSessionStatus(status, null);
+      }
     }
   }
 

@@ -17,10 +17,13 @@ const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT);
 
 // Read resource names from the environment
-const meetingsTableName = process.env.MEETINGS_TABLE_NAME;
-const logGroupName = process.env.BROWSER_LOG_GROUP_NAME;
-const sqsQueueArn = process.env.SQS_QUEUE_ARN;
-const useSqsInsteadOfEventBridge = process.env.USE_EVENT_BRIDGE === 'false';
+const {
+  MEETINGS_TABLE_NAME,
+  BROWSER_LOG_GROUP_NAME,
+  BROWSER_MEETING_EVENT_LOG_GROUP_NAME,
+  SQS_QUEUE_ARN,
+  USE_EVENT_BRIDGE
+} = process.env;
 
 // === Handlers ===
 
@@ -53,7 +56,7 @@ exports.join = async(event, context) => {
       MediaRegion: query.region,
 
       // Set up SQS notifications if being used
-      NotificationsConfiguration: useSqsInsteadOfEventBridge ? { SqsQueueArn: sqsQueueArn } : {},
+      NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? { SqsQueueArn: SQS_QUEUE_ARN } : {},
 
       // Any meeting ID you wish to associate with the meeting.
       // For simplicity here, we use the meeting title.
@@ -104,45 +107,36 @@ exports.end = async (event, context) => {
 };
 
 exports.logs = async (event, context) => {
-  const body = JSON.parse(event.body);
-  if (!body.logs || !body.meetingId || !body.attendeeId || !body.appName) {
-    return response(400, 'application/json', JSON.stringify({error: 'Need properties: logs, meetingId, attendeeId, appName'}));
-  } else if (!body.logs.length) {
-    return response(200, 'application/json', JSON.stringify({}));
-  }
-
-  const logStreamName = `ChimeSDKMeeting_${body.meetingId.toString()}_${body.attendeeId.toString()}`;
-  const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
-  const putLogEventsInput = {
-    logGroupName: logGroupName,
-    logStreamName: logStreamName
-  };
-  const uploadSequence = await ensureLogStream(cloudWatchClient, logStreamName);
-  if (uploadSequence) {
-    putLogEventsInput.sequenceToken = uploadSequence;
-  }
-  const logEvents = [];
-  for (let i = 0; i < body.logs.length; i++) {
-    const log = body.logs[i];
-    const timestamp = new Date(log.timestampMs).toISOString();
-    const message = `${timestamp} [${log.sequenceNumber}] [${log.logLevel}] [meeting: ${body.meetingId.toString()}] [attendee: ${body.attendeeId}]: ${log.message}`;
-    logEvents.push({
-      message: message,
-      timestamp: log.timestampMs
-    });
-  }
-  putLogEventsInput.logEvents = logEvents;
-  try {
-    await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
-  } catch (error) {
-    const errorMessage = `Failed to put CloudWatch log events with error ${error} and params ${JSON.stringify(putLogEventsInput)}`;
-    if (error.code === 'InvalidSequenceTokenException' || error.code === 'DataAlreadyAcceptedException') {
-      console.warn(errorMessage);
-    } else {
-      console.error(errorMessage);
+  return putLogEvents(event, BROWSER_LOG_GROUP_NAME, (logs, meetingId, attendeeId) => {
+    const logEvents = [];
+    for (let i = 0; i < logs.length; i++) {
+      const log = logs[i];
+      const timestamp = new Date(log.timestampMs).toISOString();
+      const message = `${timestamp} [${log.sequenceNumber}] [${log.logLevel}] [meeting: ${meetingId}] [attendee: ${attendeeId}]: ${log.message}`;
+      logEvents.push({
+        message: log.message,
+        timestamp: log.timestampMs
+      });
     }
-  }
-  return response(200, 'application/json', JSON.stringify({}));
+    return logEvents;
+  });
+};
+
+exports.log_meeting_event = async (event, context) => {
+  return putLogEvents(event, BROWSER_MEETING_EVENT_LOG_GROUP_NAME, (logs, meetingId, attendeeId) => {
+    const logEvents = [];
+    for (let i = 0; i < logs.length; i++) {
+      const log = logs[i];
+
+      // log.message must be a JSON string. CloudWatch Logs Insights will represent
+      // nested JSON fields using the dot notation, e.g. attributes.sdkVersion
+      logEvents.push({
+        message: log.message,
+        timestamp: log.timestampMs
+      });
+    }
+    return logEvents;
+  });
 };
 
 // Called when SQS receives records of meeting events and logs out those records
@@ -157,12 +151,20 @@ exports.event_bridge_handler = async (event, context, callback) => {
   return {};
 }
 
+exports.create_log_stream = async event => {
+  return createLogStream(event, BROWSER_LOG_GROUP_NAME);
+}
+
+exports.create_browser_event_log_stream = async event => {
+  return createLogStream(event, BROWSER_MEETING_EVENT_LOG_GROUP_NAME);
+}
+
 // === Helpers ===
 
 // Retrieves the meeting from the table by the meeting title
 async function getMeeting(title) {
   const result = await ddb.getItem({
-    TableName: meetingsTableName,
+    TableName: MEETINGS_TABLE_NAME,
     Key: {
       'Title': {
         S: title
@@ -175,7 +177,7 @@ async function getMeeting(title) {
 // Stores the meeting in the table using the meeting title as the key
 async function putMeeting(title, meeting) {
   await ddb.putItem({
-    TableName: meetingsTableName,
+    TableName: MEETINGS_TABLE_NAME,
     Item: {
       'Title': { S: title },
       'Data': { S: JSON.stringify(meeting) },
@@ -186,13 +188,48 @@ async function putMeeting(title, meeting) {
   }).promise();
 }
 
+async function putLogEvents(event, logGroupName, createLogEvents) {
+  const body = JSON.parse(event.body);
+  if (!body.logs || !body.meetingId || !body.attendeeId || !body.appName) {
+    return response(400, 'application/json', JSON.stringify({
+      error: 'Required properties: logs, meetingId, attendeeId, appName'
+    }));
+  } else if (!body.logs.length) {
+    return response(200, 'application/json', JSON.stringify({}));
+  }
+
+  const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+  const putLogEventsInput = {
+    logGroupName,
+    logStreamName: createLogStreamName(body.meetingId, body.attendeeId),
+    logEvents: createLogEvents(body.logs, body.meetingId, body.attendeeId)
+  };
+  const uploadSequenceToken = await ensureLogStream(cloudWatchClient, logGroupName, putLogEventsInput.logStreamName);
+  if (uploadSequenceToken) {
+    putLogEventsInput.sequenceToken = uploadSequenceToken;
+  }
+
+  try {
+    await cloudWatchClient.putLogEvents(putLogEventsInput).promise();
+  } catch (error) {
+    const errorMessage = `Failed to put CloudWatch log events with error ${error} and params ${JSON.stringify(putLogEventsInput)}`;
+    if (error.code === 'InvalidSequenceTokenException' || error.code === 'DataAlreadyAcceptedException') {
+      console.warn(errorMessage);
+    } else {
+      console.error(errorMessage);
+    }
+  }
+
+  return response(200, 'application/json', JSON.stringify({}));
+}
+
 // Creates log stream if necessary and returns the current sequence token
-async function ensureLogStream(cloudWatchClient, logStreamName) {
+async function ensureLogStream(cloudWatchClient, logGroupName, logStreamName) {
   const logStreamsResult = await cloudWatchClient.describeLogStreams({
     logGroupName: logGroupName,
     logStreamNamePrefix: logStreamName,
   }).promise();
-  const foundStream = logStreamsResult.logStreams.find(s => s.logStreamName === logStreamName);
+  const foundStream = logStreamsResult.logStreams.find(logStream => logStream.logStreamName === logStreamName);
   if (foundStream) {
     return foundStream.uploadSequenceToken;
   }
@@ -203,18 +240,23 @@ async function ensureLogStream(cloudWatchClient, logStreamName) {
   return null;
 }
 
-exports.create_log_stream = async (event, context, callback) => {
+async function createLogStream(event, logGroupName) {
   const body = JSON.parse(event.body);
   if (!body.meetingId || !body.attendeeId) {
-    return response(400, 'application/json', JSON.stringify({error: 'Need properties: meetingId, attendeeId'}));
+    return response(400, 'application/json', JSON.stringify({
+      error: 'Required properties: meetingId, attendeeId'
+    }));
   }
-  const logStreamName = `ChimeSDKMeeting_${body.meetingId.toString()}_${body.attendeeId.toString()}`;
   const cloudWatchClient = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
   await cloudWatchClient.createLogStream({
-    logGroupName: logGroupName,
-    logStreamName: logStreamName,
+    logGroupName,
+    logStreamName: createLogStreamName(body.meetingId, body.attendeeId)
   }).promise();
   return response(200, 'application/json', JSON.stringify({}));
+}
+
+function createLogStreamName(meetingId, attendeeId) {
+  return `ChimeSDKMeeting_${meetingId}_${attendeeId}`;
 }
 
 function response(statusCode, contentType, body) {

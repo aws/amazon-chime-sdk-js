@@ -10,6 +10,7 @@ import AudioMixControllerFacade from './audiomixcontroller/AudioMixControllerFac
 import AudioVideoController from './audiovideocontroller/AudioVideoController';
 import AudioVideoControllerFacade from './audiovideocontroller/AudioVideoControllerFacade';
 import AudioVideoControllerState from './audiovideocontroller/AudioVideoControllerState';
+import AudioVideoEventAttributes from './eventcontroller/AudioVideoEventAttributes';
 import AudioVideoFacade from './audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from './audiovideoobserver/AudioVideoObserver';
 import Backoff from './backoff/Backoff';
@@ -62,6 +63,7 @@ import DefaultDOMWebSocketFactory from './domwebsocket/DefaultDOMWebSocketFactor
 import DefaultDeviceController from './devicecontroller/DefaultDeviceController';
 import DefaultDevicePixelRatioMonitor from './devicepixelratiomonitor/DefaultDevicePixelRatioMonitor';
 import DefaultDragObserver from './dragobserver/DefaultDragObserver';
+import DefaultEventController from './eventcontroller/DefaultEventController';
 import DefaultJPEGDecoderComponentFactory from './jpegdecoder/DefaultJPEGDecoderComponentFactory';
 import DefaultJPEGDecoderController from './jpegdecoder/controller/DefaultJPEGDecoderController';
 import DefaultJPEGDecoderInstance from './jpegdecoder/instance/DefaultJPEGDecoderInstance';
@@ -107,6 +109,7 @@ import Device from './devicecontroller/Device';
 import DeviceChangeObserver from './devicechangeobserver/DeviceChangeObserver';
 import DeviceController from './devicecontroller/DeviceController';
 import DeviceControllerBasedMediaStreamBroker from './mediastreambroker/DeviceControllerBasedMediaStreamBroker';
+import DeviceEventAttributes from './eventcontroller/DeviceEventAttributes';
 import DevicePermission from './devicecontroller/DevicePermission';
 import DevicePixelRatioMonitor from './devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from './devicepixelratioobserver/DevicePixelRatioObserver';
@@ -118,6 +121,9 @@ import DragContext from './dragobserver/DragContext';
 import DragEvent from './dragobserver/DragEvent';
 import DragObserver from './dragobserver/DragObserver';
 import DragType from './dragobserver/DragType';
+import EventAttributes from './eventcontroller/EventAttributes';
+import EventController from './eventcontroller/EventController';
+import EventName from './eventcontroller/EventName';
 import FinishGatheringICECandidatesTask from './task/FinishGatheringICECandidatesTask';
 import FullJitterBackoff from './backoff/FullJitterBackoff';
 import FullJitterBackoffFactory from './backoff/FullJitterBackoffFactory';
@@ -146,6 +152,7 @@ import MediaRecordingEvent from './mediarecording/MediaRecordingEvent';
 import MediaRecordingFactory from './mediarecording/MediaRecordingFactory';
 import MediaRecordingOptions from './mediarecording/MediaRecordingOptions';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
+import MeetingHistoryState from './eventcontroller/MeetingHistoryState';
 import MeetingReadinessChecker from './meetingreadinesschecker/MeetingReadinessChecker';
 import MeetingReadinessCheckerConfiguration from './meetingreadinesschecker/MeetingReadinessCheckerConfiguration';
 import MeetingSession from './meetingsession/MeetingSession';
@@ -324,6 +331,7 @@ export {
   AudioVideoController,
   AudioVideoControllerFacade,
   AudioVideoControllerState,
+  AudioVideoEventAttributes,
   AudioVideoFacade,
   AudioVideoObserver,
   Backoff,
@@ -376,6 +384,7 @@ export {
   DefaultDeviceController,
   DefaultDevicePixelRatioMonitor,
   DefaultDragObserver,
+  DefaultEventController,
   DefaultJPEGDecoderComponentFactory,
   DefaultJPEGDecoderController,
   DefaultJPEGDecoderInstance,
@@ -421,6 +430,7 @@ export {
   DeviceChangeObserver,
   DeviceController,
   DeviceControllerBasedMediaStreamBroker,
+  DeviceEventAttributes,
   DevicePermission,
   DevicePixelRatioMonitor,
   DevicePixelRatioObserver,
@@ -432,6 +442,9 @@ export {
   DragEvent,
   DragObserver,
   DragType,
+  EventAttributes,
+  EventController,
+  EventName,
   FinishGatheringICECandidatesTask,
   FullJitterBackoff,
   FullJitterBackoffFactory,
@@ -460,6 +473,7 @@ export {
   MediaRecordingFactory,
   MediaRecordingOptions,
   MediaStreamBroker,
+  MeetingHistoryState,
   MeetingReadinessChecker,
   MeetingReadinessCheckerConfiguration,
   MeetingSession,
