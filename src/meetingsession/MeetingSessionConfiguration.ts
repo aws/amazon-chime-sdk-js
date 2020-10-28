@@ -22,6 +22,11 @@ export default class MeetingSessionConfiguration {
   meetingId: string | null = null;
 
   /**
+   * The external meeting id of the meeting the session is joining.
+   */
+  externalMeetingId: string | null = null;
+
+  /**
    * The credentials used to authenticate the session.
    */
   credentials: MeetingSessionCredentials | null = null;
@@ -144,6 +149,7 @@ export default class MeetingSessionConfiguration {
         createMeetingResponse = createMeetingResponse.meeting;
       }
       this.meetingId = createMeetingResponse.meetingid;
+      this.externalMeetingId = createMeetingResponse.externalmeetingid;
       this.urls = new MeetingSessionURLs();
       this.urls.audioHostURL = createMeetingResponse.mediaplacement.audiohosturl;
       this.urls.screenDataURL = createMeetingResponse.mediaplacement.screendataurl;

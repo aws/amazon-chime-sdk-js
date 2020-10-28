@@ -35,7 +35,7 @@ export default class OpenSignalingConnectionTask extends BaseTask {
         configuration.credentials.joinToken
       )
     );
-    const startTime = Date.now();
+    const startTimeMs = Date.now();
     try {
       await new Promise<void>((resolve, reject) => {
         class WebSocketOpenInterceptor implements SignalingClientObserver, TaskCanceler {
@@ -70,7 +70,7 @@ export default class OpenSignalingConnectionTask extends BaseTask {
     } catch (error) {
       throw error;
     } finally {
-      this.context.openSignalingConnectionDuration = Math.round(Date.now() - startTime);
+      this.context.signalingOpenDurationMs = Math.round(Date.now() - startTimeMs);
     }
   }
 }

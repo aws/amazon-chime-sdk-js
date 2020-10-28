@@ -1,0 +1,465 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>MeetingEvents | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="meetingevents.html">MeetingEvents</a>
+				</li>
+			</ul>
+			<h1>Namespace MeetingEvents</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#meeting-events" id="meeting-events" style="color: inherit; text-decoration: none;">
+							<h1>Meeting Events</h1>
+						</a>
+					</div>
+					<p>The <code>eventDidReceive</code> observer method makes it easy to collect, process, and monitor meeting events.
+					You can use meeting events to identify and troubleshoot the cause of device and meeting failures.</p>
+					<p>To receive meeting events, add an observer, and implement the <code>eventDidReceive</code> observer method.</p>
+					<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
+  eventDidReceive(name, attributes) {
+    <span class="hljs-comment">// Handle a meeting event.</span>
+  }
+}
+
+meetingSession.audioVideo.addObserver(observer);</code></pre>
+					<p>In the <code>eventDidReceive</code> observer method, we recommend that you handle each meeting event so that
+					you don&#39;t have to worry about how your event processing would scale when the later versions of Chime SDK introduce new meeting events.</p>
+					<p>For example, the code outputs error information for four failure events at the &quot;error&quot; log level.</p>
+					<pre><code class="language-js">eventDidReceive(name, attributes) {
+  <span class="hljs-keyword">switch</span> (name) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;audioInputFailed&#x27;</span>:
+      <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`Failed to choose microphone: <span class="hljs-subst">${attributes.audioInputErrorMessage}</span> in `</span>, attributes);
+      <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;videoInputFailed&#x27;</span>:
+      <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`Failed to choose camera: <span class="hljs-subst">${attributes.videoInputErrorMessage}</span> in `</span>, attributes);
+      <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;meetingStartFailed&#x27;</span>:
+      <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`Failed to start a meeting: <span class="hljs-subst">${attributes.meetingErrorMessage}</span> in `</span>, attributes);
+      <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;meetingFailed&#x27;</span>:
+      <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`Failed during a meeting: <span class="hljs-subst">${attributes.meetingErrorMessage}</span> in `</span>, attributes);
+      <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">default</span>:
+      <span class="hljs-keyword">break</span>;
+}</code></pre>
+					<p>Ensure that you are familiar with the attributes you want to use. See the following two examples.</p>
+					<p>The code logs the last 5 minutes of the <code>meetingHistory</code> attribute when a failure event occurs.
+					It&#39;s helpful to reduce the amount of data sent to your server application or analytics tool.</p>
+					<pre><code class="language-js">eventDidReceive(name, attributes) {
+  <span class="hljs-keyword">const</span> { meetingHistory, ...otherAttributes } = attributes;
+  <span class="hljs-keyword">const</span> recentMeetingHistory = meetingHistory.filter(<span class="hljs-function">(<span class="hljs-params">{ timestampMs }</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Date</span>.now() - timestampMs &lt; <span class="hljs-number">5</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>;
+  });
+
+  <span class="hljs-keyword">switch</span> (name) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;audioInputFailed&#x27;</span>:
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;videoInputFailed&#x27;</span>:
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;meetingStartFailed&#x27;</span>:
+    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;meetingFailed&#x27;</span>:
+      <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`Failure: <span class="hljs-subst">${name}</span> with attributes: `</span>, {
+        ...otherAttributes,
+        recentMeetingHistory
+      });
+      <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">default</span>:
+      <span class="hljs-keyword">break</span>;
+  }
+}</code></pre>
+					<p>This example prints out the <code>meetingStatus</code> attribute if it&#39;s available.
+					See the &quot;Included in&quot; column in the meeting and device attribute tables below for more information.</p>
+					<pre><code class="language-js">eventDidReceive(name, attributes) {
+  <span class="hljs-keyword">if</span> (attributes.hasOwnProperty(<span class="hljs-string">&#x27;meetingStatus&#x27;</span>)) {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`The meeting ended with the status: <span class="hljs-subst">${attributes.meetingStatus}</span> in `</span>, attributes);
+  }
+}</code></pre>
+					<a href="#meeting-events-and-attributes" id="meeting-events-and-attributes" style="color: inherit; text-decoration: none;">
+						<h2>Meeting events and attributes</h2>
+					</a>
+					<p>Chime SDK sends these meeting events.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Event name</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>meetingStartRequested</code></td>
+								<td>The meeting will start.</td>
+							</tr>
+							<tr>
+								<td><code>meetingStartSucceeded</code></td>
+								<td>The meeting started.</td>
+							</tr>
+							<tr>
+								<td><code>meetingStartFailed</code></td>
+								<td>The meeting failed to start.</td>
+							</tr>
+							<tr>
+								<td><code>meetingEnded</code></td>
+								<td>The meeting ended.</td>
+							</tr>
+							<tr>
+								<td><code>meetingFailed</code></td>
+								<td>The meeting ended with one of the following failure <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a>: <br><ul><li><code>AudioAuthenticationRejected</code></li><li><code>AudioCallAtCapacity</code></li><li><code>AudioDisconnected</code></li><li><code>AudioInternalServerError</code></li><li><code>AudioServiceUnavailable</code></li><li><code>ConnectionHealthReconnect</code></li><li><code>ICEGatheringTimeoutWorkaround</code></li><li><code>NoAttendeePresent</code></li><li><code>RealtimeApiFailed</code></li><li><code>SignalingBadRequest</code></li><li><code>SignalingInternalServerError</code></li><li><code>SignalingRequestFailed</code></li><li><code>StateMachineTransitionFailed</code></li><li><code>TaskFailed</code></li><li><code>VideoCallAtSourceCapacity</code></li></ul></td>
+							</tr>
+							<tr>
+								<td><code>audioInputFailed</code></td>
+								<td>The microphone selection failed.</td>
+							</tr>
+							<tr>
+								<td><code>videoInputFailed</code></td>
+								<td>The camera selection failed.</td>
+							</tr>
+					</tbody></table>
+					<a href="#standard-attributes" id="standard-attributes" style="color: inherit; text-decoration: none;">
+						<h3>Standard attributes</h3>
+					</a>
+					<p>Chime SDK sends a meeting event with attributes. These standard attributes are available as part of every event type.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Attribute</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>attendeeId</code></td>
+								<td>The Amazon Chime SDK attendee ID.</td>
+							</tr>
+							<tr>
+								<td><code>browserMajorVersion</code></td>
+								<td>The browser&#39;s major version.</td>
+							</tr>
+							<tr>
+								<td><code>browserName</code></td>
+								<td>The browser name.</td>
+							</tr>
+							<tr>
+								<td><code>browserVersion</code></td>
+								<td>The browser version.</td>
+							</tr>
+							<tr>
+								<td><code>deviceName</code></td>
+								<td>The manufacturer and model name of the computer or mobile device. <code>Unavailable</code> indicates that the device name can&#39;t be found.</td>
+							</tr>
+							<tr>
+								<td><code>externalMeetingId</code></td>
+								<td>The Amazon Chime SDK external meeting ID.</td>
+							</tr>
+							<tr>
+								<td><code>externalUserId</code></td>
+								<td>The Amazon Chime SDK external user ID that can indicate an identify managed by your application.</td>
+							</tr>
+							<tr>
+								<td><code>meetingHistory</code></td>
+								<td>The list of the meeting-history states. For more information, see the &quot;The meeting history attribute&quot; section.</td>
+							</tr>
+							<tr>
+								<td><code>meetingId</code></td>
+								<td>The Amazon Chime SDK meeting ID.</td>
+							</tr>
+							<tr>
+								<td><code>osName</code></td>
+								<td>The operating system.</td>
+							</tr>
+							<tr>
+								<td><code>osVersion</code></td>
+								<td>The version of the operating system.</td>
+							</tr>
+							<tr>
+								<td><code>sdkName</code></td>
+								<td>The Amazon Chime SDK name, such as <code>amazon-chime-sdk-js</code>.</td>
+							</tr>
+							<tr>
+								<td><code>sdkVersion</code></td>
+								<td>The Amazon Chime SDK version.</td>
+							</tr>
+							<tr>
+								<td><code>timestampMs</code></td>
+								<td>The local time, in milliseconds since 00:00:00 UTC on 1 January 1970, at which an event occurred.<br><br>Unit: Milliseconds</td>
+							</tr>
+					</tbody></table>
+					<a href="#meeting-attributes" id="meeting-attributes" style="color: inherit; text-decoration: none;">
+						<h3>Meeting attributes</h3>
+					</a>
+					<p>The following table describes attributes for a meeting.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Attribute</th>
+								<th>Description</th>
+								<th>Included in</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>maxVideoTileCount</code></td>
+								<td>The maximum number of simultaneous video tiles shared during the meeting. This includes a local tile (your video), remote tiles, and content shares.<br><br>Unit: Count</td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>meetingDurationMs</code></td>
+								<td>The time that elapsed between the beginning (<code>AudioVideoObserver.audioVideoDidStart</code>) and the end (<code>AudioVideoObserver.audioVideoDidStop</code>) of the meeting.<br><br>Unit: Milliseconds</td>
+								<td><code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>meetingErrorMessage</code></td>
+								<td>The error message that explains why the meeting has failed.</td>
+								<td><code>meetingStartFailed</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>meetingStatus</code></td>
+								<td>The meeting status when the meeting ended or failed. Note that this attribute indicates an enum name in <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a>, such as <code>Left</code> or <code>MeetingEnded</code>.</td>
+								<td><code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>poorConnectionCount</code></td>
+								<td>The number of times the significant packet loss occurred during the meeting. Per count, you receive <code>AudioVideoObserver.connectionDidBecomePoor</code> or <code>AudioVideoObserver.connectionDidSuggestStopVideo</code>.<br><br>Unit: Count</td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>retryCount</code></td>
+								<td>The number of connection retries performed during the meeting.<br><br>Unit: Count</td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>signalingOpenDurationMs</code></td>
+								<td>The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds</td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+					</tbody></table>
+					<a href="#device-attributes" id="device-attributes" style="color: inherit; text-decoration: none;">
+						<h3>Device attributes</h3>
+					</a>
+					<p>The following table describes attributes for the microphone and camera.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Attribute</th>
+								<th>Description</th>
+								<th>Included in</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>audioInputErrorMessage</code></td>
+								<td>The error message that explains why the microphone selection failed.</td>
+								<td><code>audioInputFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>videoInputErrorMessage</code></td>
+								<td>The error message that explains why the camera selection failed.</td>
+								<td><code>videoInputFailed</code></td>
+							</tr>
+					</tbody></table>
+					<a href="#the-meeting-history-attribute" id="the-meeting-history-attribute" style="color: inherit; text-decoration: none;">
+						<h3>The meeting history attribute</h3>
+					</a>
+					<p>The meeting history attribute is a list of states. Each state object contains the state name and timestamp.</p>
+					<pre><code class="language-js">[
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;audioInputSelected&#x27;</span>,
+    <span class="hljs-attr">timestampMs</span>: <span class="hljs-number">1612166400000</span>
+  },
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;meetingStartSucceeded&#x27;</span>,
+    <span class="hljs-attr">timestampMs</span>: <span class="hljs-number">1612167400000</span>
+  },
+  {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;meetingEnded&#x27;</span>,
+    <span class="hljs-attr">timestampMs</span>: <span class="hljs-number">1612167900000</span>
+  }
+]</code></pre>
+					<p>You can use the meeting history to track user actions and events from the creation of the <code>DefaultMeetingSession</code> object.
+						For example, if you started a meeting twice using the same <code>DefaultMeetingSession</code> object,
+					the meeting history will include two <code>meetingStartSucceeded</code>.</p>
+					<p>Note that meeting history can have a large number of states. Ensure that you process the meeting history
+					before sending it to your server application or analytics tool.</p>
+					<p>The following table lists available states.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>State</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>audioInputFailed</code></td>
+								<td>The microphone selection failed.</td>
+							</tr>
+							<tr>
+								<td><code>audioInputSelected</code></td>
+								<td>The microphone was selected.</td>
+							</tr>
+							<tr>
+								<td><code>audioInputUnselected</code></td>
+								<td>The microphone was removed. You called <code>meetingSession.audioVideo.chooseAudioInputDevice</code> with <code>null</code>.</td>
+							</tr>
+							<tr>
+								<td><code>meetingEnded</code></td>
+								<td>The meeting ended.</td>
+							</tr>
+							<tr>
+								<td><code>meetingFailed</code></td>
+								<td>The meeting ended with the failure status.</td>
+							</tr>
+							<tr>
+								<td><code>meetingReconnected</code></td>
+								<td>The meeting reconnected.</td>
+							</tr>
+							<tr>
+								<td><code>meetingStartFailed</code></td>
+								<td>The meeting failed to start.</td>
+							</tr>
+							<tr>
+								<td><code>meetingStartRequested</code></td>
+								<td>The meeting will start.</td>
+							</tr>
+							<tr>
+								<td><code>meetingStartSucceeded</code></td>
+								<td>The meeting started.</td>
+							</tr>
+							<tr>
+								<td><code>receivingAudioDropped</code></td>
+								<td>A significant number of receive-audio packets dropped.</td>
+							</tr>
+							<tr>
+								<td><code>signalingDropped</code></td>
+								<td>WebSocket failed or closed with an error.</td>
+							</tr>
+							<tr>
+								<td><code>videoInputFailed</code></td>
+								<td>The camera selection failed.</td>
+							</tr>
+							<tr>
+								<td><code>videoInputSelected</code></td>
+								<td>The camera was selected.</td>
+							</tr>
+							<tr>
+								<td><code>videoInputUnselected</code></td>
+								<td>The camera was removed. You called <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with <code>null</code>.</td>
+							</tr>
+					</tbody></table>
+					<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+						<h2>Example</h2>
+					</a>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless">The Chime SDK serverless demo</a> uses Amazon CloudWatch Logs to collect, process, and analyze meeting events. For more information, see <a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless#meeting-dashboard">the Meeting Dashboard section</a> on the serverless demo page.</p>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Meeting%20Events%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

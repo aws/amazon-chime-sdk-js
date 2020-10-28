@@ -355,6 +355,11 @@ export default class DOMMockBuilder {
             mediaStream.active = true;
             resolve(mediaStream);
           } else {
+            if (typeof mockBehavior.getUserMediaError !== 'undefined') {
+              reject(mockBehavior.getUserMediaError);
+              return;
+            }
+
             if (
               mockBehavior.getUserMediaResult &&
               mockBehavior.getUserMediaResult === UserMediaState.OverConstrained

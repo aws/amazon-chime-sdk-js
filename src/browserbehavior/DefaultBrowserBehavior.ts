@@ -2,13 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { detect } from 'detect-browser';
-import { UAParser } from 'ua-parser-js';
 
 import BrowserBehavior from './BrowserBehavior';
 
 export default class DefaultBrowserBehavior implements BrowserBehavior {
   private readonly browser = detect();
-  private readonly parser = new UAParser();
 
   private browserSupport: { [id: string]: number } = {
     chrome: 78,
@@ -49,18 +47,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   name(): string {
     return this.browser.name;
-  }
-
-  os(): string {
-    return this.parser.getOS().name;
-  }
-
-  osVersion(): string {
-    return this.parser.getOS().version;
-  }
-
-  deviceName(): string {
-    return this.parser.getDevice().model;
   }
 
   hasChromiumWebRTC(): boolean {

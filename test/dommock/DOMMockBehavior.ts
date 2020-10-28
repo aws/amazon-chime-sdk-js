@@ -10,6 +10,7 @@ export default class DOMMockBehavior {
   triggeredEndedEventForStopStreamTrack: boolean = true;
   getUserMediaResult: UserMediaState = UserMediaState.Success;
   getUserMediaSucceeds: boolean = true;
+  getUserMediaError: Error = undefined;
   getUserMediaAudioLabel: string = 'Default';
   webSocketOpenSucceeds: boolean = true;
   webSocketSendSucceeds: boolean = true;

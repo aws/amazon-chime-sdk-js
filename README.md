@@ -36,6 +36,7 @@ And review the following guides:
 * [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html)
 * [Quality, Bandwidth, and Connectivity](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html)
 * [Simulcast](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html)
+* [Meeting events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html)
 * [Frequently Asked Questions](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
 
 ## Examples

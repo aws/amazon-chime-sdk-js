@@ -20,6 +20,8 @@ import {
   Device,
   DefaultBrowserBehavior,
   DeviceChangeObserver,
+  EventName,
+  EventAttributes,
   LogLevel,
   Logger,
   MultiLogger,
@@ -116,6 +118,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   static testVideo: string = 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
   static readonly LOGGER_BATCH_SIZE: number = 85;
   static readonly LOGGER_INTERVAL_MS: number = 2000;
+  static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = "chat";
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300000;
 
@@ -158,6 +161,7 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
   markdown = require('markdown-it')({linkify: true});
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
+  meetingEventPOSTLogger: MeetingSessionPOSTLogger;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -663,28 +667,55 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     }
   }
 
-  async createLogStream(configuration: MeetingSessionConfiguration): Promise<void> {
+  async createLogStream(configuration: MeetingSessionConfiguration, pathname: string): Promise<void> {
     const body = JSON.stringify({
       meetingId: configuration.meetingId,
       attendeeId: configuration.credentials.attendeeId,
     });
     try {
-      const response = await fetch(`${DemoMeetingApp.BASE_URL}create_log_stream`, {
+      const response = await fetch(`${DemoMeetingApp.BASE_URL}${pathname}`, {
         method: 'POST',
         body
       });
       if (response.status === 200) {
-        console.log('Log stream created');
+        this.log('Log stream created');
       }
     } catch (error) {
-      console.error(error.message);
+      this.log(error.message);
     }
   }
   
-  eventDidReceive(name: string, attributes: { [attributeName: string]: string | string [] }): void {
-    // TODO: Implement this observer function
-    console.log("Event name: " + name);
-    console.log("Attributes: " + JSON.stringify(attributes));
+  eventDidReceive(name: EventName, attributes: EventAttributes): void {
+    this.log(`Received an event: ${JSON.stringify({ name, attributes })}`);
+    const { meetingHistory, ...otherAttributes } = attributes;
+    switch (name) {
+      case 'meetingStartRequested':
+      case 'meetingStartSucceeded':
+      case 'meetingEnded': {
+        // Exclude the "meetingHistory" attribute for successful events.
+        this.meetingEventPOSTLogger?.info(JSON.stringify({
+          name,
+          attributes: otherAttributes
+        }));
+        break;
+      }
+      case 'audioInputFailed':
+      case 'videoInputFailed':
+      case 'meetingStartFailed':
+      case 'meetingFailed': {
+        // Send the last 5 minutes of events.
+        this.meetingEventPOSTLogger?.info(JSON.stringify({
+          name,
+          attributes: {
+            ...otherAttributes,
+            meetingHistory: meetingHistory.filter(({ timestampMs }) => {
+              return Date.now() - timestampMs < DemoMeetingApp.MAX_MEETING_HISTORY_MS;
+            })
+          }
+        }));
+        break;
+      }
+    }
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
@@ -694,7 +725,11 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       logger = consoleLogger;
     } else {
-      await this.createLogStream(configuration);
+      await Promise.all([
+        this.createLogStream(configuration, 'create_log_stream'),
+        this.createLogStream(configuration, 'create_browser_event_log_stream')
+      ]);
+
       logger = new MultiLogger(
         consoleLogger,
         new MeetingSessionPOSTLogger(
@@ -705,6 +740,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
           `${DemoMeetingApp.BASE_URL}logs`,
           logLevel
         ),
+      );
+      this.meetingEventPOSTLogger = new MeetingSessionPOSTLogger(
+        'SDKEvent',
+        configuration,
+        DemoMeetingApp.LOGGER_BATCH_SIZE,
+        DemoMeetingApp.LOGGER_INTERVAL_MS,
+        `${DemoMeetingApp.BASE_URL}log_meeting_event`,
+        logLevel
       );
     }
     const deviceController = new DefaultDeviceController(logger);
