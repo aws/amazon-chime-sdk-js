@@ -26,7 +26,7 @@ To get started, see the following resources:
 * [Amazon Chime SDK for JavaScript Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers)
 * [Amazon Chime SDK Technical Blogs](https://aws.amazon.com/blogs/business-productivity/tag/amazon-chime-sdk/)
 * [Amazon Chime SDK Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html)
-* [Amazon Chime SDK API Reference](http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
+* [Amazon Chime SDK API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
 * [Amazon Chime SDK for JavaScript Documentation](https://aws.github.io/amazon-chime-sdk-js)
 
 And review the following guides:
@@ -95,7 +95,7 @@ const meetingSession = new DefaultMeetingSession(
 
 You can use an AWS SDK, the AWS Command Line Interface (AWS CLI), or the REST API
 to make API calls. In this section, you will use the AWS SDK for JavaScript in your server application, e.g. Node.js.
-See [Amazon Chime SDK API Reference](http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html) for more information.
+See [Amazon Chime SDK API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html) for more information.
 
 > ⚠️ The server application does not require the Amazon Chime SDK for JavaScript.
 
@@ -151,7 +151,7 @@ Then open `docs/index.html` in your browser.
 ## Reporting a suspected vulnerability
 
 If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our
-[vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/).
+[vulnerability reporting page](https://aws.amazon.com/security/vulnerability-reporting/).
 Please do **not** create a public GitHub issue.
 
 ## Usage

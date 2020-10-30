@@ -5,15 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+
+### Changed
+- [Documentation] Updated HTTP to HTTPS in README URL links
+- [Test] Updated browserstack URL formation to use HTTPS
+
+### Removed
+
+### Fixed
+
 ## [1.21.0] - 2020-10-29
 ### Added
 - [Demo] Add default SSE to meeting notifications queue in CF template
 - Add meeting events
 
 ### Changed
-- Removed check for iceGatheringState to be complete for bypassing gathering ice candidate again
 
 ### Removed
+- Removed check for iceGatheringState to be complete for bypassing gathering ice candidate again
 
 ### Fixed
 - Allow the build to complete in the absence of a Git checkout.
