@@ -104,7 +104,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       result === DevicePermission.PermissionGrantedByUser ||
       result === DevicePermission.PermissionGrantedByBrowser
     ) {
-      this.boundAudioVideoController?.eventController.pushMeetingState(
+      this.boundAudioVideoController?.eventController?.pushMeetingState(
         device === null ? 'audioInputUnselected' : 'audioInputSelected'
       );
     }
@@ -119,7 +119,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       result === DevicePermission.PermissionGrantedByUser ||
       result === DevicePermission.PermissionGrantedByBrowser
     ) {
-      this.boundAudioVideoController?.eventController.pushMeetingState(
+      this.boundAudioVideoController?.eventController?.pushMeetingState(
         device === null ? 'videoInputUnselected' : 'videoInputSelected'
       );
     }
@@ -728,11 +728,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       }
 
       if (kind === 'audio') {
-        this.boundAudioVideoController?.eventController.publishEvent('audioInputFailed', {
+        this.boundAudioVideoController?.eventController?.publishEvent('audioInputFailed', {
           audioInputErrorMessage: errorMessage,
         });
       } else {
-        this.boundAudioVideoController?.eventController.publishEvent('videoInputFailed', {
+        this.boundAudioVideoController?.eventController?.publishEvent('videoInputFailed', {
           videoInputErrorMessage: errorMessage,
         });
       }
