@@ -127,12 +127,15 @@ An implementation can be found in the [getNearestMediaRegion()](https://github.c
 ## Building and testing
 
 ```
+git fetch --tags https://github.com/aws/amazon-chime-sdk-js
 npm run build
 npm run test
 ```
 
 After running `npm run test` the first time, you can use `npm run test:fast` to
 speed up the test suite.
+
+Tags are fetched in order to correctly generate versioning metadata.
 
 To view code coverage results open `coverage/index.html` in your browser
 after running `npm run test`.
