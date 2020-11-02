@@ -38,6 +38,8 @@ And review the following guides:
 * [Simulcast](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html)
 * [Meeting events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html)
 * [Frequently Asked Questions](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
+* [Migrating from v1.0 to v2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
+* [Integrating Amazon Voice Focus into your application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
 
 ## Examples
 
