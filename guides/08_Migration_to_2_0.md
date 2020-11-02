@@ -1,4 +1,4 @@
-### Migration from SDK v1 to SDK v2
+# Migration from SDK v1 to SDK v2
 
 Version 2 of the Amazon Chime SDK for JavaScript makes a small number of interface
 changes, as well as removing some deprecated interfaces.
@@ -10,9 +10,9 @@ if:
 * You do not explicitly call `enableWebAudio` on any instances of `DeviceController` or
   `AudioVideoFacade`, or use the `MeetingSessionConfiguration` field `enableWebAudio`.
 
-If you do, please read on.
+If you do, read on.
 
-#### Removing `enableWebAudio`
+## Removing `enableWebAudio`
 
 The `enableWebAudio` method on `DefaultDeviceController` would produce unexpected results if
 called after the first audio device was selected, and as a synchronous API it was not possible
@@ -76,7 +76,7 @@ this.audioVideo = this.meetingSession.audioVideo;
 
 ---
 
-#### Introducing `AudioInputDevice` and `VideoInputDevice`
+## Introducing `AudioInputDevice` and `VideoInputDevice`
 
 These two types describe `DeviceController`'s methods for selecting audio and
 video inputs respectively. They both include the space of `Device`s, which are the 'intrinsic'
