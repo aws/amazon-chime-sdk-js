@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - [Documentation] Updated HTTP to HTTPS in README URL links
+- [Documentation] Improved documentation for running integration tests locally
 - [Test] Updated browserstack URL formation to use HTTPS
 
 ### Removed
