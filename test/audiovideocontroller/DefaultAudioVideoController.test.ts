@@ -1146,7 +1146,7 @@ describe('DefaultAudioVideoController', () => {
 
     // FinishGatheringICECandidatesTask does not throw the ICEGatheringTimeoutWorkaround error if
     // the session connection timeout is less than 5000ms.
-    it('reconnects when the start operation fails with a non-Terminal meeting status such as ICEGatheringTimeoutWorkaround', function(done) {
+    it('reconnects when the start operation fails with a non-Terminal meeting status such as ICEGatheringTimeoutWorkaround', function (done) {
       this.timeout(20000);
 
       domMockBehavior.browserName = 'chrome';
@@ -1204,7 +1204,7 @@ describe('DefaultAudioVideoController', () => {
       });
     });
 
-    it('reconnects when the start operation fails with a task failed meeting status', function(done) {
+    it('reconnects when the start operation fails with a task failed meeting status', function (done) {
       configuration.connectionTimeoutMs = 100;
       const logger = new NoOpDebugLogger();
       const spy = sinon.spy(logger, 'warn');
@@ -1329,7 +1329,7 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('reconnect for no attendee presence', () => {
-    it('reconnects when the start operation fails due to no attendee presence event', function(done) {
+    it('reconnects when the start operation fails due to no attendee presence event', function (done) {
       this.timeout(15000);
 
       const logger = new NoOpDebugLogger();
@@ -1392,7 +1392,7 @@ describe('DefaultAudioVideoController', () => {
       });
     });
 
-    it('does not reconnect for no attendee presence event if the attendee presence timeout is set to zero', function(done) {
+    it('does not reconnect for no attendee presence event if the attendee presence timeout is set to zero', function (done) {
       this.timeout(15000);
 
       const logger = new NoOpDebugLogger();

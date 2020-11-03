@@ -13,7 +13,8 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import BaseTask from './BaseTask';
 
-export default class ListenForVolumeIndicatorsTask extends BaseTask
+export default class ListenForVolumeIndicatorsTask
+  extends BaseTask
   implements RemovableObserver, SignalingClientObserver {
   protected taskName = 'ListenForVolumeIndicatorsTask';
   constructor(private context: AudioVideoControllerState) {

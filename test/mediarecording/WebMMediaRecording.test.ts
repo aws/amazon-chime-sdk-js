@@ -263,10 +263,7 @@ describe('WebMMediaRecording', () => {
       it('is rejected', (done: Mocha.Done) => {
         const mediaStream = Substitute.for<MediaStream>();
         const subject = new WebMMediaRecording(mediaStream);
-        chai
-          .expect(subject.unpause())
-          .to.be.rejectedWith('not started')
-          .and.notify(done);
+        chai.expect(subject.unpause()).to.be.rejectedWith('not started').and.notify(done);
       });
     });
 

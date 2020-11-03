@@ -62,10 +62,10 @@ export default class DefaultStatsCollector implements StatsCollector {
     } else {
       // e.g. CamelCaseWithCAPS -> _camel_case_with_caps
       return str
-        .replace(/([A-Z][a-z]+)/g, function($1) {
+        .replace(/([A-Z][a-z]+)/g, function ($1) {
           return `_${$1}`;
         })
-        .replace(/([A-Z][A-Z]+)/g, function($1) {
+        .replace(/([A-Z][A-Z]+)/g, function ($1) {
           return `_${$1}`;
         })
         .toLowerCase();

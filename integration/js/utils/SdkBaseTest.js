@@ -98,7 +98,7 @@ class SdkBaseTest extends KiteBaseTest {
     this.report = new AllureTestReport(this.name);
     if (this.io !== undefined) {
       this.attendeeId = uuidv4();
-      console.log("attendee id generated: " + this.attendee_id);
+      console.log("attendee id generated: " + this.attendeeId);
       this.io.emit("setup_test", this.baseUrl, this.attendeeId);
     } else {
       this.meetingTitle = uuidv4();

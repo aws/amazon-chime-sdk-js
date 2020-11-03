@@ -14,7 +14,8 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import BaseTask from './BaseTask';
 
-export default class SendAndReceiveDataMessagesTask extends BaseTask
+export default class SendAndReceiveDataMessagesTask
+  extends BaseTask
   implements RemovableObserver, SignalingClientObserver {
   protected taskName = 'SendAndReceiveDataMessagesTask';
 

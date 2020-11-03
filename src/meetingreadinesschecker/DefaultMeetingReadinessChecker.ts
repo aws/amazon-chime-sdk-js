@@ -182,7 +182,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       return CheckCameraResolutionFeedback.Failed;
     } finally {
       if (stream) {
-        stream.getTracks().forEach(function(track) {
+        stream.getTracks().forEach(function (track) {
           track.stop();
         });
       }
