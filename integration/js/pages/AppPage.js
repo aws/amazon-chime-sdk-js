@@ -1,46 +1,54 @@
-const {By, Key} = require('selenium-webdriver');
+const {By, Key, until} = require('selenium-webdriver');
 const {TestUtils} = require('kite-common');
 const {performance} = require('perf_hooks');
 
-const elements = {
-  meetingIdInput: By.id('inputMeeting'),
-  sipMeetingIdInput: By.id('sip-inputMeeting'),
-  voiceConnectorIdInput: By.id('voiceConnectorId'),
-  attendeeNameInput: By.id('inputName'),
-  authenticateButton: By.id('authenticate'),
-  localVideoBotton: By.id('button-camera'),
-  joinButton: By.id('joinButton'),
-  meetingEndButtom: By.id('button-meeting-end'),
-  meetingLeaveButton: By.id('button-meeting-leave'),
-  contentShareButton: By.id('button-content-share'),
-  contentShareDropButton: By.id('button-content-share-drop'),
-  contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
-  contentSharePauseButton: By.id('button-pause-content-share'),
-  dataMessageSendInput: By.id('send-message'),
-  sipAuthenticateButton: By.id('button-sip-authenticate'),
-  roster: By.id('roster'),
-  participants: By.css('li'),
-  switchToSipFlow: By.id('to-sip-flow'),
+let elements;
 
-  authenticationFlow: By.id('flow-authenticate'),
-  deviceFlow: By.id('flow-devices'),
-  meetingFlow: By.id('flow-meeting'),
-  sipAuthenticateFlow: By.id('flow-sip-authenticate'),
-  sipUriFlow: By.id('flow-sip-uri'),
+function findAllElements() {
+  // These will be stale after a reload.
+  elements = {
+    meetingIdInput: By.id('inputMeeting'),
+    sipMeetingIdInput: By.id('sip-inputMeeting'),
+    voiceConnectorIdInput: By.id('voiceConnectorId'),
+    attendeeNameInput: By.id('inputName'),
+    authenticateButton: By.id('authenticate'),
+    localVideoButton: By.id('button-camera'),
+    addVoiceFocusInput: By.id('add-voice-focus'),        // Checkbox.
+    joinButton: By.id('joinButton'),
+    meetingEndButtom: By.id('button-meeting-end'),
+    meetingLeaveButton: By.id('button-meeting-leave'),
+    contentShareButton: By.id('button-content-share'),
+    contentShareDropButton: By.id('button-content-share-drop'),
+    contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
+    contentSharePauseButton: By.id('button-pause-content-share'),
+    dataMessageSendInput: By.id('send-message'),
+    sipAuthenticateButton: By.id('button-sip-authenticate'),
+    roster: By.id('roster'),
+    participants: By.css('li'),
+    switchToSipFlow: By.id('to-sip-flow'),
 
-  failedMeetingFlow: By.id('flow-failed-meeting'),
-  microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
-  microphoneDropDownButton: By.id('button-microphone-drop'),
-  microphoneButton: By.id('button-microphone'),
+    authenticationFlow: By.id('flow-authenticate'),
+    deviceFlow: By.id('flow-devices'),
+    meetingFlow: By.id('flow-meeting'),
+    sipAuthenticateFlow: By.id('flow-sip-authenticate'),
+    sipUriFlow: By.id('flow-sip-uri'),
 
-  meetingAudio: By.id('meeting-audio'),
-  sipUri: By.id('sip-uri'),
-  
-  simulcastFeature: By.id('simulcast'),
-  simulcastFeatureLabel: By.css('label[for="simulcast"]'),
-  webAudioFeature: By.id('webaudio'),
-  webAudioFeatureLabel: By.css('label[for="webaudio"]'),
-};
+    failedMeetingFlow: By.id('flow-failed-meeting'),
+    microphoneDropDownVoiceFocusButton: By.id('toggle-dropdown-menu-microphone-Amazon-Voice-Focus'),
+    microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
+    microphoneDropDownButton: By.id('button-microphone-drop'),
+    microphoneButton: By.id('button-microphone'),
+
+    meetingAudio: By.id('meeting-audio'),
+    sipUri: By.id('sip-uri'),
+    simulcastFeature: By.id('simulcast'),
+    webAudioFeature: By.id('webaudio'),
+    simulcastFeatureLabel: By.css('label[for="simulcast"]'),
+    webAudioFeatureLabel: By.css('label[for="webaudio"]'),
+  };
+}
+
+findAllElements();
 
 const SessionStatus = {
   STARTED: 'Started',
@@ -52,6 +60,10 @@ class AppPage {
   constructor(driver, logger) {
     this.driver = driver;
     this.logger = logger;
+  }
+
+  findAllElements() {
+    findAllElements();
   }
 
   async open(stepInfo) {
@@ -82,6 +94,8 @@ class AppPage {
   async chooseUseWebAudio() {
     let webAudioFeature = await this.driver.findElement(elements.webAudioFeature);
     let webAudioFeatureLabel = await this.driver.findElement(elements.webAudioFeatureLabel);
+
+    // Click the label because it's on top.
     if (await webAudioFeature.isSelected()) {
       console.log('Web Audio is selected');
     } else {
@@ -92,6 +106,8 @@ class AppPage {
   async chooseUseSimulcast() {
     let simulcastFeature = await this.driver.findElement(elements.simulcastFeature);
     let simulcastFeatureLabel = await this.driver.findElement(elements.simulcastFeatureLabel);
+
+    // Click the label because it's on top.
     if (await simulcastFeature.isSelected()) {
       console.log('simulcast is selected');
     } else {
@@ -135,7 +151,7 @@ class AppPage {
   }
 
   async clickCameraButton() {
-    let localVideoButton = await this.driver.findElement(elements.localVideoBotton);
+    let localVideoButton = await this.driver.findElement(elements.localVideoButton);
     await localVideoButton.click();
   }
 
@@ -165,11 +181,6 @@ class AppPage {
     // TODO: find a way to check if the user was able to join the meeting or not
     await TestUtils.waitAround(5 * 1000); // wait for 5 secs
     return SessionStatus.STARTED;
-  }
-
-  async switchToSipCallFlow() {
-    let switchToSipFlow = await this.driver.findElement(elements.switchToSipFlow);
-    await switchToSipFlow.click();
   }
 
   async getSipUri() {
@@ -257,6 +268,39 @@ class AppPage {
       await TestUtils.waitAround(1000);
     }
     return 'failed'
+  }
+
+  async isVoiceFocusCheckboxVisible(visible) {
+    const element = await this.driver.findElement(elements.addVoiceFocusInput);
+    console.info(`Expecting element to be visible`, visible, element);
+    if (visible) {
+      await this.driver.wait(until.elementIsVisible(element), 30000);
+      return true;
+    }
+
+    // Not using `elementIsNotVisible`, because we want to make sure it does
+    // not *become* visible.
+    try {
+      await this.driver.wait(until.elementIsVisible(element), 5000);
+    } catch (e) {
+      return true;
+    }
+    throw new Error('Element should not have been visible.')
+  }
+
+  async isVoiceFocusPresentInDeviceMenu() {
+    return await this.driver.findElement(elements.microphoneDropDownVoiceFocusButton).isDisplayed();
+  }
+
+  async isVoiceFocusEnabled() {
+    const elem = await this.driver.findElement(elements.microphoneDropDownVoiceFocusButton);
+    const classes = await elem.getAttribute('class');
+    return classes.includes('vf-active');
+  }
+
+  async enableVoiceFocusInLobby() {
+    const elem = await this.driver.findElement(elements.addVoiceFocusInput);
+    return elem.click();
   }
 
   async isJoiningMeeting() {
