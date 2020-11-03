@@ -182,16 +182,18 @@ export default class DefaultTransceiverController implements TransceiverControll
     // Begin counting out index in the the subscription array at 1 since the camera.
     // Always occupies position 0 (whether active or not).
     let n = 1;
+    const emptySpots: [number, RTCRtpTransceiver][] = [];
     for (const transceiver of transceivers) {
       if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
         continue;
       }
 
-      if (transceiver.direction === 'inactive' && videosRemaining.length > 0) {
-        // Fill available slot
-        transceiver.direction = 'recvonly';
-        const streamId = videosRemaining.shift();
-        this.videoSubscriptions[n] = streamId;
+      if (transceiver.direction === 'inactive') {
+        // Track previously available spots
+        emptySpots.push([n, transceiver]);
+
+        // Mark with a zero in case it doesn't get filled
+        this.videoSubscriptions[n] = 0;
       } else {
         // See if we want this existing transceiver
         // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
@@ -218,17 +220,25 @@ export default class DefaultTransceiverController implements TransceiverControll
       n += 1;
     }
 
-    // add transceivers for the remaining subscriptions
+    // use an existing spot or add transceivers for the remaining subscriptions
     for (const index of videosRemaining) {
-      // @ts-ignore
-      const transceiver = this.peer.addTransceiver('video', {
-        direction: 'recvonly',
-        streams: [this.defaultMediaStream],
-      });
-      this.videoSubscriptions.push(index);
-      this.logger.info(
-        `adding transceiver mid: ${transceiver.mid} subscription: ${index} direction: recvonly`
-      );
+      if (emptySpots.length > 0) {
+        const [n, transceiver] = emptySpots.shift();
+
+        // Fill available slot
+        transceiver.direction = 'recvonly';
+        this.videoSubscriptions[n] = index;
+      } else {
+        // @ts-ignore
+        const transceiver = this.peer.addTransceiver('video', {
+          direction: 'recvonly',
+          streams: [this.defaultMediaStream],
+        });
+        this.videoSubscriptions.push(index);
+        this.logger.info(
+          `adding transceiver mid: ${transceiver.mid} subscription: ${index} direction: recvonly`
+        );
+      }
     }
   }
 

@@ -463,6 +463,39 @@ describe('DefaultTransceiverController', () => {
       verifyTransceiverDirections(['inactive', 'recvonly']);
     });
 
+    it('will not change position of existing subscriptions', () => {
+      const videoStreamIndex = prepareIndex([4, 5, 6]);
+      let videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([4, 5]);
+      let videoSubscriptions: number[] = tc.updateVideoTransceivers(
+        videoStreamIndex,
+        videosToReceive
+      );
+      expect(videoSubscriptions).to.deep.equal([0, 4, 5]);
+
+      let subackFrame = new SdkSubscribeAckFrame({
+        tracks: [
+          new SdkTrackMapping({ streamId: 4, trackLabel: 'v_4' }),
+          new SdkTrackMapping({ streamId: 5, trackLabel: 'v_5' }),
+        ],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
+
+      videosToReceive = new DefaultVideoStreamIdSet([5]);
+      videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
+      expect(videoSubscriptions).to.deep.equal([0, 0, 5]);
+
+      subackFrame = new SdkSubscribeAckFrame({
+        tracks: [new SdkTrackMapping({ streamId: 5, trackLabel: 'v_5' })],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
+
+      videosToReceive = new DefaultVideoStreamIdSet([5, 6]);
+      videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
+      expect(videoSubscriptions).to.deep.equal([0, 6, 5]);
+    });
+
     it('will use local transceivers', () => {
       tc.setupLocalTransceivers();
 
