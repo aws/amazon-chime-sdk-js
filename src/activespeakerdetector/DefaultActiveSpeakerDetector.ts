@@ -69,10 +69,10 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
 
     const sortedAttendeeIds = sortedSpeakers
       .sort((s1, s2) => s2.activeScore - s1.activeScore)
-      .filter(function(s) {
+      .filter(function (s) {
         return s.activeScore > 0;
       })
-      .map(function(s) {
+      .map(function (s) {
         return s.attendeeId;
       });
     this.activeSpeakers = sortedAttendeeIds;

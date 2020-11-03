@@ -8,7 +8,8 @@ import Device from './Device';
 import DevicePermission from './DevicePermission';
 import VideoQualitySettings from './VideoQualitySettings';
 
-export default class NoOpDeviceController extends NoOpMediaStreamBroker
+export default class NoOpDeviceController
+  extends NoOpMediaStreamBroker
   implements DeviceControllerBasedMediaStreamBroker {
   listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
     return Promise.resolve([]);

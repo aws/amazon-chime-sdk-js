@@ -100,6 +100,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   async chooseAudioInputDevice(device: Device): Promise<DevicePermission> {
     const result = await this.chooseInputDevice('audio', device, false);
+    if (
+      result === DevicePermission.PermissionGrantedByUser ||
+      result === DevicePermission.PermissionGrantedByBrowser
+    ) {
+      this.boundAudioVideoController?.eventController?.pushMeetingState(
+        device === null ? 'audioInputUnselected' : 'audioInputSelected'
+      );
+    }
     this.trace('chooseAudioInputDevice', device, DevicePermission[result]);
     return result;
   }
@@ -107,6 +115,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   async chooseVideoInputDevice(device: Device): Promise<DevicePermission> {
     this.updateMaxBandwidthKbps();
     const result = await this.chooseInputDevice('video', device, false);
+    if (
+      result === DevicePermission.PermissionGrantedByUser ||
+      result === DevicePermission.PermissionGrantedByBrowser
+    ) {
+      this.boundAudioVideoController?.eventController?.pushMeetingState(
+        device === null ? 'videoInputUnselected' : 'videoInputSelected'
+      );
+    }
     this.trace('chooseVideoInputDevice', device, DevicePermission[result]);
     return result;
   }
@@ -700,11 +716,33 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       }
       newDevice.groupId = this.getGroupIdFromDeviceId(kind, this.getDeviceIdStr(device));
     } catch (error) {
+      let errorMessage: string;
+      if (error?.name && error.message) {
+        errorMessage = `${error.name}: ${error.message}`;
+      } else if (error?.name) {
+        errorMessage = error.name;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = 'UnknownError';
+      }
+
+      if (kind === 'audio') {
+        this.boundAudioVideoController?.eventController?.publishEvent('audioInputFailed', {
+          audioInputErrorMessage: errorMessage,
+        });
+      } else {
+        this.boundAudioVideoController?.eventController?.publishEvent('videoInputFailed', {
+          videoInputErrorMessage: errorMessage,
+        });
+      }
+
       this.logger.error(
-        `failed to get ${kind} device for constraints ${JSON.stringify(proposedConstraints)}: ${
-          error.name
-        }: ${error.message}`
+        `failed to get ${kind} device for constraints ${JSON.stringify(
+          proposedConstraints
+        )}: ${errorMessage}`
       );
+
       /*
        * If there is any error while acquiring the audio device, we fall back to null device.
        * Reason: If device selection fails (e.g. NotReadableError), the peer connection is left hanging
@@ -723,6 +761,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
           );
         }
       }
+
       return deniedForDuration(startTimeMs, Date.now());
     }
 

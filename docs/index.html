@@ -91,7 +91,7 @@
 					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">Amazon Chime SDK for JavaScript Supported Browsers</a></li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/tag/amazon-chime-sdk/">Amazon Chime SDK Technical Blogs</a></li>
 					<li><a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html">Amazon Chime SDK Developer Guide</a></li>
-					<li><a href="http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Amazon Chime SDK API Reference</a></li>
+					<li><a href="https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Amazon Chime SDK API Reference</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js">Amazon Chime SDK for JavaScript Documentation</a></li>
 				</ul>
 				<p>And review the following guides:</p>
@@ -101,6 +101,7 @@
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html">Content Share</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html">Quality, Bandwidth, and Connectivity</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html">Simulcast</a></li>
+					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html">Meeting events</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html">Frequently Asked Questions</a></li>
 				</ul>
 				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
@@ -156,7 +157,7 @@
 				</a>
 				<p>You can use an AWS SDK, the AWS Command Line Interface (AWS CLI), or the REST API
 					to make API calls. In this section, you will use the AWS SDK for JavaScript in your server application, e.g. Node.js.
-				See <a href="http://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Amazon Chime SDK API Reference</a> for more information.</p>
+				See <a href="https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Amazon Chime SDK API Reference</a> for more information.</p>
 				<blockquote>
 					<p>⚠️ The server application does not require the Amazon Chime SDK for JavaScript.</p>
 				</blockquote>
@@ -200,7 +201,7 @@ npm <span class="hljs-keyword">run</span><span class="bash"> doc</span></code></
 					<h2>Reporting a suspected vulnerability</h2>
 				</a>
 				<p>If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our
-					<a href="http://aws.amazon.com/security/vulnerability-reporting/">vulnerability reporting page</a>.
+					<a href="https://aws.amazon.com/security/vulnerability-reporting/">vulnerability reporting page</a>.
 				Please do <strong>not</strong> create a public GitHub issue.</p>
 				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 					<h2>Usage</h2>
@@ -1120,6 +1121,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/defaultdragobserver.html" class="tsd-kind-icon">Default<wbr>Drag<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/defaulteventcontroller.html" class="tsd-kind-icon">Default<wbr>Event<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/defaultjpegdecodercomponentfactory.html" class="tsd-kind-icon">DefaultJPEGDecoder<wbr>Component<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1555,6 +1559,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="interfaces/audiovideocontrollerfacade.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Controller<wbr>Facade</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/audiovideoeventattributes.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Event<wbr>Attributes</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/audiovideofacade.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Facade</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1606,6 +1613,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-kind-icon">Device<wbr>Controller<wbr>Based<wbr>Media<wbr>Stream<wbr>Broker</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/deviceeventattributes.html" class="tsd-kind-icon">Device<wbr>Event<wbr>Attributes</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/devicepixelratiomonitor.html" class="tsd-kind-icon">Device<wbr>Pixel<wbr>Ratio<wbr>Monitor</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1622,6 +1632,12 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/dragobserver.html" class="tsd-kind-icon">Drag<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/eventattributes.html" class="tsd-kind-icon">Event<wbr>Attributes</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/eventcontroller.html" class="tsd-kind-icon">Event<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/jpegdecodercomponentfactory.html" class="tsd-kind-icon">JPEGDecoder<wbr>Component<wbr>Factory</a>
@@ -1885,7 +1901,13 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="globals.html#dragobserverfactory" class="tsd-kind-icon">Drag<wbr>Observer<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#eventname" class="tsd-kind-icon">Event<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#listenerfunction" class="tsd-kind-icon">Listener<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#meetinghistorystate" class="tsd-kind-icon">Meeting<wbr>History<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#rawmetricreport" class="tsd-kind-icon">Raw<wbr>Metric<wbr>Report</a>

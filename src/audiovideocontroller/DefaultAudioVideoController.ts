@@ -10,6 +10,9 @@ import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
+import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
+import DefaultEventController from '../eventcontroller/DefaultEventController';
+import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
@@ -80,6 +83,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
   private _mediaStreamBroker: MediaStreamBroker;
   private _reconnectController: ReconnectController;
   private _audioMixController: AudioMixController;
+  private _eventController: EventController;
 
   private connectionHealthData = new ConnectionHealthData();
   private observerQueue: Set<AudioVideoObserver> = new Set<AudioVideoObserver>();
@@ -91,6 +95,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
   private static PING_PONG_INTERVAL_MS = 10000;
 
   private enableSimulcast: boolean = false;
+  private totalRetryCount = 0;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -129,6 +134,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     );
     this._audioMixController = new DefaultAudioMixController();
     this.meetingSessionContext.logger = this._logger;
+    this._eventController = new DefaultEventController(this);
   }
 
   get configuration(): MeetingSessionConfiguration {
@@ -149,6 +155,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
   get audioMixController(): AudioMixController {
     return this._audioMixController;
+  }
+
+  get eventController(): EventController {
+    return this._eventController;
   }
 
   get logger(): Logger {
@@ -200,6 +210,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this.connectionHealthData.reset();
     this.meetingSessionContext = new AudioVideoControllerState();
     this.meetingSessionContext.logger = this.logger;
+    this.meetingSessionContext.eventController = this.eventController;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior({
       enableUnifiedPlanForChromiumBasedBrowsers: this.configuration
         .enableUnifiedPlanForChromiumBasedBrowsers,
@@ -293,10 +304,15 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this.meetingSessionContext.videoDeviceInformation = {};
 
     if (!reconnecting) {
+      this.totalRetryCount = 0;
       this._reconnectController.reset();
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(false));
       });
+      /* istanbul ignore else */
+      if (this.eventController) {
+        this.eventController.publishEvent('meetingStartRequested');
+      }
     }
 
     if (this._reconnectController.hasStartedConnectionAttempt()) {
@@ -349,6 +365,16 @@ export default class DefaultAudioVideoController implements AudioVideoController
         ),
       ]).run();
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
+        /* istanbul ignore else */
+        if (this.eventController) {
+          this.eventController.publishEvent('meetingStartSucceeded', {
+            maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
+            poorConnectionCount: this.meetingSessionContext.poorConnectionCount,
+            retryCount: this.totalRetryCount,
+            signalingOpenDurationMs: this.meetingSessionContext.signalingOpenDurationMs,
+          });
+        }
+        this.meetingSessionContext.startTimeMs = Date.now();
         this.actionFinishConnecting();
       });
     } catch (error) {
@@ -356,11 +382,9 @@ export default class DefaultAudioVideoController implements AudioVideoController
         const status = new MeetingSessionStatus(
           this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
         );
-        await this.actionDisconnect(status, true);
+        await this.actionDisconnect(status, true, error);
         if (!this.handleMeetingSessionStatus(status, error)) {
-          this.forEachObserver(observer => {
-            Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
-          });
+          this.notifyStop(status, error);
         }
       });
     }
@@ -383,13 +407,14 @@ export default class DefaultAudioVideoController implements AudioVideoController
 
   stop(): void {
     this.sessionStateController.perform(SessionStateControllerAction.Disconnect, () => {
-      this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.Left), false);
+      this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.Left), false, null);
     });
   }
 
   private async actionDisconnect(
     status: MeetingSessionStatus,
-    reconnecting: boolean
+    reconnecting: boolean,
+    error: Error | null
   ): Promise<void> {
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStop'), [
@@ -399,7 +424,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
           this.configuration.connectionTimeoutMs
         ),
       ]).run();
-    } catch (error) {
+    } catch (stopError) {
       this.logger.info('fail to stop');
     }
 
@@ -411,14 +436,12 @@ export default class DefaultAudioVideoController implements AudioVideoController
           this.configuration.connectionTimeoutMs
         ),
       ]).run();
-    } catch (error) {
+    } catch (cleanError) {
       this.logger.info('fail to clean');
     }
     this.sessionStateController.perform(SessionStateControllerAction.FinishDisconnecting, () => {
       if (!reconnecting) {
-        this.forEachObserver(observer => {
-          Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
-        });
+        this.notifyStop(status, error);
       }
     });
   }
@@ -531,6 +554,40 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
   }
 
+  private notifyStop(status: MeetingSessionStatus, error: Error | null): void {
+    this.forEachObserver(observer => {
+      Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
+    });
+
+    /* istanbul ignore else */
+    if (this.eventController) {
+      const {
+        signalingOpenDurationMs,
+        poorConnectionCount,
+        startTimeMs,
+      } = this.meetingSessionContext;
+      const attributes: AudioVideoEventAttributes = {
+        maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
+        meetingDurationMs: startTimeMs === null ? 0 : Math.round(Date.now() - startTimeMs),
+        meetingStatus: MeetingSessionStatusCode[status.statusCode()],
+        signalingOpenDurationMs,
+        poorConnectionCount,
+        retryCount: this.totalRetryCount,
+      };
+
+      if (attributes.meetingDurationMs === 0) {
+        attributes.meetingErrorMessage = (error && error.message) || '';
+        delete attributes.meetingDurationMs;
+        this.eventController.publishEvent('meetingStartFailed', attributes);
+      } else if (status.isFailure() || status.isAudioConnectionFailure()) {
+        attributes.meetingErrorMessage = (error && error.message) || '';
+        this.eventController.publishEvent('meetingFailed', attributes);
+      } else {
+        this.eventController.publishEvent('meetingEnded', attributes);
+      }
+    }
+  }
+
   private actionFinishUpdating(): void {
     // we do not update parameter for simulcast since they are updated in AttachMediaInputTask
     if (!this.meetingSessionContext.enableSimulcast) {
@@ -540,7 +597,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     this.logger.info('updated audio-video session');
   }
 
-  reconnect(status: MeetingSessionStatus): boolean {
+  reconnect(status: MeetingSessionStatus, error: Error | null): boolean {
     const willRetry = this._reconnectController.retryWithBackoff(
       async () => {
         if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
@@ -552,6 +609,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
             this.actionReconnect();
           });
         }
+        this.totalRetryCount += 1;
       },
       () => {
         this.logger.info('canceled retry');
@@ -559,7 +617,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     );
     if (!willRetry) {
       this.sessionStateController.perform(SessionStateControllerAction.Fail, () => {
-        this.actionDisconnect(status, false);
+        this.actionDisconnect(status, false, error);
       });
     }
 
@@ -607,6 +665,10 @@ export default class DefaultAudioVideoController implements AudioVideoController
       ]).run();
 
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
+        /* istanbul ignore else */
+        if (this.eventController) {
+          this.eventController.pushMeetingState('meetingReconnected');
+        }
         this.actionFinishConnecting();
       });
     } catch (error) {
@@ -677,7 +739,7 @@ export default class DefaultAudioVideoController implements AudioVideoController
     }
     if (status.isFailure() || status.isTerminal()) {
       if (this.meetingSessionContext.reconnectController) {
-        const willRetry = this.reconnect(status);
+        const willRetry = this.reconnect(status, error);
         if (willRetry) {
           this.logger.warn(
             `will retry due to status code ${MeetingSessionStatusCode[status.statusCode()]}${

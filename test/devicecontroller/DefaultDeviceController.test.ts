@@ -9,6 +9,8 @@ import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObs
 import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
 import Device from '../../src/devicecontroller/Device';
 import DevicePermission from '../../src/devicecontroller/DevicePermission';
+import EventAttributes from '../../src/eventcontroller/EventAttributes';
+import EventName from '../../src/eventcontroller/EventName';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MediaDeviceProxyHandler from '../../src/mediadevicefactory/MediaDeviceProxyHandler';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -16,6 +18,7 @@ import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElem
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import NotAllowedError from '../dommock/NotAllowedError';
 
 describe('DefaultDeviceController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -443,21 +446,30 @@ describe('DefaultDeviceController', () => {
 
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      deviceController.bindToAudioVideoController(audioVideoController);
+      const handleEventSpy = sinon.spy(audioVideoController.eventController, 'publishEvent');
       const permission = await deviceController.chooseVideoInputDevice(stringDeviceId);
       expect(permission).to.equal(DevicePermission.PermissionDeniedByBrowser);
+      expect(handleEventSpy.called).to.be.true;
     });
 
     it('denies the permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.asyncWaitMs = 1500;
+      deviceController.bindToAudioVideoController(audioVideoController);
+      const handleEventSpy = sinon.spy(audioVideoController.eventController, 'publishEvent');
       const permission = await deviceController.chooseVideoInputDevice(stringDeviceId);
       expect(permission).to.equal(DevicePermission.PermissionDeniedByUser);
+      expect(handleEventSpy.called).to.be.true;
     });
 
     it('cannot choose the device of an empty string ID', async () => {
       const device: Device = '';
+      deviceController.bindToAudioVideoController(audioVideoController);
+      const handleEventSpy = sinon.spy(audioVideoController.eventController, 'publishEvent');
       const permission = await deviceController.chooseVideoInputDevice(device);
       expect(permission).to.equal(DevicePermission.PermissionDeniedByBrowser);
+      expect(handleEventSpy.called).to.be.true;
     });
   });
 
@@ -1030,6 +1042,70 @@ describe('DefaultDeviceController', () => {
       await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
       expect(videoInputStreamEndedCallCount).to.equal(1);
       expect(spy.called).to.be.false;
+    });
+  });
+
+  describe('getUserMedia failures', () => {
+    it('receives the unknown error message if the error does not exist', done => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaError = null;
+      audioVideoController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).includes('UnknownError');
+          done();
+        },
+      });
+      deviceController.bindToAudioVideoController(audioVideoController);
+      deviceController.chooseAudioInputDevice(stringDeviceId);
+    });
+
+    it('receives the error name and the message', done => {
+      const errorMessage = 'Permission denied';
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaError = new NotAllowedError(errorMessage);
+      audioVideoController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).includes(errorMessage);
+          expect(attributes.audioInputErrorMessage).includes('NotAllowedError');
+          done();
+        },
+      });
+      deviceController.bindToAudioVideoController(audioVideoController);
+      deviceController.chooseAudioInputDevice(stringDeviceId);
+    });
+
+    it('receives the error name only if the message is empty', done => {
+      const errorMessage = '';
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaError = new NotAllowedError(errorMessage);
+      audioVideoController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).to.equal('NotAllowedError');
+          done();
+        },
+      });
+      deviceController.bindToAudioVideoController(audioVideoController);
+      deviceController.chooseAudioInputDevice(stringDeviceId);
+    });
+
+    it('receives the error message only if the error name is empty', done => {
+      const errorMessage = 'Permission denied';
+      const error = new NotAllowedError(errorMessage);
+      error.name = '';
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaError = error;
+      audioVideoController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(name).to.equal('audioInputFailed');
+          expect(attributes.audioInputErrorMessage).includes(errorMessage);
+          done();
+        },
+      });
+      deviceController.bindToAudioVideoController(audioVideoController);
+      deviceController.chooseAudioInputDevice(stringDeviceId);
     });
   });
 });

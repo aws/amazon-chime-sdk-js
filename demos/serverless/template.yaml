@@ -23,6 +23,7 @@ Globals:
         MEETINGS_TABLE_NAME: !Ref Meetings
         SQS_QUEUE_ARN: !GetAtt MeetingNotificationsQueue.Arn
         BROWSER_LOG_GROUP_NAME: !Ref ChimeBrowserLogs
+        BROWSER_MEETING_EVENT_LOG_GROUP_NAME: !Ref ChimeBrowserMeetingEventLogs
         CHIME_ENDPOINT: !Ref ChimeEndpoint
 Resources:
   ChimeMeetingsAccessPolicy:
@@ -64,7 +65,9 @@ Resources:
             Resource: '*'
       Roles:
         - Ref: ChimeSdkBrowserLogsLambdaRole
+        - Ref: ChimeSdkBrowserMeetingEventLogsLambdaRole
         - Ref: ChimeSdkBrowserCreateLogStreamLambdaRole
+        - Ref: ChimeSdkBrowserCreateBrowserEventLogStreamLambdaRole
   Meetings:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -89,6 +92,8 @@ Resources:
         Enabled: true
   MeetingNotificationsQueue:
     Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: 'alias/aws/sqs'
   ChimeSdkIndexLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -181,6 +186,17 @@ Resources:
           Properties:
             Path: /logs
             Method: POST
+  ChimeSdkBrowserMeetingEventLogsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.log_meeting_event
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /log_meeting_event
+            Method: POST
   ChimeSdkBrowserCreateLogStreamLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -191,6 +207,17 @@ Resources:
           Type: Api
           Properties:
             Path: /create_log_stream
+            Method: POST
+  ChimeSdkBrowserCreateBrowserEventLogStreamLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.create_browser_event_log_stream
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /create_browser_event_log_stream
             Method: POST
   ChimeNotificationsQueuePolicy:
     Type: AWS::SQS::QueuePolicy
@@ -210,6 +237,154 @@ Resources:
         - Ref: MeetingNotificationsQueue
   ChimeBrowserLogs:
     Type: AWS::Logs::LogGroup
+  ChimeBrowserMeetingEventLogs:
+    Type: AWS::Logs::LogGroup
+  ChimeSdkBrowserMeetingEventDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardBody: !Sub
+        - >
+          {
+            "widgets": [
+                {
+                    "type": "log",
+                    "x": 0,
+                    "y": 12,
+                    "width": 12,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | filter name in [\"meetingStartSucceeded\", \"meetingStartFailed\"]\n| stats count(*) as meetingJoin by name",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "Meeting join success rate",
+                        "view": "pie"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 0,
+                    "y": 6,
+                    "width": 12,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | fields @timestamp, @message\n| filter name in [\"meetingStartRequested\"]\n| stats count(*) as startRequested by attributes.browserName as browser, attributes.browserMajorVersion as version\n| sort startRequested desc\n| limit 10",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "Top 10 browsers",
+                        "view": "table"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 12,
+                    "y": 6,
+                    "width": 12,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | fields @timestamp, @message\n| filter name in [\"meetingStartRequested\"]\n| stats count(*) as startRequested by attributes.osName as operatingSystem\n| sort startRequested desc\n| limit 10",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "Top 10 operating systems",
+                        "view": "table"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 0,
+                    "y": 30,
+                    "width": 24,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | filter name in [\"audioInputFailed\", \"videoInputFailed\"]\n| fields\nfromMillis(@timestamp) as timestamp,\nconcat(attributes.osName, \" \", attributes.osVersion) as operatingSystem,\nconcat(attributes.browserName, \" \", attributes.browserMajorVersion) as browser,\nreplace(name, \"InputFailed\", \"\") as kind,\nconcat(attributes.audioInputErrorMessage, attributes.videoInputErrorMessage) as reason\n| sort @timestamp desc\n",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "Audio and video input failures",
+                        "view": "table"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 0,
+                    "y": 18,
+                    "width": 24,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | filter name in [\"meetingStartFailed\"]\n| fields fromMillis(@timestamp) as timestamp,\nconcat(attributes.osName, \" \", attributes.osVersion) as operatingSystem,\nconcat(attributes.browserName, \" \", attributes.browserMajorVersion) as browser,\nattributes.meetingStatus as failedStatus,\nconcat(attributes.signalingOpenDurationMs / 1000, \"s\")  as signalingOpenDurationMs,\nattributes.retryCount as retryCount\n| sort @timestamp desc\n",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "Meeting join failures",
+                        "view": "table"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 0,
+                    "y": 24,
+                    "width": 24,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | filter name in [\"meetingFailed\"]\n| fields\nfromMillis(@timestamp) as timestamp,\nconcat(attributes.osName, \" \", attributes.osVersion) as operatingSystem,\nconcat(attributes.browserName, \" \", attributes.browserMajorVersion) as browser,\nattributes.meetingStatus as failedStatus,\nconcat(attributes.meetingDurationMs / 1000, \"s\") as meetingDurationMs,\nattributes.retryCount as retryCount,\nattributes.poorConnectionCount as poorConnectionCount\n| sort @timestamp desc\n",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "Dropped attendees",
+                        "view": "table"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 12,
+                    "y": 0,
+                    "width": 12,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | filter name in [\"meetingStartRequested\"]\n| stats count(*) as startRequested by attributes.sdkName as SDK, attributes.sdkVersion as version",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "SDK versions",
+                        "view": "table"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 0,
+                    "y": 0,
+                    "width": 12,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | filter name in [\"meetingStartRequested\"]\n| stats count(*) as platform by attributes.sdkName",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "SDK platforms (JavaScript, iOS, and Android)",
+                        "view": "pie"
+                    }
+                },
+                {
+                    "type": "text",
+                    "x": 0,
+                    "y": 36,
+                    "width": 24,
+                    "height": 12,
+                    "properties": {
+                        "markdown": "\n## How to search events for a specific attendee?\n\nThe Chime SDK serverless demo uses Amazon CloudWatch Logs Insights to search and analyze SDK events. You can view trends in the types of failures and identify where your attendees drop off.\n\n1. Click on the row number (▶) to expand a row.\n2. You can see detailed failure information.\n  - **attributes.meetingErrorMessage** explains the reason for the meeting failure.\n  - **attributes.audioInputErrorMessage** and **attributes.videoInputErrorMessage** indicate problems with the microphone and camera.\n  - **attributes.meetingHistory** shows up to last 15 attendee actions and events.\n3. To view a specific attendee's events, take note of **attributes.attendeeId** and choose **Insights** in the navigation pane.\n4. Select your ChimeBrowserMeetingEventLogs log group that starts with your stack name.\n  ```\n  __your_stack_name__ChimeBrowserMeetingEventLogs-...\n  ```\n5. In the query editor, delete the current contents, enter the following filter function, and then choose **Run query**.\n  ```\n  filter attributes.attendeeId = \"__your_attendee_id__\"\n  ```\n\n  The results show the number of SDK events from device selection to meeting end.\n\n  You can use CloudWatch Logs Insights to count device input errors for platforms, calculate the average value of the signaling connection time, and visualize trends over time. For more information, see [Analyzing Log Data with CloudWatch Logs Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html) in the *AWS CloudWatch Logs User Guide*.\n"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 12,
+                    "y": 12,
+                    "width": 12,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | filter name in [\"meetingStartSucceeded\"]\n| stats count(*) as meetingStart by bin(1d) as time\n| sort time asc",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "Daily attendees who joined a meeting",
+                        "view": "bar"
+                    }
+                }
+            ]
+          }
+        - { Source: !Ref ChimeBrowserMeetingEventLogs }
 Outputs:
   ApiURL:
     Description: "API endpoint URL for Prod environment"

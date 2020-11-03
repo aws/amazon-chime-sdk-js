@@ -80,6 +80,7 @@ describe('OpenSignalingConnectionTask', () => {
       context.signalingClient = signalingClient;
       task.run().then(() => {
         expect(called).to.be.true;
+        expect(context.signalingOpenDurationMs).to.not.be.null;
         done();
       });
     });

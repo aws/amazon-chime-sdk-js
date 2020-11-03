@@ -9,11 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- [Documentation] Update README to add information about `tileState.active`
+- [Documentation] Updated HTTP to HTTPS in README URL links
+- [Documentation] Improved documentation for running integration tests locally
+- [Test] Updated browserstack URL formation to use HTTPS
+- Upgraded eslint to understand modern TypeScript syntax, including `import type`.
 
 ### Removed
 
 ### Fixed
+- Make the event controller optional in the AudioVideoController interface
+- Handle undefined attendeeId when calling `realtimeSetAttendeeIdPresence`
+- Fix `DefaultModality` base check
+- [Test] Fix a typo in integ tests
+
+## [1.21.0] - 2020-10-29
+### Added
+- [Demo] Add default SSE to meeting notifications queue in CF template
+- Add meeting events
+
+### Changed
+
+### Removed
+- Removed check for `iceGatheringState` to be complete for bypassing gathering ice candidate again
+
+### Fixed
+- Allow the build to complete in the absence of a Git checkout
+
+## [1.20.2] - 2020-10-20
+### Added
+
+### Changed
+- [Documentation] Update README to add information about `tileState.active`
+- Update PR template to ask demo testing question
+
+### Removed
+
+### Fixed
+- Reduced sessionId resolution to 32 bits and removed Long dependency
+- Handle case where meeting or attendee response properties can accept null or undefined
+
 
 ## [1.20.0] - 2020-10-15
 ### Added

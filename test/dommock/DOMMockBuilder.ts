@@ -355,6 +355,11 @@ export default class DOMMockBuilder {
             mediaStream.active = true;
             resolve(mediaStream);
           } else {
+            if (typeof mockBehavior.getUserMediaError !== 'undefined') {
+              reject(mockBehavior.getUserMediaError);
+              return;
+            }
+
             if (
               mockBehavior.getUserMediaResult &&
               mockBehavior.getUserMediaResult === UserMediaState.OverConstrained
@@ -862,7 +867,7 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.fetch = function fetch(_input: RequestInfo, _init?: RequestInit): Promise<Response> {
-      return new Promise<Response>(function(resolve, reject) {
+      return new Promise<Response>(function (resolve, reject) {
         asyncWait(() => {
           if (mockBehavior.fetchSucceeds) {
             resolve(new Response());

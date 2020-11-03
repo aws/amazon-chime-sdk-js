@@ -22,6 +22,7 @@ export default class DefaultContentShareController
   ): MeetingSessionConfiguration {
     const contentShareConfiguration = new MeetingSessionConfiguration();
     contentShareConfiguration.meetingId = configuration.meetingId;
+    contentShareConfiguration.externalMeetingId = configuration.externalMeetingId;
     contentShareConfiguration.urls = configuration.urls;
     contentShareConfiguration.credentials = new MeetingSessionCredentials();
     contentShareConfiguration.credentials.attendeeId =

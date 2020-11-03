@@ -1,8 +1,9 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 import 'mocha';
+
+import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 import { ResizeObserver } from 'resize-observer';
 
 import DefaultResizeObserverAdapter from '../../src/resizeobserveradapter/DefaultResizeObserverAdapter';

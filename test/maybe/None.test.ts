@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -58,13 +58,7 @@ describe('None', () => {
 
   describe('#defaulting', () => {
     it('is default', () => {
-      chai
-        .expect(
-          None.of()
-            .defaulting('any')
-            .get()
-        )
-        .to.eq('any');
+      chai.expect(None.of().defaulting('any').get()).to.eq('any');
     });
   });
 });

@@ -16,7 +16,7 @@ export default class DefaultModality implements Modality {
   }
 
   base(): string {
-    if (this._id === '') {
+    if (!this._id) {
       return '';
     }
     return this._id.split(DefaultModality.MODALITY_SEPARATOR)[0];

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
-import * as Long from 'long';
 
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -90,7 +89,7 @@ describe('DefaultSignalingClient', () => {
   const _audioHost = 'some-audio-host';
   let domMockBuilder: DOMMockBuilder | null = null;
 
-  const createTestObjects = function(testConfigs?: TestConfigs): TestObjects {
+  const createTestObjects = function (testConfigs?: TestConfigs): TestObjects {
     const testObjects: TestObjects = new TestObjects(testConfigs);
     activeTestObjects.push(testObjects);
     return testObjects;
@@ -716,7 +715,7 @@ describe('DefaultSignalingClient', () => {
   describe('generateNewAudioSessionId', () => {
     it('will generate a random audio session id', done => {
       const randomNumSet = new Set();
-      let average = Long.fromNumber(0, true);
+      let average = 0;
       const iterations = 1000;
       const testObjects = createTestObjects();
 
@@ -724,17 +723,15 @@ describe('DefaultSignalingClient', () => {
         // @ts-ignore
         const id = testObjects.signalingClient.generateNewAudioSessionId();
 
-        if (randomNumSet.has(id.toString())) {
+        if (randomNumSet.has(id)) {
           expect.fail('audioSessionId was not unique');
         }
-        randomNumSet.add(id.toString());
-        const roundedRemainder = Math.round(id.mod(iterations).toNumber() / iterations);
-        average = average.add(id.div(iterations).add(roundedRemainder));
+        randomNumSet.add(id);
+        const roundedRemainder = Math.round((id % iterations) / iterations);
+        average = average + (id / iterations + roundedRemainder);
       }
-      // average should be near the midpoint of the 64-bit range
-      const passed =
-        average.greaterThan(Long.fromString('0x7000000000000000', true, 16)) &&
-        average.lessThan(Long.fromString('0x9000000000000000', true, 16));
+      // average should be near the midpoint of the 32-bit range
+      const passed = average > parseInt('0x70000000') && average < parseInt('0x90000000');
       expect(passed).to.be.true;
       done();
     });
