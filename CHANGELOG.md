@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle undefined attendeeId when calling `realtimeSetAttendeeIdPresence`
 - Fix `DefaultModality` base check
 - [Test] Fix a typo in integ tests
+- [Demo] Fix serverless deploy script to not print out logs
 
 ## [1.21.0] - 2020-10-29
 ### Added
