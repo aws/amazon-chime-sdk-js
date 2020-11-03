@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -7,7 +7,8 @@ import ConnectionHealthData from './ConnectionHealthData';
 import ConnectionHealthPolicy from './ConnectionHealthPolicy';
 import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfiguration';
 
-export default class ReconnectionHealthPolicy extends BaseConnectionHealthPolicy
+export default class ReconnectionHealthPolicy
+  extends BaseConnectionHealthPolicy
   implements ConnectionHealthPolicy {
   private static CONNECTION_UNHEALTHY_THRESHOLD: number;
   private static CONNECTION_WAIT_TIME_MS: number;

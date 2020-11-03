@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Documentation] Updated HTTP to HTTPS in README URL links
 - [Documentation] Improved documentation for running integration tests locally
 - [Test] Updated browserstack URL formation to use HTTPS
+- Upgraded eslint to understand modern TypeScript syntax, including `import type`.
 
 ### Removed
 
@@ -27,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Removed
-- Removed check for iceGatheringState to be complete for bypassing gathering ice candidate again
+- Removed check for `iceGatheringState` to be complete for bypassing gathering ice candidate again
 
 ### Fixed
 - Allow the build to complete in the absence of a Git checkout.

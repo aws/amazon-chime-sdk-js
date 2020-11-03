@@ -1,10 +1,11 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import 'mocha';
+
 import { Substitute } from '@fluffy-spoon/substitute';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import 'mocha';
 
 import DOMWebSocket from '../../src/domwebsocket/DOMWebSocket';
 import DefaultPromisedWebSocket from '../../src/promisedwebsocket/DefaultPromisedWebSocket';

@@ -6,7 +6,8 @@ import ConnectionHealthData from './ConnectionHealthData';
 import ConnectionHealthPolicy from './ConnectionHealthPolicy';
 import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfiguration';
 
-export default class UnusableAudioWarningConnectionHealthPolicy extends BaseConnectionHealthPolicy
+export default class UnusableAudioWarningConnectionHealthPolicy
+  extends BaseConnectionHealthPolicy
   implements ConnectionHealthPolicy {
   private coolDownTimeMs: number;
   private pastSamplesToConsider: number;

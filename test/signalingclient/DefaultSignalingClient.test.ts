@@ -89,7 +89,7 @@ describe('DefaultSignalingClient', () => {
   const _audioHost = 'some-audio-host';
   let domMockBuilder: DOMMockBuilder | null = null;
 
-  const createTestObjects = function(testConfigs?: TestConfigs): TestObjects {
+  const createTestObjects = function (testConfigs?: TestConfigs): TestObjects {
     const testObjects: TestObjects = new TestObjects(testConfigs);
     activeTestObjects.push(testObjects);
     return testObjects;
