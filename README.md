@@ -121,7 +121,7 @@ Now securely transfer the `meetingResponse` and `attendeeResponse` objects to yo
 These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.
 
 The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting.
-An implementation can be found in the [getNearestMediaRegion()](https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts#L460)
+An implementation can be found in the [getNearestMediaRegion()](https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts#L531)
 
 ## Building and testing
 
