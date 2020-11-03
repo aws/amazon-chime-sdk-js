@@ -14,3 +14,4 @@ exports.MeetingReadinessCheckerVideoConnectivityCheck = require('./MeetingReadin
 exports.MeetingReadinessCheckerContentShareConnectivityCheck = require('./MeetingReadinessCheckerContentShareConnectivityCheck');
 exports.MeetingReadinessCheckerAudioConnectivityCheck = require('./MeetingReadinessCheckerAudioConnectivityCheck');
 exports.MeetingReadinessCheckerNetworkUdpCheck = require('./MeetingReadinessCheckerNetworkUdpCheck');
+exports.VoiceFocusOfferedCheck = require('./VoiceFocusOfferedCheck');
