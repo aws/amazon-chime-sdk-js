@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Make the event controller optional in the AudioVideoController interface
+- [Test] Fix a typo in integ tests
 
 ## [1.21.0] - 2020-10-29
 ### Added
