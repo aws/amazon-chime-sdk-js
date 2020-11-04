@@ -29,7 +29,6 @@ verbose('git reset --hard origin/master')
 verbose('git clean -ffxd .')
 
 verbose("git checkout tags/amazon-chime-sdk-js@#{npm_version} -b deploy-to-prod")
-
 Dir.chdir('demos/browser/')
 verbose('npm uninstall amazon-chime-sdk-js')
 verbose("npm install amazon-chime-sdk-js@#{npm_version}")
@@ -54,5 +53,5 @@ verbose('npm run build')
 verbose('npm run build --app=meetingReadinessChecker')
 
 Dir.chdir('../serverless/')
-verbose('npm run deploy -- -b chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary')
-verbose('npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary -s chime-sdk-meeting-readiness-checker-prod-canary -a meetingReadinessChecker')
+verbose('npm run deploy -- -b chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary -l')
+verbose('npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary -s chime-sdk-meeting-readiness-checker-prod-canary -a meetingReadinessChecker -l')

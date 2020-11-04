@@ -48,12 +48,21 @@
       </div>
       <div class="row mt-3">
         <div class="col-12">
-          <label for="optional-features">Optional Features</label>
-          <select id="optional-features" class="custom-select" style="width:100%">
-            <option value="" selected>None</option>
-            <option value="simulcast">Enable Simulcast For Chrome</option>
-            <option value="webaudio">Use WebAudio</option>
-          </select>
+          <fieldset>
+            <legend>Choose your optional features</legend>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="webaudio" class="custom-control-input">
+              <label for="webaudio" class="custom-control-label">Use WebAudio</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="simulcast" class="custom-control-input">
+              <label for="simulcast" class="custom-control-label">Enable Simulcast for Chrome</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="planB" class="custom-control-input">
+              <label for="planB" class="custom-control-label">Disable Unified Plan for Chrome</label>
+            </div>
+          </fieldset>
         </div>
       </div>
       <div class="row mt-3">
