@@ -1,12 +1,11 @@
 #!/bin/bash
 set -euxo pipefail
 
-repo_path=~/build/aws/amazon-chime-sdk-js
-cd $repo_path/demos/browser
+cd $GITHUB_WORKSPACE/demos/browser
 npm run build
 npm run build --app=meetingReadinessChecker
 
-cd $repo_path/demos/serverless
+cd $GITHUB_WORKSPACE/demos/serverless
 
 echo "Deploying to alpha stage for canary"
 npm run deploy -- -b chime-sdk-demo-canary -s chime-sdk-demo-canary -t -l
