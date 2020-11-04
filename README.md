@@ -1,7 +1,6 @@
 # Amazon Chime SDK for JavaScript
 
 <a href="https://www.npmjs.com/package/amazon-chime-sdk-js"><img src="https://img.shields.io/npm/v/amazon-chime-sdk-js?style=flat-square"></a>
-<a href="https://travis-ci.org/github/aws/amazon-chime-sdk-jsr"><img src="https://travis-ci.org/aws/amazon-chime-sdk-js.svg?branch=master"></a>
 
 ### Build video calling, audio calling, and screen sharing applications powered by Amazon Chime.
 
