@@ -9,6 +9,7 @@ let stack = ``;
 let app = `meeting`;
 let useEventBridge = false;
 let enableTerminationProtection = false;
+let disablePrintingLogs = false;
 let chimeEndpoint = 'https://service.chime.aws.amazon.com'
 
 const packages = [
@@ -26,7 +27,8 @@ function usage() {
   console.log(`  -e, --event-bridge                   Enable EventBridge integration, default is no integration`);
   console.log(`  -c, --chime-endpoint                 AWS SDK Chime endpoint, default is '${chimeEndpoint}'`);
   console.log(`  -t, --enable-termination-protection  Enable termination protection for the Cloudformation stack, default is false`);
-  console.log(`  -h, --help           Show help and exit`);
+  console.log(`  -l, --disable-printing-logs          Disable printing logs`);
+  console.log(`  -h, --help                           Show help and exit`);
 }
 
 function ensureBucket() {
@@ -80,6 +82,9 @@ function parseArgs() {
         break;
       case '-t': case '--enable-termination-protection':
         enableTerminationProtection = true;
+        break;
+      case '-l': case '--disable-printing-logs':
+        disablePrintingLogs = true;
         break;
       default:
         console.log(`Invalid argument ${args[i]}`);
@@ -150,7 +155,7 @@ if (!fs.existsSync('build')) {
   fs.mkdirSync('build');
 }
 
-console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}`);
+console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}, disable-printing-logs ${disablePrintingLogs}`);
 ensureBucket();
 
 for (const package of packages) {
@@ -170,13 +175,15 @@ spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
 console.log('Deploying serverless application');
 spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--stack-name', `${stack}`,
                     '--parameter-overrides', `UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint}`,
-                    '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`, '--no-fail-on-empty-changeset']);
+                    '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`, '--no-fail-on-empty-changeset'], null, !disablePrintingLogs);
 if (enableTerminationProtection) {
   spawnOrFail('aws', ['cloudformation', 'update-termination-protection', '--enable-termination-protection', '--stack-name', `${stack}`], null, false);
 }
-console.log("Amazon Chime SDK Meeting Demo URL: ");
+if (!disablePrintingLogs) {
+  console.log('Amazon Chime SDK Meeting Demo URL: ');
+}
 const output=spawnOrFail('aws', ['cloudformation', 'describe-stacks', '--stack-name', `${stack}`,
-                    '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`]);
-if (app === 'meeting') {
+                    '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`], null, !disablePrintingLogs);
+if (app === 'meeting' && !disablePrintingLogs) {
   console.log(output.replace(/Prod/, 'Prod/v2'));
 }
