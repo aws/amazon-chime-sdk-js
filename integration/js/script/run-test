@@ -1,7 +1,7 @@
 #!/bin/bash -i
 
 function start_demo_meeting {
-    cd ~/build/aws/amazon-chime-sdk-js/demos/browser
+    cd $GITHUB_WORKSPACE/demos/browser
     uuid=$(uuidgen)
     mkdir -p logs
     if [[ $1 == 'meetingReadinessChecker' ]]

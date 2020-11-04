@@ -1,11 +1,11 @@
 #!/bin/bash
 
 echo "Uploading logs to S3"
-run_id=$TRAVIS_COMMIT-$(date +%s)
-s3_bucket="amazon-chime-sdk-js-integration-test-travis-logs"
+run_id=$JOB_ID-$(date +%s)
+s3_bucket="amazon-chime-sdk-js-integration-test-github-action-logs"
 
 function put_in_s3 {
-    aws s3 sync $TRAVIS_BUILD_DIR/$1 s3://$s3_bucket/$run_id/$2 > /dev/null
+    aws s3 sync $GITHUB_WORKSPACE/$1 s3://$s3_bucket/$JOB_ID/$2 > /dev/null
 }
 
 put_in_s3 integration/logs test_logs

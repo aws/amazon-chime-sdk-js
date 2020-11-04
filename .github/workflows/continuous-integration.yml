@@ -1,0 +1,241 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: CI Workflow
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  
+  # build:
+  #   name: Build and Run Unit Tests
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       node-version: [12.x]
+  #   steps:
+  #   - name: Checkout Package
+  #     uses: actions/checkout@v2
+  #   - name: Using Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+  #   - name: Clean Install
+  #     run: npm ci
+  #   - name: Build
+  #     run: npm run build:release
+
+  setup_integ_tests:
+    continue-on-error: true
+    name: Check if Integ Tests are Required
+    # needs: build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      integration_test_required: ${{ steps.integration_test_required.outputs.needs_integration_test }}
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Using Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Check if Integ Tests need to Run
+        run: node script/needs-integration-test.js
+      - name: Set integration test requirement to true
+        id: integration_test_required
+        if: ${{ success() }}
+        run: echo '::set-output name=needs_integration_test::true'
+      - name: Set integration test requirement to false
+        if: ${{ failure() }}
+        run: echo '::set-output name=needs_integration_test::false'
+
+
+  run-integ-tests-1:
+    name: Integ Test Group 1
+    needs: setup_integ_tests
+    if: ${{needs.setup_integ_tests.outputs.integration_test_required}}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+        integ-test-name: [audio, screen-share]
+
+    env:
+      SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+      SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+      SELENIUM_GRID_PROVIDER: saucelabs
+      CLOUD_WATCH_METRIC: false
+      TEST_TYPE: Github-Action
+    steps:
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@v1
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@master
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Checkout Chime SDK Repo
+        uses: actions/checkout@v2
+      - name: Setup Node.js - ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run ${{matrix.integ-test-name}} Integ Test
+        run: npm run test:integration-${{matrix.integ-test-name}}
+
+
+  run-integ-tests-2:
+    name: Integ Test Group 2
+    needs: run-integ-tests-1
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+        integ-test-name: [video, content-share]
+
+    env:
+      SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+      SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+      SELENIUM_GRID_PROVIDER: saucelabs
+      CLOUD_WATCH_METRIC: false
+      TEST_TYPE: Github-Action
+    steps:
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@v1
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@master
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Checkout Chime SDK Repo
+        uses: actions/checkout@v2
+      - name: Setup Node.js - ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run ${{matrix.integ-test-name}} Integ Test
+        run: npm run test:integration-${{matrix.integ-test-name}}
+
+  run-integ-tests-3:
+    name: Integ Test Group 3
+    needs: run-integ-tests-2
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+        integ-test-name: [data-message, meeting-end, meeting-readiness-checker]
+
+    env:
+      SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+      SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+      SELENIUM_GRID_PROVIDER: saucelabs
+      CLOUD_WATCH_METRIC: false
+      TEST_TYPE: Github-Action
+    steps:
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@v1
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@master
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Checkout Chime SDK Repo
+        uses: actions/checkout@v2
+      - name: Setup Node.js - ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run ${{matrix.integ-test-name}} Integ Test
+        run: npm run test:integration-${{matrix.integ-test-name}}
+      
+  deploy:
+    name: Deploy Demo App
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    env:
+        # TODO: UPDATE THESE WITH THE CORRECT SECRET
+        GAMMA_AWS_ACCESS_KEY_ID: ${{secrets.DEPLOY_ACCESS_KEY}}
+        GAMMA_AWS_SECRET_ACCESS_KEY: ${{secrets.DEPLOY_SECRET_KEY}}
+        AWS_DEFAULT_REGION: us-east-1
+        AWS_DEFAULT_OUTPUT: text
+        GAMMA_CHIME_ENDPOINT: ${{secrets.GAMMA_CHIME_ENDPOINT}}
+        DEVO_AWS_ACCESS_KEY_ID: ${{secrets.DEPLOY_ACCESS_KEY}}
+        DEVO_AWS_SECRET_ACCESS_KEY: ${{secrets.DEPLOY_SECRET_KEY}}
+        AWS_ACCESS_KEY_ID: ${{secrets.DEPLOY_ACCESS_KEY}}
+        AWS_SECRET_ACCESS_KEY: ${{secrets.DEPLOY_SECRET_KEY}}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          # TODO: UPDATE THESE WITH THE CORRECT SECRET
+          aws-access-key-id: ${{ secrets.DEPLOY_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.DEPLOY_SECRET_KEY }}
+          aws-region: us-east-1
+      - name: Checkout Package
+        uses: actions/checkout@v2
+      - name: Install SAM CLI
+        run: script/travis-awscli-installation
+      - name: Deploy the Serverless Demo App
+        run: script/deploy-canary-demo
