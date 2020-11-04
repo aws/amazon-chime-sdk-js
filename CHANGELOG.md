@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Documentation] Improved documentation for running integration tests locally
 - [Test] Updated browserstack URL formation to use HTTPS
 - Upgraded eslint to understand modern TypeScript syntax, including `import type`.
+- [Demo] change optional feature selection to be list of input box to allow combination
 
 ### Removed
 

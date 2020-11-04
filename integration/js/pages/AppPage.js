@@ -37,7 +37,11 @@ const elements = {
 
   meetingAudio: By.id('meeting-audio'),
   sipUri: By.id('sip-uri'),
-  optionalFeatures: By.id('optional-features'),
+  
+  simulcastFeature: By.id('simulcast'),
+  simulcastFeatureLabel: By.css('label[for="simulcast"]'),
+  webAudioFeature: By.id('webaudio'),
+  webAudioFeatureLabel: By.css('label[for="webaudio"]'),
 };
 
 const SessionStatus = {
@@ -77,9 +81,24 @@ class AppPage {
     await authenticateButton.click();
   }
 
+  async chooseUseWebAudio() {
+    let webAudioFeature = await this.driver.findElement(elements.webAudioFeature);
+    let webAudioFeatureLabel = await this.driver.findElement(elements.webAudioFeatureLabel);
+    if (await webAudioFeature.isSelected()) {
+      console.log('Web Audio is selected');
+    } else {
+      await webAudioFeatureLabel.click();
+    }
+  }
+
   async chooseUseSimulcast() {
-    let featureSelection = await this.driver.findElement(elements.optionalFeatures);
-    await featureSelection.sendKeys('simulcast');
+    let simulcastFeature = await this.driver.findElement(elements.simulcastFeature);
+    let simulcastFeatureLabel = await this.driver.findElement(elements.simulcastFeatureLabel);
+    if (await simulcastFeature.isSelected()) {
+      console.log('simulcast is selected');
+    } else {
+      await simulcastFeatureLabel.click();
+    }
   }
 
   async joinMeeting() {
