@@ -33,6 +33,7 @@ import {
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
+  RemovableAnalyserNode,
   SimulcastLayers,
   TimeoutScheduler,
   Versioning,
@@ -227,6 +228,7 @@ export class DemoMeetingApp implements
   // This is an extremely minimal reactive programming approach: these elements
   // will be updated when the Amazon Voice Focus display state changes.
   voiceFocusDisplayables: HTMLElement[] = [];
+  analyserNode: RemovableAnalyserNode;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -292,7 +294,7 @@ export class DemoMeetingApp implements
 
   private onVoiceFocusSettingChanged(): void {
     this.log('[DEMO] Amazon Voice Focus setting toggled to', this.enableVoiceFocus);
-    this.openAudioInputFromSelection();
+    this.openAudioInputFromSelectionAndPreview();
   }
 
   initEventListeners(): void {
@@ -352,7 +354,7 @@ export class DemoMeetingApp implements
           await this.initVoiceFocus();
 
           this.switchToFlow('flow-devices');
-          await this.openAudioInputFromSelection();
+          await this.openAudioInputFromSelectionAndPreview();
           try {
             await this.openVideoInputFromSelection(
               (document.getElementById('video-input') as HTMLSelectElement).value,
@@ -419,7 +421,7 @@ export class DemoMeetingApp implements
     const audioInput = document.getElementById('audio-input') as HTMLSelectElement;
     audioInput.addEventListener('change', async (_ev: Event) => {
       this.log('audio input device is changed');
-      await this.openAudioInputFromSelection();
+      await this.openAudioInputFromSelectionAndPreview();
     });
 
     const videoInput = document.getElementById('video-input') as HTMLSelectElement;
@@ -470,10 +472,11 @@ export class DemoMeetingApp implements
       new AsyncScheduler().start(async () => {
         try {
           this.showProgress('progress-join');
-          await this.join();
+          await this.stopAudioPreview();
           this.audioVideo.stopVideoPreviewForVideoInput(document.getElementById(
             'video-preview'
           ) as HTMLVideoElement);
+          await this.join();
           this.audioVideo.chooseVideoInputDevice(null);
           this.hideProgress('progress-join');
           this.displayButtonStates();
@@ -712,7 +715,6 @@ export class DemoMeetingApp implements
   }
 
   switchToFlow(flow: string): void {
-    this.analyserNodeCallback = () => {};
     Array.from(document.getElementsByClassName('flow')).map(
       e => ((e as HTMLDivElement).style.display = 'none')
     );
@@ -920,8 +922,6 @@ export class DemoMeetingApp implements
     window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
       this.log(event.reason);
     });
-    await this.openAudioInputFromSelection();
-    await this.openAudioOutputFromSelection();
     this.audioVideo.start();
   }
 
@@ -1470,12 +1470,20 @@ export class DemoMeetingApp implements
   async openAudioInputFromSelection(): Promise<void> {
     const device = await this.selectedAudioInput();
     await this.selectAudioInputDevice(device);
+  }
+
+  async openAudioInputFromSelectionAndPreview(): Promise<void> {
+    await this.stopAudioPreview();
+    await this.openAudioInputFromSelection();
     this.log('Starting audio preview.');
     this.startAudioPreview();
   }
 
   setAudioPreviewPercent(percent: number): void {
     const audioPreview = document.getElementById('audio-preview');
+    if (!audioPreview) {
+      return;
+    }
     this.updateProperty(audioPreview.style, 'transitionDuration', '33ms');
     this.updateProperty(audioPreview.style, 'width', `${percent}%`);
     if (audioPreview.getAttribute('aria-valuenow') !== `${percent}`) {
@@ -1483,16 +1491,34 @@ export class DemoMeetingApp implements
     }
   }
 
+  async stopAudioPreview(): Promise<void> {
+    if (!this.analyserNode) {
+      return;
+    }
+
+    this.analyserNodeCallback = () => {};
+
+    // Disconnect the analyser node from its inputs and outputs.
+    this.analyserNode.disconnect();
+    this.analyserNode.removeOriginalInputs();
+
+    this.analyserNode = undefined;
+  }
+
   startAudioPreview(): void {
     this.setAudioPreviewPercent(0);
     const analyserNode = this.audioVideo.createAnalyserNodeForAudioInput();
+
     if (!analyserNode) {
       return;
     }
+
     if (!analyserNode.getByteTimeDomainData) {
       document.getElementById('audio-preview').parentElement.style.visibility = 'hidden';
       return;
     }
+
+    this.analyserNode = analyserNode;
     const data = new Uint8Array(analyserNode.fftSize);
     let frameIndex = 0;
     this.analyserNodeCallback = () => {
