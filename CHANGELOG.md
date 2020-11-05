@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Test] Updated browserstack URL formation to use HTTPS
 - Upgraded eslint to understand modern TypeScript syntax, including `import type`.
 - [Demo] change optional feature selection to be list of input box to allow combination
+- [Documentation] Update README to replace deprecated `AudioCallEnded` with `MeetingEnded`
 
 ### Removed
 

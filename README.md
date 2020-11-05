@@ -867,9 +867,10 @@ import { MeetingSessionStatusCode } from 'amazon-chime-sdk-js';
 const observer = {
   audioVideoDidStop: sessionStatus => {
     const sessionStatusCode = sessionStatus.statusCode();
-    if (sessionStatusCode === MeetingSessionStatusCode.AudioCallEnded) {
+    if (sessionStatusCode === MeetingSessionStatusCode.MeetingEnded) {
       /*
         - You (or someone else) have called the DeleteMeeting API action in your server application.
+        - You attempted to join a deleted meeting.
         - No audio connections are present in the meeting for more than five minutes.
         - Fewer than two audio connections are present in the meeting for more than 30 minutes.
         - Screen share viewer connections are inactive for more than 30 minutes.
