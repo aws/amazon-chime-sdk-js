@@ -4,8 +4,7 @@
   "description": "",
   "scripts": {
     "clean": "rm -rf temp && rm -rf ../kite-allure-reports && rm -rf logs",
-    "test": "npm install && ./script/run-test",
-    "upload-logs-to-s3": "./script/upload-logs-to-s3"
+    "test": "npm install && ./script/run-test"
   },
   "author": "",
   "license": "ISC",
