@@ -218,6 +218,7 @@ import ReconnectController from './reconnectcontroller/ReconnectController';
 import ReconnectingPromisedWebSocket from './promisedwebsocket/ReconnectingPromisedWebSocket';
 import ReconnectingPromisedWebSocketFactory from './promisedwebsocket/ReconnectingPromisedWebSocketFactory';
 import ReconnectionHealthPolicy from './connectionhealthpolicy/ReconnectionHealthPolicy';
+import RemovableAnalyserNode from './devicecontroller/RemovableAnalyserNode';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import ResizeObserverAdapter from './resizeobserveradapter/ResizeObserverAdapter';
 import ResizeObserverAdapterFactory from './resizeobserveradapter/ResizeObserverAdapterFactory';
@@ -558,6 +559,7 @@ export {
   ReconnectingPromisedWebSocket,
   ReconnectingPromisedWebSocketFactory,
   ReconnectionHealthPolicy,
+  RemovableAnalyserNode,
   RemovableObserver,
   ResizeObserverAdapter,
   ResizeObserverAdapterFactory,

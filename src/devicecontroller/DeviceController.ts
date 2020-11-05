@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
+import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
 import AudioInputDevice from './AudioInputDevice';
 import DevicePermission from './DevicePermission';
 import VideoInputDevice from './VideoInputDevice';
@@ -91,11 +92,19 @@ export default interface DeviceController {
   removeDeviceChangeObserver(observer: DeviceChangeObserver): void;
 
   /**
-   * Gets an AnalyserNode from the current audio input. This node can be used to
-   * generate the display for a mic indicator. Null is returned if no audio
+   * Gets an `AnalyserNode` from the current audio input. This node can be used to
+   * generate the display for a mic indicator. `null` is returned if no audio
    * input has been selected.
+   *
+   * The `AnalyserNode` is not updated automatically when you choose a new
+   * audio input. Dispose of this one and fetch another by calling this method again.
+   *
+   * Note that this node should be cleaned up after use, and as such a
+   * `{@link RemovableAnalyserNode}` is returned. Call
+   * {@link RemovableAnalyserNode.removeOriginalInputs} to disconnect the node from the Web Audio
+   * graph.
    */
-  createAnalyserNodeForAudioInput(): AnalyserNode | null;
+  createAnalyserNodeForAudioInput(): RemovableAnalyserNode | null;
 
   /**
    * Starts a video preview of the currently selected video and binds it a video

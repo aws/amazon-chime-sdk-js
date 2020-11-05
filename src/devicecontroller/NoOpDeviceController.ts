@@ -6,6 +6,7 @@ import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceC
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
 import AudioInputDevice from './AudioInputDevice';
 import DevicePermission from './DevicePermission';
+import RemovableAnalyserNode from './RemovableAnalyserNode';
 import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
 
@@ -44,7 +45,7 @@ export default class NoOpDeviceController
 
   removeDeviceChangeObserver(_observer: DeviceChangeObserver): void {}
 
-  createAnalyserNodeForAudioInput(): AnalyserNode | null {
+  createAnalyserNodeForAudioInput(): RemovableAnalyserNode | null {
     return null;
   }
 

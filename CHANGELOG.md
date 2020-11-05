@@ -36,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   using a transpiler like Babel, or split your application bundle into multiple files that can
   be conditionally loaded. Note that transpiling some parts of the SDK might result in ES5 code
   that does not work when run.
+- `DeviceController.createAnalyserNodeForAudioInput` now returns a `RemovableAnalyserNode` that
+  knows how to unhook its own inputs. This allows you to correctly clean up, which avoids issues
+  with Safari when used with Web Audio. The demo has been adjusted to do so.
 
 ### Removed
 - Remove `enableWebAudio` from `DeviceController` and related types. Use the constructor argument
