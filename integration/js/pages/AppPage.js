@@ -12,8 +12,6 @@ const elements = {
   joinButton: By.id('joinButton'),
   meetingEndButtom: By.id('button-meeting-end'),
   meetingLeaveButton: By.id('button-meeting-leave'),
-  screenShareButton: By.id('button-screen-share'),
-  screenViewButton: By.id('button-screen-view'),
   contentShareButton: By.id('button-content-share'),
   contentShareDropButton: By.id('button-content-share-drop'),
   contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
@@ -114,16 +112,6 @@ class AppPage {
   async leaveTheMeeting() {
     let meetingLeaveButton = await this.driver.findElement(elements.meetingLeaveButton);
     await meetingLeaveButton.click();
-  }
-
-  async clickScreenShareButton() {
-    let screenShareButton = await this.driver.findElement(elements.screenShareButton);
-    await screenShareButton.click();
-  }
-
-  async clickScreenViewButton() {
-    let screenViewButton = await this.driver.findElement(elements.screenViewButton);
-    await screenViewButton.click();
   }
 
   async clickContentShareButton() {
@@ -489,49 +477,6 @@ class AppPage {
       return true
     }
     return false
-  }
-
-  async getScreenSharePixelSum() {
-    return await this.driver.executeAsyncScript(async () => {
-      var callback = arguments[arguments.length - 1];
-      const getSum = (total, num) => {
-        return total + num;
-      };
-      var canvas = document.querySelector('canvas');
-      var sum = 0;
-      if (canvas !== null && canvas !== undefined) {
-        var ctx = canvas.getContext('2d');
-        var imageData = ctx.getImageData(0, 0, 1000, 600).data;
-        var sum = imageData.reduce(getSum);
-      }
-      callback(sum);
-    });
-  }
-
-  async checkScreenShare(expectedState) {
-    let pixelData = [];
-    let i = 0;
-    let timeout = 10;
-    let success = 0;
-    let pixelSum = await this.getScreenSharePixelSum();
-    pixelData.push(pixelSum);
-    while (i < timeout) {
-      i++;
-      pixelSum = await this.getScreenSharePixelSum();
-      pixelData.push(pixelSum);
-      let pixelDataLen = pixelData.length;
-      if (expectedState === "video" && pixelData[pixelDataLen - 1] - pixelData[pixelDataLen - 2] !== 0) {
-        success++;
-      }
-      if (expectedState === "blank" && pixelData[pixelDataLen - 1] - pixelData[pixelDataLen - 2] === 0) {
-        success++;
-      }
-      await TestUtils.waitAround(1000);
-    }
-    if (success === 0) {
-      return 'failed'
-    }
-    return expectedState
   }
 
   async triggerReconnection() {
