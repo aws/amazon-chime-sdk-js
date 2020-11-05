@@ -57,7 +57,7 @@ class DemoTileOrganizer {
         return index;
       }
     }
-    throw new Error('No tiles are available');
+    throw new Error('no tiles are available');
   }
 
   releaseTileIndex(tileId: number): number {
@@ -142,7 +142,6 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   cameraDeviceIds: string[] = [];
   microphoneDeviceIds: string[] = [];
-  previousTileState : VideoTileState = null;
 
   buttonStates: { [key: string]: boolean } = {
     'button-microphone': true,
@@ -1464,19 +1463,15 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
       }
     });
 
-    if (!!this.previousTileState && this.previousTileState.videoElementCSSWidthPixels !== null && tileState.videoElementCSSWidthPixels === null) {
-      this.hideTile(tileIndex);
-    } else {
-      this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
-      this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
-      this.showTile(tileElement, tileState);
-    }
+    this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
+    this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
     this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#')[1]);
+
+    this.showTile(tileElement, tileState);
     this.updateGridClasses();
     this.layoutFeaturedTile();
-    this.previousTileState = tileState;
   }
 
   videoTileWasRemoved(tileId: number): void {

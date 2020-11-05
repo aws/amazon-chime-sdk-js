@@ -225,13 +225,7 @@ class SdkBaseTest extends KiteBaseTest {
       if (!this.failedTest && !this.remoteFailed) {
         break;
       }
-      if (this.numberOfParticipant > 1 && this.io) {
-        this.io.emit('test_ready', false);
-        if (!this.testFinish) {
-          console.log('[OTHER_PARTICIPANT] timed out')
-          break;
-        }
-      }
+      this.io.emit('test_ready', false);
       // If the other participant did not reach finish state then dont retry
       if (this.numberOfParticipant > 1 && this.io && !this.testFinish) {
         console.log('[OTHER_PARTICIPANT] timed out')
