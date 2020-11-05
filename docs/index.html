@@ -821,9 +821,10 @@ meetingSession.audioVideo.stop();</code></pre>
 <span class="hljs-keyword">const</span> observer = {
   <span class="hljs-attr">audioVideoDidStop</span>: <span class="hljs-function"><span class="hljs-params">sessionStatus</span> =&gt;</span> {
     <span class="hljs-keyword">const</span> sessionStatusCode = sessionStatus.statusCode();
-    <span class="hljs-keyword">if</span> (sessionStatusCode === MeetingSessionStatusCode.AudioCallEnded) {
+    <span class="hljs-keyword">if</span> (sessionStatusCode === MeetingSessionStatusCode.MeetingEnded) {
       <span class="hljs-comment">/*
         - You (or someone else) have called the DeleteMeeting API action in your server application.
+        - You attempted to join a deleted meeting.
         - No audio connections are present in the meeting for more than five minutes.
         - Fewer than two audio connections are present in the meeting for more than 30 minutes.
         - Screen share viewer connections are inactive for more than 30 minutes.
