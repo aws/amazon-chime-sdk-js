@@ -12,25 +12,29 @@ import VideoTileState from '../videotile/VideoTileState';
  */
 export default interface VideoTileController {
   /**
-   * Binds the video element to the tile. This should also be called any time
-   * the layout of the video element changes, for example, when changing its
+   * Binds the video element to the tile if it exists for the provided tileId.
+   * This should also be called any time the layout of the video element changes, for example, when changing its
    * dimensions.
    */
   bindVideoElement(tileId: number, videoElement: HTMLVideoElement): void;
 
   /**
-   * Unbinds the video element from the tile.
+   * Unbinds the video element from the tile if it exists for the provided tileId.
+   * The video tile's bounded video element and that element's width and height are set to null.
+   * This does not remove the provided tileId mapping from the tile map in the [[DefaultVideoTileController]].
+   * To remove the mapping and destroy the tile for this tileId, you can use [[removeVideoTile]].
    */
   unbindVideoElement(tileId: number): void;
 
   /**
-   * Starts sharing the local video tile, creating a new video tile if one does
-   * not already exist. It returns the the tile id of the video tile.
+   * Starts sharing the local video tile by creating a new video tile if one does not already exist.
+   * Binds the created local video tile to the local video stream and then returns its tile id.
    */
   startLocalVideoTile(): number;
 
   /**
    * Stops a local video tile, if it exists.
+   * The bounded video stream associated with the local video tile is released and set to null.
    */
   stopLocalVideoTile(): void;
 
@@ -41,6 +45,7 @@ export default interface VideoTileController {
 
   /**
    * Stops and removes a local video tile, if it exists.
+   * This calls [[removeVideoTile]] internally with the current local tileId.
    */
   removeLocalVideoTile(): void;
 
@@ -50,12 +55,19 @@ export default interface VideoTileController {
   getLocalVideoTile(): VideoTile | null;
 
   /**
-   * Pauses the video tile, if it exists.
+   * Pauses the video tile if it exists and sends the updated video tile state
+   * to the meeting session's AudioVideoObserver’s [[videoTileDidUpdate]] callback.
+   * This API is intended to be called on the remote videos.
+   * If called on a local video tile, then the tile will no longer be updated,
+   * but the local video source will continue to be sent into the meeting.
    */
   pauseVideoTile(tileId: number): void;
 
   /**
-   * Unpauses the video tile, if it exists.
+   * Unpauses the video tile if it exists and sends the updated video tile state
+   * to the meeting session's AudioVideoObserver’s [[videoTileDidUpdate]] callback.
+   * This API is intended to be called on the remote videos and has no effect on the local video.
+   * When called on a remote video tileId, the remote video source will start getting the updates if paused earlier.
    */
   unpauseVideoTile(tileId: number): void;
 
@@ -85,7 +97,9 @@ export default interface VideoTileController {
   addVideoTile(): VideoTile;
 
   /**
-   * Removes a tile by tile id.
+   * Disconnects the video source from the video element bounded with the video tile,
+   * removes the tile by the tileId and the AudioVideoObserver’s [[videoTileWasRemoved]] callback
+   * is called with the removed tile id.
    */
   removeVideoTile(tileId: number): void;
 

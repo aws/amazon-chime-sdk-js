@@ -123,7 +123,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L45">src/videotile/VideoTile.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L47">src/videotile/VideoTile.ts:47</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -154,12 +154,14 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L29">src/videotile/VideoTile.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L31">src/videotile/VideoTile.ts:31</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Binds the video stream to the tile and sends out updates.</p>
+									<p>Updates current video tile’s state with the provided arguments.
+										If the tile state is updated, the new tile state is sent to the meeting session&#39;s
+									AudioVideoObserver&#39;s <a href="audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -200,7 +202,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L78">src/videotile/VideoTile.ts:78</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L91">src/videotile/VideoTile.ts:91</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -223,7 +225,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L72">src/videotile/VideoTile.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L85">src/videotile/VideoTile.ts:85</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -268,12 +270,14 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L61">src/videotile/VideoTile.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L72">src/videotile/VideoTile.ts:72</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Marks the tile as having a poor connection returning whether it was previously unmarked</p>
+									<p>Marks the tile as having poor connection returning whether it was previously unmarked.
+										The updated video tile state is sent to the meeting session’s
+									AudioVideoObserver&#39;s <a href="audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -290,12 +294,16 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L50">src/videotile/VideoTile.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L56">src/videotile/VideoTile.ts:56</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Pauses the tile. When paused, the tile moves to an inactive state.</p>
+									<p>Pauses the tile if it is not paused. When paused, the tile moves to an inactive state.
+										The updated video tile state is sent to the meeting session’s
+										AudioVideoObserver&#39;s <a href="audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.
+										This API is intended to be called on the remote videos. If called on a local video tile,
+									then the tile will no longer be updated, but the local video source will continue to be sent into the meeting.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -356,12 +364,14 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L66">src/videotile/VideoTile.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L79">src/videotile/VideoTile.ts:79</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Unmarks the tile as having a poor connection returning whether it was previously marked</p>
+									<p>Unmarks the tile as having a poor connection returning whether it was previously marked.
+										The updated video tile state is sent to the meeting session’s
+									AudioVideoObserver&#39;s <a href="audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -378,13 +388,16 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L56">src/videotile/VideoTile.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTile.ts#L65">src/videotile/VideoTile.ts:65</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Unpauses the tile if it was paused. When unpaused,
-									the tile moves to the active state.</p>
+									<p>Unpauses the tile if it was paused. When unpaused, the tile moves to the active state.
+										The updated video tile state is sent to the meeting session’s
+										AudioVideoObserver&#39;s <a href="audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> callback.
+										This API is intended to be called on the remote videos and has no effect on the local video.
+									When called on a remote video, the remote video source will start getting the updates if paused earlier.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
