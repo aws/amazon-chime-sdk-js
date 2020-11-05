@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `DefaultModality` base check
 - [Test] Fix a typo in integ tests
 - [Demo] Fix serverless deploy script to not print out logs
+- [Test] Make sure to error out if failed to grab Sauce Lab sessions
 
 ## [1.21.0] - 2020-10-29
 ### Added

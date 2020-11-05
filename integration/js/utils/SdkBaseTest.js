@@ -20,18 +20,18 @@ class SdkBaseTest extends KiteBaseTest {
       this.url += '?max-content-share=true';
     }
     this.originalURL = this.url;
-    this.testName = testName;
     this.testReady = false;
     this.testFinish = false;
-    this.capabilities["name"] = process.env.STAGE !== undefined ? `${testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${testName}-${process.env.TEST_TYPE}`;
-    this.seleniumSessions = [];
-    this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
+    this.testName = testName;
     this.useSimulcast = !!this.payload.useSimulcast ? true : false;
     if (this.useSimulcast) {
       this.testName += 'Simulcast';
     }
+    this.capabilities["name"] = process.env.STAGE !== undefined ? `${this.testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${this.testName}-${process.env.TEST_TYPE}`;
+    this.seleniumSessions = [];
+    this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
     if (this.numberOfParticipant > 1) {
-      this.io.emit("test_name", testName);
+      this.io.emit("test_name", this.testName);
       this.io.emit("test_capabilities", this.capabilities);
       this.io.on('all_clients_ready', isReady => {
         this.testReady = !!isReady;
@@ -154,7 +154,7 @@ class SdkBaseTest extends KiteBaseTest {
         await this.updateSeleniumTestResult(false);
         await this.quitSeleniumSessions();
         await emitMetric('Common', this.capabilities, 'SeleniumInit', 0);
-        return false;
+        throw(e);
       }
     }
     await emitMetric('Common', this.capabilities, 'SeleniumInit', 1);
@@ -231,11 +231,6 @@ class SdkBaseTest extends KiteBaseTest {
           console.log('[OTHER_PARTICIPANT] timed out')
           break;
         }
-      }
-      // If the other participant did not reach finish state then dont retry
-      if (this.numberOfParticipant > 1 && this.io && !this.testFinish) {
-        console.log('[OTHER_PARTICIPANT] timed out')
-        break;
       }
       retryCount++;
     }
