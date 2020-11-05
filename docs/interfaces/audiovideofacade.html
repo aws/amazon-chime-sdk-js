@@ -530,12 +530,17 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="devicecontroller.html">DeviceController</a>.<a href="devicecontroller.html#enablewebaudio">enableWebAudio</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L143">src/devicecontroller/DeviceController.ts:143</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L148">src/devicecontroller/DeviceController.ts:148</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Sets the flag in <a href="devicecontroller.html">DeviceController</a> on whether to enable WebAudio-based device management.</p>
+									<p>Deprecated. enableWebAudio will be removed in v2.0.0.
+										This API method will removed entirely, along with the corresponding field on MeetingSessionConfiguration.
+										The MeetingSession will no longer call enableWebAudio on the corresponding DeviceController.
+										Applications should instead use the constructor argument added to DefaultDeviceConfiguration
+										which will be added in v2.0.0 to enable Web Audio at point of construction.
+									Sets the flag in <a href="devicecontroller.html">DeviceController</a> on whether to enable WebAudio-based device management.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
