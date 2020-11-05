@@ -135,6 +135,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   enableWebAudio(flag: boolean): void {
+    this.logger.warn(
+      'enableWebAudio has been Deprecated and will be removed in v2.0.0. ' +
+        'This API method will removed entirely, along with the corresponding field on MeetingSessionConfiguration. ' +
+        'The MeetingSession will no longer call enableWebAudio on the corresponding DeviceController. '
+    );
     this.useWebAudio = flag;
     this.trace('enableWebAudio', flag);
   }
