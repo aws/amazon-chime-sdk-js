@@ -27,8 +27,7 @@ The meeting created with a local server is only available within your browser.
 
 Browser demo applications are located in the `app` folder. Current demos are:
 
-* `meeting` - incorporates all functionality into a videoconferencing application with a Bootstrap user interface
-* `meetingV2` (default) - A similar demo app to `meeting` with content share functionality
+* `meetingV2` (default) - incorporates all functionality into a videoconferencing application with a Bootstrap user interface and content share functionality
 * `meetingReadinessChecker` - Meeting readiness checker app helps developers ensure that end-users can join Amazon Chime SDK meetings from their devices
 
 To run a specific demo application use:

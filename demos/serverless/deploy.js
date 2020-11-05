@@ -6,7 +6,7 @@ const path = require("path");
 let region = 'us-east-1';
 let bucket = ``;
 let stack = ``;
-let app = `meeting`;
+let app = `meetingV2`;
 let useEventBridge = false;
 let enableTerminationProtection = false;
 let disablePrintingLogs = false;
@@ -93,6 +93,11 @@ function parseArgs() {
     }
     ++i;
   }
+
+  if (app === 'meeting') {
+    app = 'meetingV2';
+  }
+
   if (!stack.trim() || !bucket.trim()) {
     console.log('Missing required parameters');
     usage();
@@ -147,9 +152,6 @@ function ensureTools() {
 parseArgs();
 ensureTools();
 ensureApp(app);
-if (app === 'meeting') {
-  ensureApp('meetingV2');
-}
 
 if (!fs.existsSync('build')) {
   fs.mkdirSync('build');

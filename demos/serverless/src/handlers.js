@@ -32,11 +32,6 @@ exports.index = async (event, context, callback) => {
   return response(200, 'text/html', fs.readFileSync('./index.html', {encoding: 'utf8'}));
 };
 
-exports.indexV2 = async (event, context, callback) => {
-  // Return the contents of the index V2 page
-  return response(200, 'text/html', fs.readFileSync('./indexV2.html', {encoding: 'utf8'}));
-};
-
 exports.join = async(event, context) => {
   const query = event.queryStringParameters;
   if (!query.title || !query.name || !query.region) {

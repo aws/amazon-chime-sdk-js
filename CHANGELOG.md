@@ -44,6 +44,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Remove `enableWebAudio` from `DeviceController` and related types. Use the constructor argument
   instead.
+- Remove V1 meeting app. The V2 meeting app is now the only meeting app deployed. Do not supply /V2/
+  paths when loading the app, if you deployed both.
+- Remove legacy screen share integration tests.
 
 ### Fixed
 

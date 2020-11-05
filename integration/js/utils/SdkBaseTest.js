@@ -11,11 +11,7 @@ const fs = require('fs');
 class SdkBaseTest extends KiteBaseTest {
   constructor(name, kiteConfig, testName) {
     super(name, kiteConfig);
-    if (this.url.endsWith('v2')) {
-      this.baseUrl = this.url.slice(0, -2);
-    } else {
-      this.baseUrl = this.url;
-    }
+    this.baseUrl = this.url;
     if (testName === 'ContentShareOnlyAllowTwoTest') {
       this.url += '?max-content-share=true';
     }
