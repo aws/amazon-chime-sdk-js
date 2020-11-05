@@ -17,6 +17,7 @@ import AudioTransformDevice, { isAudioTransformDevice } from './AudioTransformDe
 import Device from './Device';
 import DevicePermission from './DevicePermission';
 import DeviceSelection from './DeviceSelection';
+import RemovableAnalyserNode from './RemovableAnalyserNode';
 import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
 
@@ -227,7 +228,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.trace('removeDeviceChangeObserver');
   }
 
-  createAnalyserNodeForAudioInput(): AnalyserNode | null {
+  createAnalyserNodeForAudioInput(): RemovableAnalyserNode | null {
     if (!this.activeDevices['audio']) {
       return null;
     }
@@ -235,7 +236,12 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     // If there is a WebAudio node in the graph, we use that as the source instead of the stream.
     const node = this.transform?.nodes?.end;
     if (node) {
-      const analyser = node.context.createAnalyser();
+      const analyser = node.context.createAnalyser() as RemovableAnalyserNode;
+
+      analyser.removeOriginalInputs = () => {
+        node.disconnect(analyser);
+      };
+
       node.connect(analyser);
       return analyser;
     }
@@ -245,19 +251,25 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   //
   // N.B., this bypasses any applied transform node.
-  ///
-  createAnalyserNodeForRawAudioInput(): AnalyserNode | null {
+  //
+  createAnalyserNodeForRawAudioInput(): RemovableAnalyserNode | null {
     if (!this.activeDevices['audio']) {
       return null;
     }
     return this.createAnalyserNodeForStream(this.activeDevices['audio'].stream);
   }
 
-  private createAnalyserNodeForStream(stream: MediaStream): AnalyserNode {
+  private createAnalyserNodeForStream(stream: MediaStream): RemovableAnalyserNode {
     const audioContext = DefaultDeviceController.getAudioContext();
-    const analyser = audioContext.createAnalyser();
-    audioContext.createMediaStreamSource(stream).connect(analyser);
+    const analyser = audioContext.createAnalyser() as RemovableAnalyserNode;
+    const source = audioContext.createMediaStreamSource(stream);
+    source.connect(analyser);
     this.trace('createAnalyserNodeForAudioInput');
+
+    analyser.removeOriginalInputs = () => {
+      source.disconnect(analyser);
+    };
+
     return analyser;
   }
 

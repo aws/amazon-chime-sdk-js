@@ -1121,7 +1121,17 @@ describe('DefaultDeviceController', () => {
 
     it('can create the analyser node if active audio exists', async () => {
       await deviceController.chooseAudioInputDevice(stringDeviceId);
-      expect(deviceController.createAnalyserNodeForAudioInput()).to.exist;
+      const node = deviceController.createAnalyserNodeForAudioInput();
+      expect(node).to.exist;
+
+      // We would like to do this, but we can't, because our audio nodes aren't real.
+      // expect(node.numberOfInputs).to.eq(1);
+
+      // Now clean up.
+      node.removeOriginalInputs();
+
+      // Similarly.
+      // expect(node.numberOfInputs).to.eq(0);
     });
 
     it('can create the analyser node for raw input if Web Audio is enabled', async () => {
@@ -1129,6 +1139,9 @@ describe('DefaultDeviceController', () => {
       await deviceController.chooseAudioInputDevice(stringDeviceId);
       const node = deviceController.createAnalyserNodeForRawAudioInput();
       expect(node).to.exist;
+
+      // Now clean up.
+      node.removeOriginalInputs();
     });
 
     it('can create the analyser node if Web Audio is enabled', async () => {
@@ -1136,6 +1149,9 @@ describe('DefaultDeviceController', () => {
       await deviceController.chooseAudioInputDevice(stringDeviceId);
       const node = deviceController.createAnalyserNodeForAudioInput();
       expect(node).to.exist;
+
+      // Now clean up.
+      node.removeOriginalInputs();
     });
 
     it('can create the analyser node for the end of a transform', async () => {
@@ -1144,6 +1160,9 @@ describe('DefaultDeviceController', () => {
       await deviceController.chooseAudioInputDevice(transform);
       const node = deviceController.createAnalyserNodeForAudioInput();
       expect(node).to.exist;
+
+      // Now clean up.
+      node.removeOriginalInputs();
     });
 
     it('can create an audio context without sampleRate', async () => {

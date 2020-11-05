@@ -13,6 +13,7 @@ import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import AudioInputDevice from '../devicecontroller/AudioInputDevice';
 import DeviceController from '../devicecontroller/DeviceController';
 import DevicePermission from '../devicecontroller/DevicePermission';
+import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
 import VideoInputDevice from '../devicecontroller/VideoInputDevice';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import RealtimeController from '../realtimecontroller/RealtimeController';
@@ -355,7 +356,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('removeDeviceChangeObserver');
   }
 
-  createAnalyserNodeForAudioInput(): AnalyserNode | null {
+  createAnalyserNodeForAudioInput(): RemovableAnalyserNode | null {
     const result = this.deviceController.createAnalyserNodeForAudioInput();
     this.trace('createAnalyserNodeForAudioInput');
     return result;
