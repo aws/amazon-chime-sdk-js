@@ -95,7 +95,7 @@ const getSauceLabsConfig = (capabilities) => {
     name: capabilities.name,
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
-    tunnelIdentifier: process.env.JOB_ID,
+    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
     ...(capabilities.platform.toUpperCase() !== 'LINUX' && {
       extendedDebugging: true
     })

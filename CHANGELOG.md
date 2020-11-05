@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Add github actions continuous integration workflow
 
 ### Changed
 - [Documentation] Updated HTTP to HTTPS in README URL links
