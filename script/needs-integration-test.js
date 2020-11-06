@@ -26,5 +26,11 @@ for (const commit of commits) {
         }
     }
 }
-requires_integration_test ? console.log('requires') : console.log('doesnt require');
-requires_integration_test ? process.exit(0) : process.exit(1);
+if (requires_integration_test) {
+    process.env.INTEG_TEST_REQUIRED = true;
+    console.log("Integration tests are required.");
+} else {
+    console.log("Integration tests are not required.");
+}
+
+process.exit(0)
