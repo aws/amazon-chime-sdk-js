@@ -35,10 +35,6 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
-import DefaultScreenShareFacade from '../../src/screensharefacade/DefaultScreenShareFacade';
-import ScreenShareFacade from '../../src/screensharefacade/ScreenShareFacade';
-import DefaultScreenShareViewFacade from '../../src/screenshareviewfacade/DefaultScreenShareViewFacade';
-import ScreenShareViewFacade from '../../src/screenshareviewfacade/ScreenShareViewFacade';
 import DisplayMediaState from '../dommock/DisplayMediaState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -172,12 +168,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       attendeeAudioVideoController = new TestAudioVideoController(this.configuration);
       this.audioVideoController = attendeeAudioVideoController;
       deviceController.bindToAudioVideoController(this.audioVideoController);
-      this.screenShare = new DefaultScreenShareFacade(
-        this.configuration,
-        this.logger,
-        deviceController
-      );
-      this.screenShareView = new DefaultScreenShareViewFacade(this.configuration, this.logger);
       const contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(this.logger);
       contentAudioVideoController = new TestAudioVideoController(
         DefaultContentShareController.createContentShareMeetingSessionConfigure(this.configuration)
@@ -203,8 +193,6 @@ describe('DefaultMeetingReadinessChecker', () => {
     readonly contentShare: ContentShareController;
     readonly deviceController: DeviceController;
     readonly logger: Logger;
-    readonly screenShare: ScreenShareFacade;
-    readonly screenShareView: ScreenShareViewFacade;
   }
 
   beforeEach(() => {
