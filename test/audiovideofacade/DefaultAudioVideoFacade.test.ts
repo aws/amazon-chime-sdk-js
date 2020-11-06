@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
 import DefaultAudioVideoFacade from '../../src/audiovideofacade/DefaultAudioVideoFacade';
@@ -36,6 +37,8 @@ describe('DefaultAudioVideoFacade', () => {
     async startContentShareFromScreenCapture(_sourceId?: string): Promise<MediaStream> {
       return new MediaStream();
     }
+
+    setContentAudioProfile(_audioProfile: AudioProfile): void {}
 
     pauseContentShare(): void {}
 
@@ -99,6 +102,13 @@ describe('DefaultAudioVideoFacade', () => {
       const arg1 = new NoOpObserver();
       facade.removeObserver(arg1);
       assert(spy.calledOnceWith(arg1));
+    });
+
+    it('will call setAudioProfile', () => {
+      const spy = sinon.spy(controller, 'setAudioProfile');
+      const profile = new AudioProfile();
+      facade.setAudioProfile(profile);
+      assert(spy.calledOnceWith(profile));
     });
 
     it('will call start', () => {
@@ -541,6 +551,13 @@ describe('DefaultAudioVideoFacade', () => {
       const arg1 = new MediaStream();
       facade.mixIntoAudioInput(arg1);
       assert(spy.calledOnceWith(arg1));
+    });
+
+    it('will call setContentAudioProfile', () => {
+      const spy = sinon.spy(contentShareController, 'setContentAudioProfile');
+      const profile = new AudioProfile();
+      facade.setContentAudioProfile(profile);
+      assert(spy.calledOnceWith(profile));
     });
 
     it('will call startContentShare', () => {

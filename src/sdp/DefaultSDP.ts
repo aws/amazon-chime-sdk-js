@@ -10,6 +10,9 @@ import SDPCandidateType from './SDPCandidateType';
 export default class DefaultSDP implements SDP {
   private static CRLF: string = '\r\n';
 
+  static rfc7587LowestBitrate = 6000;
+  static rfc7587HighestBitrate = 510000;
+
   constructor(public sdp: string) {}
 
   clone(): DefaultSDP {
@@ -198,6 +201,54 @@ export default class DefaultSDP implements SDP {
         } else {
           dstLines.push(`b=AS:${maxBitrateKbps}`);
         }
+      }
+    }
+    return DefaultSDP.linesToSDP(dstLines);
+  }
+
+  withAudioMaxAverageBitrate(maxAverageBitrate: number | null): DefaultSDP {
+    if (!maxAverageBitrate) {
+      return this.clone();
+    }
+    maxAverageBitrate = Math.trunc(
+      Math.min(
+        Math.max(maxAverageBitrate, DefaultSDP.rfc7587LowestBitrate),
+        DefaultSDP.rfc7587HighestBitrate
+      )
+    );
+    const srcLines: string[] = this.lines();
+    const dstLines: string[] = [];
+    const opusRtpMapRegex = /^a=rtpmap:\s*(\d+)\s+opus\/48000/;
+    let lookingForOpusRtpMap = false;
+    let fmtpAttribute: string | null = null;
+    for (const line of srcLines) {
+      if (line.startsWith('m=audio')) {
+        lookingForOpusRtpMap = true;
+        fmtpAttribute = null;
+      }
+      if (line.startsWith('m=video')) {
+        lookingForOpusRtpMap = false;
+        fmtpAttribute = null;
+      }
+      if (lookingForOpusRtpMap) {
+        const match = opusRtpMapRegex.exec(line);
+        if (match !== null) {
+          fmtpAttribute = `a=fmtp:${match[1]} `;
+          lookingForOpusRtpMap = false;
+        }
+      }
+      if (fmtpAttribute && line.startsWith(fmtpAttribute)) {
+        const oldParameters: string[] = line.slice(fmtpAttribute.length).split(';');
+        const newParameters: string[] = [];
+        for (const parameter of oldParameters) {
+          if (!parameter.startsWith('maxaveragebitrate=')) {
+            newParameters.push(parameter);
+          }
+        }
+        newParameters.push(`maxaveragebitrate=${maxAverageBitrate}`);
+        dstLines.push(fmtpAttribute + newParameters.join(';'));
+      } else {
+        dstLines.push(line);
       }
     }
     return DefaultSDP.linesToSDP(dstLines);

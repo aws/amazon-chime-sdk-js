@@ -1,8 +1,9 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
@@ -22,5 +23,10 @@ describe('NoOpAudioVideoController', () => {
     configuration.credentials.attendeeId = 'attendee-id';
     const audioVideoController = new NoOpAudioVideoController(configuration);
     expect(audioVideoController.configuration.meetingId).to.equal(meetingId);
+  });
+
+  it('can call setAudioProfile', () => {
+    const audioProfile = AudioProfile.fullbandSpeechMono();
+    new NoOpAudioVideoController().setAudioProfile(audioProfile);
   });
 });

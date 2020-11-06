@@ -1,6 +1,7 @@
 // Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import NoOpDebugLogger from '../logger/NoOpDebugLogger';
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
@@ -34,6 +35,8 @@ export default class NoOpAudioVideoController extends DefaultAudioVideoControlle
       new DefaultReconnectController(0, new FullJitterBackoff(0, 0, 0))
     );
   }
+
+  setAudioProfile(_audioProfile: AudioProfile): void {}
 
   start(): void {}
 

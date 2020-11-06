@@ -48,6 +48,11 @@ export default interface SDP {
   withoutServerReflexiveCandidates(): SDP;
 
   /**
+   * Inserts a parameter to the SDP local offer setting the desired average audio bitrate
+   */
+  withAudioMaxAverageBitrate(maxAverageBitrate: number): SDP;
+
+  /**
    * Inserts a bandwidth limitation attribute to answer SDP for setRemoteDescription and limiting client outbound maximum bitrate
    */
   withBandwidthRestriction(maxBitrateKbps: number, isUnifiedPlan: boolean): SDP;
