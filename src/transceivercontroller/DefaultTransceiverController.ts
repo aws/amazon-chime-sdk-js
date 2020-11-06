@@ -179,9 +179,36 @@ export default class DefaultTransceiverController implements TransceiverControll
   ): void {
     const videosRemaining = videosToReceive.array();
 
+    // Start by handling existing videos
     // Begin counting out index in the the subscription array at 1 since the camera.
     // Always occupies position 0 (whether active or not).
     let n = 1;
+    for (const transceiver of transceivers) {
+      if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
+        continue;
+      }
+      this.videoSubscriptions[n] = 0;
+      if (transceiver.direction !== 'inactive') {
+        // See if we want this existing transceiver
+        // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
+        // we use this to get the streamId for the track
+        const streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
+        if (streamId !== undefined) {
+          for (const [index, recvStreamId] of videosRemaining.entries()) {
+            if (videoStreamIndex.StreamIdsInSameGroup(streamId, recvStreamId)) {
+              transceiver.direction = 'recvonly';
+              this.videoSubscriptions[n] = recvStreamId;
+              videosRemaining.splice(index, 1);
+              break;
+            }
+          }
+        }
+      }
+      n += 1;
+    }
+
+    // Next fill in open slots and remove unused
+    n = 1;
     for (const transceiver of transceivers) {
       if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
         continue;
@@ -193,26 +220,9 @@ export default class DefaultTransceiverController implements TransceiverControll
         const streamId = videosRemaining.shift();
         this.videoSubscriptions[n] = streamId;
       } else {
-        // See if we want this existing transceiver
-        // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
-        // we use this to get the streamId for the track
-        let stillSubscribed = false;
-        const streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
-        if (streamId !== undefined) {
-          for (const [index, recvStreamId] of videosRemaining.entries()) {
-            if (videoStreamIndex.StreamIdsInSameGroup(streamId, recvStreamId)) {
-              stillSubscribed = true;
-              transceiver.direction = 'recvonly';
-              this.videoSubscriptions[n] = recvStreamId;
-              videosRemaining.splice(index, 1);
-              break;
-            }
-          }
-        }
-        if (stillSubscribed === false) {
+        // Remove if no longer subscribed
+        if (this.videoSubscriptions[n] === 0) {
           transceiver.direction = 'inactive';
-          // mark this slot inactive with a 0 in the subscription array
-          this.videoSubscriptions[n] = 0;
         }
       }
       n += 1;
