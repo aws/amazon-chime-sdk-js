@@ -85,13 +85,10 @@ import DefaultRealtimeController from './realtimecontroller/DefaultRealtimeContr
 import DefaultReconnectController from './reconnectcontroller/DefaultReconnectController';
 import DefaultResizeObserverAdapter from './resizeobserveradapter/DefaultResizeObserverAdapter';
 import DefaultSDP from './sdp/DefaultSDP';
-import DefaultScreenShareFacade from './screensharefacade/DefaultScreenShareFacade';
-import DefaultScreenShareViewFacade from './screenshareviewfacade/DefaultScreenShareViewFacade';
 import DefaultScreenSharingSession from './screensharingsession/DefaultScreenSharingSession';
 import DefaultScreenSharingSessionFactory from './screensharingsession/DefaultScreenSharingSessionFactory';
 import DefaultScreenSignalingSession from './screensignalingsession/DefaultScreenSignalingSession';
 import DefaultScreenSignalingSessionFactory from './screensignalingsession/DefaultScreenSignalingSessionFactory';
-import DefaultScreenViewing from './screenviewing/DefaultScreenViewing';
 import DefaultScreenViewingComponentContext from './screenviewing/context/DefaultScreenViewingComponentContext';
 import DefaultScreenViewingDeltaRenderer from './screenviewing/deltarenderer/DefaultScreenViewingDeltaRenderer';
 import DefaultScreenViewingDeltaSource from './screenviewing/deltasource/DefaultScreenViewingDeltaSource';
@@ -230,15 +227,12 @@ import Scheduler from './scheduler/Scheduler';
 import ScreenMessageDetail from './screenmessagedetail/ScreenMessageDetail';
 import ScreenMessageDetailSerialization from './screenmessagedetailserialization/ScreenMessageDetailSerialization';
 import ScreenObserver from './screenviewing/observer/ScreenObserver';
-import ScreenShareFacade from './screensharefacade/ScreenShareFacade';
-import ScreenShareFacadeObserver from './screensharefacade/ScreenShareFacadeObserver';
 import ScreenShareStream from './screensharestreaming/ScreenShareStream';
 import ScreenShareStreamFactory from './screensharestreaming/ScreenShareStreamFactory';
 import ScreenShareStreaming from './screensharestreaming/ScreenShareStreaming';
 import ScreenShareStreamingContainer from './screensharestreaming/ScreenShareStreamingContainer';
 import ScreenShareStreamingEvent from './screensharestreaming/ScreenShareStreamingEvent';
 import ScreenShareStreamingFactory from './screensharestreaming/ScreenShareStreamingFactory';
-import ScreenShareViewFacade from './screenshareviewfacade/ScreenShareViewFacade';
 import ScreenSharingMessage from './screensharingmessage/ScreenSharingMessage';
 import ScreenSharingMessageFlag from './screensharingmessage/ScreenSharingMessageFlag';
 import ScreenSharingMessageFlagSerialization from './screensharingmessageserialization/ScreenSharingMessageFlagSerialization';
@@ -257,7 +251,6 @@ import ScreenSignalingSession from './screensignalingsession/ScreenSignalingSess
 import ScreenSignalingSessionContainer from './screensignalingsession/ScreenSignalingSessionContainer';
 import ScreenSignalingSessionEventType from './screensignalingsession/ScreenSignalingSessionEventType';
 import ScreenSignalingSessionFactory from './screensignalingsession/ScreenSignalingSessionFactory';
-import ScreenViewing from './screenviewing/ScreenViewing';
 import ScreenViewingComponentContext from './screenviewing/context/ScreenViewingComponentContext';
 import ScreenViewingDeltaRenderer from './screenviewing/deltarenderer/ScreenViewingDeltaRenderer';
 import ScreenViewingDeltaSource from './screenviewing/deltasource/ScreenViewingDeltaSource';
@@ -426,13 +419,10 @@ export {
   DefaultReconnectController,
   DefaultResizeObserverAdapter,
   DefaultSDP,
-  DefaultScreenShareFacade,
-  DefaultScreenShareViewFacade,
   DefaultScreenSharingSession,
   DefaultScreenSharingSessionFactory,
   DefaultScreenSignalingSession,
   DefaultScreenSignalingSessionFactory,
-  DefaultScreenViewing,
   DefaultScreenViewingComponentContext,
   DefaultScreenViewingDeltaRenderer,
   DefaultScreenViewingDeltaSource,
@@ -571,15 +561,12 @@ export {
   ScreenMessageDetail,
   ScreenMessageDetailSerialization,
   ScreenObserver,
-  ScreenShareFacade,
-  ScreenShareFacadeObserver,
   ScreenShareStream,
   ScreenShareStreamFactory,
   ScreenShareStreaming,
   ScreenShareStreamingContainer,
   ScreenShareStreamingEvent,
   ScreenShareStreamingFactory,
-  ScreenShareViewFacade,
   ScreenSharingMessage,
   ScreenSharingMessageFlag,
   ScreenSharingMessageFlagSerialization,
@@ -598,7 +585,6 @@ export {
   ScreenSignalingSessionContainer,
   ScreenSignalingSessionEventType,
   ScreenSignalingSessionFactory,
-  ScreenViewing,
   ScreenViewingComponentContext,
   ScreenViewingDeltaRenderer,
   ScreenViewingDeltaSource,
