@@ -44,7 +44,7 @@ jobs:
       matrix:
         node-version: [12.x]
     outputs:
-      integration_test_required: ${{ steps.integration_test_required.outputs.needs_integration_test }}
+      integration_test_not_required: ${{ steps.integration_test_not_required.outputs.needs_integration_test }}
     steps:
       - name: Checkout Package
         uses: actions/checkout@v2
@@ -56,16 +56,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Check if Integ Tests need to Run
         run: node script/needs-integration-test.js
-      - name: Set integration test requirement to true if necessary
-        id: integration_test_required
-        if: ${{ success() }}
-        run: echo '::set-output name=needs_integration_test::true'
-
+      - name: Set integration test requirement to false if necessary
+        id: integration_test_not_required
+        if: ${{ failure() }}
+        run: echo '::set-output name=needs_integration_test::false'
 
   run-integ-tests-1:
     name: Integ Test Group 1
     needs: setup_integ_tests
-    if: ${{needs.setup_integ_tests.outputs.integration_test_required}}
     runs-on: ubuntu-latest
 
     strategy:
@@ -74,6 +72,10 @@ jobs:
         integ-test-name: [audio, screen-share]
       
     steps:
+      - name: Automatically Pass if Integration Tests aren't Required
+        if: ${{needs.setup_integ_tests.outputs.integration_test_not_required}}
+        run: |
+          exit 0
       - name: Create a Job ID
         id: create-job-id
         uses: filipstefansson/uuid-action@v1
@@ -119,6 +121,10 @@ jobs:
         integ-test-name: [video, content-share]
 
     steps:
+      - name: Automatically Pass if Integration Tests aren't Required
+        if: ${{needs.setup_integ_tests.outputs.integration_test_not_required}}
+        run: |
+          exit 0
       - name: Create a Job ID
         id: create-job-id
         uses: filipstefansson/uuid-action@v1
@@ -163,6 +169,10 @@ jobs:
         integ-test-name: [data-message, meeting-end, meeting-readiness-checker]
 
     steps:
+      - name: Automatically Pass if Integration Tests aren't Required
+        if: ${{needs.setup_integ_tests.outputs.integration_test_not_required}}
+        run: |
+          exit 0
       - name: Create a Job ID
         id: create-job-id
         uses: filipstefansson/uuid-action@v1
