@@ -305,7 +305,7 @@ export class DemoMeetingApp implements
     await this.populateAllDeviceLists();
   }
 
-  private onVoiceFocusSettingChanged(): void {
+  private async onVoiceFocusSettingChanged(): Promise<void> {
     this.log('[DEMO] Amazon Voice Focus setting toggled to', this.enableVoiceFocus);
     this.openAudioInputFromSelectionAndPreview();
   }
@@ -752,8 +752,33 @@ export class DemoMeetingApp implements
     (document.getElementById(flow) as HTMLDivElement).style.display = 'block';
   }
 
-  audioInputsChanged(_freshAudioInputDeviceList: MediaDeviceInfo[]): void {
-    this.populateAudioInputList();
+  async onAudioInputsChanged(freshDevices: MediaDeviceInfo[]): Promise<void> {
+    await this.populateAudioInputList();
+
+    if (!this.currentAudioInputDevice) {
+      return;
+    }
+
+    if (this.currentAudioInputDevice === 'default') {
+      // The default device might actually have changed. Go ahead and trigger a
+      // reselection.
+      this.log('Reselecting default device.');
+      await this.selectAudioInputDevice(this.currentAudioInputDevice);
+      return;
+    }
+
+    const freshDeviceWithSameID = freshDevices.find((device) => device.deviceId === this.currentAudioInputDevice);
+
+    if (freshDeviceWithSameID === undefined) {
+      this.log('Existing device disappeared. Selecting a new one.');
+
+      // Select a new device.
+      await this.openAudioInputFromSelectionAndPreview();
+    }
+  }
+
+  audioInputsChanged(freshAudioInputDeviceList: MediaDeviceInfo[]): void {
+    this.onAudioInputsChanged(freshAudioInputDeviceList);
   }
 
   videoInputsChanged(_freshVideoInputDeviceList: MediaDeviceInfo[]): void {
@@ -1518,7 +1543,7 @@ export class DemoMeetingApp implements
     await this.stopAudioPreview();
     await this.openAudioInputFromSelection();
     this.log('Starting audio preview.');
-    this.startAudioPreview();
+    await this.startAudioPreview();
   }
 
   setAudioPreviewPercent(percent: number): void {
@@ -1549,6 +1574,16 @@ export class DemoMeetingApp implements
 
   startAudioPreview(): void {
     this.setAudioPreviewPercent(0);
+
+    // Recreate.
+    if (this.analyserNode) {
+      // Disconnect the analyser node from its inputs and outputs.
+      this.analyserNode.disconnect();
+      this.analyserNode.removeOriginalInputs();
+
+      this.analyserNode = undefined;
+    }
+
     const analyserNode = this.audioVideo.createAnalyserNodeForAudioInput();
 
     if (!analyserNode) {
