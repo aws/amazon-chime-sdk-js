@@ -5,6 +5,7 @@ import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetecto
 import DefaultActiveSpeakerDetector from '../activespeakerdetector/DefaultActiveSpeakerDetector';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import DefaultAudioMixController from '../audiomixcontroller/DefaultAudioMixController';
+import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
@@ -88,6 +89,7 @@ export default class DefaultAudioVideoController
   private _reconnectController: ReconnectController;
   private _audioMixController: AudioMixController;
   private _eventController: EventController;
+  private _audioProfile: AudioProfile = new AudioProfile();
 
   private connectionHealthData = new ConnectionHealthData();
   private observerQueue: Set<AudioVideoObserver> = new Set<AudioVideoObserver>();
@@ -184,6 +186,10 @@ export default class DefaultAudioVideoController
     return this.rtcPeerConnection.getStats(selector);
   }
 
+  setAudioProfile(audioProfile: AudioProfile): void {
+    this._audioProfile = audioProfile;
+  }
+
   addObserver(observer: AudioVideoObserver): void {
     this.logger.info('adding meeting observer');
     this.observerQueue.add(observer);
@@ -276,6 +282,7 @@ export default class DefaultAudioVideoController
           this.configuration.credentials.attendeeId
         );
       }
+      this.meetingSessionContext.audioProfile = this._audioProfile;
     }
 
     this.meetingSessionContext.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();

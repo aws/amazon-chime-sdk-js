@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   injection of custom device constraints and Web Audio nodes as pseudo-devices.
 - Add Amazon Voice Focus, which allows you to create an audio input device that suppresses
   background noise.
+- Add `AudioProfile` for configuring audio quality
+- Add `setAudioProfile` and `setContentAudioProfile` audio-video facade methods for setting audio quality
 
 ### Changed
 - The project now produces ES2015 output, rather than ES5 output that refers to ES2015

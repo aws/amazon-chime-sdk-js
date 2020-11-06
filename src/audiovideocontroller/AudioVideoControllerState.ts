@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioMixController from '../audiomixcontroller/AudioMixController';
+import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import ConnectionMonitor from '../connectionmonitor/ConnectionMonitor';
@@ -76,6 +77,8 @@ export default class AudioVideoControllerState {
   reconnectController: ReconnectController | null = null;
 
   removableObservers: RemovableObserver[] = [];
+
+  audioProfile: AudioProfile | null = null;
 
   videoStreamIndex: VideoStreamIndex | null = null;
 

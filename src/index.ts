@@ -12,6 +12,7 @@ import AudioLogEvent from './statscollector/AudioLogEvent';
 import AudioMixController from './audiomixcontroller/AudioMixController';
 import AudioMixControllerFacade from './audiomixcontroller/AudioMixControllerFacade';
 import AudioNodeSubgraph from './devicecontroller/AudioNodeSubgraph';
+import AudioProfile from './audioprofile/AudioProfile';
 import AudioTransformDevice from './devicecontroller/AudioTransformDevice';
 import AudioVideoController from './audiovideocontroller/AudioVideoController';
 import AudioVideoControllerFacade from './audiovideocontroller/AudioVideoControllerFacade';
@@ -245,6 +246,7 @@ export {
   AudioMixController,
   AudioMixControllerFacade,
   AudioNodeSubgraph,
+  AudioProfile,
   AudioTransformDevice,
   AudioVideoController,
   AudioVideoControllerFacade,

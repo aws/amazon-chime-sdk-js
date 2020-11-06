@@ -34,7 +34,11 @@ export default class SetRemoteDescriptionTask extends BaseTask {
 
     let sdp = this.context.sdpAnswer;
     sdp = new DefaultSDP(sdp).withoutServerReflexiveCandidates().sdp;
-
+    if (this.context.audioProfile) {
+      sdp = new DefaultSDP(sdp).withAudioMaxAverageBitrate(
+        this.context.audioProfile.audioBitrateBps
+      ).sdp;
+    }
     if (!this.context.browserBehavior.requiresUnifiedPlan()) {
       // Under Plan B if our offer has video, but we're not going to subscribe to
       // any videos, ensure that the answer has video (marked inactive). If

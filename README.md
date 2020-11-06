@@ -995,6 +995,24 @@ const networkTCPFeedback = await meetingReadinessChecker.checkNetworkTCPConnecti
 console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}`);
 ```
 
+### Selecting an Audio Profile
+
+**Use case 32.** Set the audio quality of the main audio input to optimize for speech or music:
+
+Use the following setting to optimize the audio bitrate of the main audio input for fullband speech with a mono channel:
+
+```js
+meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
+````
+
+**Use case 33.** Set the audio quality of content share audio to optimize for speech or music:
+
+Use the following setting to optimize the audio bitrate of content share audio for fullband music with a mono channel:
+
+```js
+meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
+```
+
 ## Notice
 
 The use of Amazon Voice Focus via this SDK involves the downloading and execution of code at runtime by end users.
