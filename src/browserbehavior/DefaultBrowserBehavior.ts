@@ -62,10 +62,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return this.isFirefox();
   }
 
-  screenShareSendsOnlyKeyframes(): boolean {
-    return this.isFirefox();
-  }
-
   requiresUnifiedPlan(): boolean {
     let shouldEnable = (this.isSafari() && this.isUnifiedPlanSupported()) || this.isFirefox();
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
