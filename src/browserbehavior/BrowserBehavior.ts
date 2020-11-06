@@ -28,11 +28,6 @@ export default interface BrowserBehavior {
   hasFirefoxWebRTC(): boolean;
 
   /**
-   * Returns whether screen share implementation can only send keyframes
-   */
-  screenShareSendsOnlyKeyframes(): boolean;
-
-  /**
    * Returns whether the browser requires the use of Unified Plan implementation
    */
   requiresUnifiedPlan(): boolean;

@@ -14,7 +14,6 @@ import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVid
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import RemovableObserver from '../removableobserver/RemovableObserver';
-import ScreenSharingSession from '../screensharingsession/ScreenSharingSession';
 import SDP from '../sdp/SDP';
 import SignalingClient from '../signalingclient/SignalingClient';
 import { SdkIndexFrame, SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
@@ -69,8 +68,6 @@ export default class AudioVideoControllerState {
   iceCandidateHandler: ((event: RTCPeerConnectionIceEvent) => void) | null = null;
 
   iceGatheringStateEventHandler: (() => void) | null = null;
-
-  screenSharingSession: ScreenSharingSession | null = null;
 
   sdpAnswer: string | null = null;
 
