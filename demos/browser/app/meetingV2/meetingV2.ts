@@ -7,6 +7,7 @@ import 'bootstrap';
 import {
   AsyncScheduler,
   AudioInputDevice,
+  AudioProfile,
   AudioVideoFacade,
   AudioVideoObserver,
   ClientMetricReport,
@@ -904,6 +905,13 @@ export class DemoMeetingApp implements
     configuration.attendeePresenceTimeoutMs = 5000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
+    if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
+      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
+      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono());
+    } else if ((document.getElementById('fullband-music-mono-quality') as HTMLInputElement).checked) {
+      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicMono());
+      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
+    }
     this.audioVideo = this.meetingSession.audioVideo;
 
     this.audioVideo.addDeviceChangeObserver(this);

@@ -3,6 +3,7 @@
 
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
+import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
@@ -39,6 +40,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
   removeObserver(observer: AudioVideoObserver): void {
     this.audioVideoController.removeObserver(observer);
     this.trace('removeObserver');
+  }
+
+  setAudioProfile(audioProfile: AudioProfile): void {
+    this.trace('setAudioProfile', audioProfile);
+    this.audioVideoController.setAudioProfile(audioProfile);
   }
 
   start(): void {
@@ -402,6 +408,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     const result = this.deviceController.getVideoInputQualitySettings();
     this.trace('getVideoInputQualitySettings');
     return result;
+  }
+
+  setContentAudioProfile(audioProfile: AudioProfile): void {
+    this.trace('setContentAudioProfile', audioProfile);
+    this.contentShareController.setContentAudioProfile(audioProfile);
   }
 
   startContentShare(stream: MediaStream): Promise<void> {
