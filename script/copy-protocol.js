@@ -5,6 +5,3 @@ const fs = require('fs-extra');
 fs.copy('./src/signalingprotocol/', './build/signalingprotocol/', err => {
   if (err) return console.error(err);
 });
-fs.copy('./src/screensignalingprotocol/', './build/screensignalingprotocol/', err => {
-  if (err) return console.error(err);
-});

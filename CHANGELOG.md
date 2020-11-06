@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   paths when loading the app, if you deployed both.
 - Remove legacy screen share integration tests.
 - Remove legacy screen share interfaces.
+- Remove legacy screen share helper code.
 
 ### Fixed
 
