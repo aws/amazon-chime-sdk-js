@@ -35,6 +35,8 @@ import {
   Versioning,
   VideoTileState,
   ClientVideoStreamReceivingReport,
+  SimulcastLayers,
+  VideoSource
 } from '../../../../src/index';
 
 class DemoTileOrganizer {
@@ -112,7 +114,19 @@ export enum ContentShareType {
   VideoFile,
 };
 
-export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver {
+const SimulcastLayerMapping = {
+  [SimulcastLayers.Low]: 'Low',
+  [SimulcastLayers.LowAndMedium]: 'Low and Medium',
+  [SimulcastLayers.LowAndHigh]: 'Low and High',
+  [SimulcastLayers.Medium]: 'Medium',
+  [SimulcastLayers.MediumAndHigh]: 'Medium and High',
+  [SimulcastLayers.High]: 'High'
+};
+
+export class DemoMeetingApp implements
+  AudioVideoObserver,
+  DeviceChangeObserver,
+  ContentShareObserver {
   static readonly DID: string = '+17035550122';
   static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/').replace('/v2', '')].join('');
   static testVideo: string = 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
@@ -1641,6 +1655,14 @@ export class DemoMeetingApp implements AudioVideoObserver, DeviceChangeObserver,
 
   contentShareDidUnpause(): void {
     this.log(`content share unpaused.`);
+  }
+
+  encodingSimulcastLayersDidChange(simulcastLayers: SimulcastLayers): void {
+    this.log(`current active simulcast layers changed to: ${SimulcastLayerMapping[simulcastLayers]}`);
+  }
+
+  remoteVideoSourcesDidChange(videoSources: VideoSource[]) {
+    this.log(`available remote video sources changed: ${JSON.stringify(videoSources)}`);
   }
 }
 

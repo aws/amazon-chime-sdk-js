@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add github actions continuous integration workflow and deploy workflow
+- Add simulcast uplink policy layer change notification methods and observer
+- Add `getRemoteVideoSources` method and `remoteVideoSourcesDidChange` observer
 
 ### Changed
 - [Documentation] Updated HTTP to HTTPS in README URL links
@@ -68,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add extended debugging for saucelab sessions
 - Add data message throttle limits to documentation
 - Add `audioSessionId` to join frame to always drop when reconnecting
+- Add audioSessionId to join frame to always drop when reconnecting
 
 ### Changed
 - Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests

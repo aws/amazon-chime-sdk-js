@@ -16,6 +16,7 @@ import {
   SdkStreamServiceType,
 } from '../signalingprotocol/SignalingProtocol.js';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
+import VideoSource from '../videosource/VideoSource';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import BaseTask from './BaseTask';
@@ -75,6 +76,7 @@ export default class ReceiveVideoStreamIndexTask
       videoUplinkBandwidthPolicy,
     } = this.context;
 
+    const oldVideoSources = videoStreamIndex.allVideoSendingSourcesExcludingSelf(selfAttendeeId);
     videoStreamIndex.integrateIndexFrame(indexFrame);
     videoDownlinkBandwidthPolicy.updateIndex(videoStreamIndex);
     videoUplinkBandwidthPolicy.updateIndex(videoStreamIndex);
@@ -82,6 +84,36 @@ export default class ReceiveVideoStreamIndexTask
     this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy);
     this.updateVideoAvailability(indexFrame);
     this.handleIndexVideosPausedAtSource();
+    const newVideoSources = videoStreamIndex.allVideoSendingSourcesExcludingSelf(selfAttendeeId);
+    if (!this.areVideoSourcesEqual(oldVideoSources, newVideoSources)) {
+      this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
+        Maybe.of(observer.remoteVideoSourcesDidChange).map(f => f.bind(observer)(newVideoSources));
+      });
+    }
+  }
+
+  private areVideoSourcesEqual(
+    oldVideoSources: VideoSource[],
+    newVideoSources: VideoSource[]
+  ): boolean {
+    if (oldVideoSources.length !== newVideoSources.length) {
+      return false;
+    }
+    const compare = (videoSourceA: VideoSource, videoSourceB: VideoSource): number =>
+      videoSourceA.attendee.attendeeId.localeCompare(videoSourceB.attendee.attendeeId);
+
+    const sortedOldVideoSources = [...oldVideoSources].sort(compare);
+    const sortedNewVideoSources = [...newVideoSources].sort(compare);
+
+    for (let i = 0; i < sortedOldVideoSources.length; i++) {
+      if (
+        sortedOldVideoSources[i].attendee.attendeeId !==
+        sortedNewVideoSources[i].attendee.attendeeId
+      ) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private resubscribe(
