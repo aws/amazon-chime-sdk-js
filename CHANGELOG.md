@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed deploy github action with correct keys
 - Remote video may switch transceivers/videoTiles on simulcast change or camera toggle
 - Fix github actions deploy workflow
+- Fix issue with calling closeCurrentTest twice when timeout waiting for an attendee in integ test
 
 ## [1.21.0] - 2020-10-29
 ### Added

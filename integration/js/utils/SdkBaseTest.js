@@ -157,7 +157,7 @@ class SdkBaseTest extends KiteBaseTest {
         throw(e);
       }
     }
-    await emitMetric('Common', this.capabilities, 'SeleniumInit', 1);
+    emitMetric('Common', this.capabilities, 'SeleniumInit', 1);
     return true;
   }
 
@@ -203,7 +203,7 @@ class SdkBaseTest extends KiteBaseTest {
           if (!this.testReady) {
             this.io.emit('test_ready', false);
             console.log('[OTHER_PARTICIPANT] failed to be ready');
-            await this.closeCurrentTest(false);
+            this.remoteFailed = true;
             return;
           }
         }
@@ -214,7 +214,7 @@ class SdkBaseTest extends KiteBaseTest {
       } catch (e) {
         console.error(e);
         this.failedTest = true;
-        await SetTestBrokenStep.executeStep(this, 'Error exception when runing test');
+        await SetTestBrokenStep.executeStep(this, 'Error exception when running test');
       } finally {
         await this.closeCurrentTest(!this.failedTest && !this.remoteFailed);
       }
