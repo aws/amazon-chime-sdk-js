@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Documentation] Update README to replace deprecated `AudioCallEnded` with `MeetingEnded`
 - [Documentation] Update few `VideoTileController` and `VideoTile` APIs documentation
 - [Documentation] Added deprecation message and log for `enableWebAudio` API in DeviceController
+- Improve `DefaultEventController` to create less garbage
 
 ### Removed
 
