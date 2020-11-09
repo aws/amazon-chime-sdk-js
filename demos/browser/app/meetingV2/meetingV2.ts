@@ -370,6 +370,19 @@ export class DemoMeetingApp implements
       );
     });
 
+    const speechMonoCheckbox = document.getElementById('fullband-speech-mono-quality') as HTMLInputElement;
+    const musicMonoCheckbox = document.getElementById('fullband-music-mono-quality') as HTMLInputElement;
+    speechMonoCheckbox.addEventListener('change', e => {
+      if (speechMonoCheckbox.checked) {
+        musicMonoCheckbox.checked = false;
+      }
+    });
+    musicMonoCheckbox.addEventListener('change', e => {
+      if (musicMonoCheckbox.checked) {
+        speechMonoCheckbox.checked = false;
+      }
+    });
+
     document.getElementById('to-sip-flow').addEventListener('click', e => {
       e.preventDefault();
       this.switchToFlow('flow-sip-authenticate');
