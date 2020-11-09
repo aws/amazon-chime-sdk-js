@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   background noise.
 - Add `AudioProfile` for configuring audio quality
 - Add `setAudioProfile` and `setContentAudioProfile` audio-video facade methods for setting audio quality
+- Add audio quality settings to meeting demo
 
 ### Changed
 - The project now produces ES2015 output, rather than ES5 output that refers to ES2015
