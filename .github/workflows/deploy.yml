@@ -7,7 +7,6 @@ on:
   push:
     branches: [ master ]
 
-
 jobs:
   deploy:
     name: Deploy Demo App
@@ -31,6 +30,8 @@ jobs:
           aws-region: us-east-1
       - name: Checkout Package
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Install SAM CLI
         run: script/github-action-awscli-installation
       - name: Deploy the Serverless Demo App

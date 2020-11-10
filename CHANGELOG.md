@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Test] Make sure to error out if failed to grab Sauce Lab sessions
 - Fixed deploy github action with correct keys
 - Remote video may switch transceivers/videoTiles on simulcast change or camera toggle
+- Fix github actions deploy workflow
 
 ## [1.21.0] - 2020-10-29
 ### Added
