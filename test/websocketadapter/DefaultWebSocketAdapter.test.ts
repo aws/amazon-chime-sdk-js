@@ -15,6 +15,7 @@ describe('DefaultWebSocketAdapter', () => {
   let expect: Chai.ExpectStatic;
   let domMockBuilder: DOMMockBuilder | null = null;
   const socket: DefaultWebSocketAdapter = new DefaultWebSocketAdapter(new NoOpLogger());
+  const testMessage = 'ᚻᛖ ᚳᚹᚫᚦ ᚦᚫᛏ ᚻᛖ ᛒᚢᛞᛖ ᚩᚾ ᚦᚫᛗ ᛚᚪᚾᛞᛖ ᚾᚩᚱᚦᚹᛖᚪᚱᛞᚢᛗ ᚹᛁᚦ ᚦᚪ ᚹᛖᛥᚫ';
 
   before(() => {
     domMockBuilder = new DOMMockBuilder();
@@ -42,12 +43,21 @@ describe('DefaultWebSocketAdapter', () => {
     });
   });
 
-  it('can send a message', () => {
+  it('can send a Uint8Array message', () => {
     domMockBuilder = new DOMMockBuilder();
     const spy = sinon.spy(WebSocket.prototype, 'send');
     socket.create('http://example.com', ['testProtocol']);
-    socket.send(new Uint8Array(8));
-    expect(spy.called).to.be.true;
+    const uint8ArrayMessage = new TextEncoder().encode(testMessage);
+    socket.send(uint8ArrayMessage);
+    expect(spy.calledWithExactly(uint8ArrayMessage.buffer)).to.be.true;
+  });
+
+  it('can send a string message', () => {
+    domMockBuilder = new DOMMockBuilder();
+    const spy = sinon.spy(WebSocket.prototype, 'send');
+    socket.create('http://example.com', ['testProtocol']);
+    socket.send(testMessage);
+    expect(spy.calledWithExactly(testMessage)).to.be.true;
   });
 
   it('fails to send a message', () => {

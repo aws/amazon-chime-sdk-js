@@ -89,7 +89,7 @@ export default class DOMMockBuilder {
         }
       }
 
-      send(data: ArrayBuffer): void {
+      send(data: ArrayBuffer | string): void {
         if (mockBehavior.webSocketSendSucceeds) {
           asyncWait(() => {
             if (mockBehavior.webSocketSendEcho && this.listeners.hasOwnProperty('message')) {
