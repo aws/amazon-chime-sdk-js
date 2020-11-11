@@ -1021,4 +1021,4 @@ The use of Amazon Voice Focus runtime code is subject to additional notices. See
 
 ---
 
-Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
