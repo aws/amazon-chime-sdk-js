@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 type MetricsData = { [key: string]: number };
@@ -124,7 +124,7 @@ export default class WebRTCStatsCollector {
             report.bytesSent &&
             report.frameHeight &&
             report.frameWidth
-          ) { 
+          ) {
           // Collect and process upstream stats.
           if (!this.upstreamMetrics.hasOwnProperty(ssrcNum)) {
             if (Object.keys(this.upstreamMetrics).length === WebRTCStatsCollector.MAX_UPSTREAMS_COUNT) {
@@ -141,7 +141,7 @@ export default class WebRTCStatsCollector {
           this.upstreamMetrics[ssrcNum].current['framesEncodedPerSecond'] = countPerSecond('framesEncoded', this.upstreamMetrics[ssrcNum]);
           this.upstreamMetrics[ssrcNum].current['bitrate'] = bitsPerSecond('bytesSent', this.upstreamMetrics[ssrcNum]);
         } else {
-          if (report.type === 'inbound-rtp' && report.bytesReceived) { 
+          if (report.type === 'inbound-rtp' && report.bytesReceived) {
             // Collect and process downstream stats.
             const { trackId } = report;
             if (!this.downstreamMetrics.hasOwnProperty(tileIndex)) {
