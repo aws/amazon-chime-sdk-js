@@ -16,9 +16,13 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
     this.connection.binaryType = 'arraybuffer';
   }
 
-  send(message: Uint8Array): boolean {
+  send(message: Uint8Array | string): boolean {
     try {
-      this.connection.send(message.buffer);
+      if (message instanceof Uint8Array) {
+        this.connection.send(message.buffer);
+      } else if (typeof message === 'string') {
+        this.connection.send(message);
+      }
       return true;
     } catch (err) {
       this.logger.debug(
