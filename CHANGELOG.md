@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- [Demo] Show video WebRTC stats and attendeeId on video tile hover
 
 ### Changed
 
@@ -19,15 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2.0
 ### Added
-- A constructor argument to `DefaultDeviceController` to specify whether Web Audio should be
+- [Demo] Show video WebRTC stats and attendeeId on video tile hover
+- Add a constructor argument to `DefaultDeviceController` to specify whether Web Audio should be
   supported. Use this instead of `enableWebAudio`.
 - Add an `AudioTransformDevice` type that can be supplied to `chooseAudioInputDevice`, allowing the
   injection of custom device constraints and Web Audio nodes as pseudo-devices.
 - Add Amazon Voice Focus, which allows you to create an audio input device that suppresses
   background noise.
-- Add `AudioProfile` for configuring audio quality
-- Add `setAudioProfile` and `setContentAudioProfile` audio-video facade methods for setting audio quality
-- Add audio quality settings to meeting demo
+- Add `AudioProfile` for configuring audio quality.
+- Add `setAudioProfile` and `setContentAudioProfile` audio-video facade methods for setting audio quality.
+- [Demo] Add audio quality settings to meeting demo.
 
 ### Changed
 - The project now produces ES2015 output, rather than ES5 output that refers to ES2015
@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DeviceController.createAnalyserNodeForAudioInput` now returns a `RemovableAnalyserNode` that
   knows how to unhook its own inputs. This allows you to correctly clean up, which avoids issues
   with Safari when used with Web Audio. The demo has been adjusted to do so.
-- Modify WebSocketAdapter send method to accept string parameter
+- Modify WebSocketAdapter send method to accept string parameters.
 
 ### Removed
 - Remove `enableWebAudio` from `DeviceController` and related types. Use the constructor argument
