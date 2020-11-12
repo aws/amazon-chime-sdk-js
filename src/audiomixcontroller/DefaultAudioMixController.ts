@@ -3,6 +3,7 @@
 
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import Logger from '../logger/Logger';
 import AudioMixController from './AudioMixController';
 
 export default class DefaultAudioMixController implements AudioMixController {
@@ -11,13 +12,16 @@ export default class DefaultAudioMixController implements AudioMixController {
   private audioStream: MediaStream | null = null;
   private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior();
 
-  bindAudioElement(element: HTMLAudioElement): boolean {
+  constructor(private logger?: Logger) {}
+
+  async bindAudioElement(element: HTMLAudioElement): Promise<void> {
     if (element) {
       this.audioElement = element;
       this.audioElement.autoplay = true;
       return this.bindAudioMix();
+    } else {
+      throw new Error(`Cannot bind audio element: ${element}`);
     }
-    return false;
   }
 
   unbindAudioElement(): void {
@@ -27,51 +31,70 @@ export default class DefaultAudioMixController implements AudioMixController {
     }
   }
 
-  bindAudioStream(stream: MediaStream): boolean {
+  async bindAudioStream(stream: MediaStream): Promise<void> {
     if (stream) {
       this.audioStream = stream;
-      return this.bindAudioMix();
+      try {
+        await this.bindAudioMix();
+      } catch (error) {
+        this.logger?.error(`Failed to bind audio stream: ${error}`);
+      }
     }
-    return false;
   }
 
-  bindAudioDevice(device: MediaDeviceInfo | null): boolean {
+  async bindAudioDevice(device: MediaDeviceInfo | null): Promise<void> {
+    /**
+     * Throw error if browser doesn't even support setSinkId
+     * Read more: https://caniuse.com/?search=setSinkId
+     */
+    if (!this.browserBehavior.supportsSetSinkId()) {
+      throw new Error(
+        'Cannot select audio output device. This browser does not support setSinkId.'
+      );
+    }
+
     if (device) {
       this.audioDevice = device;
       return this.bindAudioMix();
     }
-    return false;
   }
 
-  private bindAudioMix(): boolean {
-    if (this.audioElement) {
-      if (this.audioStream) {
-        this.audioElement.srcObject = this.audioStream;
-      }
-      // @ts-ignore
-      if (typeof this.audioElement.sinkId !== 'undefined') {
-        const newSinkId = this.audioDevice ? this.audioDevice.deviceId : '';
-        // @ts-ignore
-        const oldSinkId: string = this.audioElement.sinkId;
-        if (newSinkId !== oldSinkId) {
-          if (this.browserBehavior.hasChromiumWebRTC()) {
-            const existingAudioElement = this.audioElement;
-            const existingstream = this.audioStream;
-            existingAudioElement.srcObject = null;
-            // @ts-ignore
-            existingAudioElement.setSinkId(newSinkId).then(() => {
-              if (this.audioElement === existingAudioElement) {
-                existingAudioElement.srcObject = existingstream;
-              }
-            });
-          } else {
-            // @ts-ignore
-            this.audioElement.setSinkId(newSinkId);
-          }
-        }
-        return true;
-      }
+  private async bindAudioMix(): Promise<void> {
+    if (!this.audioElement) {
+      return;
     }
-    return false;
+
+    if (this.audioStream) {
+      this.audioElement.srcObject = this.audioStream;
+    }
+    // @ts-ignore
+    if (typeof this.audioElement.sinkId === 'undefined') {
+      throw new Error(
+        'Cannot select audio output device. This browser does not support setSinkId.'
+      );
+    }
+
+    const newSinkId = this.audioDevice ? this.audioDevice.deviceId : '';
+    // @ts-ignore
+    const oldSinkId: string = this.audioElement.sinkId;
+    if (newSinkId === oldSinkId) {
+      return;
+    }
+
+    const existingAudioElement = this.audioElement;
+    const existingStream = this.audioStream;
+    if (this.browserBehavior.hasChromiumWebRTC()) {
+      existingAudioElement.srcObject = null;
+    }
+    try {
+      // @ts-ignore
+      await existingAudioElement.setSinkId(newSinkId);
+    } catch (error) {
+      this.logger?.error(`Failed to set sinkId for audio element: ${error}`);
+      throw error;
+    }
+    if (this.browserBehavior.hasChromiumWebRTC()) {
+      existingAudioElement.srcObject = existingStream;
+    }
   }
 }

@@ -4,6 +4,7 @@
 import DefaultAudioMixController from '../../src/audiomixcontroller/DefaultAudioMixController';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import ReceiveAudioInputTask from '../../src/task/ReceiveAudioInputTask';
@@ -33,6 +34,7 @@ describe('ReceiveAudioInputTask', () => {
   let domMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder;
   let context: AudioVideoControllerState;
+  const logger = new NoOpLogger();
 
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
@@ -44,7 +46,7 @@ describe('ReceiveAudioInputTask', () => {
       acquireAudioInputDeviceSucceeds: true,
     });
     context.realtimeController = new DefaultRealtimeController();
-    context.audioMixController = new DefaultAudioMixController();
+    context.audioMixController = new DefaultAudioMixController(logger);
   });
 
   afterEach(() => {

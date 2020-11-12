@@ -211,7 +211,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   async chooseAudioOutputDevice(deviceId: string | null): Promise<void> {
     this.audioOutputDeviceId = deviceId;
-    this.bindAudioOutput();
+    await this.bindAudioOutput();
     this.trace('chooseAudioOutputDevice', deviceId, null);
     return;
   }
@@ -413,7 +413,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     }
     this.boundAudioVideoController = audioVideoController;
     this.subscribeToMuteAndUnmuteLocalAudio();
-    this.bindAudioOutput();
+    new AsyncScheduler().start(() => {
+      this.bindAudioOutput();
+    });
   }
 
   private subscribeToMuteAndUnmuteLocalAudio(): void {
@@ -963,8 +965,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       return;
     }
     const deviceInfo = this.deviceInfoFromDeviceId('audiooutput', this.audioOutputDeviceId);
-    // TODO: fail promise if audio output device cannot be selected or setSinkId promise rejects
-    this.boundAudioVideoController.audioMixController.bindAudioDevice(deviceInfo);
+    await this.boundAudioVideoController.audioMixController.bindAudioDevice(deviceInfo);
   }
 
   private calculateMediaStreamConstraints(

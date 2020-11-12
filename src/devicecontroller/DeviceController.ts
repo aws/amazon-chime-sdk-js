@@ -78,6 +78,8 @@ export default interface DeviceController {
 
   /**
    * Selects an audio output device for use. Null specifies the default device.
+   * Note: This method will throw an error if browser does not support
+   * setSinkId. See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId
    */
   chooseAudioOutputDevice(deviceId: string | null): Promise<void>;
 

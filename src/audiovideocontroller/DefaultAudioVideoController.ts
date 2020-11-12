@@ -138,7 +138,7 @@ export default class DefaultAudioVideoController
       this,
       this._logger
     );
-    this._audioMixController = new DefaultAudioMixController();
+    this._audioMixController = new DefaultAudioMixController(this._logger);
     this.meetingSessionContext.logger = this._logger;
     this._eventController = new DefaultEventController(this);
   }
