@@ -11,7 +11,7 @@ export default interface AudioMixController extends AudioMixControllerFacade {
   /**
    * Called when the audio mix element can be bound to a device and stream. Returns true on success.
    */
-  bindAudioElement(element: HTMLAudioElement): boolean;
+  bindAudioElement(element: HTMLAudioElement): Promise<void>;
 
   /**
    * Called to unbind the audio element so that the audio output stream does not have a sink.
@@ -21,10 +21,10 @@ export default interface AudioMixController extends AudioMixControllerFacade {
   /**
    * Called when the audio mix stream can be bound to a device and element. Returns true on success.
    */
-  bindAudioStream(stream: MediaStream): boolean;
+  bindAudioStream(stream: MediaStream): Promise<void>;
 
   /**
    * Called when the audio mix device can be bound to an element and stream. Returns true on success.
    */
-  bindAudioDevice(device: MediaDeviceInfo | null): boolean;
+  bindAudioDevice(device: MediaDeviceInfo | null): Promise<void>;
 }

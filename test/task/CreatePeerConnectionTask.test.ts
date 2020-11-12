@@ -79,7 +79,7 @@ describe('CreatePeerConnectionTask', () => {
     context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
     context.activeVideoInput = null;
     context.transceiverController = new DefaultTransceiverController(logger, browser);
-    context.audioMixController = new DefaultAudioMixController();
+    context.audioMixController = new DefaultAudioMixController(logger);
     context.browserBehavior = new DefaultBrowserBehavior();
     task = new CreatePeerConnectionTask(context);
   });

@@ -106,34 +106,46 @@ const VOICE_FOCUS_SPEC = {
 
 class TestSound {
   constructor(
-    sinkId: string | null,
-    frequency: number = 440,
-    durationSec: number = 1,
-    rampSec: number = 0.1,
-    maxGainValue: number = 0.1
-  ) {
+    private logger: Logger,
+    private sinkId: string | null,
+    private frequency: number = 440,
+    private durationSec: number = 1,
+    private rampSec: number = 0.1,
+    private maxGainValue: number = 0.1
+  ) {}
+
+
+  async init(): Promise<void> {
     // @ts-ignore
     const audioContext: AudioContext = new (window.AudioContext || window.webkitAudioContext)();
     const gainNode = audioContext.createGain();
     gainNode.gain.value = 0;
     const oscillatorNode = audioContext.createOscillator();
-    oscillatorNode.frequency.value = frequency;
+    oscillatorNode.frequency.value = this.frequency;
     oscillatorNode.connect(gainNode);
     const destinationStream = audioContext.createMediaStreamDestination();
     gainNode.connect(destinationStream);
     const currentTime = audioContext.currentTime;
     const startTime = currentTime + 0.1;
     gainNode.gain.linearRampToValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(maxGainValue, startTime + rampSec);
-    gainNode.gain.linearRampToValueAtTime(maxGainValue, startTime + rampSec + durationSec);
-    gainNode.gain.linearRampToValueAtTime(0, startTime + rampSec * 2 + durationSec);
+    gainNode.gain.linearRampToValueAtTime(this.maxGainValue, startTime + this.rampSec);
+    gainNode.gain.linearRampToValueAtTime(this.maxGainValue, startTime + this.rampSec + this.durationSec);
+    gainNode.gain.linearRampToValueAtTime(0, startTime + this.rampSec * 2 + this.durationSec);
     oscillatorNode.start();
-    const audioMixController = new DefaultAudioMixController();
-    // @ts-ignore
-    audioMixController.bindAudioDevice({ deviceId: sinkId });
-    audioMixController.bindAudioElement(new Audio());
-    audioMixController.bindAudioStream(destinationStream.stream);
-    new TimeoutScheduler((rampSec * 2 + durationSec + 1) * 1000).start(() => {
+    const audioMixController = new DefaultAudioMixController(this.logger);
+    try {
+      // @ts-ignore
+      await audioMixController.bindAudioDevice({ deviceId: this.sinkId });
+    } catch (e) {
+      this.logger?.error(`Failed to bind audio device: ${e}`);
+    }
+    try {
+      await audioMixController.bindAudioElement(new Audio());
+    } catch (e) {
+      this.logger?.error(`Failed to bind audio element: ${e}`);
+    }
+    await audioMixController.bindAudioStream(destinationStream.stream);
+    new TimeoutScheduler((this.rampSec * 2 + this.durationSec + 1) * 1000).start(() => {
       audioContext.close();
     });
   }
@@ -475,10 +487,11 @@ export class DemoMeetingApp implements
       await this.openAudioOutputFromSelection();
     });
 
-    document.getElementById('button-test-sound').addEventListener('click', e => {
+    document.getElementById('button-test-sound').addEventListener('click', async e => {
       e.preventDefault();
       const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
-      new TestSound(audioOutput.value);
+      const testSound = new TestSound(this.meetingEventPOSTLogger, audioOutput.value);
+      await testSound.init();
     });
 
     document.getElementById('form-devices').addEventListener('submit', e => {
@@ -566,9 +579,13 @@ export class DemoMeetingApp implements
     buttonSpeaker.addEventListener('click', _e => {
       new AsyncScheduler().start(async () => {
         if (this.toggleButton('button-speaker')) {
-          this.audioVideo.bindAudioElement(document.getElementById(
-            'meeting-audio'
-          ) as HTMLAudioElement);
+          try {
+            await this.audioVideo.bindAudioElement(document.getElementById(
+              'meeting-audio'
+            ) as HTMLAudioElement);
+          } catch (e) {
+            this.log('Failed to bindAudioElement', e);
+          }
         } else {
           this.audioVideo.unbindAudioElement();
         }
@@ -1462,7 +1479,11 @@ export class DemoMeetingApp implements
       additionalDevices,
       undefined,
       async (name: string) => {
-        await this.audioVideo.chooseAudioOutputDevice(name);
+        try {
+          await this.audioVideo.chooseAudioOutputDevice(name);
+        } catch (e) {
+          this.log('Failed to chooseAudioOutputDevice', e)
+        }
       }
     );
   }
@@ -1562,9 +1583,17 @@ export class DemoMeetingApp implements
 
   async openAudioOutputFromSelection(): Promise<void> {
     const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
-    await this.audioVideo.chooseAudioOutputDevice(audioOutput.value);
+    try {
+      await this.audioVideo.chooseAudioOutputDevice(audioOutput.value);
+    } catch (e) {
+      this.log('failed to chooseAudioOutputDevice', e);
+    }
     const audioMix = document.getElementById('meeting-audio') as HTMLAudioElement;
-    await this.audioVideo.bindAudioElement(audioMix);
+    try {
+      await this.audioVideo.bindAudioElement(audioMix);
+    } catch (e) {
+      this.log('failed to bindAudioElement', e);
+    }
   }
 
   private selectedVideoInput: string | null = null;

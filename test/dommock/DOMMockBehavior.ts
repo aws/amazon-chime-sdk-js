@@ -17,6 +17,8 @@ export default class DOMMockBehavior {
   webSocketCloseSucceeds: boolean = true;
   webSocketSendEcho: boolean = true;
   iceConnectionStates: string[] = ['completed'];
+  setSinkIdSucceeds: boolean = true;
+  setSinkIdSupported: boolean = true;
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   FakeTURNCredentialsBody: Promise<object> = new Promise((resolve, _reject) => {
