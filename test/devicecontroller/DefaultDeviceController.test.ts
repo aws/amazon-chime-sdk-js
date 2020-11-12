@@ -935,8 +935,18 @@ describe('DefaultDeviceController', () => {
 
     it('binds the audio device if the audio-video is bound', async () => {
       domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo(stringDeviceId, null, 'label'),
         getMediaDeviceInfo(stringDeviceId, 'audiooutput', 'label'),
       ];
+      await deviceController.listAudioOutputDevices();
+      const spy = sinon.spy(audioVideoController.audioMixController, 'bindAudioDevice');
+      deviceController.bindToAudioVideoController(audioVideoController);
+      await deviceController.chooseAudioOutputDevice(stringDeviceId);
+      expect(spy.called).to.be.true;
+    });
+
+    it('binds the null device if the audio-video is bound', async () => {
+      domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo(stringDeviceId, null, 'label')];
       await deviceController.listAudioOutputDevices();
       const spy = sinon.spy(audioVideoController.audioMixController, 'bindAudioDevice');
       deviceController.bindToAudioVideoController(audioVideoController);

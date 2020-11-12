@@ -91,4 +91,9 @@ export default interface BrowserBehavior {
    * Returns the supported codecs
    */
   supportedVideoCodecs(): Promise<string[]>;
+
+  /**
+   * Returns whether browser supports setSinkId operation
+   */
+  supportsSetSinkId(): boolean;
 }

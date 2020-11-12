@@ -329,6 +329,18 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('unsuccessful after playing tone - callback throws error', async () => {
+      domMockBehavior.setSinkIdSupported = false;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      meetingSession = new TestMeetingSession(makeSessionConfiguration(), logger, deviceController);
+      meetingReadinessCheckerConfiguration = new MeetingReadinessCheckerConfiguration();
+      meetingReadinessCheckerConfiguration.timeoutMs = 10;
+      meetingReadinessCheckerConfiguration.waitDurationMs = 3;
+      meetingReadinessCheckerController = new DefaultMeetingReadinessChecker(
+        logger,
+        meetingSession,
+        meetingReadinessCheckerConfiguration
+      );
       const failureCallback = (): Promise<boolean> => {
         throw new Error();
       };

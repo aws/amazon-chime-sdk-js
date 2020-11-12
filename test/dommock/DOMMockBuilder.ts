@@ -904,12 +904,19 @@ export default class DOMMockBuilder {
 
     GlobalAny.HTMLAudioElement = class MockHTMLAudioElement {
       sinkId = 'fakeSinkId';
-      async setSinkId(deviceId: string): Promise<undefined> {
-        this.sinkId = deviceId;
-        await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs * 10));
-        return undefined;
+      async setSinkId(deviceId: string): Promise<void> {
+        if (mockBehavior.setSinkIdSucceeds) {
+          this.sinkId = deviceId;
+          await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs * 10));
+          return undefined;
+        } else {
+          throw new Error('Failed to set sinkId');
+        }
       }
     };
+    if (!mockBehavior.setSinkIdSupported) {
+      GlobalAny.HTMLAudioElement.prototype.setSinkId = undefined;
+    }
 
     GlobalAny.document = {
       createElement(_tagName: string): HTMLElement {

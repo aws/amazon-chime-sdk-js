@@ -74,7 +74,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
         audioOutputDeviceInfo && audioOutputDeviceInfo.deviceId
           ? audioOutputDeviceInfo.deviceId
           : '';
-      this.playTone(audioOutputDeviceId, 440, audioElement);
+      await this.playTone(audioOutputDeviceId, 440, audioElement);
       const userFeedback = await audioOutputVerificationCallback();
       if (userFeedback) {
         return CheckAudioOutputFeedback.Succeeded;
@@ -89,11 +89,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     }
   }
 
-  private playTone(
+  private async playTone(
     sinkId: string | null,
     frequency: number | 440,
     audioElement: HTMLAudioElement | null
-  ): void {
+  ): Promise<void> {
     const rampSec = 0.1;
     const maxGainValue = 0.1;
 
@@ -113,11 +113,19 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     this.gainNode.gain.linearRampToValueAtTime(0, startTime);
     this.gainNode.gain.linearRampToValueAtTime(maxGainValue, startTime + rampSec);
     this.oscillatorNode.start();
-    const audioMixController = new DefaultAudioMixController();
-    // @ts-ignore
-    audioMixController.bindAudioDevice({ deviceId: sinkId });
-    audioMixController.bindAudioElement(audioElement || new Audio());
-    audioMixController.bindAudioStream(this.destinationStream.stream);
+    const audioMixController = new DefaultAudioMixController(this.logger);
+    try {
+      // @ts-ignore
+      await audioMixController.bindAudioDevice({ deviceId: sinkId });
+    } catch (e) {
+      this.logger.error(`Failed to bind audio device: ${e}`);
+    }
+    try {
+      await audioMixController.bindAudioElement(audioElement || new Audio());
+    } catch (e) {
+      this.logger.error(`Failed to bind audio element: ${e}`);
+    }
+    await audioMixController.bindAudioStream(this.destinationStream.stream);
   }
 
   private stopTone(): void {
