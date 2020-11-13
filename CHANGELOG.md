@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Update the clicking sound answer in FAQs
 
 ## [1.22.0] - 2020-11-10
 ### Added
