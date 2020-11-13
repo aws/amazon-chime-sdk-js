@@ -403,6 +403,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Allow option to skip device selection page in demo app.
 - Add demo hook for debugging media connections
+- Add github link to getNearestMediaRegion method in README.md
 - Add data message APIs
 
 ### Changed
