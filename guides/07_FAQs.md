@@ -53,6 +53,8 @@ You can find the complete list of browsers in this link: [Supported Browsers](ht
 
 [Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.
 
+[Android Chrome](https://bugs.chromium.org/p/chromium/issues/detail?id=635686&sort=-stars&q=android%20chrome%20bluetooth%20headphone&can=2) has a known issue switching between bluetooth audio output devices. While clients can continue the meeting using the default device, there is a [bug](https://bugs.chromium.org/p/chromium/issues/detail?id=635686&sort=-stars&q=android%20chrome%20bluetooth%20headphone&can=2) related to switching to an bluetooth audio output.
+
 ### My video disappears in Safari browsers, is this a known issue?
 
 macOS and iOS Safari browsers have limitations when you use a camera in more than one apps or tab. 
@@ -210,7 +212,7 @@ iOS Safari has a known issue where it only lists one audio input device even whe
 
 ### I can hear clicking noise from an attendee using iPhone X devices (X, XS, and XR).
 
-This is a known issue on iPhone X devices (X, XS, and XR) when using AudioContext-based APIs. For more information, see our comment in [the WebKit issue](https://bugs.webkit.org/show_bug.cgi?id=204625#c6).
+This was a known issue on iPhone X devices (X, XS, and XR) when using AudioContext-based APIs in iOS Safari 13 and below. Please upgrade your device to iOS 14 and try again. For more information, see our comment in [the WebKit issue](https://bugs.webkit.org/show_bug.cgi?id=204625#c6). 
 
 ### I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.
 

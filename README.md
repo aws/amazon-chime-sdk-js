@@ -1,8 +1,8 @@
 # Amazon Chime SDK for JavaScript
 
 <a href="https://www.npmjs.com/package/amazon-chime-sdk-js"><img src="https://img.shields.io/npm/v/amazon-chime-sdk-js?style=flat-square"></a>
-<a href="https://travis-ci.org/github/aws/amazon-chime-sdk-jsr"><img src="https://travis-ci.org/aws/amazon-chime-sdk-js.svg?branch=master"></a>
-
+<a href="https://github.com/aws/amazon-chime-sdk-js/actions?query=workflow%3A%22CI+Workflow%22"><img src="https://github.com/aws/amazon-chime-sdk-js/workflows/CI%20Workflow/badge.svg"></a>
+<a href="https://github.com/aws/amazon-chime-sdk-js/actions?query=workflow%3A%22Deploy+Demo+App+Workflow%22"><img src="https://github.com/aws/amazon-chime-sdk-js/workflows/Deploy%20Demo%20App%20Workflow/badge.svg"></a>
 ### Build video calling, audio calling, and screen sharing applications powered by Amazon Chime.
 
 The Amazon Chime SDK makes it easy to add collaborative audio calling,
@@ -572,6 +572,31 @@ const observer = {
 meetingSession.audioVideo.addObserver(observer);
 ```
 
+**Use case 17.** Add an observer to know all the remote video sources when changed.
+```js
+const observer = {
+  remoteVideoSourcesDidChange: videoSources => {
+    videoSources.forEach(videoSource => {
+      const { attendee } = videoSource;
+      console.log(`An attendee (${attendee.attendeeId} ${attendee.externalUserId}) is sending video`);
+    });
+  }
+};
+
+meetingSession.audioVideo.addObserver(observer);
+```
+You can also call below method to know all the remote video sources:
+> Note: `getRemoteVideoSources` method is different from `getAllRemoteVideoTiles`, 
+`getRemoteVideoSources` returns all the remote video sources that are available to be viewed,
+while `getAllRemoteVideoTiles` returns the ones that are actually being seen.
+```js
+const videoSources = meetingSession.audioVideo.getRemoteVideoSources();
+videoSources.forEach(videoSource => {
+  const { attendee } = videoSource;
+  console.log(`An attendee (${attendee.attendeeId} ${attendee.externalUserId}) is sending video`);
+});
+```
+
 ### Screen and content share
 
 > Note: When you or other attendees share content (a screen capture, a video file, or any other MediaStream object),
@@ -580,7 +605,7 @@ the content attendee (attendee-id#content) joins the session and shares content 
 > For example, your attendee ID is "my-id". When you call `meetingSession.audioVideo.startContentShare`,
 the content attendee "my-id#content" will join the session and share your content.
 
-**Use case 17.** Start sharing your screen.
+**Use case 18.** Start sharing your screen.
 
 ```js
 import { DefaultModality } from 'amazon-chime-sdk-js';
@@ -628,7 +653,7 @@ If you want to display the content share stream for the sharer, you can bind the
 DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, false);
 ```
 
-**Use case 18.** Start sharing your screen in an environment that does not support a screen picker dialog. e.g. Electron
+**Use case 19.** Start sharing your screen in an environment that does not support a screen picker dialog. e.g. Electron
 
 ```js
 const sourceId = /* Window or screen ID e.g. the ID of a DesktopCapturerSource object in Electron */;
@@ -636,7 +661,7 @@ const sourceId = /* Window or screen ID e.g. the ID of a DesktopCapturerSource o
 await meetingSession.audioVideo.startContentShareFromScreenCapture(sourceId);
 ```
 
-**Use case 19.** Start streaming your video file from an `<input>` element of type `file`.
+**Use case 20.** Start streaming your video file from an `<input>` element of type `file`.
 
 ```js
 const videoElement = /* HTMLVideoElement object e.g. document.getElementById('video-element-id') */;
@@ -654,7 +679,7 @@ inputElement.addEventListener('change', async () => {
 });
 ```
 
-**Use case 20.** Stop sharing your screen or content.
+**Use case 21.** Stop sharing your screen or content.
 
 ```js
 const observer = {
@@ -668,7 +693,7 @@ meetingSession.audioVideo.addContentShareObserver(observer);
 await meetingSession.audioVideo.stopContentShare();
 ```
 
-**Use case 21.** View up to 2 attendee content or screens. Chime SDK allows 2 simultaneous content shares per meeting.
+**Use case 22.** View up to 2 attendee content or screens. Chime SDK allows 2 simultaneous content shares per meeting.
 
 ```js
 import { DefaultModality } from 'amazon-chime-sdk-js';
@@ -720,7 +745,7 @@ meetingSession.audioVideo.addObserver(observer);
 
 ### Attendees
 
-**Use case 22.** Subscribe to attendee presence changes. When an attendee joins or leaves a session,
+**Use case 23.** Subscribe to attendee presence changes. When an attendee joins or leaves a session,
 the callback receives `presentAttendeeId` and `present` (a boolean).
 
 ```js
@@ -737,7 +762,7 @@ const callback = (presentAttendeeId, present) => {
 meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(callback);
 ```
 
-**Use case 23.** Create a simple roster by subscribing to attendee presence and volume changes.
+**Use case 24.** Create a simple roster by subscribing to attendee presence and volume changes.
 
 ```js
 import { DefaultModality } from 'amazon-chime-sdk-js';
@@ -785,7 +810,7 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
 
 ### Monitoring and alerts
 
-**Use case 24.** Add an observer to receive video metrics. See `AudioVideoObserver` for more available metrics,
+**Use case 25.** Add an observer to receive video metrics. See `AudioVideoObserver` for more available metrics,
 such as WebRTC statistics processed by Chime SDK.
 
 ```js
@@ -804,7 +829,7 @@ const observer = {
 meetingSession.audioVideo.addObserver(observer);
 ```
 
-**Use case 25.** Add an observer to receive alerts. You can use these alerts to notify users of connection problems.
+**Use case 26.** Add an observer to receive alerts. You can use these alerts to notify users of connection problems.
 
 ```js
 const observer = {
@@ -835,7 +860,7 @@ meetingSession.audioVideo.addObserver(observer);
 
 ### Stopping a session
 
-**Use case 26.** Leave a session.
+**Use case 27.** Leave a session.
 
 ```js
 import { MeetingSessionStatusCode } from 'amazon-chime-sdk-js';
@@ -860,7 +885,7 @@ meetingSession.audioVideo.addObserver(observer);
 meetingSession.audioVideo.stop();
 ```
 
-**Use case 27.** Add an observer to get notified when a session has ended.
+**Use case 28.** Add an observer to get notified when a session has ended.
 
 ```js
 import { MeetingSessionStatusCode } from 'amazon-chime-sdk-js';
@@ -868,9 +893,10 @@ import { MeetingSessionStatusCode } from 'amazon-chime-sdk-js';
 const observer = {
   audioVideoDidStop: sessionStatus => {
     const sessionStatusCode = sessionStatus.statusCode();
-    if (sessionStatusCode === MeetingSessionStatusCode.AudioCallEnded) {
+    if (sessionStatusCode === MeetingSessionStatusCode.MeetingEnded) {
       /*
         - You (or someone else) have called the DeleteMeeting API action in your server application.
+        - You attempted to join a deleted meeting.
         - No audio connections are present in the meeting for more than five minutes.
         - Fewer than two audio connections are present in the meeting for more than 30 minutes.
         - Screen share viewer connections are inactive for more than 30 minutes.
@@ -889,7 +915,7 @@ meetingSession.audioVideo.addObserver(observer);
 
 ### Meeting readiness checker
 
-**Use case 28.** Initialize the meeting readiness checker.
+**Use case 29.** Initialize the meeting readiness checker.
 
 ```js
 import { DefaultMeetingReadinessChecker } from 'amazon-chime-sdk-js';
@@ -898,7 +924,7 @@ import { DefaultMeetingReadinessChecker } from 'amazon-chime-sdk-js';
 const meetingReadinessChecker = new DefaultMeetingReadinessChecker(logger, meetingSession);
 ```
 
-**Use case 29.** Use the meeting readiness checker to perform local checks.
+**Use case 30.** Use the meeting readiness checker to perform local checks.
 
 ```js
 import { CheckAudioInputFeedback } from 'amazon-chime-sdk-js';
@@ -919,7 +945,7 @@ switch (audioInputFeedback) {
 }
 ```
 
-**Use case 30.** Use the meeting readiness checker to perform end-to-end checks, e.g. audio, video, and content share.
+**Use case 31.** Use the meeting readiness checker to perform end-to-end checks, e.g. audio, video, and content share.
 
 ```js
 import {
@@ -943,7 +969,7 @@ const contentShareFeedback = await meetingReadinessChecker.checkContentShareConn
 console.log(`Feedback result: ${CheckContentShareConnectivityFeedback[contentShareFeedback]}`);
 ```
 
-**Use case 31.** Use the meeting readiness checker to perform network checks, e.g. TCP and UDP.
+**Use case 32.** Use the meeting readiness checker to perform network checks, e.g. TCP and UDP.
 
 ```js
 import {

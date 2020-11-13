@@ -14,8 +14,8 @@ import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import ReceiveVideoInputTask from '../../src/task/ReceiveVideoInputTask';
 import DefaultVideoCaptureAndEncodeParameters from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
+import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
-import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -99,7 +99,10 @@ describe('ReceiveVideoInputTask', () => {
     it('will acquire the video input and query constraint', async () => {
       context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
       context.enableSimulcast = true;
-      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('attendee', new NoOpLogger());
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+        'attendee',
+        new NoOpLogger()
+      );
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,
@@ -113,7 +116,10 @@ describe('ReceiveVideoInputTask', () => {
       domMockBehavior.applyConstraintSucceeds = false;
       context.videoStreamIndex = new SimulcastVideoStreamIndex(new NoOpLogger());
       context.enableSimulcast = true;
-      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('attendee', new NoOpLogger());
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+        'attendee',
+        new NoOpLogger()
+      );
       context.videoTileController.startLocalVideoTile();
       context.mediaStreamBroker = new MockMediaStreamBroker({
         acquireVideoInputDeviceSucceeds: true,
@@ -164,7 +170,7 @@ describe('ReceiveVideoInputTask', () => {
   describe('run with simulcast enabled', () => {
     beforeEach(() => {
       context.enableSimulcast = true;
-      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy(
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
         'self-attendee',
         new NoOpLogger()
       );

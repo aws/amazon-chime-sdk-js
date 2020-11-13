@@ -50,7 +50,7 @@ import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStre
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
-import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
+import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -434,7 +434,7 @@ describe('MonitorTask', () => {
           }
         }
       }
-      class TestVideoUplinkPolicy extends SimulcastUplinkPolicy {
+      class TestVideoUplinkPolicy extends DefaultSimulcastUplinkPolicy {
         wantsResubscribe(): boolean {
           if (firstTimeUplink < 4) {
             firstTimeUplink += 1;

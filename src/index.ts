@@ -4,6 +4,7 @@ import ActiveSpeakerPolicy from './activespeakerpolicy/ActiveSpeakerPolicy';
 import AllHighestVideoBandwidthPolicy from './videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import AsyncScheduler from './scheduler/AsyncScheduler';
 import AttachMediaInputTask from './task/AttachMediaInputTask';
+import Attendee from './attendee/Attendee';
 import AudioLogEvent from './statscollector/AudioLogEvent';
 import AudioMixController from './audiomixcontroller/AudioMixController';
 import AudioMixControllerFacade from './audiomixcontroller/AudioMixControllerFacade';
@@ -95,6 +96,7 @@ import DefaultScreenViewingViewer from './screenviewing/viewer/DefaultScreenView
 import DefaultSessionStateController from './sessionstatecontroller/DefaultSessionStateController';
 import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSignalingSession from './screenviewing/signalingsession/DefaultSignalingSession';
+import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import DefaultStatsCollector from './statscollector/DefaultStatsCollector';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
@@ -281,7 +283,9 @@ import SignalingClientJoin from './signalingclient/SignalingClientJoin';
 import SignalingClientObserver from './signalingclientobserver/SignalingClientObserver';
 import SignalingClientSubscribe from './signalingclient/SignalingClientSubscribe';
 import SignalingSession from './screenviewing/signalingsession/SignalingSession';
+import SimulcastLayers from './simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from './transceivercontroller/SimulcastTransceiverController';
+import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplinkObserver';
 import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
 import Some from './maybe/Some';
@@ -302,6 +306,7 @@ import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDo
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoLogEvent from './statscollector/VideoLogEvent';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
+import VideoSource from './videosource/VideoSource';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
 import VideoStreamIdSet from './videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from './videostreamindex/VideoStreamIndex';
@@ -325,6 +330,7 @@ export {
   AllHighestVideoBandwidthPolicy,
   AsyncScheduler,
   AttachMediaInputTask,
+  Attendee,
   AudioLogEvent,
   AudioMixController,
   AudioMixControllerFacade,
@@ -416,6 +422,7 @@ export {
   DefaultSessionStateController,
   DefaultSignalingClient,
   DefaultSignalingSession,
+  DefaultSimulcastUplinkPolicy,
   DefaultStatsCollector,
   DefaultTransceiverController,
   DefaultVideoCaptureAndEncodeParameter,
@@ -602,7 +609,9 @@ export {
   SignalingClientObserver,
   SignalingClientSubscribe,
   SignalingSession,
+  SimulcastLayers,
   SimulcastTransceiverController,
+  SimulcastUplinkObserver,
   SimulcastUplinkPolicy,
   SimulcastVideoStreamIndex,
   Some,
@@ -623,6 +632,7 @@ export {
   VideoElementFactory,
   VideoLogEvent,
   VideoQualitySettings,
+  VideoSource,
   VideoStreamDescription,
   VideoStreamIdSet,
   VideoStreamIndex,

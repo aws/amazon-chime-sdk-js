@@ -138,6 +138,9 @@ export default interface DeviceController {
   getVideoInputQualitySettings(): VideoQualitySettings | null;
 
   /**
+   * Deprecated. enableWebAudio will be removed in v2.0.0.
+   * This API method will removed entirely, along with the corresponding field on MeetingSessionConfiguration.
+   * The MeetingSession will no longer call enableWebAudio on the corresponding DeviceController.
    * Sets the flag in [[DeviceController]] on whether to enable WebAudio-based device management.
    */
   enableWebAudio(flag: boolean): void;

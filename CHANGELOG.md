@@ -7,13 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- [Demo] Show video WebRTC stats and attendeeId on video tile hover
+
+### Changed
+
+### Removed
+
+### Fixed
+- Update the clicking sound answer in FAQs
+
+## [1.22.0] - 2020-11-10
+### Added
+- Add github actions continuous integration workflow and deploy workflow
+- Add simulcast uplink policy layer change notification methods and observer
+- Add `getRemoteVideoSources` method and `remoteVideoSourcesDidChange` observer
+- [Documentation] Add question to FAQ about android chrome bluetooth audio devices
 
 ### Changed
 - [Documentation] Updated HTTP to HTTPS in README URL links
 - [Documentation] Improved documentation for running integration tests locally
 - [Test] Updated browserstack URL formation to use HTTPS
-- Upgraded eslint to understand modern TypeScript syntax, including `import type`.
+- Upgraded eslint to understand modern TypeScript syntax, including `import type`
 - [Demo] change optional feature selection to be list of input box to allow combination
+- [Documentation] Update README to replace deprecated `AudioCallEnded` with `MeetingEnded`
+- [Documentation] Update few `VideoTileController` and `VideoTile` APIs documentation
+- [Documentation] Added deprecation message and log for `enableWebAudio` API in DeviceController
+- Improve `DefaultEventController` to create less garbage
 
 ### Removed
 
@@ -22,8 +41,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle undefined attendeeId when calling `realtimeSetAttendeeIdPresence`
 - Fix `DefaultModality` base check
 - [Test] Fix a typo in integ tests
-- [Demo] Fix serverless deploy script to not print out logs
 - Fix getNearestMediaRegion link in README
+- [Test] Make sure to error out if failed to grab Sauce Lab sessions
+- Fixed deploy github action with correct keys
+- Remote video may switch transceivers/videoTiles on simulcast change or camera toggle
+- Fix github actions deploy workflow
+- Fix issue with calling closeCurrentTest twice when timeout waiting for an attendee in integ test
 
 ## [1.21.0] - 2020-10-29
 ### Added
@@ -63,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add extended debugging for saucelab sessions
 - Add data message throttle limits to documentation
 - Add `audioSessionId` to join frame to always drop when reconnecting
+- Add audioSessionId to join frame to always drop when reconnecting
 
 ### Changed
 - Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests

@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,14 +32,14 @@
     "test:fast": "cross-env TS_NODE_CACHE=false nyc mocha -r esm -rv ts-node/register \"test/**/*.test.ts\"",
     "test:slow": "cross-env MOCHA_TEST_DELAY_MS=100 npm run test:fast",
     "test:retry": "(npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast)",
-    "test:integration": "cd ./integration/js && npm run test && npm run upload-logs-to-s3",
-    "test:integration-audio": "cd ./integration/js && npm run test -- audio && npm run upload-logs-to-s3",
-    "test:integration-video": "cd ./integration/js && npm run test -- video && npm run upload-logs-to-s3",
-    "test:integration-meeting-end": "cd ./integration/js && npm run test -- meeting_end && npm run upload-logs-to-s3",
-    "test:integration-screen-share": "cd ./integration/js && npm run test -- screen_share && npm run upload-logs-to-s3",
-    "test:integration-content-share": "cd ./integration/js && npm run test -- content_share && npm run upload-logs-to-s3",
-    "test:integration-data-message": "cd ./integration/js && npm run test -- data_message && npm run upload-logs-to-s3",
-    "test:integration-meeting-readiness-checker": "cd ./integration/js && npm run test -- meeting_readiness_checker && npm run upload-logs-to-s3"
+    "test:integration": "cd ./integration/js && npm run test ",
+    "test:integration-audio": "cd ./integration/js && npm run test -- audio ",
+    "test:integration-video": "cd ./integration/js && npm run test -- video ",
+    "test:integration-meeting-end": "cd ./integration/js && npm run test -- meeting_end ",
+    "test:integration-screen-share": "cd ./integration/js && npm run test -- screen_share ",
+    "test:integration-content-share": "cd ./integration/js && npm run test -- content_share ",
+    "test:integration-data-message": "cd ./integration/js && npm run test -- data_message ",
+    "test:integration-meeting-readiness-checker": "cd ./integration/js && npm run test -- meeting_readiness_checker "
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.89.0",
