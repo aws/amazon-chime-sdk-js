@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle undefined attendeeId when calling `realtimeSetAttendeeIdPresence`
 - Fix `DefaultModality` base check
 - [Test] Fix a typo in integ tests
-- Fix getNearestMediaRegion link in README
+- [Demo] Fix serverless deploy script to not print out logs
 - [Test] Make sure to error out if failed to grab Sauce Lab sessions
 - Fixed deploy github action with correct keys
 - Remote video may switch transceivers/videoTiles on simulcast change or camera toggle
@@ -403,7 +403,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Allow option to skip device selection page in demo app.
 - Add demo hook for debugging media connections
-- [Demo] Fix serverless deploy script to not print out logs
 - Add data message APIs
 
 ### Changed
