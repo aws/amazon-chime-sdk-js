@@ -212,7 +212,7 @@ iOS Safari has a known issue where it only lists one audio input device even whe
 
 ### I can hear clicking noise from an attendee using iPhone X devices (X, XS, and XR).
 
-This is a known issue on iPhone X devices (X, XS, and XR) when using AudioContext-based APIs. For more information, see our comment in [the WebKit issue](https://bugs.webkit.org/show_bug.cgi?id=204625#c6).
+This was a known issue on iPhone X devices (X, XS, and XR) when using AudioContext-based APIs in iOS Safari 13 and below. Please upgrade your device to iOS 14 and try again. For more information, see our comment in [the WebKit issue](https://bugs.webkit.org/show_bug.cgi?id=204625#c6). 
 
 ### I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.
 
