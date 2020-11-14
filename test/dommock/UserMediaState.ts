@@ -3,9 +3,19 @@
 
 export enum UserMediaState {
   Success,
-  PermissionDenied,
-  OverConstrained,
+  PermissionDeniedError,
+  NotReadableError,
+  TrackStartError,
+  NotFoundError,
+  DevicesNotFoundError,
+  NotAllowedError,
+  OverconstrainedError,
+  ConstraintNotSatisfiedError,
+  TypeError,
+  AbortError,
+  SecurityError,
   Failure,
+  GetUserMediaError,
 }
 
 export default UserMediaState;

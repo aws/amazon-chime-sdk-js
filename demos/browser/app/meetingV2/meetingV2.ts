@@ -1524,7 +1524,11 @@ export class DemoMeetingApp implements
   async selectAudioInputDevice(device: AudioInputDevice): Promise<void> {
     this.currentAudioInputDevice = device;
     this.log('Selecting audio input', device);
-    await this.audioVideo.chooseAudioInputDevice(device);
+    try {
+      await this.audioVideo.chooseAudioInputDevice(device);
+    } catch (e) {
+      this.log(`failed to choose audio input device ${device}`, e);
+    }
     this.updateVoiceFocusDisplayState();
   }
 
@@ -1648,10 +1652,19 @@ export class DemoMeetingApp implements
       this.audioVideo.stopLocalVideoTile();
       this.toggleButton('button-camera', 'off');
       // choose video input null is redundant since we expect stopLocalVideoTile to clean up
-      await this.audioVideo.chooseVideoInputDevice(device);
+      try {
+        await this.audioVideo.chooseVideoInputDevice(device);
+      } catch (e) {
+        this.log(`failed to chooseVideoInputDevice ${device}`, e);
+      }
       throw new Error('no video device selected');
     }
-    await this.audioVideo.chooseVideoInputDevice(device);
+    try {
+      await this.audioVideo.chooseVideoInputDevice(device);
+    } catch (e) {
+      this.log(`failed to chooseVideoInputDevice ${device}`, e);
+    }
+
     if (showPreview) {
       this.audioVideo.startVideoPreviewForVideoInput(document.getElementById(
         'video-preview'

@@ -13,7 +13,6 @@ import DataMessage from '../datamessage/DataMessage';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import AudioInputDevice from '../devicecontroller/AudioInputDevice';
 import DeviceController from '../devicecontroller/DeviceController';
-import DevicePermission from '../devicecontroller/DevicePermission';
 import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
 import VideoInputDevice from '../devicecontroller/VideoInputDevice';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
@@ -334,16 +333,14 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     return result;
   }
 
-  chooseAudioInputDevice(device: AudioInputDevice): Promise<DevicePermission> {
-    const result = this.deviceController.chooseAudioInputDevice(device);
+  chooseAudioInputDevice(device: AudioInputDevice): Promise<void> {
     this.trace('chooseAudioInputDevice', device);
-    return result;
+    return this.deviceController.chooseAudioInputDevice(device);
   }
 
-  chooseVideoInputDevice(device: VideoInputDevice): Promise<DevicePermission> {
-    const result = this.deviceController.chooseVideoInputDevice(device);
+  chooseVideoInputDevice(device: VideoInputDevice): Promise<void> {
     this.trace('chooseVideoInputDevice', device);
-    return result;
+    return this.deviceController.chooseVideoInputDevice(device);
   }
 
   chooseAudioOutputDevice(deviceId: string | null): Promise<void> {

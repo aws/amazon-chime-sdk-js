@@ -92,7 +92,6 @@ import DeviceChangeObserver from './devicechangeobserver/DeviceChangeObserver';
 import DeviceController from './devicecontroller/DeviceController';
 import DeviceControllerBasedMediaStreamBroker from './mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import DeviceEventAttributes from './eventcontroller/DeviceEventAttributes';
-import DevicePermission from './devicecontroller/DevicePermission';
 import DevicePixelRatioMonitor from './devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from './devicepixelratioobserver/DevicePixelRatioObserver';
 import DevicePixelRatioSource from './devicepixelratiosource/DevicePixelRatioSource';
@@ -105,6 +104,7 @@ import FinishGatheringICECandidatesTask from './task/FinishGatheringICECandidate
 import FullJitterBackoff from './backoff/FullJitterBackoff';
 import FullJitterBackoffFactory from './backoff/FullJitterBackoffFactory';
 import FullJitterLimitedBackoff from './backoff/FullJitterLimitedBackoff';
+import GetUserMediaError from './devicecontroller/GetUserMediaError';
 import GlobalMetricReport from './clientmetricreport/GlobalMetricReport';
 import IntervalScheduler from './scheduler/IntervalScheduler';
 import JoinAndReceiveIndexTask from './task/JoinAndReceiveIndexTask';
@@ -146,8 +146,12 @@ import NoOpVideoElementFactory from './videoelementfactory/NoOpVideoElementFacto
 import NoVideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import NoVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import None from './maybe/None';
+import NotFoundError from './devicecontroller/NotFoundError';
+import NotReadableError from './devicecontroller/NotReadableError';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
+import OverconstrainedError from './devicecontroller/OverconstrainedError';
 import ParallelGroupTask from './task/ParallelGroupTask';
+import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
@@ -199,6 +203,7 @@ import TaskStatus from './task/TaskStatus';
 import TimeoutScheduler from './scheduler/TimeoutScheduler';
 import TimeoutTask from './task/TimeoutTask';
 import TransceiverController from './transceivercontroller/TransceiverController';
+import TypeError from './devicecontroller/TypeError';
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import Versioning from './versioning/Versioning';
 import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
@@ -326,7 +331,6 @@ export {
   DeviceController,
   DeviceControllerBasedMediaStreamBroker,
   DeviceEventAttributes,
-  DevicePermission,
   DevicePixelRatioMonitor,
   DevicePixelRatioObserver,
   DevicePixelRatioSource,
@@ -339,6 +343,7 @@ export {
   FullJitterBackoff,
   FullJitterBackoffFactory,
   FullJitterLimitedBackoff,
+  GetUserMediaError,
   GlobalMetricReport,
   IntervalScheduler,
   JoinAndReceiveIndexTask,
@@ -380,8 +385,12 @@ export {
   NoVideoDownlinkBandwidthPolicy,
   NoVideoUplinkBandwidthPolicy,
   None,
+  NotFoundError,
+  NotReadableError,
   OpenSignalingConnectionTask,
+  OverconstrainedError,
   ParallelGroupTask,
+  PermissionDeniedError,
   PingPong,
   PingPongObserver,
   RealtimeAttendeePositionInFrame,
@@ -433,6 +442,7 @@ export {
   TimeoutScheduler,
   TimeoutTask,
   TransceiverController,
+  TypeError,
   UnusableAudioWarningConnectionHealthPolicy,
   Versioning,
   VideoAdaptiveProbePolicy,
