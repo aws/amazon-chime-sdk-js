@@ -5,7 +5,6 @@ import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
 import AudioInputDevice from './AudioInputDevice';
-import DevicePermission from './DevicePermission';
 import RemovableAnalyserNode from './RemovableAnalyserNode';
 import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
@@ -29,11 +28,11 @@ export default class NoOpDeviceController
     return Promise.resolve([]);
   }
 
-  chooseAudioInputDevice(_device: AudioInputDevice): Promise<DevicePermission> {
+  chooseAudioInputDevice(_device: AudioInputDevice): Promise<void> {
     return Promise.reject();
   }
 
-  chooseVideoInputDevice(_device: VideoInputDevice): Promise<DevicePermission> {
+  chooseVideoInputDevice(_device: VideoInputDevice): Promise<void> {
     return Promise.reject();
   }
 

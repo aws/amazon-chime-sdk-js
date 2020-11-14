@@ -15,14 +15,18 @@ import AudioInputDevice from './AudioInputDevice';
 import AudioNodeSubgraph from './AudioNodeSubgraph';
 import AudioTransformDevice, { isAudioTransformDevice } from './AudioTransformDevice';
 import Device from './Device';
-import DevicePermission from './DevicePermission';
 import DeviceSelection from './DeviceSelection';
+import GetUserMediaError from './GetUserMediaError';
+import NotFoundError from './NotFoundError';
+import NotReadableError from './NotReadableError';
+import OverconstrainedError from './OverconstrainedError';
+import PermissionDeniedError from './PermissionDeniedError';
 import RemovableAnalyserNode from './RemovableAnalyserNode';
+import TypeError from './TypeError';
 import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
 
 export default class DefaultDeviceController implements DeviceControllerBasedMediaStreamBroker {
-  private static permissionGrantedOriginDetectionThresholdMs = 1000;
   private static permissionDeniedOriginDetectionThresholdMs = 500;
   private static defaultVideoWidth = 960;
   private static defaultVideoHeight = 540;
@@ -115,58 +119,36 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     return result;
   }
 
-  private pushAudioMeetingStateForPermissions(
-    device: AudioInputDevice,
-    permission: DevicePermission
-  ): DevicePermission {
-    if (
-      permission === DevicePermission.PermissionGrantedByUser ||
-      permission === DevicePermission.PermissionGrantedByBrowser
-    ) {
-      this.boundAudioVideoController?.eventController?.pushMeetingState(
-        device === null ? 'audioInputUnselected' : 'audioInputSelected'
-      );
-    }
-
-    return permission;
+  private pushAudioMeetingStateForPermissions(device: AudioInputDevice): void {
+    this.boundAudioVideoController?.eventController?.pushMeetingState(
+      device === null ? 'audioInputUnselected' : 'audioInputSelected'
+    );
   }
 
-  private pushVideoMeetingStateForPermissions(
-    device: VideoInputDevice,
-    permission: DevicePermission
-  ): DevicePermission {
-    if (
-      permission === DevicePermission.PermissionGrantedByUser ||
-      permission === DevicePermission.PermissionGrantedByBrowser
-    ) {
-      this.boundAudioVideoController?.eventController?.pushMeetingState(
-        device === null ? 'videoInputUnselected' : 'videoInputSelected'
-      );
-    }
-
-    return permission;
+  private pushVideoMeetingStateForPermissions(device: VideoInputDevice): void {
+    this.boundAudioVideoController?.eventController?.pushMeetingState(
+      device === null ? 'videoInputUnselected' : 'videoInputSelected'
+    );
   }
 
-  async chooseAudioInputDevice(device: AudioInputDevice): Promise<DevicePermission> {
+  async chooseAudioInputDevice(device: AudioInputDevice): Promise<void> {
     if (isAudioTransformDevice(device)) {
       // N.B., do not JSON.stringify here — for some kinds of devices this
       // will cause a cyclic object reference error.
       this.logger.info(`Choosing transform input device ${device}`);
-      const result = await this.chooseAudioTransformInputDevice(device);
-      return this.pushAudioMeetingStateForPermissions(device, result);
+      await this.chooseAudioTransformInputDevice(device);
+      return this.pushAudioMeetingStateForPermissions(device);
     }
 
     this.removeTransform();
-    const result = await this.chooseInputIntrinsicDevice('audio', device, false);
-    this.trace('chooseAudioInputDevice', device, DevicePermission[result]);
-    return this.pushAudioMeetingStateForPermissions(device, result);
+    await this.chooseInputIntrinsicDevice('audio', device, false);
+    this.trace('chooseAudioInputDevice', device, `success`);
+    this.pushAudioMeetingStateForPermissions(device);
   }
 
-  private async chooseAudioTransformInputDevice(
-    device: AudioTransformDevice
-  ): Promise<DevicePermission> {
+  private async chooseAudioTransformInputDevice(device: AudioTransformDevice): Promise<void> {
     if (this.transform?.device === device) {
-      return DevicePermission.PermissionGrantedPreviously;
+      return;
     }
 
     if (!this.useWebAudio) {
@@ -185,28 +167,17 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     // Pick the plain ol' inner device as the source. It will be
     // connected to the node.
     const inner = await device.intrinsicDevice();
-    const innerPermission = await this.chooseInputIntrinsicDevice('audio', inner, false);
-
-    this.logger.debug(`Got inner stream: ${inner} (${innerPermission}).`);
-
-    if (
-      innerPermission === DevicePermission.PermissionDeniedByBrowser ||
-      innerPermission === DevicePermission.PermissionDeniedByUser
-    ) {
-      return innerPermission;
-    }
-
+    await this.chooseInputIntrinsicDevice('audio', inner, false);
+    this.logger.debug(`Got inner stream: ${inner}.`);
     // Otherwise, continue: hook up the new node.
     this.setTransform(device, nodes);
-
-    return innerPermission;
   }
 
-  async chooseVideoInputDevice(device: VideoInputDevice): Promise<DevicePermission> {
+  async chooseVideoInputDevice(device: VideoInputDevice): Promise<void> {
     this.updateMaxBandwidthKbps();
-    const result = await this.chooseInputIntrinsicDevice('video', device, false);
-    this.trace('chooseVideoInputDevice', device, DevicePermission[result]);
-    return this.pushVideoMeetingStateForPermissions(device, result);
+    await this.chooseInputIntrinsicDevice('video', device, false);
+    this.trace('chooseVideoInputDevice', device);
+    this.pushVideoMeetingStateForPermissions(device);
   }
 
   async chooseAudioOutputDevice(deviceId: string | null): Promise<void> {
@@ -789,23 +760,41 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     }
   }
 
+  private handleGetUserMediaError(error: Error, errorTimeMs?: number): void {
+    switch (error.name) {
+      case 'NotReadableError':
+      case 'TrackStartError':
+        throw new NotReadableError(error);
+      case 'NotFoundError':
+      case 'DevicesNotFoundError':
+        throw new NotFoundError(error);
+      case 'NotAllowedError':
+      case 'PermissionDeniedError':
+      case 'SecurityError':
+        if (
+          errorTimeMs &&
+          errorTimeMs < DefaultDeviceController.permissionDeniedOriginDetectionThresholdMs
+        ) {
+          throw new PermissionDeniedError(error, 'Permission denied by browser');
+        } else {
+          throw new PermissionDeniedError(error, 'Permission denied by user');
+        }
+      case 'OverconstrainedError':
+      case 'ConstraintNotSatisfiedError':
+        throw new OverconstrainedError(error);
+      case 'TypeError':
+        throw new TypeError(error);
+      case 'AbortError':
+      default:
+        throw new GetUserMediaError(error);
+    }
+  }
+
   private async chooseInputIntrinsicDevice(
     kind: string,
     device: Device,
     fromAcquire: boolean
-  ): Promise<DevicePermission> {
-    function grantedForDuration(start: number, end: number): DevicePermission {
-      return end - start < DefaultDeviceController.permissionGrantedOriginDetectionThresholdMs
-        ? DevicePermission.PermissionGrantedByBrowser
-        : DevicePermission.PermissionGrantedByUser;
-    }
-
-    function deniedForDuration(start: number, end: number): DevicePermission {
-      return end - start < DefaultDeviceController.permissionDeniedOriginDetectionThresholdMs
-        ? DevicePermission.PermissionDeniedByBrowser
-        : DevicePermission.PermissionDeniedByUser;
-    }
-
+  ): Promise<void> {
     this.inputDeviceCount += 1;
     const callCount = this.inputDeviceCount;
 
@@ -815,7 +804,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         this.releaseMediaStream(this.activeDevices[kind].stream);
         delete this.activeDevices[kind];
       }
-      return DevicePermission.PermissionGrantedByBrowser;
+      return;
     }
 
     // N.B.,: the input device might already have augmented constraints supplied
@@ -837,7 +826,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       this.hasSameGroupId(this.activeDevices[kind].groupId, kind, device)
     ) {
       this.logger.info(`reusing existing ${kind} device`);
-      return DevicePermission.PermissionGrantedPreviously;
+      return;
     }
     if (kind === 'audio' && this.activeDevices[kind] && this.activeDevices[kind].stream) {
       this.releaseMediaStream(this.activeDevices[kind].stream);
@@ -866,7 +855,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
             )} as no device was requested`
           );
           this.releaseMediaStream(newDevice.stream);
-          return DevicePermission.PermissionGrantedByUser;
+          return;
         }
 
         await this.handleDeviceChange();
@@ -932,12 +921,12 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         }
       }
 
-      return deniedForDuration(startTimeMs, Date.now());
+      this.handleGetUserMediaError(error, Date.now() - startTimeMs);
     }
 
     this.logger.info(`got ${kind} device for constraints ${JSON.stringify(proposedConstraints)}`);
     await this.handleNewInputDevice(kind, newDevice, fromAcquire);
-    return grantedForDuration(startTimeMs, Date.now());
+    return;
   }
 
   private async handleNewInputDevice(
@@ -1090,13 +1079,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       // @ts-ignore
       existingConstraints = active.constraints ? active.constraints[kind] : null;
     }
-    const result = await this.chooseInputIntrinsicDevice(kind, existingConstraints, true);
-    if (
-      result === DevicePermission.PermissionDeniedByBrowser ||
-      result === DevicePermission.PermissionDeniedByUser
-    ) {
+    try {
+      await this.chooseInputIntrinsicDevice(kind, existingConstraints, true);
+    } catch (e) {
       this.logger.error(`unable to acquire ${kind} device`);
-      throw new Error(`unable to acquire ${kind} device`);
+      if (e instanceof PermissionDeniedError) {
+        throw e;
+      }
+      throw new GetUserMediaError(e, `unable to acquire ${kind} device`);
     }
     return this.activeDevices[kind].stream;
   }

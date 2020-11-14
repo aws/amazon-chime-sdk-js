@@ -4,7 +4,6 @@
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
 import AudioInputDevice from './AudioInputDevice';
-import DevicePermission from './DevicePermission';
 import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
 
@@ -63,18 +62,18 @@ export default interface DeviceController {
    * indicate no device. It may also be an {@link AudioTransformDevice} to customize the
    * constraints used or to apply Web Audio transforms.
    *
-   * The promise always resolves with a {@link DevicePermission} result indicating whether access
-   * was * granted or denied.
+   * The promise will resolve indicating success or it will throw an appropriate error
+   * indicating the failure.
    */
-  chooseAudioInputDevice(device: AudioInputDevice): Promise<DevicePermission>;
+  chooseAudioInputDevice(device: AudioInputDevice): Promise<void>;
 
   /**
    * Selects a video input device to use. The constraint may be a device id,
    * `MediaTrackConstraint`, `MediaStream` (containing video track), or `null` to
-   * indicate no device. The promise always resolves with a {@link DevicePermission}
-   * result indicating whether access was granted or denied.
+   * indicate no device. The promise will resolve indicating success or it will
+   * throw an appropriate error indicating the failure.
    */
-  chooseVideoInputDevice(device: VideoInputDevice): Promise<DevicePermission>;
+  chooseVideoInputDevice(device: VideoInputDevice): Promise<void>;
 
   /**
    * Selects an audio output device for use. Null specifies the default device.
