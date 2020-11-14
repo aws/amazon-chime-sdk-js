@@ -13,12 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
-- Update the clicking sound answer in FAQs
-- Fix Github Actions CI workflow to include all integ tests
 
 ## 2.0
 ### Added
-- [Demo] Show video WebRTC stats and attendeeId on video tile hover
 - Add a constructor argument to `DefaultDeviceController` to specify whether Web Audio should be
   supported. Use this instead of `enableWebAudio`.
 - Add an `AudioTransformDevice` type that can be supplied to `chooseAudioInputDevice`, allowing the
@@ -27,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   background noise.
 - Add `AudioProfile` for configuring audio quality.
 - Add `setAudioProfile` and `setContentAudioProfile` audio-video facade methods for setting audio quality.
+- Added `GetUserMediaError` errors which are thrown for `chooseAudioInputDevice` and
+  `chooseVideoInputDevice` API failures.
+- [Demo] Show video WebRTC stats and attendeeId on video tile hover.
 - [Demo] Add audio quality settings to meeting demo.
 
 ### Changed
@@ -43,7 +43,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DeviceController.createAnalyserNodeForAudioInput` now returns a `RemovableAnalyserNode` that
   knows how to unhook its own inputs. This allows you to correctly clean up, which avoids issues
   with Safari when used with Web Audio. The demo has been adjusted to do so.
-- Modify WebSocketAdapter send method to accept string parameters.
+- Modify `WebSocketAdapter.send` to accept string parameters.
+- Changed `chooseAudioInputDevice` and `chooseVideoInputDevice` to return void and reject with a
+  hierarchy of errors instead of either rejecting with an error and otherwise returning
+  `DevicePermission`.
 
 ### Removed
 - Remove `enableWebAudio` from `DeviceController` and related types. Use the constructor argument
@@ -54,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `DevicePermission`.
 
 ### Fixed
+- Fix Github Actions CI workflow to include all integ tests.
+- Update the clicking sound answer in FAQs.
 
 ## [1.22.0] - 2020-11-10
 ### Added

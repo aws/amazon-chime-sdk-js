@@ -225,6 +225,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('granted permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 100;
       const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
@@ -234,6 +235,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
         new MediaDeviceInfo()
       );
@@ -242,6 +244,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('denies the permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 600;
       const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
@@ -389,6 +392,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
         new MediaDeviceInfo()
       );
@@ -397,6 +401,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('denies the permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 600;
       const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
         new MediaDeviceInfo()
@@ -441,7 +446,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('checks for 7680 × 4320 resolution - overconstrained', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.OverConstrained;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
         new MediaDeviceInfo(),
         7680,
@@ -454,7 +459,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('checks for 240 x 320 resolution - permission denied', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDenied;
+      domMockBehavior.getUserMediaResult = UserMediaState.NotAllowedError;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
         new MediaDeviceInfo(),
         240,
@@ -524,6 +529,7 @@ describe('DefaultMeetingReadinessChecker', () => {
   describe('checks audio connection', () => {
     it('permission denied', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       const result = await meetingReadinessCheckerController.checkAudioConnectivity(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
       );
@@ -569,6 +575,7 @@ describe('DefaultMeetingReadinessChecker', () => {
   describe('check video connection', () => {
     it('permission denied', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       const result = await meetingReadinessCheckerController.checkVideoConnectivity(
         new MediaDeviceInfo()
       );

@@ -20,7 +20,7 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
     try {
       if (message instanceof Uint8Array) {
         this.connection.send(message.buffer);
-      } else if (typeof message === 'string') {
+      } else {
         this.connection.send(message);
       }
       return true;

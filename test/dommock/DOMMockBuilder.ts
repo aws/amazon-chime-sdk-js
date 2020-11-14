@@ -3,12 +3,12 @@
 
 import { Substitute } from '@fluffy-spoon/substitute';
 
+import GetUserMediaError from '../../src/devicecontroller/GetUserMediaError';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import SafariSDPMock from '../sdp/SafariSDPMock';
 import DisplayMediaState from './DisplayMediaState';
 import DOMMockBehavior from './DOMMockBehavior';
-import NotAllowedError from './NotAllowedError';
-import OverconstrainedError from './OverconstrainedError';
+import MockError, { OverconstrainedError } from './MockError';
 import UserMediaState from './UserMediaState';
 
 // eslint-disable-next-line
@@ -316,7 +316,7 @@ export default class DOMMockBuilder {
           const mediaStream = new mediaStreamMaker();
           return Promise.resolve(mediaStream);
         } else if (mockBehavior.getDisplayMediaResult === DisplayMediaState.PermissionDenied) {
-          return Promise.reject(new NotAllowedError('Permission denied'));
+          return Promise.reject(new MockError('NotAllowedError', 'Permission denied'));
         } else {
           return Promise.reject(new Error('failed to get display media'));
         }
@@ -329,7 +329,8 @@ export default class DOMMockBuilder {
         return new Promise<typeof GlobalAny.MediaStream>((resolve, reject) => {
           if (constraints === null) {
             reject(
-              new Error(
+              new MockError(
+                'TypeError',
                 `TypeError: Failed to execute 'getUserMedia' on 'MediaDevices': At least one of audio and video must be requested`
               )
             );
@@ -362,14 +363,18 @@ export default class DOMMockBuilder {
 
             if (
               mockBehavior.getUserMediaResult &&
-              mockBehavior.getUserMediaResult === UserMediaState.OverConstrained
+              mockBehavior.getUserMediaResult !== UserMediaState.Failure
             ) {
-              reject(new OverconstrainedError('Resolution not supported', 'testconstraint'));
-            } else if (
-              mockBehavior.getUserMediaResult &&
-              mockBehavior.getUserMediaResult === UserMediaState.PermissionDenied
-            ) {
-              reject(new NotAllowedError('Permission denied'));
+              if (mockBehavior.getUserMediaResult === UserMediaState.GetUserMediaError) {
+                reject(new GetUserMediaError(null, null));
+              }
+
+              if (mockBehavior.getUserMediaResult !== UserMediaState.OverconstrainedError) {
+                const errorName = UserMediaState[mockBehavior.getUserMediaResult];
+                reject(new MockError(errorName));
+              } else {
+                reject(new OverconstrainedError('OverconstrainedError', 'testconstraint'));
+              }
             }
             reject(new Error('failed to get media device'));
           }
