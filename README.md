@@ -593,7 +593,7 @@ const observer = {
 meetingSession.audioVideo.addObserver(observer);
 ```
 You can also call below method to know all the remote video sources:
-> Note: `getRemoteVideoSources` method is different from `getAllRemoteVideoTiles`, 
+> Note: `getRemoteVideoSources` method is different from `getAllRemoteVideoTiles`,
 `getRemoteVideoSources` returns all the remote video sources that are available to be viewed,
 while `getAllRemoteVideoTiles` returns the ones that are actually being seen.
 ```js
@@ -992,5 +992,13 @@ console.log(`Feedback result: ${CheckNetworkUDPConnectivityFeedback[networkUDPFe
 const networkTCPFeedback = await meetingReadinessChecker.checkNetworkTCPConnectivity();
 console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}`);
 ```
+
+## Notice
+
+The use of Amazon Voice Focus via this SDK involves the downloading and execution of code at runtime by end users.
+
+The use of Amazon Voice Focus runtime code is subject to additional notices. See [this NOTICES file](https://static.sdkassets.chime.aws/workers/NOTICES.txt) for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus runtime code via this SDK.
+
+---
 
 Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
