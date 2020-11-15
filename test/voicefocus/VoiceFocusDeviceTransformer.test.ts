@@ -432,6 +432,31 @@ describe('VoiceFocusDeviceTransformer', () => {
       // The same: returns self.
       const fifth = await fourth.chooseNewInnerDevice('bar');
       expect(fifth).to.eq(fourth);
+
+      // If you do it a weird way, we will not figure out the equality, but that's OK.
+      const constraints = { deviceId: 'bar' } as MediaTrackConstraints;
+      const sixth = await fifth.chooseNewInnerDevice(constraints);
+      expect(sixth).to.not.eq(fifth);
+      const seventh = await sixth.chooseNewInnerDevice(constraints);
+      expect(sixth).to.eq(seventh);
+
+      // If you pass default twice, you get two different devices,
+      // for each of the three ways to express 'default'.
+      const literalDefault = 'default';
+      const streamDefault = { id: 'default' } as MediaStream;
+      const constraintsDefault = { deviceId: 'default' } as MediaTrackConstraints;
+
+      const firstDefault = await fifth.chooseNewInnerDevice(literalDefault);
+      const secondDefault = await firstDefault.chooseNewInnerDevice(literalDefault);
+      expect(firstDefault).to.not.eq(secondDefault);
+
+      const thirdDefault = await secondDefault.chooseNewInnerDevice(streamDefault);
+      const fourthDefault = await thirdDefault.chooseNewInnerDevice(streamDefault);
+      expect(thirdDefault).to.not.eq(fourthDefault);
+
+      const fifthDefault = await fourthDefault.chooseNewInnerDevice(constraintsDefault);
+      const sixthDefault = await fifthDefault.chooseNewInnerDevice(constraintsDefault);
+      expect(fifthDefault).to.not.eq(sixthDefault);
     });
 
     it('gives a node via its inner VoiceFocus instance', async () => {

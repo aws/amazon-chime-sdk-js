@@ -69,11 +69,14 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
    * between them using {@link DeviceController.chooseAudioInputDevice}.
    *
    * If the same device is passed as is currently in use, `this` is returned.
+   *
    * @param inner The new inner device to use.
    * @param enabled (optional) Whether to toggle the enabled state of the device.
    */
   async chooseNewInnerDevice(inner: Device): Promise<VoiceFocusTransformDevice> {
-    if (this.device === inner) {
+    // If the new device is 'default', always recreate. Chrome can switch out
+    // the real device underneath us.
+    if (this.device === inner && !isDefaultDevice(inner)) {
       return this;
     }
 
@@ -190,6 +193,22 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
   removeObserver(observer: VoiceFocusTransformDeviceObserver): void {
     this.delegate.removeObserver(observer);
   }
+}
+
+function isDefaultDevice(device: Device): boolean {
+  if (device === 'default') {
+    return true;
+  }
+  if (!device || typeof device !== 'object') {
+    return false;
+  }
+  if ('deviceId' in device && device.deviceId === 'default') {
+    return true;
+  }
+  if ('id' in device && device.id === 'default') {
+    return true;
+  }
+  return false;
 }
 
 export default VoiceFocusTransformDevice;
