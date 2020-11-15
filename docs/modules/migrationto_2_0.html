@@ -70,7 +70,7 @@
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<a href="#migration-from-sdk-v1-to-sdk-v2" id="migration-from-sdk-v1-to-sdk-v2" style="color: inherit; text-decoration: none;">
-							<h3>Migration from SDK v1 to SDK v2</h3>
+							<h1>Migration from SDK v1 to SDK v2</h1>
 						</a>
 					</div>
 					<p>Version 2 of the Amazon Chime SDK for JavaScript makes a small number of interface
@@ -82,9 +82,9 @@
 						<li>You do not explicitly call <code>enableWebAudio</code> on any instances of <code>DeviceController</code> or
 						<code>AudioVideoFacade</code>, or use the <code>MeetingSessionConfiguration</code> field <code>enableWebAudio</code>.</li>
 					</ul>
-					<p>If you do, please read on.</p>
+					<p>If you do, read on.</p>
 					<a href="#removing-enablewebaudio" id="removing-enablewebaudio" style="color: inherit; text-decoration: none;">
-						<h4>Removing <code>enableWebAudio</code></h4>
+						<h2>Removing <code>enableWebAudio</code></h2>
 					</a>
 					<p>The <code>enableWebAudio</code> method on <code>DefaultDeviceController</code> would produce unexpected results if
 						called after the first audio device was selected, and as a synchronous API it was not possible
@@ -128,7 +128,7 @@ deviceController.enableWebAudio(enableWebAudio);</code></pre>
 …</code></pre>
 					<hr>
 					<a href="#introducing-audioinputdevice-and-videoinputdevice" id="introducing-audioinputdevice-and-videoinputdevice" style="color: inherit; text-decoration: none;">
-						<h4>Introducing <code>AudioInputDevice</code> and <code>VideoInputDevice</code></h4>
+						<h2>Introducing <code>AudioInputDevice</code> and <code>VideoInputDevice</code></h2>
 					</a>
 					<p>These two types describe <code>DeviceController</code>&#39;s methods for selecting audio and
 						video inputs respectively. They both include the space of <code>Device</code>s, which are the &#39;intrinsic&#39;
