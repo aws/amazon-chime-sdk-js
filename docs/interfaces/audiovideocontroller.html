@@ -125,6 +125,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideocontroller.html#restartlocalaudio" class="tsd-kind-icon">restart<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideocontroller.html#restartlocalvideo" class="tsd-kind-icon">restart<wbr>Local<wbr>Video</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideocontroller.html#resumereceivingstream" class="tsd-kind-icon">resume<wbr>Receiving<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideocontroller.html#setaudioprofile" class="tsd-kind-icon">set<wbr>Audio<wbr>Profile</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiovideocontroller.html#setvideomaxbandwidthkbps" class="tsd-kind-icon">set<wbr>Video<wbr>Max<wbr>Bandwidth<wbr>Kbps</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideocontroller.html#start" class="tsd-kind-icon">start</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="audiovideocontroller.html#stop" class="tsd-kind-icon">stop</a></li>
@@ -286,7 +287,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#addobserver">addObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L8">src/audiovideocontroller/AudioVideoControllerFacade.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L9">src/audiovideocontroller/AudioVideoControllerFacade.ts:9</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -357,7 +358,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#getrtcpeerconnectionstats">getRTCPeerConnectionStats</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L12">src/audiovideocontroller/AudioVideoControllerFacade.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L13">src/audiovideocontroller/AudioVideoControllerFacade.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -381,7 +382,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#getremotevideosources">getRemoteVideoSources</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L16">src/audiovideocontroller/AudioVideoControllerFacade.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L17">src/audiovideocontroller/AudioVideoControllerFacade.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -397,7 +398,7 @@
 					<a name="handlemeetingsessionstatus" class="tsd-anchor"></a>
 					<h3>handle<wbr>Meeting<wbr>Session<wbr>Status</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">handle<wbr>Meeting<wbr>Session<wbr>Status<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a>, error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Meeting<wbr>Session<wbr>Status<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a>, error<span class="tsd-signature-symbol">: </span><a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -417,7 +418,7 @@
 									<h5>status: <a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a></h5>
 								</li>
 								<li>
-									<h5>error: <span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>error: <a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -456,7 +457,7 @@
 					<a name="reconnect" class="tsd-anchor"></a>
 					<h3>reconnect</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">reconnect<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a>, error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">reconnect<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a>, error<span class="tsd-signature-symbol">: </span><a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -476,7 +477,7 @@
 									<h5>status: <a href="../classes/meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a></h5>
 								</li>
 								<li>
-									<h5>error: <span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>error: <a href="../classes/getusermediaerror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -494,7 +495,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L9">src/audiovideocontroller/AudioVideoControllerFacade.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L10">src/audiovideocontroller/AudioVideoControllerFacade.ts:10</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -617,6 +618,36 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a name="setaudioprofile" class="tsd-anchor"></a>
+					<h3>set<wbr>Audio<wbr>Profile</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Audio<wbr>Profile<span class="tsd-signature-symbol">(</span>audioProfile<span class="tsd-signature-symbol">: </span><a href="../classes/audioprofile.html" class="tsd-signature-type">AudioProfile</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#setaudioprofile">setAudioProfile</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L23">src/audiovideocontroller/AudioVideoControllerFacade.ts:23</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the audio profile to use for audio. The new audio profile takes effect
+									on the next call to <code>start</code> or if already started, upon the next reconnect.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>audioProfile: <a href="../classes/audioprofile.html" class="tsd-signature-type">AudioProfile</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="setvideomaxbandwidthkbps" class="tsd-anchor"></a>
 					<h3>set<wbr>Video<wbr>Max<wbr>Bandwidth<wbr>Kbps</h3>
@@ -656,7 +687,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#start">start</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L10">src/audiovideocontroller/AudioVideoControllerFacade.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L11">src/audiovideocontroller/AudioVideoControllerFacade.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -674,7 +705,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="audiovideocontrollerfacade.html">AudioVideoControllerFacade</a>.<a href="audiovideocontrollerfacade.html#stop">stop</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L11">src/audiovideocontroller/AudioVideoControllerFacade.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerFacade.ts#L12">src/audiovideocontroller/AudioVideoControllerFacade.ts:12</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -779,6 +810,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="audiovideocontroller.html#resumereceivingstream" class="tsd-kind-icon">resume<wbr>Receiving<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+								<a href="audiovideocontroller.html#setaudioprofile" class="tsd-kind-icon">set<wbr>Audio<wbr>Profile</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="audiovideocontroller.html#setvideomaxbandwidthkbps" class="tsd-kind-icon">set<wbr>Video<wbr>Max<wbr>Bandwidth<wbr>Kbps</a>
