@@ -153,7 +153,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L86">src/devicecontroller/DeviceController.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L88">src/devicecontroller/DeviceController.ts:88</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -175,7 +175,7 @@
 					<a name="chooseaudioinputdevice" class="tsd-anchor"></a>
 					<h3>choose<wbr>Audio<wbr>Input<wbr>Device</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Audio<wbr>Input<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="../globals.html#audioinputdevice" class="tsd-signature-type">AudioInputDevice</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/devicepermission.html" class="tsd-signature-type">DevicePermission</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">choose<wbr>Audio<wbr>Input<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="../globals.html#audioinputdevice" class="tsd-signature-type">AudioInputDevice</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -191,8 +191,8 @@
 										indicate no device. It may also be an <a href="audiotransformdevice.html">AudioTransformDevice</a> to customize the
 									constraints used or to apply Web Audio transforms.</p>
 								</div>
-								<p>The promise always resolves with a <a href="../enums/devicepermission.html">DevicePermission</a> result indicating whether access
-								was * granted or denied.</p>
+								<p>The promise will resolve indicating success or it will throw an appropriate error
+								indicating the failure.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -200,7 +200,7 @@
 									<h5>device: <a href="../globals.html#audioinputdevice" class="tsd-signature-type">AudioInputDevice</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/devicepermission.html" class="tsd-signature-type">DevicePermission</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -214,12 +214,14 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L81">src/devicecontroller/DeviceController.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L83">src/devicecontroller/DeviceController.ts:83</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Selects an audio output device for use. Null specifies the default device.</p>
+									<p>Selects an audio output device for use. Null specifies the default device.
+										Note: This method will throw an error if browser does not support
+									setSinkId. See: <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId">https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId</a></p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -236,7 +238,7 @@
 					<a name="choosevideoinputdevice" class="tsd-anchor"></a>
 					<h3>choose<wbr>Video<wbr>Input<wbr>Device</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="../globals.html#videoinputdevice" class="tsd-signature-type">VideoInputDevice</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/devicepermission.html" class="tsd-signature-type">DevicePermission</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">choose<wbr>Video<wbr>Input<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="../globals.html#videoinputdevice" class="tsd-signature-type">VideoInputDevice</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -249,8 +251,8 @@
 								<div class="lead">
 									<p>Selects a video input device to use. The constraint may be a device id,
 										<code>MediaTrackConstraint</code>, <code>MediaStream</code> (containing video track), or <code>null</code> to
-										indicate no device. The promise always resolves with a <a href="../enums/devicepermission.html">DevicePermission</a>
-									result indicating whether access was granted or denied.</p>
+										indicate no device. The promise will resolve indicating success or it will
+									throw an appropriate error indicating the failure.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -259,7 +261,7 @@
 									<h5>device: <a href="../globals.html#videoinputdevice" class="tsd-signature-type">VideoInputDevice</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/devicepermission.html" class="tsd-signature-type">DevicePermission</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -273,7 +275,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L132">src/devicecontroller/DeviceController.ts:132</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L142">src/devicecontroller/DeviceController.ts:142</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -306,23 +308,29 @@
 					<a name="createanalysernodeforaudioinput" class="tsd-anchor"></a>
 					<h3>create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnalyserNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="removableanalysernode.html" class="tsd-signature-type">RemovableAnalyserNode</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L98">src/devicecontroller/DeviceController.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L108">src/devicecontroller/DeviceController.ts:108</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets an AnalyserNode from the current audio input. This node can be used to
-										generate the display for a mic indicator. Null is returned if no audio
+									<p>Gets an <code>AnalyserNode</code> from the current audio input. This node can be used to
+										generate the display for a mic indicator. <code>null</code> is returned if no audio
 									input has been selected.</p>
 								</div>
+								<p>The <code>AnalyserNode</code> is not updated automatically when you choose a new
+								audio input. Dispose of this one and fetch another by calling this method again.</p>
+								<p>Note that this node should be cleaned up after use, and as such a
+									<code>&lt;a href=&quot;removableanalysernode.html&quot;&gt;RemovableAnalyserNode&lt;/a&gt;</code> is returned. Call
+									<a href="removableanalysernode.html#removeoriginalinputs">RemovableAnalyserNode.removeOriginalInputs</a> to disconnect the node from the Web Audio
+								graph.</p>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AnalyserNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="removableanalysernode.html" class="tsd-signature-type">RemovableAnalyserNode</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -336,7 +344,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L142">src/devicecontroller/DeviceController.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L152">src/devicecontroller/DeviceController.ts:152</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -424,7 +432,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L125">src/devicecontroller/DeviceController.ts:125</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L135">src/devicecontroller/DeviceController.ts:135</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -452,7 +460,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L91">src/devicecontroller/DeviceController.ts:91</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L93">src/devicecontroller/DeviceController.ts:93</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -480,7 +488,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L120">src/devicecontroller/DeviceController.ts:120</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L130">src/devicecontroller/DeviceController.ts:130</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -522,7 +530,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L107">src/devicecontroller/DeviceController.ts:107</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L117">src/devicecontroller/DeviceController.ts:117</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -554,7 +562,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L113">src/devicecontroller/DeviceController.ts:113</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L123">src/devicecontroller/DeviceController.ts:123</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

@@ -104,6 +104,8 @@
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html">Simulcast</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html">Meeting events</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html">Frequently Asked Questions</a></li>
+					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html">Migrating from v1.0 to v2.0</a></li>
+					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html">Integrating Amazon Voice Focus into your application</a></li>
 				</ul>
 				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
 					<h2>Examples</h2>
@@ -925,7 +927,22 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 <span class="hljs-comment">// Tests for TCP network connectivity</span>
 <span class="hljs-keyword">const</span> networkTCPFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkNetworkTCPConnectivity();
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}</span>`</span>);</code></pre>
-				<p>Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.</p>
+				<a href="#selecting-an-audio-profile" id="selecting-an-audio-profile" style="color: inherit; text-decoration: none;">
+					<h3>Selecting an Audio Profile</h3>
+				</a>
+				<p><strong>Use case 32.</strong> Set the audio quality of the main audio input to optimize for speech or music:</p>
+				<p>Use the following setting to optimize the audio bitrate of the main audio input for fullband speech with a mono channel:</p>
+				<pre><code class="language-js">meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());</code></pre>
+				<p><strong>Use case 33.</strong> Set the audio quality of content share audio to optimize for speech or music:</p>
+				<p>Use the following setting to optimize the audio bitrate of content share audio for fullband music with a mono channel:</p>
+				<pre><code class="language-js">meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());</code></pre>
+				<a href="#notice" id="notice" style="color: inherit; text-decoration: none;">
+					<h2>Notice</h2>
+				</a>
+				<p>The use of Amazon Voice Focus via this SDK involves the downloading and execution of code at runtime by end users.</p>
+				<p>The use of Amazon Voice Focus runtime code is subject to additional notices. See <a href="https://static.sdkassets.chime.aws/workers/NOTICES.txt">this NOTICES file</a> for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus runtime code via this SDK.</p>
+				<hr>
+				<p>Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -981,16 +998,7 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="enums/contentshareconstants.html" class="tsd-kind-icon">Content<wbr>Share<wbr>Constants</a>
 					</li>
 					<li class=" tsd-kind-enum">
-						<a href="enums/devicepermission.html" class="tsd-kind-icon">Device<wbr>Permission</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/dragtype.html" class="tsd-kind-icon">Drag<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-enum">
 						<a href="enums/loglevel.html" class="tsd-kind-icon">Log<wbr>Level</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/mediarecordingevent.html" class="tsd-kind-icon">Media<wbr>Recording<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/meetingsessionlifecycleevent.html" class="tsd-kind-icon">Meeting<wbr>Session<wbr>Lifecycle<wbr>Event</a>
@@ -1002,31 +1010,10 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="enums/meetingsessionstatuscode.html" class="tsd-kind-icon">Meeting<wbr>Session<wbr>Status<wbr>Code</a>
 					</li>
 					<li class=" tsd-kind-enum">
-						<a href="enums/presentationboxtype.html" class="tsd-kind-icon">Presentation<wbr>Box<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/promisedwebsocketclosurecode.html" class="tsd-kind-icon">Promised<wbr>Web<wbr>Socket<wbr>Closure<wbr>Code</a>
-					</li>
-					<li class=" tsd-kind-enum">
 						<a href="enums/rateprobestate.html" class="tsd-kind-icon">Rate<wbr>Probe<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/sdpcandidatetype.html" class="tsd-kind-icon">SDPCandidate<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/screensharestreamingevent.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>Streaming<wbr>Event</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/screensharingmessageflag.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message<wbr>Flag</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/screensharingmessagetype.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/screensignalingsessioneventtype.html" class="tsd-kind-icon">Screen<wbr>Signaling<wbr>Session<wbr>Event<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/screenviewingpackettype.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Packet<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/sessionstatecontrolleraction.html" class="tsd-kind-icon">Session<wbr>State<wbr>Controller<wbr>Action</a>
@@ -1058,9 +1045,6 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					<li class=" tsd-kind-enum">
 						<a href="enums/websocketreadystate.html" class="tsd-kind-icon">Web<wbr>Socket<wbr>Ready<wbr>State</a>
 					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/zoomtype.html" class="tsd-kind-icon">Zoom<wbr>Type</a>
-					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/allhighestvideobandwidthpolicy.html" class="tsd-kind-icon">All<wbr>Highest<wbr>Video<wbr>Bandwidth<wbr>Policy</a>
 					</li>
@@ -1072,6 +1056,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/attendee.html" class="tsd-kind-icon">Attendee</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/audioprofile.html" class="tsd-kind-icon">Audio<wbr>Profile</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/audiovideocontrollerstate.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Controller<wbr>State</a>
@@ -1140,31 +1127,13 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/defaultcontentsharecontroller.html" class="tsd-kind-icon">Default<wbr>Content<wbr>Share<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/defaultdomwebsocket.html" class="tsd-kind-icon">DefaultDOMWeb<wbr>Socket</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultdomwebsocketfactory.html" class="tsd-kind-icon">DefaultDOMWeb<wbr>Socket<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/defaultdevicecontroller.html" class="tsd-kind-icon">Default<wbr>Device<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultdevicepixelratiomonitor.html" class="tsd-kind-icon">Default<wbr>Device<wbr>Pixel<wbr>Ratio<wbr>Monitor</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/defaultdragobserver.html" class="tsd-kind-icon">Default<wbr>Drag<wbr>Observer</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/defaulteventcontroller.html" class="tsd-kind-icon">Default<wbr>Event<wbr>Controller</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultjpegdecodercomponentfactory.html" class="tsd-kind-icon">DefaultJPEGDecoder<wbr>Component<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultjpegdecodercontroller.html" class="tsd-kind-icon">DefaultJPEGDecoder<wbr>Controller</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultjpegdecoderinstance.html" class="tsd-kind-icon">DefaultJPEGDecoder<wbr>Instance</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultmediadevicefactory.html" class="tsd-kind-icon">Default<wbr>Media<wbr>Device<wbr>Factory</a>
@@ -1182,73 +1151,19 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/defaultpingpong.html" class="tsd-kind-icon">Default<wbr>Ping<wbr>Pong</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/defaultpresentation.html" class="tsd-kind-icon">Default<wbr>Presentation</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultpromisedwebsocket.html" class="tsd-kind-icon">Default<wbr>Promised<wbr>Web<wbr>Socket</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultpromisedwebsocketfactory.html" class="tsd-kind-icon">Default<wbr>Promised<wbr>Web<wbr>Socket<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/defaultrealtimecontroller.html" class="tsd-kind-icon">Default<wbr>Realtime<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultreconnectcontroller.html" class="tsd-kind-icon">Default<wbr>Reconnect<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/defaultresizeobserveradapter.html" class="tsd-kind-icon">Default<wbr>Resize<wbr>Observer<wbr>Adapter</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/defaultsdp.html" class="tsd-kind-icon">DefaultSDP</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreensharefacade.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Share<wbr>Facade</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreenshareviewfacade.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Share<wbr>View<wbr>Facade</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreensharingsession.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Sharing<wbr>Session</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreensharingsessionfactory.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Sharing<wbr>Session<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreensignalingsession.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Signaling<wbr>Session</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreensignalingsessionfactory.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Signaling<wbr>Session<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreenviewing.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Viewing</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreenviewingcomponentcontext.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Viewing<wbr>Component<wbr>Context</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreenviewingdeltarenderer.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Viewing<wbr>Delta<wbr>Renderer</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreenviewingdeltasource.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Viewing<wbr>Delta<wbr>Source</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreenviewingmessagehandler.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Viewing<wbr>Message<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreenviewingsession.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Viewing<wbr>Session</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultscreenviewingviewer.html" class="tsd-kind-icon">Default<wbr>Screen<wbr>Viewing<wbr>Viewer</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultsessionstatecontroller.html" class="tsd-kind-icon">Default<wbr>Session<wbr>State<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultsignalingclient.html" class="tsd-kind-icon">Default<wbr>Signaling<wbr>Client</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaultsignalingsession.html" class="tsd-kind-icon">Default<wbr>Signaling<wbr>Session</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultsimulcastuplinkpolicy.html" class="tsd-kind-icon">Default<wbr>Simulcast<wbr>Uplink<wbr>Policy</a>
@@ -1290,9 +1205,6 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/deviceselection.html" class="tsd-kind-icon">Device<wbr>Selection</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/dragandzoompresentationpolicy.html" class="tsd-kind-icon">Drag<wbr>And<wbr>Zoom<wbr>Presentation<wbr>Policy</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/finishgatheringicecandidatestask.html" class="tsd-kind-icon">Finish<wbr>GatheringICECandidates<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1305,22 +1217,13 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/fulljitterlimitedbackoff.html" class="tsd-kind-icon">Full<wbr>Jitter<wbr>Limited<wbr>Backoff</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/getusermediaerror.html" class="tsd-kind-icon">Get<wbr>User<wbr>Media<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/globalmetricreport.html" class="tsd-kind-icon">Global<wbr>Metric<wbr>Report</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/initializedefaultjpegdecodercontrollertask.html" class="tsd-kind-icon">Initialize<wbr>DefaultJPEGDecoder<wbr>Controller<wbr>Task</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/intervalscheduler.html" class="tsd-kind-icon">Interval<wbr>Scheduler</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/jpegdecoder.html" class="tsd-kind-icon">JPEGDecoder</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/jpegdecoderinput.html" class="tsd-kind-icon">JPEGDecoder<wbr>Input</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/jpegdecodermodule.html" class="tsd-kind-icon">JPEGDecoder<wbr>Module</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/joinandreceiveindextask.html" class="tsd-kind-icon">Join<wbr>And<wbr>Receive<wbr>Index<wbr>Task</a>
@@ -1336,6 +1239,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/log.html" class="tsd-kind-icon">Log</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/loggeradapter.html" class="tsd-kind-icon">Logger<wbr>Adapter</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/maybe.html" class="tsd-kind-icon">Maybe</a>
@@ -1407,25 +1313,22 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/none.html" class="tsd-kind-icon">None</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/openscreensignalingsessiontask.html" class="tsd-kind-icon">Open<wbr>Screen<wbr>Signaling<wbr>Session<wbr>Task</a>
+						<a href="classes/notfounderror.html" class="tsd-kind-icon">Not<wbr>Found<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/openscreenviewingconnectiontask.html" class="tsd-kind-icon">Open<wbr>Screen<wbr>Viewing<wbr>Connection<wbr>Task</a>
+						<a href="classes/notreadableerror.html" class="tsd-kind-icon">Not<wbr>Readable<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/opensignalingconnectiontask.html" class="tsd-kind-icon">Open<wbr>Signaling<wbr>Connection<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/overconstrainederror.html" class="tsd-kind-icon">Overconstrained<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/parallelgrouptask.html" class="tsd-kind-icon">Parallel<wbr>Group<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/presentationelementfactory.html" class="tsd-kind-icon">Presentation<wbr>Element<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/protobufscreenmessagedetail.html" class="tsd-kind-icon">Protobuf<wbr>Screen<wbr>Message<wbr>Detail</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/protocolscreenmessagedetailserialization.html" class="tsd-kind-icon">Protocol<wbr>Screen<wbr>Message<wbr>Detail<wbr>Serialization</a>
+						<a href="classes/permissiondeniederror.html" class="tsd-kind-icon">Permission<wbr>Denied<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/realtimeattendeepositioninframe.html" class="tsd-kind-icon">Realtime<wbr>Attendee<wbr>Position<wbr>InFrame</a>
@@ -1449,52 +1352,10 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/receivevideostreamindextask.html" class="tsd-kind-icon">Receive<wbr>Video<wbr>Stream<wbr>Index<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/reconnectingpromisedwebsocket.html" class="tsd-kind-icon">Reconnecting<wbr>Promised<wbr>Web<wbr>Socket</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/reconnectingpromisedwebsocketfactory.html" class="tsd-kind-icon">Reconnecting<wbr>Promised<wbr>Web<wbr>Socket<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/reconnectionhealthpolicy.html" class="tsd-kind-icon">Reconnection<wbr>Health<wbr>Policy</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/resizeobserveradapterfactory.html" class="tsd-kind-icon">Resize<wbr>Observer<wbr>Adapter<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/runnabletask.html" class="tsd-kind-icon">Runnable<wbr>Task</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/scaletofitpresentationpolicy.html" class="tsd-kind-icon">Scale<wbr>ToFit<wbr>Presentation<wbr>Policy</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screensharestream.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>Stream</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screensharestreamfactory.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>Stream<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screensharestreamingcontainer.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>Streaming<wbr>Container</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screensharingmessageflagserializer.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message<wbr>Flag<wbr>Serializer</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screensharingmessageserializer.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message<wbr>Serializer</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screensharingmessagetypeserializer.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message<wbr>Type<wbr>Serializer</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screensharingsessioncontainer.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Session<wbr>Container</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screensignalingsessioncontainer.html" class="tsd-kind-icon">Screen<wbr>Signaling<wbr>Session<wbr>Container</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screenviewingmessagedispatcher.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Message<wbr>Dispatcher</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/screenviewingsessionconnectionrequest.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Session<wbr>Connection<wbr>Request</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/sendandreceivedatamessagestask.html" class="tsd-kind-icon">Send<wbr>And<wbr>Receive<wbr>Data<wbr>Messages<wbr>Task</a>
@@ -1545,6 +1406,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/timeouttask.html" class="tsd-kind-icon">Timeout<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/typeerror.html" class="tsd-kind-icon">Type<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/unusableaudiowarningconnectionhealthpolicy.html" class="tsd-kind-icon">Unusable<wbr>Audio<wbr>Warning<wbr>Connection<wbr>Health<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1566,13 +1430,16 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/videotilestate.html" class="tsd-kind-icon">Video<wbr>Tile<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/voicefocusdevicetransformer.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Device<wbr>Transformer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/voicefocustransformdevice.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Transform<wbr>Device</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/voicefocustransformdevicedelegate.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Transform<wbr>Device<wbr>Delegate</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/waitforattendeepresencetask.html" class="tsd-kind-icon">Wait<wbr>For<wbr>Attendee<wbr>Presence<wbr>Task</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/webmmediarecording.html" class="tsd-kind-icon">WebMMedia<wbr>Recording</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/webmmediarecordingfactory.html" class="tsd-kind-icon">WebMMedia<wbr>Recording<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/activespeakerdetector.html" class="tsd-kind-icon">Active<wbr>Speaker<wbr>Detector</a>
@@ -1641,12 +1508,6 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="interfaces/contentshareobserver.html" class="tsd-kind-icon">Content<wbr>Share<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/domwebsocket.html" class="tsd-kind-icon">DOMWeb<wbr>Socket</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/domwebsocketfactory.html" class="tsd-kind-icon">DOMWeb<wbr>Socket<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="interfaces/devicechangeobserver.html" class="tsd-kind-icon">Device<wbr>Change<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1668,28 +1529,10 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="interfaces/devicepixelratiosource.html" class="tsd-kind-icon">Device<wbr>Pixel<wbr>Ratio<wbr>Source</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/dragcontext.html" class="tsd-kind-icon">Drag<wbr>Context</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/dragevent.html" class="tsd-kind-icon">Drag<wbr>Event</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/dragobserver.html" class="tsd-kind-icon">Drag<wbr>Observer</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="interfaces/eventattributes.html" class="tsd-kind-icon">Event<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/eventcontroller.html" class="tsd-kind-icon">Event<wbr>Controller</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/jpegdecodercomponentfactory.html" class="tsd-kind-icon">JPEGDecoder<wbr>Component<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/jpegdecodercontroller.html" class="tsd-kind-icon">JPEGDecoder<wbr>Controller</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/jpegdecoderinstance.html" class="tsd-kind-icon">JPEGDecoder<wbr>Instance</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/logger.html" class="tsd-kind-icon">Logger</a>
@@ -1699,15 +1542,6 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/mediadevicefactory.html" class="tsd-kind-icon">Media<wbr>Device<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/mediarecording.html" class="tsd-kind-icon">Media<wbr>Recording</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/mediarecordingfactory.html" class="tsd-kind-icon">Media<wbr>Recording<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/mediarecordingoptions.html" class="tsd-kind-icon">Media<wbr>Recording<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/mediastreambroker.html" class="tsd-kind-icon">Media<wbr>Stream<wbr>Broker</a>
@@ -1728,36 +1562,6 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="interfaces/pingpongobserver.html" class="tsd-kind-icon">Ping<wbr>Pong<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/presentation.html" class="tsd-kind-icon">Presentation</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/presentationcontentelement.html" class="tsd-kind-icon">Presentation<wbr>Content<wbr>Element</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/presentationcontentplacement.html" class="tsd-kind-icon">Presentation<wbr>Content<wbr>Placement</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/presentationpolicy.html" class="tsd-kind-icon">Presentation<wbr>Policy</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/presentationsourceelement.html" class="tsd-kind-icon">Presentation<wbr>Source<wbr>Element</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/presentationstate.html" class="tsd-kind-icon">Presentation<wbr>State</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/presentationupdateevent.html" class="tsd-kind-icon">Presentation<wbr>Update<wbr>Event</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/presentationviewportelement.html" class="tsd-kind-icon">Presentation<wbr>Viewport<wbr>Element</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/promisedwebsocket.html" class="tsd-kind-icon">Promised<wbr>Web<wbr>Socket</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/promisedwebsocketfactory.html" class="tsd-kind-icon">Promised<wbr>Web<wbr>Socket<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="interfaces/realtimecontroller.html" class="tsd-kind-icon">Realtime<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1767,106 +1571,16 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="interfaces/reconnectcontroller.html" class="tsd-kind-icon">Reconnect<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/removableobserver.html" class="tsd-kind-icon">Removable<wbr>Observer</a>
+						<a href="interfaces/removableanalysernode.html" class="tsd-kind-icon">Removable<wbr>Analyser<wbr>Node</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/resizeobserveradapter.html" class="tsd-kind-icon">Resize<wbr>Observer<wbr>Adapter</a>
+						<a href="interfaces/removableobserver.html" class="tsd-kind-icon">Removable<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/sdp.html" class="tsd-kind-icon">SDP</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/scheduler.html" class="tsd-kind-icon">Scheduler</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenmessagedetail.html" class="tsd-kind-icon">Screen<wbr>Message<wbr>Detail</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenmessagedetailserialization.html" class="tsd-kind-icon">Screen<wbr>Message<wbr>Detail<wbr>Serialization</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenobserver.html" class="tsd-kind-icon">Screen<wbr>Observer</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharefacade.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>Facade</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharefacadeobserver.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>Facade<wbr>Observer</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharestreaming.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>Streaming</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharestreamingfactory.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>Streaming<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenshareviewfacade.html" class="tsd-kind-icon">Screen<wbr>Share<wbr>View<wbr>Facade</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharingmessage.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharingmessageflagserialization.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message<wbr>Flag<wbr>Serialization</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharingmessageserialization.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message<wbr>Serialization</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharingmessagetypeserialization.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Message<wbr>Type<wbr>Serialization</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharingsession.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Session</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharingsessionfactory.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Session<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharingsessionobserver.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Session<wbr>Observer</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensharingsessionoptions.html" class="tsd-kind-icon">Screen<wbr>Sharing<wbr>Session<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensignalingsession.html" class="tsd-kind-icon">Screen<wbr>Signaling<wbr>Session</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screensignalingsessionfactory.html" class="tsd-kind-icon">Screen<wbr>Signaling<wbr>Session<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewing.html" class="tsd-kind-icon">Screen<wbr>Viewing</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingcomponentcontext.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Component<wbr>Context</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingcomponentproviders.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Component<wbr>Providers</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingdeltarenderer.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Delta<wbr>Renderer</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingdeltasource.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Delta<wbr>Source</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingimagedimensions.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Image<wbr>Dimensions</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingjpegdecoder.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Jpeg<wbr>Decoder</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingjpegdecodermanager.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Jpeg<wbr>Decoder<wbr>Manager</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingmessagehandler.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Message<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingsession.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Session</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingsessionobserver.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Session<wbr>Observer</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/screenviewingviewer.html" class="tsd-kind-icon">Screen<wbr>Viewing<wbr>Viewer</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/sessionstatecontroller.html" class="tsd-kind-icon">Session<wbr>State<wbr>Controller</a>
@@ -1876,9 +1590,6 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/signalingclientobserver.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Observer</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/signalingsession.html" class="tsd-kind-icon">Signaling<wbr>Session</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/simulcastuplinkobserver.html" class="tsd-kind-icon">Simulcast<wbr>Uplink<wbr>Observer</a>
@@ -1929,13 +1640,16 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="interfaces/videouplinkbandwidthpolicy.html" class="tsd-kind-icon">Video<wbr>Uplink<wbr>Bandwidth<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/voicefocusdeviceoptions.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Device<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/voicefocustransformdeviceobserver.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Transform<wbr>Device<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/volumeindicatorsadapter.html" class="tsd-kind-icon">Volume<wbr>Indicators<wbr>Adapter</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/websocketadapter.html" class="tsd-kind-icon">Web<wbr>Socket<wbr>Adapter</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/zoomevent.html" class="tsd-kind-icon">Zoom<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#audioinputdevice" class="tsd-kind-icon">Audio<wbr>Input<wbr>Device</a>
@@ -1948,9 +1662,6 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#device" class="tsd-kind-icon">Device</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#dragobserverfactory" class="tsd-kind-icon">Drag<wbr>Observer<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#eventname" class="tsd-kind-icon">Event<wbr>Name</a>
@@ -1970,17 +1681,14 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#videoinputdevice" class="tsd-kind-icon">Video<wbr>Input<wbr>Device</a>
 					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#css_overflow_hidden" class="tsd-kind-icon">CSS_<wbr>OVERFLOW_<wbr>HIDDEN</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#css_position_absolute" class="tsd-kind-icon">CSS_<wbr>POSITION_<wbr>ABSOLUTE</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#css_position_relative" class="tsd-kind-icon">CSS_<wbr>POSITION_<wbr>RELATIVE</a>
-					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#isaudiotransformdevice" class="tsd-kind-icon">is<wbr>Audio<wbr>Transform<wbr>Device</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isdefaultdevice" class="tsd-kind-icon">is<wbr>Default<wbr>Device</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#stringify" class="tsd-kind-icon">stringify</a>
 					</li>
 				</ul>
 			</nav>
