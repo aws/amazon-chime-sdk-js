@@ -892,6 +892,229 @@ describe('DefaultAudioVideoController', () => {
     });
   });
 
+  describe('replaceLocalVideo', () => {
+    it('fails if device controller has no active video stream', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      let success = true;
+      try {
+        await audioVideoController.replaceLocalVideo(() => {});
+      } catch (error) {
+        success = false;
+      }
+
+      expect(success).to.be.false;
+
+      class TestDeviceController extends NoOpMediaStreamBroker {
+        async acquireVideoInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          return mediaStream;
+        }
+      }
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+      success = true;
+      try {
+        await audioVideoController.replaceLocalVideo(() => {});
+      } catch (error) {
+        success = false;
+      }
+      expect(success).to.be.false;
+    });
+
+    it('fails if no peer connection is established', async () => {
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireVideoInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+      }
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+      let success = true;
+      try {
+        await audioVideoController.replaceLocalVideo(() => {});
+      } catch (error) {
+        success = false;
+      }
+      expect(success).to.be.false;
+    });
+
+    it('replaces video track for unified plan', async () => {
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireVideoInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          // @ts-ignore
+          track.kind = 'video';
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+
+        async acquireAudioInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+      }
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      audioVideoController.videoTileController.startLocalVideoTile();
+      await sendICEEventAndSubscribeAckFrame();
+
+      let callbackExecuted = false;
+      await audioVideoController.replaceLocalVideo(() => {
+        callbackExecuted = true;
+      });
+      expect(callbackExecuted).to.be.true;
+      await stop();
+    });
+
+    it('fails to replace local video for Plan B', async () => {
+      setUserAgent('Chrome/77.0.3865.75');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireVideoInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          // @ts-ignore
+          track.kind = 'video';
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+
+        async acquireAudioInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+      }
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      audioVideoController.videoTileController.startLocalVideoTile();
+      await sendICEEventAndSubscribeAckFrame();
+
+      try {
+        await audioVideoController.replaceLocalVideo(() => {});
+      } catch (error) {}
+      await stop();
+    });
+
+    it('fails to replace local video if local tile is null', async () => {
+      class TestDeviceController extends NoOpDeviceController {
+        async acquireVideoInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          // @ts-ignore
+          track.kind = 'video';
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+
+        async acquireAudioInputStream(): Promise<MediaStream> {
+          const mediaStream = new MediaStream();
+          const track = new MediaStreamTrack();
+          mediaStream.addTrack(track);
+          return mediaStream;
+        }
+      }
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new TestDeviceController(),
+        reconnectController
+      );
+
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      await audioVideoController.replaceLocalVideo(() => {});
+      await stop();
+    });
+  });
+
   describe('restartLocalAudio', () => {
     it('fails if device controller has no active audio stream', async () => {
       audioVideoController = new DefaultAudioVideoController(

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VideoTransformDevice | amazon-chime-sdk-js</title>
+	<title>VideoFrameProcessorPipelineObserver | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="videotransformdevice.html">VideoTransformDevice</a>
+					<a href="videoframeprocessorpipelineobserver.html">VideoFrameProcessorPipelineObserver</a>
 				</li>
 			</ul>
-			<h1>Interface VideoTransformDevice</h1>
+			<h1>Interface VideoFrameProcessorPipelineObserver</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A device that applies processing to another device.</p>
+						<p><a href="videoframeprocessorpipelineobserver.html">VideoFrameProcessorPipelineObserver</a> is the observer for <a href="videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a> to receive lifecycle or performance callbacks.</p>
 					</div>
 				</div>
 			</section>
@@ -77,7 +77,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">VideoTransformDevice</span>
+						<span class="target">VideoFrameProcessorPipelineObserver</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="defaultvideotransformdeviceobserver.html" class="tsd-signature-type">DefaultVideoTransformDeviceObserver</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -92,112 +97,110 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="videotransformdevice.html#outputmediastream" class="tsd-kind-icon">output<wbr>Media<wbr>Stream</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotransformdevice.html#applyprocessors" class="tsd-kind-icon">apply<wbr>Processors</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotransformdevice.html#intrinsicdevice" class="tsd-kind-icon">intrinsic<wbr>Device</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotransformdevice.html#stop" class="tsd-kind-icon">stop</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoframeprocessorpipelineobserver.html#processingdidfailtostart" class="tsd-kind-icon">processing<wbr>Did<wbr>Fail<wbr>ToStart</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoframeprocessorpipelineobserver.html#processingdidstart" class="tsd-kind-icon">processing<wbr>Did<wbr>Start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoframeprocessorpipelineobserver.html#processingdidstop" class="tsd-kind-icon">processing<wbr>Did<wbr>Stop</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videoframeprocessorpipelineobserver.html#processinglatencytoohigh" class="tsd-kind-icon">processing<wbr>Latency<wbr>Too<wbr>High</a></li>
 							</ul>
 						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="outputmediastream" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> output<wbr>Media<wbr>Stream</h3>
-					<div class="tsd-signature tsd-kind-icon">output<wbr>Media<wbr>Stream<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaStream</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L29">src/devicecontroller/VideoTransformDevice.ts:29</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p><code>outputMediaStream</code> is generated after processors are applied. It will be auto-released after <code>stop</code> is called.</p>
-						</div>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="applyprocessors" class="tsd-anchor"></a>
-					<h3>apply<wbr>Processors</h3>
+					<a name="processingdidfailtostart" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> processing<wbr>Did<wbr>Fail<wbr>ToStart</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">apply<wbr>Processors<span class="tsd-signature-symbol">(</span>mediaStream<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">processing<wbr>Did<wbr>Fail<wbr>ToStart<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L24">src/devicecontroller/VideoTransformDevice.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/VideoFrameProcessorPipelineObserver.ts#L16">src/videoframeprocessor/VideoFrameProcessorPipelineObserver.ts:16</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Starts processing the input <code>MediaStream</code> and returns the output <code>MediaStream</code>.</p>
+									<p><code>processingDidFailToStart</code> will be called when <a href="videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a> could not start streaming due to runtime errors.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="processingdidstart" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> processing<wbr>Did<wbr>Start</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">processing<wbr>Did<wbr>Start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/VideoFrameProcessorPipelineObserver.ts#L11">src/videoframeprocessor/VideoFrameProcessorPipelineObserver.ts:11</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p><code>processingDidStart</code> will be called when <a href="videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a> starts streaming.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="processingdidstop" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> processing<wbr>Did<wbr>Stop</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">processing<wbr>Did<wbr>Stop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/VideoFrameProcessorPipelineObserver.ts#L21">src/videoframeprocessor/VideoFrameProcessorPipelineObserver.ts:21</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p><code>processingDidStop</code> will be called when <a href="videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a> stops streaming expectedly.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="processinglatencytoohigh" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> processing<wbr>Latency<wbr>Too<wbr>High</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">processing<wbr>Latency<wbr>Too<wbr>High<span class="tsd-signature-symbol">(</span>latencyMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/VideoFrameProcessorPipelineObserver.ts#L26">src/videoframeprocessor/VideoFrameProcessorPipelineObserver.ts:26</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p><code>processingLatencyTooHigh</code> will be called when the execution of <a href="videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a> slows the frame rate down by half.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> mediaStream: <span class="tsd-signature-type">MediaStream</span></h5>
+									<h5>latencyMs: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="intrinsicdevice" class="tsd-anchor"></a>
-					<h3>intrinsic<wbr>Device</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">intrinsic<wbr>Device<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L19">src/devicecontroller/VideoTransformDevice.ts:19</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Returns the inner <a href="../globals.html#device">Device</a> that the device controller should select as active video device.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="stop" class="tsd-anchor"></a>
-					<h3>stop</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L14">src/devicecontroller/VideoTransformDevice.ts:14</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p><code>stop</code> should be called  to free any resources associated with the device.
-									It must be called if <code>applyProcessors</code> is ever called.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -216,19 +219,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="videotransformdevice.html" class="tsd-kind-icon">Video<wbr>Transform<wbr>Device</a>
+						<a href="videoframeprocessorpipelineobserver.html" class="tsd-kind-icon">Video<wbr>Frame<wbr>Processor<wbr>Pipeline<wbr>Observer</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="videotransformdevice.html#outputmediastream" class="tsd-kind-icon">output<wbr>Media<wbr>Stream</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videoframeprocessorpipelineobserver.html#processingdidfailtostart" class="tsd-kind-icon">processing<wbr>Did<wbr>Fail<wbr>ToStart</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="videotransformdevice.html#applyprocessors" class="tsd-kind-icon">apply<wbr>Processors</a>
+								<a href="videoframeprocessorpipelineobserver.html#processingdidstart" class="tsd-kind-icon">processing<wbr>Did<wbr>Start</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="videotransformdevice.html#intrinsicdevice" class="tsd-kind-icon">intrinsic<wbr>Device</a>
+								<a href="videoframeprocessorpipelineobserver.html#processingdidstop" class="tsd-kind-icon">processing<wbr>Did<wbr>Stop</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="videotransformdevice.html#stop" class="tsd-kind-icon">stop</a>
+								<a href="videoframeprocessorpipelineobserver.html#processinglatencytoohigh" class="tsd-kind-icon">processing<wbr>Latency<wbr>Too<wbr>High</a>
 							</li>
 						</ul>
 					</li>

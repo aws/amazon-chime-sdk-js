@@ -19,7 +19,7 @@ class NoOpVideoTransformDevice implements VideoTransformDevice {
   intrinsicDevice(): Promise<Device> {
     throw new Error('Method not implemented.');
   }
-  applyProcessors(_mediaStream?: MediaStream): Promise<MediaStream> {
+  applyProcessors(_mediaStream: MediaStream): Promise<MediaStream> {
     throw new Error('Method not implemented.');
   }
 }

@@ -21,6 +21,9 @@ function findAllElements() {
     contentShareDropButton: By.id('button-content-share-drop'),
     contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
     contentSharePauseButton: By.id('button-pause-content-share'),
+
+    videoFilterDropButton: By.id('button-video-filter-drop'),
+  
     dataMessageSendInput: By.id('send-message'),
     sipAuthenticateButton: By.id('button-sip-authenticate'),
     roster: By.id('roster'),
@@ -38,6 +41,8 @@ function findAllElements() {
     microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
     microphoneDropDownButton: By.id('button-microphone-drop'),
     microphoneButton: By.id('button-microphone'),
+
+    emojiFilterButton: By.id('dropdown-menu-filter-Emojify'),
 
     meetingAudio: By.id('meeting-audio'),
     sipUri: By.id('sip-uri'),
@@ -109,7 +114,7 @@ class AppPage {
 
     // Click the label because it's on top.
     if (await simulcastFeature.isSelected()) {
-      console.log('simulcast is selected');
+      this.logger('simulcast is selected');
     } else {
       await simulcastFeatureLabel.click();
     }
@@ -158,6 +163,17 @@ class AppPage {
   async clickMicrophoneButton() {
     let microphoneButton = await this.driver.findElement(elements.microphoneButton);
     await microphoneButton.click();
+  }
+
+  async clickVideoFilterDropButton() {
+    const videoFilterDropButton = await this.driver.findElement(elements.videoFilterDropButton);
+    this.logger(`video filter button is ${videoFilterDropButton}`);
+    await videoFilterDropButton.click();
+  }
+
+  async clickVideoFilterFromDropDownMenu() {
+    const emojiFilter = await this.driver.findElement(elements.emojiFilterButton);
+    await emojiFilter.click();
   }
 
   async playRandomTone() {

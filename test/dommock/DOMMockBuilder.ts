@@ -240,6 +240,10 @@ export default class DOMMockBuilder {
         this.tracks = tracks;
       }
 
+      clone(): typeof GlobalAny.MediaStream {
+        return new MockMediaStream(this.tracks);
+      }
+
       addTrack(track: MediaStreamTrack): void {
         this.tracks.push(track);
       }
@@ -925,34 +929,14 @@ export default class DOMMockBuilder {
 
     GlobalAny.document = {
       createElement(_tagName: string): HTMLElement {
-        const element = {
-          getContext(_contextId: string): CanvasRenderingContext2D {
-            const context = {
-              drawImage(
-                _image: CanvasImageSource,
-                _dx: number,
-                _dy: number,
-                _dw: number,
-                _dh: number
-              ): void {},
-              getImageData(_sx: number, _sy: number, sw: number, sh: number): ImageData {
-                // @ts-ignore
-                return {
-                  width: sw,
-                  height: sh,
-                };
-              },
-              fillRect(_x: number, _y: number, _w: number, _h: number): void {},
-            };
-            // @ts-ignore
-            return context;
-          },
-          captureStream(_frameRate: number): MediaStream {
-            return mockBehavior.createElementCaptureStream;
-          },
-        };
-        // @ts-ignore
-        return element;
+        switch (_tagName) {
+          case 'video': {
+            return new GlobalAny.HTMLVideoElement();
+          }
+          case 'canvas': {
+            return new GlobalAny.HTMLCanvasElement();
+          }
+        }
       },
     };
 
@@ -1115,6 +1099,125 @@ export default class DOMMockBuilder {
         ]);
       },
     };
+
+    GlobalAny.HTMLVideoElement = class MockHTMLVideoElement {
+      refSrcObject: MediaStream;
+      width: number;
+      height: number;
+
+      poster: string;
+      videoHeight: number;
+      videoWidth: number;
+      private listeners: { [type: string]: MockListener[] } = {};
+
+      private clearAttribute(): void {
+        this.videoHeight = 0;
+        this.videoWidth = 0;
+        this.width = 0;
+        this.height = 0;
+      }
+
+      set srcObject(stream: MediaStream | null) {
+        if (stream === null) {
+          this.clearAttribute();
+        }
+        this.refSrcObject = stream;
+      }
+
+      get srcObject(): MediaStream {
+        return this.refSrcObject;
+      }
+
+      addEventListener(type: string, listener: (event?: Event) => void): void {
+        if (!this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = [];
+        }
+        this.listeners[type].push(listener);
+      }
+
+      pause(): void {}
+
+      play(): void {
+        if (!!this.refSrcObject) {
+          new TimeoutScheduler(mockBehavior.videoElementStartPlayDelay).start(() => {
+            this.dispatchEvent(new Event('timeupdate'));
+          });
+
+          new TimeoutScheduler(mockBehavior.videoElementSetWidthHeightAttiributeDelay).start(() => {
+            this.videoWidth = 1280;
+            this.videoHeight = 720;
+          });
+        }
+      }
+      fired = false;
+      load(): void {
+        if (!!this.refSrcObject) {
+          if (!this.fired) {
+            this.fired = true;
+            new TimeoutScheduler(mockBehavior.videoElementStartPlayDelay).start(() => {
+              this.dispatchEvent(new Event('loadedmetadata'));
+            });
+          }
+        }
+      }
+
+      removeEventListener(type: string, listener: MockListener): void {
+        if (this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = this.listeners[type].filter(
+            eachListener => eachListener !== listener
+          );
+        }
+      }
+
+      attributes: { [index: string]: string } = {};
+      setAttribute(qualifiedName: string, value: string): void {
+        this.attributes[qualifiedName] = value;
+      }
+
+      hasAttribute(qualifiedName: string): boolean {
+        return this.attributes[qualifiedName] === 'true';
+      }
+
+      dispatchEvent(event: typeof GlobalAny.Event): boolean {
+        const eventType: string = event.type;
+        if (this.listeners.hasOwnProperty(eventType)) {
+          this.listeners[eventType].forEach((listener: MockListener) => {
+            listener(event);
+          });
+        }
+        return true;
+      }
+    };
+
+    GlobalAny.HTMLCanvasElement = class MockHTMLCanvasElement {
+      getContext(_contextId: string): CanvasRenderingContext2D {
+        const context = {
+          drawImage(
+            _image: CanvasImageSource,
+            _dx: number,
+            _dy: number,
+            _dw: number,
+            _dh: number
+          ): void {},
+          getImageData(_sx: number, _sy: number, sw: number, sh: number): ImageData {
+            // @ts-ignore
+            return {
+              width: sw,
+              height: sh,
+            };
+          },
+          fillRect(_x: number, _y: number, _w: number, _h: number): void {},
+        };
+        // @ts-ignore
+        return context;
+      }
+
+      captureStream(_frameRate: number): MediaStream {
+        return mockBehavior.createElementCaptureStream;
+      }
+    };
+
+    GlobalAny.performance = Date;
   }
 
   cleanup(): void {

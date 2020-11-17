@@ -35,6 +35,15 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   restartLocalVideo(callback: () => void): void;
 
   /**
+   * Replaces the local video device without a WebRTC negotiation on the sender side and
+   * avoids that all video subscribers to re-negotiate at the same time.
+   * This is an optimized way of replacing video stream and requires `WebRTC Unified Plan`.
+   * See {@link MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers} and
+   * {@link BrowserBehavior.requiresUnifiedPlan}.
+   */
+  replaceLocalVideo?(callback: () => void): Promise<void>;
+
+  /**
    * Restarts the local audio. This function assumes the peer connection is established and an active
    * audio stream must be chosen in [[DeviceController]]
    */

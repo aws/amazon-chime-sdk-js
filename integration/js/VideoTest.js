@@ -1,4 +1,4 @@
-const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, ClickVideoButton, WaitForRemoteVideoCheckToComplete, WaitForRemoteParticipantsToTurnVideoOff, WaitForRemoteParticipantsToTurnVideoOn, WaitForRemoteParticipantsToJoinMeeting, WaitForMeetingToBeCreated} = require('./steps');
+const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, ClickVideoButton, ClickVideoFilterButton, WaitForRemoteVideoCheckToComplete, WaitForRemoteParticipantsToTurnVideoOff, WaitForRemoteParticipantsToTurnVideoOn, WaitForRemoteParticipantsToJoinMeeting, WaitForMeetingToBeCreated} = require('./steps');
 const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteVideoCheck, UserAuthenticationCheck, RosterCheck} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
@@ -13,6 +13,7 @@ class VideoTest extends SdkBaseTest {
   async runIntegrationTest() {
     const session = this.seleniumSessions[0];
     const useSimulcast = this.useSimulcast;
+    const useVideoProcessor = this.useVideoProcessor;
     await WaitForMeetingToBeCreated.executeStep(this, session);
     await OpenAppStep.executeStep(this, session);
     await AuthenticateUserStep.executeStep(this, session, this.attendeeId, useSimulcast);
@@ -21,6 +22,9 @@ class VideoTest extends SdkBaseTest {
     await UserJoinedMeetingCheck.executeStep(this, session, this.attendeeId);
     await WaitForRemoteParticipantsToJoinMeeting.executeStep(this, session);
     await RosterCheck.executeStep(this, session, 2);
+    if (useVideoProcessor) {
+      await ClickVideoFilterButton.executeStep(this, session);
+    }
     await ClickVideoButton.executeStep(this, session);
     await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON');
     await WaitForRemoteParticipantsToTurnVideoOn.executeStep(this, session);

@@ -17,36 +17,41 @@ import {
   DataMessage,
   DefaultActiveSpeakerPolicy,
   DefaultAudioMixController,
+  DefaultBrowserBehavior,
   DefaultDeviceController,
   DefaultMeetingSession,
   DefaultModality,
-  DefaultBrowserBehavior,
+  DefaultVideoTransformDevice,
   Device,
   DeviceChangeObserver,
-  EventName,
   EventAttributes,
-  LogLevel,
+  EventName,
+  isAudioTransformDevice,
   Logger,
-  MultiLogger,
+  LogLevel,
   MeetingSession,
   MeetingSessionConfiguration,
   MeetingSessionPOSTLogger,
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
+  MultiLogger,
+  NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
   SimulcastLayers,
   TimeoutScheduler,
   Versioning,
+  VideoFrameProcessor,
   VideoInputDevice,
   VideoSource,
   VideoTileState,
   VoiceFocusDeviceTransformer,
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
-  isAudioTransformDevice,
 } from '../../../../src/index';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
+import EmojifyVideoFrameProcessor from './videofilter/EmojifyVideoFrameProcessor';
+import CircularCut from './videofilter/CircularCut';
 
 class DemoTileOrganizer {
   // this is index instead of length
@@ -214,6 +219,7 @@ export class DemoMeetingApp implements
     'button-content-share': false,
     'button-pause-content-share': false,
     'button-video-stats': false,
+    'button-video-filter': false,
   };
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
@@ -541,7 +547,7 @@ export class DemoMeetingApp implements
             await this.openVideoInputFromSelection(camera, false);
             this.audioVideo.startLocalVideoTile();
           } catch (err) {
-            this.log('no video input device selected');
+            this.log(`failed to start local video tile due to ${err}`);
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
@@ -1374,7 +1380,33 @@ export class DemoMeetingApp implements
   async populateAllDeviceLists(): Promise<void> {
     await this.populateAudioInputList();
     await this.populateVideoInputList();
+    await this.populateVideoFilterInputList();
     await this.populateAudioOutputList();
+  }
+
+  private videoFilter: string = 'None';
+  private async populateVideoFilterInputList(): Promise<void> {
+    const genericName = 'Filter';
+    const filters = ['None', 'Emojify', 'Circular Cut', 'No Op'];
+    this.populateInMeetingDeviceList(
+      'dropdown-menu-filter',
+      genericName,
+      [],
+      filters,
+      undefined,
+      async (name: string) => {
+        this.videoFilter = name;
+        this.log(`clicking video filter ${this.videoFilter}`);
+        this.toggleButton('button-video-filter', this.videoFilter === 'None' ? 'off' : 'on');
+        if (this.isButtonOn('button-camera')) {
+          try {
+            await this.openVideoInputFromSelection(this.selectedVideoInput, false);
+          } catch (err) {
+            this.log(`failed to choose VideoTransformDevice with error: ${err}`);
+          }
+        }
+      }
+    );
   }
 
   async populateAudioInputList(): Promise<void> {
@@ -1636,7 +1668,6 @@ export class DemoMeetingApp implements
   }
 
   private selectedVideoInput: string | null = null;
-
   async openVideoInputFromSelection(selection: string | null, showPreview: boolean): Promise<void> {
     if (selection) {
       this.selectedVideoInput = selection;
@@ -1744,8 +1775,8 @@ export class DemoMeetingApp implements
     return this.audioInputSelectionWithOptionalVoiceFocus(inner);
   }
 
-  private videoInputSelectionToDevice(value: string): VideoInputDevice {
-    if (this.isRecorder() || this.isBroadcaster()) {
+  private videoInputSelectionToIntrinsicDevice(value: string): Device {
+    if (this.isRecorder() || this.isBroadcaster() || value === 'None') {
       return null;
     }
 
@@ -1757,11 +1788,42 @@ export class DemoMeetingApp implements
       return DefaultDeviceController.synthesizeVideoDevice('smpte');
     }
 
-    if (value === 'None') {
-      return null;
+    return value;
+  }
+
+  private videoFilterToProcessor(): VideoFrameProcessor | null {
+    this.log(`Choosing video filter ${this.videoFilter}`);
+    if (this.videoFilter === 'Emojify') {
+      return new EmojifyVideoFrameProcessor('🚀');
     }
 
-    return value;
+    if (this.videoFilter === 'Circular Cut') {
+      return new CircularCut();
+    }
+
+    if (this.videoFilter === 'No Op') {
+      return new NoOpVideoFrameProcessor();
+    }
+
+    return null;
+  }
+
+  private videoInputSelectionWithOptionalFilter(device: Device): VideoInputDevice {
+    const processor = this.videoFilterToProcessor();
+    if (processor === null) {
+      return device;
+    }
+    return new DefaultVideoTransformDevice(new ConsoleLogger('Demo'), device, [processor]);
+  }
+
+  private videoInputSelectionToDevice(
+    value: string,
+  ): VideoInputDevice {
+    const intrinsicDevice = this.videoInputSelectionToIntrinsicDevice(value);
+    if (intrinsicDevice === null) {
+      return null;
+    }
+    return this.videoInputSelectionWithOptionalFilter(intrinsicDevice);
   }
 
   private initContentShareDropDownItems(): void {

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Add `DefaultVideoTransformDevice` to implement `VideoTransformDevice`.
+ `VideoFrameProcessor`, `VideoFrameProcessorPipeline` and `VideoFrameBuffer` interfaces
+ are added to support `DefaultVideoTransformDevice` and allows processing steps to be applied to device.
+ The method `chooseVideoInputDevice` in `DefaultDeviceController` can handle `VideoTransformDevice` now.
 
 ### Removed
 - [Test] Remove check for `/v2` in canary URL
