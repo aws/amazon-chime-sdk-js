@@ -6,6 +6,7 @@ exports.ClickUnbindVideoElementButton = require('./ClickUnbindVideoElementButton
 exports.ClickBindVideoElementButton = require('./ClickBindVideoElementButton');
 exports.ClickStartLocalVideoButton = require('./ClickStartLocalVideoButton');
 exports.ClickStopLocalVideoButton = require('./ClickStopLocalVideoButton');
+exports.ClickVideoFilterButton = require('./ClickVideoFilterButton');
 exports.AuthenticateUserStep = require('./AuthenticateUserStep');
 exports.PlayRandomToneStep = require('./PlayRandomToneStep');
 exports.ClickMicrophoneButton = require('./ClickMicrophoneButton');

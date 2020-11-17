@@ -492,6 +492,53 @@ export default class DefaultAudioVideoController
     );
   }
 
+  async replaceLocalVideo(): Promise<void> {
+    let videoStream: MediaStream | null = null;
+    try {
+      videoStream = await this.mediaStreamBroker.acquireVideoInputStream();
+    } catch (error) {
+      throw new Error(
+        `could not acquire video stream from mediaStreamBroker due to ${error.message}`
+      );
+    }
+
+    if (!videoStream || videoStream.getVideoTracks().length < 1) {
+      throw new Error('could not acquire video track');
+    }
+
+    const videoTrack = videoStream.getVideoTracks()[0];
+    if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
+      throw new Error('no active meeting and peer connection');
+    }
+
+    if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
+      await this.meetingSessionContext.transceiverController.setVideoInput(videoTrack);
+    } else {
+      throw new Error('cannot replace track on Plan B');
+    }
+
+    // if there is a local tile, a video tile update event should be fired.
+    const localTile = this.meetingSessionContext.videoTileController.getLocalVideoTile();
+    if (localTile) {
+      const state = localTile.state();
+      const settings = videoStream.getVideoTracks()[0].getSettings();
+      // so tile update wil be fired.
+      localTile.bindVideoStream(
+        state.boundAttendeeId,
+        true,
+        videoStream,
+        settings.width,
+        settings.height,
+        state.streamId,
+        state.boundExternalUserId
+      );
+    }
+
+    // Update  the active video input on subscription context to match what we just changed
+    // so that subsequent meeting actions can reuse and destroy it.
+    this.meetingSessionContext.activeVideoInput = videoStream;
+  }
+
   async restartLocalAudio(callback: () => void): Promise<void> {
     let audioStream: MediaStream | null = null;
     try {

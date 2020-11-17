@@ -16,6 +16,7 @@ import ContentShareObserver from '../../src/contentshareobserver/ContentShareObs
 import DataMessage from '../../src/datamessage/DataMessage';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
+import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultAudioVideoFacade', () => {
@@ -475,6 +476,10 @@ describe('DefaultAudioVideoFacade', () => {
       const arg1 = '';
       facade.chooseVideoInputDevice(arg1);
       assert(spy.calledOnceWith(arg1));
+
+      const arg2 = new DefaultVideoTransformDevice(null, '', []);
+      facade.chooseVideoInputDevice(arg2);
+      assert(spy.calledWith(arg2));
     });
 
     it('will call chooseVideoInputQuality', () => {

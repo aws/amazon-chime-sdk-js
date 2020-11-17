@@ -70,6 +70,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return this.isFirefox();
   }
 
+  supportsCanvasCapturedStreamPlayback(): boolean {
+    return !this.isIOSSafari();
+  }
+
   requiresUnifiedPlan(): boolean {
     let shouldEnable = (this.isSafari() && this.isUnifiedPlanSupported()) || this.isFirefox();
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {

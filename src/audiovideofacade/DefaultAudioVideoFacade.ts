@@ -16,6 +16,7 @@ import DeviceController from '../devicecontroller/DeviceController';
 import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
 import VideoInputDevice from '../devicecontroller/VideoInputDevice';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
+import { isVideoTransformDevice } from '../devicecontroller/VideoTransformDevice';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
@@ -339,7 +340,12 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
   }
 
   chooseVideoInputDevice(device: VideoInputDevice): Promise<void> {
-    this.trace('chooseVideoInputDevice', device);
+    if (isVideoTransformDevice(device)) {
+      // Don't stringify the device to avoid failures when cyclic object references are present.
+      this.trace('chooseVideoInputDevice with transform device');
+    } else {
+      this.trace('chooseVideoInputDevice', device);
+    }
     return this.deviceController.chooseVideoInputDevice(device);
   }
 

@@ -24,9 +24,13 @@ class SdkBaseTest extends KiteBaseTest {
     this.testReady = false;
     this.testFinish = false;
     this.testName = testName;
-    this.useSimulcast = !!this.payload.useSimulcast ? true : false;
+    this.useSimulcast = !!this.payload.useSimulcast;
     if (this.useSimulcast) {
       this.testName += 'Simulcast';
+    }
+    this.useVideoProcessor = !!this.payload.useVideoProcessor;
+    if (this.useVideoProcessor) {
+      this.testName += 'Processor';
     }
     this.capabilities["name"] = process.env.STAGE !== undefined ? `${this.testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${this.testName}-${process.env.TEST_TYPE}`;
     this.seleniumSessions = [];
