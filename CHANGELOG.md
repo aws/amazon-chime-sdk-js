@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased]
+
+### Added
+- Add `DefaultVideoTransformDevice` to implement `VideoTransformDevice`.
+ `VideoFrameProcessor`, `VideoFrameProcessorPipeline` and `VideoFrameBuffer` interfaces
+ are added to support `DefaultVideoTransformDevice` and allows processing steps to be applied to device.
+ The method `chooseVideoInputDevice` in `DefaultDeviceController` can handle `VideoTransformDevice` now.
+
+### Changed
+
+### Removed
+
+### Fixed
+
 ## [2.2.0] - 2020-12-04
 
 ### Added

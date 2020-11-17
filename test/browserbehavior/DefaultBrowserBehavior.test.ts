@@ -220,4 +220,10 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.eq(true);
     });
   });
+
+  describe('supportsCanvasCapturedStreamPlayback', () => {
+    it('can determine if video processing is supported', async () => {
+      expect(new DefaultBrowserBehavior().supportsCanvasCapturedStreamPlayback()).to.eq(true);
+    });
+  });
 });

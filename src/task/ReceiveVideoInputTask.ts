@@ -30,7 +30,7 @@ export default class ReceiveVideoInputTask extends BaseTask {
     this.context.videoCaptureAndEncodeParameter = this.context.videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
 
     if (!this.context.videoTileController.hasStartedLocalVideoTile()) {
-      this.context.logger.info('a video input is not enabled');
+      this.context.logger.info('has not started local video tile');
       if (this.context.activeVideoInput) {
         this.stopVideoInput();
       }

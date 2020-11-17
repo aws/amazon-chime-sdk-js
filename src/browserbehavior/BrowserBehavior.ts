@@ -96,4 +96,9 @@ export default interface BrowserBehavior {
    * Returns whether browser supports setSinkId operation
    */
   supportsSetSinkId(): boolean;
+
+  /**
+   * Returns whether browser supports video processing
+   */
+  supportsCanvasCapturedStreamPlayback(): boolean;
 }
