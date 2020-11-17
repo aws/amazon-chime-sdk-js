@@ -15,7 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Update the clicking sound answer in FAQs
+- Fix Github Actions CI workflow to include all integ tests
 - [Documentation] Link to Media Regions documentation in README
+
 
 ## [1.22.0] - 2020-11-10
 ### Added
