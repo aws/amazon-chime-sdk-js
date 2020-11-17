@@ -76,6 +76,58 @@ this.audioVideo = this.meetingSession.audioVideo;
 
 ---
 
+## Update `bindAudioElement()` to return `Promise<void>` instead of `boolean`
+The `bindAudioElement()` API in `AudioMixControllerFacade` was previously a synchronous function which used to return `boolean`.
+Under the hood, it used to call [`setSinkId()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId)
+which is an asynchronous function. 
+
+As part of this change, three APIs in `AudioMixController` were changed to return `Promise<void>`. These APIs are listed below.
+
+```typescript
+// Old Syntax
+bindAudioElement(element: HTMLAudioElement): boolean;
+bindAudioStream(stream: MediaStream): boolean;
+bindAudioDevice(device: MediaDeviceInfo | null): boolean;
+
+// New Syntax
+bindAudioElement(element: HTMLAudioElement): Promise<void>;
+bindAudioStream(stream: MediaStream): Promise<void>;
+bindAudioDevice(device: MediaDeviceInfo | null): Promise<void>;
+````
+
+Additionally, `AudioMixController`'s constructor now takes an additional optional `logger` parameter.
+If the `logger` is passed, it will log the errors for any of the operations in `AudioMixController`.
+
+```
+constructor(private logger?: Logger) {}
+```
+
+If your code looked like this
+
+```typescript
+audioMixController.bindAudioDevice({ deviceId: sinkId });
+audioMixController.bindAudioElement(new Audio());
+audioMixController.bindAudioStream(destinationStream.stream);
+```
+
+change it to
+
+```typescript
+try {
+  await audioMixController.bindAudioDevice({ deviceId: this.sinkId });
+} catch (e) {
+  console.error('Failed to bind audio device', e);
+}
+try {
+  await audioMixController.bindAudioElement(new Audio());
+} catch (e) {
+  console.error('Failed to bind audio element', e);
+}
+await audioMixController.bindAudioStream(destinationStream.stream);
+```
+
+---
+
 ## Introducing `AudioInputDevice` and `VideoInputDevice`
 
 These two types describe `DeviceController`'s methods for selecting audio and
@@ -94,7 +146,7 @@ If you have an implementation like:
 
 ```typescript
 class MyDeviceController implements DeviceController {
-  async chooseAudioInputDevice(device: Device): Promise<DevicePermission> {
+  async chooseAudioInputDevice(device: Device): Promise<void> {
     // device must be a string, stream, constraints, or null.
     // …
     return permission;
@@ -111,7 +163,7 @@ import {
 } from 'amazon-chime-sdk-js';
 
 class MyDeviceController implements DeviceController {
-  async chooseAudioInputDevice(device: AudioInputDevice): Promise<DevicePermission> {
+  async chooseAudioInputDevice(device: AudioInputDevice): Promise<void> {
     if (isAudioTransformDevice(device)) {
       // Handle transform devices, should you need to.
       throw new Error('My app does not use transform devices.');
@@ -126,3 +178,51 @@ At present `VideoInputDevice` is identical to `Device`, and so the only change y
 
 If you use the type `Device` for a field or variable and pass that value to
 `choose{Audio,Video}InputDevice`, your code should continue to work without changes.
+
+---
+
+## Introducing `GetUserMediaError` type
+With version 2.0, we are introducing new error types which will be thrown in case of any failures in `chooseAudioInputDevice` and `chooseVideoInputDevice` APIs in the `DeviceController`.
+
+Here is the list of new error classes introduced in version 2.0:
+- `GetUserMediaError`
+- `NotFoundError`
+- `NotReadableError`
+- `OverconstrainedError`
+- `PermissionDeniedError`
+- `TypeError`
+
+Here is an example of handling `PermissionDeniedError`:
+
+```typescript
+try {
+  await this.audiovideo.chooseAudioInputDevice(device);
+} catch (e) {
+  if (e instanceof PermissionDeniedError) {
+    console.error('Permission denied', e);
+  }
+}
+```
+
+---
+
+## Introducing `supportsSetSinkId()` API in `DefaultBrowserBehavior`
+This new helper API returns a boolean `true` if the browser supports [`setSinkId()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId) otherwise returning `false`.
+
+Here is how the code would look like:
+
+```typescript
+if (!this.browserBehavior.supportsSetSinkId()) {
+  throw new Error(
+    'Cannot select audio output device. This browser does not support setSinkId.'
+  );
+} else {
+  console.log('The browser supports setSinkId() API');
+}
+```
+
+---
+
+## Deprecating legacy screen share
+From version 2.0 onwards, the Amazon Chime SDK for JavaScript will no longer include the deprecated screen share API identified by `ScreenShareFacade` and `ScreenShareViewFacade` and all related code.
+Customers should use our Video Based Content Sharing detailed in our [Content Share guide](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/02_Content_Share.md).
