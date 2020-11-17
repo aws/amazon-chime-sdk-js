@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultAudioMixController from '../audiomixcontroller/DefaultAudioMixController';
@@ -6,7 +6,7 @@ import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import DefaultDeviceController from '../devicecontroller/DefaultDeviceController';
-import DevicePermission from '../devicecontroller/DevicePermission';
+import PermissionDeniedError from '../devicecontroller/PermissionDeniedError';
 import Logger from '../logger/Logger';
 import MeetingSession from '../meetingsession/MeetingSession';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
@@ -46,20 +46,14 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   async checkAudioInput(audioInputDeviceInfo: MediaDeviceInfo): Promise<CheckAudioInputFeedback> {
     try {
-      const result = await this.meetingSession.audioVideo.chooseAudioInputDevice(
-        audioInputDeviceInfo
-      );
-      if (
-        result === DevicePermission.PermissionDeniedByBrowser ||
-        result === DevicePermission.PermissionDeniedByUser
-      ) {
-        return CheckAudioInputFeedback.PermissionDenied;
-      } else {
-        await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
-        return CheckAudioInputFeedback.Succeeded;
-      }
+      await this.meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo);
+      await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
+      return CheckAudioInputFeedback.Succeeded;
     } catch (error) {
       this.logger.error(`MeetingReadinessChecker: Audio input check failed with error ${error}`);
+      if (error instanceof PermissionDeniedError) {
+        return CheckAudioInputFeedback.PermissionDenied;
+      }
       return CheckAudioInputFeedback.Failed;
     }
   }
@@ -74,7 +68,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
         audioOutputDeviceInfo && audioOutputDeviceInfo.deviceId
           ? audioOutputDeviceInfo.deviceId
           : '';
-      this.playTone(audioOutputDeviceId, 440, audioElement);
+      await this.playTone(audioOutputDeviceId, 440, audioElement);
       const userFeedback = await audioOutputVerificationCallback();
       if (userFeedback) {
         return CheckAudioOutputFeedback.Succeeded;
@@ -89,11 +83,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     }
   }
 
-  private playTone(
+  private async playTone(
     sinkId: string | null,
     frequency: number | 440,
     audioElement: HTMLAudioElement | null
-  ): void {
+  ): Promise<void> {
     const rampSec = 0.1;
     const maxGainValue = 0.1;
 
@@ -113,11 +107,19 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     this.gainNode.gain.linearRampToValueAtTime(0, startTime);
     this.gainNode.gain.linearRampToValueAtTime(maxGainValue, startTime + rampSec);
     this.oscillatorNode.start();
-    const audioMixController = new DefaultAudioMixController();
-    // @ts-ignore
-    audioMixController.bindAudioDevice({ deviceId: sinkId });
-    audioMixController.bindAudioElement(audioElement || new Audio());
-    audioMixController.bindAudioStream(this.destinationStream.stream);
+    const audioMixController = new DefaultAudioMixController(this.logger);
+    try {
+      // @ts-ignore
+      await audioMixController.bindAudioDevice({ deviceId: sinkId });
+    } catch (e) {
+      this.logger.error(`Failed to bind audio device: ${e}`);
+    }
+    try {
+      await audioMixController.bindAudioElement(audioElement || new Audio());
+    } catch (e) {
+      this.logger.error(`Failed to bind audio element: ${e}`);
+    }
+    await audioMixController.bindAudioStream(this.destinationStream.stream);
   }
 
   private stopTone(): void {
@@ -140,20 +142,14 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
 
   async checkVideoInput(videoInputDeviceInfo: MediaDeviceInfo): Promise<CheckVideoInputFeedback> {
     try {
-      const result = await this.meetingSession.audioVideo.chooseVideoInputDevice(
-        videoInputDeviceInfo
-      );
-      if (
-        result === DevicePermission.PermissionDeniedByBrowser ||
-        result === DevicePermission.PermissionDeniedByUser
-      ) {
-        return CheckVideoInputFeedback.PermissionDenied;
-      } else {
-        await this.meetingSession.audioVideo.chooseVideoInputDevice(null);
-        return CheckVideoInputFeedback.Succeeded;
-      }
+      await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo);
+      await this.meetingSession.audioVideo.chooseVideoInputDevice(null);
+      return CheckVideoInputFeedback.Succeeded;
     } catch (error) {
       this.logger.error(`MeetingReadinessChecker: Video check failed with error ${error}`);
+      if (error instanceof PermissionDeniedError) {
+        return CheckVideoInputFeedback.PermissionDenied;
+      }
       return CheckVideoInputFeedback.Failed;
     }
   }
@@ -274,23 +270,24 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       }
     };
     try {
-      const permissionResult = await audioVideo.chooseAudioInputDevice(audioInputDeviceInfo);
-      if (
-        permissionResult === DevicePermission.PermissionDeniedByBrowser ||
-        permissionResult === DevicePermission.PermissionDeniedByUser
-      ) {
-        return CheckAudioConnectivityFeedback.AudioInputPermissionDenied;
-      }
+      await audioVideo.chooseAudioInputDevice(audioInputDeviceInfo);
     } catch (error) {
       this.logger.error(
         `MeetingReadinessChecker: Failed to get audio input device with error ${error}`
       );
+      if (error instanceof PermissionDeniedError) {
+        return CheckAudioConnectivityFeedback.AudioInputPermissionDenied;
+      }
       return CheckAudioConnectivityFeedback.AudioInputRequestFailed;
     }
     audioVideo.realtimeSubscribeToAttendeeIdPresence(attendeePresenceHandler);
     if (!(await this.startMeeting())) {
       audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
-      await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
+      try {
+        await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
+      } catch (e) {
+        this.logger.error(`MeetingReadinessChecker: Failed to choose null device with error ${e}`);
+      }
       return CheckAudioConnectivityFeedback.ConnectionFailed;
     }
     await this.executeTimeoutTask(async () => {
@@ -298,7 +295,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     });
     audioVideo.realtimeUnsubscribeToAttendeeIdPresence(attendeePresenceHandler);
     await this.stopMeeting();
-    await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
+    try {
+      await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
+    } catch (e) {
+      this.logger.error(`MeetingReadinessChecker: Failed to choose null device with error ${e}`);
+    }
     return audioPresence
       ? CheckAudioConnectivityFeedback.Succeeded
       : CheckAudioConnectivityFeedback.AudioNotReceived;
@@ -310,17 +311,14 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     const audioVideo = this.meetingSession.audioVideo;
 
     try {
-      const permissionResult = await audioVideo.chooseVideoInputDevice(videoInputDeviceInfo);
-      if (
-        permissionResult === DevicePermission.PermissionDeniedByBrowser ||
-        permissionResult === DevicePermission.PermissionDeniedByUser
-      ) {
-        return CheckVideoConnectivityFeedback.VideoInputPermissionDenied;
-      }
+      await audioVideo.chooseVideoInputDevice(videoInputDeviceInfo);
     } catch (error) {
       this.logger.error(
         `MeetingReadinessChecker: Failed to get video input device with error ${error}`
       );
+      if (error instanceof PermissionDeniedError) {
+        return CheckVideoConnectivityFeedback.VideoInputPermissionDenied;
+      }
       return CheckVideoConnectivityFeedback.VideoInputRequestFailed;
     }
 

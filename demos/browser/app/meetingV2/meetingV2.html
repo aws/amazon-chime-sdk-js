@@ -55,6 +55,14 @@
               <label for="webaudio" class="custom-control-label">Use WebAudio</label>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="fullband-speech-mono-quality" class="custom-control-input">
+              <label for="fullband-speech-mono-quality" class="custom-control-label">Set fullband speech (mono) quality</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="fullband-music-mono-quality" class="custom-control-input">
+              <label for="fullband-music-mono-quality" class="custom-control-label">Set fullband music (mono) quality</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" id="simulcast" class="custom-control-input">
               <label for="simulcast" class="custom-control-label">Enable Simulcast for Chrome</label>
             </div>
@@ -166,11 +174,18 @@
           <label for="audio-input block">Microphone</label>
           <select id="audio-input" class="custom-select" style="width:100%"></select>
         </div>
+
         <div class="text-center col-sm-4 d-sm-block">
           <label>Preview</label>
           <div class="w-100 progress" style="margin-top:0.75rem">
             <div id="audio-preview" class="progress-bar bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div id="voice-focus-setting" class="col-12 col-sm-8 hidden">
+          <input autocomplete="off" type="checkbox" id="add-voice-focus"></input>
+          <label style="margin-left: 0.5em" for="voice-focus-setting block">Add Voice Focus</label>
         </div>
       </div>
       <div class="row mt-3">

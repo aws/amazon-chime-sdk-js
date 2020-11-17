@@ -1,10 +1,9 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
-import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('MeetingSessionConfiguration', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -299,16 +298,6 @@ describe('MeetingSessionConfiguration', () => {
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
       expect(configuration.credentials.joinToken).to.eq('join-token');
-    });
-
-    it('can will automatically set the screen sharing bitrate for Firefox', () => {
-      const dommock = new DOMMockBuilder();
-      // @ts-ignore
-      navigator.userAgent =
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
-      const configuration = new MeetingSessionConfiguration();
-      expect(configuration.screenSharingSessionOptions.bitRate).to.eq(384000);
-      dommock.cleanup();
     });
   });
 });

@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
@@ -16,7 +16,8 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
   private speakerScores: { [attendeeId: string]: number } = {};
   private speakerMuteState: { [attendeeId: string]: boolean } = {};
 
-  private activeSpeakers: string[];
+  private activeSpeakers: string[] | undefined;
+
   private detectorCallbackToHandler: Map<DetectorCallback, DetectorHandler> = new Map<
     DetectorCallback,
     DetectorHandler
@@ -157,7 +158,9 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
   unsubscribe(callback: DetectorCallback): void {
     const handler = this.detectorCallbackToHandler.get(callback);
     this.detectorCallbackToHandler.delete(callback);
-    this.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
+    if (handler) {
+      this.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
+    }
 
     const activityTimer = this.detectorCallbackToActivityTimer.get(callback);
     if (activityTimer) {

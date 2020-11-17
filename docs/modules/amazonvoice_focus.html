@@ -1,0 +1,375 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>AmazonVoice_Focus | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="amazonvoice_focus.html">AmazonVoice_Focus</a>
+				</li>
+			</ul>
+			<h1>Namespace AmazonVoice_Focus</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#integrating-amazon-voice-focus-into-your-amazon-chime-sdk-for-javascript-application" id="integrating-amazon-voice-focus-into-your-amazon-chime-sdk-for-javascript-application" style="color: inherit; text-decoration: none;">
+							<h1>Integrating Amazon Voice Focus into your Amazon Chime SDK for JavaScript application</h1>
+						</a>
+					</div>
+					<a href="#what-is-amazon-voice-focus" id="what-is-amazon-voice-focus" style="color: inherit; text-decoration: none;">
+						<h2>What is Amazon Voice Focus?</h2>
+					</a>
+					<p>Amazon Voice Focus is a noise suppressor that uses machine learning to reduce unwanted background noise in your users’ microphone input. Unlike conventional noise suppressors, Amazon Voice Focus reduces fan noise, road noise, typing, rustling paper, lawnmowers, barking dogs, and other kinds of non-speech input, allowing your users to focus on the human voice.</p>
+					<p>Amazon Voice Focus offers multiple complexity levels, allowing you to trade some quality to support a wider range of devices. The Amazon Chime SDK will by default automatically choose the right complexity level at runtime based on device performance.</p>
+					<p>Amazon Voice Focus is integrated into the <code>browser</code> demo application. To try it out, launch the demo with <code>npm run start</code>, choose “Web Audio” on the first screen, then either check the “Voice Focus” box in the lobby view, or click “Voice Focus” in the device picker after joining the meeting.</p>
+					<a href="#amazon-voice-focus-on-the-web" id="amazon-voice-focus-on-the-web" style="color: inherit; text-decoration: none;">
+						<h2>Amazon Voice Focus on the web</h2>
+					</a>
+					<p>Amazon Voice Focus runs in the end user’s web browser, leveraging modern web platform features including Web Audio, Audio Worklet, and WebAssembly. See the section “<a href="#can-i-use-amazon-voice-focus-in-my-application">Can I use Amazon Voice Focus in my application?</a>” for browser version requirements.</p>
+					<p>Amazon Voice Focus is available as part of the Amazon Chime SDK for JavaScript from version 2.0 onward.</p>
+					<p>Because Amazon Voice Focus on the web requires Web Audio, construct your <code>DeviceController</code> with Web Audio support, passing the <code>{ enableWebAudio: true }</code> argument to <code>new DefaultDeviceController</code>.</p>
+					<p>When testing Amazon Voice Focus in the <code>browser</code> demo application, remember to choose “Web Audio” in the feature picker on the first screen.</p>
+					<a href="#when-should-i-use-amazon-voice-focus" id="when-should-i-use-amazon-voice-focus" style="color: inherit; text-decoration: none;">
+						<h2>When should I use Amazon Voice Focus?</h2>
+					</a>
+					<p>Amazon Voice Focus is ideal for situations in which users will experience background noise and only care about human speech. Because it reduces almost all non-voice sound, it works best in applications where the person’s voice is the most important part of the interaction. When your users are in shared or noisy spaces, Amazon Voice Focus can substantially reduce distracting background noises that contribute to a poor meeting experience.</p>
+					<p>Quiet environments, and situations in which other sound is important (music lessons, for example) will see less benefit from Amazon Voice Focus, and in some of those situations Amazon Voice Focus will impair the user experience by eliminating important audio.</p>
+					<p>Additionally, situations in which multiple human speakers might overlap at different volume levels, as might be the case with several participants in a room with a single laptop, might exhibit unwanted suppression of the quietest participants.</p>
+					<p>Applications with demanding CPU utilization, like games, might not leave enough compute resources for Amazon Voice Focus to work smoothly, particularly on resource-constrained devices.</p>
+					<p>If you think your application might be used in these scenarios, take care to test your application with Amazon Voice Focus, and give your users the ability to control whether to enable noise suppression, as well as to turn it off during a meeting.</p>
+					<a href="#can-i-use-amazon-voice-focus-in-my-application" id="can-i-use-amazon-voice-focus-in-my-application" style="color: inherit; text-decoration: none;">
+						<h2>Can I use Amazon Voice Focus in my application?</h2>
+					</a>
+					<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
+						<h3>Browser compatibility</h3>
+					</a>
+					<p>Amazon Voice Focus in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop and Android operating systems. A full compatibility table is below. Amazon Voice Focus does not currently support Safari on desktop or iOS devices, because Safari does not implement the required web standards.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Browser</th>
+								<th>Minimum supported version</th>
+								<th>Preferred version</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>Firefox</td>
+								<td>76</td>
+								<td>83+</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>Chromium-based browsers and environments, including Edge and Electron</td>
+								<td>78</td>
+								<td>87+</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>Safari</td>
+								<td>Not supported</td>
+								<td>-</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>Android browser</td>
+								<td>78*</td>
+								<td>87*</td>
+								<td>Typically too slow.</td>
+							</tr>
+							<tr>
+								<td>iOS Safari</td>
+								<td>Not supported</td>
+								<td>-</td>
+								<td></td>
+							</tr>
+					</tbody></table>
+					<p>Amazon Voice Focus is more CPU-intensive than conventional noise suppression systems, and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful. The default configuration will adapt to available processor power and adjust quality accordingly, but some browsers and devices will simply be unable to enable the feature. Android browsers are theoretically compatible, but typically cannot meet the performance requirements.</p>
+					<p>See the sections “<a href="#checking-for-support-before-offering-noise-suppression">Checking for support before offering noise suppression</a>” and “<a href="#adapting-to-performance-constraints">Adapting to performance constraints</a>” for more details about checking for support and adapting to capabilities.</p>
+					<a href="#simd-support" id="simd-support" style="color: inherit; text-decoration: none;">
+						<h3>SIMD support</h3>
+					</a>
+					<p>Amazon Voice Focus is more efficient in environments that support Single Instruction, Multiple Data (SIMD), and will use less CPU for a given complexity level when it is enabled. Low-powered devices running browsers without SIMD support might be unable to use any complexity level of Amazon Voice Focus.</p>
+					<p>See the section “<a href="#configuring-simd">Configuring SIMD</a>” for more details about controlling SIMD usage.</p>
+					<a href="#content-delivery-caching-and-bandwidth" id="content-delivery-caching-and-bandwidth" style="color: inherit; text-decoration: none;">
+						<h3>Content delivery, caching and bandwidth</h3>
+					</a>
+					<p>Amazon Voice Focus model files are loaded from an Amazon Content Delivery Network (CDN) at runtime. This provides low-latency global distribution without the need to serve a full suite of files as part of your application.</p>
+					<p>Model files range in size from 200KB up to 8MB, depending on the complexity level selected by you or by the SDK’s own performance estimator, and depending on the capabilities of the user’s browser. Model files will be cached indefinitely by end users’ browsers, so that subsequent uses of Amazon Voice Focus on the same device will take less time to initialize.</p>
+					<p>In addition to having network connectivity to <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-components.html">Amazon Chime’s media services, as described in the documentation</a>, the use of Amazon Voice Focus requires access to Amazon CloudFront via HTTPS (port 443). All requests will be to subdomains of <code>sdkassets.chime.aws</code>. End users whose network configurations prevent access to this CDN, or applications that do not include the correct domain in Content Security Policy (see below), will fail support checks and be unable to use Amazon Voice Focus.</p>
+					<p>CloudFront’s IP address ranges are documented in the <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html">Amazon CloudFront Developer Guide</a>.</p>
+					<p>The overhead of loading model files can add latency to parts of your application. A browser loading the <code>c20</code> model over a residential broadband connection will typically download and compile the model in around 500ms, but global internet speeds and latencies can vary. The browser cache will make subsequent loads significantly faster. Check for support and create Amazon Voice Focus resources at appropriate times to minimize the impact of this latency: for example, during a lobby or device picker interaction.</p>
+					<a href="#preparing-your-application" id="preparing-your-application" style="color: inherit; text-decoration: none;">
+						<h2>Preparing your application</h2>
+					</a>
+					<a href="#content-security-policy" id="content-security-policy" style="color: inherit; text-decoration: none;">
+						<h3>Content Security Policy</h3>
+					</a>
+					<p>Modern web applications use <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">Content Security Policy</a> to protect users from certain classes of attacks. You will need to include the following in your policy to allow the Amazon Chime SDK access to resources it needs at runtime:</p>
+					<ul>
+						<li><code>script-src</code> and <code>script-src-elem</code>: add <code>https://*.sdkassets.chime.aws</code> to load audio processing code to run in the browser’s audio renderer thread.</li>
+						<li><code>connect-src</code>: add <code>https://*.sdkassets.chime.aws</code> to load model files via <code>fetch</code>.</li>
+						<li><code>worker-src</code>: add <code>blob:</code> to load worker JavaScript across origins.</li>
+					</ul>
+					<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then Amazon Voice Focus will not be able to initialize, and will either appear to be unsupported or will fail to create a suppressed audio device. You will see errors in your browser console like:</p>
+					<pre><code>Refused <span class="hljs-built_in">to</span> connect <span class="hljs-built_in">to</span>
+<span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/workers/worker-v1.js…&#x27;</span>
+because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> document<span class="hljs-string">&#x27;s Content Security Policy.</span></code></pre>
+					<p>or</p>
+					<pre><code>Refused <span class="hljs-built_in">to</span> <span class="hljs-built_in">load</span> <span class="hljs-keyword">the</span> script
+<span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/processors/worklet-inline-processor…&#x27;</span>
+because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> following Content Security Policy directive…</code></pre>
+					<p>If you need guidance with correct CSP configuration to use Amazon Voice Focus, contact AWS Support.</p>
+					<a href="#cross-origin-opener-policy" id="cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
+						<h3>Cross-Origin Opener Policy</h3>
+					</a>
+					<p>Some execution modes require careful configuration of web security, including less common headers like <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy"><code>Cross-Origin-Opener-Policy</code></a>. To opt in to these execution modes, send</p>
+					<pre><code><span class="hljs-keyword">Cross</span>-Origin-Opener-<span class="hljs-keyword">Policy</span>: same-origin
+<span class="hljs-keyword">Cross</span>-Origin-Embedder-<span class="hljs-keyword">Policy</span>: require-corp</code></pre>
+					<p>when serving your application HTML. These headers are optional but advised: they improve web security, as well as allowing the browser to support technologies like <code>SharedArrayBuffer</code>.</p>
+					<a href="#checking-for-support-before-offering-noise-suppression" id="checking-for-support-before-offering-noise-suppression" style="color: inherit; text-decoration: none;">
+						<h2>Checking for support before offering noise suppression</h2>
+					</a>
+					<p>Some browsers support the Amazon Chime SDK but do not support Amazon Voice Focus. Additionally, some devices are not fast enough to keep up with real-time audio while suppressing noise.</p>
+					<p>The SDK provides a static method to allow you to cheaply check for the required browser features:</p>
+					<pre><code class="language-typescript"><span class="hljs-string">`import { VoiceFocusDeviceTransformer } from &#x27;amazon-chime-sdk-js&#x27;;`</span>
+…
+<span class="hljs-string">`const isVoiceFocusSupported = await VoiceFocusDeviceTransformer.isSupported();`</span></code></pre>
+					<p>If <code>isSupported</code> returns <code>true</code>, you can instantiate a transformer. This will measure the runtime environment and perform some initialization, and so its <code>isSupported</code> method is more accurate.</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">let</span> transformer: VoiceFocusDeviceTransformer;
+<span class="hljs-keyword">try</span> {
+  transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer.create();
+  isVoiceFocusSupported = transformer.isSupported();
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-comment">// Will only occur due to invalid input or transient errors (e.g., network).</span>
+  isVoiceFocusSupported = <span class="hljs-literal">false</span>;
+}</code></pre>
+					<p>By default this will also pre-load the model file and prepare Amazon Voice Focus for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. If you do not want to pre-load resources — <em>e.g.</em>, if you would rather the download occur later, or you are not sure if the user will use noise suppression — pass the optional <code>preload</code> argument:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec = {};
+<span class="hljs-keyword">const</span> options = {
+  preload: <span class="hljs-literal">false</span>,
+  logger,
+};
+
+transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer(spec, options);</code></pre>
+					<p>Check for both of these kinds of support prior to offering noise suppression to users. The ideal time to do so is during pre-meeting setup.</p>
+					<p>Your device controller must support Web Audio to use Amazon Voice Focus. If you do not wish to enable Web Audio universally, you can use your support check as a condition:</p>
+					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController({
+  enableWebAudio: isVoiceFocusSupported
+});</code></pre>
+					<a href="#adding-amazon-voice-focus-to-your-application" id="adding-amazon-voice-focus-to-your-application" style="color: inherit; text-decoration: none;">
+						<h2>Adding Amazon Voice Focus to your application</h2>
+					</a>
+					<p>Amazon Voice Focus integrates with the SDK by providing a new kind of audio input device: one that wraps another audio input and applies noise suppression to it.</p>
+					<p>Once you have checked for support and created a transformer, you create a <code>VoiceFocusTransformDevice</code> from a user’s selected audio input as follows:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> chosenAudioInput = <span class="hljs-string">&#x27;abcdef&#x27;</span>;    <span class="hljs-comment">// Device ID, stream, or constraints</span>
+<span class="hljs-keyword">const</span> vfDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);</code></pre>
+					<p>If the transformer returned that Amazon Voice Focus is not supported, or it failed to initialize, this method returns <code>undefined</code>. In that case, fall back to the user&#39;s chosen audio input and indicate to the user that noise suppression is not enabled.</p>
+					<p>The returned <code>VoiceFocusTransformDevice</code> can be supplied to a <code>chooseAudioInputDevice</code> call in the usual way:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> deviceToUse = vfDevice || chosenAudioInput;
+<span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(deviceToUse);
+<span class="hljs-keyword">if</span> (vfDevice) {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus enabled&#x27;</span>);
+}</code></pre>
+					<p>As noted above, the device controller must support Web Audio.</p>
+					<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+						<h2>Configuration</h2>
+					</a>
+					<p>Both <code>isSupported</code> and <code>create</code> accept <code>VoiceFocusSpec</code> structures as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.</p>
+					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. Some options are described in the section “<a href="#adapting-to-performance-constraints">Adapting to performance constraints</a>”.</p>
+					<a href="#disabling-amazon-voice-focus-and-switching-devices" id="disabling-amazon-voice-focus-and-switching-devices" style="color: inherit; text-decoration: none;">
+						<h2>Disabling Amazon Voice Focus and switching devices</h2>
+					</a>
+					<p>In some cases you might wish to temporarily or permanently disable noise suppression during a call: perhaps to reduce CPU utilization or to allow background noise to be heard.</p>
+					<p>You can do so by simply selecting the inner device without Amazon Voice Focus, which will fall back to the browser’s own simple noise suppressor:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(chosenAudioInput);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus disabled&#x27;</span>);</code></pre>
+					<p>You can re-enable Amazon Voice Focus again by reselecting the transform device:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(vfDevice);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus re-enabled&#x27;</span>);</code></pre>
+					<p>If a user switches microphone inputs, <em>e.g.</em>, after plugging in a headset, you can reuse the setup work involved in building the transform device by choosing a new inner device:</p>
+					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.voiceFocusDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
+…
+<span class="hljs-comment">// New device selected. Swap it out.</span>
+<span class="hljs-built_in">this</span>.voiceFocusDevice = <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.voiceFocusDevice.chooseNewInnerDevice(newDevice);
+<span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(<span class="hljs-built_in">this</span>.voiceFocusDevice);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus switched to new device&#x27;</span>, newDevice);</code></pre>
+					<a href="#adapting-to-performance-constraints" id="adapting-to-performance-constraints" style="color: inherit; text-decoration: none;">
+						<h2>Adapting to performance constraints</h2>
+					</a>
+					<p>As mentioned previously, you can supply a <code>VoiceFocusSpec</code> object when configuring a device transformer. The following options allow you to tune Amazon Voice Focus’s behavior for uncommon circumstances.</p>
+					<a href="#usage-preference" id="usage-preference" style="color: inherit; text-decoration: none;">
+						<h3>Usage preference</h3>
+					</a>
+					<p>The complexity of your application (<em>e.g.</em>, the number of active video tiles, or other work being done in the page) and the behavior of your user (<em>e.g.</em>, switching tabs) can interfere with the smooth processing of audio. The default configuration, <code>{ usagePreference: &#39;interactivity&#39; }</code>, biases for interactivity and is relatively conservative.</p>
+					<p>If you are confident that your users will be using your application exclusively, without multitasking or switching tabs, you can specify <code>{ usagePreference: &#39;quality&#39; }</code> when configuring the device transformer. This setting makes it more likely that the noise suppressor will choose to use alternative execution modes that allow for higher quality models to be selected at the cost of making audio input more prone to glitching if the page loses focus.</p>
+					<a href="#variant-selection" id="variant-selection" style="color: inherit; text-decoration: none;">
+						<h3>Variant selection</h3>
+					</a>
+					<p>If you have precise control over your runtime environment, you can specify the complexity level the SDK will use by providing a <code>variant</code> parameter: one of <code>c100</code>, <code>c50</code>, <code>c20</code>, or <code>c10</code>.</p>
+					<p><code>c100</code> is the highest quality and most expensive, and requires SIMD on most devices. <code>c10</code> is the lowest quality and has the lowest CPU footprint. We advise you to test your deployed configurations carefully before specifying an explicit variant.</p>
+					<a href="#execution-preference" id="execution-preference" style="color: inherit; text-decoration: none;">
+						<h3>Execution preference</h3>
+					</a>
+					<p>If you have precise control over your runtime environment, you can specify the execution approach that the SDK will use. The allowed values are <code>auto</code>, <code>inline,</code> and <code>worker</code>. Use the <code>executionPreference</code> specifier to define these.</p>
+					<p>In general, use <code>auto</code>. If you think you need control over the execution approach, contact AWS Support.</p>
+					<a href="#configuring-simd" id="configuring-simd" style="color: inherit; text-decoration: none;">
+						<h3>Configuring SIMD</h3>
+					</a>
+					<p>SIMD dramatically accelerates Amazon Voice Focus, reducing CPU load and/or allowing higher quality models to be used.</p>
+					<p>Release versions of Firefox and Chrome do not enable SIMD support by default. If you have control over the browser environment of your end users, you can set Firefox’s <code>javascript.options.wasm_simd</code> preference to <code>true</code> in <code>about:config</code>, or toggle <code>[chrome://flags/#enable-webassembly-simd](http://chrome//flags/#enable-webassembly-simd)</code> in Chrome.</p>
+					<p>You can enable SIMD in an Electron application by adding <code>--enable-features=WebAssemblySimd</code> to your startup flags, then supplying <code>{ simd: &#39;force&#39; }</code> as part of your specification.</p>
+					<p>Until SIMD support stabilizes, compatibility is subject to change. In particular you will need to explicitly opt in to the use of SIMD in Chrome, because detection is unreliable; as with Electron, specify <code>{ simd: &#39;force&#39; }</code> when configuring the device transformer. Detection of SIMD capability is automatic in Firefox.</p>
+					<p>You can opt-in for a Chrome Origin Trial to <a href="https://developers.chrome.com/origintrials/#/view_trial/-4708513410415853567">test SIMD on Chrome browsers</a>.</p>
+					<a href="#disabling-estimation-entirely" id="disabling-estimation-entirely" style="color: inherit; text-decoration: none;">
+						<h3>Disabling estimation entirely</h3>
+					</a>
+					<p>If you specify a non-<code>auto</code> <code>executionPreference</code> and a <code>variant</code>, no estimation work will be done: the SDK will use the values you provide. If you additionally specify <code>simd</code>, the execution approach chosen is predictable and fixed, and no capability testing or estimation is required.</p>
+					<p>For example, to force the use of a high-quality model in an Electron application built with SIMD enabled:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
+  variant: <span class="hljs-string">&#x27;c50&#x27;</span>,
+  executionPreference: <span class="hljs-string">&#x27;inline&#x27;</span>,
+  simd: <span class="hljs-string">&#x27;force&#x27;</span>,
+};
+
+<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });</code></pre>
+					<p>or to force the use of the highest quality model, which typically requires offload to a Web Worker:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
+  variant: <span class="hljs-string">&#x27;c100&#x27;</span>,
+  executionPreference: <span class="hljs-string">&#x27;worker&#x27;</span>,
+  simd: <span class="hljs-string">&#x27;force&#x27;</span>,
+};
+
+<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });</code></pre>
+					<p>We recommend that you allow estimation to adapt to the runtime environment: it is difficult to predict in advance the correct execution preference and model complexity, and choosing a too-complex model or the wrong execution approach can result in audio glitches or high CPU utilization that affects the rest of the application.</p>
+					<a href="#observer-notifications" id="observer-notifications" style="color: inherit; text-decoration: none;">
+						<h2>Observer notifications</h2>
+					</a>
+					<p>You can optionally implement the <code>VoiceFocusTransformDeviceObserver</code> interface and use <code>addObserver</code> to receive callbacks when one of two things occur:</p>
+					<ul>
+						<li><code>voiceFocusFellBackToInnerStream</code>: if applying noise suppression to an audio device failed, causing the SDK to fall back to using the inner device with the browser’s own noise suppression, this will be called. This should be uncommon, but this allows you to adapt your UI to failure.</li>
+						<li><code>onCPUWarning</code>: if the noise suppressor is unable to keep up with input audio, and the execution mode is able to determine this, then <code>onCPUWarning</code> will be invoked approximately every 15 milliseconds. The user will not themselves hear any audio glitching: bad audio will be heard by <em>other participants in the meeting</em>. Disabling noise suppression or other application features might be necessary to avoid continued disruption of the user experience.</li>
+					</ul>
+					<a href="#automatic-gain-control" id="automatic-gain-control" style="color: inherit; text-decoration: none;">
+						<h2>Automatic gain control</h2>
+					</a>
+					<p>Web browsers include mechanisms for automatically adjusting input volume, termed Automatic Gain Control (AGC).</p>
+					<p>AGC in mainstream browsers is fairly simplistic: it periodically adjusts your device input volume to improve the situation when your microphone is too quiet or too loud. As a developer you can control this with <code>[MediaTrackConstraints.autoGainControl](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/autoGainControl)</code>. This is enabled by default when your application asks for a microphone input.</p>
+					<p>Amazon Voice enables the built-in AGC by default. If you need additional control of the user’s volume, you can apply a <a href="https://developer.mozilla.org/en-US/docs/Web/API/GainNode"><code>GainNode</code></a> in a custom <code>AudioTransformDevice</code> in series <em>after</em> the Amazon Voice Focus node.</p>
+					<p>If the interaction of the built-in AGC with Amazon Voice Focus produces undesirable effects, you can disable it by passing <code>{ agc: { useBuiltInAGC: false } }</code> when constructing the transform device.</p>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Amazon%20Voice_Focus%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

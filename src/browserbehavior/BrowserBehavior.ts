@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 export default interface BrowserBehavior {
@@ -26,11 +26,6 @@ export default interface BrowserBehavior {
    * Returns whether the browser has a Firefox WebRTC implementation
    */
   hasFirefoxWebRTC(): boolean;
-
-  /**
-   * Returns whether screen share implementation can only send keyframes
-   */
-  screenShareSendsOnlyKeyframes(): boolean;
 
   /**
    * Returns whether the browser requires the use of Unified Plan implementation
@@ -96,4 +91,9 @@ export default interface BrowserBehavior {
    * Returns the supported codecs
    */
   supportedVideoCodecs(): Promise<string[]>;
+
+  /**
+   * Returns whether browser supports setSinkId operation
+   */
+  supportsSetSinkId(): boolean;
 }

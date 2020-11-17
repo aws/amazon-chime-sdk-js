@@ -38,6 +38,8 @@ And review the following guides:
 * [Simulcast](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html)
 * [Meeting events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html)
 * [Frequently Asked Questions](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
+* [Migrating from v1.0 to v2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
+* [Integrating Amazon Voice Focus into your application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
 
 ## Examples
 
@@ -54,13 +56,17 @@ And review the following guides:
 
 ## Installation
 
-Make sure you have Node.js version 10 and higher.
+Make sure you have Node.js version 10 or higher. Node 14 is recommended and supported.
+
 To add the Amazon Chime SDK for JavaScript into an existing application,
 install the package directly from npm:
 
 ```
 npm install amazon-chime-sdk-js --save
 ```
+
+Note that the Amazon Chime SDK for JavaScript targets ES2015, which is fully compatible with
+all supported browsers.
 
 ## Setup
 
@@ -127,12 +133,15 @@ An implementation can be found in the [Amazon Chime SDK Media Regions documentat
 ## Building and testing
 
 ```
+git fetch --tags https://github.com/aws/amazon-chime-sdk-js
 npm run build
 npm run test
 ```
 
 After running `npm run test` the first time, you can use `npm run test:fast` to
 speed up the test suite.
+
+Tags are fetched in order to correctly generate versioning metadata.
 
 To view code coverage results open `coverage/index.html` in your browser
 after running `npm run test`.
@@ -414,7 +423,7 @@ meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
 > Note: In Chime SDK terms, a video tile is an object containing an attendee ID,
 a video stream, etc. To view a video in your application, you must bind a tile to a `<video>` element.
 > - Make sure you bind a tile to the same video element until the tile is removed.
-> - A local video tile can be identified using `localTile` property. 
+> - A local video tile can be identified using `localTile` property.
 > - A tile is created with a new tile ID when the same remote attendee restarts the video.
 
 **Use case 13.** Start sharing your video. The local video element is flipped horizontally (mirrored mode).
@@ -586,7 +595,7 @@ const observer = {
 meetingSession.audioVideo.addObserver(observer);
 ```
 You can also call below method to know all the remote video sources:
-> Note: `getRemoteVideoSources` method is different from `getAllRemoteVideoTiles`, 
+> Note: `getRemoteVideoSources` method is different from `getAllRemoteVideoTiles`,
 `getRemoteVideoSources` returns all the remote video sources that are available to be viewed,
 while `getAllRemoteVideoTiles` returns the ones that are actually being seen.
 ```js
@@ -986,4 +995,30 @@ const networkTCPFeedback = await meetingReadinessChecker.checkNetworkTCPConnecti
 console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}`);
 ```
 
-Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+### Selecting an Audio Profile
+
+**Use case 32.** Set the audio quality of the main audio input to optimize for speech or music:
+
+Use the following setting to optimize the audio bitrate of the main audio input for fullband speech with a mono channel:
+
+```js
+meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
+````
+
+**Use case 33.** Set the audio quality of content share audio to optimize for speech or music:
+
+Use the following setting to optimize the audio bitrate of content share audio for fullband music with a mono channel:
+
+```js
+meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
+```
+
+## Notice
+
+The use of Amazon Voice Focus via this SDK involves the downloading and execution of code at runtime by end users.
+
+The use of Amazon Voice Focus runtime code is subject to additional notices. See [this NOTICES file](https://static.sdkassets.chime.aws/workers/NOTICES.txt) for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus runtime code via this SDK.
+
+---
+
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.

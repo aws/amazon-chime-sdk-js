@@ -1,9 +1,7 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
-import ScreenSharingSessionOptions from '../screensharingsession/ScreenSharingSessionOptions';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
@@ -58,20 +56,10 @@ export default class MeetingSessionConfiguration {
   attendeePresenceTimeoutMs: number = 0;
 
   /**
-   * Screen sharing session options.
-   */
-  screenSharingSessionOptions: ScreenSharingSessionOptions = {};
-
-  /**
    * Configuration for connection health policies: reconnection, unusable audio warning connection,
    * and signal strength bars connection.
    */
   connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
-
-  /**
-   * Feature flag to enable WebAudio processing
-   */
-  enableWebAudio: boolean = false;
 
   /**
    * Feature flag to enable Chromium-based browsers
@@ -167,9 +155,6 @@ export default class MeetingSessionConfiguration {
       this.credentials.attendeeId = createAttendeeResponse.attendeeid;
       this.credentials.externalUserId = createAttendeeResponse.externaluserid;
       this.credentials.joinToken = createAttendeeResponse.jointoken;
-    }
-    if (new DefaultBrowserBehavior().screenShareSendsOnlyKeyframes()) {
-      this.screenSharingSessionOptions = { bitRate: 384000 };
     }
 
     // simulcast feature flag will override the following policies when DefaultAudioVideoController is created

@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -35,10 +35,6 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
-import DefaultScreenShareFacade from '../../src/screensharefacade/DefaultScreenShareFacade';
-import ScreenShareFacade from '../../src/screensharefacade/ScreenShareFacade';
-import DefaultScreenShareViewFacade from '../../src/screenshareviewfacade/DefaultScreenShareViewFacade';
-import ScreenShareViewFacade from '../../src/screenshareviewfacade/ScreenShareViewFacade';
 import DisplayMediaState from '../dommock/DisplayMediaState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -58,7 +54,6 @@ describe('DefaultMeetingReadinessChecker', () => {
 
   function makeSessionConfiguration(): MeetingSessionConfiguration {
     const configuration = new MeetingSessionConfiguration();
-    configuration.enableWebAudio = false;
     configuration.meetingId = 'foo-meeting';
     configuration.urls = new MeetingSessionURLs();
     configuration.urls.audioHostURL = 'https://audiohost.test.example.com';
@@ -170,16 +165,9 @@ describe('DefaultMeetingReadinessChecker', () => {
       this.logger = logger;
 
       this.deviceController = deviceController;
-      this.deviceController.enableWebAudio(configuration.enableWebAudio);
       attendeeAudioVideoController = new TestAudioVideoController(this.configuration);
       this.audioVideoController = attendeeAudioVideoController;
       deviceController.bindToAudioVideoController(this.audioVideoController);
-      this.screenShare = new DefaultScreenShareFacade(
-        this.configuration,
-        this.logger,
-        deviceController
-      );
-      this.screenShareView = new DefaultScreenShareViewFacade(this.configuration, this.logger);
       const contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(this.logger);
       contentAudioVideoController = new TestAudioVideoController(
         DefaultContentShareController.createContentShareMeetingSessionConfigure(this.configuration)
@@ -205,8 +193,6 @@ describe('DefaultMeetingReadinessChecker', () => {
     readonly contentShare: ContentShareController;
     readonly deviceController: DeviceController;
     readonly logger: Logger;
-    readonly screenShare: ScreenShareFacade;
-    readonly screenShareView: ScreenShareViewFacade;
   }
 
   beforeEach(() => {
@@ -239,6 +225,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('granted permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 100;
       const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
@@ -248,6 +235,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
         new MediaDeviceInfo()
       );
@@ -256,6 +244,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('denies the permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 600;
       const audioCheckFeedback: CheckAudioInputFeedback = await meetingReadinessCheckerController.checkAudioInput(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
@@ -343,6 +332,18 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('unsuccessful after playing tone - callback throws error', async () => {
+      domMockBehavior.setSinkIdSupported = false;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      meetingSession = new TestMeetingSession(makeSessionConfiguration(), logger, deviceController);
+      meetingReadinessCheckerConfiguration = new MeetingReadinessCheckerConfiguration();
+      meetingReadinessCheckerConfiguration.timeoutMs = 10;
+      meetingReadinessCheckerConfiguration.waitDurationMs = 3;
+      meetingReadinessCheckerController = new DefaultMeetingReadinessChecker(
+        logger,
+        meetingSession,
+        meetingReadinessCheckerConfiguration
+      );
       const failureCallback = (): Promise<boolean> => {
         throw new Error();
       };
@@ -391,6 +392,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('denies the permission by browser', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
         new MediaDeviceInfo()
       );
@@ -399,6 +401,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('denies the permission by user', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       domMockBehavior.asyncWaitMs = 600;
       const videoCheckFeedback: CheckVideoInputFeedback = await meetingReadinessCheckerController.checkVideoInput(
         new MediaDeviceInfo()
@@ -443,7 +446,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('checks for 7680 × 4320 resolution - overconstrained', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.OverConstrained;
+      domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
         new MediaDeviceInfo(),
         7680,
@@ -456,7 +459,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('checks for 240 x 320 resolution - permission denied', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
-      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDenied;
+      domMockBehavior.getUserMediaResult = UserMediaState.NotAllowedError;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
         new MediaDeviceInfo(),
         240,
@@ -526,6 +529,7 @@ describe('DefaultMeetingReadinessChecker', () => {
   describe('checks audio connection', () => {
     it('permission denied', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       const result = await meetingReadinessCheckerController.checkAudioConnectivity(
         getMediaDeviceInfo('1', 'audioinput', 'label', 'group-id')
       );
@@ -571,6 +575,7 @@ describe('DefaultMeetingReadinessChecker', () => {
   describe('check video connection', () => {
     it('permission denied', async () => {
       domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
       const result = await meetingReadinessCheckerController.checkVideoConnectivity(
         new MediaDeviceInfo()
       );

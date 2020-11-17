@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import './styleV2.scss';
@@ -6,9 +6,12 @@ import 'bootstrap';
 
 import {
   AsyncScheduler,
+  AudioInputDevice,
+  AudioProfile,
   AudioVideoFacade,
   AudioVideoObserver,
   ClientMetricReport,
+  ClientVideoStreamReceivingReport,
   ConsoleLogger,
   ContentShareObserver,
   DataMessage,
@@ -17,8 +20,8 @@ import {
   DefaultDeviceController,
   DefaultMeetingSession,
   DefaultModality,
-  Device,
   DefaultBrowserBehavior,
+  Device,
   DeviceChangeObserver,
   EventName,
   EventAttributes,
@@ -31,12 +34,17 @@ import {
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
+  RemovableAnalyserNode,
+  SimulcastLayers,
   TimeoutScheduler,
   Versioning,
+  VideoInputDevice,
+  VideoSource,
   VideoTileState,
-  ClientVideoStreamReceivingReport,
-  SimulcastLayers,
-  VideoSource
+  VoiceFocusDeviceTransformer,
+  VoiceFocusPaths,
+  VoiceFocusTransformDevice,
+  isAudioTransformDevice,
 } from '../../../../src/index';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
 
@@ -75,36 +83,69 @@ class DemoTileOrganizer {
   }
 }
 
+// Support a set of query parameters to allow for testing pre-release versions of
+// Amazon Voice Focus. If none of these parameters are supplied, the SDK default
+// values will be used.
+const search = new URLSearchParams(document.location.search);
+const VOICE_FOCUS_CDN = search.get('voiceFocusCDN') || undefined;
+const VOICE_FOCUS_ASSET_GROUP = search.get('voiceFocusAssetGroup') || undefined;
+const VOICE_FOCUS_REVISION_ID = search.get('voiceFocusRevisionID') || undefined;
+
+const VOICE_FOCUS_PATHS: VoiceFocusPaths | undefined = VOICE_FOCUS_CDN && {
+  processors: `${VOICE_FOCUS_CDN}processors/`,
+  wasm: `${VOICE_FOCUS_CDN}wasm/`,
+  workers: `${VOICE_FOCUS_CDN}workers/`,
+  models: `${VOICE_FOCUS_CDN}wasm/`,
+};
+
+const VOICE_FOCUS_SPEC = {
+  assetGroup: VOICE_FOCUS_ASSET_GROUP,
+  revisionID: VOICE_FOCUS_REVISION_ID,
+  paths: VOICE_FOCUS_PATHS,
+};
+
 class TestSound {
   constructor(
-    sinkId: string | null,
-    frequency: number = 440,
-    durationSec: number = 1,
-    rampSec: number = 0.1,
-    maxGainValue: number = 0.1
-  ) {
+    private logger: Logger,
+    private sinkId: string | null,
+    private frequency: number = 440,
+    private durationSec: number = 1,
+    private rampSec: number = 0.1,
+    private maxGainValue: number = 0.1
+  ) {}
+
+
+  async init(): Promise<void> {
     // @ts-ignore
     const audioContext: AudioContext = new (window.AudioContext || window.webkitAudioContext)();
     const gainNode = audioContext.createGain();
     gainNode.gain.value = 0;
     const oscillatorNode = audioContext.createOscillator();
-    oscillatorNode.frequency.value = frequency;
+    oscillatorNode.frequency.value = this.frequency;
     oscillatorNode.connect(gainNode);
     const destinationStream = audioContext.createMediaStreamDestination();
     gainNode.connect(destinationStream);
     const currentTime = audioContext.currentTime;
     const startTime = currentTime + 0.1;
     gainNode.gain.linearRampToValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(maxGainValue, startTime + rampSec);
-    gainNode.gain.linearRampToValueAtTime(maxGainValue, startTime + rampSec + durationSec);
-    gainNode.gain.linearRampToValueAtTime(0, startTime + rampSec * 2 + durationSec);
+    gainNode.gain.linearRampToValueAtTime(this.maxGainValue, startTime + this.rampSec);
+    gainNode.gain.linearRampToValueAtTime(this.maxGainValue, startTime + this.rampSec + this.durationSec);
+    gainNode.gain.linearRampToValueAtTime(0, startTime + this.rampSec * 2 + this.durationSec);
     oscillatorNode.start();
-    const audioMixController = new DefaultAudioMixController();
-    // @ts-ignore
-    audioMixController.bindAudioDevice({ deviceId: sinkId });
-    audioMixController.bindAudioElement(new Audio());
-    audioMixController.bindAudioStream(destinationStream.stream);
-    new TimeoutScheduler((rampSec * 2 + durationSec + 1) * 1000).start(() => {
+    const audioMixController = new DefaultAudioMixController(this.logger);
+    try {
+      // @ts-ignore
+      await audioMixController.bindAudioDevice({ deviceId: this.sinkId });
+    } catch (e) {
+      this.logger?.error(`Failed to bind audio device: ${e}`);
+    }
+    try {
+      await audioMixController.bindAudioElement(new Audio());
+    } catch (e) {
+      this.logger?.error(`Failed to bind audio element: ${e}`);
+    }
+    await audioMixController.bindAudioStream(destinationStream.stream);
+    new TimeoutScheduler((this.rampSec * 2 + this.durationSec + 1) * 1000).start(() => {
       audioContext.close();
     });
   }
@@ -123,6 +164,12 @@ const SimulcastLayerMapping = {
   [SimulcastLayers.MediumAndHigh]: 'Medium and High',
   [SimulcastLayers.High]: 'High'
 };
+
+interface Toggle {
+  name: string,
+  oncreate: (elem: HTMLElement) => void,
+  action: () => void,
+}
 
 export class DemoMeetingApp implements
   AudioVideoObserver,
@@ -148,7 +195,8 @@ export class DemoMeetingApp implements
   audioVideo: AudioVideoFacade | null = null;
   tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
   canStartLocalVideo: boolean = true;
-  defaultBrowserBehaviour: DefaultBrowserBehavior = new DefaultBrowserBehavior();;
+  defaultBrowserBehaviour: DefaultBrowserBehavior = new DefaultBrowserBehavior();
+
   // eslint-disable-next-line
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
@@ -157,6 +205,7 @@ export class DemoMeetingApp implements
 
   cameraDeviceIds: string[] = [];
   microphoneDeviceIds: string[] = [];
+  currentAudioInputDevice: AudioInputDevice | undefined;
 
   buttonStates: { [key: string]: boolean } = {
     'button-microphone': true,
@@ -174,13 +223,25 @@ export class DemoMeetingApp implements
   enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
 
+  supportsVoiceFocus = false;
+  enableVoiceFocus = false;
+  voiceFocusIsActive = false;
+
   markdown = require('markdown-it')({linkify: true});
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
   meetingEventPOSTLogger: MeetingSessionPOSTLogger;
 
   hasChromiumWebRTC: boolean = this.defaultBrowserBehaviour.hasChromiumWebRTC();
+
   statsCollector: WebRTCStatsCollector = new WebRTCStatsCollector();
+  voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
+  voiceFocusDevice: VoiceFocusTransformDevice | undefined;
+
+  // This is an extremely minimal reactive programming approach: these elements
+  // will be updated when the Amazon Voice Focus display state changes.
+  voiceFocusDisplayables: HTMLElement[] = [];
+  analyserNode: RemovableAnalyserNode;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -215,12 +276,46 @@ export class DemoMeetingApp implements
     }
   }
 
+  async initVoiceFocus(): Promise<void> {
+    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    if (!this.enableWebAudio) {
+      logger.info('[DEMO] Web Audio not enabled. Not checking for Amazon Voice Focus support.');
+      return;
+    }
+
+    try {
+      this.supportsVoiceFocus = await VoiceFocusDeviceTransformer.isSupported(VOICE_FOCUS_SPEC, { logger });
+      if (this.supportsVoiceFocus) {
+        this.voiceFocusTransformer = await this.getVoiceFocusDeviceTransformer();
+        this.supportsVoiceFocus = this.voiceFocusTransformer && this.voiceFocusTransformer.isSupported();
+        if (this.supportsVoiceFocus) {
+          logger.info('[DEMO] Amazon Voice Focus is supported.');
+          document.getElementById('voice-focus-setting').classList.remove('hidden');
+          await this.populateAllDeviceLists();
+          return;
+        }
+      }
+    } catch (e) {
+      // Fall through.
+      logger.warn(`[DEMO] Does not support Amazon Voice Focus: ${e.message}`);
+    }
+    logger.warn('[DEMO] Does not support Amazon Voice Focus.');
+    this.supportsVoiceFocus = false;
+    document.getElementById('voice-focus-setting').classList.toggle('hidden', true);
+    await this.populateAllDeviceLists();
+  }
+
+  private async onVoiceFocusSettingChanged(): Promise<void> {
+    this.log('[DEMO] Amazon Voice Focus setting toggled to', this.enableVoiceFocus);
+    this.openAudioInputFromSelectionAndPreview();
+  }
+
   initEventListeners(): void {
     if (!this.defaultBrowserBehaviour.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('planB') as HTMLInputElement).disabled = true;
     }
-    
+
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
       this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
@@ -268,8 +363,11 @@ export class DemoMeetingApp implements
           ) as HTMLSpanElement).innerText = `Attendee ID: ${this.meetingSession.configuration.credentials.attendeeId}`;
           (document.getElementById('info-meeting') as HTMLSpanElement).innerText = this.meeting;
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
+
+          await this.initVoiceFocus();
+
           this.switchToFlow('flow-devices');
-          await this.openAudioInputFromSelection();
+          await this.openAudioInputFromSelectionAndPreview();
           try {
             await this.openVideoInputFromSelection(
               (document.getElementById('video-input') as HTMLSelectElement).value,
@@ -282,6 +380,19 @@ export class DemoMeetingApp implements
           this.hideProgress('progress-authenticate');
         }
       );
+    });
+
+    const speechMonoCheckbox = document.getElementById('fullband-speech-mono-quality') as HTMLInputElement;
+    const musicMonoCheckbox = document.getElementById('fullband-music-mono-quality') as HTMLInputElement;
+    speechMonoCheckbox.addEventListener('change', e => {
+      if (speechMonoCheckbox.checked) {
+        musicMonoCheckbox.checked = false;
+      }
+    });
+    musicMonoCheckbox.addEventListener('change', e => {
+      if (musicMonoCheckbox.checked) {
+        speechMonoCheckbox.checked = false;
+      }
     });
 
     document.getElementById('to-sip-flow').addEventListener('click', e => {
@@ -336,7 +447,7 @@ export class DemoMeetingApp implements
     const audioInput = document.getElementById('audio-input') as HTMLSelectElement;
     audioInput.addEventListener('change', async (_ev: Event) => {
       this.log('audio input device is changed');
-      await this.openAudioInputFromSelection();
+      await this.openAudioInputFromSelectionAndPreview();
     });
 
     const videoInput = document.getElementById('video-input') as HTMLSelectElement;
@@ -376,10 +487,11 @@ export class DemoMeetingApp implements
       await this.openAudioOutputFromSelection();
     });
 
-    document.getElementById('button-test-sound').addEventListener('click', e => {
+    document.getElementById('button-test-sound').addEventListener('click', async e => {
       e.preventDefault();
       const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
-      new TestSound(audioOutput.value);
+      const testSound = new TestSound(this.meetingEventPOSTLogger, audioOutput.value);
+      await testSound.init();
     });
 
     document.getElementById('form-devices').addEventListener('submit', e => {
@@ -387,10 +499,11 @@ export class DemoMeetingApp implements
       new AsyncScheduler().start(async () => {
         try {
           this.showProgress('progress-join');
-          await this.join();
+          await this.stopAudioPreview();
           this.audioVideo.stopVideoPreviewForVideoInput(document.getElementById(
             'video-preview'
           ) as HTMLVideoElement);
+          await this.join();
           this.audioVideo.chooseVideoInputDevice(null);
           this.hideProgress('progress-join');
           this.displayButtonStates();
@@ -400,6 +513,11 @@ export class DemoMeetingApp implements
           document.getElementById('failed-join-error').innerText = `Error: ${error.message}`;
         }
       });
+    });
+
+    (document.getElementById('add-voice-focus') as HTMLInputElement).addEventListener('change', e => {
+      this.enableVoiceFocus = (e.target as HTMLInputElement).checked;
+      this.onVoiceFocusSettingChanged();
     });
 
     const buttonMute = document.getElementById('button-microphone');
@@ -461,9 +579,13 @@ export class DemoMeetingApp implements
     buttonSpeaker.addEventListener('click', _e => {
       new AsyncScheduler().start(async () => {
         if (this.toggleButton('button-speaker')) {
-          this.audioVideo.bindAudioElement(document.getElementById(
-            'meeting-audio'
-          ) as HTMLAudioElement);
+          try {
+            await this.audioVideo.bindAudioElement(document.getElementById(
+              'meeting-audio'
+            ) as HTMLAudioElement);
+          } catch (e) {
+            this.log('Failed to bindAudioElement', e);
+          }
         } else {
           this.audioVideo.unbindAudioElement();
         }
@@ -624,15 +746,39 @@ export class DemoMeetingApp implements
   }
 
   switchToFlow(flow: string): void {
-    this.analyserNodeCallback = () => {};
     Array.from(document.getElementsByClassName('flow')).map(
       e => ((e as HTMLDivElement).style.display = 'none')
     );
     (document.getElementById(flow) as HTMLDivElement).style.display = 'block';
   }
 
-  audioInputsChanged(_freshAudioInputDeviceList: MediaDeviceInfo[]): void {
-    this.populateAudioInputList();
+  async onAudioInputsChanged(freshDevices: MediaDeviceInfo[]): Promise<void> {
+    await this.populateAudioInputList();
+
+    if (!this.currentAudioInputDevice) {
+      return;
+    }
+
+    if (this.currentAudioInputDevice === 'default') {
+      // The default device might actually have changed. Go ahead and trigger a
+      // reselection.
+      this.log('Reselecting default device.');
+      await this.selectAudioInputDevice(this.currentAudioInputDevice);
+      return;
+    }
+
+    const freshDeviceWithSameID = freshDevices.find((device) => device.deviceId === this.currentAudioInputDevice);
+
+    if (freshDeviceWithSameID === undefined) {
+      this.log('Existing device disappeared. Selecting a new one.');
+
+      // Select a new device.
+      await this.openAudioInputFromSelectionAndPreview();
+    }
+  }
+
+  audioInputsChanged(freshAudioInputDeviceList: MediaDeviceInfo[]): void {
+    this.onAudioInputsChanged(freshAudioInputDeviceList);
   }
 
   videoInputsChanged(_freshVideoInputDeviceList: MediaDeviceInfo[]): void {
@@ -737,7 +883,7 @@ export class DemoMeetingApp implements
         body
       });
       if (response.status === 200) {
-        this.log('Log stream created');
+        console.log('[DEMO] Log stream created');
       }
     } catch (error) {
       this.log(error.message);
@@ -809,12 +955,18 @@ export class DemoMeetingApp implements
         logLevel
       );
     }
-    const deviceController = new DefaultDeviceController(logger);
-    configuration.enableWebAudio = this.enableWebAudio;
+    const deviceController = new DefaultDeviceController(logger, { enableWebAudio: this.enableWebAudio });
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.attendeePresenceTimeoutMs = 5000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(configuration, logger, deviceController);
+    if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
+      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
+      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono());
+    } else if ((document.getElementById('fullband-music-mono-quality') as HTMLInputElement).checked) {
+      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicMono());
+      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
+    }
     this.audioVideo = this.meetingSession.audioVideo;
 
     this.audioVideo.addDeviceChangeObserver(this);
@@ -829,24 +981,18 @@ export class DemoMeetingApp implements
     this.initContentShareDropDownItems();
   }
 
-  setClickHandler(elementId: string, f: () => void): void {
-    document.getElementById(elementId).addEventListener('click', () => {
-      f();
-    });
-  }
-
   async join(): Promise<void> {
     window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
       this.log(event.reason);
     });
-    await this.openAudioInputFromSelection();
-    await this.openAudioOutputFromSelection();
     this.audioVideo.start();
   }
 
   leave(): void {
     this.statsCollector.resetStats();
     this.audioVideo.stop();
+    this.voiceFocusDevice?.stop();
+    this.voiceFocusDevice = undefined;
     this.roster = {};
   }
 
@@ -1164,6 +1310,7 @@ export class DemoMeetingApp implements
     genericName: string,
     devices: MediaDeviceInfo[],
     additionalOptions: string[],
+    additionalToggles: Toggle[] | undefined,
     callback: (name: string) => void
   ): void {
     const menu = document.getElementById(elementId) as HTMLDivElement;
@@ -1175,7 +1322,7 @@ export class DemoMeetingApp implements
         callback(devices[i].deviceId);
       });
     }
-    if (additionalOptions.length > 0) {
+    if (additionalOptions.length) {
       this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
       for (const additionalOption of additionalOptions) {
         this.createDropdownMenuItem(
@@ -1187,6 +1334,20 @@ export class DemoMeetingApp implements
           `${elementId}-${additionalOption.replace(/\s/g, '-')}`
         );
       }
+    }
+    if (additionalToggles?.length) {
+      this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
+      for (const { name, oncreate, action } of additionalToggles) {
+        const id = `toggle-${elementId}-${name.replace(/\s/g, '-')}`;
+        const elem = this.createDropdownMenuItem(
+          menu,
+          name,
+          action,
+          id
+        );
+        oncreate(elem);
+      }
+
     }
     if (!menu.firstElementChild) {
       this.createDropdownMenuItem(menu, 'Device selection unavailable', () => {});
@@ -1219,22 +1380,83 @@ export class DemoMeetingApp implements
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
     const additionalDevices = ['None', '440 Hz'];
+    const additionalToggles = [];
+
+    // This can't work unless Web Audio is enabled.
+    if (this.enableWebAudio && this.supportsVoiceFocus) {
+      additionalToggles.push({
+        name: 'Amazon Voice Focus',
+        oncreate: (elem: HTMLElement) => {
+          this.voiceFocusDisplayables.push(elem);
+        },
+        action: () => this.toggleVoiceFocusInMeeting(),
+      });
+    }
+
     this.populateDeviceList(
       'audio-input',
       genericName,
       await this.audioVideo.listAudioInputDevices(),
       additionalDevices
     );
+
     this.populateInMeetingDeviceList(
       'dropdown-menu-microphone',
       genericName,
       await this.audioVideo.listAudioInputDevices(),
       additionalDevices,
+      additionalToggles,
       async (name: string) => {
-        const device = await this.audioInputSelectionToDevice(name);
-        await this.audioVideo.chooseAudioInputDevice(device);
+        await this.selectAudioInputDeviceByName(name);
       }
     );
+  }
+
+  private isVoiceFocusActive(): boolean {
+    return this.currentAudioInputDevice instanceof VoiceFocusTransformDevice;
+  }
+
+  private updateVoiceFocusDisplayState() {
+    const active = this.isVoiceFocusActive();
+    this.log('Updating Amazon Voice Focus display state:', active);
+    for (const elem of this.voiceFocusDisplayables) {
+      elem.classList.toggle('vf-active', active);
+    }
+  }
+
+  private isVoiceFocusEnabled(): boolean {
+    this.log('VF supported:', this.supportsVoiceFocus);
+    this.log('VF enabled:', this.enableVoiceFocus);
+    return this.supportsVoiceFocus && this.enableVoiceFocus;
+  }
+
+  private async reselectAudioInputDevice(): Promise<void> {
+    let current = this.currentAudioInputDevice;
+
+    if (current instanceof VoiceFocusTransformDevice) {
+      // Unwrap and rewrap if Amazon Voice Focus is selected.
+      const intrinsic = current.getInnerDevice();
+      const device = await this.audioInputSelectionWithOptionalVoiceFocus(intrinsic);
+      return this.selectAudioInputDevice(device);
+    }
+
+    // If it's another kind of transform device, just reselect it.
+    if (isAudioTransformDevice(current)) {
+      return this.selectAudioInputDevice(current);
+    }
+
+    // Otherwise, apply Amazon Voice Focus if needed.
+    const device = await this.audioInputSelectionWithOptionalVoiceFocus(current);
+    return this.selectAudioInputDevice(device);
+  }
+
+  private async toggleVoiceFocusInMeeting(): Promise<void> {
+    const elem = (document.getElementById('add-voice-focus') as HTMLInputElement);
+    this.enableVoiceFocus = this.supportsVoiceFocus && !this.enableVoiceFocus;
+    elem.checked = this.enableVoiceFocus;
+    this.log('Amazon Voice Focus toggle is now', elem.checked);
+
+    await this.reselectAudioInputDevice();
   }
 
   async populateVideoInputList(): Promise<void> {
@@ -1251,6 +1473,7 @@ export class DemoMeetingApp implements
       genericName,
       await this.audioVideo.listVideoInputDevices(),
       additionalDevices,
+      undefined,
       async (name: string) => {
         try {
           await this.openVideoInputFromSelection(name, false);
@@ -1279,23 +1502,59 @@ export class DemoMeetingApp implements
       genericName,
       await this.audioVideo.listAudioOutputDevices(),
       additionalDevices,
+      undefined,
       async (name: string) => {
-        await this.audioVideo.chooseAudioOutputDevice(name);
+        try {
+          await this.audioVideo.chooseAudioOutputDevice(name);
+        } catch (e) {
+          this.log('Failed to chooseAudioOutputDevice', e)
+        }
       }
     );
   }
 
   private analyserNodeCallback = () => {};
 
-  async openAudioInputFromSelection(): Promise<void> {
+  async selectedAudioInput(): Promise<AudioInputDevice> {
     const audioInput = document.getElementById('audio-input') as HTMLSelectElement;
     const device = await this.audioInputSelectionToDevice(audioInput.value);
-    await this.audioVideo.chooseAudioInputDevice(device);
-    this.startAudioPreview();
+    return device;
+  }
+
+  async selectAudioInputDevice(device: AudioInputDevice): Promise<void> {
+    this.currentAudioInputDevice = device;
+    this.log('Selecting audio input', device);
+    try {
+      await this.audioVideo.chooseAudioInputDevice(device);
+    } catch (e) {
+      this.log(`failed to choose audio input device ${device}`, e);
+    }
+    this.updateVoiceFocusDisplayState();
+  }
+
+  async selectAudioInputDeviceByName(name: string): Promise<void> {
+    this.log('Selecting audio input device by name:', name);
+    const device = await this.audioInputSelectionToDevice(name);
+    return this.selectAudioInputDevice(device);
+  }
+
+  async openAudioInputFromSelection(): Promise<void> {
+    const device = await this.selectedAudioInput();
+    await this.selectAudioInputDevice(device);
+  }
+
+  async openAudioInputFromSelectionAndPreview(): Promise<void> {
+    await this.stopAudioPreview();
+    await this.openAudioInputFromSelection();
+    this.log('Starting audio preview.');
+    await this.startAudioPreview();
   }
 
   setAudioPreviewPercent(percent: number): void {
     const audioPreview = document.getElementById('audio-preview');
+    if (!audioPreview) {
+      return;
+    }
     this.updateProperty(audioPreview.style, 'transitionDuration', '33ms');
     this.updateProperty(audioPreview.style, 'width', `${percent}%`);
     if (audioPreview.getAttribute('aria-valuenow') !== `${percent}`) {
@@ -1303,16 +1562,44 @@ export class DemoMeetingApp implements
     }
   }
 
+  async stopAudioPreview(): Promise<void> {
+    if (!this.analyserNode) {
+      return;
+    }
+
+    this.analyserNodeCallback = () => {};
+
+    // Disconnect the analyser node from its inputs and outputs.
+    this.analyserNode.disconnect();
+    this.analyserNode.removeOriginalInputs();
+
+    this.analyserNode = undefined;
+  }
+
   startAudioPreview(): void {
     this.setAudioPreviewPercent(0);
+
+    // Recreate.
+    if (this.analyserNode) {
+      // Disconnect the analyser node from its inputs and outputs.
+      this.analyserNode.disconnect();
+      this.analyserNode.removeOriginalInputs();
+
+      this.analyserNode = undefined;
+    }
+
     const analyserNode = this.audioVideo.createAnalyserNodeForAudioInput();
+
     if (!analyserNode) {
       return;
     }
+
     if (!analyserNode.getByteTimeDomainData) {
       document.getElementById('audio-preview').parentElement.style.visibility = 'hidden';
       return;
     }
+
+    this.analyserNode = analyserNode;
     const data = new Uint8Array(analyserNode.fftSize);
     let frameIndex = 0;
     this.analyserNodeCallback = () => {
@@ -1335,9 +1622,17 @@ export class DemoMeetingApp implements
 
   async openAudioOutputFromSelection(): Promise<void> {
     const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
-    await this.audioVideo.chooseAudioOutputDevice(audioOutput.value);
+    try {
+      await this.audioVideo.chooseAudioOutputDevice(audioOutput.value);
+    } catch (e) {
+      this.log('failed to chooseAudioOutputDevice', e);
+    }
     const audioMix = document.getElementById('meeting-audio') as HTMLAudioElement;
-    await this.audioVideo.bindAudioElement(audioMix);
+    try {
+      await this.audioVideo.bindAudioElement(audioMix);
+    } catch (e) {
+      this.log('failed to bindAudioElement', e);
+    }
   }
 
   private selectedVideoInput: string | null = null;
@@ -1357,10 +1652,19 @@ export class DemoMeetingApp implements
       this.audioVideo.stopLocalVideoTile();
       this.toggleButton('button-camera', 'off');
       // choose video input null is redundant since we expect stopLocalVideoTile to clean up
-      await this.audioVideo.chooseVideoInputDevice(device);
+      try {
+        await this.audioVideo.chooseVideoInputDevice(device);
+      } catch (e) {
+        this.log(`failed to chooseVideoInputDevice ${device}`, e);
+      }
       throw new Error('no video device selected');
     }
-    await this.audioVideo.chooseVideoInputDevice(device);
+    try {
+      await this.audioVideo.chooseVideoInputDevice(device);
+    } catch (e) {
+      this.log(`failed to chooseVideoInputDevice ${device}`, e);
+    }
+
     if (showPreview) {
       this.audioVideo.startVideoPreviewForVideoInput(document.getElementById(
         'video-preview'
@@ -1368,30 +1672,95 @@ export class DemoMeetingApp implements
     }
   }
 
-  private async audioInputSelectionToDevice(value: string): Promise<Device> {
+  private async audioInputSelectionToIntrinsicDevice(value: string): Promise<Device> {
     if (this.isRecorder() || this.isBroadcaster()) {
       return null;
     }
+
     if (value === '440 Hz') {
       return DefaultDeviceController.synthesizeAudioDevice(440);
     }
+
     if (value === 'None') {
       return null;
     }
+
     return value;
   }
 
-  private videoInputSelectionToDevice(value: string): Device {
+  private async getVoiceFocusDeviceTransformer(): Promise<VoiceFocusDeviceTransformer> {
+    if (this.voiceFocusTransformer) {
+      return this.voiceFocusTransformer;
+    }
+    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    const transformer = await VoiceFocusDeviceTransformer.create(VOICE_FOCUS_SPEC, { logger });
+    this.voiceFocusTransformer = transformer;
+    return transformer;
+  }
+
+  private async createVoiceFocusDevice(inner: Device): Promise<VoiceFocusTransformDevice | Device> {
+    if (!this.supportsVoiceFocus) {
+      return inner;
+    }
+
+    if (this.voiceFocusDevice) {
+      // Dismantle the old one.
+      return this.voiceFocusDevice = await this.voiceFocusDevice.chooseNewInnerDevice(inner);
+    }
+
+    try {
+      const transformer = await this.getVoiceFocusDeviceTransformer();
+      const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner);
+      if (vf) {
+        return this.voiceFocusDevice = vf;
+      }
+    } catch (e) {
+      // Fall through.
+    }
+    return inner;
+  }
+
+
+
+  private async audioInputSelectionWithOptionalVoiceFocus(device: Device): Promise<Device | VoiceFocusTransformDevice> {
+    if (this.isVoiceFocusEnabled()) {
+      if (!this.voiceFocusDevice) {
+        return this.createVoiceFocusDevice(device);
+      }
+
+      // Switch out the inner if needed.
+      // The reuse of the Voice Focus device is more efficient, particularly if
+      // reselecting the same inner -- no need to modify the Web Audio graph.
+      // Allowing the Voice Focus device to manage toggling Voice Focus on and off
+      // also
+      return this.voiceFocusDevice = await this.voiceFocusDevice.chooseNewInnerDevice(device);
+    }
+
+    return device;
+  }
+
+  private async audioInputSelectionToDevice(value: string): Promise<Device | VoiceFocusTransformDevice> {
+    const inner = await this.audioInputSelectionToIntrinsicDevice(value);
+    return this.audioInputSelectionWithOptionalVoiceFocus(inner);
+  }
+
+  private videoInputSelectionToDevice(value: string): VideoInputDevice {
     if (this.isRecorder() || this.isBroadcaster()) {
       return null;
     }
+
     if (value === 'Blue') {
       return DefaultDeviceController.synthesizeVideoDevice('blue');
-    } else if (value === 'SMPTE Color Bars') {
+    }
+
+    if (value === 'SMPTE Color Bars') {
       return DefaultDeviceController.synthesizeVideoDevice('smpte');
-    } else if (value === 'None') {
+    }
+
+    if (value === 'None') {
       return null;
     }
+
     return value;
   }
 
@@ -1484,8 +1853,8 @@ export class DemoMeetingApp implements
     return configuration.meetingId;
   }
 
-  log(str: string): void {
-    console.log(`[DEMO] ${str}`);
+  log(str: string, ...args: any[]): void {
+    console.log.apply(console, [`[DEMO] ${str}`, ...args]);
   }
 
   audioVideoDidStartConnecting(reconnecting: boolean): void {

@@ -82,36 +82,6 @@ const allFiles = () => {
   return srcFiles.concat(testFiles).concat(demosFiles);
 };
 
-const joinYears = (years) => {
-  let prevYear = null;
-  let rangeEnd = null;
-  let out = '';
-  for (const year of years) {
-    if (parseInt(prevYear) + 1 === parseInt(year)) {
-      rangeEnd = year;
-    } else {
-      if (rangeEnd) {
-        out += `-${rangeEnd}`;
-        rangeEnd = null;
-      }
-      if (out !== '') {
-        out += ', ';
-      }
-      out += year;
-    }
-    prevYear = year;
-  }
-  if (rangeEnd) {
-    out += `-${rangeEnd}`;
-    rangeEnd = null;
-  }
-  return out;
-};
-
-const unique = (value, index, self) => {
-  return self.indexOf(value) === index;
-};
-
 tests().forEach(file => {
   if (file === 'test/global/Global.test.ts') {
     return;
@@ -172,6 +142,11 @@ tests().forEach(file => {
 
 components().forEach(component => {
   if (isIgnored(component)) {
+    return;
+  }
+
+  if (component === 'voicefocus') {
+    // This rule does not make sense for Voice Focus.
     return;
   }
 
@@ -236,24 +211,7 @@ allFiles().forEach(file => {
     return;
   }
 
-  let yearsForFileInGitHistory = [];
-  const stdout = exec(`git log --pretty=format:'%ad' --date=short '${file}'`);
-
-  const dates = [];
-  for (const line of stdout
-    .toString()
-    .trim()
-    .split('\n')) {
-    const year = line.replace(/[-].*/, '');
-    dates.push(year);
-    allYears.push(year);
-  }
-
-  yearsForFileInGitHistory = dates.sort().filter(unique);
-
-  const copyright = `// Copyright ${joinYears(
-    yearsForFileInGitHistory
-  )} Amazon.com, Inc. or its affiliates. All Rights Reserved.`;
+  const copyright = `// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.`;
   const fileLines = fs
     .readFileSync(file)
     .toString()
@@ -296,9 +254,7 @@ allFiles().forEach(file => {
   }
 });
 
-const footerCopyright = `\nCopyright ${joinYears(
-  allYears.sort().filter(unique)
-)} Amazon.com, Inc. or its affiliates. All Rights Reserved.\n`;
+const footerCopyright = `\nCopyright Amazon.com, Inc. or its affiliates. All Rights Reserved.\n`;
 
 for (const file of ['README.md', 'NOTICE']) {
   if (

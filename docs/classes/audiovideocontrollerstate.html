@@ -92,6 +92,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#activevideoinput" class="tsd-kind-icon">active<wbr>Video<wbr>Input</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#audiodeviceinformation" class="tsd-kind-icon">audio<wbr>Device<wbr>Information</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#audiomixcontroller" class="tsd-kind-icon">audio<wbr>Mix<wbr>Controller</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#audioprofile" class="tsd-kind-icon">audio<wbr>Profile</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#audiovideocontroller" class="tsd-kind-icon">audio<wbr>Video<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#browserbehavior" class="tsd-kind-icon">browser<wbr>Behavior</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#connectionmonitor" class="tsd-kind-icon">connection<wbr>Monitor</a></li>
@@ -114,7 +115,6 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#realtimecontroller" class="tsd-kind-icon">realtime<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#reconnectcontroller" class="tsd-kind-icon">reconnect<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#removableobservers" class="tsd-kind-icon">removable<wbr>Observers</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#screensharingsession" class="tsd-kind-icon">screen<wbr>Sharing<wbr>Session</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#sdpanswer" class="tsd-kind-icon">sdp<wbr>Answer</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#sdpofferinit" class="tsd-kind-icon">sdp<wbr>Offer<wbr>Init</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#signalingclient" class="tsd-kind-icon">signaling<wbr>Client</a></li>
@@ -191,6 +191,16 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="audioprofile" class="tsd-anchor"></a>
+					<h3>audio<wbr>Profile</h3>
+					<div class="tsd-signature tsd-kind-icon">audio<wbr>Profile<span class="tsd-signature-symbol">:</span> <a href="audioprofile.html" class="tsd-signature-type">AudioProfile</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L81">src/audiovideocontroller/AudioVideoControllerState.ts:81</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="audiovideocontroller" class="tsd-anchor"></a>
 					<h3>audio<wbr>Video<wbr>Controller</h3>
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Video<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
@@ -243,33 +253,12 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="icecandidatehandler" class="tsd-anchor"></a>
 					<h3>ice<wbr>Candidate<wbr>Handler</h3>
-					<div class="tsd-signature tsd-kind-icon">ice<wbr>Candidate<wbr>Handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCPeerConnectionIceEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<div class="tsd-signature tsd-kind-icon">ice<wbr>Candidate<wbr>Handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCPeerConnectionIceEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L69">src/audiovideocontroller/AudioVideoControllerState.ts:69</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCPeerConnectionIceEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>event: <span class="tsd-signature-type">RTCPeerConnectionIceEvent</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="icecandidates" class="tsd-anchor"></a>
@@ -284,27 +273,12 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="icegatheringstateeventhandler" class="tsd-anchor"></a>
 					<h3>ice<wbr>Gathering<wbr>State<wbr>Event<wbr>Handler</h3>
-					<div class="tsd-signature tsd-kind-icon">ice<wbr>Gathering<wbr>State<wbr>Event<wbr>Handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<div class="tsd-signature tsd-kind-icon">ice<wbr>Gathering<wbr>State<wbr>Event<wbr>Handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L71">src/audiovideocontroller/AudioVideoControllerState.ts:71</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="indexframe" class="tsd-anchor"></a>
@@ -432,7 +406,7 @@
 					<div class="tsd-signature tsd-kind-icon">reconnect<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/reconnectcontroller.html" class="tsd-signature-type">ReconnectController</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L79">src/audiovideocontroller/AudioVideoControllerState.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L77">src/audiovideocontroller/AudioVideoControllerState.ts:77</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -442,17 +416,7 @@
 					<div class="tsd-signature tsd-kind-icon">removable<wbr>Observers<span class="tsd-signature-symbol">:</span> <a href="../interfaces/removableobserver.html" class="tsd-signature-type">RemovableObserver</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L81">src/audiovideocontroller/AudioVideoControllerState.ts:81</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="screensharingsession" class="tsd-anchor"></a>
-					<h3>screen<wbr>Sharing<wbr>Session</h3>
-					<div class="tsd-signature tsd-kind-icon">screen<wbr>Sharing<wbr>Session<span class="tsd-signature-symbol">:</span> <a href="../interfaces/screensharingsession.html" class="tsd-signature-type">ScreenSharingSession</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L73">src/audiovideocontroller/AudioVideoControllerState.ts:73</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L79">src/audiovideocontroller/AudioVideoControllerState.ts:79</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -462,7 +426,7 @@
 					<div class="tsd-signature tsd-kind-icon">sdp<wbr>Answer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L75">src/audiovideocontroller/AudioVideoControllerState.ts:75</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L73">src/audiovideocontroller/AudioVideoControllerState.ts:73</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -532,7 +496,7 @@
 					<div class="tsd-signature tsd-kind-icon">turn<wbr>Credentials<span class="tsd-signature-symbol">:</span> <a href="meetingsessionturncredentials.html" class="tsd-signature-type">MeetingSessionTURNCredentials</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L77">src/audiovideocontroller/AudioVideoControllerState.ts:77</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L75">src/audiovideocontroller/AudioVideoControllerState.ts:75</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -694,6 +658,9 @@
 								<a href="audiovideocontrollerstate.html#audiomixcontroller" class="tsd-kind-icon">audio<wbr>Mix<wbr>Controller</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="audiovideocontrollerstate.html#audioprofile" class="tsd-kind-icon">audio<wbr>Profile</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#audiovideocontroller" class="tsd-kind-icon">audio<wbr>Video<wbr>Controller</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -758,9 +725,6 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#removableobservers" class="tsd-kind-icon">removable<wbr>Observers</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="audiovideocontrollerstate.html#screensharingsession" class="tsd-kind-icon">screen<wbr>Sharing<wbr>Session</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#sdpanswer" class="tsd-kind-icon">sdp<wbr>Answer</a>

@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -7,6 +7,7 @@ import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObs
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { MockPassthroughTransformDevice } from '../transformdevicemock/MockTransformDevice';
 
 describe('NoOpDeviceController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -32,12 +33,6 @@ describe('NoOpDeviceController', () => {
     });
   });
 
-  describe('enableWebAudio', () => {
-    it('can be called', () => {
-      deviceController.enableWebAudio(true);
-    });
-  });
-
   describe('listAudioInputDevices', () => {
     it('returns empty list', async () => {
       const devices = await deviceController.listAudioInputDevices();
@@ -60,9 +55,18 @@ describe('NoOpDeviceController', () => {
   });
 
   describe('chooseAudioInputDevice', () => {
-    it('fails', async () => {
+    it('fails for intrinsic devices', async () => {
       await deviceController
         .chooseAudioInputDevice('')
+        .then(() => {
+          assert.fail();
+        })
+        .catch(() => {});
+    });
+
+    it('fails for transform devices', async () => {
+      await deviceController
+        .chooseAudioInputDevice(new MockPassthroughTransformDevice(''))
         .then(() => {
           assert.fail();
         })

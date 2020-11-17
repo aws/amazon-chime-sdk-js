@@ -1,15 +1,16 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 
 import DefaultAudioMixController from '../../src/audiomixcontroller/DefaultAudioMixController';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import NoOpLogger from '../../src/logger/NoOpLogger';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultAudioMixController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
+  const logger = new NoOpLogger();
   let domMockBuilder: DOMMockBuilder;
   let behavior: DOMMockBehavior;
   let defaultAudioMixController: DefaultAudioMixController;
@@ -20,7 +21,7 @@ describe('DefaultAudioMixController', () => {
   beforeEach(() => {
     behavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(behavior);
-    defaultAudioMixController = new DefaultAudioMixController();
+    defaultAudioMixController = new DefaultAudioMixController(logger);
     element = new HTMLAudioElement();
     device = new MediaDeviceInfo();
     // @ts-ignore
@@ -36,89 +37,201 @@ describe('DefaultAudioMixController', () => {
     expect(defaultAudioMixController).to.not.equal(null);
   });
 
-  it('can bind an audio element, but not yet sink', () => {
-    expect(defaultAudioMixController.bindAudioElement(element)).to.equal(true);
+  it('can bind an audio element, but not yet sink', async () => {
+    // expect(await defaultAudioMixController.bindAudioElement(element)).to.equal(true);
+    element.autoplay = false;
+    try {
+      await defaultAudioMixController.bindAudioElement(element);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
+    expect(element.autoplay).to.equal(true);
   });
 
-  it('can fail to bind an audio element when element does not exist', () => {
-    expect(defaultAudioMixController.bindAudioElement(null)).to.equal(false);
+  it('can fail to bind an audio element when element does not exist', async () => {
+    try {
+      await defaultAudioMixController.bindAudioElement(null);
+      throw new Error('This line should not be reached.');
+    } catch (e) {
+      expect(e.message).include('Cannot bind audio element');
+    }
   });
 
-  it('can unbind an audio element when element does not exist', () => {
-    defaultAudioMixController.bindAudioDevice(device);
-    defaultAudioMixController.bindAudioStream(stream);
+  it('can unbind an audio element when element does not exist', async () => {
+    await defaultAudioMixController.bindAudioDevice(device);
+    await defaultAudioMixController.bindAudioStream(stream);
     defaultAudioMixController.unbindAudioElement();
-    expect(defaultAudioMixController.bindAudioElement(element)).to.equal(true);
+    try {
+      await defaultAudioMixController.bindAudioElement(element);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
     defaultAudioMixController.unbindAudioElement();
-    expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(false);
+    try {
+      await defaultAudioMixController.bindAudioStream(stream);
+    } catch (e) {
+      expect(e.messaage).to.include('bla');
+    }
   });
 
-  it('can successfully bind and sink an audio element', () => {
-    defaultAudioMixController.bindAudioDevice(device);
-    defaultAudioMixController.bindAudioStream(stream);
-    expect(defaultAudioMixController.bindAudioElement(element)).to.equal(true);
+  it('can successfully bind and sink an audio element', async () => {
+    //@ts-ignore
+    await element.setSinkId('undefined');
+    //@ts-ignore
+    expect(element.sinkId).to.equal('undefined');
+    await defaultAudioMixController.bindAudioDevice(device);
+    await defaultAudioMixController.bindAudioStream(stream);
+    element.autoplay = false;
+    try {
+      await defaultAudioMixController.bindAudioElement(element);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
+    expect(element.autoplay).to.equal(true);
+    // @ts-ignore
+    expect(element.sinkId).to.equal('device-id');
   });
 
-  it('can bind an audio stream, but not yet sink', () => {
-    expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(false);
+  it('Does not throw error on failure to bindAudioStream. Just logs error. (with logger)', async () => {
+    behavior.setSinkIdSupported = false;
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    await defaultAudioMixController.bindAudioElement(element);
+    //@ts-ignore
+    await element.setSinkId(undefined);
+    try {
+      await defaultAudioMixController.bindAudioStream(stream);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
+
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    try {
+      await defaultAudioMixController.bindAudioStream(stream);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
+
+    defaultAudioMixController = new DefaultAudioMixController();
+    //@ts-ignore
+    await element.setSinkId('sink-id');
+    await defaultAudioMixController.bindAudioElement(element);
+    //@ts-ignore
+    await element.setSinkId(undefined);
+    try {
+      await defaultAudioMixController.bindAudioStream(stream);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
   });
 
-  it('can fail to bind an audio stream when stream does not exist', () => {
-    expect(defaultAudioMixController.bindAudioStream(null)).to.equal(false);
+  it('does nothing when trying to bind an audio stream and the stream does not exist', async () => {
+    try {
+      await defaultAudioMixController.bindAudioStream(null);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
   });
 
-  it('can successfully bind and sink an audio stream', () => {
-    defaultAudioMixController.bindAudioDevice(device);
-    defaultAudioMixController.bindAudioElement(element);
-    expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(true);
+  it('can successfully bind and sink an audio stream', async () => {
+    try {
+      await defaultAudioMixController.bindAudioDevice(device);
+      await defaultAudioMixController.bindAudioElement(element);
+      await defaultAudioMixController.bindAudioStream(stream);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
+  });
+
+  it('throws an error if browser does not support setSinkId', async () => {
+    behavior.setSinkIdSupported = false;
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    try {
+      await defaultAudioMixController.bindAudioDevice(device);
+      throw new Error('This line should not be reached.');
+    } catch (e) {
+      expect(e.message).include(
+        'Cannot select audio output device. This browser does not support setSinkId.'
+      );
+    }
   });
 
   it('can successfully bind and sink an audio stream in chromium based browser', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
-    defaultAudioMixController = new DefaultAudioMixController();
-    defaultAudioMixController.bindAudioDevice(device);
-    defaultAudioMixController.bindAudioElement(element);
-    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
-    expect(defaultAudioMixController.bindAudioStream(stream)).to.equal(true);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    try {
+      await defaultAudioMixController.bindAudioDevice(device);
+      await defaultAudioMixController.bindAudioElement(element);
+      await defaultAudioMixController.bindAudioStream(stream);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
     expect(element.srcObject).to.equal(stream);
   });
 
-  it('can bind an audio device, but not yet sink', () => {
-    expect(defaultAudioMixController.bindAudioDevice(device)).to.equal(false);
+  it('can bind an audio device, but not yet sink', async () => {
+    // @ts-ignore
+    await element.setSinkId('random-id');
+    await defaultAudioMixController.bindAudioElement(element);
+    await defaultAudioMixController.bindAudioDevice(device);
+    // @ts-ignore
+    expect(element.sinkId).to.equal('device-id');
+
+    // @ts-ignore
+    await element.setSinkId('random-id');
+    behavior.setSinkIdSucceeds = false;
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    try {
+      await defaultAudioMixController.bindAudioDevice(device);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
+    // @ts-ignore
+    expect(element.sinkId).to.not.equal('device-id');
+    // @ts-ignore
+    expect(element.sinkId).to.equal('random-id');
   });
 
-  it('can fail to bind an audio device when device does not exist', () => {
-    expect(defaultAudioMixController.bindAudioDevice(null)).to.equal(false);
+  it('does nothing if we try to bind an audio device when device does not exist', async () => {
+    try {
+      await defaultAudioMixController.bindAudioDevice(null);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
   });
 
-  it('can successfully bind and sink an audio device', () => {
-    defaultAudioMixController.bindAudioStream(stream);
-    defaultAudioMixController.bindAudioElement(element);
-    expect(defaultAudioMixController.bindAudioDevice(device)).to.equal(true);
+  it('can successfully bind and sink an audio device', async () => {
+    try {
+      await defaultAudioMixController.bindAudioStream(stream);
+      await defaultAudioMixController.bindAudioElement(element);
+      await defaultAudioMixController.bindAudioDevice(device);
+    } catch (e) {
+      throw new Error('This line should not be reached.');
+    }
   });
 
   it('can successfully set audio element and unbind element', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
-    defaultAudioMixController = new DefaultAudioMixController();
-    defaultAudioMixController.bindAudioElement(element);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    await defaultAudioMixController.bindAudioElement(element);
     defaultAudioMixController.unbindAudioElement();
-    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
     expect(element.srcObject).to.equal(null);
   });
 
   it('can switch between audio elements and streams', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
-    defaultAudioMixController = new DefaultAudioMixController();
+    defaultAudioMixController = new DefaultAudioMixController(logger);
     const element2 = new HTMLAudioElement();
     const stream2 = new MediaStream();
-    defaultAudioMixController.bindAudioElement(element);
-    defaultAudioMixController.bindAudioStream(stream);
-    defaultAudioMixController.bindAudioElement(element2);
-    defaultAudioMixController.bindAudioStream(stream2);
-    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
+    await defaultAudioMixController.bindAudioElement(element);
+    await defaultAudioMixController.bindAudioStream(stream);
+    await defaultAudioMixController.bindAudioElement(element2);
+    await defaultAudioMixController.bindAudioStream(stream2);
     expect(element.srcObject).to.equal(stream);
     expect(element2.srcObject).to.equal(stream2);
   });
@@ -126,15 +239,14 @@ describe('DefaultAudioMixController', () => {
   it('can bind and unbind between various audio elements and streams', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
-    defaultAudioMixController = new DefaultAudioMixController();
+    defaultAudioMixController = new DefaultAudioMixController(logger);
     const element2 = new HTMLAudioElement();
     const stream2 = new MediaStream();
-    defaultAudioMixController.bindAudioElement(element);
-    defaultAudioMixController.bindAudioStream(stream);
+    await defaultAudioMixController.bindAudioElement(element);
+    await defaultAudioMixController.bindAudioStream(stream);
     defaultAudioMixController.unbindAudioElement();
-    defaultAudioMixController.bindAudioElement(element2);
-    defaultAudioMixController.bindAudioStream(stream2);
-    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
+    await defaultAudioMixController.bindAudioElement(element2);
+    await defaultAudioMixController.bindAudioStream(stream2);
     expect(element.srcObject).to.equal(null);
     expect(element2.srcObject).to.equal(stream2);
   });
@@ -142,29 +254,76 @@ describe('DefaultAudioMixController', () => {
   it('can execute calls to the 3 bind methods consecutively in chromium based browser', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
-    defaultAudioMixController = new DefaultAudioMixController();
-    defaultAudioMixController.bindAudioDevice(device);
-    defaultAudioMixController.bindAudioElement(element);
-    defaultAudioMixController.bindAudioStream(stream);
-    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    await defaultAudioMixController.bindAudioDevice(device);
+    await defaultAudioMixController.bindAudioElement(element);
+    await defaultAudioMixController.bindAudioStream(stream);
     expect(element.srcObject).to.equal(stream);
   });
 
   it('can execute 3 bind and unbind methods consecutively in chromium based browser', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
-    defaultAudioMixController = new DefaultAudioMixController();
-    defaultAudioMixController.bindAudioDevice(device);
-    defaultAudioMixController.bindAudioElement(element);
-    defaultAudioMixController.bindAudioStream(stream);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    await defaultAudioMixController.bindAudioDevice(device);
+    await defaultAudioMixController.bindAudioElement(element);
+    await defaultAudioMixController.bindAudioStream(stream);
     defaultAudioMixController.unbindAudioElement();
-    await new Promise(resolve => new TimeoutScheduler(50).start(resolve));
     expect(element.srcObject).to.equal(null);
   });
 
-  it('can fail to bind an audio element when sinkId does not exist', () => {
+  it('can fail to bind an audio element when sinkId does not exist', async () => {
     // @ts-ignore
-    element.setSinkId(undefined);
-    expect(defaultAudioMixController.bindAudioElement(element)).to.equal(false);
+    await element.setSinkId(undefined);
+    try {
+      await defaultAudioMixController.bindAudioElement(element);
+      throw new Error('This line should not be reached.');
+    } catch (e) {
+      expect(e.message).to.include(
+        'Cannot select audio output device. This browser does not support setSinkId.'
+      );
+    }
+  });
+
+  it('throws an error when setSinkId call errors out existingAudioElement', async () => {
+    behavior.setSinkIdSucceeds = false;
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    try {
+      await defaultAudioMixController.bindAudioElement(element);
+      throw new Error('This line should not be reached.');
+    } catch (e) {
+      expect(e.message).to.include('Failed to set sinkId');
+    }
+
+    defaultAudioMixController = new DefaultAudioMixController();
+    try {
+      await defaultAudioMixController.bindAudioElement(element);
+      throw new Error('This line should not be reached.');
+    } catch (e) {
+      expect(e.message).to.include('Failed to set sinkId');
+    }
+  });
+
+  it('throws an error when setSinkId call errors out for current audioElement', async () => {
+    behavior.setSinkIdSucceeds = false;
+    behavior.browserName = 'firefox';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    try {
+      await defaultAudioMixController.bindAudioElement(element);
+      throw new Error('This line should not be reached.');
+    } catch (e) {
+      expect(e.message).to.include('Failed to set sinkId');
+    }
+
+    defaultAudioMixController = new DefaultAudioMixController();
+    try {
+      await defaultAudioMixController.bindAudioElement(element);
+      throw new Error('This line should not be reached.');
+    } catch (e) {
+      expect(e.message).to.include('Failed to set sinkId');
+    }
   });
 });

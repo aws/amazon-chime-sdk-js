@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 const AWS = require('./aws-sdk');
@@ -30,11 +30,6 @@ const {
 exports.index = async (event, context, callback) => {
   // Return the contents of the index page
   return response(200, 'text/html', fs.readFileSync('./index.html', {encoding: 'utf8'}));
-};
-
-exports.indexV2 = async (event, context, callback) => {
-  // Return the contents of the index V2 page
-  return response(200, 'text/html', fs.readFileSync('./indexV2.html', {encoding: 'utf8'}));
 };
 
 exports.join = async(event, context) => {

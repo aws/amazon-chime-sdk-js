@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
+    "declaration": true,
     "downlevelIteration": true,
     "experimentalDecorators": true,
+    "lib": [
+      "DOM",
+      "ES2015",
+      "ES2016.Array.Include",
+      "ES2017.SharedMemory"
+    ],
     "module": "commonjs",
-    "target": "es5",
-    "lib": ["es6", "dom"],
-    "declaration": true
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "target": "ES2015"
   }
 }

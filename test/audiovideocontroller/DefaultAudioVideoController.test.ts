@@ -1,10 +1,11 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import Attendee from '../../src/attendee/Attendee';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import DefaultAudioVideoController from '../../src/audiovideocontroller/DefaultAudioVideoController';
 import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver';
 import Backoff from '../../src/backoff/Backoff';
@@ -366,7 +367,7 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
-    it('can be started with customized video policies', async () => {
+    it('can be started with customized audio and video policies', async () => {
       const myUplinkPolicy = new NScaleVideoUplinkBandwidthPolicy('test');
       const myDownlinkPolicy = new AllHighestVideoBandwidthPolicy('test');
       configuration.videoUplinkBandwidthPolicy = myUplinkPolicy;
@@ -378,6 +379,9 @@ describe('DefaultAudioVideoController', () => {
         new NoOpMediaStreamBroker(),
         reconnectController
       );
+      const audioProfile = AudioProfile.fullbandSpeechMono();
+      audioVideoController.setAudioProfile(audioProfile);
+
       let sessionStarted = false;
       let sessionConnecting = false;
       class TestObserver implements AudioVideoObserver {
@@ -414,6 +418,8 @@ describe('DefaultAudioVideoController', () => {
 
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+      // @ts-ignore
+      expect(audioVideoController.meetingSessionContext.audioProfile).to.equal(audioProfile);
       // @ts-ignore
       expect(audioVideoController.meetingSessionContext.videoDownlinkBandwidthPolicy).to.equal(
         myDownlinkPolicy

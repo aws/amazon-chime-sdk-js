@@ -1,9 +1,10 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
-import Device from './Device';
-import DevicePermission from './DevicePermission';
+import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
+import AudioInputDevice from './AudioInputDevice';
+import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
 
 /**
@@ -57,22 +58,27 @@ export default interface DeviceController {
 
   /**
    * Selects an audio input device to use. The constraint may be a device id,
-   * MediaTrackConstraint, MediaStream (containing audio track), or null to
-   * indicate no device. The promise always resolves with a DevicePermission
-   * result indicating whether access was granted or denied.
+   * `MediaTrackConstraint`, `MediaStream` (containing audio track), or `null` to
+   * indicate no device. It may also be an {@link AudioTransformDevice} to customize the
+   * constraints used or to apply Web Audio transforms.
+   *
+   * The promise will resolve indicating success or it will throw an appropriate error
+   * indicating the failure.
    */
-  chooseAudioInputDevice(device: Device): Promise<DevicePermission>;
+  chooseAudioInputDevice(device: AudioInputDevice): Promise<void>;
 
   /**
-   * Selects an video input device to use. The constraint may be a device id,
-   * MediaTrackConstraint, MediaStream (containing video track), or null to
-   * indicate no device. The promise always resolves with a DevicePermission
-   * result indicating whether access was granted or denied.
+   * Selects a video input device to use. The constraint may be a device id,
+   * `MediaTrackConstraint`, `MediaStream` (containing video track), or `null` to
+   * indicate no device. The promise will resolve indicating success or it will
+   * throw an appropriate error indicating the failure.
    */
-  chooseVideoInputDevice(device: Device): Promise<DevicePermission>;
+  chooseVideoInputDevice(device: VideoInputDevice): Promise<void>;
 
   /**
    * Selects an audio output device for use. Null specifies the default device.
+   * Note: This method will throw an error if browser does not support
+   * setSinkId. See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId
    */
   chooseAudioOutputDevice(deviceId: string | null): Promise<void>;
 
@@ -87,11 +93,19 @@ export default interface DeviceController {
   removeDeviceChangeObserver(observer: DeviceChangeObserver): void;
 
   /**
-   * Gets an AnalyserNode from the current audio input. This node can be used to
-   * generate the display for a mic indicator. Null is returned if no audio
+   * Gets an `AnalyserNode` from the current audio input. This node can be used to
+   * generate the display for a mic indicator. `null` is returned if no audio
    * input has been selected.
+   *
+   * The `AnalyserNode` is not updated automatically when you choose a new
+   * audio input. Dispose of this one and fetch another by calling this method again.
+   *
+   * Note that this node should be cleaned up after use, and as such a
+   * `{@link RemovableAnalyserNode}` is returned. Call
+   * {@link RemovableAnalyserNode.removeOriginalInputs} to disconnect the node from the Web Audio
+   * graph.
    */
-  createAnalyserNodeForAudioInput(): AnalyserNode | null;
+  createAnalyserNodeForAudioInput(): RemovableAnalyserNode | null;
 
   /**
    * Starts a video preview of the currently selected video and binds it a video
@@ -136,12 +150,4 @@ export default interface DeviceController {
    * Get the current video input quality settings to request when enabling video.
    */
   getVideoInputQualitySettings(): VideoQualitySettings | null;
-
-  /**
-   * Deprecated. enableWebAudio will be removed in v2.0.0.
-   * This API method will removed entirely, along with the corresponding field on MeetingSessionConfiguration.
-   * The MeetingSession will no longer call enableWebAudio on the corresponding DeviceController.
-   * Sets the flag in [[DeviceController]] on whether to enable WebAudio-based device management.
-   */
-  enableWebAudio(flag: boolean): void;
 }

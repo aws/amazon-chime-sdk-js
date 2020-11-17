@@ -1,10 +1,11 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetector';
 import DefaultActiveSpeakerDetector from '../activespeakerdetector/DefaultActiveSpeakerDetector';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import DefaultAudioMixController from '../audiomixcontroller/DefaultAudioMixController';
+import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
@@ -88,6 +89,7 @@ export default class DefaultAudioVideoController
   private _reconnectController: ReconnectController;
   private _audioMixController: AudioMixController;
   private _eventController: EventController;
+  private _audioProfile: AudioProfile = new AudioProfile();
 
   private connectionHealthData = new ConnectionHealthData();
   private observerQueue: Set<AudioVideoObserver> = new Set<AudioVideoObserver>();
@@ -136,7 +138,7 @@ export default class DefaultAudioVideoController
       this,
       this._logger
     );
-    this._audioMixController = new DefaultAudioMixController();
+    this._audioMixController = new DefaultAudioMixController(this._logger);
     this.meetingSessionContext.logger = this._logger;
     this._eventController = new DefaultEventController(this);
   }
@@ -182,6 +184,10 @@ export default class DefaultAudioVideoController
       return null;
     }
     return this.rtcPeerConnection.getStats(selector);
+  }
+
+  setAudioProfile(audioProfile: AudioProfile): void {
+    this._audioProfile = audioProfile;
   }
 
   addObserver(observer: AudioVideoObserver): void {
@@ -276,6 +282,7 @@ export default class DefaultAudioVideoController
           this.configuration.credentials.attendeeId
         );
       }
+      this.meetingSessionContext.audioProfile = this._audioProfile;
     }
 
     this.meetingSessionContext.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();

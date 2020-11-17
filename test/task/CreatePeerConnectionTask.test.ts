@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -79,7 +79,7 @@ describe('CreatePeerConnectionTask', () => {
     context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
     context.activeVideoInput = null;
     context.transceiverController = new DefaultTransceiverController(logger, browser);
-    context.audioMixController = new DefaultAudioMixController();
+    context.audioMixController = new DefaultAudioMixController(logger);
     context.browserBehavior = new DefaultBrowserBehavior();
     task = new CreatePeerConnectionTask(context);
   });

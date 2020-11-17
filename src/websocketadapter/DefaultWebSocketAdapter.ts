@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -16,9 +16,13 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
     this.connection.binaryType = 'arraybuffer';
   }
 
-  send(message: Uint8Array): boolean {
+  send(message: Uint8Array | string): boolean {
     try {
-      this.connection.send(message.buffer);
+      if (message instanceof Uint8Array) {
+        this.connection.send(message.buffer);
+      } else {
+        this.connection.send(message);
+      }
       return true;
     } catch (err) {
       this.logger.debug(

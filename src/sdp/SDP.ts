@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import SDPCandidateType from './SDPCandidateType';
@@ -46,6 +46,11 @@ export default interface SDP {
    * Removes server reflexive candidate from SDP
    */
   withoutServerReflexiveCandidates(): SDP;
+
+  /**
+   * Inserts a parameter to the SDP local offer setting the desired average audio bitrate
+   */
+  withAudioMaxAverageBitrate(maxAverageBitrate: number): SDP;
 
   /**
    * Inserts a bandwidth limitation attribute to answer SDP for setRemoteDescription and limiting client outbound maximum bitrate
