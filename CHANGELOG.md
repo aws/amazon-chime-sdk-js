@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+- Fixed `npm publish` scripts for not doing a major version bump and not deploying 
+  demo apps
+
 ## [1.22.0] - 2020-11-10
 ### Added
 - Add github actions continuous integration workflow and deploy workflow
