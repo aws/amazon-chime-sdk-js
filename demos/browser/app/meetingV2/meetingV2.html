@@ -4,6 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.7.0/dist/tf.min.js" 
+  integrity="sha384-uI1PW0SEa/QzAUuRQ6Bz5teBONsa9D0ZbVxMcM8mu4IjJ5msHyM7RRtZtL8LnSf3" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@2.7.0/dist/tf-core.min.js" 
+  integrity="sha384-DlI/SVdTGUBY5hi4h0p+nmC6V8i0FW5Nya/gYElz0L68HrSiXsBh+rqWcoZx3SXY" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@2.7.0/dist/tf-backend-webgl.min.js" 
+  integrity="sha384-21TV9Kpzn8SF68G1U6nYN3qPZnb97F06JuW4v0FDDBzW+CUwv8GcKMR+BjnE7Vmm" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0.5/dist/body-pix.min.js" 
+  integrity="sha384-dPJ/sICXCqdh39bsuGLVFcOiRyeL/XcFrwiFrJq9oh7k1TCtsUKhX6UV2X4UuKU4" crossorigin="anonymous"></script>
   <title>Meeting Demo</title>
 </head>
 <body>
@@ -284,6 +294,17 @@
             <button id="button-camera-drop" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select camera"></button>
             <div id="dropdown-menu-camera" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-camera-drop" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
               <a class="dropdown-item" href="#">Default camera</a>
+            </div>
+          </div>
+        </div>
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Apply filter">
+          <button id="button-video-filter" type="button" class="btn btn-success" title="Apply filter">
+            ${require('../../node_modules/open-iconic/svg/contrast.svg').default}
+          </button>
+          <div class="btn-group" role="group">
+            <button id="button-video-filter-drop" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+            <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
+              <a class="dropdown-item" href="#">No filter</a>
             </div>
           </div>
         </div>

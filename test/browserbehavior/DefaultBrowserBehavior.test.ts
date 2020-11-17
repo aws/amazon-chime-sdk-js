@@ -213,11 +213,26 @@ describe('DefaultBrowserBehavior', () => {
   });
 
   describe('requiresSimulcastMunging', () => {
-    it('can determine if simulcast requires munging', async () => {
+    it('can determine if simulcast requires munging', () => {
       setUserAgent(CHROME_USERAGENT);
       expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.eq(false);
       setUserAgent(SAFARI_USERAGENT);
       expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.eq(true);
     });
+  });
+
+  describe('supportsCanvasCapturedStreamPlayback', () => {
+    it('can determine if video processing is supported', () => {
+      expect(new DefaultBrowserBehavior().supportsCanvasCapturedStreamPlayback()).to.eq(true);
+    });
+  });
+
+  describe('supportsVideoProcessingBasedOnTensorflowModel', () => {
+    domMockBehavior = new DOMMockBehavior();
+    mockBuilder = new DOMMockBuilder(domMockBehavior);
+    setUserAgent(CHROME_USERAGENT);
+    expect(new DefaultBrowserBehavior().supportsVideoProcessingBasedOnTensorflowModel()).to.eq(
+      true
+    );
   });
 });

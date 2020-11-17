@@ -62,6 +62,16 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return this.isFirefox();
   }
 
+  supportsCanvasCapturedStreamPlayback(): boolean {
+    return !this.isIOSSafari();
+  }
+
+  supportsVideoProcessingBasedOnTensorflowModel(): boolean {
+    // most of the tf models have memory leak on Firefox
+    // on android chrome, the performance is not "real-time conferencing"
+    return !this.isAndroid() && this.isChrome();
+  }
+
   requiresUnifiedPlan(): boolean {
     let shouldEnable = (this.isSafari() && this.isUnifiedPlanSupported()) || this.isFirefox();
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {

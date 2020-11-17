@@ -81,6 +81,12 @@
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel">
+				<h3>Implemented by</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../classes/defaultvideotransformdevice.html" class="tsd-signature-type">DefaultVideoTransformDevice</a></li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -94,9 +100,10 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotransformdevice.html#applyprocessors" class="tsd-kind-icon">apply<wbr>Processors</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotransformdevice.html#intrinsicdevice" class="tsd-kind-icon">intrinsic<wbr>Device</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotransformdevice.html#onoutputstreamdisconnect" class="tsd-kind-icon">on<wbr>Output<wbr>Stream<wbr>Disconnect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotransformdevice.html#stop" class="tsd-kind-icon">stop</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videotransformdevice.html#transformstream" class="tsd-kind-icon">transform<wbr>Stream</a></li>
 							</ul>
 						</section>
 					</div>
@@ -110,7 +117,7 @@
 					<div class="tsd-signature tsd-kind-icon">output<wbr>Media<wbr>Stream<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaStream</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L29">src/devicecontroller/VideoTransformDevice.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L34">src/devicecontroller/VideoTransformDevice.ts:34</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -122,34 +129,6 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="applyprocessors" class="tsd-anchor"></a>
-					<h3>apply<wbr>Processors</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">apply<wbr>Processors<span class="tsd-signature-symbol">(</span>mediaStream<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L24">src/devicecontroller/VideoTransformDevice.ts:24</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Starts processing the input <code>MediaStream</code> and returns the output <code>MediaStream</code>.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> mediaStream: <span class="tsd-signature-type">MediaStream</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="intrinsicdevice" class="tsd-anchor"></a>
 					<h3>intrinsic<wbr>Device</h3>
@@ -173,6 +152,28 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="onoutputstreamdisconnect" class="tsd-anchor"></a>
+					<h3>on<wbr>Output<wbr>Stream<wbr>Disconnect</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Output<wbr>Stream<wbr>Disconnect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L29">src/devicecontroller/VideoTransformDevice.ts:29</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p><code>onOutputStreamDisconnect</code> is called when device controller disconnects the transformed video stream.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="stop" class="tsd-anchor"></a>
 					<h3>stop</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -188,10 +189,38 @@
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p><code>stop</code> should be called  to free any resources associated with the device.
-									It must be called if <code>applyProcessors</code> is ever called.</p>
+									It must be called if <code>transformStream</code> is ever called.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="transformstream" class="tsd-anchor"></a>
+					<h3>transform<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">transform<wbr>Stream<span class="tsd-signature-symbol">(</span>mediaStream<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L24">src/devicecontroller/VideoTransformDevice.ts:24</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Starts processing the input <code>MediaStream</code> and returns the output <code>MediaStream</code>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> mediaStream: <span class="tsd-signature-type">MediaStream</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -216,13 +245,16 @@
 								<a href="videotransformdevice.html#outputmediastream" class="tsd-kind-icon">output<wbr>Media<wbr>Stream</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="videotransformdevice.html#applyprocessors" class="tsd-kind-icon">apply<wbr>Processors</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videotransformdevice.html#intrinsicdevice" class="tsd-kind-icon">intrinsic<wbr>Device</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videotransformdevice.html#onoutputstreamdisconnect" class="tsd-kind-icon">on<wbr>Output<wbr>Stream<wbr>Disconnect</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videotransformdevice.html#stop" class="tsd-kind-icon">stop</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videotransformdevice.html#transformstream" class="tsd-kind-icon">transform<wbr>Stream</a>
 							</li>
 						</ul>
 					</li>

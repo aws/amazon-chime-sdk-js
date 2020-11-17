@@ -26,6 +26,7 @@ import BaseConnectionHealthPolicy from './connectionhealthpolicy/BaseConnectionH
 import BaseTask from './task/BaseTask';
 import BitrateParameters from './videouplinkbandwidthpolicy/BitrateParameters';
 import BrowserBehavior from './browserbehavior/BrowserBehavior';
+import CanvasVideoFrameBuffer from './videoframeprocessor/CanvasVideoFrameBuffer';
 import CheckAudioConnectivityFeedback from './meetingreadinesschecker/CheckAudioConnectivityFeedback';
 import CheckAudioInputFeedback from './meetingreadinesschecker/CheckAudioInputFeedback';
 import CheckAudioOutputFeedback from './meetingreadinesschecker/CheckAudioOutputFeedback';
@@ -82,11 +83,14 @@ import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSi
 import DefaultStatsCollector from './statscollector/DefaultStatsCollector';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
+import DefaultVideoFrameProcessorPipeline from './videoframeprocessor/DefaultVideoFrameProcessorPipeline';
 import DefaultVideoStreamIdSet from './videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from './videostreamindex/DefaultVideoStreamIndex';
 import DefaultVideoTile from './videotile/DefaultVideoTile';
 import DefaultVideoTileController from './videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from './videotilefactory/DefaultVideoTileFactory';
+import DefaultVideoTransformDevice from './videoframeprocessor/DefaultVideoTransformDevice';
+import DefaultVideoTransformDeviceObserver from './videoframeprocessor/DefaultVideoTransformDeviceObserver';
 import DefaultVolumeIndicatorAdapter from './volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import DefaultWebSocketAdapter from './websocketadapter/DefaultWebSocketAdapter';
 import Device from './devicecontroller/Device';
@@ -149,6 +153,7 @@ import NoOpLogger from './logger/NoOpLogger';
 import NoOpMediaStreamBroker from './mediastreambroker/NoOpMediaStreamBroker';
 import NoOpTask from './task/NoOpTask';
 import NoOpVideoElementFactory from './videoelementfactory/NoOpVideoElementFactory';
+import NoOpVideoFrameProcessor from './videoframeprocessor/NoOpVideoFrameProcessor';
 import NoVideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import NoVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import None from './maybe/None';
@@ -217,6 +222,10 @@ import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdapti
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
+import VideoFrameBuffer from './videoframeprocessor/VideoFrameBuffer';
+import VideoFrameProcessor from './videoframeprocessor/VideoFrameProcessor';
+import VideoFrameProcessorPipeline from './videoframeprocessor/VideoFrameProcessorPipeline';
+import VideoFrameProcessorPipelineObserver from './videoframeprocessor/VideoFrameProcessorPipelineObserver';
 import VideoInputDevice from './devicecontroller/VideoInputDevice';
 import VideoLogEvent from './statscollector/VideoLogEvent';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
@@ -274,6 +283,7 @@ export {
   BaseTask,
   BitrateParameters,
   BrowserBehavior,
+  CanvasVideoFrameBuffer,
   CheckAudioConnectivityFeedback,
   CheckAudioInputFeedback,
   CheckAudioOutputFeedback,
@@ -330,11 +340,14 @@ export {
   DefaultStatsCollector,
   DefaultTransceiverController,
   DefaultVideoCaptureAndEncodeParameter,
+  DefaultVideoFrameProcessorPipeline,
   DefaultVideoStreamIdSet,
   DefaultVideoStreamIndex,
   DefaultVideoTile,
   DefaultVideoTileController,
   DefaultVideoTileFactory,
+  DefaultVideoTransformDevice,
+  DefaultVideoTransformDeviceObserver,
   DefaultVolumeIndicatorAdapter,
   DefaultWebSocketAdapter,
   Device,
@@ -397,6 +410,7 @@ export {
   NoOpMediaStreamBroker,
   NoOpTask,
   NoOpVideoElementFactory,
+  NoOpVideoFrameProcessor,
   NoVideoDownlinkBandwidthPolicy,
   NoVideoUplinkBandwidthPolicy,
   None,
@@ -465,6 +479,10 @@ export {
   VideoCaptureAndEncodeParameter,
   VideoDownlinkBandwidthPolicy,
   VideoElementFactory,
+  VideoFrameBuffer,
+  VideoFrameProcessor,
+  VideoFrameProcessorPipeline,
+  VideoFrameProcessorPipelineObserver,
   VideoInputDevice,
   VideoLogEvent,
   VideoQualitySettings,

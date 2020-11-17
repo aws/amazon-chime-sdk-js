@@ -9,7 +9,7 @@ import Device from './Device';
 export default interface VideoTransformDevice {
   /**
    * `stop` should be called  to free any resources associated with the device.
-   * It must be called if `applyProcessors` is ever called.
+   * It must be called if `transformStream` is ever called.
    */
   stop(): Promise<void>;
 
@@ -21,7 +21,12 @@ export default interface VideoTransformDevice {
   /**
    * Starts processing the input `MediaStream` and returns the output `MediaStream`.
    */
-  applyProcessors(mediaStream?: MediaStream): Promise<MediaStream>;
+  transformStream(mediaStream?: MediaStream): Promise<MediaStream>;
+
+  /**
+   * `onOutputStreamDisconnect` is called when device controller disconnects the transformed video stream.
+   */
+  onOutputStreamDisconnect(): void;
 
   /**
    * `outputMediaStream` is generated after processors are applied. It will be auto-released after `stop` is called.
@@ -38,7 +43,7 @@ export function isVideoTransformDevice(device: unknown): device is VideoTransfor
   return (
     !!device &&
     typeof device === 'object' &&
-    'applyProcessors' in device &&
+    'transformStream' in device &&
     'stop' in device &&
     'intrinsicDevice' in device
   );

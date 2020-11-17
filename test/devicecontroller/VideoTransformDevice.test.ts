@@ -12,6 +12,9 @@ import VideoTransformDevice, {
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 
 class NoOpVideoTransformDevice implements VideoTransformDevice {
+  onOutputStreamDisconnect(): void {
+    throw new Error('Method not implemented.');
+  }
   outputMediaStream: MediaStream;
   stop(): Promise<void> {
     throw new Error('Method not implemented.');
@@ -19,7 +22,7 @@ class NoOpVideoTransformDevice implements VideoTransformDevice {
   intrinsicDevice(): Promise<Device> {
     throw new Error('Method not implemented.');
   }
-  applyProcessors(_mediaStream?: MediaStream): Promise<MediaStream> {
+  transformStream(_mediaStream: MediaStream): Promise<MediaStream> {
     throw new Error('Method not implemented.');
   }
 }

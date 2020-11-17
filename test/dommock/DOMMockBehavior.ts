@@ -12,6 +12,7 @@ export default class DOMMockBehavior {
   getUserMediaSucceeds: boolean = true;
   getUserMediaError: Error = undefined;
   getUserMediaAudioLabel: string = 'Default';
+  getUserMediaVideoTrack: MediaStreamTrack = undefined;
   webSocketOpenSucceeds: boolean = true;
   webSocketSendSucceeds: boolean = true;
   webSocketCloseSucceeds: boolean = true;
@@ -78,4 +79,7 @@ export default class DOMMockBehavior {
   audioContextCreateBufferSucceeds = true;
   createMediaStreamDestinationSuccess: boolean = true;
   isUnifiedPlanSupported: boolean = true;
+
+  videoElementStartPlayDelay = 25;
+  videoElementSetWidthHeightAttiributeDelay = 100;
 }

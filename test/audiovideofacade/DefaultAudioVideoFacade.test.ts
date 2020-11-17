@@ -5,6 +5,7 @@ import { Substitute } from '@fluffy-spoon/substitute';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { DefaultVideoTransformDevice } from '../../src';
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -475,6 +476,10 @@ describe('DefaultAudioVideoFacade', () => {
       const arg1 = '';
       facade.chooseVideoInputDevice(arg1);
       assert(spy.calledOnceWith(arg1));
+
+      const arg2 = new DefaultVideoTransformDevice(null, '', []);
+      facade.chooseVideoInputDevice(arg2);
+      assert(spy.calledWith(arg2));
     });
 
     it('will call chooseVideoInputQuality', () => {
