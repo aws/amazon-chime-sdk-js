@@ -3,7 +3,7 @@ require 'json'
 require 'date'
 
 puts
-puts "Warning: are you sure to reset the HEAD to origin/master?"
+puts "Warning: are you sure to reset the HEAD to origin/release-1.x?"
 puts
 puts "Current staged and local changes will be lost!"
 puts
@@ -25,10 +25,9 @@ version = original_version.split('.').map{ |x| x.to_i }
 puts "Choose one of the following bumping version options:"
 puts "1. Patch"
 puts "2. Minor"
-puts "3. Major"
-puts "4. Manual"
+puts "3. Manual"
 x = STDIN.gets.strip
-exit(1) unless ["1", "2", "3", "4"].include?(x)
+exit(1) unless ["1", "2", "3"].include?(x)
 puts
 
 case x
@@ -40,11 +39,6 @@ when "2"
   version[2] = 0
   version_string = version.join('.')
 when "3"
-  version[0] += 1
-  version[1] = 0
-  version[2] = 0
-  version_string = version.join('.')
-when "4"
   puts "Specify the version in Semantic Versioning format:"
   version_string = STDIN.gets.strip
 else
@@ -74,7 +68,7 @@ exit(1) unless x.strip == 'yes'
 puts
 
 verbose('git fetch origin')
-verbose('git reset --hard origin/master')
+verbose('git reset --hard origin/release-1.x')
 verbose('git clean -ffxd .')
 
 File.write(changelog_file, File.read(changelog_file).gsub(/\[Unreleased\]/, "[#{version_string}] - #{Date.today}"))
