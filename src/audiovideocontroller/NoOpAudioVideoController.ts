@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import AudioProfile from '../../src/audioprofile/AudioProfile';
+import AudioProfile from '../audioprofile/AudioProfile';
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import NoOpDebugLogger from '../logger/NoOpDebugLogger';
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';

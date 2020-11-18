@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   supported. Use this instead of `enableWebAudio`.
 - Add an `AudioTransformDevice` type that can be supplied to `chooseAudioInputDevice`, allowing the
   injection of custom device constraints and Web Audio nodes as pseudo-devices.
-- Add `VideoTransformDevice` interface placeholder. This interface mirrors `AudioTransformDevice`. 
+- Add `VideoTransformDevice` interface placeholder. This interface mirrors `AudioTransformDevice`.
   Choosing `VideoTransformDevice`s in `DefaultDeviceController` will be implemented in a future release.
 - Add Amazon Voice Focus, which allows you to create an audio input device that suppresses
   background noise.
@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix Github Actions CI workflow to include all integ tests.
 - Update the clicking sound answer in FAQs.
 - [Test] Make sure to remove v2 from URL when trying to create meeting
+- Correct import in `NoOpAudioVideoController`.
 
 ## [1.22.0] - 2020-11-10
 ### Added
