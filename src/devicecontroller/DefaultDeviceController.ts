@@ -25,6 +25,7 @@ import RemovableAnalyserNode from './RemovableAnalyserNode';
 import TypeError from './TypeError';
 import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
+import { isVideoTransformDevice } from './VideoTransformDevice';
 
 export default class DefaultDeviceController implements DeviceControllerBasedMediaStreamBroker {
   private static permissionDeniedOriginDetectionThresholdMs = 500;
@@ -174,6 +175,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   async chooseVideoInputDevice(device: VideoInputDevice): Promise<void> {
+    if (isVideoTransformDevice(device)) {
+      throw new Error(`Not implemented`);
+    }
     this.updateMaxBandwidthKbps();
     await this.chooseInputIntrinsicDevice('video', device, false);
     this.trace('chooseVideoInputDevice', device);

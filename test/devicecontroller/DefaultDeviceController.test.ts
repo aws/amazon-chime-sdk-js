@@ -9,6 +9,7 @@ import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObs
 import AudioInputDevice from '../../src/devicecontroller/AudioInputDevice';
 import AudioTransformDevice from '../../src/devicecontroller/AudioTransformDevice';
 import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
+import Device from '../../src/devicecontroller/Device';
 import GetUserMediaError from '../../src/devicecontroller/GetUserMediaError';
 import NotFoundError from '../../src/devicecontroller/NotFoundError';
 import NotReadableError from '../../src/devicecontroller/NotReadableError';
@@ -16,6 +17,7 @@ import OverconstrainedError from '../../src/devicecontroller/OverconstrainedErro
 import PermissionDeniedError from '../../src/devicecontroller/PermissionDeniedError';
 import TypeError from '../../src/devicecontroller/TypeError';
 import VideoInputDevice from '../../src/devicecontroller/VideoInputDevice';
+import VideoTransformDevice from '../../src/devicecontroller/VideoTransformDevice';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventName from '../../src/eventcontroller/EventName';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -1033,6 +1035,27 @@ describe('DefaultDeviceController', () => {
         expect(e).to.be.instanceof(TypeError);
       }
       expect(handleEventSpy.called).to.be.true;
+    });
+
+    it('throws error when choosing VideoTransformDevice', async () => {
+      class NoOpVideoTransformDevice implements VideoTransformDevice {
+        stop(): Promise<void> {
+          throw new Error('Method not implemented.');
+        }
+        intrinsicDevice(): Promise<Device> {
+          throw new Error('Method not implemented.');
+        }
+        applyProcessors(_mediaStream?: MediaStream): Promise<MediaStream> {
+          throw new Error('Method not implemented.');
+        }
+        outputMediaStream: MediaStream;
+      }
+      const device = new NoOpVideoTransformDevice();
+
+      try {
+        await deviceController.chooseVideoInputDevice(device);
+        throw new Error('Not reachable');
+      } catch (error) {}
     });
   });
 

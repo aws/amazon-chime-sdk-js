@@ -59,6 +59,11 @@ walk('src')
       importStrings.push(`import { isAudioTransformDevice } from '${pathToImport}/AudioTransformDevice';`);
       exportStrings.push(`  isAudioTransformDevice,`);
     }
+
+    if (typeToImport === 'VideoTransformDevice') {
+      importStrings.push(`import { isVideoTransformDevice } from '${pathToImport}/VideoTransformDevice';`);
+      exportStrings.push(`  isVideoTransformDevice,`);
+    }
   });
 
 importStrings.sort();

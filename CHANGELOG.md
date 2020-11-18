@@ -5,12 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## Unreleased 
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+- [Documentation] Link to Media Regions documentation in README
+
+## [2.0.0] - 2020-11-18
 ### Added
 - Add a constructor argument to `DefaultDeviceController` to specify whether Web Audio should be
   supported. Use this instead of `enableWebAudio`.
 - Add an `AudioTransformDevice` type that can be supplied to `chooseAudioInputDevice`, allowing the
   injection of custom device constraints and Web Audio nodes as pseudo-devices.
+- Add `VideoTransformDevice` interface placeholder. This interface mirrors `AudioTransformDevice`.
+  Choosing `VideoTransformDevice`s in `DefaultDeviceController` will be implemented in a future release.
 - Add Amazon Voice Focus, which allows you to create an audio input device that suppresses
   background noise.
 - Add `AudioProfile` for configuring audio quality.
@@ -51,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix Github Actions CI workflow to include all integ tests.
 - Update the clicking sound answer in FAQs.
 - [Test] Make sure to remove v2 from URL when trying to create meeting
-- [Documentation] Link to Media Regions documentation in README
+- Correct import in `NoOpAudioVideoController`.
 
 ## [1.22.0] - 2020-11-10
 ### Added
