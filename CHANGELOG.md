@@ -7,17 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-
-### Changed
-
-### Removed
-
-### Fixed
-- [Documentation] Link to Media Regions documentation in README
-
-
-## 2.0
-### Added
 - Add a constructor argument to `DefaultDeviceController` to specify whether Web Audio should be
   supported. Use this instead of `enableWebAudio`.
 - Add an `AudioTransformDevice` type that can be supplied to `chooseAudioInputDevice`, allowing the
@@ -62,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix Github Actions CI workflow to include all integ tests.
 - Update the clicking sound answer in FAQs.
 - [Test] Make sure to remove v2 from URL when trying to create meeting
+- [Documentation] Link to Media Regions documentation in README
 
 ## [1.22.0] - 2020-11-10
 ### Added
