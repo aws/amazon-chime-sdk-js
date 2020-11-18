@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix Github Actions CI workflow to include all integ tests.
 - Update the clicking sound answer in FAQs.
+- [Test] Make sure to remove v2 from URL when trying to create meeting
 
 ## [1.22.0] - 2020-11-10
 ### Added
