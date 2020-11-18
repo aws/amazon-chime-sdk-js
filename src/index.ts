@@ -222,6 +222,7 @@ import VideoTileController from './videotilecontroller/VideoTileController';
 import VideoTileControllerFacade from './videotilecontroller/VideoTileControllerFacade';
 import VideoTileFactory from './videotilefactory/VideoTileFactory';
 import VideoTileState from './videotile/VideoTileState';
+import VideoTransformDevice from './devicecontroller/VideoTransformDevice';
 import VideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import VoiceFocusConfig from './voicefocus/VoiceFocusConfig';
 import VoiceFocusDeviceOptions from './voicefocus/VoiceFocusDeviceOptions';
@@ -235,6 +236,7 @@ import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
 import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
+import { isVideoTransformDevice } from './devicecontroller/VideoTransformDevice';
 
 export {
   AGCOptions,
@@ -461,6 +463,7 @@ export {
   VideoTileControllerFacade,
   VideoTileFactory,
   VideoTileState,
+  VideoTransformDevice,
   VideoUplinkBandwidthPolicy,
   VoiceFocusConfig,
   VoiceFocusDeviceOptions,
@@ -474,4 +477,5 @@ export {
   WebSocketAdapter,
   WebSocketReadyState,
   isAudioTransformDevice,
+  isVideoTransformDevice,
 }

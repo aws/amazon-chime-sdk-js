@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Device from './Device';
+import VideoTransformDevice from './VideoTransformDevice';
 
-// This gives space to expand the definition of `VideoInputDevice` to include
-// transforms à la `AudioInputDevice`.
-type VideoInputDevice = Device;
+type VideoInputDevice = Device | VideoTransformDevice;
 
 export default VideoInputDevice;

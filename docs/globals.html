@@ -321,6 +321,7 @@
 								<li class="tsd-kind-interface"><a href="interfaces/videotilecontroller.html" class="tsd-kind-icon">Video<wbr>Tile<wbr>Controller</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/videotilecontrollerfacade.html" class="tsd-kind-icon">Video<wbr>Tile<wbr>Controller<wbr>Facade</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/videotilefactory.html" class="tsd-kind-icon">Video<wbr>Tile<wbr>Factory</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/videotransformdevice.html" class="tsd-kind-icon">Video<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/videouplinkbandwidthpolicy.html" class="tsd-kind-icon">Video<wbr>Uplink<wbr>Bandwidth<wbr>Policy</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voicefocusdeviceoptions.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Device<wbr>Options</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voicefocustransformdeviceobserver.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Transform<wbr>Device<wbr>Observer</a></li>
@@ -348,6 +349,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function"><a href="globals.html#isaudiotransformdevice" class="tsd-kind-icon">is<wbr>Audio<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#isdefaultdevice" class="tsd-kind-icon">is<wbr>Default<wbr>Device</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#stringify" class="tsd-kind-icon">stringify</a></li>
 							</ul>
 						</section>
@@ -539,10 +541,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="videoinputdevice" class="tsd-anchor"></a>
 					<h3>Video<wbr>Input<wbr>Device</h3>
-					<div class="tsd-signature tsd-kind-icon">Video<wbr>Input<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="globals.html#device" class="tsd-signature-type">Device</a></div>
+					<div class="tsd-signature tsd-kind-icon">Video<wbr>Input<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/videotransformdevice.html" class="tsd-signature-type">VideoTransformDevice</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoInputDevice.ts#L8">src/devicecontroller/VideoInputDevice.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoInputDevice.ts#L7">src/devicecontroller/VideoInputDevice.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -600,6 +602,37 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="isvideotransformdevice" class="tsd-anchor"></a>
+					<h3>is<wbr>Video<wbr>Transform<wbr>Device</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">device</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">VideoTransformDevice</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L37">src/devicecontroller/VideoTransformDevice.ts:37</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p><code>isVideoTransformDevice</code> is a type guard for <a href="interfaces/videotransformdevice.html">VideoTransformDevice</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>device: <span class="tsd-signature-type">unknown</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the value to check.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">device</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">VideoTransformDevice</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1326,6 +1359,9 @@
 						<a href="interfaces/videotilefactory.html" class="tsd-kind-icon">Video<wbr>Tile<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/videotransformdevice.html" class="tsd-kind-icon">Video<wbr>Transform<wbr>Device</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/videouplinkbandwidthpolicy.html" class="tsd-kind-icon">Video<wbr>Uplink<wbr>Bandwidth<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1375,6 +1411,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#isdefaultdevice" class="tsd-kind-icon">is<wbr>Default<wbr>Device</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#stringify" class="tsd-kind-icon">stringify</a>
