@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Removed
+- [Test] Remove check for `/v2` in canary URL
 
 ### Fixed
 - [Script] Update postpublish script to enable termination protection for prod canary stack.
