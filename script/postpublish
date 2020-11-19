@@ -50,5 +50,5 @@ verbose('npm run build')
 verbose('npm run build --app=meetingReadinessChecker')
 
 Dir.chdir('../serverless/')
-verbose('npm run deploy -- -b chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary -l')
-verbose('npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary -s chime-sdk-meeting-readiness-checker-prod-canary -a meetingReadinessChecker -l')
+verbose('npm run deploy -- -b chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary -t -l')
+verbose('npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary -s chime-sdk-meeting-readiness-checker-prod-canary -a meetingReadinessChecker -t -l')
