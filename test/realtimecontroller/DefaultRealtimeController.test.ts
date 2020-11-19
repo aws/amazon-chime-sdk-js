@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
+import { RealtimeState } from '../../src';
 import DataMessage from '../../src/datamessage/DataMessage';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import RealtimeAttendeePositionInFrame from '../../src/realtimecontroller/RealtimeAttendeePositionInFrame';
@@ -150,6 +152,17 @@ describe('DefaultRealtimeController', () => {
       expect(setCanUnmuteFired).to.be.true;
       expect(fatalErrorFired).to.be.true;
     });
+
+    it('safely handles unsubscribe without subscribe', () => {
+      const rt = new DefaultRealtimeController();
+      const stub = sinon.stub();
+      rt.realtimeUnsubscribeToAttendeeIdPresence(stub);
+      rt.realtimeUnsubscribeToFatalError(stub);
+      rt.realtimeUnsubscribeToLocalSignalStrengthChange(stub);
+      rt.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(stub);
+      rt.realtimeUnsubscribeToSetCanUnmuteLocalAudio(stub);
+      rt.realtimeUnsubscribeFromSendDataMessage(stub);
+    });
   });
 
   describe('muting', () => {
@@ -170,13 +183,15 @@ describe('DefaultRealtimeController', () => {
       let changedToCanUnmute = false;
       let changedToCannotUnmute = false;
       const rt: RealtimeController = new DefaultRealtimeController();
-      rt.realtimeSubscribeToSetCanUnmuteLocalAudio((canUnmute: boolean) => {
+
+      const cb = (canUnmute: boolean): void => {
         if (canUnmute) {
           changedToCanUnmute = true;
         } else {
           changedToCannotUnmute = true;
         }
-      });
+      };
+      rt.realtimeSubscribeToSetCanUnmuteLocalAudio(cb);
       expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
       rt.realtimeSetCanUnmuteLocalAudio(true);
       expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
@@ -196,6 +211,7 @@ describe('DefaultRealtimeController', () => {
       expect(rt.realtimeCanUnmuteLocalAudio()).to.be.true;
       expect(changedToCanUnmute).to.be.true;
       expect(changedToCannotUnmute).to.be.false;
+      rt.realtimeUnsubscribeToSetCanUnmuteLocalAudio(cb);
     });
 
     it('disables the media stream if mute is called', () => {
@@ -1166,6 +1182,246 @@ describe('DefaultRealtimeController', () => {
           attendeesInFrame: attendeesInFrame,
         });
       }
+    });
+  });
+
+  // Most of these cannot occur unless the state object is somehow damaged.
+  describe('unusual failures', () => {
+    function matchError(message: string): sinon.SinonMatcher {
+      return sinon.match.instanceOf(Error).and(sinon.match.has('message', message));
+    }
+
+    it('handles broken attendeeIdChangesCallbacks', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.attendeeIdChangesCallbacks = undefined;
+
+      rt.realtimeSubscribeToAttendeeIdPresence((_a, _p) => {});
+      expect(fatal.calledOnce).to.be.true;
+      const match = matchError("Cannot read property 'push' of undefined");
+      expect(fatal.calledWith(match)).to.be.true;
+
+      rt.realtimeUnsubscribeToAttendeeIdPresence((_a, _p) => {});
+      expect(fatal.calledTwice).to.be.true;
+    });
+
+    it('handles broken CanUnmute callbacks', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.setCanUnmuteLocalAudioCallbacks = undefined;
+
+      rt.realtimeSubscribeToSetCanUnmuteLocalAudio(_m => {});
+      expect(fatal.calledOnce).to.be.true;
+      const match = matchError("Cannot read property 'push' of undefined");
+      expect(fatal.calledWith(match)).to.be.true;
+      fatal.reset();
+
+      rt.realtimeUnsubscribeToSetCanUnmuteLocalAudio(_m => {});
+      const matchUn = matchError("Cannot read property 'indexOf' of undefined");
+      expect(fatal.calledWith(matchUn)).to.be.true;
+    });
+
+    it('handles broken volume callbacks', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.volumeIndicatorCallbacks = undefined;
+
+      rt.realtimeSubscribeToVolumeIndicator('a', (_a, _v, _m, _s) => {});
+      expect(fatal.calledOnce).to.be.true;
+      const match = matchError("Cannot read property 'hasOwnProperty' of undefined");
+      expect(fatal.calledWith(match)).to.be.true;
+      fatal.reset();
+
+      rt.realtimeUnsubscribeFromVolumeIndicator('a');
+      const matchUn = matchError('Cannot convert undefined or null to object');
+      expect(fatal.calledWith(matchUn)).to.be.true;
+    });
+
+    it('handles broken signal strength callbacks', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.localSignalStrengthChangeCallbacks = undefined;
+
+      rt.realtimeSubscribeToLocalSignalStrengthChange(_s => {});
+      expect(fatal.calledOnce).to.be.true;
+      expectError(fatal, "Cannot read property 'push' of undefined");
+      fatal.reset();
+
+      rt.realtimeUnsubscribeToLocalSignalStrengthChange(_s => {});
+      expectError(fatal, "Cannot read property 'indexOf' of undefined");
+    });
+
+    function expectError(stub: sinon.SinonStub, message: string): void {
+      const match = matchError(message);
+      if (!stub.calledWith(match)) {
+        chai.assert(false, `Expected error '${message}, but got ${stub.getCalls()[0].lastArg}`);
+      }
+      expect(stub.calledWith(match)).to.be.true;
+    }
+
+    it('handles broken receive datamessage callbacks', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.receiveDataMessageCallbacks = undefined;
+
+      rt.realtimeSubscribeToReceiveDataMessage('a', _data => {});
+      expect(fatal.calledOnce).to.be.true;
+      expectError(fatal, "Cannot read property 'has' of undefined");
+      fatal.reset();
+
+      rt.realtimeUnsubscribeFromReceiveDataMessage('a');
+      expectError(fatal, "Cannot read property 'delete' of undefined");
+    });
+
+    it('handles broken send datamessage callbacks', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.sendDataMessageCallbacks = undefined;
+
+      rt.realtimeSubscribeToSendDataMessage((_topic, _data) => {});
+      expect(fatal.calledOnce).to.be.true;
+      expectError(fatal, "Cannot read property 'push' of undefined");
+      fatal.reset();
+
+      rt.realtimeUnsubscribeFromSendDataMessage((_topic, _data) => {});
+      expectError(fatal, "Cannot read property 'indexOf' of undefined");
+    });
+
+    it('handles broken mute callbacks', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.muteAndUnmuteLocalAudioCallbacks = undefined;
+
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio(_m => {});
+      expect(fatal.calledOnce).to.be.true;
+      expectError(fatal, "Cannot read property 'push' of undefined");
+      fatal.reset();
+
+      rt.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(_m => {});
+      expectError(fatal, "Cannot read property 'indexOf' of undefined");
+    });
+
+    it('handles broken fatal callbacks', () => {
+      const rt = new DefaultRealtimeController();
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.fatalErrorCallbacks = undefined;
+
+      const stub = sinon.stub();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ((rt as unknown) as any).onError = stub;
+
+      const cb = (): void => {
+        throw new Error('bad');
+      };
+      rt.realtimeSubscribeToFatalError(cb);
+
+      expect(stub.calledOnce).to.be.true;
+      rt.realtimeUnsubscribeToFatalError(cb);
+    });
+
+    it('handles broken setAudioInputEnabled', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+
+      // Break it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const state: RealtimeState = ((rt as unknown) as any).state as RealtimeState;
+      state.audioInput = ({
+        getTracks: () => {
+          throw new Error('Oh no');
+        },
+      } as unknown) as MediaStream;
+
+      rt.realtimeSetLocalAudioInput({} as MediaStream);
+      expect(fatal.calledOnce).to.be.true;
+      expectError(fatal, 'Oh no');
+    });
+
+    it('handles a throwing mute callback', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+      rt.realtimeSubscribeToMuteAndUnmuteLocalAudio(_m => {
+        throw new Error('Oh no');
+      });
+      expect(fatal.notCalled).to.be.true;
+
+      rt.realtimeMuteLocalAudio();
+
+      expect(fatal.calledOnce).to.be.true;
+      expectError(fatal, 'Oh no');
+
+      fatal.reset();
+
+      rt.realtimeUnmuteLocalAudio();
+
+      expect(fatal.calledOnce).to.be.true;
+      expectError(fatal, 'Oh no');
+    });
+
+    it('handles a send message callback that throws', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+      rt.realtimeSubscribeToSendDataMessage(_m => {
+        throw new Error('Oh no');
+      });
+
+      rt.realtimeSendDataMessage('foo', 'bar', 1000);
+      expectError(fatal, 'Oh no');
+    });
+
+    it('handles a receive message callback that throws', () => {
+      const rt = new DefaultRealtimeController();
+      const fatal = sinon.stub();
+      rt.realtimeSubscribeToFatalError(fatal);
+      rt.realtimeSubscribeToReceiveDataMessage('foo', _m => {
+        throw new Error('Oh no');
+      });
+
+      const message = new DataMessage(Date.now(), 'foo', new Uint8Array(), 'abc', 'def', false);
+      rt.realtimeReceiveDataMessage(message);
+      expectError(fatal, 'Oh no');
     });
   });
 });
