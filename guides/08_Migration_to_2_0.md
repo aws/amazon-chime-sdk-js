@@ -1,18 +1,29 @@
 # Migration from SDK v1 to SDK v2
 
+## Installation
+
+Installation involves adjusting your `package.json` to depend on version `2.0.0`.
+
+```shell
+npm install --save amazon-chime-sdk-js@2
+```
+
+## Interface changes
+
 Version 2 of the Amazon Chime SDK for JavaScript makes a small number of interface
 changes, as well as removing some deprecated interfaces.
 
-In many cases you should not need to adjust your application code at all. This will be the case
-if:
+In many cases you should not need to adjust your application code at all. This will be the case if:
 
 * You do not implement `AudioVideoFacade` or `DeviceController` yourself.
 * You do not explicitly call `enableWebAudio` on any instances of `DeviceController` or
   `AudioVideoFacade`, or use the `MeetingSessionConfiguration` field `enableWebAudio`.
+* You already handle errors in `chooseAudioInputDevice` with `catch`.
+* You neither directly call, nor implement, the `bindAudio*` methods on `AudioMixController`.
 
-If you do, read on.
+If your application does not meet all four criteria, read on.
 
-## Removing `enableWebAudio`
+### Removing `enableWebAudio`
 
 The `enableWebAudio` method on `DefaultDeviceController` would produce unexpected results if
 called after the first audio device was selected, and as a synchronous API it was not possible
@@ -76,10 +87,11 @@ this.audioVideo = this.meetingSession.audioVideo;
 
 ---
 
-## Update `bindAudioElement()` to return `Promise<void>` instead of `boolean`
+### Update `bindAudioElement()` to return `Promise<void>` instead of `boolean`
+
 The `bindAudioElement()` API in `AudioMixControllerFacade` was previously a synchronous function which used to return `boolean`.
 Under the hood, it used to call [`setSinkId()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId)
-which is an asynchronous function. 
+which is an asynchronous function.
 
 As part of this change, three APIs in `AudioMixController` were changed to return `Promise<void>`. These APIs are listed below.
 
@@ -98,7 +110,7 @@ bindAudioDevice(device: MediaDeviceInfo | null): Promise<void>;
 Additionally, `AudioMixController`'s constructor now takes an additional optional `logger` parameter.
 If the `logger` is passed, it will log the errors for any of the operations in `AudioMixController`.
 
-```
+```typescript
 constructor(private logger?: Logger) {}
 ```
 
@@ -128,7 +140,7 @@ await audioMixController.bindAudioStream(destinationStream.stream);
 
 ---
 
-## Introducing `AudioInputDevice` and `VideoInputDevice`
+### Introducing `AudioInputDevice` and `VideoInputDevice`
 
 These two types describe `DeviceController`'s methods for selecting audio and
 video inputs respectively. They both include the space of `Device`s, which are the 'intrinsic'
@@ -174,23 +186,26 @@ class MyDeviceController implements DeviceController {
 }
 ```
 
-At present `VideoInputDevice` is identical to `Device`, and so the only change you need to make is to change the parameter type of `chooseVideoInputDevice` from `Device` to `VideoInputDevice`.
+A similar adjustment is needed for `VideoInputDevice`. v2.0 does not include any
+`VideoTransformDevice`s.
 
 If you use the type `Device` for a field or variable and pass that value to
 `choose{Audio,Video}InputDevice`, your code should continue to work without changes.
 
 ---
 
-## Introducing `GetUserMediaError` type
-With version 2.0, we are introducing new error types which will be thrown in case of any failures in `chooseAudioInputDevice` and `chooseVideoInputDevice` APIs in the `DeviceController`.
+### Introducing the `GetUserMediaError` type
+
+v2.0 introduces new error types which will be thrown in case of any failures in `chooseAudioInputDevice` and `chooseVideoInputDevice` APIs in the `DeviceController`.
 
 Here is the list of new error classes introduced in version 2.0:
-- `GetUserMediaError`
-- `NotFoundError`
-- `NotReadableError`
-- `OverconstrainedError`
-- `PermissionDeniedError`
-- `TypeError`
+
+* `GetUserMediaError`
+  * `NotFoundError`
+  * `NotReadableError`
+  * `OverconstrainedError`
+  * `PermissionDeniedError`
+  * `TypeError`
 
 Here is an example of handling `PermissionDeniedError`:
 
@@ -206,8 +221,9 @@ try {
 
 ---
 
-## Introducing `supportsSetSinkId()` API in `DefaultBrowserBehavior`
-This new helper API returns a boolean `true` if the browser supports [`setSinkId()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId) otherwise returning `false`.
+### Introducing `supportsSetSinkId()` in `DefaultBrowserBehavior`
+
+This new helper API returns a boolean `true` if the browser supports [`setSinkId()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId), otherwise returning `false`.
 
 Here is how the code would look like:
 
@@ -223,6 +239,7 @@ if (!this.browserBehavior.supportsSetSinkId()) {
 
 ---
 
-## Deprecating legacy screen share
+### Deprecating legacy screen share
+
 From version 2.0 onwards, the Amazon Chime SDK for JavaScript will no longer include the deprecated screen share API identified by `ScreenShareFacade` and `ScreenShareViewFacade` and all related code.
 Customers should use our Video Based Content Sharing detailed in our [Content Share guide](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/02_Content_Share.md).
