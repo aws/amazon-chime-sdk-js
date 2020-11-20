@@ -92,13 +92,6 @@ tests().forEach(file => {
   }
 
   const fileText = fs.readFileSync(file, 'utf-8').toString();
-  if (fileText.includes('sinon.stub')) {
-    failed(
-      file,
-      'uses sinon.stub',
-      'Avoid using stubs as they do not test functionality end-to-end'
-    );
-  }
   if (fileText.includes('not.equal.null')) {
     failed(
       file,
