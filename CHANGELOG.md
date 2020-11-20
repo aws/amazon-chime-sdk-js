@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - [Script] Update postpublish script to enable termination protection for prod canary stack.
+- [Documentation] Update the Amazon Chime SDK Media Regions documentation link in the README
 
 ## [2.0.0] - 2020-11-18
 ### Added
