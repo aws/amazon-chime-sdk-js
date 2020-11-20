@@ -883,7 +883,7 @@ export class DemoMeetingApp implements
         body
       });
       if (response.status === 200) {
-        console.log('[DEMO] Log stream created');
+        console.log('[DEMO] log stream created');
       }
     } catch (error) {
       this.log(error.message);
