@@ -12,15 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Removed
+
 - [Test] Remove check for `/v2` in canary URL
 
 ### Fixed
+
 - [Script] Update postpublish script to enable termination protection for prod canary stack.
 - [Documentation] Link to Media Regions documentation in README
 
 
 ## [2.0.0] - 2020-11-18
 ### Added
+
 - Add a constructor argument to `DefaultDeviceController` to specify whether Web Audio should be
   supported. Use this instead of `enableWebAudio`.
 - Add an `AudioTransformDevice` type that can be supplied to `chooseAudioInputDevice`, allowing the
@@ -37,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Demo] Add audio quality settings to meeting demo.
 
 ### Changed
+
 - The project now produces ES2015 output, rather than ES5 output that refers to ES2015
   features. The SDK supports only modern browsers, and is increasingly dependent on ES2015
   features. This change leads to more compact bundles and aligns the supported JavaScript
@@ -56,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `DevicePermission`.
 
 ### Removed
+
 - Remove `enableWebAudio` from `DeviceController` and related types. Use the constructor argument
   instead.
 - Remove V1 meeting app. The V2 meeting app is now the only meeting app deployed. Do not supply /V2/
@@ -64,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `DevicePermission`.
 
 ### Fixed
+
 - Fix Github Actions CI workflow to include all integ tests.
 - Update the clicking sound answer in FAQs.
 - [Test] Make sure to remove v2 from URL when trying to create meeting
