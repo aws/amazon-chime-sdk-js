@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Script] Update postpublish script to enable termination protection for prod canary stack.
 - [Documentation] Update the Amazon Chime SDK Media Regions documentation link in the README
 - Reimplement error handling in `DefaultRealtimeController` to generate less garbage.
+- Add github actions fix to conditionally run integ tests
 
 ## [2.0.0] - 2020-11-18
 ### Added
