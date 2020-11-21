@@ -200,4 +200,4 @@ class MeetingReadinessCheckerPage {
   }
 }
 
-module.exports.MeetingReadinessCheckerPage = MeetingReadinessCheckerPage;
+module.exports = MeetingReadinessCheckerPage;

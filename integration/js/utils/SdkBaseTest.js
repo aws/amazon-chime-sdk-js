@@ -15,6 +15,11 @@ class SdkBaseTest extends KiteBaseTest {
     if (testName === 'ContentShareOnlyAllowTwoTest') {
       this.url += '?max-content-share=true';
     }
+
+    if (testName === 'MessagingSessionTest') {
+      this.userArn = this.payload.userArn;
+    }
+
     this.originalURL = this.url;
     this.testReady = false;
     this.testFinish = false;
@@ -286,9 +291,11 @@ class SdkBaseTest extends KiteBaseTest {
   getAppName() {
     if(this.testName && this.testName.toLowerCase().includes('meetingreadinesschecker')) {
       return 'meetingReadinessChecker';
+    } else if (this.testName && this.testName.toLowerCase().includes('messagingsession')) {
+      return 'messagingSession';
     } else {
-      return 'meeting';
-    }
+        return 'meeting'
+    };
   }
 }
 

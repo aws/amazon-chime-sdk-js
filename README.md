@@ -70,6 +70,7 @@ all supported browsers.
 
 ## Setup
 
+### Meeting session
 Create a meeting session in your client application.
 
 ```js
@@ -129,6 +130,28 @@ These objects contain all the information needed for a client application using 
 
 The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic 'Choosing the nearest media Region' in the [Amazon Chime SDK Media Regions documentation](https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html).
 
+### Messaging session
+Create a messaging session in your client application to receive messages from Amazon Chime SDK for Messaging.
+```js
+import * as AWS from 'aws-sdk/global';
+import * as Chime from 'aws-sdk/clients/chime';
+
+import {
+  ConsoleLogger,
+  DefaultMessagingSession,
+  LogLevel,
+  MessagingSessionConfiguration,
+} from 'amazon-chime-sdk-js';
+
+const logger = new ConsoleLogger('SDK', LogLevel.INFO);
+const chime = new Chime({ region: 'us-east-1' });
+const endpoint = await chime.getMessagingSessionEndpoint().promise();
+
+const userArn = /* The userArn */;
+const sessionId = /* The sessionId */;
+const configuration = new MessagingSessionConfiguration(userArn, sessionId, endpoint.Endpoint.Url, chime, AWS);
+const messagingSession = new DefaultMessagingSession(configuration, logger);
+```
 ## Building and testing
 
 ```
@@ -172,6 +195,9 @@ Please do **not** create a public GitHub issue.
 - [Attendees](#attendees)
 - [Monitoring and alerts](#monitoring-and-alerts)
 - [Stopping a session](#stopping-a-session)
+- [Meeting readiness checker](#meeting-readiness-checker)
+- [Selecting an Audio Profile](#selecting-an-audio-profile)
+- [Starting a Messaging Session](#starting-a-messaging-session)
 
 ### Device
 
@@ -994,7 +1020,7 @@ const networkTCPFeedback = await meetingReadinessChecker.checkNetworkTCPConnecti
 console.log(`Feedback result: ${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}`);
 ```
 
-### Selecting an Audio Profile
+### Selecting an audio profile
 
 **Use case 32.** Set the audio quality of the main audio input to optimize for speech or music:
 
@@ -1012,6 +1038,38 @@ Use the following setting to optimize the audio bitrate of content share audio f
 meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
 ```
 
+### Starting a messaging session
+
+**Use case 34.** Setup an observer to receive events: connecting, start, stop and receive message; and 
+start a messaging session. 
+
+> Note: You can remove an observer by calling `messagingSession.removeObserver(observer)`.
+In a component-based architecture (such as React, Vue, and Angular), you may need to add an observer
+when a component is mounted, and remove it when unmounted.
+>
+```js
+const observer = {
+  messagingSessionDidStart: () => {
+    console.log('Session started');
+  },
+  messagingSessionDidStartConnecting: reconnecting => {
+    if (reconnecting) {
+      console.log('Start reconnecting');
+    } else {
+      console.log('Start connecting');
+    }
+  },
+  messagingSessionDidStop: event => {
+    console.log(`Closed: ${event.code} ${event.reason}`);
+  },
+  messagingSessionDidReceiveMessage: message => {
+    console.log(`Receive message type ${message.type}`);
+  }
+};
+
+messagingSession.addObserver(observer);
+messagingSession.start();
+```
 ## Notice
 
 The use of Amazon Voice Focus via this SDK involves the downloading and execution of code at runtime by end users.

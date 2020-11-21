@@ -15,3 +15,4 @@ exports.MeetingReadinessCheckerContentShareConnectivityCheck = require('./Meetin
 exports.MeetingReadinessCheckerAudioConnectivityCheck = require('./MeetingReadinessCheckerAudioConnectivityCheck');
 exports.MeetingReadinessCheckerNetworkUdpCheck = require('./MeetingReadinessCheckerNetworkUdpCheck');
 exports.VoiceFocusOfferedCheck = require('./VoiceFocusOfferedCheck');
+exports.SocketSubscribeMessageCheck = require('./SocketSubscribeMessageCheck');
