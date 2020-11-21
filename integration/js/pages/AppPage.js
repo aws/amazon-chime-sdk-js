@@ -542,5 +542,4 @@ class AppPage {
   }
 }
 
-module.exports.AppPage = AppPage;
-module.exports.SessionStatus = SessionStatus;
+module.exports = AppPage;

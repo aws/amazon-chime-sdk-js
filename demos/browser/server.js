@@ -87,6 +87,13 @@ http.createServer({}, async (request, response) => {
         MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
       }).promise();
       respond(response, 200, 'application/json', JSON.stringify({}));
+    } else if (request.method === 'GET' && requestUrl.pathname === '/fetch_credentials') {
+      const awsCredentials = {
+        accessKeyId: AWS.config.credentials.accessKeyId,
+        secretAccessKey: AWS.config.credentials.secretAccessKey,
+        sessionToken: AWS.config.credentials.sessionToken,
+      };
+      respond(response, 200, 'application/json', JSON.stringify(awsCredentials), true);
     } else {
       respond(response, 404, 'text/html', '404 Not Found');
     }
@@ -102,11 +109,12 @@ function log(message) {
   console.log(`${new Date().toISOString()} ${message}`);
 };
 
-function respond(response, statusCode, contentType, body) {
+function respond(response, statusCode, contentType, body, skipLogging = false) {
   response.statusCode = statusCode;
   response.setHeader('Content-Type', contentType);
   response.end(body);
-  if (contentType === 'application/json') {
+  if (contentType === 'application/json' && !skipLogging) {
     log(body);
   }
 }
+

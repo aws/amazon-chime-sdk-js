@@ -11,8 +11,8 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
 
   constructor(private logger: Logger) {}
 
-  create(url: string, protocols: string[]): void {
-    this.connection = new WebSocket(Versioning.urlWithVersion(url), protocols);
+  create(url: string, protocols: string[], isSignedUrl?: boolean): void {
+    this.connection = new WebSocket(isSignedUrl ? url : Versioning.urlWithVersion(url), protocols);
     this.connection.binaryType = 'arraybuffer';
   }
 

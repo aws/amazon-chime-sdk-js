@@ -31,3 +31,7 @@ exports.WaitForContentShareTestToBeReady = require('./WaitForContentShareTestToB
 exports.WaitForStartMeetingReadinessCheckerButtonToBeEnabled = require('./WaitForStartMeetingReadinessCheckerButtonToBeEnabled');
 exports.WaitForMeetingCreationAndMeetingReadinessCheckerInitializationStep = require('./WaitForMeetingCreationAndMeetingReadinessCheckerInitializationStep');
 exports.SetTestBrokenStep = require('./SetTestBrokenStep');
+
+exports.OpenMessagingSessionAppStep = require('./OpenMessagingSessionAppStep');
+exports.ConnectMessagingSessionStep = require('./ConnectMessagingSessionStep');
+exports.DisconnectMessagingSessionStep = require('./DisconnectMessagingSessionStep');

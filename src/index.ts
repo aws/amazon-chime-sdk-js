@@ -69,12 +69,14 @@ import DefaultEventController from './eventcontroller/DefaultEventController';
 import DefaultMediaDeviceFactory from './mediadevicefactory/DefaultMediaDeviceFactory';
 import DefaultMeetingReadinessChecker from './meetingreadinesschecker/DefaultMeetingReadinessChecker';
 import DefaultMeetingSession from './meetingsession/DefaultMeetingSession';
+import DefaultMessagingSession from './messagingsession/DefaultMessagingSession';
 import DefaultModality from './modality/DefaultModality';
 import DefaultPingPong from './pingpong/DefaultPingPong';
 import DefaultRealtimeController from './realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from './reconnectcontroller/DefaultReconnectController';
 import DefaultSDP from './sdp/DefaultSDP';
 import DefaultSessionStateController from './sessionstatecontroller/DefaultSessionStateController';
+import DefaultSigV4 from './sigv4/DefaultSigV4';
 import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import DefaultStatsCollector from './statscollector/DefaultStatsCollector';
@@ -132,6 +134,10 @@ import MeetingSessionStatusCode from './meetingsession/MeetingSessionStatusCode'
 import MeetingSessionTURNCredentials from './meetingsession/MeetingSessionTURNCredentials';
 import MeetingSessionURLs from './meetingsession/MeetingSessionURLs';
 import MeetingSessionVideoAvailability from './meetingsession/MeetingSessionVideoAvailability';
+import Message from './message/Message';
+import MessagingSession from './messagingsession/MessagingSession';
+import MessagingSessionConfiguration from './messagingsession/MessagingSessionConfiguration';
+import MessagingSessionObserver from './messagingsessionobserver/MessagingSessionObserver';
 import Modality from './modality/Modality';
 import MonitorTask from './task/MonitorTask';
 import MultiLogger from './logger/MultiLogger';
@@ -180,6 +186,7 @@ import SessionStateControllerState from './sessionstatecontroller/SessionStateCo
 import SessionStateControllerTransitionResult from './sessionstatecontroller/SessionStateControllerTransitionResult';
 import SetLocalDescriptionTask from './task/SetLocalDescriptionTask';
 import SetRemoteDescriptionTask from './task/SetRemoteDescriptionTask';
+import SigV4 from './sigv4/SigV4';
 import SignalingAndMetricsConnectionMonitor from './connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import SignalingClient from './signalingclient/SignalingClient';
 import SignalingClientConnectionRequest from './signalingclient/SignalingClientConnectionRequest';
@@ -310,12 +317,14 @@ export {
   DefaultMediaDeviceFactory,
   DefaultMeetingReadinessChecker,
   DefaultMeetingSession,
+  DefaultMessagingSession,
   DefaultModality,
   DefaultPingPong,
   DefaultRealtimeController,
   DefaultReconnectController,
   DefaultSDP,
   DefaultSessionStateController,
+  DefaultSigV4,
   DefaultSignalingClient,
   DefaultSimulcastUplinkPolicy,
   DefaultStatsCollector,
@@ -373,6 +382,10 @@ export {
   MeetingSessionTURNCredentials,
   MeetingSessionURLs,
   MeetingSessionVideoAvailability,
+  Message,
+  MessagingSession,
+  MessagingSessionConfiguration,
+  MessagingSessionObserver,
   Modality,
   MonitorTask,
   MultiLogger,
@@ -421,6 +434,7 @@ export {
   SessionStateControllerTransitionResult,
   SetLocalDescriptionTask,
   SetRemoteDescriptionTask,
+  SigV4,
   SignalingAndMetricsConnectionMonitor,
   SignalingClient,
   SignalingClientConnectionRequest,

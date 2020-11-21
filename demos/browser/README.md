@@ -13,6 +13,8 @@ Ensure you have AWS credentials configured in your `~/.aws` folder for a
 role with a policy allowing `chime:CreateMeeting`, `chime:DeleteMeeting`, and
 `chime:CreateAttendee`.
 
+For messaging session, make sure your role policy contains `chime:Connect` and `chime:GetMessagingSessionEndpoint`.
+
 ### Running the browser demos with a local server
 
 1. Navigate to the `demos/browser` folder: `cd demos/browser`
