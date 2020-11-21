@@ -50,6 +50,20 @@ Resources:
       Roles:
         - Ref: ChimeSdkJoinLambdaRole
         - Ref: ChimeSdkEndLambdaRole
+  ChimeMessagingAccessPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ChimeMeetingsAccess
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'chime:Connect'
+              - 'chime:GetMessagingSessionEndpoint'
+            Resource: '*'
+      Roles:
+        - Ref: ChimeSdkBrowserFetchCredentialsLambdaRole
   CloudWatchAccessPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -207,6 +221,17 @@ Resources:
           Properties:
             Path: /create_browser_event_log_stream
             Method: POST
+  ChimeSdkBrowserFetchCredentialsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.fetch_credentials
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /fetch_credentials
+            Method: GET
   ChimeNotificationsQueuePolicy:
     Type: AWS::SQS::QueuePolicy
     Properties:

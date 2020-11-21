@@ -101,6 +101,16 @@ exports.end = async (event, context) => {
   return response(200, 'application/json', JSON.stringify({}));
 };
 
+exports.fetch_credentials = async (event, context) => {
+  const awsCredentials = {
+    accessKeyId: AWS.config.credentials.accessKeyId,
+    secretAccessKey: AWS.config.credentials.secretAccessKey,
+    sessionToken: AWS.config.credentials.sessionToken,
+  };
+
+  return response(200, 'application/json', JSON.stringify(awsCredentials));
+};
+
 exports.logs = async (event, context) => {
   return putLogEvents(event, BROWSER_LOG_GROUP_NAME, (logs, meetingId, attendeeId) => {
     const logEvents = [];

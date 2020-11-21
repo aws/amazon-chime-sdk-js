@@ -60,6 +60,14 @@ describe('DefaultWebSocketAdapter', () => {
     expect(spy.calledWithExactly(testMessage)).to.be.true;
   });
 
+  it('can send a string message', () => {
+    domMockBuilder = new DOMMockBuilder();
+    const spy = sinon.spy(WebSocket.prototype, 'send');
+    socket.create('http://example.com', ['testProtocol']);
+    socket.send('test');
+    expect(spy.called).to.be.true;
+  });
+
   it('fails to send a message', () => {
     const behavior = new DOMMockBehavior();
     behavior.webSocketSendSucceeds = false;

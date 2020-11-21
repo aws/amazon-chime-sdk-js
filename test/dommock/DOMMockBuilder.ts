@@ -1144,5 +1144,6 @@ export default class DOMMockBuilder {
     delete GlobalAny.AudioBuffer;
     delete GlobalAny.MediaStreamAudioDestinationNode;
     delete GlobalAny.MediaStreamAudioSourceNode;
+    delete GlobalAny.crypto;
   }
 }

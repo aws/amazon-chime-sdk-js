@@ -11,8 +11,9 @@ export default interface WebSocketAdapter {
    *
    * @param{string} url URL to connect to
    * @param{string[]} protocols Protocols to send when establishing the connection
+   * @param{boolean} isSignedUrl whether the URL is signed
    */
-  create(url: string, protocols: string[]): void;
+  create(url: string, protocols: string[], isSignedUrl?: boolean): void;
 
   /**
    * Sends a raw byte message.

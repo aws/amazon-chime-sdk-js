@@ -134,6 +134,9 @@
 				<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
 					<h2>Setup</h2>
 				</a>
+				<a href="#meeting-session" id="meeting-session" style="color: inherit; text-decoration: none;">
+					<h3>Meeting session</h3>
+				</a>
 				<p>Create a meeting session in your client application.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> {
   ConsoleLogger,
@@ -185,6 +188,28 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 				<p>Now securely transfer the <code>meetingResponse</code> and <code>attendeeResponse</code> objects to your client application.
 				These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.</p>
 				<p>The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic &#39;Choosing the nearest media Region&#39; in the <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html">Amazon Chime SDK Media Regions documentation</a>.</p>
+				<a href="#messaging-session" id="messaging-session" style="color: inherit; text-decoration: none;">
+					<h3>Messaging session</h3>
+				</a>
+				<p>Create a messaging session in your client application to receive messages from Amazon Chime SDK for Messaging.</p>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> AWS <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;aws-sdk/global&#x27;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Chime <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;aws-sdk/clients/chime&#x27;</span>;
+
+<span class="hljs-keyword">import</span> {
+  ConsoleLogger,
+  DefaultMessagingSession,
+  LogLevel,
+  MessagingSessionConfiguration,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;SDK&#x27;</span>, LogLevel.INFO);
+<span class="hljs-keyword">const</span> chime = <span class="hljs-keyword">new</span> Chime({ <span class="hljs-attr">region</span>: <span class="hljs-string">&#x27;us-east-1&#x27;</span> });
+<span class="hljs-keyword">const</span> endpoint = <span class="hljs-keyword">await</span> chime.getMessagingSessionEndpoint().promise();
+
+<span class="hljs-keyword">const</span> userArn = <span class="hljs-comment">/* The userArn */</span>;
+<span class="hljs-keyword">const</span> sessionId = <span class="hljs-comment">/* The sessionId */</span>;
+<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(userArn, sessionId, endpoint.Endpoint.Url, chime, AWS);
+<span class="hljs-keyword">const</span> messagingSession = <span class="hljs-keyword">new</span> DefaultMessagingSession(configuration, logger);</code></pre>
 				<a href="#building-and-testing" id="building-and-testing" style="color: inherit; text-decoration: none;">
 					<h2>Building and testing</h2>
 				</a>
@@ -221,6 +246,9 @@ npm <span class="hljs-keyword">run</span><span class="bash"> doc</span></code></
 					<li><a href="#attendees">Attendees</a></li>
 					<li><a href="#monitoring-and-alerts">Monitoring and alerts</a></li>
 					<li><a href="#stopping-a-session">Stopping a session</a></li>
+					<li><a href="#meeting-readiness-checker">Meeting readiness checker</a></li>
+					<li><a href="#selecting-an-audio-profile">Selecting an Audio Profile</a></li>
+					<li><a href="#starting-a-messaging-session">Starting a Messaging Session</a></li>
 				</ul>
 				<a href="#device" id="device" style="color: inherit; text-decoration: none;">
 					<h3>Device</h3>
@@ -927,7 +955,7 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 <span class="hljs-keyword">const</span> networkTCPFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkNetworkTCPConnectivity();
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}</span>`</span>);</code></pre>
 				<a href="#selecting-an-audio-profile" id="selecting-an-audio-profile" style="color: inherit; text-decoration: none;">
-					<h3>Selecting an Audio Profile</h3>
+					<h3>Selecting an audio profile</h3>
 				</a>
 				<p><strong>Use case 32.</strong> Set the audio quality of the main audio input to optimize for speech or music:</p>
 				<p>Use the following setting to optimize the audio bitrate of the main audio input for fullband speech with a mono channel:</p>
@@ -935,6 +963,37 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 				<p><strong>Use case 33.</strong> Set the audio quality of content share audio to optimize for speech or music:</p>
 				<p>Use the following setting to optimize the audio bitrate of content share audio for fullband music with a mono channel:</p>
 				<pre><code class="language-js">meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());</code></pre>
+				<a href="#starting-a-messaging-session" id="starting-a-messaging-session" style="color: inherit; text-decoration: none;">
+					<h3>Starting a messaging session</h3>
+				</a>
+				<p><strong>Use case 34.</strong> Setup an observer to receive events: connecting, start, stop and receive message; and
+				start a messaging session. </p>
+				<blockquote>
+					<p>Note: You can remove an observer by calling <code>messagingSession.removeObserver(observer)</code>.
+						In a component-based architecture (such as React, Vue, and Angular), you may need to add an observer
+					when a component is mounted, and remove it when unmounted.</p>
+				</blockquote>
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
+  <span class="hljs-attr">messagingSessionDidStart</span>: <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Session started&#x27;</span>);
+  },
+  <span class="hljs-attr">messagingSessionDidStartConnecting</span>: <span class="hljs-function"><span class="hljs-params">reconnecting</span> =&gt;</span> {
+    <span class="hljs-keyword">if</span> (reconnecting) {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Start reconnecting&#x27;</span>);
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Start connecting&#x27;</span>);
+    }
+  },
+  <span class="hljs-attr">messagingSessionDidStop</span>: <span class="hljs-function"><span class="hljs-params">event</span> =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Closed: <span class="hljs-subst">${event.code}</span> <span class="hljs-subst">${event.reason}</span>`</span>);
+  },
+  <span class="hljs-attr">messagingSessionDidReceiveMessage</span>: <span class="hljs-function"><span class="hljs-params">message</span> =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Receive message type <span class="hljs-subst">${message.type}</span>`</span>);
+  }
+};
+
+messagingSession.addObserver(observer);
+messagingSession.start();</code></pre>
 				<a href="#notice" id="notice" style="color: inherit; text-decoration: none;">
 					<h2>Notice</h2>
 				</a>
@@ -1144,6 +1203,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="classes/defaultmeetingsession.html" class="tsd-kind-icon">Default<wbr>Meeting<wbr>Session</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/defaultmessagingsession.html" class="tsd-kind-icon">Default<wbr>Messaging<wbr>Session</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/defaultmodality.html" class="tsd-kind-icon">Default<wbr>Modality</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1160,6 +1222,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultsessionstatecontroller.html" class="tsd-kind-icon">Default<wbr>Session<wbr>State<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/defaultsigv4.html" class="tsd-kind-icon">Default<wbr>Sig<wbr>V4</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultsignalingclient.html" class="tsd-kind-icon">Default<wbr>Signaling<wbr>Client</a>
@@ -1271,6 +1336,12 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/meetingsessionvideoavailability.html" class="tsd-kind-icon">Meeting<wbr>Session<wbr>Video<wbr>Availability</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/message.html" class="tsd-kind-icon">Message</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/messagingsessionconfiguration.html" class="tsd-kind-icon">Messaging<wbr>Session<wbr>Configuration</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/monitortask.html" class="tsd-kind-icon">Monitor<wbr>Task</a>
@@ -1552,6 +1623,12 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 						<a href="interfaces/meetingsession.html" class="tsd-kind-icon">Meeting<wbr>Session</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/messagingsession.html" class="tsd-kind-icon">Messaging<wbr>Session</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/messagingsessionobserver.html" class="tsd-kind-icon">Messaging<wbr>Session<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/modality.html" class="tsd-kind-icon">Modality</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1583,6 +1660,9 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/sessionstatecontroller.html" class="tsd-kind-icon">Session<wbr>State<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/sigv4.html" class="tsd-kind-icon">Sig<wbr>V4</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/signalingclient.html" class="tsd-kind-icon">Signaling<wbr>Client</a>

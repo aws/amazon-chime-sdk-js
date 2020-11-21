@@ -2,6 +2,7 @@ const {Builder} = require('selenium-webdriver');
 const {getBuildId, getRunDetails} = require('./BrowserStackLogs');
 const {AppPage} = require('../pages/AppPage');
 const {MeetingReadinessCheckerPage} = require('../pages/MeetingReadinessCheckerPage');
+const { MessagingSessionPage } = require('../pages/MessagingSessionPage');
 
 const getOS = capabilities => {
   switch (capabilities.platform) {
@@ -122,11 +123,18 @@ class BrowserStackSession {
 
   getAppPage() {
     if (this.page === undefined) {
-      this.page = this.appName === 'meeting'
-        ? new AppPage(this.driver, this.logger)
-        : new MeetingReadinessCheckerPage(this.driver, this.logger);
+      switch (this.appName) {
+        case 'meetingReadinessChecker':
+          this.page = new MeetingReadinessCheckerPage(this.driver, this.logger);
+          break;
+        case 'messagingSession':
+          this.page = new MessagingSessionPage(this.driver, this.logger);
+          break;
+        default:
+          this.page = new AppPage(this.driver, this.logger);
+          break;
+      }
     }
-    return this.page;
   }
 
   async updateTestResults(passed) {
