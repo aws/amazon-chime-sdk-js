@@ -184,8 +184,7 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 }).promise();</code></pre>
 				<p>Now securely transfer the <code>meetingResponse</code> and <code>attendeeResponse</code> objects to your client application.
 				These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.</p>
-				<p>The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting.
-				An implementation can be found in the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts#L460">getNearestMediaRegion()</a></p>
+				<p>The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic &#39;Choosing the nearest media Region&#39; in the <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html">Amazon Chime SDK Media Regions documentation</a>.</p>
 				<a href="#building-and-testing" id="building-and-testing" style="color: inherit; text-decoration: none;">
 					<h2>Building and testing</h2>
 				</a>
