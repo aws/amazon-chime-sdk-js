@@ -136,8 +136,8 @@ deviceController.enableWebAudio(enableWebAudio);</code></pre>
 <span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
 …</code></pre>
 					<hr>
-					<a href="#update-bindaudioelement-to-return-promiseltvoidgt-instead-of-boolean" id="update-bindaudioelement-to-return-promiseltvoidgt-instead-of-boolean" style="color: inherit; text-decoration: none;">
-						<h3>Update <code>bindAudioElement()</code> to return <code>Promise&lt;void&gt;</code> instead of <code>boolean</code></h3>
+					<a href="#update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promiseltvoidgt-instead-of-boolean" id="update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promiseltvoidgt-instead-of-boolean" style="color: inherit; text-decoration: none;">
+						<h3>Update <code>bindAudioElement()</code>, <code>bindAudioStream()</code> and <code>bindAudioDevice()</code> to return <code>Promise&lt;void&gt;</code> instead of <code>boolean</code></h3>
 					</a>
 					<p>The <code>bindAudioElement()</code> API in <code>AudioMixControllerFacade</code> was previously a synchronous function which used to return <code>boolean</code>.
 						Under the hood, it used to call <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a>
@@ -171,6 +171,9 @@ audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
   <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Failed to bind audio element&#x27;</span>, e);
 }
 <span class="hljs-keyword">await</span> audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
+					<p>Additionally, if the browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a> API, the <code>bindAudioDevice()</code> will throw an
+						error with a message &#39;Cannot select audio output device. This browser does not support setSinkId.&#39;
+					Check <a href="https://caniuse.com/?search=setSinkId">https://caniuse.com/?search=setSinkId</a> for the setSinkId browser support.</p>
 					<hr>
 					<a href="#introducing-audioinputdevice-and-videoinputdevice" id="introducing-audioinputdevice-and-videoinputdevice" style="color: inherit; text-decoration: none;">
 						<h3>Introducing <code>AudioInputDevice</code> and <code>VideoInputDevice</code></h3>

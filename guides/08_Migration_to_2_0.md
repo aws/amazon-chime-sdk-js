@@ -87,8 +87,7 @@ this.audioVideo = this.meetingSession.audioVideo;
 
 ---
 
-### Update `bindAudioElement()` to return `Promise<void>` instead of `boolean`
-
+### Update `bindAudioElement()`, `bindAudioStream()` and `bindAudioDevice()` to return `Promise<void>` instead of `boolean`
 The `bindAudioElement()` API in `AudioMixControllerFacade` was previously a synchronous function which used to return `boolean`.
 Under the hood, it used to call [`setSinkId()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId)
 which is an asynchronous function.
@@ -137,6 +136,10 @@ try {
 }
 await audioMixController.bindAudioStream(destinationStream.stream);
 ```
+
+Additionally, if the browser does not support [`setSinkId()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId) API, the `bindAudioDevice()` will throw an
+error with a message 'Cannot select audio output device. This browser does not support setSinkId.'
+Check https://caniuse.com/?search=setSinkId for the setSinkId browser support.
 
 ---
 
