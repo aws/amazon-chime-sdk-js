@@ -71,7 +71,6 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
    * If the same device is passed as is currently in use, `this` is returned.
    *
    * @param inner The new inner device to use.
-   * @param enabled (optional) Whether to toggle the enabled state of the device.
    */
   async chooseNewInnerDevice(inner: Device): Promise<VoiceFocusTransformDevice> {
     // If the new device is 'default', always recreate. Chrome can switch out
