@@ -5,6 +5,34 @@ def verbose command
   puts("--> #{command}") || system(command) || fail("Failed: #{command}")
 end
 
+def requires_changelog commits
+  for commit in commits 
+    commit_files=`git diff-tree --no-commit-id --name-only -r #{commit}`.split("\n")
+    matches = false
+    for committed_file in commit_files
+      File.foreach(".changelog-watchlist") do |stem|
+        stem = stem.strip
+        if stem == ''
+          next
+        elsif stem.start_with?('!')
+          stem_string = stem[1..-1]
+          if committed_file.start_with?(stem_string)
+            matches = false
+          end
+        elsif committed_file.start_with?(stem)
+          puts 'There are changes within ' + stem
+          matches = true
+        end
+      end
+      if matches
+        return true
+      end
+    end
+  end
+  puts 'Does not contain any changes in the changelog watchlist'
+  return false
+end
+
 Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
 base = File.read('.base-branch').strip
 commits = `git rev-list #{base}..`.strip.split("\n")
@@ -14,10 +42,16 @@ if commits.size == 0
   exit 0
 end
 
-changelog = `git diff #{base}.. CHANGELOG.md`.strip
-if changelog.length == 0
-  STDERR.puts "No CHANGELOG.md entries since #{base}."
-  exit 1
+if requires_changelog(commits)
+  changelog = `git diff #{base}.. CHANGELOG.md`.strip
+  if changelog.length == 0
+    STDERR.puts "FAIL: Requires CHANGELOG, but no CHANGELOG.md entries found since #{base}."
+    exit 1
+  else
+    puts "OK: Changelog changes found"
+  end
+else 
+  puts "OK: No Changelog required"
 end
 
 # Pull in package fixes automatically.
