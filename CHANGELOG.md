@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reimplement error handling in `DefaultRealtimeController` to generate less garbage.
 - Add github actions fix to conditionally run integ tests
 - [Documentation] Correct docstring for `VoiceFocusTransformDevice`.
+- [Script] Add prepublish script to verify CDN configuration.
 
 ## [2.0.0] - 2020-11-18
 

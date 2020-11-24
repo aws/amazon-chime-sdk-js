@@ -23,7 +23,7 @@
     "prebuild:release": "script/prebuild",
     "build:release": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
     "postbuild:release": "script/postbuild",
-    "prebuild:publish": "script/prebuild --publish",
+    "prebuild:publish": "node script/check-voice-focus-version.js && script/prebuild --publish",
     "build:publish": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
     "postbuild:publish": "script/postbuild",
     "predoc": "rm -rf docs && node script/build-guides.js",
