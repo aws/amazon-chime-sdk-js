@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Documentation] Add demo video stats widget information to the quality and bandwidth guide
 - [Documentation] Updated migration document to add more information about `bindAudioDevice()` API behavior
 - Add APIs to create a messaging session with Amazon Chime SDK for Messaging
+- test
 
 ### Changed
 

@@ -191,7 +191,7 @@ export default class DefaultAudioVideoController
   }
 
   addObserver(observer: AudioVideoObserver): void {
-    this.logger.info('adding meeting observer');
+    this.logger.info('Adding meeting observer');
     this.observerQueue.add(observer);
   }
 
