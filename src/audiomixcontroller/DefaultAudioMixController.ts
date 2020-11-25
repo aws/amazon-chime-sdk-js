@@ -20,7 +20,7 @@ export default class DefaultAudioMixController implements AudioMixController {
       this.audioElement.autoplay = true;
       return this.bindAudioMix();
     } else {
-      throw new Error(`Cannot bind audio element: ${element}`);
+      throw new Error(`cannot bind audio element: ${element}`);
     }
   }
 
