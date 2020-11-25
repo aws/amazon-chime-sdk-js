@@ -132,11 +132,7 @@ describe('DefaultDeviceController', () => {
     });
 
     it('returns an empty list if MediaDeviceInfo API does not exist', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const GlobalAny = global as any;
-      // Deleting MediaDeviceInfo throws "ReferenceError: MediaDeviceInfo is not defined."
-      // For testing, assign a boolean.
-      GlobalAny['window']['MediaDeviceInfo'] = false;
+      MediaDeviceInfo = undefined;
       const devices: MediaDeviceInfo[] = await deviceController.listAudioInputDevices();
       expect(devices.length).to.equal(0);
     });
@@ -580,6 +576,17 @@ describe('DefaultDeviceController', () => {
       }
     });
 
+    it('pass undefined device', async () => {
+      try {
+        const logSpy = sinon.spy(logger, 'error');
+        await deviceController.chooseAudioInputDevice(undefined);
+        expect(logSpy.calledOnce);
+        logSpy.restore();
+      } catch (e) {
+        throw new Error('This line should not be reached');
+      }
+    });
+
     it('chooses an audio device', async () => {
       const device: AudioInputDevice = { deviceId: 'string-device-id' };
       try {
@@ -938,6 +945,17 @@ describe('DefaultDeviceController', () => {
       const device: VideoInputDevice = null;
       try {
         await deviceController.chooseVideoInputDevice(device);
+      } catch (e) {
+        throw new Error('This line should not be reached');
+      }
+    });
+
+    it('pass undefined device', async () => {
+      try {
+        const logSpy = sinon.spy(logger, 'error');
+        await deviceController.chooseVideoInputDevice(undefined);
+        expect(logSpy.calledOnce);
+        logSpy.restore();
       } catch (e) {
         throw new Error('This line should not be reached');
       }
