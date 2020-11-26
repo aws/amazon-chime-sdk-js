@@ -83,7 +83,7 @@ do
 done
 
 echo 'Requires integ tests:' $requires_integration_test
-if ![[ $requires_integration_test ]]
+if [[ ! $requires_integration_test ]]
 then
    exit 0
 fi
