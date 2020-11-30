@@ -97,6 +97,9 @@ class VoiceFocus {
     }
     static isSupported(spec, options) {
         const { fetchBehavior, logger } = options || {};
+        if (typeof globalThis === 'undefined') {
+            return Promise.resolve(false);
+        }
         if (!support_js_1.supportsAudioWorklet(globalThis, logger) || !support_js_1.supportsWASMStreaming(globalThis, logger)) {
             return Promise.resolve(false);
         }
@@ -243,10 +246,11 @@ class VoiceFocus {
     }
 }
 exports.VoiceFocus = VoiceFocus;
-exports.createAudioContext = (contextHint = DEFAULT_CONTEXT_HINT) => {
+const createAudioContext = (contextHint = DEFAULT_CONTEXT_HINT) => {
     return new (window.AudioContext || window.webkitAudioContext)(contextHint);
 };
-exports.getAudioInput = (context, inputOptions, voiceFocusOptions) => __awaiter(void 0, void 0, void 0, function* () {
+exports.createAudioContext = createAudioContext;
+const getAudioInput = (context, inputOptions, voiceFocusOptions) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const { constraints, spec, delegate, preload = true, options } = inputOptions;
     const { logger } = voiceFocusOptions;
@@ -260,3 +264,4 @@ exports.getAudioInput = (context, inputOptions, voiceFocusOptions) => __awaiter(
     const input = yield window.navigator.mediaDevices.getUserMedia(mungeConstraints(constraints, agc));
     return factory.applyToStream(input, context, options).then(result => result.stream);
 });
+exports.getAudioInput = getAudioInput;

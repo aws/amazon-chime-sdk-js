@@ -9,7 +9,7 @@ const WORKER_FETCH_OPTIONS = {
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
 };
-exports.loadWorker = (workerURL, name, fetchBehavior, logger) => {
+const loadWorker = (workerURL, name, fetchBehavior, logger) => {
     logger === null || logger === void 0 ? void 0 : logger.debug(`Loading ${name} worker from ${workerURL}.`);
     let workerURLIsSameOrigin = false;
     try {
@@ -30,3 +30,4 @@ exports.loadWorker = (workerURL, name, fetchBehavior, logger) => {
         throw new Error('Fetch failed.');
     });
 };
+exports.loadWorker = loadWorker;

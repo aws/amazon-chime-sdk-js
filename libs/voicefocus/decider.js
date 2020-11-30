@@ -274,7 +274,7 @@ const estimateAndFeatureCheck = (forceSIMD, fetchConfig, estimatorBudget, logger
         estimator.stop();
     }
 });
-exports.measureAndDecideExecutionApproach = (spec, fetchConfig, logger, thresholds = PERFORMANCE_THRESHOLDS) => __awaiter(void 0, void 0, void 0, function* () {
+const measureAndDecideExecutionApproach = (spec, fetchConfig, logger, thresholds = PERFORMANCE_THRESHOLDS) => __awaiter(void 0, void 0, void 0, function* () {
     let executionPreference = spec.executionPreference;
     const { usagePreference, variantPreference, simdPreference, estimatorBudget, } = spec;
     if (usagePreference === 'interactivity' && executionPreference !== 'inline') {
@@ -299,6 +299,8 @@ exports.measureAndDecideExecutionApproach = (spec, fetchConfig, logger, threshol
     }
     return decideExecutionApproach(Object.assign(Object.assign({}, supports), { simdPreference, executionPreference, variantPreference }), thresholds, logger);
 });
-exports.decideModel = ({ category, name, variant, simd }) => {
+exports.measureAndDecideExecutionApproach = measureAndDecideExecutionApproach;
+const decideModel = ({ category, name, variant, simd }) => {
     return `${category}-${name}-${variant}-v1${simd ? '_simd' : ''}`;
 };
+exports.decideModel = decideModel;
