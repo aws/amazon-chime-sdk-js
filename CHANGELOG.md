@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `globalThis is not defined` error on browsers that doesn't support `globalThis`
+- Fix `globalThis is not defined` error on browsers that doesn't support `globalThis`
 
 ## [2.1.0] - 2020-11-23
 
