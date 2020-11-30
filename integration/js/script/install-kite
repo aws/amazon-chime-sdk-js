@@ -10,7 +10,6 @@ cd KITE
 git checkout e9296165cd24bea92cddb59f2bf211c99f764d58
 
 chmod -R +x scripts/linux
-yes | ./scripts/linux/installMaven.sh
 
 chmod +x configureLinux.sh
 yes n | ./configureLinux.sh

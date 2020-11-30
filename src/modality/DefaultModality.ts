@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ContentShareConstants from '../contentsharecontroller/ContentShareConstants';
@@ -16,7 +16,7 @@ export default class DefaultModality implements Modality {
   }
 
   base(): string {
-    if (this._id === '') {
+    if (!this._id) {
       return '';
     }
     return this._id.split(DefaultModality.MODALITY_SEPARATOR)[0];

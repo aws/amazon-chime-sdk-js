@@ -1,11 +1,15 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { Substitute } from '@fluffy-spoon/substitute';
 
+import GetUserMediaError from '../../src/devicecontroller/GetUserMediaError';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import SafariSDPMock from '../sdp/SafariSDPMock';
+import DisplayMediaState from './DisplayMediaState';
 import DOMMockBehavior from './DOMMockBehavior';
+import MockError, { OverconstrainedError } from './MockError';
+import UserMediaState from './UserMediaState';
 
 // eslint-disable-next-line
 const GlobalAny = global as any;
@@ -85,7 +89,7 @@ export default class DOMMockBuilder {
         }
       }
 
-      send(data: ArrayBuffer): void {
+      send(data: ArrayBuffer | string): void {
         if (mockBehavior.webSocketSendSucceeds) {
           asyncWait(() => {
             if (mockBehavior.webSocketSendEcho && this.listeners.hasOwnProperty('message')) {
@@ -171,7 +175,10 @@ export default class DOMMockBuilder {
       stop(): void {
         if (this.readyState === 'live') {
           this.readyState = 'ended';
-          if (this.listeners.hasOwnProperty('ended')) {
+          if (
+            this.listeners.hasOwnProperty('ended') &&
+            mockBehavior.triggeredEndedEventForStopStreamTrack
+          ) {
             this.listeners.ended.forEach((listener: MockListener) =>
               listener({
                 ...Substitute.for(),
@@ -304,8 +311,15 @@ export default class DOMMockBuilder {
       getDisplayMedia(
         _constraints: MockMediaStreamConstraints
       ): Promise<typeof GlobalAny.MediaStream> {
-        const mediaStream = Substitute.for<typeof GlobalAny.MediaStream>();
-        return Promise.resolve(mediaStream);
+        if (mockBehavior.getDisplayMediaResult === DisplayMediaState.Success) {
+          const mediaStreamMaker: typeof GlobalAny.MediaStream = GlobalAny.MediaStream;
+          const mediaStream = new mediaStreamMaker();
+          return Promise.resolve(mediaStream);
+        } else if (mockBehavior.getDisplayMediaResult === DisplayMediaState.PermissionDenied) {
+          return Promise.reject(new MockError('NotAllowedError', 'Permission denied'));
+        } else {
+          return Promise.reject(new Error('failed to get display media'));
+        }
       }
 
       async getUserMedia(
@@ -315,7 +329,8 @@ export default class DOMMockBuilder {
         return new Promise<typeof GlobalAny.MediaStream>((resolve, reject) => {
           if (constraints === null) {
             reject(
-              new Error(
+              new MockError(
+                'TypeError',
                 `TypeError: Failed to execute 'getUserMedia' on 'MediaDevices': At least one of audio and video must be requested`
               )
             );
@@ -341,6 +356,26 @@ export default class DOMMockBuilder {
             mediaStream.active = true;
             resolve(mediaStream);
           } else {
+            if (typeof mockBehavior.getUserMediaError !== 'undefined') {
+              reject(mockBehavior.getUserMediaError);
+              return;
+            }
+
+            if (
+              mockBehavior.getUserMediaResult &&
+              mockBehavior.getUserMediaResult !== UserMediaState.Failure
+            ) {
+              if (mockBehavior.getUserMediaResult === UserMediaState.GetUserMediaError) {
+                reject(new GetUserMediaError(null, null));
+              }
+
+              if (mockBehavior.getUserMediaResult !== UserMediaState.OverconstrainedError) {
+                const errorName = UserMediaState[mockBehavior.getUserMediaResult];
+                reject(new MockError(errorName));
+              } else {
+                reject(new OverconstrainedError('OverconstrainedError', 'testconstraint'));
+              }
+            }
             reject(new Error('failed to get media device'));
           }
         });
@@ -356,7 +391,7 @@ export default class DOMMockBuilder {
           if (mockBehavior.enumerateDeviceList) {
             deviceLists = mockBehavior.enumerateDeviceList;
           } else {
-            let label = this.gotLabels ? 'fakeLabel' : '';
+            const label = this.gotLabels ? 'fakeLabel' : '';
             deviceLists = [
               { deviceId: ++mockBehavior.deviceCounter + '', kind: 'audioinput', label: label },
               { deviceId: ++mockBehavior.deviceCounter + '', kind: 'videoinput', label: label },
@@ -476,6 +511,10 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.window = GlobalAny;
+
+    GlobalAny.Audio = class MockAudio {
+      constructor(public src?: string) {}
+    };
 
     GlobalAny.Event = class MockEvent {
       track: typeof GlobalAny.MediaStreamTrack;
@@ -765,7 +804,6 @@ export default class DOMMockBuilder {
       parameter: RTCRtpSendParameters;
       constructor(track: MediaStreamTrack) {
         this.track = track;
-        // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
         this.parameter = {
           degradationPreference: null,
           encodings: [],
@@ -834,7 +872,7 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.fetch = function fetch(_input: RequestInfo, _init?: RequestInit): Promise<Response> {
-      return new Promise<Response>(function(resolve, reject) {
+      return new Promise<Response>(function (resolve, reject) {
         asyncWait(() => {
           if (mockBehavior.fetchSucceeds) {
             resolve(new Response());
@@ -852,13 +890,13 @@ export default class DOMMockBuilder {
     GlobalAny.MediaQueryList = class MockMediaQueryList {
       constructor() {}
 
-      addEventListener(_type: string, listener: () => {}): void {
+      addEventListener(_type: string, listener: () => void): void {
         asyncWait(() => {
           listener();
         });
       }
 
-      addListener(listener: () => {}): void {
+      addListener(listener: () => void): void {
         asyncWait(() => {
           listener();
         });
@@ -871,12 +909,19 @@ export default class DOMMockBuilder {
 
     GlobalAny.HTMLAudioElement = class MockHTMLAudioElement {
       sinkId = 'fakeSinkId';
-      async setSinkId(deviceId: string): Promise<undefined> {
-        this.sinkId = deviceId;
-        await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs * 10));
-        return undefined;
+      async setSinkId(deviceId: string): Promise<void> {
+        if (mockBehavior.setSinkIdSucceeds) {
+          this.sinkId = deviceId;
+          await new Promise(resolve => setTimeout(resolve, mockBehavior.asyncWaitMs * 10));
+          return undefined;
+        } else {
+          throw new Error('Failed to set sinkId');
+        }
       }
     };
+    if (!mockBehavior.setSinkIdSupported) {
+      GlobalAny.HTMLAudioElement.prototype.setSinkId = undefined;
+    }
 
     GlobalAny.document = {
       createElement(_tagName: string): HTMLElement {
@@ -931,7 +976,9 @@ export default class DOMMockBuilder {
       }
 
       createMediaStreamDestination(): MediaStreamAudioDestinationNode {
-        return new GlobalAny.MediaStreamAudioDestinationNode();
+        return mockBehavior.createMediaStreamDestinationSuccess
+          ? new GlobalAny.MediaStreamAudioDestinationNode()
+          : null;
       }
 
       createMediaStreamSource(mediaStream: MediaStream): MediaStreamAudioSourceNode {
@@ -942,7 +989,9 @@ export default class DOMMockBuilder {
 
       createAnalyser(): AnalyserNode {
         // @ts-ignore
-        return {};
+        return {
+          context: (this as unknown) as BaseAudioContext,
+        };
       }
 
       createBufferSource(): AudioBufferSourceNode {
@@ -952,22 +1001,35 @@ export default class DOMMockBuilder {
       createGain(): GainNode {
         // @ts-ignore
         return {
+          context: (this as unknown) as BaseAudioContext,
           // @ts-ignore
           connect(_destinationParam: AudioParam, _output?: number): void {},
           // @ts-ignore
-          gain: {},
+          disconnect(_destinationParam: AudioParam): void {},
+          // @ts-ignore
+          gain: {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            linearRampToValueAtTime(value: number, endTime: number): AudioParam {
+              // @ts-ignore
+              return {};
+            },
+          },
         };
       }
 
       createOscillator(): OscillatorNode {
         // @ts-ignore
         return {
+          context: (this as unknown) as BaseAudioContext,
           // @ts-ignore
           start(_when?: number): void {},
+          stop(): void {},
           // @ts-ignore
           connect(destinationNode: AudioNode, _output?: number, _input?: number): AudioNode {
             return destinationNode;
           },
+          // @ts-ignore
+          disconnect(_destinationNode: AudioNode): void {},
           // @ts-ignore
           frequency: {},
         };
@@ -1007,6 +1069,7 @@ export default class DOMMockBuilder {
 
       constructor() {
         this.stream = new GlobalAny.MediaStream();
+        this.stream.id = 'destination-stream-id';
 
         // For testing the "ended" event handler, dispatch the "ended" event right after
         // initialization.
@@ -1043,6 +1106,15 @@ export default class DOMMockBuilder {
 
       disconnect(): void {}
     };
+
+    GlobalAny.crypto = {
+      getRandomValues(_data: Uint32Array): Uint32Array {
+        return new Uint32Array([
+          Math.trunc(Math.random() * 2 ** 32),
+          Math.trunc(Math.random() * 2 ** 32),
+        ]);
+      },
+    };
   }
 
   cleanup(): void {
@@ -1066,10 +1138,12 @@ export default class DOMMockBuilder {
     delete GlobalAny.matchMedia;
     delete GlobalAny.document;
     delete GlobalAny.requestAnimationFrame;
+    delete GlobalAny.Audio;
     delete GlobalAny.AudioContext;
     delete GlobalAny.AudioBufferSourceNode;
     delete GlobalAny.AudioBuffer;
     delete GlobalAny.MediaStreamAudioDestinationNode;
     delete GlobalAny.MediaStreamAudioSourceNode;
+    delete GlobalAny.crypto;
   }
 }

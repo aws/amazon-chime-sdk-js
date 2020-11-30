@@ -1,15 +1,15 @@
 #!/bin/bash -i
 
 function start_demo_meeting {
-    cd ~/build/aws/amazon-chime-sdk-js/demos/browser
+    cd $GITHUB_WORKSPACE/demos/browser
     uuid=$(uuidgen)
     mkdir -p logs
-    if [[ $1 == 'v1' ]]
+    if [[ $1 == 'meetingReadinessChecker' ]]
     then
-      extra_args='--app=meeting'
-      echo "Starting the demo v1"
+      extra_args='--app=meetingReadinessChecker'
+      echo "Starting meeting readiness checker"
     else
-      echo "Starting the demo v2"
+      echo "Starting the meeting demo"
     fi
     npm run start $extra_args &> logs/$uuid.log &
 }
@@ -42,11 +42,59 @@ function wait_for_demo_to_start {
     fi
 }
 
+function check_if_integ_tests_required {
+base_branch=$(head -n 1 ../../.base-branch)
+commits=`git rev-list $base_branch..`
+echo 'Commits:'  $commits
+
+requires_integration_test=false
+for commit in $commits
+do
+   commit_files=`git diff-tree --no-commit-id --name-only -r ${commit}`
+   echo 'Commited files are: ' $commit_files
+   matches=false
+   for committed_file in $commit_files
+   do
+      while read -r stem
+      do
+         if [[ $stem =~ ^#.* ]]
+         then
+               continue
+         elif [[ $stem = "" ]]
+         then
+               continue
+         elif [[ $stem =~ ^!.* ]]
+         then
+               stem_string="${stem:1}"
+               if [[ $committed_file = $stem_string* ]]
+               then
+                  matches=false
+               fi
+         elif [[ $committed_file = $stem* ]]
+         then
+               matches=true
+         fi
+      done < "../../.integration-watchlist"
+      if [[ $matches ]]
+      then
+         requires_integration_test=true
+      fi
+   done
+done
+
+echo 'Requires integ tests:' $requires_integration_test
+if ![[ $requires_integration_test ]]
+then
+   exit 0
+fi
+}
+echo `pwd`
+check_if_integ_tests_required
 curr=`pwd`
 
-if [[ $1 == screen_share ]]
+if [[ $1 == meeting_readiness_checker ]]
 then
-  start_demo_meeting 'v1'
+  start_demo_meeting 'meetingReadinessChecker'
 else
   start_demo_meeting
 fi
@@ -64,19 +112,14 @@ case $1 in
       ;;
    video)
       r video_test.config.json
-      r video_test_simulcast.config.json
+      #  TODO: Re-enable simulcast test after it has been fixed
+      # r video_test_simulcast.config.json
       r app_quit_video_test.config.json
       r meeting_leave_video_test.config.json
       r reconnection_test.config.json
       ;;
    meeting_end)
       r meeting_end_test.config.json
-      ;;
-   screen_share)
-      r screen_sharing_test.config.json
-      r screen_viewing_test.config.json
-      r meeting_leave_screen_share_test.config.json
-      r app_quit_screen_share_test.config.json
       ;;
    content_share)
       r content_share_screen_capture_test.config.json
@@ -89,6 +132,9 @@ case $1 in
    data_message)
       r data_message_test.config.json
       ;;
+   meeting_readiness_checker)
+      r meeting_readiness_checker_test.config.json
+      ;;
    *)
       r audio_test.config.json
       r video_test.config.json
@@ -97,10 +143,6 @@ case $1 in
       r app_quit_video_test.config.json
       r meeting_leave_audio_test.config.json
       r meeting_leave_video_test.config.json
-      r screen_sharing_test.config.json
-      r screen_viewing_test.config.json
-      r meeting_leave_screen_share_test.config.json
-      r app_quit_screen_share_test.config.json
       ;;
 esac
 

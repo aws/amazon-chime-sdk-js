@@ -1,7 +1,8 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import VERSION from './version';
 
 export default class Versioning {
   static X_AMZN_VERSION = 'X-Amzn-Version';
@@ -18,7 +19,15 @@ export default class Versioning {
    * Return string representation of SDK version
    */
   static get sdkVersion(): string {
-    return '1.15.5';
+    return VERSION.semverString;
+  }
+
+  /**
+   * Return the SHA-1 of the Git commit from which this build was created.
+   */
+  static get buildSHA(): string {
+    // Skip the leading 'g'.
+    return VERSION.hash.substr(1);
   }
 
   /**

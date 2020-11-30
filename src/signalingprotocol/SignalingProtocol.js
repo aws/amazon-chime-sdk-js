@@ -1402,6 +1402,7 @@ $root.SdkJoinFrame = (function() {
      * @property {number|null} [maxNumOfVideos] SdkJoinFrame maxNumOfVideos
      * @property {number|null} [flags] SdkJoinFrame flags
      * @property {ISdkClientDetails|null} [clientDetails] SdkJoinFrame clientDetails
+     * @property {number|Long|null} [audioSessionId] SdkJoinFrame audioSessionId
      */
 
     /**
@@ -1452,6 +1453,14 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.prototype.clientDetails = null;
 
     /**
+     * SdkJoinFrame audioSessionId.
+     * @member {number|Long} audioSessionId
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.audioSessionId = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+    /**
      * Creates a new SdkJoinFrame instance using the specified properties.
      * @function create
      * @memberof SdkJoinFrame
@@ -1483,6 +1492,8 @@ $root.SdkJoinFrame = (function() {
             writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.flags);
         if (message.clientDetails != null && message.hasOwnProperty("clientDetails"))
             $root.SdkClientDetails.encode(message.clientDetails, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
+            writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.audioSessionId);
         return writer;
     };
 
@@ -1528,6 +1539,9 @@ $root.SdkJoinFrame = (function() {
                 break;
             case 4:
                 message.clientDetails = $root.SdkClientDetails.decode(reader, reader.uint32());
+                break;
+            case 6:
+                message.audioSessionId = reader.uint64();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -1578,6 +1592,9 @@ $root.SdkJoinFrame = (function() {
             if (error)
                 return "clientDetails." + error;
         }
+        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
+            if (!$util.isInteger(message.audioSessionId) && !(message.audioSessionId && $util.isInteger(message.audioSessionId.low) && $util.isInteger(message.audioSessionId.high)))
+                return "audioSessionId: integer|Long expected";
         return null;
     };
 
@@ -1604,6 +1621,15 @@ $root.SdkJoinFrame = (function() {
                 throw TypeError(".SdkJoinFrame.clientDetails: object expected");
             message.clientDetails = $root.SdkClientDetails.fromObject(object.clientDetails);
         }
+        if (object.audioSessionId != null)
+            if ($util.Long)
+                (message.audioSessionId = $util.Long.fromValue(object.audioSessionId)).unsigned = true;
+            else if (typeof object.audioSessionId === "string")
+                message.audioSessionId = parseInt(object.audioSessionId, 10);
+            else if (typeof object.audioSessionId === "number")
+                message.audioSessionId = object.audioSessionId;
+            else if (typeof object.audioSessionId === "object")
+                message.audioSessionId = new $util.LongBits(object.audioSessionId.low >>> 0, object.audioSessionId.high >>> 0).toNumber(true);
         return message;
     };
 
@@ -1625,6 +1651,11 @@ $root.SdkJoinFrame = (function() {
             object.maxNumOfVideos = 8;
             object.flags = 0;
             object.clientDetails = null;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, true);
+                object.audioSessionId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.audioSessionId = options.longs === String ? "0" : 0;
         }
         if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
             object.protocolVersion = message.protocolVersion;
@@ -1634,6 +1665,11 @@ $root.SdkJoinFrame = (function() {
             object.flags = message.flags;
         if (message.clientDetails != null && message.hasOwnProperty("clientDetails"))
             object.clientDetails = $root.SdkClientDetails.toObject(message.clientDetails, options);
+        if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
+            if (typeof message.audioSessionId === "number")
+                object.audioSessionId = options.longs === String ? String(message.audioSessionId) : message.audioSessionId;
+            else
+                object.audioSessionId = options.longs === String ? $util.Long.prototype.toString.call(message.audioSessionId) : options.longs === Number ? new $util.LongBits(message.audioSessionId.low >>> 0, message.audioSessionId.high >>> 0).toNumber(true) : message.audioSessionId;
         return object;
     };
 
@@ -1657,6 +1693,7 @@ $root.SdkJoinAckFrame = (function() {
      * Properties of a SdkJoinAckFrame.
      * @exports ISdkJoinAckFrame
      * @interface ISdkJoinAckFrame
+     * @property {ISdkTurnCredentials|null} [turnCredentials] SdkJoinAckFrame turnCredentials
      */
 
     /**
@@ -1673,6 +1710,14 @@ $root.SdkJoinAckFrame = (function() {
                 if (properties[keys[i]] != null)
                     this[keys[i]] = properties[keys[i]];
     }
+
+    /**
+     * SdkJoinAckFrame turnCredentials.
+     * @member {ISdkTurnCredentials|null|undefined} turnCredentials
+     * @memberof SdkJoinAckFrame
+     * @instance
+     */
+    SdkJoinAckFrame.prototype.turnCredentials = null;
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.
@@ -1698,6 +1743,8 @@ $root.SdkJoinAckFrame = (function() {
     SdkJoinAckFrame.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
+        if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
+            $root.SdkTurnCredentials.encode(message.turnCredentials, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
         return writer;
     };
 
@@ -1732,6 +1779,9 @@ $root.SdkJoinAckFrame = (function() {
         while (reader.pos < end) {
             var tag = reader.uint32();
             switch (tag >>> 3) {
+            case 1:
+                message.turnCredentials = $root.SdkTurnCredentials.decode(reader, reader.uint32());
+                break;
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -1767,6 +1817,11 @@ $root.SdkJoinAckFrame = (function() {
     SdkJoinAckFrame.verify = function verify(message) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials")) {
+            var error = $root.SdkTurnCredentials.verify(message.turnCredentials);
+            if (error)
+                return "turnCredentials." + error;
+        }
         return null;
     };
 
@@ -1781,7 +1836,13 @@ $root.SdkJoinAckFrame = (function() {
     SdkJoinAckFrame.fromObject = function fromObject(object) {
         if (object instanceof $root.SdkJoinAckFrame)
             return object;
-        return new $root.SdkJoinAckFrame();
+        var message = new $root.SdkJoinAckFrame();
+        if (object.turnCredentials != null) {
+            if (typeof object.turnCredentials !== "object")
+                throw TypeError(".SdkJoinAckFrame.turnCredentials: object expected");
+            message.turnCredentials = $root.SdkTurnCredentials.fromObject(object.turnCredentials);
+        }
+        return message;
     };
 
     /**
@@ -1793,8 +1854,15 @@ $root.SdkJoinAckFrame = (function() {
      * @param {$protobuf.IConversionOptions} [options] Conversion options
      * @returns {Object.<string,*>} Plain object
      */
-    SdkJoinAckFrame.toObject = function toObject() {
-        return {};
+    SdkJoinAckFrame.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            object.turnCredentials = null;
+        if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
+            object.turnCredentials = $root.SdkTurnCredentials.toObject(message.turnCredentials, options);
+        return object;
     };
 
     /**
@@ -2868,6 +2936,7 @@ $root.SdkIndexFrame = (function() {
      * @property {boolean|null} [atCapacity] SdkIndexFrame atCapacity
      * @property {Array.<ISdkStreamDescriptor>|null} [sources] SdkIndexFrame sources
      * @property {Array.<number>|null} [pausedAtSourceIds] SdkIndexFrame pausedAtSourceIds
+     * @property {number|null} [numParticipants] SdkIndexFrame numParticipants
      */
 
     /**
@@ -2912,6 +2981,14 @@ $root.SdkIndexFrame = (function() {
     SdkIndexFrame.prototype.pausedAtSourceIds = $util.emptyArray;
 
     /**
+     * SdkIndexFrame numParticipants.
+     * @member {number} numParticipants
+     * @memberof SdkIndexFrame
+     * @instance
+     */
+    SdkIndexFrame.prototype.numParticipants = 0;
+
+    /**
      * Creates a new SdkIndexFrame instance using the specified properties.
      * @function create
      * @memberof SdkIndexFrame
@@ -2943,6 +3020,8 @@ $root.SdkIndexFrame = (function() {
         if (message.pausedAtSourceIds != null && message.pausedAtSourceIds.length)
             for (var i = 0; i < message.pausedAtSourceIds.length; ++i)
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.pausedAtSourceIds[i]);
+        if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
+            writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.numParticipants);
         return writer;
     };
 
@@ -2994,6 +3073,9 @@ $root.SdkIndexFrame = (function() {
                         message.pausedAtSourceIds.push(reader.uint32());
                 } else
                     message.pausedAtSourceIds.push(reader.uint32());
+                break;
+            case 4:
+                message.numParticipants = reader.uint32();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -3049,6 +3131,9 @@ $root.SdkIndexFrame = (function() {
                 if (!$util.isInteger(message.pausedAtSourceIds[i]))
                     return "pausedAtSourceIds: integer[] expected";
         }
+        if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
+            if (!$util.isInteger(message.numParticipants))
+                return "numParticipants: integer expected";
         return null;
     };
 
@@ -3083,6 +3168,8 @@ $root.SdkIndexFrame = (function() {
             for (var i = 0; i < object.pausedAtSourceIds.length; ++i)
                 message.pausedAtSourceIds[i] = object.pausedAtSourceIds[i] >>> 0;
         }
+        if (object.numParticipants != null)
+            message.numParticipants = object.numParticipants >>> 0;
         return message;
     };
 
@@ -3103,8 +3190,10 @@ $root.SdkIndexFrame = (function() {
             object.sources = [];
             object.pausedAtSourceIds = [];
         }
-        if (options.defaults)
+        if (options.defaults) {
             object.atCapacity = false;
+            object.numParticipants = 0;
+        }
         if (message.atCapacity != null && message.hasOwnProperty("atCapacity"))
             object.atCapacity = message.atCapacity;
         if (message.sources && message.sources.length) {
@@ -3117,6 +3206,8 @@ $root.SdkIndexFrame = (function() {
             for (var j = 0; j < message.pausedAtSourceIds.length; ++j)
                 object.pausedAtSourceIds[j] = message.pausedAtSourceIds[j];
         }
+        if (message.numParticipants != null && message.hasOwnProperty("numParticipants"))
+            object.numParticipants = message.numParticipants;
         return object;
     };
 
@@ -7757,6 +7848,277 @@ $root.SdkDataMessagePayload = (function() {
     };
 
     return SdkDataMessagePayload;
+})();
+
+$root.SdkTurnCredentials = (function() {
+
+    /**
+     * Properties of a SdkTurnCredentials.
+     * @exports ISdkTurnCredentials
+     * @interface ISdkTurnCredentials
+     * @property {string|null} [username] SdkTurnCredentials username
+     * @property {string|null} [password] SdkTurnCredentials password
+     * @property {number|null} [ttl] SdkTurnCredentials ttl
+     * @property {Array.<string>|null} [uris] SdkTurnCredentials uris
+     */
+
+    /**
+     * Constructs a new SdkTurnCredentials.
+     * @exports SdkTurnCredentials
+     * @classdesc Represents a SdkTurnCredentials.
+     * @implements ISdkTurnCredentials
+     * @constructor
+     * @param {ISdkTurnCredentials=} [properties] Properties to set
+     */
+    function SdkTurnCredentials(properties) {
+        this.uris = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTurnCredentials username.
+     * @member {string} username
+     * @memberof SdkTurnCredentials
+     * @instance
+     */
+    SdkTurnCredentials.prototype.username = "";
+
+    /**
+     * SdkTurnCredentials password.
+     * @member {string} password
+     * @memberof SdkTurnCredentials
+     * @instance
+     */
+    SdkTurnCredentials.prototype.password = "";
+
+    /**
+     * SdkTurnCredentials ttl.
+     * @member {number} ttl
+     * @memberof SdkTurnCredentials
+     * @instance
+     */
+    SdkTurnCredentials.prototype.ttl = 0;
+
+    /**
+     * SdkTurnCredentials uris.
+     * @member {Array.<string>} uris
+     * @memberof SdkTurnCredentials
+     * @instance
+     */
+    SdkTurnCredentials.prototype.uris = $util.emptyArray;
+
+    /**
+     * Creates a new SdkTurnCredentials instance using the specified properties.
+     * @function create
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {ISdkTurnCredentials=} [properties] Properties to set
+     * @returns {SdkTurnCredentials} SdkTurnCredentials instance
+     */
+    SdkTurnCredentials.create = function create(properties) {
+        return new SdkTurnCredentials(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTurnCredentials message. Does not implicitly {@link SdkTurnCredentials.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {ISdkTurnCredentials} message SdkTurnCredentials message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTurnCredentials.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.username != null && message.hasOwnProperty("username"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.username);
+        if (message.password != null && message.hasOwnProperty("password"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.password);
+        if (message.ttl != null && message.hasOwnProperty("ttl"))
+            writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.ttl);
+        if (message.uris != null && message.uris.length)
+            for (var i = 0; i < message.uris.length; ++i)
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.uris[i]);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTurnCredentials message, length delimited. Does not implicitly {@link SdkTurnCredentials.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {ISdkTurnCredentials} message SdkTurnCredentials message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTurnCredentials.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTurnCredentials message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTurnCredentials} SdkTurnCredentials
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTurnCredentials.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTurnCredentials();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.username = reader.string();
+                break;
+            case 2:
+                message.password = reader.string();
+                break;
+            case 3:
+                message.ttl = reader.uint32();
+                break;
+            case 4:
+                if (!(message.uris && message.uris.length))
+                    message.uris = [];
+                message.uris.push(reader.string());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTurnCredentials message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTurnCredentials} SdkTurnCredentials
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTurnCredentials.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTurnCredentials message.
+     * @function verify
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTurnCredentials.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.username != null && message.hasOwnProperty("username"))
+            if (!$util.isString(message.username))
+                return "username: string expected";
+        if (message.password != null && message.hasOwnProperty("password"))
+            if (!$util.isString(message.password))
+                return "password: string expected";
+        if (message.ttl != null && message.hasOwnProperty("ttl"))
+            if (!$util.isInteger(message.ttl))
+                return "ttl: integer expected";
+        if (message.uris != null && message.hasOwnProperty("uris")) {
+            if (!Array.isArray(message.uris))
+                return "uris: array expected";
+            for (var i = 0; i < message.uris.length; ++i)
+                if (!$util.isString(message.uris[i]))
+                    return "uris: string[] expected";
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkTurnCredentials message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTurnCredentials} SdkTurnCredentials
+     */
+    SdkTurnCredentials.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTurnCredentials)
+            return object;
+        var message = new $root.SdkTurnCredentials();
+        if (object.username != null)
+            message.username = String(object.username);
+        if (object.password != null)
+            message.password = String(object.password);
+        if (object.ttl != null)
+            message.ttl = object.ttl >>> 0;
+        if (object.uris) {
+            if (!Array.isArray(object.uris))
+                throw TypeError(".SdkTurnCredentials.uris: array expected");
+            message.uris = [];
+            for (var i = 0; i < object.uris.length; ++i)
+                message.uris[i] = String(object.uris[i]);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTurnCredentials message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTurnCredentials
+     * @static
+     * @param {SdkTurnCredentials} message SdkTurnCredentials
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTurnCredentials.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.uris = [];
+        if (options.defaults) {
+            object.username = "";
+            object.password = "";
+            object.ttl = 0;
+        }
+        if (message.username != null && message.hasOwnProperty("username"))
+            object.username = message.username;
+        if (message.password != null && message.hasOwnProperty("password"))
+            object.password = message.password;
+        if (message.ttl != null && message.hasOwnProperty("ttl"))
+            object.ttl = message.ttl;
+        if (message.uris && message.uris.length) {
+            object.uris = [];
+            for (var j = 0; j < message.uris.length; ++j)
+                object.uris[j] = message.uris[j];
+        }
+        return object;
+    };
+
+    /**
+     * Converts this SdkTurnCredentials to JSON.
+     * @function toJSON
+     * @memberof SdkTurnCredentials
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTurnCredentials.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkTurnCredentials;
 })();
 
 module.exports = $root;

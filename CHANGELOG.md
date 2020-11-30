@@ -5,27 +5,319 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2020-11-23
 
 ### Added
-- Added auth-token based npm login and logout scripts for npm package publishing
+
+- [Documentation] Add demo video stats widget information to the quality and bandwidth guide
+- [Documentation] Updated migration document to add more information about `bindAudioDevice()` API behavior
+- Add APIs to create a messaging session with Amazon Chime SDK for Messaging
 
 ### Changed
+
+### Removed
+
+- [Test] Remove check for `/v2` in canary URL
+
+### Fixed
+
+- [Script] Update postpublish script to enable termination protection for prod canary stack.
+- [Documentation] Update the Amazon Chime SDK Media Regions documentation link in the README
+- Reimplement error handling in `DefaultRealtimeController` to generate less garbage.
+- Add github actions fix to conditionally run integ tests
+
+## [2.0.0] - 2020-11-18
+
+### Added
+
+- Add a constructor argument to `DefaultDeviceController` to specify whether Web Audio should be
+  supported. Use this instead of `enableWebAudio`.
+- Add an `AudioTransformDevice` type that can be supplied to `chooseAudioInputDevice`, allowing the
+  injection of custom device constraints and Web Audio nodes as pseudo-devices.
+- Add `VideoTransformDevice` interface placeholder. This interface mirrors `AudioTransformDevice`.
+  Choosing `VideoTransformDevice`s in `DefaultDeviceController` will be implemented in a future release.
+- Add Amazon Voice Focus, which allows you to create an audio input device that suppresses
+  background noise.
+- Add `AudioProfile` for configuring audio quality.
+- Add `setAudioProfile` and `setContentAudioProfile` audio-video facade methods for setting audio quality.
+- Added `GetUserMediaError` errors which are thrown for `chooseAudioInputDevice` and
+  `chooseVideoInputDevice` API failures.
+- [Demo] Show video WebRTC stats and attendeeId on video tile hover.
+- [Demo] Add audio quality settings to meeting demo.
+
+### Changed
+
+- The project now produces ES2015 output, rather than ES5 output that refers to ES2015
+  features. The SDK supports only modern browsers, and is increasingly dependent on ES2015
+  features. This change leads to more compact bundles and aligns the supported JavaScript
+  language variant with the supported runtime features.
+
+  If you need your built application bundle to target browsers that do not
+  support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code
+  using a transpiler like Babel, or split your application bundle into multiple files that can
+  be conditionally loaded. Note that transpiling some parts of the SDK might result in ES5 code
+  that does not work when run.
+
+- `DeviceController.createAnalyserNodeForAudioInput` now returns a `RemovableAnalyserNode` that
+  knows how to unhook its own inputs. This allows you to correctly clean up, which avoids issues
+  with Safari when used with Web Audio. The demo has been adjusted to do so.
+- Modify `WebSocketAdapter.send` to accept string parameters.
+- Changed `chooseAudioInputDevice` and `chooseVideoInputDevice` to return void and reject with a
+  hierarchy of errors instead of either rejecting with an error and otherwise returning
+  `DevicePermission`.
+
+### Removed
+
+- Remove `enableWebAudio` from `DeviceController` and related types. Use the constructor argument
+  instead.
+- Remove V1 meeting app. The V2 meeting app is now the only meeting app deployed. Do not supply /V2/
+  paths when loading the app, if you deployed both.
+- Remove legacy screen share.
+- Remove `DevicePermission`.
+
+### Fixed
+
+- Fix Github Actions CI workflow to include all integ tests.
+- Update the clicking sound answer in FAQs.
+- [Test] Make sure to remove v2 from URL when trying to create meeting
+- Correct import in `NoOpAudioVideoController`.
+
+## [1.22.0] - 2020-11-10
+
+### Added
+
+- Add github actions continuous integration workflow and deploy workflow
+- Add simulcast uplink policy layer change notification methods and observer
+- Add `getRemoteVideoSources` method and `remoteVideoSourcesDidChange` observer
+- [Documentation] Add question to FAQ about android chrome bluetooth audio devices
+
+### Changed
+
+- [Documentation] Updated HTTP to HTTPS in README URL links
+- [Documentation] Improved documentation for running integration tests locally
+- [Test] Updated browserstack URL formation to use HTTPS
+- Upgraded eslint to understand modern TypeScript syntax, including `import type`
+- [Demo] change optional feature selection to be list of input box to allow combination
+- [Documentation] Update README to replace deprecated `AudioCallEnded` with `MeetingEnded`
+- [Documentation] Update few `VideoTileController` and `VideoTile` APIs documentation
+- [Documentation] Added deprecation message and log for `enableWebAudio` API in DeviceController
+- Improve `DefaultEventController` to create less garbage
+
+### Removed
+
+### Fixed
+
+- Make the event controller optional in the AudioVideoController interface
+- Handle undefined attendeeId when calling `realtimeSetAttendeeIdPresence`
+- Fix `DefaultModality` base check
+- [Test] Fix a typo in integ tests
+- [Demo] Fix serverless deploy script to not print out logs
+- [Test] Make sure to error out if failed to grab Sauce Lab sessions
+- Fixed deploy github action with correct keys
+- Remote video may switch transceivers/videoTiles on simulcast change or camera toggle
+- Fix github actions deploy workflow
+- Fix issue with calling closeCurrentTest twice when timeout waiting for an attendee in integ test
+
+## [1.21.0] - 2020-10-29
+
+### Added
+
+- [Demo] Add default SSE to meeting notifications queue in CF template
+- Add meeting events
+
+### Changed
+
+### Removed
+
+- Removed check for `iceGatheringState` to be complete for bypassing gathering ice candidate again
+
+### Fixed
+
+- Allow the build to complete in the absence of a Git checkout
+
+## [1.20.2] - 2020-10-20
+
+### Added
+
+### Changed
+
+- [Documentation] Update README to add information about `tileState.active`
+- Update PR template to ask demo testing question
+
+### Removed
+
+### Fixed
+
+- Reduced sessionId resolution to 32 bits and removed Long dependency
+- Handle case where meeting or attendee response properties can accept null or undefined
+
+## [1.20.0] - 2020-10-15
+
+### Added
+
+- Add a Travis check to make sure version update
+- Add metrics for Selenium initialization metrics for integration tests
+- Create log stream before logging begins
+- Make AWS SDK for Java camelCased meeting-attendee response compatible with Chime SDK for JavaScript
+- Mark InvalidSequenceTokenExceptions as warning
+- Add an optional parameter to the serverless demo deployment script to specify Chime endpoint, and deploy to a new devo stage that talks to gamma Chime endpoint for canary
+- Add extended debugging for saucelab sessions
+- Add data message throttle limits to documentation
+- Add `audioSessionId` to join frame to always drop when reconnecting
+- Add audioSessionId to join frame to always drop when reconnecting
+
+### Changed
+
+- Update test results to Sauce Labs before emitting CloudWatch metrics for integration tests
+- Mark `AudioInternalServerError` and `SignalingInternalServerError` as non-terminal errors
+- Replace `awesome-typescript-loader` with `ts-loader`
+- Alter the API signature for `Logger.debug` to accept strings, not just functions
+- Update meeting readiness checker demo app with new regions CPT, MXP, BOM and ICN
+- Update meeting readiness checker demo app to create meeting after the checker starts
+- Alter the versioning script to require less ritual
+- Correct TypeScript build to generate correct artifacts in `build/`
+- Fall back to `null` device if there is any error while acquiring the audio device
+
+### Removed
+
+### Fixed
+
+- Make sure integration test returns FAILED if there is error
+- [Test] Make sure to reset ready status between retries
+- No video after connection failure
+- Fix video track sometimes being removed and added on simulcast receive stream switch
+- Enabled termination protection for serverless demo CloudFormation stack
+- Simulcast optimizations
+- Correct TypeScript build to generate correct artifacts in `build/`
+- Correct TypeScript configuration for demo app
+
+## [1.19.0] - 2020-09-29
+
+### Added
+
+- Add MeetingReadinessCheckerConfiguration to allow custom configuration for meeting readiness checker
+
+### Changed
+
+- Update Travis config to improve PR build speed
+- Disable configs in saucelab capabilities
+- Use credentials sent via signaling connection JOIN_ACK to improve audio-video startup time.
+- [Demo] Adjust demo css to prevent unecessary scrollbars on windows and stretching in video grid
+- Update dependencies to TypeScript 4, `ts-loader`, and modern linting
+- [Demo] Update dependencies, too.
+- Remove unnecessary startAudioPreview in meeting demo
+- Fix video tile with incorrect bound attendee ID and external User ID
+
+### Removed
+
+- Revert the "Create log stream before logging begins" commit
+- Revert "Fix unbinding video tile bug" commit
+- Revert "Fix issue with removeLocalVideoTile not removing video tile for remote attendees" commit
+- Remove "./guides/docs.ts" and the composite setting from tsconfig.json
+- Reverted " Add continuous integration workflow support for contributions from forked repos"
+
+### Fixed
+
+- Fix Maven installation script
+- Fix SIP integration test
+- Fixed v1 meeting bug related to bootstrap row class
+- Fix meeting readiness checker integration test
+
+## [1.18.0] - 2020-09-22
+
+### Added
+
+- Add meeting readiness checker integ tests to travis config
+- Add optional parameter `sourceId` to checkContentShareConnectivity API
+- Add getVideoInputQualitySettings to retrieve the current video settings
+- Add documentation for DefaultActiveSpeakerPolicy constructor
+
+### Changed
+
+- Use pip to install aws sam cli for deployment script
+- Added meetings tags to serverless demo
+- Update PR template to add question about protocol and API change
+- Add demos/browser package-lock to git, update webpack and jquery versions
+- Update integration-watchlist to include demos/browser with no exception for package.json
+- Change error to warn for logging Cloudwatch errors
+- Update README with use case to handle `realtimeSubscribeToVolumeIndicator` updates efficiently
+- Change error messaging for getUserMedia error
+- Change demo video grid to CSS
+- Update new known issues in FAQs and PTSN sample in README
+
+### Removed
+
+### Fixed
+
+- Fixed bug related to unbinding a video element
+- Fix tone does not stop when calling MeetingReadinessChecker.checkAudioOutput multiple times
+- Fixed demo css format issue from updating to bootstrap 4.5.1
+- Fix a minor syntax in DefaultSessionStateController
+
+## [1.17.2] - 2020-09-08
+
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+
+- Change default encode resolution back to 960x540
+
+## [1.17.0] - 2020-09-04
+
+### Added
+
+- Add npm login and logout as part of publish script
+- Add Meeting Readiness Checker APIs
+
+### Changed
+
+- Change WebRTC semantics to Unified Plan by default for Chromium-based browsers
+- Update video simulcast guide doc
+- Update readme to include link to React components repo
+
+### Removed
+
+### Fixed
+
+- Fixed removeLocalVideoTile so that the video tile is removed correctly for the user and attendees
+- Handle timing issue of receiving index during resubscribe
+- Mitigate Brew Sam installation issue
+- Remove set command in travis awscli installation script
+- Add `--no-fail-on-empty-changeset` flag in deploy script to not fail for empty changeset
+
+## [1.16.0] - 2020-08-20
+
+### Added
+
+- Added auth-token based npm login and logout scripts for npm package publishing
+- Update demo app with new regions CPT, MXP, BOM and ICN
+
+### Changed
+
 - Update the dependency version for the singlejs demo
 
 ### Removed
-- Remove  `device` demo from demos
+
+- Remove `device` demo from demos
 
 ### Fixed
+
 - Fix and modify simulcast uplink policy to fix freezing and reduce switches
 - Exclude self content share video stream index
+
 ## [1.15.0] - 2020-08-10
 
 ### Added
+
 - Add comments for VideoTileState class and instructions in FAQ document
 - Add reference to CreateMeetingWithAttendees in FAQ
 
 ### Changed
+
 - Bump elliptic from 6.5.2 to 6.5.3 in /demos/device
 - Log info when stop pinging due to Websocket closed
 - Change the demo app to show content share video back to sharer
@@ -35,6 +327,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
 - Ensure all simulcast stream resolution are 16-aligned to avoid pixel3(XL) encoder issue
 - Fix race condition in Chromium browsers when consecutive audio bind operations take place
 - Fix invalid constraints and disable Unified Plan in safari 12.0
@@ -43,16 +336,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.14.0] - 2020-07-28
 
 ### Added
+
 - Add content share video test integration test
 - Add function to query outbound WebRTC video stats in browser demo
 - Add error message for TaskFailed errors
 
 ### Changed
+
 - Return the screen capture media stream for startContentShareFromScreenCapture
 
 ### Removed
 
 ### Fixed
+
 - Fix exception thrown in Safari when multiple startVideoPreviewForVideoInput() are made
 
 ## [1.13.0] - 2020-07-21
@@ -60,11 +356,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
 - Use POST instead of GET for TURN control endpoint
 
 ### Removed
 
 ### Fixed
+
 - Fix demo app responsiveness issue
 - Fix content share test video in Firefox
 - Marking `TURNMeetingEnded` error as terminal to prevent session from reconnecting
@@ -72,6 +370,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.12.0] - 2020-07-17
 
 ### Added
+
 - Add device name for mobile integration tests
 - Added new FAQs and updated Readme to include new demos for PSTN calling and live events
 - Add test report URL for mobile integration tests
@@ -81,6 +380,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add device change observer events when the current audio/video input stream ended
 
 ### Changed
+
 - Fix title for FAQ guide
 - Change DefaultDeviceController video MediaTrackConstraint parameters to be "ideal" explicitly
 - Use a single instance of AudioContext
@@ -89,6 +389,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
 - Fix typo in VideoStreamDescription when stream is disabled by WebRTC
 - Fix issue where audio input is not able to switch in Firefox
 - Fix handling WebRTC Track event with no associated streams
@@ -100,6 +401,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.11.0] - 2020-06-30
 
 ### Added
+
 - Add meeting demo parameter for broadcasting user
 - Add simulcast guide link in README and Quality Bandwidth Connectivity doc
 - Add a MediaDevices proxy to support the devicechange event in some Android Chrome browsers
@@ -107,9 +409,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Removed
+
 - Remove browser demo optional feature HTMLSelectElement multiple attribute
 
 ### Fixed
+
 - Fix CloudWatch metrics for Linux and Android integration tests
 - Fix create meeting request for audio and video e2e integration tests
 - Fix multiple issues with integration tests
@@ -122,6 +426,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.10.0] - 2020-06-23
 
 ### Added
+
 - Add position in frame to attendee updates
 - Add stale-issue bot configuration
 - Add simulcast support and provides new uplink downlink policies
@@ -131,6 +436,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add unit tests for source files previously excluded in test coverage
 
 ### Changed
+
 - Use GET instead of POST to obtain TURN credentials
 - Move integration tests to use meeting V2 demo
 - Update to add ability to run integration tests in mobile devices
@@ -138,6 +444,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
 - Update cloudwatch log stream ID to have attendee_id
 - Fix Firefox 68 codec preference issues
 - Fix uplink max bitrate value calculation
@@ -147,29 +454,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
 - Bump websocket-extensions from 0.1.3 to 0.1.4
 - Update SignalingProtocol.proto and use SDK version in JoinFrame
 
 ### Removed
 
 ### Fixed
+
 - Fix duplicate tiles and error logs due to external id race condition
 - Suppress presence leave when attendee has already joined from another device (#427)
 
 ## [1.8.0] - 2020-06-05
 
 ### Added
+
 - Add an integration tests to check remote video when reconnecting
 - Add device controller tests
 - Add option to run integration tests in Sauce Labs headless
 
 ### Changed
+
 - Switch demo DDB table to on demand
 - Restart the session if an attendee is not present during initial connection
 
 ### Removed
 
 ### Fixed
+
 - Handle user revoking video input permission
 - Fix FinishGatheringICECandidatesTask when there are no turn credentials
 - Fix log line to print device constraints
@@ -182,6 +494,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.7.0] - 2020-05-23
 
 ### Added
+
 - Add connectionDidBecomeGood callback in AudioVideoObserver
 - Add an integration test for Data Message
 - Add the device selection to the "Starting a session" example
@@ -189,12 +502,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add 'dropped' boolean attribute to realtime interface to indicate attendee drop
 
 ### Changed
+
 - Support styling and Markdown for meeting demo chat
 - Update signaling protocol
 
 ### Removed
 
 ### Fixed
+
 - Fix Firefox version 76 missing/grey tiles
 - Fix data message integration tests
 - Fix several integration test name
@@ -205,17 +520,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.6.2] - 2020-05-18
 
 ### Fixed
+
 - Disable audio capture for Electron Screen Capture
 
 ## [1.6.0] - 2020-05-15
 
 ### Added
+
 - Allow option to skip device selection page in demo app.
 - Add demo hook for debugging media connections
 - Add github link to getNearestMediaRegion method in README.md
 - Add data message APIs
 
 ### Changed
+
 - Allow audio for screen capture in Chrome and Edge browsers
 - Decouple the get call request from the UI
 - Use getSettings if possible on MediaStream and move some info logs to debug level
@@ -224,11 +542,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
 - Fix minor coding styles for data message APIs
 
 ## [1.5.0] - 2020-05-07
 
 ### Added
+
 - Add bandwidth policy to meeting session configuration to allow overriding default policies
 - Add more content sharing integration tests
 - Add gifs to read me file to show latest npm version and downloads
@@ -236,6 +556,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Display meeting and attendee IDs in the demo
 
 ### Changed
+
 - Simplify meeting demos to leverage externalUserId in roster
 - Update PR template to add testing information
 - Support a mobile-friendly demo
@@ -243,9 +564,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update reconnection parameters in ConnectionHealthPolicyConfiguration
 
 ### Removed
+
 - Remove unused VideoAdaptiveSubscribePolicy
 
 ### Fixed
+
 - Fix serverless deploy script to work on Windows
 - Clean up and fix serverless package bundling
 - Do not mirror local video for rear-facing camera
@@ -258,27 +581,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix the CloudWatch log handler
 
 ### Security
+
 - Bump package-lock.json jquery to 3.5.0 and yargs-parser to 18.1.3
 
 ## [1.4.0] - 2020-04-24
 
 ### Added
+
 - Expose an API for GetStats from RTCPeerConnection
 - Add BrowserBehavior test for supported video codecs
 - Expose ExternalUserID on videoTileDidUpdate
 
 ### Changed
+
 - Use getByteTimeDomainData to support iOS Safari in meeting demo
 - Update README to incorporate documentation feedback
 
 ### Removed
 
 ### Fixed
+
 - Fix broken link in GitHub main page README
 
 ## [1.3.0] - 2020-04-17
 
 ### Added
+
 - Enable the use of send-side bandwidth estimation
 - Add guide for content sharing
 - Display meeting id in the demo app
@@ -299,6 +627,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add link to Amazon Chime SDK Security in README
 
 ### Changed
+
 - Prevent prebuild from increase patch number when publishing to NPM
 - Change the cloudwatch log message format
 - Only run integration tests if files on watchlist were modified
@@ -308,11 +637,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix the default video resolution comment in DeviceController
 
 ### Removed
+
 - Remove unimplemented callbacks remoteDidMuteAudio and remoteDidUnmuteAudio on AudioVideoObserver
 - Remove the minimal demo app
 - Remove incomplete demo and component directories
 
 ### Fixed
+
 - Fix retry logic for integration test
 - Update typedocs to 0.16 and re-generate doc files
 - Fix issue in Travis script that prevents integration tests from running
@@ -328,6 +659,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.1] - 2020-03-20
 
 ### Added
+
 - Add BITRATES in SdkSignalFrame Type and regenerate corresponding JS and TS protocol files.
 - Add new ContentShareController APIs
 - Add Getting Started guide
@@ -342,6 +674,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add an integration test that checks only 2 content share are allowed
 
 ### Changed
+
 - Add observer event for content sharing
 - Stop content share if the media stream end
 - Trap video sending SSRC change in two consecutive negotiation
@@ -359,6 +692,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Throw error in Travis if integration test failed
 
 ### Fixed
+
 - Remove line endings in the keyword when searching for connection attributes in SDP
 - Fix pause and resume video functionality
 - Fix DefaultTransceiverController async function signature
@@ -376,6 +710,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2020-02-04
 
 ### Added
+
 - Add browser support for Safari and Opera
 - Add CHANGELOG.md
 - Allow for pausing screen sharing
@@ -393,6 +728,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Write timestamp for latest canary completion time
 
 ### Changed
+
 - Enforce SDP to have candidates for FinishGatheringICECandidateTask to resolve
 - Add event listeners on peer connection to log state change
 - Add client metrics for Safari
@@ -418,10 +754,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make meeting V2 the default demo meeting app
 
 ### Removed
+
 - Remove SDP class withPlanBSimulcast method
 - Remove noSignalStatusReceived from ReconnectionHealthPolicy and remove SignalStrengthBarsConnectionHealthPolicy.
 
 ### Fixed
+
 - Add cleanup code for failed open screen sharing
 - Handle error in screen viewing send echo response
 - Fix several error handling issues

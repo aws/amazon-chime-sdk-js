@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -186,8 +186,8 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   });
 
   it('can add to a minute window that is not full', () => {
-    let window: number[] = [];
-    let num = 1;
+    const window: number[] = [];
+    const num = 1;
     connectionHealthData.packetsReceivedInLastMinute = window;
     testClientMetricReport.packetsReceived = num;
     testClientMetricReport.fractionLoss = 1;
@@ -197,7 +197,7 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
   });
 
   it('can add to a minute window that is full', () => {
-    let window = new Array(60);
+    const window = new Array(60);
     let num: number;
     for (num = 0; num < 61; num++) {
       connectionHealthData.packetsReceivedInLastMinute = window;

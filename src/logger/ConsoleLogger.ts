@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from './Logger';
@@ -44,11 +44,11 @@ export default class ConsoleLogger implements Logger {
     this.log(LogLevel.ERROR, msg);
   }
 
-  debug(debugFunction: () => string): void {
+  debug(debugFunction: string | (() => string)): void {
     if (LogLevel.DEBUG < this.level) {
       return;
     }
-    this.log(LogLevel.DEBUG, debugFunction());
+    this.log(LogLevel.DEBUG, typeof debugFunction === 'string' ? debugFunction : debugFunction());
   }
 
   setLogLevel(level: LogLevel): void {
@@ -69,7 +69,7 @@ export default class ConsoleLogger implements Logger {
 
     switch (type) {
       case LogLevel.ERROR:
-        console.trace(logMessage);
+        console.error(logMessage);
         break;
       case LogLevel.WARN:
         console.warn(logMessage);

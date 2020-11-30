@@ -1,8 +1,9 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import ConnectionMetrics from './ConnectionMetrics';
 import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 
 /** NScaleVideoUplinkBandwidthPolicy implements capture and encode
@@ -21,7 +22,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
   }
 
-  updateConnectionMetric({}): void {
+  updateConnectionMetric(_metrics: ConnectionMetrics): void {
     return;
   }
 

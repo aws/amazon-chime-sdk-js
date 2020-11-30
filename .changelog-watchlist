@@ -1,0 +1,6 @@
+# Require changelog if files in these directories change
+src/
+guides/
+libs/voicefocus
+
+# Exceptions (Add an exception by adding a path and prepend with a '!' )

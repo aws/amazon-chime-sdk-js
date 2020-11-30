@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import BaseConnectionHealthPolicy from './BaseConnectionHealthPolicy';
@@ -6,7 +6,8 @@ import ConnectionHealthData from './ConnectionHealthData';
 import ConnectionHealthPolicy from './ConnectionHealthPolicy';
 import ConnectionHealthPolicyConfiguration from './ConnectionHealthPolicyConfiguration';
 
-export default class UnusableAudioWarningConnectionHealthPolicy extends BaseConnectionHealthPolicy
+export default class UnusableAudioWarningConnectionHealthPolicy
+  extends BaseConnectionHealthPolicy
   implements ConnectionHealthPolicy {
   private coolDownTimeMs: number;
   private pastSamplesToConsider: number;

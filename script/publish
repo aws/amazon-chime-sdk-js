@@ -52,9 +52,11 @@ else
 end
 
 package['version'] = version_string
-version_file = 'src/versioning/Versioning.ts'
 changelog_file = 'CHANGELOG.md'
 tag = "amazon-chime-sdk-js@#{version_string}"
+
+# This is what most tools (e.g., `git describe`) use.
+semvertag = "v#{version_string}"
 
 puts
 puts "Warning: you are bumping the version"
@@ -62,19 +64,19 @@ puts
 puts "From: #{original_version}"
 puts "To:   #{version_string}"
 puts
-puts "And creating the following tag:"
+puts "And creating the following tags:"
 puts tag
+puts semvertag
 puts
 puts "Type 'yes' to continue"
 x = STDIN.gets
 exit(1) unless x.strip == 'yes'
 puts
 
-verbose('git fetch origin')
-verbose('git reset --hard origin/master')
-verbose('git clean -ffxd .')
+#verbose('git fetch origin')
+#verbose('git reset --hard origin/master')
+#verbose('git clean -ffxd .')
 
-File.write(version_file, File.read(version_file).gsub(/return '[.0-9]+';/, "return '#{version_string}';"))
 File.write(changelog_file, File.read(changelog_file).gsub(/\[Unreleased\]/, "[#{version_string}] - #{Date.today}"))
 verbose("npm version #{version_string} --no-git-tag-version")
 
@@ -82,9 +84,12 @@ verbose('git add -A')
 verbose("git commit -m 'Publish #{tag}'")
 verbose("git tag -d #{tag} || true")
 verbose("git tag #{tag}")
+verbose("git tag #{semvertag} -m \"Release #{semvertag}.\"")
 
 verbose('npm run build:publish')
 verbose('npm pack --dry-run')
+
+verbose("npm run login")
 
 puts
 puts "Do you want to upload these files?"
@@ -96,3 +101,4 @@ puts
 
 verbose("git push origin")
 verbose("git push origin -f #{tag}")
+verbose("git push origin -f #{semvertag}")

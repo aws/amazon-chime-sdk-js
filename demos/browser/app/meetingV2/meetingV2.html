@@ -29,6 +29,10 @@
           <option value="us-east-1" selected>United States (N. Virginia)</option>
           <option value="ap-northeast-1">Japan (Tokyo)</option>
           <option value="ap-southeast-1">Singapore</option>
+          <option value="af-south-1">South Africa (Cape Town)</option>
+          <option value="eu-south-1">Italy (Milan)</option>
+          <option value="ap-south-1">India (Mumbai)</option>
+          <option value="ap-northeast-2">South Korea (Seoul)</option>
           <option value="ap-southeast-2">Australia (Sydney)</option>
           <option value="ca-central-1">Canada</option>
           <option value="eu-central-1">Germany (Frankfurt)</option>
@@ -44,13 +48,29 @@
       </div>
       <div class="row mt-3">
         <div class="col-12">
-          <label for="optional-features">Optional Features</label>
-          <select id="optional-features" class="custom-select" style="width:100%">
-            <option value="" selected>None</option>
-            <option value="simulcast">Enable Simulcast For Chrome</option>
-            <option value="webaudio">Use WebAudio</option>
-            <option value="unifiedplan">Use Unified Plan For Chrome</option>
-          </select>
+          <fieldset>
+            <legend>Choose your optional features</legend>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="webaudio" class="custom-control-input">
+              <label for="webaudio" class="custom-control-label">Use WebAudio</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="fullband-speech-mono-quality" class="custom-control-input">
+              <label for="fullband-speech-mono-quality" class="custom-control-label">Set fullband speech (mono) quality</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="fullband-music-mono-quality" class="custom-control-input">
+              <label for="fullband-music-mono-quality" class="custom-control-label">Set fullband music (mono) quality</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="simulcast" class="custom-control-input">
+              <label for="simulcast" class="custom-control-label">Enable Simulcast for Chrome</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="planB" class="custom-control-input">
+              <label for="planB" class="custom-control-label">Disable Unified Plan for Chrome</label>
+            </div>
+          </fieldset>
         </div>
       </div>
       <div class="row mt-3">
@@ -154,11 +174,18 @@
           <label for="audio-input block">Microphone</label>
           <select id="audio-input" class="custom-select" style="width:100%"></select>
         </div>
+
         <div class="text-center col-sm-4 d-sm-block">
           <label>Preview</label>
           <div class="w-100 progress" style="margin-top:0.75rem">
             <div id="audio-preview" class="progress-bar bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div id="voice-focus-setting" class="col-12 col-sm-8 hidden">
+          <input autocomplete="off" type="checkbox" id="add-voice-focus"></input>
+          <label style="margin-left: 0.5em" for="voice-focus-setting block">Add Voice Focus</label>
         </div>
       </div>
       <div class="row mt-3">
@@ -174,8 +201,8 @@
         <div class="col-12 col-sm-8">
           <select id="video-input-quality" class="custom-select" style="width:100%">
             <option value="360p">360p (nHD) @ 15 fps (600 Kbps max)</option>
-            <option value="540p">540p (qHD) @ 15 fps (1.4 Mbps max)</option>
-            <option value="720p" selected>720p (HD) @ 15 fps (1.4 Mbps max)</option>
+            <option value="540p" selected>540p (qHD) @ 15 fps (1.4 Mbps max)</option>
+            <option value="720p">720p (HD) @ 15 fps (1.4 Mbps max)</option>
           </select>
         </div>
       </div>
@@ -223,7 +250,7 @@
   </div>
   <audio id="meeting-audio" style="display:none"></audio>
   <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column">
-    <div class="row mb-3 mb-lg-0">
+    <div class="row mb-3 mb-lg-0" style="flex: unset;">
       <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left">
         <div id="meeting-id" class="navbar-brand text-muted m-0 m-lg-2"></div>
         <div id="mobile-chime-meeting-id" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
@@ -279,6 +306,9 @@
             </div>
           </div>
         </div>
+        <button id="button-video-stats" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle video WebRTC stats display" data-toggle="button" aria-pressed="false" autocomplete="off">
+          ${require('../../node_modules/open-iconic/svg/signal.svg').default}
+        </button>
       </div>
       <div class="col-4 col-lg-3 order-3 order-lg-3 text-right text-lg-right">
         <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4" title="Leave meeting">
@@ -289,13 +319,13 @@
         </button>
       </div>
     </div>
-    <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100">
+    <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100" style="flex: unset;">
       <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-6 col-md-5 col-lg-4 h-100">
-        <div class="bs-component" style="flex: 1 1 auto; overflow-y: scroll; height: 50%;">
+        <div class="bs-component" style="flex: 1 1 auto; overflow-y: auto; height: 50%;">
           <ul id="roster" class="list-group"></ul>
         </div>
         <div class="message d-flex flex-column pt-3" style="flex: 1 1 auto; overflow: hidden; height: 50%;">
-          <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: scroll;
+          <div class="list-group receive-message" id="receive-message" style="flex: 1 1 auto; overflow-y: auto;
             border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
           <div class="input-group send-message" style="display:flex;flex:0 0 auto;margin-top:0.2rem">
             <textarea class="form-control shadow-none" id="send-message" rows="1" placeholder="Type a message (markdown supported)" style="display:inline-block; width:100%;
@@ -304,96 +334,113 @@
         </div>
       </div>
       <div id="tile-container" class="col-12 col-sm-6 col-md-7 col-lg-8 my-4 my-sm-0 h-100" style="overflow-y: scroll">
-        <div id="tile-area" class="w-100 h-100">
-          <div id="tile-0" style="display:none">
-            <video id="video-0" class="w-100 h-100"></video>
-            <div id="nameplate-0"></div>
-            <button id="video-pause-0">Pause</button>
+        <div id="tile-area" class="v-grid">
+          <div id="tile-0" class="video-tile">
+            <video id="video-0" class="video-tile-video"></video>
+            <div id="attendeeid-0" class="video-tile-attendeeid"></div>
+            <div id="nameplate-0" class="video-tile-nameplate"></div>
+            <button id="video-pause-0" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-1" style="display:none">
-            <video id="video-1" class="w-100 h-100"></video>
-            <div id="nameplate-1"></div>
-            <button id="video-pause-1">Pause</button>
+          <div id="tile-1" class="video-tile">
+            <video id="video-1" class="video-tile-video"></video>
+            <div id="attendeeid-1" class="video-tile-attendeeid"></div>
+            <div id="nameplate-1" class="video-tile-nameplate"></div>
+            <button id="video-pause-1" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-2" style="display:none">
-            <video id="video-2" class="w-100 h-100"></video>
-            <div id="nameplate-2"></div>
-            <button id="video-pause-2">Pause</button>
+          <div id="tile-2" class="video-tile">
+            <video id="video-2" class="video-tile-video"></video>
+            <div id="attendeeid-2" class="video-tile-attendeeid"></div>
+            <div id="nameplate-2" class="video-tile-nameplate"></div>
+            <button id="video-pause-2" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-3" style="display:none">
-            <video id="video-3" class="w-100 h-100"></video>
-            <div id="nameplate-3"></div>
-            <button id="video-pause-3">Pause</button>
+          <div id="tile-3" class="video-tile">
+            <video id="video-3" class="video-tile-video"></video>
+            <div id="attendeeid-3" class="video-tile-attendeeid"></div>
+            <div id="nameplate-3" class="video-tile-nameplate"></div>
+            <button id="video-pause-3" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-4" style="display:none">
-            <video id="video-4" class="w-100 h-100"></video>
-            <div id="nameplate-4"></div>
-            <button id="video-pause-4">Pause</button>
+          <div id="tile-4" class="video-tile">
+            <video id="video-4" class="video-tile-video"></video>
+            <div id="attendeeid-4" class="video-tile-attendeeid"></div>
+            <div id="nameplate-4" class="video-tile-nameplate"></div>
+            <button id="video-pause-4" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-5" style="display:none">
-            <video id="video-5" class="w-100 h-100"></video>
-            <div id="nameplate-5"></div>
-            <button id="video-pause-5">Pause</button>
+          <div id="tile-5" class="video-tile">
+            <video id="video-5" class="video-tile-video"></video>
+            <div id="attendeeid-5" class="video-tile-attendeeid"></div>
+            <div id="nameplate-5" class="video-tile-nameplate"></div>
+            <button id="video-pause-5" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-6" style="display:none">
-            <video id="video-6" class="w-100 h-100"></video>
-            <div id="nameplate-6"></div>
-            <button id="video-pause-6">Pause</button>
+          <div id="tile-6" class="video-tile">
+            <video id="video-6" class="video-tile-video"></video>
+            <div id="attendeeid-6" class="video-tile-attendeeid"></div>
+            <div id="nameplate-6" class="video-tile-nameplate"></div>
+            <button id="video-pause-6" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-7" style="display:none">
-            <video id="video-7" class="w-100 h-100"></video>
-            <div id="nameplate-7"></div>
-            <button id="video-pause-7">Pause</button>
+          <div id="tile-7" class="video-tile">
+            <video id="video-7" class="video-tile-video"></video>
+            <div id="attendeeid-7" class="video-tile-attendeeid"></div>
+            <div id="nameplate-7" class="video-tile-nameplate"></div>
+            <button id="video-pause-7" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-8" style="display:none">
-            <video id="video-8" class="w-100 h-100"></video>
-            <div id="nameplate-8"></div>
-            <button id="video-pause-8">Pause</button>
+          <div id="tile-8" class="video-tile">
+            <video id="video-8" class="video-tile-video"></video>
+            <div id="attendeeid-8" class="video-tile-attendeeid"></div>
+            <div id="nameplate-8" class="video-tile-nameplate"></div>
+            <button id="video-pause-8" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-9" style="display:none">
-            <video id="video-9" class="w-100 h-100"></video>
-            <div id="nameplate-9"></div>
-            <button id="video-pause-9">Pause</button>
+          <div id="tile-9" class="video-tile">
+            <video id="video-9" class="video-tile-video"></video>
+            <div id="attendeeid-9" class="video-tile-attendeeid"></div>
+            <div id="nameplate-9" class="video-tile-nameplate"></div>
+            <button id="video-pause-9" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-10" style="display:none">
-            <video id="video-10" class="w-100 h-100"></video>
-            <div id="nameplate-10"></div>
-            <button id="video-pause-10">Pause</button>
+          <div id="tile-10" class="video-tile">
+            <video id="video-10" class="video-tile-video"></video>
+            <div id="attendeeid-10" class="video-tile-attendeeid"></div>
+            <div id="nameplate-10" class="video-tile-nameplate"></div>
+            <button id="video-pause-10" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-11" style="display:none">
-            <video id="video-11" class="w-100 h-100"></video>
-            <div id="nameplate-11"></div>
-            <button id="video-pause-11">Pause</button>
+          <div id="tile-11" class="video-tile">
+            <video id="video-11" class="video-tile-video"></video>
+            <div id="attendeeid-11" class="video-tile-attendeeid"></div>
+            <div id="nameplate-11" class="video-tile-nameplate"></div>
+            <button id="video-pause-11" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-12" style="display:none">
-            <video id="video-12" class="w-100 h-100"></video>
-            <div id="nameplate-12"></div>
-            <button id="video-pause-12">Pause</button>
+          <div id="tile-12" class="video-tile">
+            <video id="video-12" class="video-tile-video"></video>
+            <div id="attendeeid-12" class="video-tile-attendeeid"></div>
+            <div id="nameplate-12" class="video-tile-nameplate"></div>
+            <button id="video-pause-12" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-13" style="display:none">
-            <video id="video-13" class="w-100 h-100"></video>
-            <div id="nameplate-13"></div>
-            <button id="video-pause-13">Pause</button>
+          <div id="tile-13" class="video-tile">
+            <video id="video-13" class="video-tile-video"></video>
+            <div id="attendeeid-13" class="video-tile-attendeeid"></div>
+            <div id="nameplate-13" class="video-tile-nameplate"></div>
+            <button id="video-pause-13" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-14" style="display:none">
-            <video id="video-14" class="w-100 h-100"></video>
-            <div id="nameplate-14"></div>
-            <button id="video-pause-14">Pause</button>
+          <div id="tile-14" class="video-tile">
+            <video id="video-14" class="video-tile-video"></video>
+            <div id="attendeeid-14" class="video-tile-attendeeid"></div>
+            <div id="nameplate-14" class="video-tile-nameplate"></div>
+            <button id="video-pause-14" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-15" style="display:none">
-            <video id="video-15" class="w-100 h-100"></video>
-            <div id="nameplate-15"></div>
-            <button id="video-pause-15">Pause</button>
+          <div id="tile-15" class="video-tile">
+            <video id="video-15" class="video-tile-video"></video>
+            <div id="attendeeid-15" class="video-tile-attendeeid"></div>
+            <div id="nameplate-15" class="video-tile-nameplate"></div>
+            <button id="video-pause-15" class="video-tile-pause">Pause</button>
           </div>
-          <div id="tile-16" style="display:none">
-            <video id="video-16" class="w-100 h-100"></video>
-            <div id="nameplate-16"></div>
-            <button id="video-pause-16" class="btn">Pause</button>
+          <div id="tile-16" class="video-tile">
+            <video id="video-16" class="video-tile-video"></video>
+            <div id="attendeeid-16" class="video-tile-attendeeid"></div>
+            <div id="nameplate-16" class="video-tile-nameplate"></div>
+            <button id="video-pause-16" class="video-tile-pause" class="btn">Pause</button>
           </div>
-          <div id="tile-17" style="display:none">
-            <video id="video-17" class="w-100 h-100"></video>
-            <div id="nameplate-17"></div>
-            <button id="video-pause-17" class="btn">Pause</button>
+          <div id="tile-17" class="video-tile">
+            <video id="video-17" class="video-tile-video"></video>
+            <div id="nameplate-17" class="video-tile-nameplate"></div>
+            <button id="video-pause-17" class="video-tile-pause" class="btn">Pause</button>
           </div>
         </div>
       </div>

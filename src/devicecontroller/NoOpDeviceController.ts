@@ -1,14 +1,21 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
-import Device from './Device';
-import DevicePermission from './DevicePermission';
+import AudioInputDevice from './AudioInputDevice';
+import RemovableAnalyserNode from './RemovableAnalyserNode';
+import VideoInputDevice from './VideoInputDevice';
+import VideoQualitySettings from './VideoQualitySettings';
 
-export default class NoOpDeviceController extends NoOpMediaStreamBroker
+export default class NoOpDeviceController
+  extends NoOpMediaStreamBroker
   implements DeviceControllerBasedMediaStreamBroker {
+  constructor(_options?: { enableWebAudio?: boolean }) {
+    super();
+  }
+
   listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
     return Promise.resolve([]);
   }
@@ -21,11 +28,11 @@ export default class NoOpDeviceController extends NoOpMediaStreamBroker
     return Promise.resolve([]);
   }
 
-  chooseAudioInputDevice(_device: Device): Promise<DevicePermission> {
+  chooseAudioInputDevice(_device: AudioInputDevice): Promise<void> {
     return Promise.reject();
   }
 
-  chooseVideoInputDevice(_device: Device): Promise<DevicePermission> {
+  chooseVideoInputDevice(_device: VideoInputDevice): Promise<void> {
     return Promise.reject();
   }
 
@@ -37,7 +44,7 @@ export default class NoOpDeviceController extends NoOpMediaStreamBroker
 
   removeDeviceChangeObserver(_observer: DeviceChangeObserver): void {}
 
-  createAnalyserNodeForAudioInput(): AnalyserNode | null {
+  createAnalyserNodeForAudioInput(): RemovableAnalyserNode | null {
     return null;
   }
 
@@ -58,5 +65,7 @@ export default class NoOpDeviceController extends NoOpMediaStreamBroker
     _maxBandwidthKbps: number
   ): void {}
 
-  enableWebAudio(_flag: boolean): void {}
+  getVideoInputQualitySettings(): VideoQualitySettings | null {
+    return null;
+  }
 }

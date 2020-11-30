@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { SdkSignalFrame } from '../signalingprotocol/SignalingProtocol.js';
@@ -20,7 +20,9 @@ export default class SignalingClientEvent {
   constructor(
     public client: SignalingClient,
     public type: SignalingClientEventType,
-    public message: SdkSignalFrame
+    public message: SdkSignalFrame,
+    public closeCode?: number,
+    public closeReason?: string
   ) {
     this.timestampMs = Date.now();
   }

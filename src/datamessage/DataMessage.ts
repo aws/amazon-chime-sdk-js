@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 /* eslint @typescript-eslint/no-explicit-any: 0 */
@@ -31,6 +31,8 @@ export default class DataMessage {
   /**
    * true if server throttled or rejected message
    * false if server has posted the message to its recipients
+   * Throttling soft limit: Rate:100, Burst:200
+   * Throttling hard limit: Rate: 100 * 5, Burst: 200 * 50 (i.e Rate: 500, Burst: 10000)
    */
   readonly throttled: boolean;
 

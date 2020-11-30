@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -103,8 +103,40 @@ describe('MultiLogger', () => {
         return message;
       };
       new MultiLogger(internalLogger1, internalLogger2).debug(messageFn);
-      expect(spy1.withArgs(messageFn).calledOnce).to.be.true;
-      expect(spy2.withArgs(messageFn).calledOnce).to.be.true;
+      expect(spy1.calledOnce).to.be.true;
+      expect(spy2.calledOnce).to.be.true;
+
+      const firstArg = spy1.firstCall.args[0];
+      const secondArg = spy2.firstCall.args[0];
+
+      expect(typeof firstArg === 'function').to.be.true;
+      expect(typeof secondArg === 'function').to.be.true;
+      expect((firstArg as () => string)()).to.equal(message);
+      expect((secondArg as () => string)()).to.equal(message);
+      expect(firstArg).to.eq(secondArg);
+    });
+
+    it('memoizes debug functions', () => {
+      const internalLogger1: Logger = new NoOpLogger(LogLevel.DEBUG);
+      const internalLogger2: Logger = new NoOpLogger(LogLevel.DEBUG);
+      let called = 0;
+      const messageFn = (): string => {
+        called += 1;
+        return message;
+      };
+      new MultiLogger(internalLogger1, internalLogger2).debug(messageFn);
+      expect(called).to.eq(1);
+    });
+
+    it('accepts debug strings', () => {
+      const internalLogger1: Logger = new NoOpLogger(LogLevel.DEBUG);
+      const internalLogger2: Logger = new NoOpLogger(LogLevel.DEBUG);
+      const spy1 = sinon.spy(internalLogger1, 'debug');
+      const spy2 = sinon.spy(internalLogger2, 'debug');
+      const message = 'hello, world';
+      new MultiLogger(internalLogger1, internalLogger2).debug(message);
+      expect(spy1.withArgs(message).calledOnce).to.be.true;
+      expect(spy2.withArgs(message).calledOnce).to.be.true;
     });
   });
 });

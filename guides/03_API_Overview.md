@@ -311,6 +311,6 @@ To receive messages on a given topic, set up a handler using the meetingSession.
 
 To unsubscribe the receive message handler, call meetingSession.audioVideo.[realtimeUnsubscribeFromReceiveDataMessage()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribefromreceivedatamessage).
 
-If you send too many messages at once, your messages may be returned to you with the [throttled](https://aws.github.io/amazon-chime-sdk-js/classes/datamessage.html#throttled) flag set. If you continue to exceed the throttle limit, then the server may hang up the connection.
+If you send too many messages at once, your messages may be returned to you with the [throttled](https://aws.github.io/amazon-chime-sdk-js/classes/datamessage.html#throttled) flag set. The current throttling soft limit for Data Messages is Rate: 100, Burst: 200. If you continue to exceed the throttle limit (hard limit: Rate: 500, Burst: 10000), then the server may hang up the connection.
 
 **Note:** Take care when using data messages for functionality involving *asymmetric permissions* (e.g. a moderator attendee sending a message to regular attendees). Any attendee may, in theory, send any message on any topic. You should always confirm that the message's [senderAttendeeId](https://aws.github.io/amazon-chime-sdk-js/classes/datamessage.html#senderattendeeid) belongs to an attendee that is allowed to send that type of message, and your handler should tolerate messages that are not serialized in the format you are expecting.

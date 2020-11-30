@@ -1,18 +1,12 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./build",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "module": "commonjs",
-    "target": "es5",
-    "lib": ["es6", "dom"],
-    "declaration": true
+    "rootDir": "./src",
+    "stripInternal": true
   },
   "include": [
     "./src/**/*",
-    "./guides/docs.ts"
+    "./libs/**/*"
   ]
 }

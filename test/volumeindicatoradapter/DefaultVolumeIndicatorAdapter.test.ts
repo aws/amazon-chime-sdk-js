@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -138,6 +138,56 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       streamInfo2Join.externalUserId = fooExternal;
       streamInfo2Leave.audioStreamId = 1;
       streamInfo2Frame.streams = [streamInfo2Join, streamInfo2Leave];
+      const rt: RealtimeController = new DefaultRealtimeController();
+      let attendeeIdUpdate = 0;
+      rt.realtimeSubscribeToAttendeeIdPresence(
+        (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
+          let expected = false;
+          if (attendeeIdUpdate === 0) {
+            expected =
+              attendeeId === fooAttendee &&
+              present === true &&
+              externalUserId === fooExternal &&
+              dropped === false;
+          } else if (attendeeIdUpdate === 1) {
+            expected =
+              attendeeId === fooAttendee &&
+              present === true &&
+              externalUserId === fooExternal &&
+              dropped === false;
+          }
+          attendeeIdUpdate += 1;
+          expect(expected).to.be.true;
+        }
+      );
+      const vi: VolumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
+        new NoOpLogger(),
+        rt,
+        minVolumeDecibels,
+        maxVolumeDecibels
+      );
+      expect(attendeeIdUpdate).to.equal(0);
+      vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfo1Frame);
+      expect(attendeeIdUpdate).to.equal(1);
+      vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfo2Frame);
+      expect(attendeeIdUpdate).to.equal(2);
+    });
+
+    it('presence leave event not fired when same attendee audio stream id is seen two or more times', () => {
+      const streamInfo1Join = SdkAudioStreamIdInfo.create();
+      const streamInfo1Frame = SdkAudioStreamIdInfoFrame.create();
+      const streamInfo2Join = SdkAudioStreamIdInfo.create();
+      const streamInfo2Leave = SdkAudioStreamIdInfo.create();
+      const streamInfo2Frame = SdkAudioStreamIdInfoFrame.create();
+      streamInfo1Join.audioStreamId = 1;
+      streamInfo1Join.attendeeId = fooAttendee;
+      streamInfo1Join.externalUserId = fooExternal;
+      streamInfo1Frame.streams = [streamInfo1Join];
+      streamInfo2Join.audioStreamId = 2;
+      streamInfo2Join.attendeeId = fooAttendee;
+      streamInfo2Join.externalUserId = fooExternal;
+      streamInfo2Leave.audioStreamId = 1;
+      streamInfo2Frame.streams = [streamInfo2Join, streamInfo2Leave, streamInfo2Leave];
       const rt: RealtimeController = new DefaultRealtimeController();
       let attendeeIdUpdate = 0;
       rt.realtimeSubscribeToAttendeeIdPresence(

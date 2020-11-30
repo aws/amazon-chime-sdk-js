@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
@@ -17,6 +17,10 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   private subscribedReceiveSet: VideoStreamIdSet;
 
   constructor(private selfAttendeeId: string) {
+    this.reset();
+  }
+
+  reset(): void {
     this.optimalReceiveSet = new DefaultVideoStreamIdSet();
     this.subscribedReceiveSet = new DefaultVideoStreamIdSet();
   }
@@ -26,8 +30,6 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   }
 
   updateMetrics(_clientMetricReport: ClientMetricReport): void {}
-
-  updateCalculatedOptimalReceiveSet(): void {}
 
   wantsResubscribe(): boolean {
     return !this.subscribedReceiveSet.equal(this.optimalReceiveSet);

@@ -1,5 +1,6 @@
 const {KiteBaseTest, TestUtils} = require('../node_modules/kite-common');
 const {AllureTestReport} = require('../node_modules/kite-common/report');
+const {SetTestBrokenStep} = require('../steps');
 const {SaucelabsSession} = require('./WebdriverSauceLabs');
 const {BrowserStackSession} = require('./WebdriverBrowserStack');
 const {LocalSession} = require('./WebdriverLocal');
@@ -10,27 +11,28 @@ const fs = require('fs');
 class SdkBaseTest extends KiteBaseTest {
   constructor(name, kiteConfig, testName) {
     super(name, kiteConfig);
-    if (this.url.endsWith('v2')) {
-      this.baseUrl = this.url.slice(0, -2);
-    } else {
-      this.baseUrl = this.url;
-    }
+    this.baseUrl = this.url;
     if (testName === 'ContentShareOnlyAllowTwoTest') {
       this.url += '?max-content-share=true';
     }
+
+    if (testName === 'MessagingSessionTest') {
+      this.userArn = this.payload.userArn;
+    }
+
     this.originalURL = this.url;
-    this.testName = testName;
     this.testReady = false;
     this.testFinish = false;
-    this.capabilities["name"] = process.env.STAGE !== undefined ? `${testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${testName}-${process.env.TEST_TYPE}`;
-    this.seleniumSessions = [];
-    this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
+    this.testName = testName;
     this.useSimulcast = !!this.payload.useSimulcast ? true : false;
     if (this.useSimulcast) {
       this.testName += 'Simulcast';
     }
+    this.capabilities["name"] = process.env.STAGE !== undefined ? `${this.testName}-${process.env.TEST_TYPE}-${process.env.STAGE}`: `${this.testName}-${process.env.TEST_TYPE}`;
+    this.seleniumSessions = [];
+    this.timeout = this.payload.testTimeout ? this.payload.testTimeout : 60;
     if (this.numberOfParticipant > 1) {
-      this.io.emit("test_name", testName);
+      this.io.emit("test_name", this.testName);
       this.io.emit("test_capabilities", this.capabilities);
       this.io.on('all_clients_ready', isReady => {
         this.testReady = !!isReady;
@@ -97,6 +99,7 @@ class SdkBaseTest extends KiteBaseTest {
     this.report = new AllureTestReport(this.name);
     if (this.io !== undefined) {
       this.attendeeId = uuidv4();
+      console.log("attendee id generated: " + this.attendeeId);
       this.io.emit("setup_test", this.baseUrl, this.attendeeId);
     } else {
       this.meetingTitle = uuidv4();
@@ -110,15 +113,15 @@ class SdkBaseTest extends KiteBaseTest {
 
   async createSeleniumSession(capabilities) {
     if (process.env.SELENIUM_GRID_PROVIDER === "browserstack") {
-      const session = await BrowserStackSession.createSession(capabilities);
+      const session = await BrowserStackSession.createSession(capabilities, this.getAppName());
       return session;
     } else if (process.env.SELENIUM_GRID_PROVIDER === "local") {
-      const session = await LocalSession.createSession(capabilities, this.remoteUrl);
+      const session = await LocalSession.createSession(capabilities, this.remoteUrl, this.getAppName());
       return session;
     } else {
       const invalidSessionIdRegEx = new RegExp(/^new_request:/);
       for (let i =0; i< 3; i++) {
-        const session = await SaucelabsSession.createSession(capabilities);
+        const session = await SaucelabsSession.createSession(capabilities, this.getAppName());
         const sessionId = await session.getSessionId();
         if (invalidSessionIdRegEx.test(sessionId)) {
           console.log(`Invalid Saucelabs session id : ${sessionId}. Retrying: ${i+1}`);
@@ -145,16 +148,18 @@ class SdkBaseTest extends KiteBaseTest {
       try {
         const session = await this.createSeleniumSession(this.capabilities);
         await session.init();
-        this.seleniumSessions.push(session)
+        this.seleniumSessions.push(session);
       } catch (e) {
         console.log('Failed to initialize');
         console.log(e);
-        await emitMetric(this.testName, this.capabilities, 'E2E', 0);
         await this.updateSeleniumTestResult(false);
         await this.quitSeleniumSessions();
-        return;
+        await emitMetric('Common', this.capabilities, 'SeleniumInit', 0);
+        throw(e);
       }
     }
+    emitMetric('Common', this.capabilities, 'SeleniumInit', 1);
+    return true;
   }
 
   numberOfSessions() {
@@ -186,25 +191,31 @@ class SdkBaseTest extends KiteBaseTest {
       if (retryCount !== 0) {
         console.log(`Retrying : ${retryCount}`);
       }
-      await this.initializeSeleniumSession(numberOfSeleniumSessions);
-      //Wait for other to be ready
-      if (this.numberOfParticipant > 1 && this.io) {
-        this.io.emit('test_ready', true);
-        await this.waitForTestReady();
-        if (!this.testReady) {
-          this.io.emit('test_ready', false);
-          console.log('[OTHER_PARTICIPANT] failed to be ready');
-          await this.closeCurrentTest(false);
+      try {
+        if (!await this.initializeSeleniumSession(numberOfSeleniumSessions)) {
+          await emitMetric(this.testName, this.capabilities, 'E2E', 0);
           return;
         }
-      }
-      this.testFinish = false;
-      this.initializeState();
-      try {
+
+        //Wait for other to be ready
+        if (this.numberOfParticipant > 1 && this.io) {
+          this.io.emit('test_ready', true);
+          await this.waitForTestReady();
+          if (!this.testReady) {
+            this.io.emit('test_ready', false);
+            console.log('[OTHER_PARTICIPANT] failed to be ready');
+            this.remoteFailed = true;
+            return;
+          }
+        }
+        this.testFinish = false;
+        this.initializeState();
         console.log("Running test on: " + process.env.SELENIUM_GRID_PROVIDER);
         await this.runIntegrationTest();
       } catch (e) {
-        console.log(e);
+        console.error(e);
+        this.failedTest = true;
+        await SetTestBrokenStep.executeStep(this, 'Error exception when running test');
       } finally {
         await this.closeCurrentTest(!this.failedTest && !this.remoteFailed);
       }
@@ -215,11 +226,12 @@ class SdkBaseTest extends KiteBaseTest {
       if (!this.failedTest && !this.remoteFailed) {
         break;
       }
-      // If the other participant did not reach finish state then dont retry
-      if (this.numberOfParticipant > 1 && this.io && !this.testFinish) {
-        console.log('[OTHER_PARTICIPANT] timed out')
+      if (this.numberOfParticipant > 1 && this.io) {
         this.io.emit('test_ready', false);
-        break;
+        if (!this.testFinish) {
+          console.log('[OTHER_PARTICIPANT] timed out')
+          break;
+        }
       }
       retryCount++;
     }
@@ -262,8 +274,8 @@ class SdkBaseTest extends KiteBaseTest {
 
   async closeCurrentTest(testResult) {
     try {
-      await emitMetric(this.testName, this.capabilities, 'E2E', testResult? 1 : 0);
       await this.updateSeleniumTestResult(testResult);
+      await emitMetric(this.testName, this.capabilities, 'E2E', testResult? 1 : 0);
       await this.printRunDetails(testResult);
     } catch (e) {
       console.log(e);
@@ -274,6 +286,16 @@ class SdkBaseTest extends KiteBaseTest {
 
   isMobilePlatform() {
     return this.capabilities.platform === 'ANDROID' || this.capabilities.platform === 'IOS';
+  }
+
+  getAppName() {
+    if(this.testName && this.testName.toLowerCase().includes('meetingreadinesschecker')) {
+      return 'meetingReadinessChecker';
+    } else if (this.testName && this.testName.toLowerCase().includes('messagingsession')) {
+      return 'messagingSession';
+    } else {
+        return 'meeting'
+    };
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -14,7 +14,8 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import BaseTask from './BaseTask';
 
-export default class SendAndReceiveDataMessagesTask extends BaseTask
+export default class SendAndReceiveDataMessagesTask
+  extends BaseTask
   implements RemovableObserver, SignalingClientObserver {
   protected taskName = 'SendAndReceiveDataMessagesTask';
 
@@ -43,7 +44,7 @@ export default class SendAndReceiveDataMessagesTask extends BaseTask
       event.type === SignalingClientEventType.ReceivedSignalFrame &&
       event.message.type === SdkSignalFrame.Type.DATA_MESSAGE
     ) {
-      for (let message of event.message.dataMessage.messages) {
+      for (const message of event.message.dataMessage.messages) {
         const dataMessage = new DataMessage(
           (message.ingestTimeNs as number) / 1000000,
           message.topic,
@@ -61,7 +62,7 @@ export default class SendAndReceiveDataMessagesTask extends BaseTask
     topic: string,
     data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
     lifetimeMs?: number
-  ) => {
+  ): void => {
     if (this.context.signalingClient.ready()) {
       let uint8Data;
       if (data instanceof Uint8Array) {

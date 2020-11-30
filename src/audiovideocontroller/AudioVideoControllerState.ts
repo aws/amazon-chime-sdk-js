@@ -1,10 +1,12 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioMixController from '../audiomixcontroller/AudioMixController';
+import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import ConnectionMonitor from '../connectionmonitor/ConnectionMonitor';
+import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -13,7 +15,6 @@ import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVid
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import RemovableObserver from '../removableobserver/RemovableObserver';
-import ScreenSharingSession from '../screensharingsession/ScreenSharingSession';
 import SDP from '../sdp/SDP';
 import SignalingClient from '../signalingclient/SignalingClient';
 import { SdkIndexFrame, SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
@@ -65,11 +66,9 @@ export default class AudioVideoControllerState {
 
   iceCandidates: RTCIceCandidate[] = [];
 
-  iceCandidateHandler: (event: RTCPeerConnectionIceEvent) => void | null = null;
+  iceCandidateHandler: ((event: RTCPeerConnectionIceEvent) => void) | null = null;
 
-  iceGatheringStateEventHandler: () => void | null = null;
-
-  screenSharingSession: ScreenSharingSession | null = null;
+  iceGatheringStateEventHandler: (() => void) | null = null;
 
   sdpAnswer: string | null = null;
 
@@ -78,6 +77,8 @@ export default class AudioVideoControllerState {
   reconnectController: ReconnectController | null = null;
 
   removableObservers: RemovableObserver[] = [];
+
+  audioProfile: AudioProfile | null = null;
 
   videoStreamIndex: VideoStreamIndex | null = null;
 
@@ -114,4 +115,14 @@ export default class AudioVideoControllerState {
   videoDeviceInformation: { [id: string]: string } = {};
 
   enableSimulcast: boolean = false;
+
+  eventController: EventController | null = null;
+
+  signalingOpenDurationMs: number | null = null;
+
+  poorConnectionCount: number = 0;
+
+  maxVideoTileCount: number = 0;
+
+  startTimeMs: number | null = null;
 }

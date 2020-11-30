@@ -1,0 +1,31 @@
+{
+  "`": 1,
+  "name": "meeting_readiness_checker_test.config.json %ts",
+  "grids": [
+  ],
+  "tests": [
+    {
+      "name": "Meeting readiness checker all checks pass test %ts",
+      "description": "Meeting readiness checker all checks pass test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "MeetingReadinessCheckerRunAllTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "78",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "76",
+      "platform": "MAC"
+    }
+  ]
+}

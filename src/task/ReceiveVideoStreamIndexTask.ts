@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -16,6 +16,7 @@ import {
   SdkStreamServiceType,
 } from '../signalingprotocol/SignalingProtocol.js';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
+import VideoSource from '../videosource/VideoSource';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import BaseTask from './BaseTask';
@@ -23,7 +24,8 @@ import BaseTask from './BaseTask';
 /*
  * [[ReceiveVideoStreamIndexTask]] receives [[SdkIndexFrame]] and updates [[VideoUplinkBandwidthPolicy]] and [[VideoDownlinkBandwidthPolicy]].
  */
-export default class ReceiveVideoStreamIndexTask extends BaseTask
+export default class ReceiveVideoStreamIndexTask
+  extends BaseTask
   implements SignalingClientObserver, RemovableObserver {
   protected taskName = 'ReceiveVideoStreamIndexTask';
 
@@ -74,6 +76,7 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
       videoUplinkBandwidthPolicy,
     } = this.context;
 
+    const oldVideoSources = videoStreamIndex.allVideoSendingSourcesExcludingSelf(selfAttendeeId);
     videoStreamIndex.integrateIndexFrame(indexFrame);
     videoDownlinkBandwidthPolicy.updateIndex(videoStreamIndex);
     videoUplinkBandwidthPolicy.updateIndex(videoStreamIndex);
@@ -81,6 +84,36 @@ export default class ReceiveVideoStreamIndexTask extends BaseTask
     this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy);
     this.updateVideoAvailability(indexFrame);
     this.handleIndexVideosPausedAtSource();
+    const newVideoSources = videoStreamIndex.allVideoSendingSourcesExcludingSelf(selfAttendeeId);
+    if (!this.areVideoSourcesEqual(oldVideoSources, newVideoSources)) {
+      this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
+        Maybe.of(observer.remoteVideoSourcesDidChange).map(f => f.bind(observer)(newVideoSources));
+      });
+    }
+  }
+
+  private areVideoSourcesEqual(
+    oldVideoSources: VideoSource[],
+    newVideoSources: VideoSource[]
+  ): boolean {
+    if (oldVideoSources.length !== newVideoSources.length) {
+      return false;
+    }
+    const compare = (videoSourceA: VideoSource, videoSourceB: VideoSource): number =>
+      videoSourceA.attendee.attendeeId.localeCompare(videoSourceB.attendee.attendeeId);
+
+    const sortedOldVideoSources = [...oldVideoSources].sort(compare);
+    const sortedNewVideoSources = [...newVideoSources].sort(compare);
+
+    for (let i = 0; i < sortedOldVideoSources.length; i++) {
+      if (
+        sortedOldVideoSources[i].attendee.attendeeId !==
+        sortedNewVideoSources[i].attendee.attendeeId
+      ) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private resubscribe(

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  <title>Amazon Chime SDK Channel Message</title>
+</head>
+
+<body>
+<div id="demo" class="text-center p-2">
+  <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
+  <div id="flow-connect" class="flow text-center p-2">
+    <div class="container">
+      <form>
+        <h1 class="h3 mb-3 font-weight-normal">Messaging Session</h1>
+        <div class="row mt-3">
+          <label for="userArn" class="sr-only">UserArn:</label>
+          <input type="text" id="userArn" name="userArn" class="form-control" placeholder="userArn" required>
+        </div>
+        <div class="row mt-3">
+          <label for="sessionId" class="sr-only">SessionId(optional):</label>
+          <input type="text" id="sessionId" name="sessionId" class="form-control" placeholder="SessionId">
+        </div>
+        <div class="row mt-3">
+          <button id="connect" type="button" class="btn btn-lg btn-primary btn-block">
+            Connect
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div id="flow-message" class="flow text-center p-2">
+    <div class="container">
+      <form>
+        <div class="row mt-3">
+          <div id="messages" class="text-left" style="min-width: 500px; height: 400px; overflow-y: scroll;
+            border: 1px solid rgba(0, 0, 0, 0.125); background-color: #fff"></div>
+        </div>
+        <div class="row mt-3 justify-content-center">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group mr-2" role="group">
+              <button id="clear" type="button" class="btn btn-sm btn-secondary">
+                Clear
+              </button>
+            </div>
+            <div class="btn-group mr-2" role="group">
+              <button id="disconnect" type="button" class="btn btn-sm btn-secondary">
+                Disconnect
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

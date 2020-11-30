@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -26,7 +26,7 @@ describe('SimulcastVideoStreamIndex', () => {
   }
   let originalDateNow: DateNow;
   let startTime: number;
-  let logger = new NoOpLogger(LogLevel.DEBUG);
+  const logger = new NoOpLogger(LogLevel.DEBUG);
 
   function mockDateNow(): number {
     return startTime;
@@ -391,6 +391,7 @@ describe('SimulcastVideoStreamIndex', () => {
       subackFrame.allocations = undefined;
       expect(index.attendeeIdForTrack('4107')).to.equal('');
       index.integrateIndexFrame(indexFrame);
+      index.subscribeFrameSent();
       index.integrateSubscribeAckFrame(subackFrame);
       expect(index.attendeeIdForTrack('4107')).to.equal('a0ff');
     });
@@ -443,6 +444,74 @@ describe('SimulcastVideoStreamIndex', () => {
 
       index.integrateIndexFrame(indexFrame);
       index.integrateSubscribeAckFrame(subackFrame);
+    });
+  });
+
+  describe('handle sequencing of index and subscriptions', () => {
+    it('resolves track id to external user id after remote restarts video', () => {
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          atCapacity: false,
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              attendeeId: 'client1',
+              externalUserId: 'client1-ext',
+            }),
+            new SdkStreamDescriptor({
+              streamId: 4,
+              groupId: 1,
+              attendeeId: 'client1',
+              externalUserId: 'client1-ext',
+            }),
+          ],
+        })
+      );
+      index.subscribeFrameSent();
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [new SdkTrackMapping({ streamId: 4, trackLabel: 'track_v2' })],
+        })
+      );
+      expect(index.externalUserIdForTrack('track_v2')).to.equal('client1-ext');
+
+      index.integrateIndexFrame(new SdkIndexFrame({ atCapacity: false, sources: [] }));
+      index.subscribeFrameSent();
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [],
+        })
+      );
+      index.integrateIndexFrame(new SdkIndexFrame({ atCapacity: false, sources: [] }));
+
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          atCapacity: false,
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 12,
+              groupId: 3,
+              attendeeId: 'client1p',
+              externalUserId: 'client1p-ext',
+            }),
+            new SdkStreamDescriptor({
+              streamId: 14,
+              groupId: 3,
+              attendeeId: 'client1p',
+              externalUserId: 'client1p-ext',
+            }),
+          ],
+        })
+      );
+      index.subscribeFrameSent();
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [new SdkTrackMapping({ streamId: 14, trackLabel: 'track_v2' })],
+        })
+      );
+
+      expect(index.externalUserIdForTrack('track_v2')).to.equal('client1p-ext');
     });
   });
 });

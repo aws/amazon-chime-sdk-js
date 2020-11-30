@@ -1,9 +1,10 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import ContentShareConstants from '../../src/contentsharecontroller/ContentShareConstants';
@@ -75,6 +76,12 @@ describe('DefaultContentShareController', () => {
   }
 
   class TestAudioVideoController extends NoOpAudioVideoController {
+    audioProfile: AudioProfile = null;
+
+    setAudioProfile(audioProfile: AudioProfile): void {
+      this.audioProfile = audioProfile;
+    }
+
     start(): void {
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
@@ -161,6 +168,13 @@ describe('DefaultContentShareController', () => {
 
     it('can be constructed', () => {
       expect(contentShareController).to.exist;
+    });
+
+    it('can call setContentAudioProfile', () => {
+      const audioProfile = new AudioProfile();
+      contentShareController.setContentAudioProfile(audioProfile);
+      // @ts-ignore
+      expect(contentShareController.contentAudioVideo.audioProfile).to.equal(audioProfile);
     });
 
     it('startContentShare with video track', async () => {

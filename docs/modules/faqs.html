@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>FAQs | amazon-chime-sdk-js</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -59,7 +59,7 @@
 					<a href="faqs.html">FAQs</a>
 				</li>
 			</ul>
-			<h1>Module FAQs</h1>
+			<h1>Namespace FAQs</h1>
 		</div>
 	</div>
 </header>
@@ -100,6 +100,15 @@
 						<h3>Can I use the Amazon Chime application to join an Amazon Chime SDK meeting?</h3>
 					</a>
 					<p>The meetings created by the Amazon Chime Application and the SDK are distinct. Amazon Chime SDK is meant for customers who would like to build the experience into their existing applications and it is <strong>NOT</strong> a means to create an Amazon Chime meeting (with a PIN) that can be joined using our client application. You cannot use the Amazon Chime SDK to build a custom client to join an Amazon Chime meeting with a PIN.</p>
+					<a href="#does-the-meetingsnotificationsconfiguration-only-support-sqs-queues-in-us-east-1" id="does-the-meetingsnotificationsconfiguration-only-support-sqs-queues-in-us-east-1" style="color: inherit; text-decoration: none;">
+						<h3>Does the MeetingsNotificationsConfiguration only support SQS queues in us-east-1?</h3>
+					</a>
+					<p>Yes, we currently support SNS topics or SQS queues located in us-east-1 region only. For more details, please refer
+					to <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_MeetingNotificationConfiguration.html">Meeting Notification Configuration API</a>.</p>
+					<a href="#how-can-i-learn-about-interruptions-to-the-amazon-chime-service" id="how-can-i-learn-about-interruptions-to-the-amazon-chime-service" style="color: inherit; text-decoration: none;">
+						<h3>How can I learn about interruptions to the Amazon Chime service?</h3>
+					</a>
+					<p>You can be notified about Amazon Chime service interruptions at the <a href="https://status.aws.amazon.com/">https://status.aws.amazon.com/</a> website. In addition you can set up <a href="https://aws.amazon.com/cloudwatch/">Amazon CloudWatch</a> events via the <a href="https://aws.amazon.com/premiumsupport/technology/personal-health-dashboard/">AWS Personal Health Dashboard</a> for the Amazon Chime service. You can find the Amazon Chime SLA on this <a href="https://aws.amazon.com/chime/sla/">webpage</a>.</p>
 					<a href="#browser-support" id="browser-support" style="color: inherit; text-decoration: none;">
 						<h2>Browser support</h2>
 					</a>
@@ -107,10 +116,25 @@
 						<h3>What browsers are supported by the Amazon Chime SDK for JavaScript?</h3>
 					</a>
 					<p>You can find the complete list of browsers in this link: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">Supported Browsers</a>. <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API">WebRTC</a> support in a browser is a prerequisite for Amazon Chime SDK to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.</p>
-					<a href="#how-can-i-learn-about-interruptions-to-the-amazon-chime-service" id="how-can-i-learn-about-interruptions-to-the-amazon-chime-service" style="color: inherit; text-decoration: none;">
-						<h3>How can I learn about interruptions to the Amazon Chime service?</h3>
+					<p>The SDK is built to target ES2015, both syntax and features. If you need your built application bundle to target legacy browsers that do not support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code using a transpiler like Babel, split your application bundle into multiple files that can be built with different targets and conditionally loaded, or generate multiple versions of your application to target specific browsers.</p>
+					<p>Note that due to limitations in transpilers, requirements of the web platform might result in transpiled ES5 code that raises an error when run, such as &quot;Please use the &#39;new&#39; operator, this DOM object constructor cannot be called as a function&quot;. Prefer using ES2015 code on supported platforms.</p>
+					<a href="#i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" id="i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>I am unable to select an audio output device in some browsers, is this a known issue?</h3>
 					</a>
-					<p>You can be notified about Amazon Chime service interruptions at the <a href="https://status.aws.amazon.com/">https://status.aws.amazon.com/</a> website. In addition you can set up <a href="https://aws.amazon.com/cloudwatch/">Amazon CloudWatch</a> events via the <a href="https://aws.amazon.com/premiumsupport/technology/personal-health-dashboard/">AWS Personal Health Dashboard</a> for the Amazon Chime service. You can find the Amazon Chime SLA on this <a href="https://aws.amazon.com/chime/sla/">webpage</a>.</p>
+					<p><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1152401">Firefox</a> and <a href="https://bugs.webkit.org/show_bug.cgi?id=179415">Safari</a> have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.</p>
+					<p><a href="https://bugs.chromium.org/p/chromium/issues/detail?id=635686&amp;sort=-stars&amp;q=android%20chrome%20bluetooth%20headphone&amp;can=2">Android Chrome</a> has a known issue switching between bluetooth audio output devices. While clients can continue the meeting using the default device, there is a <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=635686&amp;sort=-stars&amp;q=android%20chrome%20bluetooth%20headphone&amp;can=2">bug</a> related to switching to an bluetooth audio output.</p>
+					<a href="#my-video-disappears-in-safari-browsers-is-this-a-known-issue" id="my-video-disappears-in-safari-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>My video disappears in Safari browsers, is this a known issue?</h3>
+					</a>
+					<p>macOS and iOS Safari browsers have limitations when you use a camera in more than one apps or tab.
+						For example, if you enable a video in two macOS Safari tabs, one video will go black.
+					Make sure to close all other apps and tabs that are using the camera.</p>
+					<a href="#i-cannot-join-meeting-in-firefox-with-no-audio-and-video-permission-due-to-no-ice-candidates-were-gathered-error-is-this-a-known-issue" id="i-cannot-join-meeting-in-firefox-with-no-audio-and-video-permission-due-to-no-ice-candidates-were-gathered-error-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>I cannot join meeting in Firefox with no audio and video permission due to <code>no ice candidates were gathered</code> error, is this a known issue?</h3>
+					</a>
+					<p>In Firefox, if access to camera or microphone has been granted to the site — either by currently having a video or audio input, or as a result of the user choosing to always allow access — and the profile has not been configured with media.peerconnection.ice.default_address_only, then ICE will gather all interface addresses. If the user has not granted the appropriate permissions, or if that preference has been set, then the ICE stack will limit ICE candidates to a default interface only. The default interface is the one that was used to load the page. This is a privacy mechanism in Firefox to stop sites from de-anonymizing VPN users via WebRTC leakage.</p>
+					<p>If the page itself is loaded via a different network interface than the one that is intended to be used by the Chime SDK to connect to Chime media resources, e.g., in a split-tunneling VPN where browser traffic uses the VPN interface but Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.</p>
+					<p>Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.</p>
 					<a href="#is-the-amazon-chime-sdk-supported-on-mobile-browsers" id="is-the-amazon-chime-sdk-supported-on-mobile-browsers" style="color: inherit; text-decoration: none;">
 						<h3>Is the Amazon Chime SDK supported on mobile browsers?</h3>
 					</a>
@@ -217,7 +241,7 @@
 					<a href="#what-are-the-subnets-and-ports-used-by-an-application-using-the-aws-sdk" id="what-are-the-subnets-and-ports-used-by-an-application-using-the-aws-sdk" style="color: inherit; text-decoration: none;">
 						<h3>What are the subnets and ports used by an application using the AWS SDK?</h3>
 					</a>
-					<p>An application which calls Amazon Chime APIs via the <a href="https://aws.amazon.com/tools/">AWS SDK</a>, like <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">CreateMeeting</a>, connects to the global service endpoint in the us-east-1 region: <a href="http://service.chime.aws.amazon.com/">service.chime.aws.amazon.com</a>, or <a href="http://service.chime.aws.amazon.com/">service-fips.chime.aws.amazon.com</a> with TCP:443.</p>
+					<p>An application which calls Amazon Chime APIs via the <a href="https://aws.amazon.com/tools/">AWS SDK</a>, like <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">CreateMeeting</a>, connects to the global service endpoint in the us-east-1 region: <a href="https://service.chime.aws.amazon.com/">service.chime.aws.amazon.com</a>, or <a href="https://service-fips.chime.aws.amazon.com/">service-fips.chime.aws.amazon.com</a> with TCP:443.</p>
 					<p>The URIs resolve to IP addresses in the AMAZON subnets for us-east-1, as published in the <a href="https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html">AWS ip-ranges.json</a>.</p>
 					<a href="#what-are-the-subnets-and-ports-used-by-a-client-running-the-amazon-chime-sdk" id="what-are-the-subnets-and-ports-used-by-a-client-running-the-amazon-chime-sdk" style="color: inherit; text-decoration: none;">
 						<h3>What are the subnets and ports used by a client running the Amazon Chime SDK?</h3>
@@ -231,10 +255,6 @@
 					<a href="#mobile-browser" id="mobile-browser" style="color: inherit; text-decoration: none;">
 						<h2>Mobile browser</h2>
 					</a>
-					<a href="#i-am-unable-to-select-audio-output-device-in-some-browsers-is-this-a-known-issue" id="i-am-unable-to-select-audio-output-device-in-some-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
-						<h3>I am unable to select audio output device in some browsers, is this a known issue?</h3>
-					</a>
-					<p><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1152401">Firefox</a> and <a href="https://bugs.webkit.org/show_bug.cgi?id=179415">Safari</a> have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.</p>
 					<a href="#is-screen-capture-supported-on-mobile-browsers" id="is-screen-capture-supported-on-mobile-browsers" style="color: inherit; text-decoration: none;">
 						<h3>Is screen capture supported on mobile browsers?</h3>
 					</a>
@@ -251,15 +271,28 @@
 						<h3>I notice that my clients lose audio and drop from the meeting if the Chrome browser on Android stays in background for several minutes, is that a known issue?</h3>
 					</a>
 					<p>This is a known issue and happens primarily due to this <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=951418">Chromium bug</a>. At present we do not have a workaround.</p>
+					<a href="#i-only-see-iphone-or-ipad-microphone-as-audio-input-in-ios-device-is-that-a-known-issue" id="i-only-see-iphone-or-ipad-microphone-as-audio-input-in-ios-device-is-that-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>I only see iPhone or iPad microphone as audio input in iOS device, is that a known issue?</h3>
+					</a>
+					<p>iOS Safari has a known issue where it only lists one audio input device even when there are multiple. For example
+						, if you plug in a wired headset to your iPhone, it will show up as iPhone microphone replacing the internal mic. For
+					more information, please refer to <a href="https://bugs.webkit.org/show_bug.cgi?id=174833">the Webkit issue</a>.</p>
 					<a href="#i-can-hear-clicking-noise-from-an-attendee-using-iphone-x-devices-x-xs-and-xr" id="i-can-hear-clicking-noise-from-an-attendee-using-iphone-x-devices-x-xs-and-xr" style="color: inherit; text-decoration: none;">
 						<h3>I can hear clicking noise from an attendee using iPhone X devices (X, XS, and XR).</h3>
 					</a>
-					<p>This is a known issue on iPhone X devices (X, XS, and XR) when using AudioContext-based APIs. For more information, see our comment in <a href="https://bugs.webkit.org/show_bug.cgi?id=204625#c6">the WebKit issue</a>.</p>
+					<p>This was a known issue on iPhone X devices (X, XS, and XR) when using AudioContext-based APIs in iOS Safari 13 and below. Please upgrade your device to iOS 14 and try again. For more information, see our comment in <a href="https://bugs.webkit.org/show_bug.cgi?id=204625#c6">the WebKit issue</a>.</p>
+					<a href="#i-cannot-hear-audio-from-other-attendees-using-ios-devices-after-i-unplug-my-wired-headset" id="i-cannot-hear-audio-from-other-attendees-using-ios-devices-after-i-unplug-my-wired-headset" style="color: inherit; text-decoration: none;">
+						<h3>I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.</h3>
+					</a>
+					<p>iOS Safari has a known issue where it does not automatically switch to the iOS internal speaker after users unplug
+					their wired headset. For more information, please refer to <a href="https://bugs.webkit.org/show_bug.cgi?id=216389">the Webkit issue</a>.</p>
 					<a href="#i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safari-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" id="i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safari-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3><strong>I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari in iOS and frozen tile in Chrome in Android, is this a known issue?</strong></h3>
 					</a>
 					<p>This is the default behavior that is specific to each browser. In Android, the video stream is muted when in background and thus, the video will show the last frame.
-					Note that for Android, if an attendee joins later after the video stream is in background, it will show as a blank tile since the last frame is blank.</p>
+						Note that for Android, if an attendee joins later after the video stream is in background, it will show as a blank tile since the last frame is blank.
+						For better user experience, we recommend considering <a href="https://github.com/aws/amazon-chime-sdk-ios">Chime SDK iOS</a> and
+					<a href="https://github.com/aws/amazon-chime-sdk-android">Chime SDK Android</a>.</p>
 					<a href="#when-i-join-a-meeting-in-chrome-in-android-8-or-9-with-speakerphone-other-people-could-not-hear-me-switch-to-default-mic-fixes-the-issue" id="when-i-join-a-meeting-in-chrome-in-android-8-or-9-with-speakerphone-other-people-could-not-hear-me-switch-to-default-mic-fixes-the-issue" style="color: inherit; text-decoration: none;">
 						<h3><strong>When I join a meeting in Chrome in Android 8 or 9 with speakerphone, other people could not hear me. Switch to default mic fixes the issue.</strong></h3>
 					</a>
@@ -306,7 +339,8 @@ meetingSession.audioVideo.stop();</code></pre>
 						<h3>My clients are unable to successfully join audio calls from Safari, they get a <code>failed to get audio device for constraints null: Type error</code>, what could be the issue?</h3>
 					</a>
 					<p>This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the <code>chooseVideoInputDevice</code> API. In this case you will see the following entry in the log where an empty string after <code>chooseVideoInputDevice</code>:</p>
-					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">""</span> -&gt; <span class="hljs-string">"PermissionDeniedByBrowser"</span></code></pre><p>This applies for video input as well.</p>
+					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">&quot;&quot;</span> -&gt; <span class="hljs-string">&quot;PermissionDeniedByBrowser&quot;</span></code></pre>
+					<p>This applies for video input as well.</p>
 					<a href="#how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" id="how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" style="color: inherit; text-decoration: none;">
 						<h3>How can I show a custom UX when the browser prompts the user for permission to use microphone and camera?</h3>
 					</a>
@@ -320,7 +354,8 @@ meetingSession.audioVideo.stop();</code></pre>
     hideCustomUX();
     <span class="hljs-keyword">return</span> stream;
   }
-);</code></pre><p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
+);</code></pre>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>
@@ -344,57 +379,30 @@ meetingSession.audioVideo.stop();</code></pre>
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
 			</ul>
 		</div>
 	</div>
@@ -404,6 +412,5 @@ meetingSession.audioVideo.stop();</code></pre>
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

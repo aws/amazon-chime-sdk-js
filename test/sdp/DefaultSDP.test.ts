@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -84,6 +84,64 @@ describe('DefaultSDP', () => {
       const sdpB = new DefaultSDP(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
       const sdpC = sdpB.copyVideo(sdpA.sdp);
       expect(sdpC.sdp).to.equal(SDPMock.VIDEO_HOST_AUDIO_ANSWER_WITH_VIDEO_COPIED);
+    });
+  });
+
+  describe('withAudioMaxAverageBitrate', () => {
+    it('adds the bitrate parameter', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(64000);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_AUDIO_BITRATE.replace('$VALUE', '64000')
+      );
+    });
+
+    it('updates an old bitrate parameter', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(64000).withAudioMaxAverageBitrate(48000);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_AUDIO_BITRATE.replace('$VALUE', '48000')
+      );
+    });
+
+    it('returns same SDP if null passed in', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(null);
+      expect(sdpB.sdp).to.equal(sdpA.sdp);
+    });
+
+    it('returns same SDP if zero passed in', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(0);
+      expect(sdpB.sdp).to.equal(sdpA.sdp);
+    });
+
+    it('returns same SDP if undefined passed in', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(undefined);
+      expect(sdpB.sdp).to.equal(sdpA.sdp);
+    });
+
+    it('clamps to the lowest bitrate', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(1);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_AUDIO_BITRATE.replace(
+          '$VALUE',
+          `${DefaultSDP.rfc7587LowestBitrate}`
+        )
+      );
+    });
+
+    it('clamps to the highest bitrate', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(Infinity);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_AUDIO_BITRATE.replace(
+          '$VALUE',
+          `${DefaultSDP.rfc7587HighestBitrate}`
+        )
+      );
     });
   });
 

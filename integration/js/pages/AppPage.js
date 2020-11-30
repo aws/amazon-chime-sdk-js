@@ -1,43 +1,54 @@
-const {By, Key} = require('selenium-webdriver');
+const {By, Key, until} = require('selenium-webdriver');
 const {TestUtils} = require('kite-common');
+const {performance} = require('perf_hooks');
 
-const elements = {
-  meetingIdInput: By.id('inputMeeting'),
-  sipMeetingIdInput: By.id('sip-inputMeeting'),
-  voiceConnectorIdInput: By.id('voiceConnectorId'),
-  attendeeNameInput: By.id('inputName'),
-  authenticateButton: By.id('authenticate'),
-  localVideoBotton: By.id('button-camera'),
-  joinButton: By.id('joinButton'),
-  meetingEndButtom: By.id('button-meeting-end'),
-  meetingLeaveButton: By.id('button-meeting-leave'),
-  screenShareButton: By.id('button-screen-share'),
-  screenViewButton: By.id('button-screen-view'),
-  contentShareButton: By.id('button-content-share'),
-  contentShareDropButton: By.id('button-content-share-drop'),
-  contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
-  contentSharePauseButton: By.id('button-pause-content-share'),
-  dataMessageSendInput: By.id('send-message'),
-  sipAuthenticateButton: By.id('button-sip-authenticate'),
-  roster: By.id('roster'),
-  participants: By.css('li'),
-  switchToSipFlow: By.id('to-sip-flow'),
+let elements;
 
-  authenticationFlow: By.id('flow-authenticate'),
-  deviceFlow: By.id('flow-devices'),
-  meetingFlow: By.id('flow-meeting'),
-  sipAuthenticateFlow: By.id('flow-sip-authenticate'),
-  sipUriFlow: By.id('flow-sip-uri'),
+function findAllElements() {
+  // These will be stale after a reload.
+  elements = {
+    meetingIdInput: By.id('inputMeeting'),
+    sipMeetingIdInput: By.id('sip-inputMeeting'),
+    voiceConnectorIdInput: By.id('voiceConnectorId'),
+    attendeeNameInput: By.id('inputName'),
+    authenticateButton: By.id('authenticate'),
+    localVideoButton: By.id('button-camera'),
+    addVoiceFocusInput: By.id('add-voice-focus'),        // Checkbox.
+    joinButton: By.id('joinButton'),
+    meetingEndButtom: By.id('button-meeting-end'),
+    meetingLeaveButton: By.id('button-meeting-leave'),
+    contentShareButton: By.id('button-content-share'),
+    contentShareDropButton: By.id('button-content-share-drop'),
+    contentShareVideoTestButton: By.id('dropdown-item-content-share-screen-test-video'),
+    contentSharePauseButton: By.id('button-pause-content-share'),
+    dataMessageSendInput: By.id('send-message'),
+    sipAuthenticateButton: By.id('button-sip-authenticate'),
+    roster: By.id('roster'),
+    participants: By.css('li'),
+    switchToSipFlow: By.id('to-sip-flow'),
 
-  failedMeetingFlow: By.id('flow-failed-meeting'),
-  microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
-  microphoneDropDownButton: By.id('button-microphone-drop'),
-  microphoneButton: By.id('button-microphone'),
+    authenticationFlow: By.id('flow-authenticate'),
+    deviceFlow: By.id('flow-devices'),
+    meetingFlow: By.id('flow-meeting'),
+    sipAuthenticateFlow: By.id('flow-sip-authenticate'),
+    sipUriFlow: By.id('flow-sip-uri'),
 
-  meetingAudio: By.id('meeting-audio'),
-  sipUri: By.id('sip-uri'),
-  optionalFeatures: By.id('optional-features'),
-};
+    failedMeetingFlow: By.id('flow-failed-meeting'),
+    microphoneDropDownVoiceFocusButton: By.id('toggle-dropdown-menu-microphone-Amazon-Voice-Focus'),
+    microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
+    microphoneDropDownButton: By.id('button-microphone-drop'),
+    microphoneButton: By.id('button-microphone'),
+
+    meetingAudio: By.id('meeting-audio'),
+    sipUri: By.id('sip-uri'),
+    simulcastFeature: By.id('simulcast'),
+    webAudioFeature: By.id('webaudio'),
+    simulcastFeatureLabel: By.css('label[for="simulcast"]'),
+    webAudioFeatureLabel: By.css('label[for="webaudio"]'),
+  };
+}
+
+findAllElements();
 
 const SessionStatus = {
   STARTED: 'Started',
@@ -49,6 +60,10 @@ class AppPage {
   constructor(driver, logger) {
     this.driver = driver;
     this.logger = logger;
+  }
+
+  findAllElements() {
+    findAllElements();
   }
 
   async open(stepInfo) {
@@ -76,9 +91,28 @@ class AppPage {
     await authenticateButton.click();
   }
 
+  async chooseUseWebAudio() {
+    let webAudioFeature = await this.driver.findElement(elements.webAudioFeature);
+    let webAudioFeatureLabel = await this.driver.findElement(elements.webAudioFeatureLabel);
+
+    // Click the label because it's on top.
+    if (await webAudioFeature.isSelected()) {
+      console.log('Web Audio is selected');
+    } else {
+      await webAudioFeatureLabel.click();
+    }
+  }
+
   async chooseUseSimulcast() {
-    let featureSelection = await this.driver.findElement(elements.optionalFeatures);
-    await featureSelection.sendKeys('simulcast');
+    let simulcastFeature = await this.driver.findElement(elements.simulcastFeature);
+    let simulcastFeatureLabel = await this.driver.findElement(elements.simulcastFeatureLabel);
+
+    // Click the label because it's on top.
+    if (await simulcastFeature.isSelected()) {
+      console.log('simulcast is selected');
+    } else {
+      await simulcastFeatureLabel.click();
+    }
   }
 
   async joinMeeting() {
@@ -94,16 +128,6 @@ class AppPage {
   async leaveTheMeeting() {
     let meetingLeaveButton = await this.driver.findElement(elements.meetingLeaveButton);
     await meetingLeaveButton.click();
-  }
-
-  async clickScreenShareButton() {
-    let screenShareButton = await this.driver.findElement(elements.screenShareButton);
-    await screenShareButton.click();
-  }
-
-  async clickScreenViewButton() {
-    let screenViewButton = await this.driver.findElement(elements.screenViewButton);
-    await screenViewButton.click();
   }
 
   async clickContentShareButton() {
@@ -127,7 +151,7 @@ class AppPage {
   }
 
   async clickCameraButton() {
-    let localVideoButton = await this.driver.findElement(elements.localVideoBotton);
+    let localVideoButton = await this.driver.findElement(elements.localVideoButton);
     await localVideoButton.click();
   }
 
@@ -157,11 +181,6 @@ class AppPage {
     // TODO: find a way to check if the user was able to join the meeting or not
     await TestUtils.waitAround(5 * 1000); // wait for 5 secs
     return SessionStatus.STARTED;
-  }
-
-  async switchToSipCallFlow() {
-    let switchToSipFlow = await this.driver.findElement(elements.switchToSipFlow);
-    await switchToSipFlow.click();
   }
 
   async getSipUri() {
@@ -251,6 +270,39 @@ class AppPage {
     return 'failed'
   }
 
+  async isVoiceFocusCheckboxVisible(visible) {
+    const element = await this.driver.findElement(elements.addVoiceFocusInput);
+    console.info(`Expecting element to be visible`, visible, element);
+    if (visible) {
+      await this.driver.wait(until.elementIsVisible(element), 30000);
+      return true;
+    }
+
+    // Not using `elementIsNotVisible`, because we want to make sure it does
+    // not *become* visible.
+    try {
+      await this.driver.wait(until.elementIsVisible(element), 5000);
+    } catch (e) {
+      return true;
+    }
+    throw new Error('Element should not have been visible.')
+  }
+
+  async isVoiceFocusPresentInDeviceMenu() {
+    return await this.driver.findElement(elements.microphoneDropDownVoiceFocusButton).isDisplayed();
+  }
+
+  async isVoiceFocusEnabled() {
+    const elem = await this.driver.findElement(elements.microphoneDropDownVoiceFocusButton);
+    const classes = await elem.getAttribute('class');
+    return classes.includes('vf-active');
+  }
+
+  async enableVoiceFocusInLobby() {
+    const elem = await this.driver.findElement(elements.addVoiceFocusInput);
+    return elem.click();
+  }
+
   async isJoiningMeeting() {
     return await this.driver.findElement(elements.deviceFlow).isDisplayed();
   }
@@ -279,20 +331,24 @@ class AppPage {
     return await this.driver.findElement(elements.failedMeetingFlow).isDisplayed();
   }
 
-  async rosterCheck(numberOfParticipants) {
+  async rosterCheck(numberOfParticipants, checkCount = 10, waitTimeMs = 100) {
     let i = 0;
-    let timeout = 10;
-    while (i < timeout) {
+    let start = performance.now();
+    while (i < checkCount) {
       try {
         const participantCountOnRoster = await this.getNumberOfParticipantsOnRoster();
         if (participantCountOnRoster === numberOfParticipants) {
+          let end = performance.now();
+          console.log("Roster check completed successfully in : %i secs", (end - start)/1000);
           return true;
         }
       } catch (err) {
       }
-      await TestUtils.waitAround(10);
+      await TestUtils.waitAround(waitTimeMs);
       i++;
     }
+    let end = performance.now();
+    console.log("Roster check failed in : %i secs", (end - start)/1000);
     return false;
   }
 
@@ -467,49 +523,6 @@ class AppPage {
     return false
   }
 
-  async getScreenSharePixelSum() {
-    return await this.driver.executeAsyncScript(async () => {
-      var callback = arguments[arguments.length - 1];
-      const getSum = (total, num) => {
-        return total + num;
-      };
-      var canvas = document.querySelector('canvas');
-      var sum = 0;
-      if (canvas !== null && canvas !== undefined) {
-        var ctx = canvas.getContext('2d');
-        var imageData = ctx.getImageData(0, 0, 1000, 600).data;
-        var sum = imageData.reduce(getSum);
-      }
-      callback(sum);
-    });
-  }
-
-  async checkScreenShare(expectedState) {
-    let pixelData = [];
-    let i = 0;
-    let timeout = 10;
-    let success = 0;
-    let pixelSum = await this.getScreenSharePixelSum();
-    pixelData.push(pixelSum);
-    while (i < timeout) {
-      i++;
-      pixelSum = await this.getScreenSharePixelSum();
-      pixelData.push(pixelSum);
-      let pixelDataLen = pixelData.length;
-      if (expectedState === "video" && pixelData[pixelDataLen - 1] - pixelData[pixelDataLen - 2] !== 0) {
-        success++;
-      }
-      if (expectedState === "blank" && pixelData[pixelDataLen - 1] - pixelData[pixelDataLen - 2] === 0) {
-        success++;
-      }
-      await TestUtils.waitAround(1000);
-    }
-    if (success === 0) {
-      return 'failed'
-    }
-    return expectedState
-  }
-
   async triggerReconnection() {
     this.driver.executeAsyncScript(
       '(async () => { await app.audioVideo.audioVideoController.actionReconnect(); })().then(arguments[0]);'
@@ -529,5 +542,4 @@ class AppPage {
   }
 }
 
-module.exports.AppPage = AppPage;
-module.exports.SessionStatus = SessionStatus;
+module.exports = AppPage;

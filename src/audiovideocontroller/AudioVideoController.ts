@@ -1,10 +1,11 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetector';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioVideoControllerFacade from '../audiovideocontroller/AudioVideoControllerFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -42,7 +43,7 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   /**
    * Restarts the peer connection and/or the session.
    */
-  reconnect(status: MeetingSessionStatus): boolean;
+  reconnect(status: MeetingSessionStatus, error: Error | null): boolean;
 
   /**
    * Handles the meeting session status and returns true if it will restart the session.
@@ -104,4 +105,9 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
    * Returns the [[AudioMixController]] for this audio-video controller.
    */
   readonly audioMixController: AudioMixController;
+
+  /**
+   * Returns the [[EventController]] for this audio-video controller.
+   */
+  readonly eventController?: EventController;
 }

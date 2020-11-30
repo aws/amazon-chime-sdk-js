@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -29,6 +29,11 @@ describe('NoOpLogger', () => {
       const logger: NoOpLogger = new NoOpLogger(LogLevel.DEBUG);
       logger.debug(spy);
       expect(spy.called).to.be.true;
+    });
+
+    it('should accept a string for debug, not just a function', () => {
+      const logger: NoOpLogger = new NoOpLogger(LogLevel.DEBUG);
+      logger.debug('foo');
     });
 
     it('should call not a callback for non-debug levels', () => {
