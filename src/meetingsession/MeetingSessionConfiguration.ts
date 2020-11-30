@@ -1,9 +1,7 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
-import ScreenSharingSessionOptions from '../screensharingsession/ScreenSharingSessionOptions';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
@@ -20,6 +18,11 @@ export default class MeetingSessionConfiguration {
    * The id of the meeting the session is joining.
    */
   meetingId: string | null = null;
+
+  /**
+   * The external meeting id of the meeting the session is joining.
+   */
+  externalMeetingId: string | null = null;
 
   /**
    * The credentials used to authenticate the session.
@@ -53,25 +56,15 @@ export default class MeetingSessionConfiguration {
   attendeePresenceTimeoutMs: number = 0;
 
   /**
-   * Screen sharing session options.
-   */
-  screenSharingSessionOptions: ScreenSharingSessionOptions = {};
-
-  /**
    * Configuration for connection health policies: reconnection, unusable audio warning connection,
    * and signal strength bars connection.
    */
   connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
 
   /**
-   * Feature flag to enable WebAudio processing
-   */
-  enableWebAudio: boolean = false;
-
-  /**
    * Feature flag to enable Chromium-based browsers
    */
-  enableUnifiedPlanForChromiumBasedBrowsers: boolean = false;
+  enableUnifiedPlanForChromiumBasedBrowsers: boolean = true;
 
   /**
    * Feature flag to enable Simulcast
@@ -139,29 +132,29 @@ export default class MeetingSessionConfiguration {
    */
   constructor(createMeetingResponse?: any, createAttendeeResponse?: any) { // eslint-disable-line
     if (createMeetingResponse) {
-      if (createMeetingResponse.Meeting) {
-        createMeetingResponse = createMeetingResponse.Meeting;
+      createMeetingResponse = this.toLowerCasePropertyNames(createMeetingResponse);
+      if (createMeetingResponse.meeting) {
+        createMeetingResponse = createMeetingResponse.meeting;
       }
-      this.meetingId = createMeetingResponse.MeetingId;
+      this.meetingId = createMeetingResponse.meetingid;
+      this.externalMeetingId = createMeetingResponse.externalmeetingid;
       this.urls = new MeetingSessionURLs();
-      this.urls.audioHostURL = createMeetingResponse.MediaPlacement.AudioHostUrl;
-      this.urls.screenDataURL = createMeetingResponse.MediaPlacement.ScreenDataUrl;
-      this.urls.screenSharingURL = createMeetingResponse.MediaPlacement.ScreenSharingUrl;
-      this.urls.screenViewingURL = createMeetingResponse.MediaPlacement.ScreenViewingUrl;
-      this.urls.signalingURL = createMeetingResponse.MediaPlacement.SignalingUrl;
-      this.urls.turnControlURL = createMeetingResponse.MediaPlacement.TurnControlUrl;
+      this.urls.audioHostURL = createMeetingResponse.mediaplacement.audiohosturl;
+      this.urls.screenDataURL = createMeetingResponse.mediaplacement.screendataurl;
+      this.urls.screenSharingURL = createMeetingResponse.mediaplacement.screensharingurl;
+      this.urls.screenViewingURL = createMeetingResponse.mediaplacement.screenviewingurl;
+      this.urls.signalingURL = createMeetingResponse.mediaplacement.signalingurl;
+      this.urls.turnControlURL = createMeetingResponse.mediaplacement.turncontrolurl;
     }
     if (createAttendeeResponse) {
-      if (createAttendeeResponse.Attendee) {
-        createAttendeeResponse = createAttendeeResponse.Attendee;
+      createAttendeeResponse = this.toLowerCasePropertyNames(createAttendeeResponse);
+      if (createAttendeeResponse.attendee) {
+        createAttendeeResponse = createAttendeeResponse.attendee;
       }
       this.credentials = new MeetingSessionCredentials();
-      this.credentials.attendeeId = createAttendeeResponse.AttendeeId;
-      this.credentials.externalUserId = createAttendeeResponse.ExternalUserId;
-      this.credentials.joinToken = createAttendeeResponse.JoinToken;
-    }
-    if (new DefaultBrowserBehavior().screenShareSendsOnlyKeyframes()) {
-      this.screenSharingSessionOptions = { bitRate: 384000 };
+      this.credentials.attendeeId = createAttendeeResponse.attendeeid;
+      this.credentials.externalUserId = createAttendeeResponse.externaluserid;
+      this.credentials.joinToken = createAttendeeResponse.jointoken;
     }
 
     // simulcast feature flag will override the following policies when DefaultAudioVideoController is created
@@ -171,5 +164,23 @@ export default class MeetingSessionConfiguration {
     this.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
       this.credentials ? this.credentials.attendeeId : null
     );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private toLowerCasePropertyNames(input: any): any {
+    if (input === null) {
+      return null;
+    } else if (typeof input !== 'object') {
+      return input;
+    } else if (Array.isArray(input)) {
+      return input.map(this.toLowerCasePropertyNames);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return Object.keys(input).reduce((result: any, key: string) => {
+      const value = input[key];
+      const newValue = typeof value === 'object' ? this.toLowerCasePropertyNames(value) : value;
+      result[key.toLowerCase()] = newValue;
+      return result;
+    }, {});
   }
 }

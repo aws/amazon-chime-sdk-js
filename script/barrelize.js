@@ -23,6 +23,19 @@ const walk = function(dir) {
 const importStrings = [];
 const exportStrings = [];
 
+const ignoredTypes = [
+  // These are @internal Voice Focus types.
+  'VoiceFocusTransformDeviceDelegate',
+  'LoggerAdapter',
+
+  // Generated versioning data.
+  'version',
+
+  'SignalingProtocol',
+  'index',
+  'ScreenSignalingProtocol',
+];
+
 walk('src')
   .filter(fn => fn.endsWith('.ts'))
   .forEach(file => {
@@ -31,22 +44,26 @@ walk('src')
     }
     let typeToImport = path.basename(file).replace(new RegExp('[.].*'), '');
     let pathToImport = './' + path.dirname(file).replace('src/', '');
-    if (
-      typeToImport === 'SignalingProtocol' ||
-      typeToImport === 'index' ||
-      typeToImport === 'ScreenSignalingProtocol'
-    ) {
+    if (ignoredTypes.includes(typeToImport)) {
       return;
     }
-    let importLine = [
-      'import',
-      typeToImport,
-      'from',
-      "'" + pathToImport + '/' + typeToImport + "'",
-    ];
-    let exportLine = '  ' + typeToImport + ',';
-    importStrings.push(importLine.join(' ') + ';');
+
+    const importLine = `import ${typeToImport} from '${pathToImport}/${typeToImport}';`;
+    const exportLine = `  ${typeToImport},`;
+    importStrings.push(importLine);
     exportStrings.push(exportLine);
+
+    // It's hard to add type guard functions to this Java-ish class model, so
+    // forgive the hack.
+    if (typeToImport === 'AudioTransformDevice') {
+      importStrings.push(`import { isAudioTransformDevice } from '${pathToImport}/AudioTransformDevice';`);
+      exportStrings.push(`  isAudioTransformDevice,`);
+    }
+
+    if (typeToImport === 'VideoTransformDevice') {
+      importStrings.push(`import { isVideoTransformDevice } from '${pathToImport}/VideoTransformDevice';`);
+      exportStrings.push(`  isVideoTransformDevice,`);
+    }
   });
 
 importStrings.sort();

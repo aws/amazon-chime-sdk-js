@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -23,6 +23,33 @@ describe('AllHighestVideoBandwidthPolicy', () => {
   before(() => {
     expect = chai.expect;
     policy = new AllHighestVideoBandwidthPolicy(selfAttendeeId);
+  });
+
+  describe('reset', () => {
+    it('can be reset', () => {
+      const index = new DefaultVideoStreamIndex(logger);
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 3,
+              groupId: 3,
+              maxBitrateKbps: 400,
+              attendeeId: 'xy2',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      policy.updateIndex(index);
+      const resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([3]);
+      policy.reset();
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([]);
+    });
   });
 
   describe('wantsResubscribe', () => {
@@ -199,7 +226,6 @@ describe('AllHighestVideoBandwidthPolicy', () => {
 
       policy.updateIndex(index);
       policy.updateMetrics(metricReport);
-      policy.updateCalculatedOptimalReceiveSet();
       const subscriptions = policy.chooseSubscriptions();
       expect(subscriptions.array()).to.deep.equal([2, 4, 6]);
     });

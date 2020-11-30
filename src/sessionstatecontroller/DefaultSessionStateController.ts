@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -167,7 +167,7 @@ export default class DefaultSessionStateController implements SessionStateContro
     ) {
       this.logger.info(
         `unable to perform deferred action ${
-          SessionStateControllerAction[this.deferredAction]
+          SessionStateControllerAction[deferredAction]
         } in state ${SessionStateControllerState[this.currentState]}`
       );
     }

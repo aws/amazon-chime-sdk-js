@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -10,7 +10,7 @@ import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 describe('DefaultReconnectController', () => {
   let expect: Chai.ExpectStatic;
   let timeout: number;
-  let defaultController = (): DefaultReconnectController => {
+  const defaultController = (): DefaultReconnectController => {
     return new DefaultReconnectController(50, new FullJitterBackoff(10, 0, 0));
   };
 

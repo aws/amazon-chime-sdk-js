@@ -32,12 +32,12 @@ walk('docs')
     });
   });
 
-fs.readFile('docs/assets/js/search.js', 'utf8', (err, data) => {
+fs.readFile('docs/assets/js/search.json', 'utf8', (err, data) => {
   if (err) return console.error(err);
 
   let result = data.replace(/["][,]["]/g, '",\n"');
   result = result.replace(/[}][,][{]/g, '},\n{');
-  fs.writeFile('docs/assets/js/search.js', result, 'utf8', err => {
+  fs.writeFile('docs/assets/js/search.json', result, 'utf8', err => {
     if (err) return console.error(err);
   });
 });

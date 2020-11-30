@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -72,7 +72,7 @@ describe('OpenSignalingConnectionTask', () => {
         openConnection(request: SignalingClientConnectionRequest): void {
           super.openConnection(request);
           expect(request.signalingURL).to.be.equal(configuration.urls.signalingURL);
-          expect(request.sessionToken).to.be.equal(configuration.credentials.joinToken);
+          expect(request.joinToken).to.be.equal(configuration.credentials.joinToken);
           called = true;
         }
       }
@@ -80,6 +80,7 @@ describe('OpenSignalingConnectionTask', () => {
       context.signalingClient = signalingClient;
       task.run().then(() => {
         expect(called).to.be.true;
+        expect(context.signalingOpenDurationMs).to.not.be.null;
         done();
       });
     });

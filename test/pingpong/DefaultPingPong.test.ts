@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -19,13 +19,26 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
+import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultPingPong', () => {
   let expect: Chai.ExpectStatic;
   const defaultIntervalMs = 10000;
   const logger = new NoOpLogger(LogLevel.DEBUG);
+  let domMockBuilder: DOMMockBuilder | null = null;
   before(() => {
     expect = chai.expect;
+  });
+
+  beforeEach(() => {
+    domMockBuilder = new DOMMockBuilder();
+  });
+
+  afterEach(() => {
+    if (domMockBuilder) {
+      domMockBuilder.cleanup();
+      domMockBuilder = null;
+    }
   });
 
   describe('construction', () => {
@@ -289,7 +302,7 @@ describe('DefaultPingPong', () => {
       pong.pingPong.pingId = 1;
       pong.timestampMs = pingTimestampLocalMs + 1000;
 
-      let pongEvent = new SignalingClientEvent(
+      const pongEvent = new SignalingClientEvent(
         signalingClient,
         SignalingClientEventType.ReceivedSignalFrame,
         pong

@@ -1,7 +1,5 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-/* eslint-disable @typescript-eslint/camelcase */
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
@@ -64,10 +62,10 @@ export default class DefaultStatsCollector implements StatsCollector {
     } else {
       // e.g. CamelCaseWithCAPS -> _camel_case_with_caps
       return str
-        .replace(/([A-Z][a-z]+)/g, function($1) {
+        .replace(/([A-Z][a-z]+)/g, function ($1) {
           return `_${$1}`;
         })
-        .replace(/([A-Z][A-Z]+)/g, function($1) {
+        .replace(/([A-Z][A-Z]+)/g, function ($1) {
           return `_${$1}`;
         })
         .toLowerCase();

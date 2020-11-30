@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { Substitute } from '@fluffy-spoon/substitute';
@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
 import DefaultAudioVideoFacade from '../../src/audiovideofacade/DefaultAudioVideoFacade';
@@ -37,6 +38,8 @@ describe('DefaultAudioVideoFacade', () => {
       return new MediaStream();
     }
 
+    setContentAudioProfile(_audioProfile: AudioProfile): void {}
+
     pauseContentShare(): void {}
 
     unpauseContentShare(): void {}
@@ -54,11 +57,8 @@ describe('DefaultAudioVideoFacade', () => {
     contentShareDidStop(): void {}
   }
 
-  beforeEach(() => {
-    domMockBuilder = new DOMMockBuilder();
-    controller = new NoOpAudioVideoController();
-    deviceController = new NoOpDeviceController();
-    contentShareController = new NoOpContentShareController();
+  function enableWebAudio(enabled = true): void {
+    deviceController = new NoOpDeviceController({ enableWebAudio: enabled });
     facade = new DefaultAudioVideoFacade(
       controller,
       controller.videoTileController,
@@ -67,6 +67,13 @@ describe('DefaultAudioVideoFacade', () => {
       deviceController,
       contentShareController
     );
+  }
+
+  beforeEach(() => {
+    domMockBuilder = new DOMMockBuilder();
+    controller = new NoOpAudioVideoController();
+    contentShareController = new NoOpContentShareController();
+    enableWebAudio(false);
   });
 
   afterEach(() => {
@@ -95,6 +102,13 @@ describe('DefaultAudioVideoFacade', () => {
       const arg1 = new NoOpObserver();
       facade.removeObserver(arg1);
       assert(spy.calledOnceWith(arg1));
+    });
+
+    it('will call setAudioProfile', () => {
+      const spy = sinon.spy(controller, 'setAudioProfile');
+      const profile = new AudioProfile();
+      facade.setAudioProfile(profile);
+      assert(spy.calledOnceWith(profile));
     });
 
     it('will call start', () => {
@@ -473,6 +487,12 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(arg1, arg2, arg3, arg4));
     });
 
+    it('will call getVideoInputQualitySettings', () => {
+      const spy = sinon.spy(deviceController, 'getVideoInputQualitySettings');
+      facade.getVideoInputQualitySettings();
+      assert(spy.calledOnce);
+    });
+
     it('will call chooseAudioOutputDevice', () => {
       const spy = sinon.spy(deviceController, 'chooseAudioOutputDevice');
       const arg1 = '';
@@ -526,18 +546,18 @@ describe('DefaultAudioVideoFacade', () => {
     });
 
     it('will call mixIntoAudioInput if WebAudio feature is enabled', () => {
-      facade.enableWebAudio(true);
+      enableWebAudio(true);
       const spy = sinon.spy(deviceController, 'mixIntoAudioInput');
       const arg1 = new MediaStream();
       facade.mixIntoAudioInput(arg1);
       assert(spy.calledOnceWith(arg1));
     });
 
-    it('will call enableWebAudio', () => {
-      const spy = sinon.spy(deviceController, 'enableWebAudio');
-      const arg1 = false;
-      facade.enableWebAudio(arg1);
-      assert(spy.calledOnceWith(arg1));
+    it('will call setContentAudioProfile', () => {
+      const spy = sinon.spy(contentShareController, 'setContentAudioProfile');
+      const profile = new AudioProfile();
+      facade.setContentAudioProfile(profile);
+      assert(spy.calledOnceWith(profile));
     });
 
     it('will call startContentShare', () => {
@@ -583,6 +603,12 @@ describe('DefaultAudioVideoFacade', () => {
       const observer = new NoOpContentShareObserver();
       facade.removeContentShareObserver(observer);
       expect(spy.withArgs(observer).calledOnce).to.be.true;
+    });
+
+    it('will call getRemoteVideoSources', () => {
+      const spy = sinon.spy(controller, 'getRemoteVideoSources');
+      facade.getRemoteVideoSources();
+      assert(spy.calledOnceWith());
     });
   });
 });

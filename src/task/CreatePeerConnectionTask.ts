@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -64,8 +64,9 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
 
   async run(): Promise<void> {
     this.context.removableObservers.push(this);
-
-    const configuration: RTCConfiguration = this.context.turnCredentials
+    const hasTurnCredentials =
+      this.context.turnCredentials && this.context.turnCredentials.uris.length > 0;
+    const configuration: RTCConfiguration = hasTurnCredentials
       ? {
           iceServers: [
             {
@@ -113,7 +114,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     this.context.peer.addEventListener('track', this.trackAddedHandler);
   }
 
-  private trackAddedHandler = (event: RTCTrackEvent) => {
+  private trackAddedHandler = (event: RTCTrackEvent): void => {
     const track: MediaStreamTrack = event.track;
     this.context.logger.info(
       `received track event: kind=${track.kind} id=${track.id} label=${track.label}`

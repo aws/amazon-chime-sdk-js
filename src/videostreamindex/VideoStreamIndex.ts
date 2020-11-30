@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import {
@@ -6,6 +6,7 @@ import {
   SdkIndexFrame,
   SdkSubscribeAckFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
+import VideoSource from '../videosource/VideoSource';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamDescription from './VideoStreamDescription';
 
@@ -17,6 +18,11 @@ export default interface VideoStreamIndex {
    * Saves [[SdkIndexFrame]] in [[VideoStreamIndex]]
    */
   integrateIndexFrame(indexFrame: SdkIndexFrame): void;
+
+  /**
+   * Subscribe frame sent
+   */
+  subscribeFrameSent(): void;
 
   /**
    * Saves [[SdkSubscribeAckFrame]] in [[VideoStreamIndex]]
@@ -34,9 +40,9 @@ export default interface VideoStreamIndex {
   allStreams(): VideoStreamIdSet;
 
   /**
-   * Returns the attendee ids of attendees who are publishing videos excluding self
+   * Returns an array of video sources who are sending video excluding self
    */
-  allVideoSendingAttendeesExcludingSelf(selfAttendeeId: string): Set<string>;
+  allVideoSendingSourcesExcludingSelf(selfAttendeeId: string): VideoSource[];
 
   /**
    * Return a selection set of streams for subscription based on self attendee id, size information of tiles, bandwidth limitation
@@ -57,6 +63,11 @@ export default interface VideoStreamIndex {
    * Returns the number of participants who are publishing videos excluding self
    */
   numberOfVideoPublishingParticipantsExcludingSelf(selfAttendeeId: string): number;
+
+  /**
+   * Returns the number of video participants
+   */
+  numberOfParticipants(): number;
 
   /**
    * Returns attendee id for a track id

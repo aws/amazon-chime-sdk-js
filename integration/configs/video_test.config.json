@@ -22,11 +22,6 @@
       "browserName": "chrome",
       "version": "78",
       "platform": "MAC"
-    },
-    {
-      "browserName": "firefox",
-      "version": "76",
-      "platform": "MAC"
     }
   ]
 }

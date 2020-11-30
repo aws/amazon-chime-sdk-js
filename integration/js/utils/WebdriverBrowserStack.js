@@ -1,6 +1,8 @@
 const {Builder} = require('selenium-webdriver');
 const {getBuildId, getRunDetails} = require('./BrowserStackLogs');
 const {AppPage} = require('../pages/AppPage');
+const {MeetingReadinessCheckerPage} = require('../pages/MeetingReadinessCheckerPage');
+const { MessagingSessionPage } = require('../pages/MessagingSessionPage');
 
 const getOS = capabilities => {
   switch (capabilities.platform) {
@@ -69,16 +71,16 @@ const getBrowserStackOptions = (capabilities) => {
 
 const getBrowserStackUrl = () => {
   return (
-    'http://' +
+    'https://' +
     process.env.BROWSER_STACK_USERNAME +
     ':' +
     process.env.BROWSER_STACK_ACCESSKEY +
-    '@hub.browserstack.com/wd/hub'
+    '@hub-cloud.browserstack.com/wd/hub'
   );
 };
 
 class BrowserStackSession {
-  static async createSession(capabilities) {
+  static async createSession(capabilities, appName) {
     let cap = {};
     if (capabilities.browserName === 'chrome') {
       cap = getChromeCapabilities(capabilities);
@@ -89,11 +91,12 @@ class BrowserStackSession {
       .usingServer(getBrowserStackUrl())
       .withCapabilities(cap)
       .build();
-    return new BrowserStackSession(driver);
+    return new BrowserStackSession(driver, appName);
   }
 
-  constructor(inDriver) {
+  constructor(inDriver, appName) {
     this.driver = inDriver;
+    this.appName = appName;
   }
 
   async init() {
@@ -120,9 +123,18 @@ class BrowserStackSession {
 
   getAppPage() {
     if (this.page === undefined) {
-      this.page = new AppPage(this.driver, this.logger);
+      switch (this.appName) {
+        case 'meetingReadinessChecker':
+          this.page = new MeetingReadinessCheckerPage(this.driver, this.logger);
+          break;
+        case 'messagingSession':
+          this.page = new MessagingSessionPage(this.driver, this.logger);
+          break;
+        default:
+          this.page = new AppPage(this.driver, this.logger);
+          break;
+      }
     }
-    return this.page;
   }
 
   async updateTestResults(passed) {

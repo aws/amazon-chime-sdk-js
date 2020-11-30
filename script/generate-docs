@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+# We prefer 'upstream' because a fork will likely have both.
+# We fall back to 'origin' to support Travis.
+compare_to = ['upstream', 'origin']
+
+intersection = compare_to & `git remote`.split
+
+if intersection.empty?
+  STDERR.puts "Cannot generate docs: unable to determine remote. Create a remote named 'upstream' or 'origin'."
+  exit 1
+end
+
+remote = intersection[0]
+branch = 'master'
+
+STDERR.puts "Generating docs against #{remote}/#{branch}."
+
+# Explicitly use the guides/tsconfig.json file, because it includes
+# both the source and docs. The build itself just uses the root tsconfig,
+# which just hits src.
+`node node_modules/typedoc/bin/typedoc --tsconfig guides/tsconfig.json --options typedoc.json --gitRemote #{remote} --gitRevision #{branch}`

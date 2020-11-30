@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -33,26 +33,26 @@ describe('ReconnectionHealthPolicy', () => {
   });
   it('can simulate no reconnect needed', () => {
     reconnectionHealthPolicy = new ReconnectionHealthPolicy(logger, configuration, data);
-    let health = reconnectionHealthPolicy.health();
+    const health = reconnectionHealthPolicy.health();
     expect(health).to.equal(1);
   });
   it('can simulate no reconnect needed due to recent connection start', () => {
     configuration.connectionWaitTimeMs = Infinity;
     reconnectionHealthPolicy = new ReconnectionHealthPolicy(logger, configuration, data);
-    let health = reconnectionHealthPolicy.health();
+    const health = reconnectionHealthPolicy.health();
     expect(health).to.equal(1);
   });
   it('can simulate reconnect needed due to recent no packets', () => {
     configuration.connectionUnhealthyThreshold = 0;
     data.consecutiveStatsWithNoPackets = Infinity;
     reconnectionHealthPolicy = new ReconnectionHealthPolicy(logger, configuration, data);
-    let health = reconnectionHealthPolicy.health();
+    const health = reconnectionHealthPolicy.health();
     expect(health).to.equal(0);
   });
   it('can simulate reconnect needed due to recently missed pongs', () => {
     data.consecutiveMissedPongs = Infinity;
     reconnectionHealthPolicy = new ReconnectionHealthPolicy(logger, configuration, data);
-    let health = reconnectionHealthPolicy.health();
+    const health = reconnectionHealthPolicy.health();
     expect(health).to.equal(0);
   });
   it('can simulate bad audio delay', () => {

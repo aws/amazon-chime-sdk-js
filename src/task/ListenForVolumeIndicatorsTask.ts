@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -13,7 +13,8 @@ import {
 } from '../signalingprotocol/SignalingProtocol.js';
 import BaseTask from './BaseTask';
 
-export default class ListenForVolumeIndicatorsTask extends BaseTask
+export default class ListenForVolumeIndicatorsTask
+  extends BaseTask
   implements RemovableObserver, SignalingClientObserver {
   protected taskName = 'ListenForVolumeIndicatorsTask';
   constructor(private context: AudioVideoControllerState) {
@@ -52,7 +53,7 @@ export default class ListenForVolumeIndicatorsTask extends BaseTask
     }
   }
 
-  realtimeMuteAndUnmuteHandler = (muted: boolean) => {
+  realtimeMuteAndUnmuteHandler = (muted: boolean): void => {
     this.context.signalingClient.mute(muted);
   };
 }

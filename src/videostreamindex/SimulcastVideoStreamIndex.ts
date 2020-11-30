@@ -1,4 +1,4 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -89,16 +89,7 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
   }
 
   integrateBitratesFrame(bitrateFrame: SdkBitrateFrame): void {
-    if (this.currentIndex) {
-      for (const bitrate of bitrateFrame.bitrates) {
-        const source = this.currentIndex.sources.find(
-          source => source.streamId === bitrate.sourceStreamId
-        );
-        if (source !== undefined) {
-          source.avgBitrateBps = bitrate.avgBitrateBps;
-        }
-      }
-    }
+    super.integrateBitratesFrame(bitrateFrame);
 
     const stillSending = new Set<number>();
     const existingSet = new Set<number>(this.streamIdToBitrateKbpsMap.keys());
@@ -167,9 +158,7 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
   }
 
   integrateIndexFrame(indexFrame: SdkIndexFrame): void {
-    this.currentIndex = indexFrame;
-    this.streamToAttendeeMap = null;
-    this.ssrcToStreamMap = null;
+    super.integrateIndexFrame(indexFrame);
 
     const newIndexStreamIdSet = new Set<number>();
     const existingSet = new Set<number>(this.streamIdToBitrateKbpsMap.keys());
@@ -194,8 +183,7 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
   }
 
   integrateSubscribeAckFrame(subscribeAck: SdkSubscribeAckFrame): void {
-    this.currentSubscribeAck = subscribeAck;
-    this.trackToStreamMap = null;
+    super.integrateSubscribeAckFrame(subscribeAck);
     if (!subscribeAck.allocations || subscribeAck.allocations === undefined) {
       return;
     }

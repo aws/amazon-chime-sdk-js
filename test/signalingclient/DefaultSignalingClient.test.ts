@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -89,7 +89,7 @@ describe('DefaultSignalingClient', () => {
   const _audioHost = 'some-audio-host';
   let domMockBuilder: DOMMockBuilder | null = null;
 
-  const createTestObjects = function(testConfigs?: TestConfigs): TestObjects {
+  const createTestObjects = function (testConfigs?: TestConfigs): TestObjects {
     const testObjects: TestObjects = new TestObjects(testConfigs);
     activeTestObjects.push(testObjects);
     return testObjects;
@@ -709,6 +709,31 @@ describe('DefaultSignalingClient', () => {
       }
       testObjects.signalingClient.registerObserver(new TestObserver());
       testObjects.signalingClient.openConnection(testObjects.request);
+    });
+  });
+
+  describe('generateNewAudioSessionId', () => {
+    it('will generate a random audio session id', done => {
+      const randomNumSet = new Set();
+      let average = 0;
+      const iterations = 1000;
+      const testObjects = createTestObjects();
+
+      for (let i = 0; i < iterations; i++) {
+        // @ts-ignore
+        const id = testObjects.signalingClient.generateNewAudioSessionId();
+
+        if (randomNumSet.has(id)) {
+          expect.fail('audioSessionId was not unique');
+        }
+        randomNumSet.add(id);
+        const roundedRemainder = Math.round((id % iterations) / iterations);
+        average = average + (id / iterations + roundedRemainder);
+      }
+      // average should be near the midpoint of the 32-bit range
+      const passed = average > parseInt('0x70000000') && average < parseInt('0x90000000');
+      expect(passed).to.be.true;
+      done();
     });
   });
 });

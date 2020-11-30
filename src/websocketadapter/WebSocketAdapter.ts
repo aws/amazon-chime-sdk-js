@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import WebSocketReadyState from './WebSocketReadyState';
@@ -11,21 +11,22 @@ export default interface WebSocketAdapter {
    *
    * @param{string} url URL to connect to
    * @param{string[]} protocols Protocols to send when establishing the connection
+   * @param{boolean} isSignedUrl whether the URL is signed
    */
-  create(url: string, protocols: string[]): void;
+  create(url: string, protocols: string[], isSignedUrl?: boolean): void;
 
   /**
    * Sends a raw byte message.
    *
-   * @param{Uint8Array} message Raw byte message to send
+   * @param{Uint8Array | string} Raw byte or string message to send
    * @return{boolean} Whether the data was queued for sending
    */
-  send(message: Uint8Array): boolean;
+  send(message: Uint8Array | string): boolean;
 
   /**
    * Close the WebSocket connection.
    */
-  close(): void;
+  close(code?: number, reason?: string): void;
 
   /**
    * Destroys internal reference to the WebSocket.

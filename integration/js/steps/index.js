@@ -7,9 +7,7 @@ exports.PlayRandomToneStep = require('./PlayRandomToneStep');
 exports.ClickMicrophoneButton = require('./ClickMicrophoneButton');
 exports.EndMeetingStep = require('./EndMeetingStep');
 exports.LeaveMeetingStep = require('./LeaveMeetingStep');
-exports.ClickScreenShareButton = require('./ClickScreenShareButton');
 exports.ClickContentShareVideoTestButton = require('./ClickContentShareVideoTestButton');
-exports.ClickScreenViewButton = require('./ClickScreenViewButton');
 exports.ClickContentShareButton = require('./ClickContentShareButton');
 exports.ClickContentSharePauseButton = require('./ClickContentSharePauseButton');
 exports.SendDataMessage = require('./SendDataMessage');
@@ -25,3 +23,15 @@ exports.WaitForRemoteParticipantsToTurnAudioOn = require('./WaitForRemotePartici
 exports.WaitForRemoteParticipantsToTurnAudioOff = require('./WaitForRemoteParticipantsToTurnAudioOff');
 exports.WaitForRemoteParticipantsToJoinMeeting = require('./WaitForRemoteParticipantsToJoinMeeting');
 exports.WaitForMeetingToBeCreated = require('./WaitForMeetingToBeCreated');
+
+exports.OpenMeetingReadinessCheckerAppStep = require('./OpenMeetingReadinessCheckerAppStep');
+exports.StartMeetingReadinessCheckerStep = require('./StartMeetingReadinessCheckerStep');
+exports.StartContentShareConnectivityCheckStep = require('./StartContentShareConnectivityCheckStep');
+exports.WaitForContentShareTestToBeReady = require('./WaitForContentShareTestToBeReady');
+exports.WaitForStartMeetingReadinessCheckerButtonToBeEnabled = require('./WaitForStartMeetingReadinessCheckerButtonToBeEnabled');
+exports.WaitForMeetingCreationAndMeetingReadinessCheckerInitializationStep = require('./WaitForMeetingCreationAndMeetingReadinessCheckerInitializationStep');
+exports.SetTestBrokenStep = require('./SetTestBrokenStep');
+
+exports.OpenMessagingSessionAppStep = require('./OpenMessagingSessionAppStep');
+exports.ConnectMessagingSessionStep = require('./ConnectMessagingSessionStep');
+exports.DisconnectMessagingSessionStep = require('./DisconnectMessagingSessionStep');

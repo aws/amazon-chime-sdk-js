@@ -1,6 +1,7 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
@@ -22,6 +23,7 @@ export default class DefaultContentShareController
   ): MeetingSessionConfiguration {
     const contentShareConfiguration = new MeetingSessionConfiguration();
     contentShareConfiguration.meetingId = configuration.meetingId;
+    contentShareConfiguration.externalMeetingId = configuration.externalMeetingId;
     contentShareConfiguration.urls = configuration.urls;
     contentShareConfiguration.credentials = new MeetingSessionCredentials();
     contentShareConfiguration.credentials.attendeeId =
@@ -42,6 +44,10 @@ export default class DefaultContentShareController
   ) {
     this.contentAudioVideo.addObserver(this);
     this.setupContentShareEvents();
+  }
+
+  setContentAudioProfile(audioProfile: AudioProfile): void {
+    this.contentAudioVideo.setAudioProfile(audioProfile);
   }
 
   async startContentShare(stream: MediaStream): Promise<void> {

@@ -1,14 +1,15 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
+import ConnectionMetrics from './ConnectionMetrics';
 
 export default class NoVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
   constructor() {}
-  updateConnectionMetric({}): void {}
+  updateConnectionMetric(_metrics: ConnectionMetrics): void {}
   chooseMediaTrackConstraints(): MediaTrackConstraints {
     return {};
   }

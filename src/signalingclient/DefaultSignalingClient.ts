@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
@@ -40,12 +40,14 @@ export default class DefaultSignalingClient implements SignalingClient {
   private isClosing: boolean;
   private connectionRequestQueue: SignalingClientConnectionRequest[];
   private unloadHandler: () => void | null = null;
+  private audioSessionId: number;
 
   constructor(private webSocket: WebSocketAdapter, private logger: Logger) {
     this.observerQueue = new Set<SignalingClientObserver>();
     this.connectionRequestQueue = [];
     this.resetConnection();
     this.logger.debug(() => 'signaling client init');
+    this.audioSessionId = this.generateNewAudioSessionId();
   }
 
   registerObserver(observer: SignalingClientObserver): void {
@@ -91,6 +93,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       clientSource: Versioning.sdkName,
       chimeSdkVersion: Versioning.sdkVersion,
     });
+    joinFrame.audioSessionId = this.audioSessionId;
 
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
@@ -326,11 +329,17 @@ export default class DefaultSignalingClient implements SignalingClient {
       );
       this.receiveMessage(this.stripFrameTypeRTC(new Uint8Array(event.data)));
     });
-    this.webSocket.addEventListener('close', () => {
+    this.webSocket.addEventListener('close', (event: CloseEvent) => {
       this.deactivatePageUnloadHandler();
       this.resetConnection();
       this.sendEvent(
-        new SignalingClientEvent(this, SignalingClientEventType.WebSocketClosed, null)
+        new SignalingClientEvent(
+          this,
+          SignalingClientEventType.WebSocketClosed,
+          null,
+          event.code,
+          event.reason
+        )
       );
       this.serviceConnectionRequestQueue();
     });
@@ -371,5 +380,11 @@ export default class DefaultSignalingClient implements SignalingClient {
       GlobalAny['window']['addEventListener'] &&
       window.removeEventListener('unload', this.unloadHandler);
     this.unloadHandler = null;
+  }
+
+  private generateNewAudioSessionId(): number {
+    const num = new Uint32Array(1);
+    const randomNum = window.crypto.getRandomValues(num);
+    return randomNum[0];
   }
 }

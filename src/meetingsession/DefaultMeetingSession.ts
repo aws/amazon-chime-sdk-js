@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
@@ -14,10 +14,6 @@ import DeviceController from '../devicecontroller/DeviceController';
 import Logger from '../logger/Logger';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import DefaultReconnectController from '../reconnectcontroller/DefaultReconnectController';
-import DefaultScreenShareFacade from '../screensharefacade/DefaultScreenShareFacade';
-import ScreenShareFacade from '../screensharefacade/ScreenShareFacade';
-import DefaultScreenShareViewFacade from '../screenshareviewfacade/DefaultScreenShareViewFacade';
-import ScreenShareViewFacade from '../screenshareviewfacade/ScreenShareViewFacade';
 import DefaultWebSocketAdapter from '../websocketadapter/DefaultWebSocketAdapter';
 import MeetingSession from './MeetingSession';
 import MeetingSessionConfiguration from './MeetingSessionConfiguration';
@@ -28,8 +24,6 @@ export default class DefaultMeetingSession implements MeetingSession {
   private audioVideoController: AudioVideoController;
   private contentShareController: ContentShareController;
   private _deviceController: DeviceController;
-  private screenShareFacade: ScreenShareFacade;
-  private screenShareViewFacade: ScreenShareViewFacade;
   private audioVideoFacade: AudioVideoFacade;
 
   private static RECONNECT_TIMEOUT_MS = 120 * 1000;
@@ -48,7 +42,6 @@ export default class DefaultMeetingSession implements MeetingSession {
     this.checkBrowserSupportAndFeatureConfiguration();
 
     this._deviceController = deviceController;
-    this._deviceController.enableWebAudio(configuration.enableWebAudio);
     this.audioVideoController = new DefaultAudioVideoController(
       this._configuration,
       this._logger,
@@ -64,15 +57,6 @@ export default class DefaultMeetingSession implements MeetingSession {
       )
     );
     deviceController.bindToAudioVideoController(this.audioVideoController);
-    this.screenShareFacade = new DefaultScreenShareFacade(
-      this._configuration,
-      this._logger,
-      deviceController
-    );
-    this.screenShareViewFacade = new DefaultScreenShareViewFacade(
-      this._configuration,
-      this._logger
-    );
     const contentShareMediaStreamBroker = new ContentShareMediaStreamBroker(this._logger);
     this.contentShareController = new DefaultContentShareController(
       contentShareMediaStreamBroker,
@@ -118,14 +102,6 @@ export default class DefaultMeetingSession implements MeetingSession {
 
   get contentShare(): ContentShareController {
     return this.contentShareController;
-  }
-
-  get screenShare(): ScreenShareFacade {
-    return this.screenShareFacade;
-  }
-
-  get screenShareView(): ScreenShareViewFacade {
-    return this.screenShareViewFacade;
   }
 
   get deviceController(): DeviceController {

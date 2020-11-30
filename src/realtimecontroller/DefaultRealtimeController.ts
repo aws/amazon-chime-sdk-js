@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
@@ -52,15 +52,11 @@ import RealtimeVolumeIndicator from './RealtimeVolumeIndicator';
  *    [[realtimeIsLocalAudioMuted]] still returns true.
  */
 export default class DefaultRealtimeController implements RealtimeController {
-  // Attendee Id
-
-  private state: RealtimeState = new RealtimeState();
+  private readonly state: RealtimeState = new RealtimeState();
 
   realtimeSetLocalAttendeeId(attendeeId: string, externalUserId: string): void {
-    this.wrap(() => {
-      this.state.localAttendeeId = attendeeId;
-      this.state.localExternalUserId = externalUserId;
-    });
+    this.state.localAttendeeId = attendeeId;
+    this.state.localExternalUserId = externalUserId;
   }
 
   realtimeSetAttendeeIdPresence(
@@ -70,14 +66,16 @@ export default class DefaultRealtimeController implements RealtimeController {
     dropped: boolean | null,
     posInFrame: RealtimeAttendeePositionInFrame | null
   ): void {
-    this.wrap(() => {
+    try {
       if (present) {
         this.state.attendeeIdToExternalUserId[attendeeId] = externalUserId;
       }
       for (const fn of this.state.attendeeIdChangesCallbacks) {
         fn(attendeeId, present, externalUserId, dropped, posInFrame);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeSubscribeToAttendeeIdPresence(
@@ -89,9 +87,11 @@ export default class DefaultRealtimeController implements RealtimeController {
       posInFrame?: RealtimeAttendeePositionInFrame | null
     ) => void
   ): void {
-    this.wrap(() => {
+    try {
       this.state.attendeeIdChangesCallbacks.push(callback);
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnsubscribeToAttendeeIdPresence(
@@ -103,31 +103,35 @@ export default class DefaultRealtimeController implements RealtimeController {
       posInFrame?: RealtimeAttendeePositionInFrame | null
     ) => void
   ): void {
-    this.wrap(() => {
+    try {
       const index = this.state.attendeeIdChangesCallbacks.indexOf(callback);
       if (index !== -1) {
         this.state.attendeeIdChangesCallbacks.splice(index, 1);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   // Audio Input
 
   realtimeSetLocalAudioInput(audioInput: MediaStream | null): void {
-    this.wrap(() => {
+    try {
       if (this.state.audioInput === audioInput) {
         return;
       }
       this.setAudioInputEnabled(false);
       this.state.audioInput = audioInput;
       this.setAudioInputEnabled(!this.state.muted);
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   // Muting
 
   realtimeSetCanUnmuteLocalAudio(canUnmute: boolean): void {
-    this.wrap(() => {
+    try {
       if (this.state.canUnmute === canUnmute) {
         return;
       }
@@ -135,37 +139,39 @@ export default class DefaultRealtimeController implements RealtimeController {
       for (const fn of this.state.setCanUnmuteLocalAudioCallbacks) {
         fn(canUnmute);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeSubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void {
-    this.wrap(() => {
+    try {
       this.state.setCanUnmuteLocalAudioCallbacks.push(callback);
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnsubscribeToSetCanUnmuteLocalAudio(callback: (canUnmute: boolean) => void): void {
-    this.wrap(() => {
+    try {
       const index = this.state.setCanUnmuteLocalAudioCallbacks.indexOf(callback);
       if (index !== -1) {
         this.state.setCanUnmuteLocalAudioCallbacks.splice(index, 1);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeCanUnmuteLocalAudio(): boolean {
-    let result = false;
-    this.wrap(() => {
-      result = this.state.canUnmute;
-    });
-    return result;
+    return this.state.canUnmute;
   }
 
   realtimeMuteLocalAudio(): void {
-    this.wrap(() => {
-      if (this.state.muted) {
-        return;
-      }
+    if (this.state.muted) {
+      return;
+    }
+    try {
       this.setAudioInputEnabled(false);
       this.state.muted = true;
       this.realtimeUpdateVolumeIndicator(
@@ -178,20 +184,19 @@ export default class DefaultRealtimeController implements RealtimeController {
       for (const fn of this.state.muteAndUnmuteLocalAudioCallbacks) {
         fn(true);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnmuteLocalAudio(): boolean {
-    let result = false;
-    this.wrap(() => {
-      if (!this.state.muted) {
-        result = true;
-        return;
-      }
-      if (!this.state.canUnmute) {
-        result = false;
-        return;
-      }
+    if (!this.state.muted) {
+      return true;
+    }
+    if (!this.state.canUnmute) {
+      return false;
+    }
+    try {
       this.setAudioInputEnabled(true);
       this.state.muted = false;
       this.realtimeUpdateVolumeIndicator(
@@ -204,32 +209,34 @@ export default class DefaultRealtimeController implements RealtimeController {
       for (const fn of this.state.muteAndUnmuteLocalAudioCallbacks) {
         fn(false);
       }
-      result = true;
-    });
-    return result;
+      return true;
+    } catch (e) {
+      this.onError(e);
+      return false;
+    }
   }
 
   realtimeSubscribeToMuteAndUnmuteLocalAudio(callback: (muted: boolean) => void): void {
-    this.wrap(() => {
+    try {
       this.state.muteAndUnmuteLocalAudioCallbacks.push(callback);
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnsubscribeToMuteAndUnmuteLocalAudio(callback: (muted: boolean) => void): void {
-    this.wrap(() => {
+    try {
       const index = this.state.muteAndUnmuteLocalAudioCallbacks.indexOf(callback);
       if (index !== -1) {
         this.state.muteAndUnmuteLocalAudioCallbacks.splice(index, 1);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeIsLocalAudioMuted(): boolean {
-    let result = false;
-    this.wrap(() => {
-      result = this.state.muted;
-    });
-    return result;
+    return this.state.muted;
   }
 
   // Volume Indicators
@@ -244,7 +251,7 @@ export default class DefaultRealtimeController implements RealtimeController {
       externalUserId?: string
     ) => void
   ): void {
-    this.wrap(() => {
+    try {
       if (!this.state.volumeIndicatorCallbacks.hasOwnProperty(attendeeId)) {
         this.state.volumeIndicatorCallbacks[attendeeId] = [];
       }
@@ -256,13 +263,17 @@ export default class DefaultRealtimeController implements RealtimeController {
         true,
         this.state.attendeeIdToExternalUserId[attendeeId]
       );
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnsubscribeFromVolumeIndicator(attendeeId: string): void {
-    this.wrap(() => {
+    try {
       delete this.state.volumeIndicatorCallbacks[attendeeId];
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUpdateVolumeIndicator(
@@ -272,7 +283,7 @@ export default class DefaultRealtimeController implements RealtimeController {
     signalStrength: number | null,
     externalUserId: string | null
   ): void {
-    this.wrap(() => {
+    try {
       muted = this.applyLocalMuteOverride(attendeeId, muted);
       const state = this.getVolumeIndicatorState(attendeeId);
       let volumeUpdated = false;
@@ -311,47 +322,57 @@ export default class DefaultRealtimeController implements RealtimeController {
         signalStrengthUpdated,
         externalUserId
       );
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeSubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void {
-    this.wrap(() => {
+    try {
       this.state.localSignalStrengthChangeCallbacks.push(callback);
       if (this.state.localAttendeeId === null) {
         return;
       }
       this.sendLocalSignalStrengthChange(this.state.localAttendeeId, true);
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnsubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void {
-    this.wrap(() => {
+    try {
       const index = this.state.localSignalStrengthChangeCallbacks.indexOf(callback);
       if (index !== -1) {
         this.state.localSignalStrengthChangeCallbacks.splice(index, 1);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeSubscribeToSendDataMessage(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
   ): void {
-    this.wrap(() => {
+    try {
       this.state.sendDataMessageCallbacks.push(callback);
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnsubscribeFromSendDataMessage(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
   ): void {
-    this.wrap(() => {
+    try {
       const index = this.state.sendDataMessageCallbacks.indexOf(callback);
       if (index !== -1) {
         this.state.sendDataMessageCallbacks.splice(index, 1);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeSendDataMessage(
@@ -359,57 +380,69 @@ export default class DefaultRealtimeController implements RealtimeController {
     data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
     lifetimeMs?: number
   ): void {
-    this.wrap(() => {
+    try {
       for (const fn of this.state.sendDataMessageCallbacks) {
         fn(topic, data, lifetimeMs);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeSubscribeToReceiveDataMessage(
     topic: string,
     callback: (dataMessage: DataMessage) => void
   ): void {
-    this.wrap(() => {
+    try {
       if (this.state.receiveDataMessageCallbacks.has(topic)) {
         this.state.receiveDataMessageCallbacks.get(topic).push(callback);
       } else {
         this.state.receiveDataMessageCallbacks.set(topic, [callback]);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnsubscribeFromReceiveDataMessage(topic: string): void {
-    this.wrap(() => {
+    try {
       this.state.receiveDataMessageCallbacks.delete(topic);
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeReceiveDataMessage(dataMessage: DataMessage): void {
-    this.wrap(() => {
+    try {
       if (this.state.receiveDataMessageCallbacks.has(dataMessage.topic)) {
         for (const fn of this.state.receiveDataMessageCallbacks.get(dataMessage.topic)) {
           fn(dataMessage);
         }
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   // Error Handling
 
   realtimeSubscribeToFatalError(callback: (error: Error) => void): void {
-    this.wrap(() => {
+    try {
       this.state.fatalErrorCallbacks.push(callback);
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   realtimeUnsubscribeToFatalError(callback: (error: Error) => void): void {
-    this.wrap(() => {
+    try {
       const index = this.state.fatalErrorCallbacks.indexOf(callback);
       if (index !== -1) {
         this.state.fatalErrorCallbacks.splice(index, 1);
       }
-    });
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   // Internals
@@ -505,26 +538,22 @@ export default class DefaultRealtimeController implements RealtimeController {
     return state.volume === null && state.muted === null && state.signalStrength === null;
   }
 
-  private wrap(fn: () => void): void {
+  private onError(error: Error): void {
     try {
-      fn();
-    } catch (error) {
+      // 1) try the fatal error callbacks so that the issue is reported in
+      //    logs and to give the handler a chance to clean up and reset.
+      for (const callback of this.state.fatalErrorCallbacks) {
+        callback(error);
+      }
+    } catch (eventError) {
       try {
-        // 1) try the fatal error callbacks so that the issue is reported in
-        //    logs and to give the handler a chance to clean up and reset.
-        for (const fn of this.state.fatalErrorCallbacks) {
-          fn(error);
-        }
-      } catch (eventError) {
-        try {
-          // 2) if the error event fails, fall back to console.error so that
-          //    it at least prints out to the console before moving on.
-          console.error(error);
-          console.error(eventError);
-        } catch (consoleError) {
-          // 3) if all else fails, swallow the error and give up to guarantee
-          //    that the API call returns cleanly.
-        }
+        // 2) if the error event fails, fall back to console.error so that
+        //    it at least prints out to the console before moving on.
+        console.error(error);
+        console.error(eventError);
+      } catch (consoleError) {
+        // 3) if all else fails, swallow the error and give up to guarantee
+        //    that the API call returns cleanly.
       }
     }
   }

@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
@@ -11,14 +11,18 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
 
   constructor(private logger: Logger) {}
 
-  create(url: string, protocols: string[]): void {
-    this.connection = new WebSocket(Versioning.urlWithVersion(url), protocols);
+  create(url: string, protocols: string[], isSignedUrl?: boolean): void {
+    this.connection = new WebSocket(isSignedUrl ? url : Versioning.urlWithVersion(url), protocols);
     this.connection.binaryType = 'arraybuffer';
   }
 
-  send(message: Uint8Array): boolean {
+  send(message: Uint8Array | string): boolean {
     try {
-      this.connection.send(message.buffer);
+      if (message instanceof Uint8Array) {
+        this.connection.send(message.buffer);
+      } else {
+        this.connection.send(message);
+      }
       return true;
     } catch (err) {
       this.logger.debug(
@@ -29,8 +33,8 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
     }
   }
 
-  close(): void {
-    this.connection.close();
+  close(code?: number, reason?: string): void {
+    this.connection.close(code, reason);
   }
 
   destroy(): void {

@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -39,7 +39,6 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
 
   cancel(): void {
     let error = new Error(`canceling ${this.name()}`);
-
     // TODO: Remove when the Chrome VPN reconnect bug is fixed.
     // In Chrome, SDK may fail to establish TURN session after VPN reconnect.
     // https://bugs.chromium.org/p/webrtc/issues/detail?id=9097
@@ -77,9 +76,14 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       );
     }
 
-    // To bypass waiting for events, it is required that "icegatheringstate" to be complete and sdp to have candidate
+    /*
+     * To bypass waiting for events, it is required that "icegatheringstate" to be complete and sdp to have candidate
+     * For Firefox, it takes long for iceGatheringState === 'complete'
+     * Ref: https://github.com/aws/amazon-chime-sdk-js/issues/609
+     */
     if (
-      this.context.peer.iceGatheringState === 'complete' &&
+      (this.context.browserBehavior.hasFirefoxWebRTC() ||
+        this.context.peer.iceGatheringState === 'complete') &&
       new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidates()
     ) {
       this.context.logger.info(

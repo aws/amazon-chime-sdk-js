@@ -1,8 +1,9 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
+import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
@@ -10,10 +11,13 @@ import ContentShareController from '../contentsharecontroller/ContentShareContro
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import DataMessage from '../datamessage/DataMessage';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
-import Device from '../devicecontroller/Device';
+import AudioInputDevice from '../devicecontroller/AudioInputDevice';
 import DeviceController from '../devicecontroller/DeviceController';
-import DevicePermission from '../devicecontroller/DevicePermission';
+import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
+import VideoInputDevice from '../devicecontroller/VideoInputDevice';
+import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import RealtimeController from '../realtimecontroller/RealtimeController';
+import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 
@@ -37,6 +41,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('removeObserver');
   }
 
+  setAudioProfile(audioProfile: AudioProfile): void {
+    this.trace('setAudioProfile', audioProfile);
+    this.audioVideoController.setAudioProfile(audioProfile);
+  }
+
   start(): void {
     this.audioVideoController.start();
     this.trace('start');
@@ -52,7 +61,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     return this.audioVideoController.getRTCPeerConnectionStats(selector);
   }
 
-  bindAudioElement(element: HTMLAudioElement): boolean {
+  bindAudioElement(element: HTMLAudioElement): Promise<void> {
     const result = this.audioMixController.bindAudioElement(element);
     this.trace('bindAudioElement', element.id, result);
     return result;
@@ -324,16 +333,14 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     return result;
   }
 
-  chooseAudioInputDevice(device: Device): Promise<DevicePermission> {
-    const result = this.deviceController.chooseAudioInputDevice(device);
+  chooseAudioInputDevice(device: AudioInputDevice): Promise<void> {
     this.trace('chooseAudioInputDevice', device);
-    return result;
+    return this.deviceController.chooseAudioInputDevice(device);
   }
 
-  chooseVideoInputDevice(device: Device): Promise<DevicePermission> {
-    const result = this.deviceController.chooseVideoInputDevice(device);
+  chooseVideoInputDevice(device: VideoInputDevice): Promise<void> {
     this.trace('chooseVideoInputDevice', device);
-    return result;
+    return this.deviceController.chooseVideoInputDevice(device);
   }
 
   chooseAudioOutputDevice(deviceId: string | null): Promise<void> {
@@ -352,7 +359,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('removeDeviceChangeObserver');
   }
 
-  createAnalyserNodeForAudioInput(): AnalyserNode | null {
+  createAnalyserNodeForAudioInput(): RemovableAnalyserNode | null {
     const result = this.deviceController.createAnalyserNodeForAudioInput();
     this.trace('createAnalyserNodeForAudioInput');
     return result;
@@ -394,9 +401,15 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     });
   }
 
-  enableWebAudio(flag: boolean): void {
-    this.deviceController.enableWebAudio(flag);
-    this.trace('enableWebAudio', flag);
+  getVideoInputQualitySettings(): VideoQualitySettings | null {
+    const result = this.deviceController.getVideoInputQualitySettings();
+    this.trace('getVideoInputQualitySettings');
+    return result;
+  }
+
+  setContentAudioProfile(audioProfile: AudioProfile): void {
+    this.trace('setContentAudioProfile', audioProfile);
+    this.contentShareController.setContentAudioProfile(audioProfile);
   }
 
   startContentShare(stream: MediaStream): Promise<void> {
@@ -451,5 +464,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
       s += ` -> ${JSON.stringify(output)}`;
     }
     this.audioVideoController.logger.info(s);
+  }
+
+  getRemoteVideoSources(): VideoSource[] {
+    const result = this.audioVideoController.getRemoteVideoSources();
+    this.trace('getRemoteVideoSources', null, result);
+    return result;
   }
 }

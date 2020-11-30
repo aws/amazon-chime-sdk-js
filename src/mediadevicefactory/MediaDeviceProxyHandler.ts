@@ -1,8 +1,15 @@
-// Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
+
+type ListenerFunction = (
+  type: string,
+  listener: EventListenerOrEventListenerObject,
+  options?: boolean | AddEventListenerOptions
+) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
+any;
 
 export default class MediaDeviceProxyHandler implements ProxyHandler<MediaDevices> {
   private static INTERVAL_MS: number = 1000;
@@ -11,8 +18,8 @@ export default class MediaDeviceProxyHandler implements ProxyHandler<MediaDevice
   private devices: MediaDeviceInfo[] | null = null;
   private deviceChangeListeners: Set<EventListenerOrEventListenerObject> = new Set();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  get = (target: MediaDevices, property: PropertyKey, receiver: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
+  get = (target: MediaDevices, property: PropertyKey, receiver: any): any => {
     if (!Reflect.has(target, property)) {
       return undefined;
     }
@@ -32,7 +39,7 @@ export default class MediaDeviceProxyHandler implements ProxyHandler<MediaDevice
     property: PropertyKey,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     receiver: any
-  ) => {
+  ): ListenerFunction => {
     const value = Reflect.get(target, property, receiver);
     return (
       type: string,
@@ -56,7 +63,7 @@ export default class MediaDeviceProxyHandler implements ProxyHandler<MediaDevice
     property: PropertyKey,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     receiver: any
-  ) => {
+  ): ListenerFunction => {
     const value = Reflect.get(target, property, receiver);
     return (
       type: string,

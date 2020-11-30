@@ -7,7 +7,6 @@
 build
 coverage
 demos/browser/logs/
-demos/browser/package-lock.json
 demos/components/node_modules
 demos/react/node_modules
 demos/react/lib
@@ -21,3 +20,4 @@ integration/js/temp
 integration/kite-allure-reports
 integration/logs
 node_modules
+src/versioning/version.ts

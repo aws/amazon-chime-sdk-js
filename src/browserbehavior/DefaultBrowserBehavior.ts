@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { detect } from 'detect-browser';
@@ -59,10 +59,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   hasFirefoxWebRTC(): boolean {
-    return this.isFirefox();
-  }
-
-  screenShareSendsOnlyKeyframes(): boolean {
     return this.isFirefox();
   }
 
@@ -173,6 +169,11 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
       .filter(x => {
         return x !== 'rtx' && x !== 'red' && x !== 'ulpfec';
       });
+  }
+
+  supportsSetSinkId(): boolean {
+    // @ts-ignore
+    return HTMLAudioElement.prototype.setSinkId !== undefined;
   }
 
   // These helpers should be kept private to encourage

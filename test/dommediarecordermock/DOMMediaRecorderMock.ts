@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 export default class DOMMediaRecorderMock implements EventTarget {
@@ -6,7 +6,7 @@ export default class DOMMediaRecorderMock implements EventTarget {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   public state: RecordingState = 'inactive';
 
-  constructor(readonly stream: MediaStream, _options?: MediaRecorderOptions) {
+  constructor(public readonly stream: MediaStream, _options?: MediaRecorderOptions) {
     stream.addEventListener('dataavailable', (event: BlobEvent) => {
       this.dispatchEvent(event);
     });

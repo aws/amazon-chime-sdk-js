@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -8,8 +8,8 @@ import FullJitterBackoff from '../../src/backoff/FullJitterBackoff';
 
 describe('FullJitterBackoff', () => {
   let expect: Chai.ExpectStatic;
-  let TEST_RUNS = 1000;
-  let ATTEMPTS = 3;
+  const TEST_RUNS = 1000;
+  const ATTEMPTS = 3;
   before(() => {
     expect = chai.expect;
   });

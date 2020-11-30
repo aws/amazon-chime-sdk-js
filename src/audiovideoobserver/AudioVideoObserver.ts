@@ -1,11 +1,15 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
+import EventAttributes from '../eventcontroller/EventAttributes';
+import EventName from '../eventcontroller/EventName';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
+import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
+import VideoSource from '../videosource/VideoSource';
 import VideoTileState from '../videotile/VideoTileState';
 
 export default interface AudioVideoObserver {
@@ -70,7 +74,7 @@ export default interface AudioVideoObserver {
   ): void;
 
   /**
-   * Called when one or more remote video streams do not meet expected average bitrate
+   * Called when one or more remote video streams do not meet expected average bitrate.
    */
   videoNotReceivingEnoughData?(receivingDataMap: ClientVideoStreamReceivingReport[]): void;
 
@@ -107,4 +111,20 @@ export default interface AudioVideoObserver {
    * trigger a message to the user about the situation.
    */
   videoSendDidBecomeUnavailable?(): void;
+
+  /**
+   * Called when specific events occur during the meeting and includes attributes of the event. This can be used to
+   * create analytics around meeting metric.
+   */
+  eventDidReceive?(name: EventName, attributes: EventAttributes): void;
+
+  /**
+   * Called when the remote video sending sources get changed.
+   */
+  remoteVideoSourcesDidChange?(videoSources: VideoSource[]): void;
+
+  /**
+   * Called when simulcast is enabled and simulcast uplink encoding layers get changed.
+   */
+  encodingSimulcastLayersDidChange?(simulcastLayers: SimulcastLayers): void;
 }

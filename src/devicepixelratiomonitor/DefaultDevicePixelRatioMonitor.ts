@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
@@ -25,7 +25,7 @@ export default class DefaultDevicePixelRatioMonitor implements DevicePixelRatioM
     }
   }
 
-  mediaQueryListener = () => {
+  mediaQueryListener = (): void => {
     this.observerQueue.forEach(tileObserver => {
       tileObserver.devicePixelRatioChanged(this.devicePixelRatioSource.devicePixelRatio());
     });

@@ -1,14 +1,17 @@
 const {WebDriverFactory} = require('../node_modules/kite-common');
 const {AppPage} = require('../pages/AppPage');
+const {MeetingReadinessCheckerPage} = require('../pages/MeetingReadinessCheckerPage');
+const { MessagingSessionPage } = require('../pages/MessagingSessionPage');
 
 class LocalSession {
-  static async createSession(capabilities, remoteUrl) {
+  static async createSession(capabilities, remoteUrl, appName) {
     const driver = await WebDriverFactory.getDriver(capabilities, remoteUrl);
-    return new LocalSession(driver);
+    return new LocalSession(driver, appName);
   }
 
-  constructor(driver) {
+  constructor(driver, appName) {
     this.driver = driver;
+    this.appName = appName;
   }
 
   async init() {
@@ -22,9 +25,18 @@ class LocalSession {
 
   getAppPage() {
     if (this.page === undefined) {
-      this.page = new AppPage(this.driver, this.logger);
+      switch (this.appName) {
+        case 'meetingReadinessChecker':
+          this.page = new MeetingReadinessCheckerPage(this.driver, this.logger);
+          break;
+        case 'messagingSession':
+          this.page = new MessagingSessionPage(this.driver, this.logger);
+          break;
+        default:
+          this.page = new AppPage(this.driver, this.logger);
+          break;
+      }
     }
-    return this.page;
   }
 
   async updateTestResults(passed) {

@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -93,7 +93,7 @@ describe('ReceiveTURNCredentialsTask', () => {
         throw new Error('This line should not be reached.');
       } catch (error) {
         expect(error.message).includes(
-          `the meeting status code: ${MeetingSessionStatusCode.TURNMeetingEnded}`
+          `the meeting status code: ${MeetingSessionStatusCode.MeetingEnded}`
         );
       }
     });

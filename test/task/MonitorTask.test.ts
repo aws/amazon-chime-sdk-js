@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -20,6 +20,9 @@ import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport'
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
+import EventAttributes from '../../src/eventcontroller/EventAttributes';
+import EventName from '../../src/eventcontroller/EventName';
 import Logger from '../../src/logger/Logger';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
@@ -47,7 +50,7 @@ import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStre
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
-import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
+import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -149,6 +152,7 @@ describe('MonitorTask', () => {
     context.audioVideoController = new TestAudioVideoController();
     context.logger = logger;
     context.realtimeController = new TestRealtimeController();
+    context.eventController = new DefaultEventController(context.audioVideoController);
     context.videoTileController = new DefaultVideoTileController(
       new DefaultVideoTileFactory(),
       context.audioVideoController,
@@ -430,7 +434,7 @@ describe('MonitorTask', () => {
           }
         }
       }
-      class TestVideoUplinkPolicy extends SimulcastUplinkPolicy {
+      class TestVideoUplinkPolicy extends DefaultSimulcastUplinkPolicy {
         wantsResubscribe(): boolean {
           if (firstTimeUplink < 4) {
             firstTimeUplink += 1;
@@ -574,13 +578,52 @@ describe('MonitorTask', () => {
     });
 
     it('notifies the connection is poor', done => {
+      const spy = sinon.spy(context.eventController, 'pushMeetingState');
+
       class TestObserver implements AudioVideoObserver {
         connectionDidBecomePoor(): void {
+          expect(context.poorConnectionCount).to.eq(1);
+          expect(spy.calledWith('receivingAudioDropped')).to.be.true;
           done();
         }
       }
 
       context.audioVideoController.addObserver(new TestObserver());
+      const connectionHealthData = new ConnectionHealthData();
+      connectionHealthData.packetsReceivedInLastMinute = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+      ];
+      task.connectionHealthDidChange(connectionHealthData);
+
+      // connectionDidBecomePoor() should not be called again.
+      task.connectionHealthDidChange(connectionHealthData);
+    });
+
+    it('notifies the connection is poor regardless of the event controller existence', done => {
+      class TestObserver implements AudioVideoObserver {
+        connectionDidBecomePoor(): void {
+          expect(context.poorConnectionCount).to.eq(1);
+          done();
+        }
+      }
+
+      context.audioVideoController.addObserver(new TestObserver());
+      context.eventController = null;
+
       const connectionHealthData = new ConnectionHealthData();
       connectionHealthData.packetsReceivedInLastMinute = [
         0,
@@ -684,6 +727,7 @@ describe('MonitorTask', () => {
     it('suggests turning off video', done => {
       class TestObserver implements AudioVideoObserver {
         connectionDidSuggestStopVideo(): void {
+          expect(context.poorConnectionCount).to.eq(1);
           done();
         }
       }
@@ -830,7 +874,7 @@ describe('MonitorTask', () => {
       expect(spy.called).to.be.true;
     });
 
-    it('stops audio and video if the error status code is 410 (AudioCallEnded)', () => {
+    it('stops audio and video if the error status code is 410 (MeetingEnded)', () => {
       const spy = sinon.spy(context.audioVideoController, 'handleMeetingSessionStatus');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
       const message = SdkSignalFrame.create();
@@ -862,6 +906,96 @@ describe('MonitorTask', () => {
         )
       );
       expect(spy.called).to.be.true;
+    });
+
+    it('captures the signaling dropped state when the WebSocket has an error', done => {
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+
+      context.audioVideoController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(attributes.meetingHistory[0].name).to.equal('signalingDropped');
+          done();
+        },
+      });
+
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketError,
+          null
+        )
+      );
+
+      new TimeoutScheduler(100).start(() => {
+        context.eventController.publishEvent('meetingEnded');
+      });
+    });
+
+    it('captures the signaling dropped state when the WebSocket is closed', done => {
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+
+      context.audioVideoController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(attributes.meetingHistory[0].name).to.equal('signalingDropped');
+          expect(attributes.meetingHistory[1].name).to.equal('meetingEnded');
+
+          // [signalingDropped, meetingEnded]. Note that meeting
+          // history includes only one "signalingDropped."
+          expect(attributes.meetingHistory.length).to.equal(2);
+          done();
+        },
+      });
+
+      const signalingClient = new DefaultSignalingClient(webSocketAdapter, logger);
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          signalingClient,
+          SignalingClientEventType.WebSocketClosed,
+          null,
+          4410
+        )
+      );
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          signalingClient,
+          SignalingClientEventType.WebSocketClosed,
+          null,
+          4500
+        )
+      );
+
+      new TimeoutScheduler(100).start(() => {
+        context.eventController.publishEvent('meetingEnded');
+      });
+    });
+
+    it('can handle when the event controller does not exist', done => {
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+
+      context.audioVideoController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(attributes.meetingHistory[0].name).to.equal('meetingEnded');
+
+          // Meeting history includes only "meetingEnded" since
+          // the event controller is missing before publishing.
+          expect(attributes.meetingHistory.length).to.equal(1);
+          done();
+        },
+      });
+
+      context.eventController = null;
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketError,
+          null
+        )
+      );
+
+      context.eventController = new DefaultEventController(context.audioVideoController);
+      new TimeoutScheduler(100).start(() => {
+        context.eventController.publishEvent('meetingEnded');
+      });
     });
   });
 });

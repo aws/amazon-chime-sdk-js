@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -21,7 +21,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.AudioDisconnectAudio,
     MeetingSessionStatusCode.AudioAuthenticationRejected,
     MeetingSessionStatusCode.AudioCallAtCapacity,
-    MeetingSessionStatusCode.AudioCallEnded,
+    MeetingSessionStatusCode.MeetingEnded,
     MeetingSessionStatusCode.AudioInternalServerError,
     MeetingSessionStatusCode.AudioServiceUnavailable,
     MeetingSessionStatusCode.AudioDisconnected,
@@ -32,7 +32,6 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.SignalingRequestFailed,
     MeetingSessionStatusCode.StateMachineTransitionFailed,
     MeetingSessionStatusCode.TURNCredentialsForbidden,
-    MeetingSessionStatusCode.TURNMeetingEnded,
     MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround,
     MeetingSessionStatusCode.ConnectionHealthReconnect,
     MeetingSessionStatusCode.RealtimeApiFailed,
@@ -69,14 +68,11 @@ describe('MeetingSessionStatus', () => {
         MeetingSessionStatusCode.AudioJoinedFromAnotherDevice,
         MeetingSessionStatusCode.AudioAuthenticationRejected,
         MeetingSessionStatusCode.AudioCallAtCapacity,
-        MeetingSessionStatusCode.AudioCallEnded,
-        MeetingSessionStatusCode.AudioInternalServerError,
+        MeetingSessionStatusCode.MeetingEnded,
         MeetingSessionStatusCode.AudioDisconnected,
         MeetingSessionStatusCode.SignalingBadRequest,
-        MeetingSessionStatusCode.SignalingInternalServerError,
         MeetingSessionStatusCode.SignalingRequestFailed,
         MeetingSessionStatusCode.TURNCredentialsForbidden,
-        MeetingSessionStatusCode.TURNMeetingEnded,
         MeetingSessionStatusCode.VideoCallAtSourceCapacity,
         MeetingSessionStatusCode.RealtimeApiFailed,
       ]);
@@ -137,7 +133,7 @@ describe('MeetingSessionStatus', () => {
         302: MeetingSessionStatusCode.AudioDisconnectAudio,
         403: MeetingSessionStatusCode.AudioAuthenticationRejected,
         409: MeetingSessionStatusCode.AudioCallAtCapacity,
-        410: MeetingSessionStatusCode.AudioCallEnded,
+        410: MeetingSessionStatusCode.MeetingEnded,
         500: MeetingSessionStatusCode.AudioInternalServerError,
         503: MeetingSessionStatusCode.AudioServiceUnavailable,
         201: MeetingSessionStatusCode.OK,

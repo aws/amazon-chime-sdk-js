@@ -1,4 +1,4 @@
-// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -78,6 +78,7 @@ describe('ConsoleLogger', () => {
       logger.debug(() => {
         return 'debug';
       });
+      logger.debug('debug with string');
       logger.info('info');
       logger.warn('warn');
       logger.error('error');
@@ -102,6 +103,8 @@ describe('ConsoleLogger', () => {
       logger.info('info');
       expect(debugSpy.calledOnce).to.be.true;
       expect(infoSpy.calledOnce).to.be.true;
+      logger.debug('debug with string');
+      expect(debugSpy.calledTwice).to.be.true;
     });
   });
 });

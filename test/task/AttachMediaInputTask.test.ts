@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -15,8 +15,8 @@ import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
+import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
-import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -95,7 +95,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('sendrecv');
         expect(audioTransceiver.sender.track).to.equal(context.activeAudioInput.getTracks()[0]);
         done();
@@ -107,7 +107,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('inactive');
         expect(audioTransceiver.sender.track).to.equal(null);
         done();
@@ -118,7 +118,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('sendrecv');
         expect(videoTransceiver.sender.track).to.equal(context.activeVideoInput.getTracks()[0]);
         done();
@@ -130,7 +130,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('inactive');
         expect(videoTransceiver.sender.track).to.equal(null);
         done();
@@ -142,7 +142,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
+        const audioTransceiver: RTCRtpTransceiver = context.transceiverController.localAudioTransceiver();
         expect(audioTransceiver.direction).to.equal('inactive');
         expect(audioTransceiver.sender.track).to.equal(null);
         done();
@@ -154,7 +154,7 @@ describe('AttachMediaInputTask', () => {
       task.run().then(() => {
         const transceivers = context.peer.getTransceivers();
         expect(transceivers.length).to.equal(2);
-        let videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
+        const videoTransceiver: RTCRtpTransceiver = context.transceiverController.localVideoTransceiver();
         expect(videoTransceiver.direction).to.equal('inactive');
         expect(videoTransceiver.sender.track).to.equal(null);
         done();
@@ -178,7 +178,10 @@ describe('AttachMediaInputTask', () => {
   describe('Simulcast', () => {
     it('could change transceiver encoding parameter', done => {
       context.enableSimulcast = true;
-      context.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicy('self-attendee', logger);
+      context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
+        'self-attendee',
+        logger
+      );
       // @ts-ignore
       navigator.userAgent = 'Chrome/77.0.3865.75';
       context.browserBehavior = new DefaultBrowserBehavior({

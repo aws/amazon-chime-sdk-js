@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
@@ -16,7 +16,8 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
   private speakerScores: { [attendeeId: string]: number } = {};
   private speakerMuteState: { [attendeeId: string]: boolean } = {};
 
-  private activeSpeakers: string[];
+  private activeSpeakers: string[] | undefined;
+
   private detectorCallbackToHandler: Map<DetectorCallback, DetectorHandler> = new Map<
     DetectorCallback,
     DetectorHandler
@@ -59,7 +60,7 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
     if (!this.needUpdate(attendeeId)) {
       return;
     }
-    let sortedSpeakers: { attendeeId: string; activeScore: number }[] = [];
+    const sortedSpeakers: { attendeeId: string; activeScore: number }[] = [];
 
     const attendeeIds = Object.keys(this.speakerScores);
     for (let i = 0; i < attendeeIds.length; i++) {
@@ -67,12 +68,12 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
       sortedSpeakers.push({ attendeeId: attendeeId, activeScore: this.speakerScores[attendeeId] });
     }
 
-    let sortedAttendeeIds = sortedSpeakers
+    const sortedAttendeeIds = sortedSpeakers
       .sort((s1, s2) => s2.activeScore - s1.activeScore)
-      .filter(function(s) {
+      .filter(function (s) {
         return s.activeScore > 0;
       })
-      .map(function(s) {
+      .map(function (s) {
         return s.attendeeId;
       });
     this.activeSpeakers = sortedAttendeeIds;
@@ -109,7 +110,7 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
     scoresCallback?: (scores: { [attendeeId: string]: number }) => void,
     scoresCallbackIntervalMs?: number
   ): void {
-    let handler = (attendeeId: string, present: boolean): void => {
+    const handler = (attendeeId: string, present: boolean): void => {
       if (!present) {
         this.speakerScores[attendeeId] = 0;
         this.mostRecentUpdateTimestamp[attendeeId] = Date.now();
@@ -157,7 +158,9 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
   unsubscribe(callback: DetectorCallback): void {
     const handler = this.detectorCallbackToHandler.get(callback);
     this.detectorCallbackToHandler.delete(callback);
-    this.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
+    if (handler) {
+      this.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
+    }
 
     const activityTimer = this.detectorCallbackToActivityTimer.get(callback);
     if (activityTimer) {

@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { SdkSignalFrame } from '../signalingprotocol/SignalingProtocol.js';
@@ -43,13 +43,10 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.AudioJoinedFromAnotherDevice:
       case MeetingSessionStatusCode.AudioAuthenticationRejected:
       case MeetingSessionStatusCode.AudioCallAtCapacity:
-      case MeetingSessionStatusCode.AudioCallEnded:
-      case MeetingSessionStatusCode.AudioInternalServerError:
+      case MeetingSessionStatusCode.MeetingEnded:
       case MeetingSessionStatusCode.AudioDisconnected:
       case MeetingSessionStatusCode.TURNCredentialsForbidden:
-      case MeetingSessionStatusCode.TURNMeetingEnded:
       case MeetingSessionStatusCode.SignalingBadRequest:
-      case MeetingSessionStatusCode.SignalingInternalServerError:
       case MeetingSessionStatusCode.SignalingRequestFailed:
       case MeetingSessionStatusCode.VideoCallAtSourceCapacity:
       case MeetingSessionStatusCode.RealtimeApiFailed:
@@ -103,7 +100,7 @@ export default class MeetingSessionStatus {
       case 409:
         return new MeetingSessionStatus(MeetingSessionStatusCode.AudioCallAtCapacity);
       case 410:
-        return new MeetingSessionStatus(MeetingSessionStatusCode.AudioCallEnded);
+        return new MeetingSessionStatus(MeetingSessionStatusCode.MeetingEnded);
       case 500:
         return new MeetingSessionStatus(MeetingSessionStatusCode.AudioInternalServerError);
       case 503:

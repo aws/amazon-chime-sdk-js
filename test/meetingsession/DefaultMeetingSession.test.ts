@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
@@ -32,8 +32,6 @@ describe('DefaultMeetingSession', () => {
       expect(session.audioVideo).to.exist;
       expect(session.configuration).to.exist;
       expect(session.logger).to.exist;
-      expect(session.screenShare).to.exist;
-      expect(session.screenShareView).to.exist;
       expect(session.deviceController).to.exist;
       expect(session.contentShare).to.exist;
       mockBuilder.cleanup();

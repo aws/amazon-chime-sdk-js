@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
@@ -64,6 +64,8 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
       this.context.videoStreamIndex.integrateUplinkPolicyDecision([param]);
     }
+
+    this.context.videoStreamIndex.subscribeFrameSent();
 
     const isSendingStreams: boolean =
       this.context.videoDuplexMode === SdkStreamServiceType.TX ||

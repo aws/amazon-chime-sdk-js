@@ -2,7 +2,7 @@ const {Builder, Capabilities, logging} = require('selenium-webdriver');
 const safari = require('../node_modules/selenium-webdriver/safari');
 const axios = require('axios');
 const Base64 = require('js-base64').Base64;
-const {AppPage} = require('../pages/AppPage');
+const { AppPage, MeetingReadinessCheckerPage, MessagingSessionPage } = require('../pages');
 
 const getPlatformName = capabilities => {
   switch (capabilities.platform) {
@@ -23,7 +23,6 @@ const getPlatformName = capabilities => {
       return '';
   }
 };
-
 
 const getFirefoxCapabilities = (capabilities) => {
   return {
@@ -72,7 +71,6 @@ const getSafariCapabilities = capabilities => {
   return cap
 };
 
-
 const getChromeCapabilities = capabilities => {
   let cap = Capabilities.chrome();
   var prefs = new logging.Preferences();
@@ -96,11 +94,9 @@ const getSauceLabsConfig = (capabilities) => {
     name: capabilities.name,
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
-    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+    tunnelIdentifier: process.env.JOB_ID,
     ...(capabilities.platform.toUpperCase() !== 'LINUX' && {
-      extendedDebugging: true,
-      capturePerformance: true,
-      crmuxdriverVersion: 'beta'
+      extendedDebugging: true
     })
   }
 };
@@ -159,7 +155,7 @@ const isMobileDomain = (domain) => {
 }
 
 class SaucelabsSession {
-  static async createSession(capabilities) {
+  static async createSession(capabilities, appName) {
     let cap = {};
     if (capabilities.browserName === 'chrome') {
       if (capabilities.platform === 'ANDROID') {
@@ -182,12 +178,13 @@ class SaucelabsSession {
       .withCapabilities(cap)
       .forBrowser(capabilities.browserName)
       .build();
-    return new SaucelabsSession(driver, domain);
+    return new SaucelabsSession(driver, domain, appName);
   }
 
-  constructor(inDriver, domain) {
+  constructor(inDriver, domain, appName) {
     this.driver = inDriver;
     this.domain = domain;
+    this.appName = appName;
   }
 
   async init() {
@@ -230,9 +227,18 @@ class SaucelabsSession {
 
   getAppPage() {
     if (this.page === undefined) {
-      this.page = new AppPage(this.driver, this.logger);
+      switch (this.appName) {
+        case 'meetingReadinessChecker':
+          this.page = new MeetingReadinessCheckerPage(this.driver, this.logger);
+          break;
+        case 'messagingSession':
+          this.page = new MessagingSessionPage(this.driver, this.logger);
+          break;
+        default:
+          this.page = new AppPage(this.driver, this.logger);
+          break;
+      }
     }
-    return this.page;
   }
 
   async updateTestResults(passed) {

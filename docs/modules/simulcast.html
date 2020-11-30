@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Simulcast | amazon-chime-sdk-js</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -59,7 +59,7 @@
 					<a href="simulcast.html">Simulcast</a>
 				</li>
 			</ul>
-			<h1>Module Simulcast</h1>
+			<h1>Namespace Simulcast</h1>
 		</div>
 	</div>
 </header>
@@ -95,38 +95,56 @@
 					<table>
 						<thead>
 							<tr>
-								<th align="right">Publishers</th>
+								<th align="right">Publishers/Attendees</th>
 								<th align="center">Estimated Uplink Bandwidth</th>
 								<th align="center">Simulcast stream 1</th>
 								<th align="center">Simulcast stream 2</th>
 							</tr>
 						</thead>
 						<tbody><tr>
-								<td align="right">&lt;= 2 and</td>
-								<td align="center">&gt;= 1600 kbps</td>
+								<td align="right">Attendees &lt;= 2</td>
+								<td align="center">Any</td>
+								<td align="center">1280x720@15fps 1200 kbps</td>
+								<td align="center">Not used</td>
+							</tr>
+							<tr>
+								<td align="right">Publishers &lt;= 4 and</td>
+								<td align="center">&gt;= 1000 kbps</td>
 								<td align="center">1280x720@15fps 1200 kbps</td>
 								<td align="center">320x180@15fps 300 kbps</td>
 							</tr>
 							<tr>
-								<td align="right">&lt;= 2 and</td>
-								<td align="center">&gt;= 1100 kbps</td>
-								<td align="center">960x540@15fps 900 kbps</td>
-								<td align="center">240x140@15fps 200 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">&lt;= 4 and</td>
-								<td align="center">&gt;= 600 kbps</td>
-								<td align="center">960x540@15fps 600 kbps</td>
-								<td align="center">240x140@15fps 200 kbps</td>
-							</tr>
-							<tr>
-								<td align="right">&gt; 4 or</td>
-								<td align="center">&lt; 600 kbps</td>
-								<td align="center">640x360@15fps 400 kbps</td>
+								<td align="right">Publishers  &lt;= 6 and</td>
+								<td align="center">&gt;= 350 kbps</td>
+								<td align="center">640x360@15fps 600 kbps</td>
 								<td align="center">320x180@15fps 200 kbps</td>
 							</tr>
+							<tr>
+								<td align="right">Publishers  &lt;= 6 and</td>
+								<td align="center">&gt; 300 kbps</td>
+								<td align="center">640x360@15fps 600 kbps</td>
+								<td align="center">320x180@15fps 150 kbps</td>
+							</tr>
+							<tr>
+								<td align="right">Publishers &gt; 6  and</td>
+								<td align="center">&gt;= 350 kbps</td>
+								<td align="center">640x360@15fps 350 kbps</td>
+								<td align="center">320x180@15fps 200 kbps</td>
+							</tr>
+							<tr>
+								<td align="right">Publishers &gt; 6  and</td>
+								<td align="center">&gt;= 300 kbps</td>
+								<td align="center">640x360@15fps 350 kbps</td>
+								<td align="center">320x180@15fps 150 kbps</td>
+							</tr>
+							<tr>
+								<td align="right">Any number publishers</td>
+								<td align="center">&lt; 300 kbps</td>
+								<td align="center">Not used</td>
+								<td align="center">320x180@15fps 300 kbps</td>
+							</tr>
 					</tbody></table>
-					<p>When CPU and bandwidth consumption is overused, WebRTC can disable a layer or scale down resolution dynamically. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.</p>
+					<p>The table entries represent the maximum configuration.  When CPU and bandwidth consumption is overused, WebRTC will dynamically adjust bitrate, disable a layer or scale down resolution. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.</p>
 					<a href="#downlink--bandwidth-policy" id="downlink--bandwidth-policy" style="color: inherit; text-decoration: none;">
 						<h3>Downlink  Bandwidth Policy</h3>
 					</a>
@@ -138,10 +156,73 @@
 						<li>Stream type - Screen share or camera device</li>
 					</ol>
 					<p>The policy works by listening to any changes in the information listed above.  Anytime there is a change it re-evaluates the best mix of remote videos to fit within the target downlink bandwidth.  The policy is currently configured to try to request as many remote clients as possible, then increase resolution where possible.  It prioritizes screen share video above people video.  If there is insufficient bandwidth to request all far participants then only a certain number will be seen.</p>
-					<p>Applications will receive notifications of remote video being added or removed through the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a> callbacks.  There will not be any notifications when switches are made between the different simulcast resolutions.</p>
+					<p>Applications will receive notifications of remote video being added or removed through the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotilewasremoved">videoTileWasRemoved</a> callbacks. You can use <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingSimulcastLayersDidChange">encodingSimulcastLayersDidChange</a> to know when the selected upstream simulcast resolutions change.</p>
 					<p>If the application pauses a remote video by calling <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile">pauseVideoTile</a>, then this policy will not include that remote video in the list of available streams and therefore will not automatically subscribe or unsubscribe from it while it is in the paused state.</p>
 					<p>When using the policy it is recommended that applications do not take action on the downlink monitoring events such as <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videonotreceivingenoughdata">videoNotReceivingEnoughData</a> or <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#estimateddownlinkbandwidthlessthanrequired">estimatedDownlinkBandwidthLessThanRequired</a> since it may conflict with decisions being made within the policy.</p>
 					<p>The VideoAdaptiveProbePolicy can be used with or without simulcast.  To enable it without simulcast set the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy">MeetingSessionConfiguration.videoDownlinkBandwidthPolicy</a> to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>.  If simulcast is not active, then the policy will only be able to add or remove remote videos.</p>
+					<a href="#creating-a-simulcast-enabled-meeting" id="creating-a-simulcast-enabled-meeting" style="color: inherit; text-decoration: none;">
+						<h3>Creating a simulcast enabled meeting</h3>
+					</a>
+					<p>First, create a meeting session configuration.</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> {
+  ConsoleLogger,
+  DefaultDeviceController,
+  DefaultMeetingSession,
+  LogLevel,
+  MeetingSessionConfiguration
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;MyLogger&#x27;</span>, LogLevel.INFO);
+<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+
+<span class="hljs-comment">// You need responses from server-side Chime API. See &#x27;Getting responses from your server application&#x27; in the README.</span>
+<span class="hljs-keyword">const</span> meetingResponse = <span class="hljs-comment">// The response from the CreateMeeting API action.</span>
+<span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee or BatchCreateAttendee API action.</span>
+
+<span class="hljs-comment">// This meeting session configuration will be used to enable simulcast in the next step.</span>
+<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);</code></pre>
+					<p>Now you have to enable <code>enableUnifiedPlanForChromiumBasedBrowsers</code> and <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> feature flags
+					in the created <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html">MeetingSessionConfiguration</a>.</p>
+					<pre><code class="language-javascript">configuration.enableUnifiedPlanForChromiumBasedBrowsers = <span class="hljs-literal">true</span>;
+configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = <span class="hljs-literal">true</span>;</code></pre>
+					<p>Now create a meeting session with the simulcast enabled meeting session configuration.</p>
+					<pre><code class="language-javascript"><span class="hljs-comment">// In the examples below, you will use this meetingSession object.</span>
+<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
+  configuration,
+  logger,
+  deviceController
+);</code></pre>
+					<p>This <code>meetingSession</code> is now simulcast enabled and will have the <code>videoUplinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultsimulcastuplinkPolicy.html">DefaultSimulcastUplinkPolicy</a> and <code>videoDownlinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>. Due to these policies, the local and remote video resolutions may change. The video resolution depends on the available simulcast streams. The available simlucast streams are dependent on the number of attendees and the current bandwidth estimations. Check &quot;Simulcast resolutions and behavior&quot; section in this guide for more information.</p>
+					<a href="#receive-upstream-simulcast-layer-change-notification" id="receive-upstream-simulcast-layer-change-notification" style="color: inherit; text-decoration: none;">
+						<h3>Receive upstream simulcast layer change notification</h3>
+					</a>
+					<p>The active simulcast streams are represented by the <a href="https://aws.github.io/amazon-chime-sdk-js/enums/simulcastlayers.html">SimulcastLayers</a> enum. Currently, the active upstream simulcast layers will only be either &quot;Low and High&quot;, or &quot;Low and Medium&quot; or &quot;Low&quot;. To receive upstream simulcast layer change notification do the following steps:</p>
+					<ul>
+						<li><p>Implement the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingsimulcastlayersdidchange">encodingSimulcastLayersDidChange</a> method from the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a> interface.</p>
+						</li>
+						<li><p>Then, add an instance of the <code>AudioVideoObserver</code> using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addobserver">addObserver</a> method so you can receive the changed simulcast layer notification.</p>
+						</li>
+						<li><p>Now when you are in a simulcast enabled meeting and your upstream simulcast layer is changed, you will be notified in the <code>encodingSimulcastLayersDidChange</code> callback with the updated simulcast layer.</p>
+						</li>
+					</ul>
+					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { SimulcastLayers } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+
+<span class="hljs-keyword">const</span> SimulcastLayersMapping = {
+  [SimulcastLayers.Low]: <span class="hljs-string">&#x27;Low&#x27;</span>,
+  [SimulcastLayers.LowAndMedium]: <span class="hljs-string">&#x27;Low and Medium&#x27;</span>,
+  [SimulcastLayers.LowAndHigh]: <span class="hljs-string">&#x27;Low and High&#x27;</span>,
+  [SimulcastLayers.Medium]: <span class="hljs-string">&#x27;Medium&#x27;</span>,
+  [SimulcastLayers.MediumAndHigh]: <span class="hljs-string">&#x27;Medium and High&#x27;</span>,
+  [SimulcastLayers.High]: <span class="hljs-string">&#x27;High&#x27;</span>
+};
+
+<span class="hljs-keyword">const</span> observer = {
+  <span class="hljs-attr">encodingSimulcastLayersDidChange</span>: <span class="hljs-function"><span class="hljs-params">simulcastLayers</span> =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`current active simulcast layers changed to: <span class="hljs-subst">${SimulcastLayersMapping[simulcastLayers]}</span>`</span>);
+  }
+}
+
+meetingSession.audioVideo.addObserver(observer);</code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Simulcast%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
@@ -166,57 +247,30 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
 			</ul>
 		</div>
 	</div>
@@ -226,6 +280,5 @@
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
