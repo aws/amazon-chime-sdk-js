@@ -37,7 +37,7 @@ export default class DefaultAudioMixController implements AudioMixController {
       try {
         await this.bindAudioMix();
       } catch (error) {
-        this.logger?.error(`Failed to bind audio stream: ${error}`);
+        this.logger?.warn(`Failed to bind audio stream: ${error}`);
       }
     }
   }

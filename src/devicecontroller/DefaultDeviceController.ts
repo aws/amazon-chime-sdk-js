@@ -398,9 +398,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     }
     this.boundAudioVideoController = audioVideoController;
     this.subscribeToMuteAndUnmuteLocalAudio();
-    new AsyncScheduler().start(() => {
-      this.bindAudioOutput();
-    });
+    if (this.browserBehavior.supportsSetSinkId()) {
+      new AsyncScheduler().start(() => {
+        this.bindAudioOutput();
+      });
+    }
   }
 
   private subscribeToMuteAndUnmuteLocalAudio(): void {
