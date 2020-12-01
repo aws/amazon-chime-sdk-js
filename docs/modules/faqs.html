@@ -166,6 +166,10 @@
 					</a>
 					<p>Amazon Chime SDK limits are defined <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">here</a>. The service supports up to 250 attendees and up to 16 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using DeleteAttendee API call. Attendee limits cannot be changed.</p>
 					<p>If your use case requires more than 250 attendees, consider using a <a href="https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo">broadcasting solution</a>.</p>
+					<a href="#what-happens-to-the-subsequent-participants-who-try-to-turn-on-the-local-video-while-16-participants-have-already-turned-on-the-local-video" id="what-happens-to-the-subsequent-participants-who-try-to-turn-on-the-local-video-while-16-participants-have-already-turned-on-the-local-video" style="color: inherit; text-decoration: none;">
+						<h3>What happens to the subsequent participants who try to turn on the local video while 16 participants have already turned on the local video?</h3>
+					</a>
+					<p>Once the limit of 16 is reached in a meeting, for all the subsequent participants who try to turn on the local video, the SDK sets the Meeting Session status code to <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionStatusCode.ts#L73">VideoCallSwitchToViewOnly = 10</a> which in turn triggers the observer &#39;<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable">videoSendDidBecomeUnavailable</a>&#39;.</p>
 					<a href="#can-i-schedule-amazon-chime-sdk-meetings-ahead-of-time" id="can-i-schedule-amazon-chime-sdk-meetings-ahead-of-time" style="color: inherit; text-decoration: none;">
 						<h3>Can I schedule Amazon Chime SDK meetings ahead of time?</h3>
 					</a>

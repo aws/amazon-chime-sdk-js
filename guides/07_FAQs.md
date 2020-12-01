@@ -106,6 +106,10 @@ Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/lat
 
 If your use case requires more than 250 attendees, consider using a [broadcasting solution](https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo).
 
+### What happens to the subsequent participants who try to turn on the local video while 16 participants have already turned on the local video?
+
+Once the limit of 16 is reached in a meeting, for all the subsequent participants who try to turn on the local video, the SDK sets the Meeting Session status code to [VideoCallSwitchToViewOnly = 10](https://github.com/aws/amazon-chime-sdk-js/blob/bfc4c600fb7e68f2d358ecb6c7fd096d30b2d430/src/meetingsession/MeetingSessionStatusCode.ts#L73) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
+
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
 The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) or 

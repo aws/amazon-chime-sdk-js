@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- [Documentation] What happens when participants try to `startLocalVideoTile` when local video tile limit reached
+
+### Changed
+
+### Removed
+
+### Fixed
+
+- Allow Amazon Voice Focus code to load (but not function) in unsupported
+  browsers that do not define `globalThis`.
+
 ## [2.1.0] - 2020-11-23
 
 ### Added
@@ -25,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Documentation] Update the Amazon Chime SDK Media Regions documentation link in the README
 - Reimplement error handling in `DefaultRealtimeController` to generate less garbage.
 - Add github actions fix to conditionally run integ tests
+- [Documentation] Correct docstring for `VoiceFocusTransformDevice`.
+- [Script] Add prepublish script to verify CDN configuration.
 
 ## [2.0.0] - 2020-11-18
 
