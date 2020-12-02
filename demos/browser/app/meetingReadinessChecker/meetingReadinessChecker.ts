@@ -173,7 +173,14 @@ export class DemoMeetingApp {
     return device;
   };
 
+  speakerTest = async () => {
+    const button = document.getElementById('speakertest-button') as HTMLButtonElement;
+    button.disabled = false;
+  }
+
   audioTest = async () => {
+    const speakerTestResult = document.getElementById('speaker-test');
+    speakerTestResult.style.display = 'inline-block';
     this.createReadinessHtml('speaker-test', 'spinner-border');
     const audioOutput = await this.getAudioOutputDevice();
     let speakerUserFeedbackHtml = document.getElementById('speaker-user-feedback');
@@ -296,6 +303,17 @@ export class DemoMeetingApp {
     return networkUdpResp;
   };
 
+  continueTestExecution = async () => {
+    await this.micTest();
+    await this.videoTest();
+    await this.cameraTest();
+    await this.networkUdpTest();
+    await this.networkTcpTest();
+    await this.audioConnectivityTest();
+    await this.videoConnectivityTest();
+    await this.contentShareTest();
+  }
+
   createReadinessHtml(id: string, textToDisplay: string): void {
     const readinessElement = document.getElementById(id) as HTMLElement;
     readinessElement.innerHTML = '';
@@ -325,6 +343,14 @@ export class DemoMeetingApp {
       this.canHear = false;
     });
 
+    const speakerTestButton = document.getElementById('speakertest-button') as HTMLButtonElement;
+    speakerTestButton.addEventListener('click', async () => {
+      speakerTestButton.style.display = 'none';
+      await this.audioTest();
+      speakerTestButton.disabled = true;
+      await this.continueTestExecution();
+    });
+
     const contentShareButton = document.getElementById('contentshare-button') as HTMLButtonElement;
     contentShareButton.addEventListener('click', async () => {
       contentShareButton.style.display = 'none';
@@ -347,15 +373,7 @@ export class DemoMeetingApp {
         (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
           'amazon-chime-sdk-js@' + Versioning.sdkVersion;
         this.createReadinessHtml('readiness-header', 'Readiness tests underway...');
-        await this.audioTest();
-        await this.micTest();
-        await this.videoTest();
-        await this.cameraTest();
-        await this.networkUdpTest();
-        await this.networkTcpTest();
-        await this.audioConnectivityTest();
-        await this.videoConnectivityTest();
-        await this.contentShareTest();
+        await this.speakerTest();
         this.createReadinessHtml('readiness-header', 'Readiness tests complete!');
       }
     });
