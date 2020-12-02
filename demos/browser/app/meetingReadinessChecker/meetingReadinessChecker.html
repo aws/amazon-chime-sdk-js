@@ -86,16 +86,19 @@
       <tr>
         <td class="text-left">Speaker</td>
         <td id="speaker-row">
-          <span id="speaker-test" class="badge badge-secondary">Not Started</span>
+          <button id="speakertest-button" type="button" class="btn btn-sm btn-secondary" title="Play tone">
+            Play Tone
+          </button>
+          <span id="speaker-test" class="badge badge-secondary" style="display:none">Not Started</span>
           <span id="speaker-user-feedback" style="display:none">
-                <span>Can you hear a sound?</span>
-                <label>
-                    <input type="radio" id="speaker-yes" name="user-feedback-reply" value="yes"/>Yes
-                </label>
-                <label>
-                    <input type="radio" id="speaker-no" name="user-feedback-reply" value="no"/>No
-                </label>
-              </span>
+            <span>Can you hear a sound?</span>
+            <label>
+                <input type="radio" id="speaker-yes" name="user-feedback-reply" value="yes"/>Yes
+            </label>
+            <label>
+                <input type="radio" id="speaker-no" name="user-feedback-reply" value="no"/>No
+            </label>
+          </span>
         </td>
       </tr>
       <tr>
