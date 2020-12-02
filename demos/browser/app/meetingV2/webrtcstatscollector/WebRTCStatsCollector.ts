@@ -205,7 +205,7 @@ export default class WebRTCStatsCollector {
     keyStatstoShow: { [key: string]: string },
     metricsData: SSRCToMetricsData
   ) => {
-    const streams = Object.keys(metricsData);
+    const streams = metricsData ? Object.keys(metricsData) : [];
     if (streams.length === 0) {
       return;
     }
