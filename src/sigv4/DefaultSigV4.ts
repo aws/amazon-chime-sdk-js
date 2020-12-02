@@ -9,6 +9,8 @@ export default class DefaultSigV4 implements SigV4 {
   constructor(public chimeClient: any, public awsClient: any) {}
 
   private makeTwoDigits(n: number): string {
+    /* istanbul ignore if */
+    /* istanbul ignore else */
     if (n > 9) {
       return n.toString();
     } else {

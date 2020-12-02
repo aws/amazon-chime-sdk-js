@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Documentation] What happens when participants try to `startLocalVideoTile` when local video tile limit reached
 
 ### Changed
+- Log error if pass undefined device when calling choose input device
+- Doing typecheck for MediaDeviceInfo 
 
 ### Removed
 

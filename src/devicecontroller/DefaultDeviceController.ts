@@ -133,6 +133,10 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   async chooseAudioInputDevice(device: AudioInputDevice): Promise<void> {
+    if (device === undefined) {
+      this.logger.error('Audio input device cannot be undefined');
+      return;
+    }
     if (isAudioTransformDevice(device)) {
       // N.B., do not JSON.stringify here — for some kinds of devices this
       // will cause a cyclic object reference error.
@@ -175,9 +179,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   async chooseVideoInputDevice(device: VideoInputDevice): Promise<void> {
+    if (device === undefined) {
+      this.logger.error('Video input device cannot be undefined');
+      return;
+    }
     if (isVideoTransformDevice(device)) {
       throw new Error(`Not implemented`);
     }
+
     this.updateMaxBandwidthKbps();
     await this.chooseInputIntrinsicDevice('video', device, false);
     this.trace('chooseVideoInputDevice', device);
@@ -570,7 +579,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   private async updateDeviceInfoCacheFromBrowser(): Promise<void> {
-    const doesNotHaveAccessToMediaDevices = !MediaDeviceInfo;
+    const doesNotHaveAccessToMediaDevices = typeof MediaDeviceInfo === 'undefined';
     if (doesNotHaveAccessToMediaDevices) {
       this.deviceInfoCache = [];
       return;
