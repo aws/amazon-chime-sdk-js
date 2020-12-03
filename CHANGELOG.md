@@ -20,8 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow Amazon Voice Focus code to load (but not function) in unsupported
   browsers that do not define `globalThis`.
-- [Demo] Fix meeting readiness checker speaker test failing in Safari
 - Fix uncaught promise exception for bindAudioOutput API
+- [Demo] Fix meeting readiness checker speaker test failing in Safari
 - [Demo] Validate metrics data while showing video WebRTC stats
 
 ## [2.1.0] - 2020-11-23
