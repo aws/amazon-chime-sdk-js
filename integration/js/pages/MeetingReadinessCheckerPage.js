@@ -49,8 +49,11 @@ class MeetingReadinessCheckerPage {
   }
 
   async startSpeakerTest() {
-    let speakerTestButton = await this.driver.findElement(elements.speakerTestButton);
-    await speakerTestButton.click();
+    let spekerTestButtonExists = await this.driver.findElements(elements.speakerTestButton).size > 0;
+    if (spekerTestButtonExists) {
+      let speakerTestButton = await this.driver.findElement(elements.speakerTestButton);
+      await speakerTestButton.click();
+    }
   }
 
   async speakerCheckFeedbackYes() {
