@@ -363,6 +363,7 @@ export class DemoMeetingApp {
         CheckContentShareConnectivityFeedback[contentShareResp]
       );
       contentShareButton.disabled = true;
+      this.createReadinessHtml('readiness-header', 'Readiness tests complete!');
     });
 
     document.getElementById('form-authenticate').addEventListener('submit', async e => {
@@ -374,7 +375,6 @@ export class DemoMeetingApp {
           'amazon-chime-sdk-js@' + Versioning.sdkVersion;
         this.createReadinessHtml('readiness-header', 'Readiness tests underway...');
         await this.speakerTest();
-        this.createReadinessHtml('readiness-header', 'Readiness tests complete!');
       }
     });
   }
