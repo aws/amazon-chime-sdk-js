@@ -1,8 +1,7 @@
 {
   "`": 1,
   "name": "meeting_end_video_test.config.json %ts",
-  "grids": [
-  ],
+  "grids": [],
   "tests": [
     {
       "name": "App Quit Video Test %ts",
@@ -23,7 +22,7 @@
   "clients": [
     {
       "browserName": "chrome",
-      "version": "78",
+      "version": "latest",
       "platform": "MAC"
     }
   ]
