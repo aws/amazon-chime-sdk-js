@@ -172,8 +172,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   supportsSetSinkId(): boolean {
-    // @ts-ignore
-    return HTMLAudioElement.prototype.setSinkId !== undefined;
+    return 'setSinkId' in HTMLAudioElement.prototype;
   }
 
   // These helpers should be kept private to encourage

@@ -121,13 +121,15 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L29">src/audiomixcontroller/AudioMixController.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L35">src/audiomixcontroller/AudioMixController.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Called when the audio mix device can be bound to an element and stream. Returns true on success.</p>
+									<p>Called when the audio mix device can be bound to an element and stream.</p>
 								</div>
+								<p>This method rejects if you specify a device and the browser does not support <code>setSinkId</code>;
+								use <a href="browserbehavior.html#supportssetsinkid">BrowserBehavior.supportsSetSinkId</a> to check before calling this method.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -155,7 +157,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Called when the audio mix element can be bound to a device and stream. Returns true on success.</p>
+									<p>Called when the audio mix element can be bound to a device and stream.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -178,13 +180,15 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L24">src/audiomixcontroller/AudioMixController.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L27">src/audiomixcontroller/AudioMixController.ts:27</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Called when the audio mix stream can be bound to a device and element. Returns true on success.</p>
+									<p>Called when the audio mix stream can be bound to a device and element.</p>
 								</div>
+								<p>This method rejects if you specify a device and the browser does not support <code>setSinkId</code>;
+								use <a href="browserbehavior.html#supportssetsinkid">BrowserBehavior.supportsSetSinkId</a> to check before calling this method.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">

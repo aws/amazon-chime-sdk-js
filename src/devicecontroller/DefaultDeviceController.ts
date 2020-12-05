@@ -223,7 +223,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       const analyser = node.context.createAnalyser() as RemovableAnalyserNode;
 
       analyser.removeOriginalInputs = () => {
-        /* istanbul ignore catch */
         try {
           node.disconnect(analyser);
         } catch (e) {
@@ -256,7 +255,6 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.trace('createAnalyserNodeForAudioInput');
 
     analyser.removeOriginalInputs = () => {
-      /* istanbul ignore catch */
       try {
         source.disconnect(analyser);
       } catch (e) {

@@ -920,7 +920,7 @@ export default class DOMMockBuilder {
       }
     };
     if (!mockBehavior.setSinkIdSupported) {
-      GlobalAny.HTMLAudioElement.prototype.setSinkId = undefined;
+      delete GlobalAny.HTMLAudioElement.prototype.setSinkId;
     }
 
     GlobalAny.document = {

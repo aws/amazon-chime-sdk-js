@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import { DefaultBrowserBehavior } from '../../src';
 import DefaultAudioMixController from '../../src/audiomixcontroller/DefaultAudioMixController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -76,9 +77,9 @@ describe('DefaultAudioMixController', () => {
 
   it('can successfully bind and sink an audio element', async () => {
     //@ts-ignore
-    await element.setSinkId('undefined');
+    await element.setSinkId('anything');
     //@ts-ignore
-    expect(element.sinkId).to.equal('undefined');
+    expect(element.sinkId).to.equal('anything');
     await defaultAudioMixController.bindAudioDevice(device);
     await defaultAudioMixController.bindAudioStream(stream);
     element.autoplay = false;
@@ -146,7 +147,13 @@ describe('DefaultAudioMixController', () => {
   it('throws an error if browser does not support setSinkId', async () => {
     behavior.setSinkIdSupported = false;
     domMockBuilder = new DOMMockBuilder(behavior);
+
+    expect(new DefaultBrowserBehavior().supportsSetSinkId()).to.be.false;
+
     defaultAudioMixController = new DefaultAudioMixController(logger);
+
+    // First we need an element to bind to.
+    await defaultAudioMixController.bindAudioElement(element);
     try {
       await defaultAudioMixController.bindAudioDevice(device);
       throw new Error('This line should not be reached.');
@@ -157,7 +164,7 @@ describe('DefaultAudioMixController', () => {
     }
   });
 
-  it('can successfully bind and sink an audio stream in chromium based browser', async () => {
+  it('can successfully bind and sink an audio stream in Chromium based browser', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
     defaultAudioMixController = new DefaultAudioMixController(logger);
@@ -251,7 +258,7 @@ describe('DefaultAudioMixController', () => {
     expect(element2.srcObject).to.equal(stream2);
   });
 
-  it('can execute calls to the 3 bind methods consecutively in chromium based browser', async () => {
+  it('can execute calls to the 3 bind methods consecutively in Chromium based browser', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
     defaultAudioMixController = new DefaultAudioMixController(logger);
@@ -261,7 +268,7 @@ describe('DefaultAudioMixController', () => {
     expect(element.srcObject).to.equal(stream);
   });
 
-  it('can execute 3 bind and unbind methods consecutively in chromium based browser', async () => {
+  it('can execute 3 bind and unbind methods consecutively in Chromium based browser', async () => {
     behavior.browserName = 'chrome';
     domMockBuilder = new DOMMockBuilder(behavior);
     defaultAudioMixController = new DefaultAudioMixController(logger);
@@ -272,9 +279,16 @@ describe('DefaultAudioMixController', () => {
     expect(element.srcObject).to.equal(null);
   });
 
-  it('can fail to bind an audio element when sinkId does not exist', async () => {
+  it('can bind an audio element when sinkId does not exist but we do not try to set one', async () => {
     // @ts-ignore
     await element.setSinkId(undefined);
+    await defaultAudioMixController.bindAudioElement(element);
+  });
+
+  it('can fail to bind an audio element when sinkId does not exist but our device has an ID', async () => {
+    // @ts-ignore
+    await element.setSinkId(undefined);
+    await defaultAudioMixController.bindAudioDevice(device);
     try {
       await defaultAudioMixController.bindAudioElement(element);
       throw new Error('This line should not be reached.');
