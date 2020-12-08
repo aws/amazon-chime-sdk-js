@@ -34,6 +34,33 @@ import {
 
 const { v4: uuidv4 } = require('uuid');
 
+class SwappableLogger implements Logger {
+  constructor(public inner: Logger) {}
+  debug(debugFunction: string | (() => string)): void {
+    this.inner.debug(debugFunction);
+  }
+
+  info(msg: string): void {
+    this.inner.info(msg);
+  }
+
+  error(msg: string): void {
+    this.inner.error(msg);
+  }
+
+  warn(msg: string): void {
+    this.inner.warn(msg);
+  }
+
+  setLogLevel(level: LogLevel): void {
+    this.inner.setLogLevel(level);
+  }
+
+  getLogLevel(): LogLevel {
+    return this.inner.getLogLevel();
+  }
+}
+
 export class DemoMeetingApp {
   static readonly BASE_URL: string = [
     location.protocol,
@@ -52,7 +79,7 @@ export class DemoMeetingApp {
   region: string | null = null;
   meetingSession: MeetingSession | null = null;
   audioVideo: AudioVideoFacade | null = null;
-  logger: Logger;
+  logger: SwappableLogger;
   deviceController: DefaultDeviceController;
   meetingReadinessChecker: MeetingReadinessChecker | null = null;
   canStartLocalVideo: boolean = true;
@@ -78,6 +105,9 @@ export class DemoMeetingApp {
     this.initParameters();
     this.setMediaRegion();
     this.switchToFlow('flow-authenticate');
+
+    const logLevel = LogLevel.INFO;
+    this.logger = new SwappableLogger(new ConsoleLogger('SDK', logLevel));
   }
 
   switchToFlow(flow: string): void {
@@ -93,7 +123,8 @@ export class DemoMeetingApp {
     // Initialize logger and device controller to populate device list
     new AsyncScheduler().start(
       async (): Promise<void> => {
-        await this.initializeLoggerAndDeviceController();
+        await this.initializeDeviceController();
+        await this.initializeLogger();
         const button = document.getElementById("authenticate") as HTMLButtonElement;
         button.disabled = false;
       }
@@ -379,15 +410,19 @@ export class DemoMeetingApp {
     });
   }
 
-  async initializeLoggerAndDeviceController(configuration?: MeetingSessionConfiguration): Promise<void> {
-    let logger: Logger;
+  async initializeDeviceController(): Promise<void> {
+    this.deviceController = new DefaultDeviceController(this.logger, { enableWebAudio: this.enableWebAudio });
+    await this.populateAllDeviceLists();
+  }
+
+  async initializeLogger(configuration?: MeetingSessionConfiguration): Promise<void> {
     const logLevel = LogLevel.INFO;
-    const consoleLogger = (logger = new ConsoleLogger('SDK', logLevel));
+    const consoleLogger = new ConsoleLogger('SDK', logLevel);
     if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') || configuration == null) {
-      this.logger = consoleLogger;
+      this.logger.inner = consoleLogger;
     } else {
       await this.createLogStream(configuration);
-      this.logger = new MultiLogger(
+      this.logger.inner = new MultiLogger(
         consoleLogger,
         new MeetingSessionPOSTLogger(
           'SDK',
@@ -399,12 +434,10 @@ export class DemoMeetingApp {
         )
       );
     }
-    this.deviceController = new DefaultDeviceController(logger, { enableWebAudio: this.enableWebAudio });
-    await this.populateAllDeviceLists();
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
-    await this.initializeLoggerAndDeviceController(configuration);
+    await this.initializeLogger(configuration);
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.attendeePresenceTimeoutMs = 15000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
