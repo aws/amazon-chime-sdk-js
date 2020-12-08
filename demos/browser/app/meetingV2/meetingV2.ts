@@ -133,11 +133,13 @@ class TestSound {
     gainNode.gain.linearRampToValueAtTime(0, startTime + this.rampSec * 2 + this.durationSec);
     oscillatorNode.start();
     const audioMixController = new DefaultAudioMixController(this.logger);
-    try {
-      // @ts-ignore
-      await audioMixController.bindAudioDevice({ deviceId: this.sinkId });
-    } catch (e) {
-      this.logger?.error(`Failed to bind audio device: ${e}`);
+    if (new DefaultBrowserBehavior().supportsSetSinkId()) {
+      try {
+        // @ts-ignore
+        await audioMixController.bindAudioDevice({ deviceId: this.sinkId });
+      } catch (e) {
+        this.logger?.error(`Failed to bind audio device: ${e}`);
+      }
     }
     try {
       await audioMixController.bindAudioElement(new Audio());
@@ -1626,11 +1628,13 @@ export class DemoMeetingApp implements
   }
 
   async openAudioOutputFromSelection(): Promise<void> {
-    const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
-    try {
-      await this.audioVideo.chooseAudioOutputDevice(audioOutput.value);
-    } catch (e) {
-      this.log('failed to chooseAudioOutputDevice', e);
+    if (this.defaultBrowserBehaviour.supportsSetSinkId()) {
+      try {
+        const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
+        await this.audioVideo.chooseAudioOutputDevice(audioOutput.value);
+      } catch (e) {
+        this.log('failed to chooseAudioOutputDevice', e);
+      }
     }
     const audioMix = document.getElementById('meeting-audio') as HTMLAudioElement;
     try {
