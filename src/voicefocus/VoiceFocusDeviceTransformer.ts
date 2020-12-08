@@ -149,7 +149,6 @@ export class VoiceFocusDeviceTransformer {
       return undefined;
     }
 
-    /* istanbul ignore catch */
     try {
       const preload = true;
       const [vf, delegate] = await this.allocateVoiceFocus(preload);

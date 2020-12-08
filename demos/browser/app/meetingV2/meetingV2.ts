@@ -1489,21 +1489,26 @@ export class DemoMeetingApp implements
   }
 
   async populateAudioOutputList(): Promise<void> {
+    const supportsChoosing = this.defaultBrowserBehaviour.supportsSetSinkId();
     const genericName = 'Speaker';
     const additionalDevices: string[] = [];
+    const devices = supportsChoosing ? await this.audioVideo.listAudioOutputDevices() : [];
     this.populateDeviceList(
       'audio-output',
       genericName,
-      await this.audioVideo.listAudioOutputDevices(),
+      devices,
       additionalDevices
     );
     this.populateInMeetingDeviceList(
       'dropdown-menu-speaker',
       genericName,
-      await this.audioVideo.listAudioOutputDevices(),
+      devices,
       additionalDevices,
       undefined,
       async (name: string) => {
+        if (!supportsChoosing) {
+          return;
+        }
         try {
           await this.audioVideo.chooseAudioOutputDevice(name);
         } catch (e) {

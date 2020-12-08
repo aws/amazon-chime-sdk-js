@@ -72,9 +72,8 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       const userFeedback = await audioOutputVerificationCallback();
       if (userFeedback) {
         return CheckAudioOutputFeedback.Succeeded;
-      } else {
-        return CheckAudioOutputFeedback.Failed;
       }
+      return CheckAudioOutputFeedback.Failed;
     } catch (error) {
       this.logger.error(`MeetingReadinessChecker: Audio output check failed with error: ${error}`);
       return CheckAudioOutputFeedback.Failed;
@@ -107,11 +106,19 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     this.gainNode.gain.linearRampToValueAtTime(0, startTime);
     this.gainNode.gain.linearRampToValueAtTime(maxGainValue, startTime + rampSec);
     this.oscillatorNode.start();
+
+    // Because we always use `DefaultAudioMixController`, and both this class
+    // and DAMC use `DefaultBrowserBehavior`, it is not possible for the `bindAudioDevice` call here to throw.
+    // Nevertheless, we `catch` here and disable code coverage.
+
     const audioMixController = new DefaultAudioMixController(this.logger);
+
     try {
-      // @ts-ignore
-      await audioMixController.bindAudioDevice({ deviceId: sinkId });
+      if (this.browserBehavior.supportsSetSinkId()) {
+        await audioMixController.bindAudioDevice({ deviceId: sinkId } as MediaDeviceInfo);
+      }
     } catch (e) {
+      /* istanbul ignore next */
       this.logger.error(`Failed to bind audio device: ${e}`);
     }
     try {
