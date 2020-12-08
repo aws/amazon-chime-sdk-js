@@ -103,7 +103,7 @@ class SdkBaseTest extends KiteBaseTest {
       this.io.emit("setup_test", this.baseUrl, this.attendeeId);
     } else {
       this.meetingTitle = uuidv4();
-      if (this.testName === 'ContentShareOnlyAllowTwoTest') {
+      if (this.originalURL.indexOf('?') !== -1) {
         this.url = this.originalURL + '&m=' + this.meetingTitle;
       } else {
         this.url = this.originalURL + '?m=' + this.meetingTitle;
