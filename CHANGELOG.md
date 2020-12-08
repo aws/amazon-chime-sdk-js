@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Binding audio elements will no longer throw an error unless calling code is
   trying to choose an output device in a browser that does not support
   `setSinkId`, and the demo will not log an error in these cases.
+- [Demo] The meeting readiness checker no longer re-initializes the device output list
+  after the user picked a device.
 
 ## [2.2.0] - 2020-12-04
 
