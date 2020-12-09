@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [Demo] Fatal errors in the demo will now cause a fatal screen if `fatal=1` is present in the
+  URL, or if the demo is running locally.
+
 ### Changed
 
 ### Removed
