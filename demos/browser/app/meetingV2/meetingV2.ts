@@ -46,7 +46,17 @@ import {
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
 } from '../../../../src/index';
+
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
+
+const SHOULD_DIE_ON_FATALS = (() => {
+  const isLocal = document.location.host === '127.0.0.1:8080';
+  const fatalYes = document.location.search.includes('fatal=1');
+  const fatalNo = document.location.search.includes('fatal=0');
+  return fatalYes || (isLocal && !fatalNo);
+})();
+
+let fatal: (e: Error) => void;
 
 class DemoTileOrganizer {
   // this is index instead of length
@@ -138,12 +148,14 @@ class TestSound {
         // @ts-ignore
         await audioMixController.bindAudioDevice({ deviceId: this.sinkId });
       } catch (e) {
+        fatal(e);
         this.logger?.error(`Failed to bind audio device: ${e}`);
       }
     }
     try {
       await audioMixController.bindAudioElement(new Audio());
     } catch (e) {
+      fatal(e);
       this.logger?.error(`Failed to bind audio element: ${e}`);
     }
     await audioMixController.bindAudioStream(destinationStream.stream);
@@ -248,6 +260,18 @@ export class DemoMeetingApp implements
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).app = this;
+
+    fatal = this.fatal.bind(this);
+
+    // Listen for unhandled errors, too.
+    window.addEventListener('error', (event) => { fatal(event.error); });
+    window.onunhandledrejection = (event: PromiseRejectionEvent) => { fatal(event.reason); };
+
+    if (document.location.search.includes('testfatal=1')) {
+      this.fatal(new Error('Testing fatal.'));
+      return;
+    }
+
     (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
       "amazon-chime-sdk-js@" + Versioning.sdkVersion;
     this.initEventListeners();
@@ -266,6 +290,24 @@ export class DemoMeetingApp implements
     } else {
       this.switchToFlow('flow-authenticate');
     }
+  }
+
+  /**
+   * We want to make it abundantly clear at development and testing time
+   * when an unexpected error occurs.
+   * If we're running locally, or we passed a `fatal=1` query parameter, fail hard.
+   */
+  fatal(e: Error): void {
+    // Muffle mode: let the `try-catch` do its job.
+    if (!SHOULD_DIE_ON_FATALS) {
+      console.info('Ignoring fatal', e);
+      return;
+    }
+
+    console.error('Fatal error: this was going to be caught, but should not have been thrown.', e);
+    document.getElementById('stack').innerText = e.message + '\n' + e.stack?.toString();
+
+    this.switchToFlow('flow-fatal');
   }
 
   initParameters(): void {
@@ -376,6 +418,7 @@ export class DemoMeetingApp implements
               true
             );
           } catch (err) {
+            fatal(err);
             this.log('no video input device selected');
           }
           await this.openAudioOutputFromSelection();
@@ -458,6 +501,7 @@ export class DemoMeetingApp implements
       try {
         await this.openVideoInputFromSelection(videoInput.value, true);
       } catch (err) {
+        fatal(err);
         this.log('no video input device selected');
       }
     });
@@ -479,6 +523,7 @@ export class DemoMeetingApp implements
       try {
         await this.openVideoInputFromSelection(videoInput.value, true);
       } catch (err) {
+        fatal(err);
         this.log('no video input device selected');
       }
     });
@@ -543,6 +588,7 @@ export class DemoMeetingApp implements
             await this.openVideoInputFromSelection(camera, false);
             this.audioVideo.startLocalVideoTile();
           } catch (err) {
+            fatal(err);
             this.log('no video input device selected');
           }
         } else {
@@ -586,6 +632,7 @@ export class DemoMeetingApp implements
               'meeting-audio'
             ) as HTMLAudioElement);
           } catch (e) {
+            fatal(e);
             this.log('Failed to bindAudioElement', e);
           }
         } else {
@@ -700,6 +747,7 @@ export class DemoMeetingApp implements
           }
           (document.getElementById('inputRegion') as HTMLInputElement).value = nearestMediaRegion;
         } catch (error) {
+          fatal(error);
           this.log('Default media region selected: ' + error.message);
         }
       });
@@ -888,6 +936,7 @@ export class DemoMeetingApp implements
         console.log('[DEMO] log stream created');
       }
     } catch (error) {
+      fatal(error);
       this.log(error.message);
     }
   }
@@ -1480,6 +1529,7 @@ export class DemoMeetingApp implements
         try {
           await this.openVideoInputFromSelection(name, false);
         } catch (err) {
+          fatal(err);
           this.log('no video input device selected');
         }
       }
@@ -1514,6 +1564,7 @@ export class DemoMeetingApp implements
         try {
           await this.audioVideo.chooseAudioOutputDevice(name);
         } catch (e) {
+          fatal(e);
           this.log('Failed to chooseAudioOutputDevice', e)
         }
       }
@@ -1534,6 +1585,7 @@ export class DemoMeetingApp implements
     try {
       await this.audioVideo.chooseAudioInputDevice(device);
     } catch (e) {
+      fatal(e);
       this.log(`failed to choose audio input device ${device}`, e);
     }
     this.updateVoiceFocusDisplayState();
@@ -1628,11 +1680,12 @@ export class DemoMeetingApp implements
   }
 
   async openAudioOutputFromSelection(): Promise<void> {
-    if (this.defaultBrowserBehaviour.supportsSetSinkId()) {
+    if (true || this.defaultBrowserBehaviour.supportsSetSinkId()) {
       try {
         const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
         await this.audioVideo.chooseAudioOutputDevice(audioOutput.value);
       } catch (e) {
+        fatal(e);
         this.log('failed to chooseAudioOutputDevice', e);
       }
     }
@@ -1640,6 +1693,7 @@ export class DemoMeetingApp implements
     try {
       await this.audioVideo.bindAudioElement(audioMix);
     } catch (e) {
+      fatal(e);
       this.log('failed to bindAudioElement', e);
     }
   }
@@ -1664,6 +1718,7 @@ export class DemoMeetingApp implements
       try {
         await this.audioVideo.chooseVideoInputDevice(device);
       } catch (e) {
+        fatal(e);
         this.log(`failed to chooseVideoInputDevice ${device}`, e);
       }
       throw new Error('no video device selected');
@@ -1671,6 +1726,7 @@ export class DemoMeetingApp implements
     try {
       await this.audioVideo.chooseVideoInputDevice(device);
     } catch (e) {
+      fatal(e);
       this.log(`failed to chooseVideoInputDevice ${device}`, e);
     }
 

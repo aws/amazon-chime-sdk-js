@@ -8,8 +8,16 @@
 </head>
 <body>
 
-<!-- Initial meeting authentication screen with meeting and name inputs -->
+<div id="flow-fatal" class="flow">
+  <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
+  <h1>Fatal error</h1>
+  <p>An error was thrown that should not occur in ordinary use. This should be considered a fatal error for testing and canary purposes.</p>
+  <p>This error will ordinarily be muffled, but you should consider removing this code if you are building an app based on this demo.</p>
+  <code id="stack"></code>
+  </div>
+</div>
 
+<!-- Initial meeting authentication screen with meeting and name inputs -->
 <div id="flow-authenticate" class="flow text-center p-2">
   <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
   <div class="container">
