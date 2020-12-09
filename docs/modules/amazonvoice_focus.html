@@ -204,7 +204,7 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					<p>By default this will also pre-load the model file and prepare Amazon Voice Focus for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. If you do not want to pre-load resources — <em>e.g.</em>, if you would rather the download occur later, or you are not sure if the user will use noise suppression — pass the optional <code>preload</code> argument:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec = {};
 <span class="hljs-keyword">const</span> options = {
-  preload: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">preload</span>: <span class="hljs-literal">false</span>,
   logger,
 };
 
@@ -212,7 +212,7 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 					<p>Check for both of these kinds of support prior to offering noise suppression to users. The ideal time to do so is during pre-meeting setup.</p>
 					<p>Your device controller must support Web Audio to use Amazon Voice Focus. If you do not wish to enable Web Audio universally, you can use your support check as a condition:</p>
 					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController({
-  enableWebAudio: isVoiceFocusSupported
+  <span class="hljs-attr">enableWebAudio</span>: isVoiceFocusSupported
 });</code></pre>
 					<a href="#adding-amazon-voice-focus-to-your-application" id="adding-amazon-voice-focus-to-your-application" style="color: inherit; text-decoration: none;">
 						<h2>Adding Amazon Voice Focus to your application</h2>
@@ -284,17 +284,17 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 					<p>If you specify a non-<code>auto</code> <code>executionPreference</code> and a <code>variant</code>, no estimation work will be done: the SDK will use the values you provide. If you additionally specify <code>simd</code>, the execution approach chosen is predictable and fixed, and no capability testing or estimation is required.</p>
 					<p>For example, to force the use of a high-quality model in an Electron application built with SIMD enabled:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
-  variant: <span class="hljs-string">&#x27;c50&#x27;</span>,
-  executionPreference: <span class="hljs-string">&#x27;inline&#x27;</span>,
-  simd: <span class="hljs-string">&#x27;force&#x27;</span>,
+  <span class="hljs-attr">variant</span>: <span class="hljs-string">&#x27;c50&#x27;</span>,
+  <span class="hljs-attr">executionPreference</span>: <span class="hljs-string">&#x27;inline&#x27;</span>,
+  <span class="hljs-attr">simd</span>: <span class="hljs-string">&#x27;force&#x27;</span>,
 };
 
 <span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });</code></pre>
 					<p>or to force the use of the highest quality model, which typically requires offload to a Web Worker:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
-  variant: <span class="hljs-string">&#x27;c100&#x27;</span>,
-  executionPreference: <span class="hljs-string">&#x27;worker&#x27;</span>,
-  simd: <span class="hljs-string">&#x27;force&#x27;</span>,
+  <span class="hljs-attr">variant</span>: <span class="hljs-string">&#x27;c100&#x27;</span>,
+  <span class="hljs-attr">executionPreference</span>: <span class="hljs-string">&#x27;worker&#x27;</span>,
+  <span class="hljs-attr">simd</span>: <span class="hljs-string">&#x27;force&#x27;</span>,
 };
 
 <span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });</code></pre>
