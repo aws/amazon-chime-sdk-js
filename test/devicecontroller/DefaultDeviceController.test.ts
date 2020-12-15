@@ -1077,6 +1077,24 @@ describe('DefaultDeviceController', () => {
     });
   });
 
+  describe(' Samsung Internet brower', () => {
+    it('chooses audio and video devices without error', async () => {
+      domMockBehavior.browserName = 'samsung';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('1234', 'videoinput', 'label', 'group-id-1'),
+        getMediaDeviceInfo('1234', 'audioinput', 'label', 'group-id-2'),
+      ];
+      try {
+        await deviceController.chooseAudioInputDevice('1234');
+        await deviceController.chooseVideoInputDevice('1234');
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+    });
+  });
+
   describe('chooseVideoInputDevice (advanced for LED issues)', () => {
     it('releases the video input stream acquired before no device request', done => {
       const spy = sinon.spy(deviceController, 'releaseMediaStream');

@@ -16,6 +16,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     ios: 12,
     safari: 12,
     opera: 66,
+    samsung: 12,
   };
 
   private browserName: { [id: string]: string } = {
@@ -26,9 +27,16 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     ios: 'Safari iOS',
     safari: 'Safari',
     opera: 'Opera',
+    samsung: 'Samsung Internet',
   };
 
-  private chromeLike: string[] = ['chrome', 'edge-chromium', 'chromium-webview', 'opera'];
+  private chromeLike: string[] = [
+    'chrome',
+    'edge-chromium',
+    'chromium-webview',
+    'opera',
+    'samsung',
+  ];
   private enableUnifiedPlanForChromiumBasedBrowsers: boolean;
 
   constructor({
@@ -114,7 +122,14 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresNoExactMediaStreamConstraints(): boolean {
-    return this.isIOSSafari() && (this.version() === '12.0.0' || this.version() === '12.1.0');
+    return (
+      this.isSamsungInternet() ||
+      (this.isIOSSafari() && (this.version() === '12.0.0' || this.version() === '12.1.0'))
+    );
+  }
+
+  requiresGroupIdMediaStreamConstraints(): boolean {
+    return this.isSamsungInternet();
   }
 
   getDisplayMediaAudioCaptureSupport(): boolean {
@@ -143,7 +158,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   supportString(): string {
     if (this.isAndroid()) {
-      return `${this.browserName['chrome']} ${this.browserSupport['chrome']}+`;
+      return `${this.browserName['chrome']} ${this.browserSupport['chrome']}+, ${this.browserName['samsung']} ${this.browserSupport['samsung']}+`;
     }
     const s: string[] = [];
     for (const k in this.browserSupport) {
@@ -195,6 +210,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   private isEdge(): boolean {
     return this.browser.name === 'edge-chromium';
+  }
+
+  private isSamsungInternet(): boolean {
+    return this.browser.name === 'samsung';
   }
 
   private isAndroid(): boolean {
