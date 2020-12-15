@@ -1,5 +1,5 @@
 const {WebDriverFactory} = require('../node_modules/kite-common');
-const {AppPage} = require('../pages/AppPage');
+const {AppPage, TestAppPage} = require('../pages');
 const {MeetingReadinessCheckerPage} = require('../pages/MeetingReadinessCheckerPage');
 const { MessagingSessionPage } = require('../pages/MessagingSessionPage');
 
@@ -31,6 +31,9 @@ class LocalSession {
           break;
         case 'messagingSession':
           this.page = new MessagingSessionPage(this.driver, this.logger);
+          break;
+        case 'testApp':
+          this.page = new TestAppPage(this.driver, this.logger);
           break;
         default:
           this.page = new AppPage(this.driver, this.logger);

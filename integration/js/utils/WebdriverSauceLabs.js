@@ -234,6 +234,9 @@ class SaucelabsSession {
         case 'messagingSession':
           this.page = new MessagingSessionPage(this.driver, this.logger);
           break;
+        case 'testApp':
+          this.page = new TestAppPage(this.driver, this.logger);
+          break;
         default:
           this.page = new AppPage(this.driver, this.logger);
           break;

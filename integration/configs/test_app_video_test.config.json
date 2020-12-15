@@ -1,0 +1,27 @@
+{
+    "`": 1,
+    "name": "test_app_video_test.config.json %ts",
+    "grids": [
+    ],
+    "tests": [
+      {
+        "name": "Test App Video Test %ts",
+        "description": "Test App Video Test",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "VideoBindingTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "port": 30002,
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "version": "latest",
+        "platform": "MAC"
+      }
+    ]
+  }

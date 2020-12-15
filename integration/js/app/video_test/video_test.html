@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  <title>Meeting Demo</title>
+</head>
+
+<body>
+  <div id="meeting-container" style="display: block; margin: 0 auto 0 auto; max-width: 60em; padding: 1em 1.5em 1.3em 1.5em;">
+    <h2 id="chime-meeting-id"></h2>
+    <form id="form-join-meeting">
+      <h2>Join a meeting</h2>
+      <div>
+        <label for="inputMeeting">Meeting Title</label>
+        <input type="name" id="inputMeeting" placeholder="Meeting Title" required autofocus>
+      </div>
+      <div>
+        <label for="inputName">Your Name</label>
+        <input type="name" id="inputName"placeholder="Your Name" required>
+      </div>
+      <div>
+        <button id="join-meeting" type="submit">Join Meeting</button>
+      </div>
+    </form>
+
+    <div style="width: 100%; display: flex; flex-direction: row;">
+      <div id="tile-0" class="video-tile" style="width: 50%;">
+        <video id="video-0" class="video-tile-video" style="margin: 1rem; width: 100%;"></video>
+      </div>
+
+      <div id="tile-1" class="video-tile" style="width: 50%;">
+        <video id="video-1" class="video-tile-video" style="margin: 1rem; width: 100%;"></video>
+      </div>
+    </div>
+
+    <div id="button-container">
+      <button id="start-local-video" type="button"  title="Start Local Video">
+        Start Local Video Tile
+      </button>
+      <button id="stop-local-video" type="button"  title="Stop Local Video">
+        Stop Local Video Tile
+      </button>
+    </div>
+
+    <div id="api-buttons">
+      <form id="bind-video-element-form">
+        <label for="bind-video-element-tile-id">Tile Id</label>
+        <input type="text" id="bind-video-element-tile-id" placeholder="Tile Id">
+        <label for="bind-video-element-video-element">Video Element Id</label>
+        <input type="text" id="bind-video-element-video-element" placeholder="Video Element Id">
+        <button id="bind-video-element" type="submit">
+          Bind Video Element
+        </button>
+      </form>
+
+      <form id="unbind-video-element-form">
+        <label for="unbind-video-element-tile-id">Tile Id</label>
+        <input type="text" id="unbind-video-element-tile-id" placeholder="Tile Id">
+        <button id="unbind-video-element" type="submit">
+          Unbind Video Element
+        </button>
+      </form>
+    </div>
+    <div id="video-tile-state-updates">
+      <h2>Tile State Updates</h2>
+      <p id="tile-1-state"></p>
+      <p id="tile-2-state"></p>
+    </div>
+
+    <p id="sdk-version"></p>
+  </div>
+</body>
+
+</html>

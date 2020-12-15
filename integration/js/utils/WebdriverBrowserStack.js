@@ -3,6 +3,7 @@ const {getBuildId, getRunDetails} = require('./BrowserStackLogs');
 const {AppPage} = require('../pages/AppPage');
 const {MeetingReadinessCheckerPage} = require('../pages/MeetingReadinessCheckerPage');
 const { MessagingSessionPage } = require('../pages/MessagingSessionPage');
+const { TestAppPage } = require('../pages');
 
 const getOS = capabilities => {
   switch (capabilities.platform) {
@@ -129,6 +130,9 @@ class BrowserStackSession {
           break;
         case 'messagingSession':
           this.page = new MessagingSessionPage(this.driver, this.logger);
+          break;
+        case 'testApp':
+          this.page = new TestAppPage(this.driver, this.logger);
           break;
         default:
           this.page = new AppPage(this.driver, this.logger);
