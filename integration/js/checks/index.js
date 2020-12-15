@@ -16,3 +16,4 @@ exports.MeetingReadinessCheckerAudioConnectivityCheck = require('./MeetingReadin
 exports.MeetingReadinessCheckerNetworkUdpCheck = require('./MeetingReadinessCheckerNetworkUdpCheck');
 exports.VoiceFocusOfferedCheck = require('./VoiceFocusOfferedCheck');
 exports.SocketSubscribeMessageCheck = require('./SocketSubscribeMessageCheck');
+exports.TileStateCheck = require('./TileStateCheck');

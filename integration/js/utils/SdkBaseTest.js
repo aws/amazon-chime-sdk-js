@@ -293,6 +293,8 @@ class SdkBaseTest extends KiteBaseTest {
       return 'meetingReadinessChecker';
     } else if (this.testName && this.testName.toLowerCase().includes('messagingsession')) {
       return 'messagingSession';
+    } else if (this.testName && this.testName.toLowerCase().includes('testapp')) {
+      return 'testApp';
     } else {
         return 'meeting'
     };

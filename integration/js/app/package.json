@@ -1,27 +1,23 @@
 {
-  "name": "amazon-chime-sdk-js-demos",
-  "version": "0.1.0",
-  "description": "Amazon Chime SDK JavaScript Demos",
+  "name": "video_test",
+  "version": "1.0.0",
+  "description": "Mini Test App for running video Api integ tests",
   "scripts": {
-    "deps": "cd ../.. && npm run build",
+    "deps": "cd ../../.. && npm run build",
     "build:fast": "tsc && webpack --config ./webpack.config.js",
     "build": "npm run deps && npm install && npm run build:fast",
     "start:fast": "npm run build:fast && node server.js",
-    "start": "npm run deps && npm install && npm install aws-sdk && npm run start:fast"
+    "start": "npm run deps && npm install && npm run start:fast"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.1",
     "autoprefixer": "^9.6.4",
     "css-loader": "^4.3.0",
     "file-loader": "^6.1.0",
     "html-webpack-inline-source-plugin": "^0.0.10",
     "html-webpack-plugin": "^3.2.0",
-    "markdown-it": "^11.0.1",
     "node-sass": "^4.14.1",
-    "open-iconic": "^1.1.1",
     "postcss-loader": "^3.0.0",
     "precss": "^4.0.0",
-    "raw-loader": "^4.0.1",
     "sass": "^1.26.11",
     "sass-loader": "^10.0.2",
     "style-loader": "^1.2.1",
@@ -30,18 +26,9 @@
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
   },
-  "dependencies": {
-    "amazon-chime-sdk-js": "file:../..",
-    "aws-sdk": "^2.808.0",
-    "bootstrap": "^4.5.2",
-    "compression": "^1.7.4",
-    "jquery": "^3.5.1",
-    "lodash": "^4.17.20",
-    "popper.js": "^1.15.0"
-  },
   "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/aws/amazon-chime-sdk-js"
+  "dependencies": {
+    "amazon-chime-sdk-js": "file:../../..",
+    "aws-sdk": "^2.802.0"
   }
 }
