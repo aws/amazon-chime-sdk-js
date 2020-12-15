@@ -1722,18 +1722,18 @@ export class DemoMeetingApp implements
         this.log(`failed to chooseVideoInputDevice ${device}`, e);
       }
       throw new Error('no video device selected');
-    }
-    try {
-      await this.audioVideo.chooseVideoInputDevice(device);
-    } catch (e) {
-      fatal(e);
-      this.log(`failed to chooseVideoInputDevice ${device}`, e);
-    }
-
-    if (showPreview) {
-      this.audioVideo.startVideoPreviewForVideoInput(document.getElementById(
-        'video-preview'
-      ) as HTMLVideoElement);
+    } else {
+      try {
+        await this.audioVideo.chooseVideoInputDevice(device);
+        if (showPreview) {
+          this.audioVideo.startVideoPreviewForVideoInput(document.getElementById(
+            'video-preview'
+          ) as HTMLVideoElement);
+        }
+      } catch (e) {
+        fatal(e);
+        this.log(`failed to chooseVideoInputDevice ${device}`, e);
+      }
     }
   }
 
