@@ -645,6 +645,8 @@ export class DemoMeetingApp implements
     buttonVideoStats.addEventListener('click', () => {
       if (this.isButtonOn('button-video-stats')) {
         document.querySelectorAll('.stats-info').forEach(e => e.remove());
+      } else {
+        this.getRelayProtocol();
       }
       this.toggleButton('button-video-stats');
     });
@@ -903,7 +905,25 @@ export class DemoMeetingApp implements
         this.statsCollector.showDownstreamStats(tileIndex);
       }
     }
+  }
 
+  async getRelayProtocol() {
+    const rawStats = await this.audioVideo.getRTCPeerConnectionStats();
+    if (rawStats) {
+      rawStats.forEach(report => {
+        if (report.type === 'local-candidate') {
+          this.log(`Local WebRTC Ice Candidate stats: ${JSON.stringify(report)}`);
+          const relayProtocol = report.relayProtocol;
+          if (typeof relayProtocol === 'string') {
+            if (relayProtocol === 'udp') {
+              this.log(`Connection using ${relayProtocol.toUpperCase()} protocol`);
+            } else {
+              this.log(`Connection fell back to ${relayProtocol.toUpperCase()} protocol`);
+            }
+          }
+        }
+      });
+    }
   }
 
   async getStats(tileIndex: number) {
