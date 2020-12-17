@@ -283,6 +283,7 @@ export class DemoMeetingApp implements
         this.meeting = new URL(window.location.href).searchParams.get('m');
         this.name = this.isRecorder() ? '«Meeting Recorder»' : '«Meeting Broadcaster»';
         await this.authenticate();
+        await this.openAudioOutputFromSelection();
         await this.join();
         this.displayButtonStates();
         this.switchToFlow('flow-meeting');
