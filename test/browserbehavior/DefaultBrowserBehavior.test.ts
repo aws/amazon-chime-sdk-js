@@ -21,6 +21,8 @@ describe('DefaultBrowserBehavior', () => {
   const OPERA_USERAGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
   const FIREFOX_ANDROID_USERAGENT =
     'Mozilla/5.0 (Android 10; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0';
+  const SAMSUNG_INTERNET_USERAGENT =
+    'Mozilla/5.0 (Linux; Android 11; Pixel 3a XL) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/13.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -57,7 +59,9 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.eq(false);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
-      expect(new DefaultBrowserBehavior().supportString()).to.eq('Google Chrome 78+');
+      expect(new DefaultBrowserBehavior().supportString()).to.eq(
+        'Google Chrome 78+, Samsung Internet 12+'
+      );
     });
 
     it('can detect Chrome', () => {
@@ -101,6 +105,42 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
+      const enableUnifiedPlan = true;
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.eq(true);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.eq(false);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.eq(false);
+    });
+
+    it('can detect Samsung Internet', () => {
+      setUserAgent(SAMSUNG_INTERNET_USERAGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('samsung');
+      expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(false);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(true);
+      expect(new DefaultBrowserBehavior().requiresGroupIdMediaStreamConstraints()).to.eq(true);
+      expect(new DefaultBrowserBehavior().supportString()).to.eq(
+        'Google Chrome 78+, Samsung Internet 12+'
+      );
       const enableUnifiedPlan = true;
       expect(
         new DefaultBrowserBehavior({

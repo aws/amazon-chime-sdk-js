@@ -249,6 +249,15 @@ This seems to be a [bug](https://bugs.chromium.org/p/webrtc/issues/detail?id=116
 This error indicates that the device you are using does not support hardware acceleration decoding. However this does not impact the ability of this user to participate in Amazon Chime SDK meetings as the device can render and transmit VP8 streams to other parties in the call. Specifically for Chrome, you will need to enable Unified Plan support by setting this [flag](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers) to true or enable [Simulcast](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers).
 In some cases, H.264 may be missing from the initial SDP offer [tracking Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1047994)) causing this slate to appear. Rejoining the meeting can fix the videos to be rendered once again.
 
+### I am not able to join an Amazon Chime SDK meeting from an Android 11 device running Chromium 83 based browsers, such as Samsung Internet (Version 13) or Chrome (Version 83). Is this a known issue?
+
+This is a bug on Android 11 running Chromium 83 based browsers. You will observe this issue on the Samsung Internet browser (Version 13) since it is based on Chromium 83. Please check [ICE gathering stalls in Chrome on Android 11](https://bugs.chromium.org/p/chromium/issues/detail?id=1115498) bug for more information. This issue is not observed on the Samsung Internet browser (Version 12) or the latest Chrome for Android browser when tested on an Android 11 device.
+
+### Does Amazon Voice Focus support the Samsung Internet browser?
+
+Yes, Amazon Voice Focus supports the Samsung Internet browser (Chromium 83 or lower). However, it leads to a poor user experience because the preferred Chromium version is 87 or higher. Please check Amazon Voice Focus [browser compatibility matrix](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/09_Amazon_Voice_Focus.md#browser-compatibility) in Amazon Voice Focus guide.
+
+
 ## Audio and video
 
 ### My clients are unable to join the meeting and I see `navigator.mediaDevices is undefined`, what could be the reason?

@@ -992,7 +992,16 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     if (device === null) {
       return null;
     } else if (typeof device === 'string') {
-      if (this.browserBehavior.requiresNoExactMediaStreamConstraints()) {
+      if (
+        this.browserBehavior.requiresNoExactMediaStreamConstraints() &&
+        this.browserBehavior.requiresGroupIdMediaStreamConstraints()
+      ) {
+        // In Samsung Internet browser, navigator.mediaDevices.enumerateDevices()
+        // returns same deviceId but different groupdId for some audioinput and videoinput devices.
+        // To handle this, we select appropriate device using deviceId + groupId.
+        trackConstraints.deviceId = device;
+        trackConstraints.groupId = this.getGroupIdFromDeviceId(kind, device);
+      } else if (this.browserBehavior.requiresNoExactMediaStreamConstraints()) {
         trackConstraints.deviceId = device;
       } else {
         trackConstraints.deviceId = { exact: device };
