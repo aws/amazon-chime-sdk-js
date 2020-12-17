@@ -48,6 +48,54 @@ function wait_for_demo_to_start {
     fi
 }
 
+function check_if_integ_tests_required {
+base_branch=$(head -n 1 ../../.base-branch)
+commits=`git rev-list $base_branch..`
+echo 'Commits:'  $commits
+
+requires_integration_test=false
+for commit in $commits
+do
+   commit_files=`git diff-tree --no-commit-id --name-only -r ${commit}`
+   echo 'Commited files are: ' $commit_files
+   matches=false
+   for committed_file in $commit_files
+   do
+      while read -r stem
+      do
+         if [[ $stem =~ ^#.* ]]
+         then
+               continue
+         elif [[ $stem = "" ]]
+         then
+               continue
+         elif [[ $stem =~ ^!.* ]]
+         then
+               stem_string="${stem:1}"
+               if [[ $committed_file = $stem_string* ]]
+               then
+                  matches=false
+               fi
+         elif [[ $committed_file = $stem* ]]
+         then
+               matches=true
+         fi
+      done < "../../.integration-watchlist"
+      if [[ $matches ]]
+      then
+         requires_integration_test=true
+      fi
+   done
+done
+
+echo 'Requires integ tests:' $requires_integration_test
+if [[ ! $requires_integration_test ]]
+then
+   exit 0
+fi
+}
+echo `pwd`
+check_if_integ_tests_required
 curr=`pwd`
 
 if [[ $1 == meeting_readiness_checker ]]

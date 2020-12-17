@@ -19,64 +19,28 @@ jobs:
   build:
     name: Build and Run Unit Tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x]
     steps:
       - name: Checkout Package
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Using Node.js ${{ matrix.node-version }}
+      - name: Using Node.js 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
       - name: Clean Install
         run: npm ci
       - name: Build
         run: npm run build:release
 
-  check_integ_test_required:
-    name: Check if Integ Tests are Required
-    needs: build
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x]
-    outputs:
-      integration_test_required: ${{ steps.integration_test_required.outputs.needs_integration_test }}
-
-    steps:
-      - name: Checkout Package
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup Node.js - ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Check if Integ Tests need to Run
-        run: node script/needs-integration-test.js
-      - name: Set integration test requirement to true if necessary
-        id: integration_test_required
-        if: ${{ success() }}
-        run: echo '::set-output name=needs_integration_test::true'
-
   integ-audio:
     name: Audio Integration Test
-    needs: check_integ_test_required
-    if: ${{needs.check_integ_test_required.outputs.integration_test_required}}
+    needs: build
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@v1
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
@@ -94,12 +58,14 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           noSSLBumpDomains: all
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-      - name: Checkout Chime SDK Repo
+      - name: Checkout Package
         uses: actions/checkout@v2
-      - name: Setup Node.js - ${{ matrix.node-version }}
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js - 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Clean Install
@@ -109,18 +75,13 @@ jobs:
 
   integ-screen-share:
     name: Screen Share Integration Test
-    needs: check_integ_test_required
-    if: needs.check_integ_test_required.outputs.integration_test_required && github.event.pull_request.base.ref == 'release-1.x'
+    needs: build
+    if: github.event.pull_request.base.ref == 'release-1.x'
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@v1
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
@@ -138,12 +99,12 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           noSSLBumpDomains: all
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-      - name: Checkout Chime SDK Repo
+      - name: Checkout Package
         uses: actions/checkout@v2
-      - name: Setup Node.js - ${{ matrix.node-version }}
+      - name: Setup Node.js - 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Clean Install
@@ -155,15 +116,10 @@ jobs:
     name: Video Integration Test
     needs: integ-audio
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@v1
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
@@ -181,12 +137,12 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           noSSLBumpDomains: all
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-      - name: Checkout Chime SDK Repo
+      - name: Checkout Package
         uses: actions/checkout@v2
-      - name: Setup Node.js - ${{ matrix.node-version }}
+      - name: Setup Node.js - 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Clean Install
@@ -198,15 +154,10 @@ jobs:
     name: Content Share Integration Test
     needs: integ-audio
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@v1
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
@@ -224,12 +175,12 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           noSSLBumpDomains: all
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-      - name: Checkout Chime SDK Repo
+      - name: Checkout Package
         uses: actions/checkout@v2
-      - name: Setup Node.js - ${{ matrix.node-version }}
+      - name: Setup Node.js - 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Clean Install
@@ -237,20 +188,14 @@ jobs:
       - name: Run Content Share Integration Test
         run: npm run test:integration-content-share
 
-
   integ-data-message:
     name: Data Message Integration Test
     needs: integ-video
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@v1
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
@@ -268,12 +213,12 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           noSSLBumpDomains: all
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-      - name: Checkout Chime SDK Repo
+      - name: Checkout Package
         uses: actions/checkout@v2
-      - name: Setup Node.js - ${{ matrix.node-version }}
+      - name: Setup Node.js - 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Clean Install
@@ -286,15 +231,10 @@ jobs:
     name: Meeting End Integration Test
     needs: integ-video
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@v1
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
@@ -312,12 +252,12 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           noSSLBumpDomains: all
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-      - name: Checkout Chime SDK Repo
+      - name: Checkout Package
         uses: actions/checkout@v2
-      - name: Setup Node.js - ${{ matrix.node-version }}
+      - name: Setup Node.js - 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Clean Install
@@ -329,15 +269,10 @@ jobs:
     name: Meeting Readiness Integration Test
     needs: integ-video
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
       - name: Create a Job ID
         id: create-job-id
-        uses: filipstefansson/uuid-action@v1
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
       - name: Set JOB_ID Env Variable
         run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
       - name: Echo Job ID
@@ -355,12 +290,12 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           noSSLBumpDomains: all
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-      - name: Checkout Chime SDK Repo
+      - name: Checkout Package
         uses: actions/checkout@v2
-      - name: Setup Node.js - ${{ matrix.node-version }}
+      - name: Setup Node.js - 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12.x
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Clean Install
