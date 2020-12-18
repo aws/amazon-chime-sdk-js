@@ -10,7 +10,7 @@ import { SinonStub, spy, stub } from 'sinon';
 // For mocking.
 import { VoiceFocusAudioWorkletNode } from '../../libs/voicefocus/types';
 import { NodeArguments, VoiceFocus, VoiceFocusConfig } from '../../libs/voicefocus/voicefocus';
-import { VoiceFocusTransformDeviceObserver } from '../../src';
+import { ConsoleLogger, LogLevel, VoiceFocusTransformDeviceObserver } from '../../src';
 import Device from '../../src/devicecontroller/Device';
 import Logger from '../../src/logger/Logger';
 import Versioning from '../../src/versioning/Versioning';
@@ -24,6 +24,17 @@ chai.use(chaiAsPromised);
 chai.should();
 const expect = chai.expect;
 
+// This is the mock User-Agent we'll plug in to `window.navigator` and `globalThis.navigator`.
+const MOCK_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:86.0) Gecko/20100101 Firefox/86.0';
+
+// This must agree with `MOCK_UA`.
+const MOCK_UA_PARAM = 'firefox-86';
+
+// Change the `LogLevel` here to make it easier to figure out what's going wrong.
+// You will also need to pass this via `{ logger: DEFAULT_LOGGER }` when creating a transformer.
+const DEFAULT_LOGGER: Logger | undefined = new ConsoleLogger('tests', LogLevel.OFF);
+
 // These will be the same for all requests, and reflect some versions.
 function getQueryParams(): string {
   // E.g., '2.0'.
@@ -34,13 +45,10 @@ function getQueryParams(): string {
     /^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)/
   )[0];
 
-  // E.g., '14'.
-  const nodeVersion = process.version.match(/^v([1-9][0-9]*)/)[1];
-
   // E.g., 'sdk-2.0'.
   const assetGroup = `sdk-${major}`;
 
-  return `sdk=${majorMinor}&ua=node-${nodeVersion}&assetGroup=${assetGroup}`;
+  return `sdk=${majorMinor}&ua=${MOCK_UA_PARAM}&assetGroup=${assetGroup}`;
 }
 
 function basicFetchMock(): void {
@@ -53,16 +61,29 @@ function basicFetchMock(): void {
   });
 }
 
-function mockWindow(): void {
+function mockWindowAndNavigator(): void {
+  const navigator: Navigator = ({
+    userAgent: MOCK_UA,
+  } as unknown) as Navigator;
+
+  globalThis.navigator = navigator;
+
   // Oh, Node.
-  globalThis['window'] = ({
+  globalThis.window = ({
     URL: ({ createObjectURL: (url: string) => url } as unknown) as typeof URL,
+    navigator,
   } as unknown) as Window & typeof globalThis;
+}
+
+function resetWindowAndNavigator(): void {
+  delete globalThis['window'];
+  delete globalThis['navigator'];
 }
 
 describe('VoiceFocusDeviceTransformer', () => {
   before(() => {
     basicFetchMock();
+    mockWindowAndNavigator();
   });
 
   afterEach(() => {
@@ -70,6 +91,7 @@ describe('VoiceFocusDeviceTransformer', () => {
   });
 
   after(() => {
+    resetWindowAndNavigator();
     fetchMock.restore();
   });
 
@@ -132,13 +154,10 @@ describe('VoiceFocusDeviceTransformer', () => {
             body: 'function(){}',
           };
         });
-
-        mockWindow();
       });
 
       after(() => {
         basicFetchMock();
-        delete globalThis['window'];
       });
 
       it('is supported if the appropriate mocks exist', async () => {
@@ -243,7 +262,7 @@ describe('VoiceFocusDeviceTransformer', () => {
   it('fetches the estimator first, with the right URL', async () => {
     const validSpec = {};
     try {
-      await VoiceFocusDeviceTransformer.create(validSpec, {});
+      await VoiceFocusDeviceTransformer.create(validSpec, { logger: DEFAULT_LOGGER });
     } catch (e) {
       // Doesn't matter.
     }

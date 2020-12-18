@@ -12,6 +12,7 @@ export declare type ExecutionApproach = 'inline' | 'worker-sab' | 'worker-postMe
 export declare type ExecutionPreference = ExecutionApproach | 'worker' | 'auto';
 export declare type UsagePreference = 'quality' | 'interactivity';
 export declare type VariantPreference = ModelVariant | 'auto';
+export declare type ExecutionQuanta = 1 | 2 | 3;
 export interface ModelConfig {
     category: ModelCategory;
     name: ModelName;
@@ -24,6 +25,7 @@ export interface VoiceFocusExecutionSpec {
     executionPreference: ExecutionPreference;
     usagePreference: UsagePreference;
     estimatorBudget: number;
+    executionQuantaPreference?: ExecutionQuanta;
 }
 export interface ComplexityThresholds {
     c100: number;
@@ -86,6 +88,7 @@ export interface ProcessorOptions {
     sendBufferCount: number;
     prefill: number;
     agc: AGCOptions;
+    executionQuanta?: ExecutionQuanta;
 }
 export interface ProcessorMessageData {
     message: 'data' | 'cpu' | 'prepare-for-frames';
@@ -95,7 +98,7 @@ export interface ProcessorMessage {
     data: ProcessorMessageData;
 }
 export interface WorkerMessageData {
-    message: 'module' | 'stopped' | 'ready' | 'data' | 'cpu' | 'processing';
+    message: 'module' | 'module-buffer' | 'stopped' | 'ready' | 'data' | 'cpu' | 'processing';
     key?: string;
     preload?: boolean;
     module?: WebAssembly.Module;
