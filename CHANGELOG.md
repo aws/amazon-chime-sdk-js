@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
 - Add Samsung Internet browser for Android as a supported browser.
 - Add `DefaultVideoTransformDevice` to implement `VideoTransformDevice`.
  `VideoFrameProcessor`, `VideoFrameProcessorPipeline` and `VideoFrameBuffer` interfaces
@@ -20,15 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
-- [Demo] Fix audio cannot be recorded issue
 
 ## [2.2.1] - 2020-12-11
 
 ### Added
-
-- [Demo] Fatal errors in the demo will now cause a fatal screen if `fatal=1` is present in the
-  URL, or if the demo is running locally.
-- [Demo] Add logging for UDP or TCP/TLS protocol being used for audio/video
 
 ### Changed
 
