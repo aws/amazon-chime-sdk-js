@@ -77,20 +77,19 @@
 						<h2>Introduction</h2>
 					</a>
 					<p>Amazon Chime SDK for JavaScript contains easy-to-use APIs for adding frame-by-frame processing to an outgoing video stream.</p>
-					<p>Amazon Chime SDK for JavaScript defines a video processing stage as <code>VideoFrameProcessor</code>. A <code>VideoFrameProcessor</code> takes an array of <code>VideoFrameBuffer</code>s, applies builder-defined processing and outputs an array of <code>VideoFrameBuffer</code>s. Processors can be chained by their inputs and outputs. The outputs of each processor can be linked to the inputs of the next processor. The last processor in the chain must implement <code>asCanvasImageSource</code> to return <code>CanvasImageSource</code>.</p>
-					<p>Once the video is processed in <code>VideoFrameProcessorPipeline</code>, it is rendered onto a <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement">HTMLCanvasElement</a> and transformed into a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a>.</p>
-					<p>To integrate video processing into meeting session, <code>VideoTransformDevice</code> should be used.</p>
+					<p>Amazon Chime SDK for JavaScript defines a video processing stage as an implementation of the <code>VideoFrameProcessor</code> interface, which takes an array of <code>VideoFrameBuffer</code>s, applies builder-defined processing, and outputs an array of <code>VideoFrameBuffer</code>s. The outputs of each processor can be linked to the inputs of the next processor, with the last processor in the chain required to implement <code>asCanvasImageSource</code> to return <code>CanvasImageSource</code> so that the resulting frames can be rendered onto a <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement">HTMLCanvasElement</a> and transformed into a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a>.</p>
+					<p>To integrate video processing into meeting session, <code>VideoTransformDevice</code> should be used, which internally uses a <code>VideoFrameProcessorPipeline</code> to complete the aforementioned linking of stages and final canvas rendering.</p>
 					<p>A typical workflow would be:</p>
 					<ol>
 						<li>Create an array of custom <code>VideoFrameProcessor</code>s.</li>
-						<li>Create <code>VideoTransformDevice</code> with a <code>Device</code> and an array of custom <code>VideoFrameProcessor</code>s.</li>
+						<li>Create a <code>VideoTransformDevice</code> from a <code>Device</code> and the array of <code>VideoFrameProcessor</code>s.</li>
 						<li>Call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the <code>VideoTransformDevice</code>.</li>
 					</ol>
 					<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
 						<h3>Browser compatibility</h3>
 					</a>
-					<p>The APIs for video processing in Amazon Chime SDK for JavaScript works in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari on iOS devices due to <a href="https://bugs.webkit.org/show_bug.cgi?id=181663">Webkit Bug</a>.
-					WebRTC Unified Plan is also required. Unified Plan is by default enabled in <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers">MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers</a>. If Unified Plan is disabled in the meeting, the call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the <code>VideoTransformDevice</code> will throws error.</p>
+					<p>The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari on iOS devices due to <a href="https://bugs.webkit.org/show_bug.cgi?id=181663">Webkit Bug 181663</a>.
+					WebRTC Unified Plan is also required. Unified Plan is by default enabled in <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers">MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers</a>. If Unified Plan is disabled in the meeting, the call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the <code>VideoTransformDevice</code> will throw an error.</p>
 					<table>
 						<thead>
 							<tr>
@@ -132,8 +131,8 @@
 						<h4>Construction and Starting Video Processing</h4>
 					</a>
 					<p>The construction of the <code>DefaultVideoTransformDevice</code> will not start the camera or start processing. The method <code>meetingSession.audioVideo.chooseVideoInputDevice</code> is needed to be called. The device controller will use the inner <code>Device</code> to acquire the source <code>MediaStream</code> and start the processing pipeline at the same frame rate.
-						The parameters to <code>chooseVideoInputQuality</code> are used as constraints when device controller acquires the source <code>MediaStream</code>.
-					After video input is chosen, <code>meetingSession.audioVideo.startLocalVideoTile</code> can be called to start streaming video.</p>
+						The parameters to <code>chooseVideoInputQuality</code> are used as constraints on the source <code>MediaStream</code>.
+					After the video input is chosen, <code>meetingSession.audioVideo.startLocalVideoTile</code> can be called to start streaming video.</p>
 					<a href="#switching-the-inner-device-on-videotransformdevice" id="switching-the-inner-device-on-videotransformdevice" style="color: inherit; text-decoration: none;">
 						<h4>Switching the Inner Device on VideoTransformDevice</h4>
 					</a>
@@ -142,7 +141,7 @@
 					<a href="#stopping-videotransformdevice" id="stopping-videotransformdevice" style="color: inherit; text-decoration: none;">
 						<h4>Stopping VideoTransformDevice</h4>
 					</a>
-					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with different <code>DefaultVideoTransformDevice</code> or <code>null</code> to stop using previous <code>DefaultVideoTransformDevice</code>.  The method <code>meetingSession.audioVideo.stopLocalVideoTile</code> can also be used to stop the streaming.</p>
+					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with a different <code>DefaultVideoTransformDevice</code> or <code>null</code> to stop using previous <code>DefaultVideoTransformDevice</code>.  The method <code>meetingSession.audioVideo.stopLocalVideoTile</code> can also be used to stop the streaming.</p>
 					<p>After stopping the video processing, the inner <code>Device</code> will be released by device controller unless the inner <code>Device</code> is a <code>MediaStream</code> provided by users where it is their responsibility of users to handle the lifecycle.</p>
 					<p>After <code>DefaultVideoTransformDevice</code> is no longer used by device controller, call <code>DefaultVideoTransformDevice.stop</code> to release the <code>VideoProcessor</code>s and underlying pipeline. After <code>stop</code> is called, users must discard the <code>DefaultVideoTransformDevice</code>.<code>DefaultVideoTransformDevice.stop</code> is necessary to release the internal resources.</p>
 					<a href="#receiving-lifecycle-notifications-with-an-observer" id="receiving-lifecycle-notifications-with-an-observer" style="color: inherit; text-decoration: none;">
@@ -169,22 +168,22 @@
 					<a href="#videoframebuffer" id="videoframebuffer" style="color: inherit; text-decoration: none;">
 						<h3>VideoFrameBuffer</h3>
 					</a>
-					<p><code>VideoFrameBuffer</code> is an abstract interface that can be implemented to represent images or video sources. It is required to implement <code>asCanvasImageSource</code> to return <code>CanvasImageSource</code> and optionally, developers could implement <code>asCanvasElement</code> or <code>asTransferable</code> to facilitate processing algorithm to work with <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement">HTMLCanvasElement</a> or <a href="https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker">Worker</a> respectively.</p>
+					<p><code>VideoFrameBuffer</code> is an abstract interface that can be implemented to represent images or video sources. It is required to implement <code>asCanvasImageSource</code> to return <code>CanvasImageSource</code>; optionally, developers can implement <code>asCanvasElement</code> or <code>asTransferable</code> to facilitate processing algorithm to work with <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement">HTMLCanvasElement</a>s or <a href="https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker">Worker</a>s respectively.</p>
 					<a href="#videoframeprocessor" id="videoframeprocessor" style="color: inherit; text-decoration: none;">
 						<h3>VideoFrameProcessor</h3>
 					</a>
 					<p><code>VideoFrameProcessor</code> represents a processing stage. Internally,  processors are executed in a completely serial manner. Each pass will finish before the next pass begins. The input <code>VideoFrameBuffer</code>s are the video sources. Changing the property of buffers such as resizing will likely modify properties of the video sources and should be performed with care.</p>
-					<a href="#build-a-simple-processor" id="build-a-simple-processor" style="color: inherit; text-decoration: none;">
-						<h3>Build a simple processor</h3>
+					<a href="#building-a-simple-processor" id="building-a-simple-processor" style="color: inherit; text-decoration: none;">
+						<h3>Building a simple processor</h3>
 					</a>
-					<p>The following example shows how to build a basic processor to resize the video frames.</p>
+					<p>The following example shows how to build a basic processor to resize the video frames.  We first define an implementation of <code>VideoFrameProcessor</code>:</p>
 					<pre><code class="language-typescript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">VideoResizeProcessor</span> <span class="hljs-title">implements</span> <span class="hljs-title">VideoFrameProcessor</span> </span>{
   <span class="hljs-function"><span class="hljs-title">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> displayAspectRatio: <span class="hljs-built_in">number</span></span>)</span> {}
 
   <span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): VideoFrameBuffer[];
   <span class="hljs-keyword">async</span> destroy(): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
 }</code></pre>
-					<p>To keep the properties of the original video, the processor have to copy the frame onto its own staging buffer in <code>process</code>.</p>
+					<p>To keep the properties of the original video, the processor has to copy the frame onto its own staging buffer in <code>process</code>:</p>
 					<pre><code class="language-typescript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">VideoResizeProcessor</span> <span class="hljs-title">implements</span> <span class="hljs-title">VideoFrameProcessor</span> </span>{
   <span class="hljs-keyword">private</span> targetCanvas: HTMLCanvasElement = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&#x27;canvas&#x27;</span>) <span class="hljs-keyword">as</span> HTMLCanvasElement;
   <span class="hljs-keyword">private</span> targetCanvasCtx: CanvasRenderingContext2D = <span class="hljs-built_in">this</span>.targetCanvas.getContext(<span class="hljs-string">&#x27;2d&#x27;</span>) <span class="hljs-keyword">as</span> CanvasRenderingContext2D;
@@ -197,7 +196,7 @@
 
   <span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): <span class="hljs-built_in">Promise</span>&lt;VideoFrameBuffer[]&gt;;
 }</code></pre>
-					<p>The incoming video is painted onto the internal canvas.</p>
+					<p>During processing, the incoming video is painted onto the internal canvas like in the following abbreviated:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): <span class="hljs-built_in">Promise</span>&lt;VideoFrameBuffer[]&gt; {
   <span class="hljs-keyword">const</span> canvas = buffers[<span class="hljs-number">0</span>].asCanvasElement();
   <span class="hljs-keyword">const</span> frameWidth = canvas.width;
@@ -219,7 +218,7 @@
   buffers[<span class="hljs-number">0</span>] = <span class="hljs-built_in">this</span>.canvasVideoFrameBuffer;
   <span class="hljs-keyword">return</span> buffers;
 }</code></pre>
-					<p>The whole flow:</p>
+					<p>Usage of the custom processor looks like the following:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {
   DefaultVideoTransformDevice
 } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
