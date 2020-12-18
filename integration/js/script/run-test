@@ -112,6 +112,7 @@ case $1 in
       ;;
    video)
       r video_test.config.json
+      r video_test_processor.config.json
       #  TODO: Re-enable simulcast test after it has been fixed
       # r video_test_simulcast.config.json
       r app_quit_video_test.config.json

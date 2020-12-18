@@ -9,7 +9,6 @@ import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObs
 import AudioInputDevice from '../../src/devicecontroller/AudioInputDevice';
 import AudioTransformDevice from '../../src/devicecontroller/AudioTransformDevice';
 import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
-import Device from '../../src/devicecontroller/Device';
 import GetUserMediaError from '../../src/devicecontroller/GetUserMediaError';
 import NotFoundError from '../../src/devicecontroller/NotFoundError';
 import NotReadableError from '../../src/devicecontroller/NotReadableError';
@@ -17,13 +16,14 @@ import OverconstrainedError from '../../src/devicecontroller/OverconstrainedErro
 import PermissionDeniedError from '../../src/devicecontroller/PermissionDeniedError';
 import TypeError from '../../src/devicecontroller/TypeError';
 import VideoInputDevice from '../../src/devicecontroller/VideoInputDevice';
-import VideoTransformDevice from '../../src/devicecontroller/VideoTransformDevice';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventName from '../../src/eventcontroller/EventName';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MediaDeviceProxyHandler from '../../src/mediadevicefactory/MediaDeviceProxyHandler';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
+import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
+import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -142,7 +142,6 @@ describe('DefaultDeviceController', () => {
       deviceController.setDeviceLabelTrigger(async () => {
         called = true;
         throw new Error('Something went wrong');
-        return new MediaStream();
       });
       // Simulate the device list when no permission is granted.
       domMockBehavior.enumerateDeviceList = [getMediaDeviceInfo('', 'audioinput', '', '')];
@@ -642,10 +641,9 @@ describe('DefaultDeviceController', () => {
       let called = false;
 
       class TestAudioVideoController extends NoOpAudioVideoController {
-        async restartLocalAudio(callback: () => void): Promise<void> {
+        async restartLocalAudio(_callback: () => void): Promise<void> {
           called = true;
           throw new Error('something went wrong');
-          callback();
         }
       }
 
@@ -1055,25 +1053,280 @@ describe('DefaultDeviceController', () => {
       expect(handleEventSpy.called).to.be.true;
     });
 
-    it('throws error when choosing VideoTransformDevice', async () => {
-      class NoOpVideoTransformDevice implements VideoTransformDevice {
-        stop(): Promise<void> {
-          throw new Error('Method not implemented.');
-        }
-        intrinsicDevice(): Promise<Device> {
-          throw new Error('Method not implemented.');
-        }
-        applyProcessors(_mediaStream?: MediaStream): Promise<MediaStream> {
-          throw new Error('Method not implemented.');
-        }
-        outputMediaStream: MediaStream;
-      }
-      const device = new NoOpVideoTransformDevice();
+    it('can fail to choose VideoTransformDevice when permission is denied', done => {
+      domMockBehavior.getUserMediaSucceeds = false;
+      domMockBehavior.getUserMediaResult = UserMediaState.PermissionDeniedError;
+      domMockBehavior.asyncWaitMs = 1500;
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [processor]);
+      deviceController
+        .chooseVideoInputDevice(device)
+        .then(() => {})
+        .catch(e => {
+          expect(e.message).to.include('Permission denied by user');
+          done();
+        });
+    });
 
+    it('can choose same VideoTransformDevice twice', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      const mockVideoStream = new MediaStream();
+      // @ts-ignore
+      mockVideoStream.id = 'sample';
+      // @ts-ignore
+      const mockVideoTrack = new MediaStreamTrack('test', 'video');
+      mockVideoStream.addTrack(mockVideoTrack);
+      domMockBehavior.createElementCaptureStream = mockVideoStream;
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 0,
+        height: 0,
+        deviceId: 'test-same-device',
+        facingMode: 'user',
+      };
+      const processor = new NoOpVideoFrameProcessor();
+
+      await deviceController.chooseVideoInputDevice('test-same-device');
+      const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
+
+      await deviceController.chooseVideoInputDevice(device);
+      // @ts-ignore
+      expect(deviceController.chosenVideoTransformDevice).to.eq(device);
+
+      // choose the same device
+      await deviceController.chooseVideoInputDevice(device);
+      // @ts-ignore
+      expect(deviceController.chosenVideoTransformDevice).to.eq(device);
+      await deviceController.chooseVideoInputDevice(null);
+
+      await device.stop();
+    });
+
+    it('can replace the local video for VideoTransformDevice', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      const mockVideoStream = new MediaStream();
+      // @ts-ignore
+      mockVideoStream.id = 'sample';
+      // @ts-ignore
+      mockVideoStream.active = true;
+      // @ts-ignore
+      const mockVideoTrack = new MediaStreamTrack('test', 'video');
+      mockVideoStream.addTrack(mockVideoTrack);
+      domMockBehavior.createElementCaptureStream = mockVideoStream;
+
+      deviceController.chooseVideoInputDevice(stringDeviceId).then(() => {});
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [processor]);
+      let called = false;
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async replaceLocalVideo(): Promise<void> {
+          called = true;
+        }
+      }
+
+      audioVideoController = new TestAudioVideoController();
+      deviceController.bindToAudioVideoController(audioVideoController);
+      audioVideoController.videoTileController.startLocalVideoTile();
+
+      await deviceController.chooseVideoInputDevice(device);
+
+      const stream = await deviceController.acquireVideoInputStream();
+      deviceController.releaseMediaStream(stream);
+      await new Promise(resolve => setTimeout(resolve, 200));
+      await deviceController.chooseVideoInputDevice(null);
+
+      expect(called).to.be.true;
+      await device.stop();
+    });
+
+    it('can choose media stream as device then choose VideoTransformDevice without audio video controller', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      const mockVideoStream = new MediaStream();
+      // @ts-ignore
+      mockVideoStream.active = true;
+      // @ts-ignore
+      mockVideoStream.id = 'sample';
+      // @ts-ignore
+      const mockVideoTrack = new MediaStreamTrack('test', 'video');
+      mockVideoStream.addTrack(mockVideoTrack);
+      domMockBehavior.createElementCaptureStream = mockVideoStream;
+      await deviceController.chooseVideoInputDevice(mockVideoStream);
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, mockVideoStream, [processor]);
+      await deviceController.chooseVideoInputDevice(device);
+
+      await deviceController.chooseVideoInputDevice(null);
+
+      await device.stop();
+    });
+
+    it('can choose MediaStream as device then choose VideoTransformDevice when startLocalVideoTile is called', async () => {
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async replaceLocalVideo(): Promise<void> {
+          return;
+        }
+      }
+      domMockBehavior.getUserMediaSucceeds = true;
+      const mockVideoStream = new MediaStream();
+      // @ts-ignore
+      mockVideoStream.active = true;
+      // @ts-ignore
+      mockVideoStream.id = 'sample';
+      // @ts-ignore
+      const mockVideoTrack = new MediaStreamTrack('test', 'video');
+      // @ts-ignore
+      mockVideoTrack.kind = 'video';
+      mockVideoStream.addTrack(mockVideoTrack);
+      domMockBehavior.createElementCaptureStream = mockVideoStream;
+      const avController = new TestAudioVideoController();
+      const spy = sinon.spy(avController, 'replaceLocalVideo');
+
+      deviceController.bindToAudioVideoController(avController);
+
+      avController.videoTileController.startLocalVideoTile();
+      await deviceController.chooseVideoInputDevice(mockVideoStream);
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test', [processor]);
+      await deviceController.chooseVideoInputDevice(device);
+
+      await deviceController.chooseVideoInputDevice(null);
+      await device.stop();
+      expect(spy.called).to.equal(true);
+    });
+
+    it('can reuse stream when choosing VideoTransformDevice and do a update if replaceLocalVideo is not implemented', async () => {
+      class NoReplaceImpl extends NoOpAudioVideoController {
+        replaceLocalVideo: () => Promise<void> = null;
+      }
+
+      domMockBehavior.getUserMediaSucceeds = true;
+      const mockVideoStream = new MediaStream();
+      // @ts-ignore
+      mockVideoStream.active = true;
+      // @ts-ignore
+      mockVideoStream.id = 'sample';
+      // @ts-ignore
+      const mockVideoTrack = new MediaStreamTrack('test', 'video');
+      mockVideoStream.addTrack(mockVideoTrack);
+      domMockBehavior.createElementCaptureStream = mockVideoStream;
+      const avController = new NoReplaceImpl();
+      const spy = sinon.spy(avController, 'update');
+      deviceController.bindToAudioVideoController(avController);
+      avController.videoTileController.startLocalVideoTile();
+      await deviceController.chooseVideoInputDevice(mockVideoStream);
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, mockVideoStream, [processor]);
+      await deviceController.chooseVideoInputDevice(device);
+
+      await deviceController.chooseVideoInputDevice(null);
+      await device.stop();
+
+      expect(spy.called).to.equal(true);
+    });
+
+    it('can choose media stream as device then choose VideoTransformDevice when startLocalVideoTile is not called', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      const mockVideoStream = new MediaStream();
+      // @ts-ignore
+      mockVideoStream.active = true;
+      // @ts-ignore
+      mockVideoStream.id = 'sample';
+      // @ts-ignore
+      const mockVideoTrack = new MediaStreamTrack('test', 'video');
+      mockVideoStream.addTrack(mockVideoTrack);
+      domMockBehavior.createElementCaptureStream = mockVideoStream;
+      deviceController.bindToAudioVideoController(audioVideoController);
+      await deviceController.chooseVideoInputDevice(mockVideoStream);
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, mockVideoStream, [processor]);
+      await deviceController.chooseVideoInputDevice(device);
+
+      await deviceController.chooseVideoInputDevice(null);
+      await device.stop();
+    });
+
+    it('can switch between VideoTransformDevice', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 0,
+        height: 0,
+        deviceId: 'test-same-device',
+        facingMode: 'user',
+      };
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async replaceLocalVideo(): Promise<void> {
+          return;
+        }
+      }
+      const avController = new TestAudioVideoController();
+      const spy = sinon.spy(avController, 'replaceLocalVideo');
+
+      deviceController.bindToAudioVideoController(avController);
+      avController.videoTileController.startLocalVideoTile();
+
+      await deviceController.chooseVideoInputDevice('test');
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test-different-device', [processor]);
+
+      await deviceController.chooseVideoInputDevice(device);
+
+      avController.videoTileController.stopLocalVideoTile();
+      await device.stop();
+      expect(spy.called).to.equal(true);
+    });
+
+    it('can switch between VideoTransformDevice', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 0,
+        height: 0,
+        deviceId: 'test-same-device',
+        facingMode: 'user',
+      };
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async replaceLocalVideo(): Promise<void> {
+          return;
+        }
+      }
+      const avController = new TestAudioVideoController();
+      const spy = sinon.spy(avController, 'replaceLocalVideo');
+
+      deviceController.bindToAudioVideoController(avController);
+      avController.videoTileController.startLocalVideoTile();
+
+      await deviceController.chooseVideoInputDevice('test');
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test-different-device', [processor]);
+
+      await deviceController.chooseVideoInputDevice(device);
+      const newDevice = device.chooseNewInnerDevice('fake-test');
+      await deviceController.chooseVideoInputDevice(newDevice);
+      avController.videoTileController.stopLocalVideoTile();
+      await device.stop();
+      await newDevice.stop();
+      expect(spy.called).to.equal(true);
+    });
+
+    it('can fail to switch between VideoTransformDevice because track is empty', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 0,
+        height: 0,
+        deviceId: 'test-same-device',
+        facingMode: 'user',
+      };
+      const spy = sinon.spy(audioVideoController, 'replaceLocalVideo');
+
+      deviceController.bindToAudioVideoController(audioVideoController);
+      audioVideoController.videoTileController.startLocalVideoTile();
+
+      await deviceController.chooseVideoInputDevice('test');
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test-different-device', [processor]);
       try {
         await deviceController.chooseVideoInputDevice(device);
-        throw new Error('Not reachable');
+        throw new Error('not reachable');
       } catch (error) {}
+
+      audioVideoController.videoTileController.stopLocalVideoTile();
+      await device.stop();
+      expect(spy.called).to.equal(true);
     });
   });
 
