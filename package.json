@@ -36,7 +36,8 @@
     "test:integration-screen-share": "cd ./integration/js && npm run test -- screen_share ",
     "test:integration-content-share": "cd ./integration/js && npm run test -- content_share ",
     "test:integration-data-message": "cd ./integration/js && npm run test -- data_message ",
-    "test:integration-meeting-readiness-checker": "cd ./integration/js && npm run test -- meeting_readiness_checker "
+    "test:integration-meeting-readiness-checker": "cd ./integration/js && npm run test -- meeting_readiness_checker ",
+    "test:integration-messaging": "cd ./integration/js && npm run test -- messaging "
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.89.0",
