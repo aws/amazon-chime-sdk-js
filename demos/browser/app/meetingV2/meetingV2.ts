@@ -287,8 +287,10 @@ export class DemoMeetingApp
 
     // Listen for unhandled errors, too.
     window.addEventListener('error', event => {
-      fatal(event.error);
+      // In Safari there's only a message.
+      fatal(event.error || event.message);
     });
+
     window.onunhandledrejection = (event: PromiseRejectionEvent) => {
       fatal(event.reason);
     };
@@ -324,7 +326,7 @@ export class DemoMeetingApp
    * when an unexpected error occurs.
    * If we're running locally, or we passed a `fatal=1` query parameter, fail hard.
    */
-  fatal(e: Error): void {
+  fatal(e: Error | string): void {
     // Muffle mode: let the `try-catch` do its job.
     if (!SHOULD_DIE_ON_FATALS) {
       console.info('Ignoring fatal', e);
@@ -332,7 +334,12 @@ export class DemoMeetingApp
     }
 
     console.error('Fatal error: this was going to be caught, but should not have been thrown.', e);
-    document.getElementById('stack').innerText = e.message + '\n' + e.stack?.toString();
+
+    if (e && e instanceof Error) {
+      document.getElementById('stack').innerText = e.message + '\n' + e.stack?.toString();
+    } else {
+      document.getElementById('stack').innerText = '' + e;
+    }
 
     this.switchToFlow('flow-fatal');
   }

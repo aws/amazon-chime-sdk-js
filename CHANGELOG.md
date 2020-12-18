@@ -8,10 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Add support for Amazon Voice Focus support in Safari Technology Preview for macOS.
+  Builders using an explicit revision or asset group must make sure to use a
+  revision no earlier than this; an error will be thrown in Safari if older
+  revisions are used.
 
 ### Changed
 
-- Corrected `null` type on `DefaultVideoFrameProcessorPipeline` and `DefaultVideoTransformDevice`
+- Corrected `null` type on `DefaultVideoFrameProcessorPipeline` and `DefaultVideoTransformDevice`.
+- Amazon Voice Focus now makes better use of available CPU resources,
+  extending support to lower-end devices and improving quality on higher-end
+  devices.
 
 ### Removed
 
@@ -51,8 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   trying to choose an output device in a browser that does not support
   `setSinkId`, and the demo will not log an error in these cases.
 - [Demo] The meeting readiness checker no longer re-initializes the device output list
-  after the user picked a device.
-- [Test] Fix voice focus integration/canary test.
+  after the user picks a device.
+- [Test] Fix Amazon Voice Focus integration/canary test.
 - [Demo] Additional best practices around choosing audio output devices.
 
 ## [2.2.0] - 2020-12-04

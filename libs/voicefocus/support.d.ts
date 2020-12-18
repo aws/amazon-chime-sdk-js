@@ -5,6 +5,8 @@ interface LimitedWindow {
         userAgent: string;
     };
 }
+export declare const isSafari: (global?: LimitedWindow) => boolean;
+export declare const supportsWASMPostMessage: (global?: LimitedWindow) => boolean;
 export declare const supportsVoiceFocusWorker: (scope: {
     Worker?: {
         new (stringUrl: string | URL, options?: WorkerOptions | undefined): Worker;

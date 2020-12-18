@@ -1,9 +1,10 @@
-import { ExecutionApproach, Logger, ModelConfig, ModelVariant, PerformanceThresholds, VoiceFocusExecutionSpec, VoiceFocusFetchConfig, VoiceFocusProcessor } from './types.js';
+import { ExecutionApproach, ExecutionQuanta, Logger, ModelConfig, ModelVariant, PerformanceThresholds, VoiceFocusExecutionSpec, VoiceFocusFetchConfig, VoiceFocusProcessor } from './types.js';
 interface SupportedExecutionDefinition {
     supported: true;
     useSIMD: boolean;
     processor: VoiceFocusProcessor;
     executionApproach: ExecutionApproach;
+    executionQuanta?: ExecutionQuanta;
     variant: ModelVariant;
 }
 export interface Unsupported {

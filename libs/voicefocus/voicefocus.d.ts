@@ -1,4 +1,4 @@
-import { AGCOptions, ExecutionPreference, Logger, ModelCategory, ModelConfig, ModelName, ModelVariant, PerformanceThresholds, SIMDPreference, UsagePreference, VoiceFocusAudioWorkletNode, VoiceFocusConfigureOptions, VoiceFocusDelegate, VoiceFocusFetchBehavior, VoiceFocusFetchConfig, VoiceFocusPaths } from './types.js';
+import { AGCOptions, ExecutionPreference, ExecutionQuanta, Logger, ModelCategory, ModelConfig, ModelName, ModelVariant, PerformanceThresholds, SIMDPreference, UsagePreference, VoiceFocusAudioWorkletNode, VoiceFocusConfigureOptions, VoiceFocusDelegate, VoiceFocusFetchBehavior, VoiceFocusFetchConfig, VoiceFocusPaths } from './types.js';
 import { Unsupported } from './decider.js';
 export interface AssetSpec {
     assetGroup?: string;
@@ -15,6 +15,7 @@ export interface VoiceFocusSpec extends AssetSpec {
     variant?: ModelVariant | 'auto';
     simd?: SIMDPreference;
     executionPreference?: ExecutionPreference;
+    executionQuantaPreference?: ExecutionQuanta;
     usagePreference?: UsagePreference;
     estimatorBudget?: number;
     paths?: VoiceFocusPaths;
@@ -24,6 +25,7 @@ interface SupportedVoiceFocusConfig {
     supported: true;
     model: ModelConfig;
     processor: string;
+    executionQuanta?: ExecutionQuanta;
     fetchConfig: VoiceFocusFetchConfig;
 }
 export declare type VoiceFocusConfig = SupportedVoiceFocusConfig | Unsupported;
@@ -43,11 +45,13 @@ export declare class VoiceFocus {
     private processorURL;
     private nodeConstructor;
     private nodeOptions;
+    private executionQuanta;
     private internal;
     private constructor();
     static isSupported(spec?: AssetSpec & {
         paths?: VoiceFocusPaths;
     }, options?: VoiceFocusConfigureOptions): Promise<boolean>;
+    private static mungeExecutionPreference;
     static configure(spec?: VoiceFocusSpec, options?: VoiceFocusConfigureOptions): Promise<VoiceFocusConfig>;
     static init(configuration: VoiceFocusConfig, { delegate, preload, logger, }: {
         delegate: VoiceFocusDelegate;
