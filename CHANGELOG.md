@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add Samsung Internet browser for Android as a supported browser.
+- [Documentation] Add documentation for video processing APIs.
 - Add `DefaultVideoTransformDevice` to implement `VideoTransformDevice`.
  `VideoFrameProcessor`, `VideoFrameProcessorPipeline` and `VideoFrameBuffer` interfaces
  are added to support `DefaultVideoTransformDevice` and allow processing steps to be applied to device.
