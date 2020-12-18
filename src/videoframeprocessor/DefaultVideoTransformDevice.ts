@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Device from '../devicecontroller/Device';
 import VideoTransformDevice from '../devicecontroller/VideoTransformDevice';
@@ -27,7 +28,7 @@ export default class DefaultVideoTransformDevice
     private logger: Logger,
     private device: Device,
     private processors: VideoFrameProcessor[],
-    private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior()
+    private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior()
   ) {}
 
   /**
