@@ -75,15 +75,16 @@ do
                matches=true
          fi
       done < "../../.integration-watchlist"
-      if [[ $matches ]]
+      if [[ $matches = true ]]
       then
          requires_integration_test=true
+         break
       fi
    done
 done
 
 echo 'Requires integ tests:' $requires_integration_test
-if [[ ! $requires_integration_test ]]
+if [[ $requires_integration_test = false ]]
 then
    exit 0
 fi
