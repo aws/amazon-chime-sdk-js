@@ -16,7 +16,7 @@ import {
   MessagingSession,
   MessagingSessionConfiguration,
   Versioning,
-} from '../../../../src/index';
+} from 'amazon-chime-sdk-js';
 
 import * as AWS from 'aws-sdk/global';
 import * as Chime from 'aws-sdk/clients/chime';

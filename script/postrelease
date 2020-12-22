@@ -38,12 +38,6 @@ if demo_package['dependencies']['amazon-chime-sdk-js'] != "^#{npm_version}"
   exit(1)
 end
 
-files = Dir.glob("**/*.ts")
-
-for file in files
-  File.write(file, File.read(file).gsub(/'.*\/src\/index'/, "'amazon-chime-sdk-js'"))
-end
-
 verbose('npm run build')
 verbose('npm run build --app=meetingReadinessChecker')
 
