@@ -167,9 +167,6 @@ for (const package of packages) {
 }
 
 fs.copySync(appHtml(app), 'src/index.html');
-if (app === 'meeting') {
-  fs.copySync(appHtml('meetingV2'), 'src/indexV2.html');
-}
 
 spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,
@@ -186,6 +183,3 @@ if (!disablePrintingLogs) {
 }
 const output=spawnOrFail('aws', ['cloudformation', 'describe-stacks', '--stack-name', `${stack}`,
                     '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`], null, !disablePrintingLogs);
-if (app === 'meeting' && !disablePrintingLogs) {
-  console.log(output.replace(/Prod/, 'Prod/v2'));
-}
