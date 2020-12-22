@@ -1,0 +1,295 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>VideoProcessor | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="videoprocessor.html">VideoProcessor</a>
+				</li>
+			</ul>
+			<h1>Namespace VideoProcessor</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#video-processing-apis" id="video-processing-apis" style="color: inherit; text-decoration: none;">
+							<h1>Video Processing APIs</h1>
+						</a>
+					</div>
+					<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+						<h2>Introduction</h2>
+					</a>
+					<p>Amazon Chime SDK for JavaScript contains easy-to-use APIs for adding frame-by-frame processing to an outgoing video stream.</p>
+					<p>Amazon Chime SDK for JavaScript defines a video processing stage as an implementation of the <code>VideoFrameProcessor</code> interface, which takes an array of <code>VideoFrameBuffer</code>s, applies builder-defined processing, and outputs an array of <code>VideoFrameBuffer</code>s. The outputs of each processor can be linked to the inputs of the next processor, with the last processor in the chain required to implement <code>asCanvasImageSource</code> to return <code>CanvasImageSource</code> so that the resulting frames can be rendered onto a <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement">HTMLCanvasElement</a> and transformed into a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a>.</p>
+					<p>To integrate video processing into meeting session, <code>VideoTransformDevice</code> should be used, which internally uses a <code>VideoFrameProcessorPipeline</code> to complete the aforementioned linking of stages and final canvas rendering.</p>
+					<p>A typical workflow would be:</p>
+					<ol>
+						<li>Create an array of custom <code>VideoFrameProcessor</code>s.</li>
+						<li>Create a <code>VideoTransformDevice</code> from a <code>Device</code> and the array of <code>VideoFrameProcessor</code>s.</li>
+						<li>Call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the <code>VideoTransformDevice</code>.</li>
+					</ol>
+					<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
+						<h3>Browser compatibility</h3>
+					</a>
+					<p>The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari on iOS devices due to <a href="https://bugs.webkit.org/show_bug.cgi?id=181663">Webkit Bug 181663</a>.
+					WebRTC Unified Plan is also required. Unified Plan is by default enabled in <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers">MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers</a>. If Unified Plan is disabled in the meeting, the call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the <code>VideoTransformDevice</code> will throw an error.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Browser</th>
+								<th>Minimum supported version</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>Firefox</td>
+								<td>76</td>
+							</tr>
+							<tr>
+								<td>Chromium-based browsers and environments, including Edge and Electron</td>
+								<td>78</td>
+							</tr>
+							<tr>
+								<td>Android Chrome</td>
+								<td>78</td>
+							</tr>
+							<tr>
+								<td>Safari on MacOS</td>
+								<td>13.0</td>
+							</tr>
+							<tr>
+								<td>iOS Safari</td>
+								<td>Not supported</td>
+							</tr>
+					</tbody></table>
+					<a href="#video-processing-apis-and-usage" id="video-processing-apis-and-usage" style="color: inherit; text-decoration: none;">
+						<h2>Video Processing APIs and Usage</h2>
+					</a>
+					<a href="#videotransformdevice" id="videotransformdevice" style="color: inherit; text-decoration: none;">
+						<h3>VideoTransformDevice</h3>
+					</a>
+					<p><code>VideoTransformDevice</code> allows <code>VideoFrameProcessor</code>s to be applied to to a <code>Device</code> and provide a new object which can be passed into <code>meetingSession.audioVideo.chooseVideoInputDevice</code>.</p>
+					<p><code>DefaultVideoTransformDevice</code> is the provided implementation of <code>VideoTransformDevice</code>. It requires four parameters: (1) <code>Logger</code> (2) <code>Device</code> (3) <code>Array&lt;VideoFrameProcessor&gt;</code>.
+					The <code>DefaultVideoTransformDevice</code> uses <code>VideoFrameProcessorPipeline</code> under the hood and hides its complexity.</p>
+					<a href="#construction-and-starting-video-processing" id="construction-and-starting-video-processing" style="color: inherit; text-decoration: none;">
+						<h4>Construction and Starting Video Processing</h4>
+					</a>
+					<p>The construction of the <code>DefaultVideoTransformDevice</code> will not start the camera or start processing. The method <code>meetingSession.audioVideo.chooseVideoInputDevice</code> is needed to be called. The device controller will use the inner <code>Device</code> to acquire the source <code>MediaStream</code> and start the processing pipeline at the same frame rate.
+						The parameters to <code>chooseVideoInputQuality</code> are used as constraints on the source <code>MediaStream</code>.
+					After the video input is chosen, <code>meetingSession.audioVideo.startLocalVideoTile</code> can be called to start streaming video.</p>
+					<a href="#switching-the-inner-device-on-videotransformdevice" id="switching-the-inner-device-on-videotransformdevice" style="color: inherit; text-decoration: none;">
+						<h4>Switching the Inner Device on VideoTransformDevice</h4>
+					</a>
+					<p>To switch the inner <code>Device</code> on <code>DefaultVideoTransformDevice</code>, call <code>DefaultVideoTransformDevice.chooseNewInnerDevice</code> with a new <code>Device</code>.
+					<code>DefaultVideoTransformDevice.chooseNewInnerDevice</code> returns a new <code>DefaultVideoTransformDevice</code> but preserves the state of <code>VideoFrameProcessor</code>s. Then call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with the new transform device.</p>
+					<a href="#stopping-videotransformdevice" id="stopping-videotransformdevice" style="color: inherit; text-decoration: none;">
+						<h4>Stopping VideoTransformDevice</h4>
+					</a>
+					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with a different <code>DefaultVideoTransformDevice</code> or <code>null</code> to stop using previous <code>DefaultVideoTransformDevice</code>.  The method <code>meetingSession.audioVideo.stopLocalVideoTile</code> can also be used to stop the streaming.</p>
+					<p>After stopping the video processing, the inner <code>Device</code> will be released by device controller unless the inner <code>Device</code> is a <code>MediaStream</code> provided by users where it is their responsibility of users to handle the lifecycle.</p>
+					<p>After <code>DefaultVideoTransformDevice</code> is no longer used by device controller, call <code>DefaultVideoTransformDevice.stop</code> to release the <code>VideoProcessor</code>s and underlying pipeline. After <code>stop</code> is called, users must discard the <code>DefaultVideoTransformDevice</code>.<code>DefaultVideoTransformDevice.stop</code> is necessary to release the internal resources.</p>
+					<a href="#receiving-lifecycle-notifications-with-an-observer" id="receiving-lifecycle-notifications-with-an-observer" style="color: inherit; text-decoration: none;">
+						<h4>Receiving lifecycle notifications with an observer</h4>
+					</a>
+					<p>To receive notifications of lifecycle events, <code>DefaultVideoTransformDeviceObserver</code> can be added to the <code>DefaultVideoTransformDevice</code>.
+					The full list of the callbacks:</p>
+					<ol>
+						<li><code>processingDidStart</code></li>
+					</ol>
+					<p><code>processingDidStart</code> will be called when video processing starts.</p>
+					<ol start="2">
+						<li><code>processingDidFailToStart</code></li>
+					</ol>
+					<p><code>processingDidFailToStart</code> will be called when video processing could not start due to runtime errors. In this case, developers are expected to call <code>chooseVideoInputDevice</code> again with a valid <code>VideoInputDevice</code> to continue video sending.</p>
+					<ol start="3">
+						<li><code>processingDidStop</code></li>
+					</ol>
+					<p><code>processingDidStop</code> will be called when video processing is stopped <strong>expectedly</strong>.</p>
+					<ol start="4">
+						<li><code>processingLatencyTooHigh(latencyMs: number)</code></li>
+					</ol>
+					<p><code>processingLatencyTooHigh</code> will be called when the execution of processors slows the frame rate down by at least half.</p>
+					<a href="#videoframebuffer" id="videoframebuffer" style="color: inherit; text-decoration: none;">
+						<h3>VideoFrameBuffer</h3>
+					</a>
+					<p><code>VideoFrameBuffer</code> is an abstract interface that can be implemented to represent images or video sources. It is required to implement <code>asCanvasImageSource</code> to return <code>CanvasImageSource</code>; optionally, developers can implement <code>asCanvasElement</code> or <code>asTransferable</code> to facilitate processing algorithm to work with <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement">HTMLCanvasElement</a>s or <a href="https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker">Worker</a>s respectively.</p>
+					<a href="#videoframeprocessor" id="videoframeprocessor" style="color: inherit; text-decoration: none;">
+						<h3>VideoFrameProcessor</h3>
+					</a>
+					<p><code>VideoFrameProcessor</code> represents a processing stage. Internally,  processors are executed in a completely serial manner. Each pass will finish before the next pass begins. The input <code>VideoFrameBuffer</code>s are the video sources. Changing the property of buffers such as resizing will likely modify properties of the video sources and should be performed with care.</p>
+					<a href="#building-a-simple-processor" id="building-a-simple-processor" style="color: inherit; text-decoration: none;">
+						<h3>Building a simple processor</h3>
+					</a>
+					<p>The following example shows how to build a basic processor to resize the video frames.  We first define an implementation of <code>VideoFrameProcessor</code>:</p>
+					<pre><code class="language-typescript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">VideoResizeProcessor</span> <span class="hljs-title">implements</span> <span class="hljs-title">VideoFrameProcessor</span> </span>{
+  <span class="hljs-function"><span class="hljs-title">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> displayAspectRatio: <span class="hljs-built_in">number</span></span>)</span> {}
+
+  <span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): VideoFrameBuffer[];
+  <span class="hljs-keyword">async</span> destroy(): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
+}</code></pre>
+					<p>To keep the properties of the original video, the processor has to copy the frame onto its own staging buffer in <code>process</code>:</p>
+					<pre><code class="language-typescript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">VideoResizeProcessor</span> <span class="hljs-title">implements</span> <span class="hljs-title">VideoFrameProcessor</span> </span>{
+  <span class="hljs-keyword">private</span> targetCanvas: HTMLCanvasElement = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&#x27;canvas&#x27;</span>) <span class="hljs-keyword">as</span> HTMLCanvasElement;
+  <span class="hljs-keyword">private</span> targetCanvasCtx: CanvasRenderingContext2D = <span class="hljs-built_in">this</span>.targetCanvas.getContext(<span class="hljs-string">&#x27;2d&#x27;</span>) <span class="hljs-keyword">as</span> CanvasRenderingContext2D;
+  <span class="hljs-keyword">private</span> canvasVideoFrameBuffer = <span class="hljs-keyword">new</span> CanvasVideoFrameBuffer(<span class="hljs-built_in">this</span>.targetCanvas);
+
+  <span class="hljs-keyword">private</span> renderWidth: <span class="hljs-built_in">number</span> = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">private</span> renderHeight: <span class="hljs-built_in">number</span> = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">private</span> sourceWidth: <span class="hljs-built_in">number</span> = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">private</span> sourceHeight: <span class="hljs-built_in">number</span> = <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): <span class="hljs-built_in">Promise</span>&lt;VideoFrameBuffer[]&gt;;
+}</code></pre>
+					<p>During processing, the incoming video is painted onto the internal canvas like in the following abbreviated:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): <span class="hljs-built_in">Promise</span>&lt;VideoFrameBuffer[]&gt; {
+  <span class="hljs-keyword">const</span> canvas = buffers[<span class="hljs-number">0</span>].asCanvasElement();
+  <span class="hljs-keyword">const</span> frameWidth = canvas.width;
+  <span class="hljs-keyword">const</span> frameHeight = canvas.height;
+
+  <span class="hljs-comment">// error handling to skip resizing</span>
+  <span class="hljs-keyword">if</span> (frameWidth === <span class="hljs-number">0</span> || frameHeight === <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">return</span> buffers;
+  }
+
+  <span class="hljs-comment">// re-calculate the cropped width and height</span>
+  .....
+
+  <span class="hljs-comment">// copy the frame to the intermediate canvas</span>
+  <span class="hljs-built_in">this</span>.targetCanvasCtx.drawImage(canvas, <span class="hljs-built_in">this</span>.dx, <span class="hljs-number">0</span>, <span class="hljs-built_in">this</span>.renderWidth, <span class="hljs-built_in">this</span>.renderHeight,
+    <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">this</span>.renderWidth, <span class="hljs-built_in">this</span>.renderHeight);
+
+  <span class="hljs-comment">// replace the video frame with the resized one for subsequent processor</span>
+  buffers[<span class="hljs-number">0</span>] = <span class="hljs-built_in">this</span>.canvasVideoFrameBuffer;
+  <span class="hljs-keyword">return</span> buffers;
+}</code></pre>
+					<p>Usage of the custom processor looks like the following:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {
+  DefaultVideoTransformDevice
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+
+<span class="hljs-keyword">const</span> stages = [<span class="hljs-keyword">new</span> VideoResizeProcessor(<span class="hljs-number">4</span>/<span class="hljs-number">3</span>)]; <span class="hljs-comment">// constructs  processor</span>
+
+<span class="hljs-keyword">const</span> transformDevice = <span class="hljs-keyword">new</span> DefaultVideoTransformDevice(
+  logger,
+  <span class="hljs-string">&#x27;foobar&#x27;</span>, <span class="hljs-comment">// device id string</span>
+  stages
+);
+
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(transformDevice);
+meetingSession.audioVideo.startLocalVideo();
+</code></pre>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Video%20Processor%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
