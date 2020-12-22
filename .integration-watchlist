@@ -1,5 +1,4 @@
 # run integration tests if files in these directories change
-demos/serverless/
 demos/browser
 src/
 integration/
@@ -9,7 +8,6 @@ integration/
 !README.md
 !demos/browser/README.md
 !demos/device/README.md
-!demos/serverless/README.md
 !demos/singlejs/README.md
 !demos/videohelpdesk/README.md
 !guides/
