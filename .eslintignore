@@ -3,8 +3,6 @@ coverage
 demos/aws-sdk
 demos/electron/*
 demos/browser/*.*
-demos/browser/app/meetingV2/*.*
-demos/browser/app/meetingReadinessChecker
 demos/serverless/*
 demos/videohelpdesk/*
 demos/components/*

@@ -1,7 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-type MetricsData = { [key: string]: number };
+interface MetricsData {
+  [key: string]: number;
+}
 
 interface CurrentAndPreviousMetrics {
   current: MetricsData;
@@ -11,10 +13,13 @@ interface CurrentAndPreviousMetrics {
 enum StreamDirection {
   'Downstream' = 'Downstream',
   'Upstream' = 'Upstream',
-};
+}
 
-type SSRCToMetricsData = { [key: string]: CurrentAndPreviousMetrics };
+interface SSRCToMetricsData {
+  [key: string]: CurrentAndPreviousMetrics;
+}
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getCurrentUpstreamMetrics = (report: any, timestamp: number): MetricsData => {
   const currentMetrics: { [key: string]: number } = {};
   const { frameHeight, frameWidth, bytesSent, packetsSent, framesEncoded } = report;
@@ -25,8 +30,9 @@ const getCurrentUpstreamMetrics = (report: any, timestamp: number): MetricsData 
   currentMetrics['packetsSent'] = packetsSent;
   currentMetrics['timestamp'] = timestamp;
   return currentMetrics;
-}
+};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getCurrentDownstreamMetrics = (report: any, timestamp: number): MetricsData => {
   const currentMetrics: { [key: string]: number } = {};
   const { bytesReceived, packetsLost, packetsReceived, framesDecoded } = report;
@@ -35,10 +41,12 @@ const getCurrentDownstreamMetrics = (report: any, timestamp: number): MetricsDat
   currentMetrics['packetsReceived'] = packetsReceived;
   currentMetrics['framesDecoded'] = framesDecoded;
   const totalPackets = packetsReceived + packetsLost;
-  currentMetrics['packetLossPercent'] = totalPackets ? Math.trunc(packetsLost * 100 / (packetsReceived + packetsLost)) : 0;
+  currentMetrics['packetLossPercent'] = totalPackets
+    ? Math.trunc((packetsLost * 100) / (packetsReceived + packetsLost))
+    : 0;
   currentMetrics['timestamp'] = timestamp;
   return currentMetrics;
-}
+};
 
 const bitsPerSecond = (metricName: string, metricMap: CurrentAndPreviousMetrics): number => {
   const previousTimestamp = metricMap.previous.timestamp;
@@ -46,26 +54,24 @@ const bitsPerSecond = (metricName: string, metricMap: CurrentAndPreviousMetrics)
     return 0;
   }
   const currentTimestamp = metricMap.current.timestamp;
-  let intervalSeconds = (currentTimestamp - previousTimestamp) / 1000;
+  const intervalSeconds = (currentTimestamp - previousTimestamp) / 1000;
   if (intervalSeconds <= 0) {
     return 0;
   }
-  const diff =
-    (metricMap.current[metricName] - (metricMap.previous[metricName] || 0)) *
-    8;
+  const diff = (metricMap.current[metricName] - (metricMap.previous[metricName] || 0)) * 8;
   if (diff <= 0) {
     return 0;
   }
-  return Math.trunc((diff / intervalSeconds) / 1000);
+  return Math.trunc(diff / intervalSeconds / 1000);
 };
 
-const countPerSecond = (metricName: string, metricMap: CurrentAndPreviousMetrics) => {
+const countPerSecond = (metricName: string, metricMap: CurrentAndPreviousMetrics): number => {
   const previousTimestamp = metricMap.previous.timestamp;
   if (!previousTimestamp) {
     return 0;
   }
   const currentTimestamp = metricMap.current.timestamp;
-  let intervalSeconds = (currentTimestamp - previousTimestamp) / 1000;
+  const intervalSeconds = (currentTimestamp - previousTimestamp) / 1000;
   if (intervalSeconds <= 0) {
     return 0;
   }
@@ -74,7 +80,7 @@ const countPerSecond = (metricName: string, metricMap: CurrentAndPreviousMetrics
     return 0;
   }
   return Math.trunc(diff / intervalSeconds);
-}
+};
 
 export default class WebRTCStatsCollector {
   static MAX_UPSTREAMS_COUNT = 2;
@@ -83,63 +89,78 @@ export default class WebRTCStatsCollector {
   // Map SSRC to WebRTC metrics.
   upstreamMetrics: SSRCToMetricsData = {};
   static upstreamMetricsKeyStatsToShow: { [key: string]: string } = {
-    'resolution': 'Resolution',
-    'bitrate': 'Bitrate (kbps)',
-    'packetsSent': 'Packets Sent',
-    'framesEncodedPerSecond': 'Frame Rate',
+    resolution: 'Resolution',
+    bitrate: 'Bitrate (kbps)',
+    packetsSent: 'Packets Sent',
+    framesEncodedPerSecond: 'Frame Rate',
   };
 
   downstreamTileIndexToTrackId: { [key: string]: string } = {};
   // Map tile index to SSRC to WebRTC metrics.
   downstreamMetrics: { [key: string]: SSRCToMetricsData } = {};
   static downstreamMetricsKeyStatsToShow: { [key: string]: string } = {
-    'resolution': 'Resolution',
-    'bitrate': 'Bitrate (kbps)',
-    'packetLossPercent': 'Packet Loss (%)',
-    'framesDecodedPerSecond': 'Frame Rate',
+    resolution: 'Resolution',
+    bitrate: 'Bitrate (kbps)',
+    packetLossPercent: 'Packet Loss (%)',
+    framesDecodedPerSecond: 'Frame Rate',
   };
 
-  cleanUpStaleUpstreamMetricsData = () => {
+  cleanUpStaleUpstreamMetricsData = (): void => {
     const timestamp = Date.now();
     const ssrcsToRemove: string[] = [];
     for (const ssrc of Object.keys(this.upstreamMetrics)) {
-      if ((timestamp - this.upstreamMetrics[ssrc].current.timestamp) >= WebRTCStatsCollector.CLEANUP_INTERVAL) {
+      if (
+        timestamp - this.upstreamMetrics[ssrc].current.timestamp >=
+        WebRTCStatsCollector.CLEANUP_INTERVAL
+      ) {
         ssrcsToRemove.push(ssrc);
       }
     }
-    ssrcsToRemove.forEach((ssrc) => delete this.upstreamMetrics[ssrc]);
-  }
+    ssrcsToRemove.forEach(ssrc => delete this.upstreamMetrics[ssrc]);
+  };
 
-  processWebRTCStatReportForTileIndex = (rtcStatsReport: RTCStatsReport, tileIndex: number) => {
+  processWebRTCStatReportForTileIndex = (
+    rtcStatsReport: RTCStatsReport,
+    tileIndex: number
+  ): void => {
     this.cleanUpStaleUpstreamMetricsData();
     const timestamp = Date.now();
     let ssrcNum = 0;
-    rtcStatsReport.forEach((report) => {
+    rtcStatsReport.forEach(report => {
       if (report.ssrc) {
         ssrcNum = Number(report.ssrc);
       }
 
       if (report.kind && report.kind === 'video') {
-        if (report.type === 'outbound-rtp' &&
-            report.bytesSent &&
-            report.frameHeight &&
-            report.frameWidth
-          ) {
+        if (
+          report.type === 'outbound-rtp' &&
+          report.bytesSent &&
+          report.frameHeight &&
+          report.frameWidth
+        ) {
           // Collect and process upstream stats.
           if (!this.upstreamMetrics.hasOwnProperty(ssrcNum)) {
-            if (Object.keys(this.upstreamMetrics).length === WebRTCStatsCollector.MAX_UPSTREAMS_COUNT) {
+            if (
+              Object.keys(this.upstreamMetrics).length === WebRTCStatsCollector.MAX_UPSTREAMS_COUNT
+            ) {
               this.upstreamMetrics = {};
             }
             this.upstreamMetrics[ssrcNum] = {
               current: {},
-              previous: {}
+              previous: {},
             };
           } else {
             this.upstreamMetrics[ssrcNum].previous = this.upstreamMetrics[ssrcNum].current;
           }
           this.upstreamMetrics[ssrcNum].current = getCurrentUpstreamMetrics(report, timestamp);
-          this.upstreamMetrics[ssrcNum].current['framesEncodedPerSecond'] = countPerSecond('framesEncoded', this.upstreamMetrics[ssrcNum]);
-          this.upstreamMetrics[ssrcNum].current['bitrate'] = bitsPerSecond('bytesSent', this.upstreamMetrics[ssrcNum]);
+          this.upstreamMetrics[ssrcNum].current['framesEncodedPerSecond'] = countPerSecond(
+            'framesEncoded',
+            this.upstreamMetrics[ssrcNum]
+          );
+          this.upstreamMetrics[ssrcNum].current['bitrate'] = bitsPerSecond(
+            'bytesSent',
+            this.upstreamMetrics[ssrcNum]
+          );
         } else {
           if (report.type === 'inbound-rtp' && report.bytesReceived) {
             // Collect and process downstream stats.
@@ -148,22 +169,39 @@ export default class WebRTCStatsCollector {
               this.downstreamMetrics[tileIndex] = {};
             }
             if (!this.downstreamMetrics[tileIndex].hasOwnProperty(ssrcNum)) {
-              if (Object.keys(this.downstreamMetrics[tileIndex]).length === WebRTCStatsCollector.MAX_DOWNSTREAMS_COUNT) {
+              if (
+                Object.keys(this.downstreamMetrics[tileIndex]).length ===
+                WebRTCStatsCollector.MAX_DOWNSTREAMS_COUNT
+              ) {
                 this.downstreamMetrics[tileIndex] = {};
               }
               this.downstreamMetrics[tileIndex][ssrcNum] = {
                 current: {},
-                previous: {}
+                previous: {},
               };
               // Store trackId to later map frameHeight and frameWidth when WebRTC 'track' report is received for downstream videos.
               this.downstreamTileIndexToTrackId[tileIndex] = trackId;
             } else {
-              this.downstreamMetrics[tileIndex][ssrcNum].previous = this.downstreamMetrics[tileIndex][ssrcNum].current;
+              this.downstreamMetrics[tileIndex][ssrcNum].previous = this.downstreamMetrics[
+                tileIndex
+              ][ssrcNum].current;
             }
-            this.downstreamMetrics[tileIndex][ssrcNum].current = getCurrentDownstreamMetrics(report, timestamp);
-            this.downstreamMetrics[tileIndex][ssrcNum].current['bitrate'] = bitsPerSecond('bytesReceived', this.downstreamMetrics[tileIndex][ssrcNum]);
-            this.downstreamMetrics[tileIndex][ssrcNum].current['framesDecodedPerSecond'] = countPerSecond('framesDecoded', this.downstreamMetrics[tileIndex][ssrcNum]);
-          } else if (report.type === 'track' && this.downstreamTileIndexToTrackId[tileIndex] && this.downstreamTileIndexToTrackId[tileIndex] === report.id) {
+            this.downstreamMetrics[tileIndex][ssrcNum].current = getCurrentDownstreamMetrics(
+              report,
+              timestamp
+            );
+            this.downstreamMetrics[tileIndex][ssrcNum].current['bitrate'] = bitsPerSecond(
+              'bytesReceived',
+              this.downstreamMetrics[tileIndex][ssrcNum]
+            );
+            this.downstreamMetrics[tileIndex][ssrcNum].current[
+              'framesDecodedPerSecond'
+            ] = countPerSecond('framesDecoded', this.downstreamMetrics[tileIndex][ssrcNum]);
+          } else if (
+            report.type === 'track' &&
+            this.downstreamTileIndexToTrackId[tileIndex] &&
+            this.downstreamTileIndexToTrackId[tileIndex] === report.id
+          ) {
             // Collect and process frame height and width stats for downstream.
             // Process frameHeight and frameWidth separately from track report as we do not have these stats in WebRTC 'inbound-rtp' report.
             const { frameHeight, frameWidth } = report;
@@ -173,15 +211,15 @@ export default class WebRTCStatsCollector {
         }
       }
     });
-  }
+  };
 
-  resetStats = () => {
+  resetStats = (): void => {
     this.upstreamMetrics = {};
     this.downstreamMetrics = {};
     this.downstreamTileIndexToTrackId = {};
-  }
+  };
 
-  showUpstreamStats(tileIndex: number) {
+  showUpstreamStats(tileIndex: number): void {
     this.showStats(
       tileIndex,
       StreamDirection.Upstream,
@@ -190,7 +228,7 @@ export default class WebRTCStatsCollector {
     );
   }
 
-  showDownstreamStats(tileIndex: number) {
+  showDownstreamStats(tileIndex: number): void {
     this.showStats(
       tileIndex,
       StreamDirection.Downstream,
@@ -204,13 +242,15 @@ export default class WebRTCStatsCollector {
     streamDirection: StreamDirection,
     keyStatstoShow: { [key: string]: string },
     metricsData: SSRCToMetricsData
-  ) => {
+  ): void => {
     const streams = metricsData ? Object.keys(metricsData) : [];
     if (streams.length === 0) {
       return;
     }
 
-    let statsInfo: HTMLDivElement = document.getElementById(`stats-info-${tileIndex}`) as HTMLDivElement;
+    let statsInfo: HTMLDivElement = document.getElementById(
+      `stats-info-${tileIndex}`
+    ) as HTMLDivElement;
     if (!statsInfo) {
       statsInfo = document.createElement('div');
       statsInfo.setAttribute('id', `stats-info-${tileIndex}`);
@@ -247,17 +287,21 @@ export default class WebRTCStatsCollector {
     for (const ssrc of streams) {
       const { frameHeight, frameWidth, ...restStatsToShow } = metricsData[ssrc].current;
       if (frameHeight && frameWidth) {
-        const row = document.getElementById(`${streamDirection}-resolution-${tileIndex}`) as HTMLTableRowElement;
+        const row = document.getElementById(
+          `${streamDirection}-resolution-${tileIndex}`
+        ) as HTMLTableRowElement;
         cell = row.insertCell(-1);
         cell.innerHTML = `${frameWidth} &#x2715; ${frameHeight}`;
       }
       for (const [metricName, value] of Object.entries(restStatsToShow)) {
         if (keyStatstoShow[metricName]) {
-          const row = document.getElementById(`${streamDirection}-${metricName}-${tileIndex}`) as HTMLTableRowElement;
+          const row = document.getElementById(
+            `${streamDirection}-${metricName}-${tileIndex}`
+          ) as HTMLTableRowElement;
           cell = row.insertCell(-1);
           cell.innerHTML = `${value}`;
         }
       }
     }
-  }
+  };
 }
