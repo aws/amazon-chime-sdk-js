@@ -5,7 +5,7 @@ import {
   CanvasVideoFrameBuffer,
   VideoFrameBuffer,
   VideoFrameProcessor,
-} from '../../../../../src/index';
+} from 'amazon-chime-sdk-js';
 
 /**
  * [[CircularCut]] is an implementation of {@link VideoFrameProcessor} for demonstration purpose.

@@ -30,7 +30,7 @@ import {
   MeetingSessionPOSTLogger,
   MultiLogger,
   Versioning,
-} from '../../../../src/index';
+} from 'amazon-chime-sdk-js';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { v4: uuidv4 } = require('uuid');

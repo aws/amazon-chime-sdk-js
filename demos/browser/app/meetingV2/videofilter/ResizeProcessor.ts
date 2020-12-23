@@ -5,7 +5,7 @@ import {
   CanvasVideoFrameBuffer,
   VideoFrameBuffer,
   VideoFrameProcessor,
-} from '../../../../../src/index';
+} from 'amazon-chime-sdk-js';
 
 /**
  * [[ResizeProcessor]] updates the input {@link VideoFrameBuffer} and resize given the display aspect ratio.

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { VideoFrameBuffer, VideoFrameProcessor } from '../../../../../src/index';
+import { VideoFrameBuffer, VideoFrameProcessor } from 'amazon-chime-sdk-js';
 
 /**
  * [[EmojifyVideoFrameProcessor]] is an implementation of {@link VideoFrameProcessor}.

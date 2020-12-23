@@ -48,7 +48,8 @@ import {
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
-} from '../../../../src/index';
+} from 'amazon-chime-sdk-js';
+
 import CircularCut from './videofilter/CircularCut';
 import EmojifyVideoFrameProcessor from './videofilter/EmojifyVideoFrameProcessor';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';

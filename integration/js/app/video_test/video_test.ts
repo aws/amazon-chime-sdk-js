@@ -11,7 +11,7 @@ import {
   MeetingSession,
   Versioning,
   MeetingSessionStatusCode
-} from '../../../../src/index';
+} from 'amazon-chime-sdk-js';
 
 export class DemoMeetingApp implements AudioVideoObserver {
   static readonly BASE_URL: string = [location.protocol, '//', location.host, location.pathname.replace(/\/*$/, '/').replace('/v2', '')].join('');
