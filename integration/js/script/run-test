@@ -4,13 +4,19 @@ function start_demo_meeting {
     cd $GITHUB_WORKSPACE/demos/browser
     uuid=$(uuidgen)
     mkdir -p logs
-    if [[ $1 == 'meetingReadinessChecker' ]]
-    then
-      extra_args='--app=meetingReadinessChecker'
-      echo "Starting meeting readiness checker"
-    else
-      echo "Starting the meeting demo"
-    fi
+    case $1 in
+      'meetingReadinessChecker')
+        extra_args='--app=meetingReadinessChecker'
+        echo "Starting meeting readiness checker"
+        ;;
+      'meetingSession')
+        extra_args='--app=messagingSession'
+        echo "Starting messaging session demo"
+        ;;
+      *)
+        echo "Starting the meeting demo"
+        ;;
+    esac
     npm run start $extra_args &> logs/$uuid.log &
 }
 
@@ -38,7 +44,7 @@ function wait_for_demo_to_start {
     if [ $retry_count -eq $threshold ]
     then
      echo "meeting demo not started"
-     exit
+     exit 1
     fi
 }
 
@@ -93,12 +99,17 @@ echo `pwd`
 check_if_integ_tests_required
 curr=`pwd`
 
-if [[ $1 == meeting_readiness_checker ]]
-then
-  start_demo_meeting 'meetingReadinessChecker'
-else
-  start_demo_meeting
-fi
+case $1 in
+  meeting_readiness_checker)
+    start_demo_meeting 'meetingReadinessChecker'
+    ;;
+  messaging)
+    start_demo_meeting 'meetingSession'
+    ;;
+  *)
+    start_demo_meeting
+    ;;
+esac
 
 wait_for_demo_to_start 8080
 cd $curr
@@ -136,6 +147,9 @@ case $1 in
       ;;
    meeting_readiness_checker)
       r meeting_readiness_checker_test.config.json
+      ;;
+   messaging)
+      r messaging_session_test.config.json
       ;;
    *)
       r audio_test.config.json

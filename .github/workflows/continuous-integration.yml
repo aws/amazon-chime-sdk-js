@@ -14,6 +14,7 @@ env:
   TEST_TYPE: Github-Action
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
 
 jobs:
   build:
@@ -21,27 +22,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Package
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        # TODO: Enable with pull_request_target to allow for forked repos to run our github actions
-        # ref: ${{github.event.pull_request.head.ref}}
-        # repository: ${{github.event.pull_request.head.repo.full_name}}
-    - name: Using Node.js 12.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12.x
-    - name: Clean Install
-      run: npm ci
-    - name: Build
-      run: npm run build:release
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          # TODO: Enable with pull_request_target to allow for forked repos to run our github actions
+          # ref: ${{github.event.pull_request.head.ref}}
+          # repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: Using Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Clean Install
+        run: npm ci
+      - name: Build
+        run: npm run build:release
 
   integ-audio:
     name: Audio Integration Test
     needs: build
     runs-on: ubuntu-latest
-      
+
     steps:
       - name: Create a Job ID
         id: create-job-id
@@ -81,12 +82,11 @@ jobs:
       - name: Run Audio Integration Test
         run: npm run test:integration-audio
 
-  integ-screen-share:
-    name: Screen Share Integration Test
+  integ-content-share:
+    name: Content Share Integration Test
     needs: build
-    if: github.event.pull_request.base.ref == 'release-1.x'
     runs-on: ubuntu-latest
-      
+
     steps:
       - name: Create a Job ID
         id: create-job-id
@@ -112,7 +112,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          # TODO: Enable with pull_request_target to allow for forked repos to run our github actions
           # ref: ${{github.event.pull_request.head.ref}}
           # repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Setup Node.js - 12.x
@@ -123,8 +122,8 @@ jobs:
         run: integration/js/script/install-kite
       - name: Clean Install
         run: npm ci
-      - name: Run Screen Share Integration Test
-        run: npm run test:integration-screen-share
+      - name: Run Content Share Integration Test
+        run: npm run test:integration-content-share
 
   integ-video:
     name: Video Integration Test
@@ -170,9 +169,9 @@ jobs:
       - name: Run Video Integ Test
         run: npm run test:integration-video
 
-  integ-content-share:
-    name: Content Share Integration Test
-    needs: integ-audio
+  integ-meeting-readiness:
+    name: Meeting Readiness Integration Test
+    needs: integ-content-share
     runs-on: ubuntu-latest
 
     steps:
@@ -200,6 +199,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          # TODO: Enable with pull_request_target to allow for forked repos to run our github actions
           # ref: ${{github.event.pull_request.head.ref}}
           # repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Setup Node.js - 12.x
@@ -210,9 +210,8 @@ jobs:
         run: integration/js/script/install-kite
       - name: Clean Install
         run: npm ci
-      - name: Run Content Share Integration Test
-        run: npm run test:integration-content-share
-    
+      - name: Run Meeting Readiness Checker Integration Test
+        run: npm run test:integration-meeting-readiness-checker
 
   integ-data-message:
     name: Data Message Integration Test
@@ -303,9 +302,9 @@ jobs:
       - name: Run Meeting End Integ Test
         run: npm run test:integration-meeting-end
 
-  integ-meeting-readiness:
-    name: Meeting Readiness Integration Test
-    needs: integ-video
+  integ-messaging:
+    name: Messaging Integration Test
+    needs: integ-data-message
     runs-on: ubuntu-latest
 
     steps:
@@ -333,9 +332,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          # TODO: Enable with pull_request_target to allow for forked repos to run our github actions
-          # ref: ${{github.event.pull_request.head.ref}}
-          # repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Setup Node.js - 12.x
         uses: actions/setup-node@v1
         with:
@@ -344,5 +340,7 @@ jobs:
         run: integration/js/script/install-kite
       - name: Clean Install
         run: npm ci
-      - name: Run Meeting Readiness Checker Integration Test
-        run: npm run test:integration-meeting-readiness-checker
+      - name: Setup userArn
+        run: integration/js/script/test-setup
+      - name: Run Messaging Integration Test
+        run: npm run test:integration-messaging
