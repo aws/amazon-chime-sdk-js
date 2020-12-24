@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  `VideoFrameProcessor`, `VideoFrameProcessorPipeline` and `VideoFrameBuffer` interfaces
  are added to support `DefaultVideoTransformDevice` and allow processing steps to be applied to device.
  The method `chooseVideoInputDevice` in `DefaultDeviceController` can handle `VideoTransformDevice` now.
+- add callback parameter to `realtimeUnsubscribeFromVolumeIndicator`
 
 ### Changed
 
