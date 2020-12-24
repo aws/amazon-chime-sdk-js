@@ -176,7 +176,7 @@ Volume is on a scale of 0 to 1 (no volume to max volume). Signal strength is on 
 
 To subscribe to an attendee’s volume indicator, call meetingSession.audioVideo.[realtimeSubscribeToVolumeIndicator(attendeeId, callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetovolumeindicator).
 
-To unsubscribe from an attendee’s volume indicator, call meetingSession.audioVideo.[realtimeUnsubscribeFromVolumeIndicator(attendeeId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribefromvolumeindicator).
+To unsubscribe from an attendee’s volume indicator, call meetingSession.audioVideo.[realtimeUnsubscribeFromVolumeIndicator(attendeeId, callback?)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribefromvolumeindicator).
 
 ### 5c. Signal strength change (optional)
 

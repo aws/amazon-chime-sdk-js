@@ -42,7 +42,16 @@ export default interface RealtimeControllerFacade {
       externalUserId?: string
     ) => void
   ): void;
-  realtimeUnsubscribeFromVolumeIndicator(attendeeId: string): void;
+  realtimeUnsubscribeFromVolumeIndicator(
+    attendeeId: string,
+    callback?: (
+      attendeeId: string,
+      volume: number | null,
+      muted: boolean | null,
+      signalStrength: number | null,
+      externalUserId?: string
+    ) => void
+  ): void;
   realtimeSubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void;
   realtimeUnsubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void;
   realtimeSendDataMessage(
