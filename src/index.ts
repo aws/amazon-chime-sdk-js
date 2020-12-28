@@ -248,6 +248,7 @@ import VoiceFocusSpec from './voicefocus/VoiceFocusSpec';
 import VoiceFocusTransformDevice from './voicefocus/VoiceFocusTransformDevice';
 import VoiceFocusTransformDeviceObserver from './voicefocus/VoiceFocusTransformDeviceObserver';
 import VolumeIndicatorAdapter from './volumeindicatoradapter/VolumeIndicatorAdapter';
+import VolumeIndicatorCallback from './realtimecontroller/VolumeIndicatorCallback';
 import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
@@ -505,6 +506,7 @@ export {
   VoiceFocusTransformDevice,
   VoiceFocusTransformDeviceObserver,
   VolumeIndicatorAdapter,
+  VolumeIndicatorCallback,
   WaitForAttendeePresenceTask,
   WebSocketAdapter,
   WebSocketReadyState,
