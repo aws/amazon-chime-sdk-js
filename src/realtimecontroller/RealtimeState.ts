@@ -4,6 +4,7 @@
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
 import RealtimeVolumeIndicator from './RealtimeVolumeIndicator';
+import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
 /**
  * [[RealtimeState]] stores all realtime persistent state.
@@ -69,13 +70,7 @@ export default class RealtimeState {
    * Stores per-attendee id callbacks called when volume indicators change
    */
   volumeIndicatorCallbacks: {
-    [key: string]: ((
-      attendeeId: string,
-      volume: number | null,
-      muted: boolean | null,
-      signalStrength: number | null,
-      externalUserId?: string
-    ) => void)[];
+    [key: string]: VolumeIndicatorCallback[];
   } = {};
 
   /**

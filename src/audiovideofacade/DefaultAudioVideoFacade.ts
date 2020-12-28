@@ -18,6 +18,7 @@ import VideoInputDevice from '../devicecontroller/VideoInputDevice';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import { isVideoTransformDevice } from '../devicecontroller/VideoTransformDevice';
 import RealtimeController from '../realtimecontroller/RealtimeController';
+import type VolumeIndicatorCallback from '../realtimecontroller/VolumeIndicatorCallback';
 import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
@@ -237,23 +238,17 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     return result;
   }
 
-  realtimeSubscribeToVolumeIndicator(
-    attendeeId: string,
-    callback: (
-      attendeeId: string,
-      volume: number | null,
-      muted: boolean | null,
-      signalStrength: number | null,
-      externalUserId?: string
-    ) => void
-  ): void {
+  realtimeSubscribeToVolumeIndicator(attendeeId: string, callback: VolumeIndicatorCallback): void {
     this.realtimeController.realtimeSubscribeToVolumeIndicator(attendeeId, callback);
     this.trace('realtimeSubscribeToVolumeIndicator', attendeeId);
   }
 
-  realtimeUnsubscribeFromVolumeIndicator(attendeeId: string): void {
-    this.realtimeController.realtimeUnsubscribeFromVolumeIndicator(attendeeId);
-    this.trace('realtimeUnsubscribeFromVolumeIndicator', attendeeId);
+  realtimeUnsubscribeFromVolumeIndicator(
+    attendeeId: string,
+    callback?: VolumeIndicatorCallback
+  ): void {
+    this.realtimeController.realtimeUnsubscribeFromVolumeIndicator(attendeeId, callback);
+    this.trace('realtimeUnsubscribeFromVolumeIndicator', attendeeId, callback);
   }
 
   realtimeSubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void {

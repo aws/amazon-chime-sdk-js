@@ -10,22 +10,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
 - Corrected `null` type on `DefaultVideoFrameProcessorPipeline` and `DefaultVideoTransformDevice`
 
 ### Removed
 
 ### Fixed
+
 - [Documentation] Corrected name for `voiceFocusInsufficientResources` in documentation.
+- Allow for `realtimeUnsubscribeFromVolumeIndicator` to unsubscribe from specific callbacks.
 
 ## [2.3.0] - 2020-12-21
 
 ### Added
+
 - Add Samsung Internet browser for Android as a supported browser.
 - [Documentation] Add documentation for video processing APIs.
 - Add `DefaultVideoTransformDevice` to implement `VideoTransformDevice`.
- `VideoFrameProcessor`, `VideoFrameProcessorPipeline` and `VideoFrameBuffer` interfaces
- are added to support `DefaultVideoTransformDevice` and allow processing steps to be applied to device.
- The method `chooseVideoInputDevice` in `DefaultDeviceController` can handle `VideoTransformDevice` now.
+  `VideoFrameProcessor`, `VideoFrameProcessorPipeline` and `VideoFrameBuffer` interfaces
+  are added to support `DefaultVideoTransformDevice` and allow processing steps to be applied to device.
+  The method `chooseVideoInputDevice` in `DefaultDeviceController` can handle `VideoTransformDevice` now.
 
 ### Changed
 
@@ -54,9 +58,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.2.0] - 2020-12-04
 
 ### Added
+
 - [Documentation] What happens when participants try to `startLocalVideoTile` when local video tile limit reached
 
 ### Changed
+
 - Log error if pass undefined device when calling choose input device
 - Doing typecheck for MediaDeviceInfo
 - Set automated integ test coverage on recent version of browsers
