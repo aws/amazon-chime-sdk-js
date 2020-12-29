@@ -281,7 +281,7 @@ We recommend that you allow estimation to adapt to the runtime environment: it i
 You can optionally implement the `VoiceFocusTransformDeviceObserver` interface and use `addObserver` to receive callbacks when one of two things occur:
 
 * `voiceFocusFellBackToInnerStream`: if applying noise suppression to an audio device failed, causing the SDK to fall back to using the inner device with the browser’s own noise suppression, this will be called. This should be uncommon, but this allows you to adapt your UI to failure.
-* `onCPUWarning`: if the noise suppressor is unable to keep up with input audio, and the execution mode is able to determine this, then `onCPUWarning` will be invoked approximately every 15 milliseconds. The user will not themselves hear any audio glitching: bad audio will be heard by *other participants in the meeting*. Disabling noise suppression or other application features might be necessary to avoid continued disruption of the user experience.
+* `voiceFocusInsufficientResources`: if the noise suppressor is unable to keep up with input audio, and the execution mode is able to determine this, then `voiceFocusInsufficientResources` will be invoked approximately every 15 milliseconds. The user will not themselves hear any audio glitching: bad audio will be heard by *other participants in the meeting*. Disabling noise suppression or other application features might be necessary to avoid continued disruption of the user experience.
 
 ## Automatic gain control
 
