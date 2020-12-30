@@ -59,6 +59,7 @@ export default interface VideoFrameProcessorPipeline {
 
   /**
    * The output `MediaStream` as a result of processor executions.
+   * It is possible, but unlikely, that this accessor will throw.
    */
   readonly outputMediaStream: MediaStream;
 }

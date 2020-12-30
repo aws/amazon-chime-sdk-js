@@ -266,6 +266,24 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
     });
   });
 
+  describe('accessor framerate', () => {
+    it('getter can return the frame rate', () => {
+      expect(pipe.framerate).to.equal(15);
+      pipe.framerate = 30;
+      expect(pipe.framerate).to.equal(30);
+    });
+
+    it('setter can set the frame rate', () => {
+      pipe.framerate = 30;
+      expect(pipe.framerate).to.equal(30);
+    });
+
+    it('setter ignores frame rate less than 0', () => {
+      pipe.framerate = -5;
+      expect(pipe.framerate).to.equal(15);
+    });
+  });
+
   describe('addObserver', () => {
     it('can add observer', () => {
       const pipeObserver = new MockObserver();

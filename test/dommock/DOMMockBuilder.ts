@@ -235,6 +235,7 @@ export default class DOMMockBuilder {
       id: string = '';
       constraints: MockMediaStreamConstraints = {};
       tracks: typeof GlobalAny.MediaStreamTrack[] = [];
+      active: boolean = false;
 
       constructor(tracks: typeof GlobalAny.MediaStreamTrack[] = []) {
         this.tracks = tracks;

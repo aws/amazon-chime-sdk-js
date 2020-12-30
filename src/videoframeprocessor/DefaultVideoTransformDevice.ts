@@ -18,7 +18,7 @@ import VideoFrameProcessorPipelineObserver from './VideoFrameProcessorPipelineOb
  */
 export default class DefaultVideoTransformDevice
   implements VideoTransformDevice, VideoFrameProcessorPipelineObserver {
-  pipe: VideoFrameProcessorPipeline | null = null;
+  private pipe: VideoFrameProcessorPipeline;
   private inputMediaStream: MediaStream;
   private observers: Set<DefaultVideoTransformDeviceObserver> = new Set<
     DefaultVideoTransformDeviceObserver
@@ -29,17 +29,18 @@ export default class DefaultVideoTransformDevice
     private device: Device,
     private processors: VideoFrameProcessor[],
     private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior()
-  ) {}
+  ) {
+    this.pipe = new DefaultVideoFrameProcessorPipeline(this.logger, this.processors);
+    this.pipe.addObserver(this);
+  }
 
   /**
    * getter for `outputMediaStream`.
    * `outputMediaStream` is returned by internal {@link VideoFrameProcessorPipeline}.
+   * It is possible, but unlikely, that this accessor will throw.
    */
-  get outputMediaStream(): MediaStream | null {
-    if (this.pipe) {
-      return this.pipe.outputMediaStream;
-    }
-    return null;
+  get outputMediaStream(): MediaStream {
+    return this.pipe.outputMediaStream;
   }
 
   /**
@@ -100,7 +101,6 @@ export default class DefaultVideoTransformDevice
    * Returns output `MediaStream` produced by {@link VideoFrameProcessorPipeline}.
    */
   async transformStream(mediaStream?: MediaStream): Promise<MediaStream> {
-    await this.createVideoFrameProcessorPipeline();
     await this.pipe.setInputMediaStream(mediaStream);
     this.inputMediaStream = mediaStream;
     return this.pipe.getActiveOutputMediaStream();
@@ -118,9 +118,7 @@ export default class DefaultVideoTransformDevice
     const deviceIsMediaStream = this.device && (this.device as MediaStream).id;
 
     // Stop processing but keep the pipe and processors
-    if (this.pipe) {
-      this.pipe.stop();
-    }
+    this.pipe.stop();
 
     // Turn off the camera, unless device is a MediaStream
     if (!deviceIsMediaStream) {
@@ -143,20 +141,9 @@ export default class DefaultVideoTransformDevice
         track.stop();
       }
     }
-    if (this.pipe) {
-      this.pipe.destroy();
-    }
 
+    this.pipe.destroy();
     this.inputMediaStream = null;
-  }
-
-  private async createVideoFrameProcessorPipeline(): Promise<VideoFrameProcessorPipeline> {
-    if (!this.pipe) {
-      this.pipe = new DefaultVideoFrameProcessorPipeline(this.logger, this.processors);
-      this.pipe.addObserver(this);
-    }
-
-    return this.pipe;
   }
 
   /**
