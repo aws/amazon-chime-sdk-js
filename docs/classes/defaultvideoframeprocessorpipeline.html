@@ -105,7 +105,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#canvasinput" class="tsd-kind-icon">canvas<wbr>Input</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#canvasoutput" class="tsd-kind-icon">canvas<wbr>Output</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#destbuffers" class="tsd-kind-icon">dest<wbr>Buffers</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="defaultvideoframeprocessorpipeline.html#framerate" class="tsd-kind-icon">framerate</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#fr" class="tsd-kind-icon">fr</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#hasstarted" class="tsd-kind-icon">has<wbr>Started</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#inputctx" class="tsd-kind-icon">input<wbr>Ctx</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#inputvideostream" class="tsd-kind-icon">input<wbr>Video<wbr>Stream</a></li>
@@ -117,12 +117,12 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#sourcebuffers" class="tsd-kind-icon">source<wbr>Buffers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#stages" class="tsd-kind-icon">stages</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultvideoframeprocessorpipeline.html#videoinput" class="tsd-kind-icon">video<wbr>Input</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="defaultvideoframeprocessorpipeline.html#defaultframerate" class="tsd-kind-icon">default<wbr>Framerate</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="defaultvideoframeprocessorpipeline.html#framerate" class="tsd-kind-icon">framerate</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="defaultvideoframeprocessorpipeline.html#processors" class="tsd-kind-icon">processors</a></li>
 							</ul>
 						</section>
@@ -156,7 +156,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L39">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L46">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:46</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -181,17 +181,17 @@
 					<div class="tsd-signature tsd-kind-icon">canvas<wbr>Input<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLCanvasElement</span><span class="tsd-signature-symbol"> = document.createElement(&#x27;canvas&#x27;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L27">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L35">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:35</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="canvasoutput" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> canvas<wbr>Output</h3>
-					<div class="tsd-signature tsd-kind-icon">canvas<wbr>Output<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLCanvasElement</span><span class="tsd-signature-symbol"> = document.createElement(&#x27;canvas&#x27;)</span></div>
+					<div class="tsd-signature tsd-kind-icon">canvas<wbr>Output<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLCanvasElementWithCaptureStream</span><span class="tsd-signature-symbol"> = document.createElement(&#x27;canvas&#x27;) as HTMLCanvasElementWithCaptureStream</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L24">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L30">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -201,18 +201,17 @@
 					<div class="tsd-signature tsd-kind-icon">dest<wbr>Buffers<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videoframebuffer.html" class="tsd-signature-type">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L32">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L40">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:40</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="framerate" class="tsd-anchor"></a>
-					<h3>framerate</h3>
-					<div class="tsd-signature tsd-kind-icon">framerate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DefaultVideoFrameProcessorPipeline.defaultFramerate</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="fr" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> fr</h3>
+					<div class="tsd-signature tsd-kind-icon">fr<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DEFAULT_FRAMERATE</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a>.<a href="../interfaces/videoframeprocessorpipeline.html#framerate">framerate</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L17">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L25">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -222,7 +221,7 @@
 					<div class="tsd-signature tsd-kind-icon">has<wbr>Started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L37">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L45">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:45</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -232,7 +231,7 @@
 					<div class="tsd-signature tsd-kind-icon">input<wbr>Ctx<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CanvasRenderingContext2D</span><span class="tsd-signature-symbol"> = this.canvasInput.getContext(&#x27;2d&#x27;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L28">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L36">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -242,17 +241,17 @@
 					<div class="tsd-signature tsd-kind-icon">input<wbr>Video<wbr>Stream<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L29">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L37">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:37</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="lasttimeout" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> last<wbr>Time<wbr>Out</h3>
-					<div class="tsd-signature tsd-kind-icon">last<wbr>Time<wbr>Out<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<div class="tsd-signature tsd-kind-icon">last<wbr>Time<wbr>Out<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">setTimeout</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L39">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L46">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:46</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -262,7 +261,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L40">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L48">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:48</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -272,7 +271,7 @@
 					<div class="tsd-signature tsd-kind-icon">observers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/videoframeprocessorpipelineobserver.html" class="tsd-signature-type">VideoFrameProcessorPipelineObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Set&lt;VideoFrameProcessorPipelineObserver&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L33">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L41">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:41</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -282,7 +281,7 @@
 					<div class="tsd-signature tsd-kind-icon">output<wbr>Ctx<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CanvasRenderingContext2D</span><span class="tsd-signature-symbol"> = this.canvasOutput.getContext(&#x27;2d&#x27;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L25">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L33">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:33</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -293,7 +292,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a>.<a href="../interfaces/videoframeprocessorpipeline.html#outputmediastream">outputMediaStream</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L18">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L26">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -303,7 +302,7 @@
 					<div class="tsd-signature tsd-kind-icon">source<wbr>Buffers<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videoframebuffer.html" class="tsd-signature-type">VideoFrameBuffer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L31">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L39">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:39</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -313,7 +312,7 @@
 					<div class="tsd-signature tsd-kind-icon">stages<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videoframeprocessor.html" class="tsd-signature-type">VideoFrameProcessor</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L40">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L48">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:48</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -323,23 +322,45 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Input<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLVideoElement</span><span class="tsd-signature-symbol"> = document.createElement(&#x27;video&#x27;) as HTMLVideoElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L22">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:22</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<a name="defaultframerate" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> default<wbr>Framerate</h3>
-					<div class="tsd-signature tsd-kind-icon">default<wbr>Framerate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 15</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L20">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L28">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="framerate" class="tsd-anchor"></a>
+					<h3>framerate</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> framerate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> framerate<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L59">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:59</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L65">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:65</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
 					<a name="processors" class="tsd-anchor"></a>
 					<h3>processors</h3>
@@ -351,7 +372,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L134">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:134</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L155">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:155</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/videoframeprocessor.html" class="tsd-signature-type">VideoFrameProcessor</a><span class="tsd-signature-symbol">[]</span></h4>
@@ -359,7 +380,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L130">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:130</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L151">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:151</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -386,7 +407,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a>.<a href="../interfaces/videoframeprocessorpipeline.html#addobserver">addObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L78">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:78</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L99">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:99</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -410,7 +431,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a>.<a href="../interfaces/videoframeprocessorpipeline.html#destroy">destroy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L42">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L50">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:50</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -427,7 +448,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L248">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:248</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L269">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:269</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -444,7 +465,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L238">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:238</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L259">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:259</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -479,17 +500,17 @@
 					<a name="getactiveoutputmediastream" class="tsd-anchor"></a>
 					<h3>get<wbr>Active<wbr>Output<wbr>Media<wbr>Stream</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Active<wbr>Output<wbr>Media<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Active<wbr>Output<wbr>Media<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a>.<a href="../interfaces/videoframeprocessorpipeline.html#getactiveoutputmediastream">getActiveOutputMediaStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L90">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L111">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:111</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MediaStream</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -504,7 +525,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a>.<a href="../interfaces/videoframeprocessorpipeline.html#getinputmediastream">getInputMediaStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L86">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L107">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:107</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -521,7 +542,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L138">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:138</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L159">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:159</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -545,7 +566,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a>.<a href="../interfaces/videoframeprocessorpipeline.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L82">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:82</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L103">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:103</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -568,7 +589,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L102">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L123">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:123</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -598,7 +619,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videoframeprocessorpipeline.html">VideoFrameProcessorPipeline</a>.<a href="../interfaces/videoframeprocessorpipeline.html#stop">stop</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L51">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L69">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:69</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -634,8 +655,8 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultvideoframeprocessorpipeline.html#destbuffers" class="tsd-kind-icon">dest<wbr>Buffers</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="defaultvideoframeprocessorpipeline.html#framerate" class="tsd-kind-icon">framerate</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultvideoframeprocessorpipeline.html#fr" class="tsd-kind-icon">fr</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultvideoframeprocessorpipeline.html#hasstarted" class="tsd-kind-icon">has<wbr>Started</a>
@@ -670,8 +691,8 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultvideoframeprocessorpipeline.html#videoinput" class="tsd-kind-icon">video<wbr>Input</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
-								<a href="defaultvideoframeprocessorpipeline.html#defaultframerate" class="tsd-kind-icon">default<wbr>Framerate</a>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="defaultvideoframeprocessorpipeline.html#framerate" class="tsd-kind-icon">framerate</a>
 							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="defaultvideoframeprocessorpipeline.html#processors" class="tsd-kind-icon">processors</a>

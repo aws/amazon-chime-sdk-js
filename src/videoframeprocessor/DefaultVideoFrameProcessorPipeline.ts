@@ -8,20 +8,28 @@ import VideoFrameProcessor from './VideoFrameProcessor';
 import VideoFrameProcessorPipeline from './VideoFrameProcessorPipeline';
 import VideoFrameProcessorPipelineObserver from './VideoFrameProcessorPipelineObserver';
 
+const DEFAULT_FRAMERATE = 15;
+
+/** @internal */
+interface HTMLCanvasElementWithCaptureStream extends HTMLCanvasElement {
+  // Not in IE, but that's OK.
+  captureStream(frameRate?: number): MediaStream;
+}
+
 /**
  * [[DefaultVideoFrameProcessorPipeline]] implements {@link VideoFrameProcessorPipeline}.
  * It constructs a buffer {@link CanvasVideoFrameBuffer} as source by default and invokes processor based on `framerate`.
  * The default output type is `MediaStream`.
  */
 export default class DefaultVideoFrameProcessorPipeline implements VideoFrameProcessorPipeline {
-  framerate: number = DefaultVideoFrameProcessorPipeline.defaultFramerate;
+  private fr: number = DEFAULT_FRAMERATE;
   outputMediaStream: MediaStream | null = null;
-
-  private static defaultFramerate = 15;
 
   private videoInput: HTMLVideoElement = document.createElement('video') as HTMLVideoElement;
 
-  private canvasOutput: HTMLCanvasElement = document.createElement('canvas');
+  private canvasOutput: HTMLCanvasElementWithCaptureStream = document.createElement(
+    'canvas'
+  ) as HTMLCanvasElementWithCaptureStream;
   private outputCtx = this.canvasOutput.getContext('2d');
 
   private canvasInput: HTMLCanvasElement = document.createElement('canvas');
@@ -35,8 +43,8 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
   >();
 
   private hasStarted: boolean = false;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private lastTimeOut: any;
+  private lastTimeOut: ReturnType<typeof setTimeout> | undefined;
+
   constructor(private logger: Logger, private stages: VideoFrameProcessor[]) {}
 
   destroy(): void {
@@ -46,6 +54,16 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
         stage.destroy();
       }
     }
+  }
+
+  get framerate(): number {
+    return this.fr;
+  }
+
+  // A negative framerate will cause `captureStream` to throw `NotSupportedError`.
+  // The setter prevents this by switching to the default framerate if less than 0.
+  set framerate(value: number) {
+    this.fr = value < 0 ? DEFAULT_FRAMERATE : value;
   }
 
   stop(): void {
@@ -60,11 +78,14 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
         track.stop();
       }
     }
+
     // clear output stream
     this.outputMediaStream = null;
     if (this.lastTimeOut) {
       clearTimeout(this.lastTimeOut);
+      this.lastTimeOut = undefined;
     }
+
     if (this.hasStarted) {
       this.hasStarted = false;
       this.forEachObserver(observer => {
@@ -87,12 +108,12 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     return this.inputVideoStream;
   }
 
-  getActiveOutputMediaStream(): MediaStream | null {
-    if (!this.outputMediaStream || !this.outputMediaStream.active) {
-      // @ts-ignore
-      this.outputMediaStream = this.canvasOutput.captureStream(this.framerate);
+  getActiveOutputMediaStream(): MediaStream {
+    if (this.outputMediaStream && this.outputMediaStream.active) {
+      return this.outputMediaStream;
     }
-    return this.outputMediaStream;
+
+    return (this.outputMediaStream = this.canvasOutput.captureStream(this.framerate));
   }
 
   /**
