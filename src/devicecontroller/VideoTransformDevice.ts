@@ -31,7 +31,7 @@ export default interface VideoTransformDevice {
   /**
    * `outputMediaStream` is generated after processors are applied. It will be auto-released after `stop` is called.
    */
-  readonly outputMediaStream: MediaStream;
+  readonly outputMediaStream: MediaStream | null;
 }
 
 /**

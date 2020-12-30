@@ -60,5 +60,5 @@ export default interface VideoFrameProcessorPipeline {
   /**
    * The output `MediaStream` as a result of processor executions.
    */
-  readonly outputMediaStream: MediaStream;
+  readonly outputMediaStream: MediaStream | null;
 }
