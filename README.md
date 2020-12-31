@@ -40,6 +40,7 @@ And review the following guides:
 * [Frequently Asked Questions](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
 * [Migrating from v1.0 to v2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
 * [Integrating Amazon Voice Focus into your application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
+* [Adding frame-by-frame processing to an outgoing video stream](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/10_Video_Processor.md)
 
 ## Examples
 
