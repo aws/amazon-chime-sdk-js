@@ -70,10 +70,11 @@ describe('DefaultVideoTransformDevice', () => {
   });
 
   describe('getter outputMediaStream', () => {
-    it('returns null if device is not started', async () => {
+    it('returns dummy inactive MediaStream if device is not started', async () => {
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test', [processor]);
-      expect(await device.outputMediaStream).to.be.null;
+      const stream = device.outputMediaStream;
+      expect(stream.active).to.be.false;
     });
   });
 
@@ -108,7 +109,7 @@ describe('DefaultVideoTransformDevice', () => {
 
       await device.stop();
       await stopCallback;
-      expect(device.outputMediaStream).to.be.null;
+      expect(device.outputMediaStream.active).to.be.false;
     });
 
     it('can start processing on different media stream', async () => {
@@ -165,9 +166,9 @@ describe('DefaultVideoTransformDevice', () => {
       await device.stop();
 
       await stopCallback;
-      expect(device.outputMediaStream).to.be.null;
+      expect(device.outputMediaStream.active).to.be.false;
       await device.stop();
-      expect(device.outputMediaStream).to.be.null;
+      expect(device.outputMediaStream.active).to.be.false;
     });
   });
 
