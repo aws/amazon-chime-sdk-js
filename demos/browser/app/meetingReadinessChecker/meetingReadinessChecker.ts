@@ -432,7 +432,7 @@ export class DemoMeetingApp {
     if (
       location.hostname === 'localhost' ||
       location.hostname === '127.0.0.1' ||
-      configuration === null
+      !configuration
     ) {
       this.logger.inner = consoleLogger;
     } else {
