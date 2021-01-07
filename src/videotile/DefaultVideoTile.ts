@@ -35,13 +35,21 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     if (!videoElement.hasAttribute('autoplay')) {
       videoElement.setAttribute('autoplay', 'true');
     }
-    // playsinline is needed for video to play in Iphone in non-fullscreen mode.
+    // playsinline is needed for video to play in iPhone in non-fullscreen mode.
     // See https://developer.apple.com/documentation/webkit/safari_tools_and_features/delivering_video_content_for_safari#3030250
     if (!videoElement.hasAttribute('playsinline')) {
       videoElement.setAttribute('playsinline', 'true');
     }
+
+    // Note that setting the *attribute* 'muted' affects whether the element
+    // is muted *by default* (`.defaultMuted`), not whether it is currently muted (`.muted`).
+    // https://html.spec.whatwg.org/#dom-media-defaultmuted
     if (!videoElement.hasAttribute('muted')) {
+      // The default value…
       videoElement.setAttribute('muted', 'true');
+
+      // … and the value right now.
+      videoElement.muted = true;
     }
 
     if (videoElement.srcObject !== videoStream) {
