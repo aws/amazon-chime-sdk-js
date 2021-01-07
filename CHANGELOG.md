@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Documentation] Corrected name for `voiceFocusInsufficientResources` in documentation.
 - Allow for `realtimeUnsubscribeFromVolumeIndicator` to unsubscribe from specific callbacks.
+- Correctly mute video elements when bound, preventing local echo when sharing tabs via content
+  share.
+- [Demo] Local content share (e.g., video files) now plays audio through the selected audio
+  output device, rather than the default device, in browsers that support `setSinkId`.
 
 ## [2.3.0] - 2020-12-21
 

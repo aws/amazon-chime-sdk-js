@@ -1744,13 +1744,24 @@ export class DemoMeetingApp
           return;
         }
         try {
-          await this.audioVideo.chooseAudioOutputDevice(name);
+          await this.chooseAudioOutputDevice(name);
         } catch (e) {
           fatal(e);
           this.log('Failed to chooseAudioOutputDevice', e);
         }
       }
     );
+  }
+
+  private async chooseAudioOutputDevice(device: string): Promise<void> {
+    // Set it for the content share stream if we can.
+    const videoElem = document.getElementById('content-share-video') as HTMLVideoElement;
+    if (this.defaultBrowserBehaviour.supportsSetSinkId()) {
+      // @ts-ignore
+      videoElem.setSinkId(device);
+    }
+
+    await this.audioVideo.chooseAudioOutputDevice(device);
   }
 
   private analyserNodeCallback = () => {};
@@ -1865,7 +1876,7 @@ export class DemoMeetingApp
     if (this.defaultBrowserBehaviour.supportsSetSinkId()) {
       try {
         const audioOutput = document.getElementById('audio-output') as HTMLSelectElement;
-        await this.audioVideo.chooseAudioOutputDevice(audioOutput.value);
+        await this.chooseAudioOutputDevice(audioOutput.value);
       } catch (e) {
         fatal(e);
         this.log('failed to chooseAudioOutputDevice', e);
