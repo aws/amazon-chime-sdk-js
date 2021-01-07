@@ -54,19 +54,13 @@ end
 package['version'] = version_string
 changelog_file = 'CHANGELOG.md'
 tag = "amazon-chime-sdk-js@#{version_string}"
-
-# This is what most tools (e.g., `git describe`) use.
-semvertag = "v#{version_string}"
+formatted_version = version_string.gsub(".","-")
 
 puts
 puts "Warning: you are bumping the version"
 puts
 puts "From: #{original_version}"
 puts "To:   #{version_string}"
-puts
-puts "And creating the following tags:"
-puts tag
-puts semvertag
 puts
 puts "Type 'yes' to continue"
 x = STDIN.gets
@@ -82,9 +76,6 @@ verbose("npm version #{version_string} --no-git-tag-version")
 
 verbose('git add -A')
 verbose("git commit -m 'Publish #{tag}'")
-verbose("git tag -d #{tag} || true")
-verbose("git tag #{tag}")
-verbose("git tag #{semvertag} -m \"Release #{semvertag}.\"")
 
 verbose('npm run build:release')
 verbose('npm pack --dry-run')
@@ -96,4 +87,7 @@ x = STDIN.gets
 exit(1) unless x.strip == 'yes'
 puts
 
-verbose("git push origin HEAD:release --follow-tags -f")
+verbose("git push origin HEAD:release -f")
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '../demos/serverless')))
+verbose("npm run deploy -- -b chime-sdk-demo-#{formatted_version} -s chime-sdk-demo-#{formatted_version}")
