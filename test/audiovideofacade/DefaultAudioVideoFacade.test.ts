@@ -16,6 +16,7 @@ import ContentShareObserver from '../../src/contentshareobserver/ContentShareObs
 import DataMessage from '../../src/datamessage/DataMessage';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
+import type VolumeIndicatorCallback from '../../src/realtimecontroller/VolumeIndicatorCallback';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -352,7 +353,7 @@ describe('DefaultAudioVideoFacade', () => {
     it('will call realtimeSubscribeToVolumeIndicator', () => {
       const spy = sinon.spy(controller.realtimeController, 'realtimeSubscribeToVolumeIndicator');
       const arg1 = '';
-      const arg2 = (
+      const arg2: VolumeIndicatorCallback = (
         _attendeeId: string,
         _volume: number | null,
         _muted: boolean | null,
@@ -362,7 +363,7 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(arg1, arg2));
     });
 
-    it('will call realtimeUnsubscribeFromVolumeIndicator', () => {
+    it('will call realtimeUnsubscribeFromVolumeIndicator with 1 argument', () => {
       const spy = sinon.spy(
         controller.realtimeController,
         'realtimeUnsubscribeFromVolumeIndicator'
@@ -370,6 +371,22 @@ describe('DefaultAudioVideoFacade', () => {
       const arg1 = '';
       facade.realtimeUnsubscribeFromVolumeIndicator(arg1);
       assert(spy.calledOnceWith(arg1));
+    });
+
+    it('will call realtimeUnsubscribeFromVolumeIndicator with 2 arguments', () => {
+      const spy = sinon.spy(
+        controller.realtimeController,
+        'realtimeUnsubscribeFromVolumeIndicator'
+      );
+      const arg1 = '';
+      const arg2: VolumeIndicatorCallback = (
+        _attendeeId,
+        _volume,
+        _muted,
+        _signalStrength
+      ): void => {};
+      facade.realtimeUnsubscribeFromVolumeIndicator(arg1, arg2);
+      assert(spy.calledOnceWith(arg1, arg2));
     });
 
     it('will call realtimeSubscribeToLocalSignalStrengthChange', () => {

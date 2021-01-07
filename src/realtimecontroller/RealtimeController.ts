@@ -3,6 +3,7 @@
 
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
+import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
 /**
  * [[RealtimeController]] controls aspects meetings concerning realtime UX
@@ -147,21 +148,17 @@ export default interface RealtimeController {
    * Signal strength can be 0 (no signal), 0.5 (weak signal), or 1 (good signal).
    * A null value for any field means that it has not changed.
    */
-  realtimeSubscribeToVolumeIndicator(
-    attendeeId: string,
-    callback: (
-      attendeeId: string,
-      volume: number | null,
-      muted: boolean | null,
-      signalStrength: number | null,
-      externalUserId?: string
-    ) => void
-  ): void;
+  realtimeSubscribeToVolumeIndicator(attendeeId: string, callback: VolumeIndicatorCallback): void;
 
   /**
    * Unsubscribes to volume indicator changes for a specific attendee id.
+   * Optionally, you can pass a callback parameter to unsubscribe from a specific callback.
+   * Otherwise, all callbacks will be unsubscribed (e.g. activeSpeaker).
    */
-  realtimeUnsubscribeFromVolumeIndicator(attendeeId: string): void;
+  realtimeUnsubscribeFromVolumeIndicator(
+    attendeeId: string,
+    callback?: VolumeIndicatorCallback
+  ): void;
 
   /**
    * Computes the difference to the last state and sends a volume indicator
