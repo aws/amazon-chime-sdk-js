@@ -293,7 +293,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
       task.run();
     });
 
-    describe('no udpate', () => {
+    describe('no update', () => {
       it('does not update video availability if videosToReceive does not exist in the context', () => {
         context.videosToReceive = null;
       });
