@@ -419,17 +419,7 @@ export default class DefaultAudioVideoController
   }
 
   stop(): void {
-    /*
-    Stops the current audio video meeting session.
-    The stop method execution is deferred and executed after
-    the current reconnection attempt completes.
-    It disables any further reconnection attempts.
-    Upon completion, AudioVideoObserver's `audioVideoDidStop`
-    callback function is called with `MeetingSessionStatusCode.Left`.
-    */
     this.sessionStateController.perform(SessionStateControllerAction.Disconnect, () => {
-      this._reconnectController.disableReconnect();
-      this.logger.info('attendee left meeting, session will not be reconnected');
       this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.Left), false, null);
     });
   }
