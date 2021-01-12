@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Amazon Voice Focus now makes better use of available CPU resources,
   extending support to lower-end devices and improving quality on higher-end
   devices.
+- Disable reconnecting in AudioVideoControllerFacade's `stop` method.
+  Add documentation for the `stop` method.
 
 ### Removed
 

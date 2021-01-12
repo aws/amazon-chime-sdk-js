@@ -691,6 +691,43 @@ describe('DefaultAudioVideoController', () => {
       await delay(configuration.connectionTimeoutMs * 2);
       expect(called).to.be.true;
     });
+
+    it('disables reconnecting once stop is called', async () => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'info');
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
+          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.Left);
+          expect(
+            loggerSpy.calledWith(
+              sinon.match('attendee left meeting, session will not be reconnected')
+            )
+          ).true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      await start();
+      expect(
+        reconnectController.retryWithBackoff(
+          () => {},
+          () => {}
+        )
+      ).to.be.true;
+      await stop();
+      expect(
+        reconnectController.retryWithBackoff(
+          () => {},
+          () => {}
+        )
+      ).to.be.false;
+    });
   });
 
   describe('update', () => {
