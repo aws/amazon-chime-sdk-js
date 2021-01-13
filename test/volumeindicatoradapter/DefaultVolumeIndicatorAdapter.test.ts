@@ -278,6 +278,255 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       vi.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfo2Frame);
       expect(attendeeIdUpdate).to.equal(3);
     });
+
+    it('presence leave event is fired for attendees not present on reconnects', () => {
+      const streamInfoJoins = SdkAudioStreamIdInfoFrame.create();
+      streamInfoJoins.streams = [];
+      for (let i = 1; i <= 5; i++) {
+        const streamInfo = SdkAudioStreamIdInfo.create();
+        streamInfo.audioStreamId = i;
+        streamInfo.attendeeId = `${fooAttendee}-${i}`;
+        streamInfo.externalUserId = `${fooExternal}-${i}`;
+        streamInfoJoins.streams.push(streamInfo);
+      }
+
+      let attendeeIdUpdate = 0;
+      const presentAttendeeIds: Array<string> = [];
+      const presentExternalUserIds: Array<string> = [];
+      const realtimeController = new DefaultRealtimeController();
+      realtimeController.realtimeSubscribeToAttendeeIdPresence(
+        (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
+          if (attendeeIdUpdate === 0) {
+            expect(present).to.be.true;
+            expect(dropped).to.be.false;
+            presentAttendeeIds.push(attendeeId);
+            presentExternalUserIds.push(externalUserId);
+          } else if (attendeeIdUpdate === 1) {
+            expect(present).to.be.false;
+            expect(dropped).to.be.false;
+            expect(attendeeId).to.be.equal(`${fooAttendee}-${5}`);
+            expect(externalUserId).to.be.equal(`${fooExternal}-${5}`);
+            attendeeIdUpdate++;
+          }
+        }
+      );
+      const volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
+        new NoOpLogger(),
+        realtimeController,
+        minVolumeDecibels,
+        maxVolumeDecibels
+      );
+
+      expect(presentAttendeeIds).to.be.empty;
+      expect(presentExternalUserIds).to.be.empty;
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoJoins);
+      expect(presentAttendeeIds).to.have.members(
+        streamInfoJoins.streams.map(stream => stream.attendeeId)
+      );
+      expect(presentExternalUserIds).to.have.members(
+        streamInfoJoins.streams.map(stream => stream.externalUserId)
+      );
+
+      const streamInfoReconnect = SdkAudioStreamIdInfoFrame.create();
+      streamInfoReconnect.streams = [];
+      for (let i = 1; i <= 4; i++) {
+        const streamInfo = SdkAudioStreamIdInfo.create();
+        streamInfo.audioStreamId = i;
+        streamInfo.attendeeId = `${fooAttendee}-${i}`;
+        streamInfo.externalUserId = `${fooExternal}-${i}`;
+        streamInfoReconnect.streams.push(streamInfo);
+      }
+      attendeeIdUpdate++;
+      volumeIndicatorAdapter.onReconnect();
+
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoReconnect);
+      expect(attendeeIdUpdate).to.be.equal(2);
+    });
+
+    it('presence leave event not be fired when attendee joined with different stream id on reconnects', () => {
+      const streamInfoJoins = SdkAudioStreamIdInfoFrame.create();
+      streamInfoJoins.streams = [];
+      for (let i = 1; i <= 5; i++) {
+        const streamInfo = SdkAudioStreamIdInfo.create();
+        streamInfo.audioStreamId = i;
+        streamInfo.attendeeId = `${fooAttendee}-${i}`;
+        streamInfo.externalUserId = `${fooExternal}-${i}`;
+        streamInfoJoins.streams.push(streamInfo);
+      }
+
+      let attendeeIdUpdate = 0;
+      let presentAttendeeIds: Array<string> = [];
+      let presentExternalUserIds: Array<string> = [];
+      let droppedAttendeeId: Array<string> = [];
+      const realtimeController = new DefaultRealtimeController();
+      realtimeController.realtimeSubscribeToAttendeeIdPresence(
+        (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
+          if (attendeeIdUpdate === 0) {
+            expect(present).to.be.true;
+            expect(dropped).to.be.false;
+            presentAttendeeIds.push(attendeeId);
+            presentExternalUserIds.push(externalUserId);
+          } else if (attendeeIdUpdate === 1) {
+            if (attendeeId === `${fooAttendee}-${5}`) {
+              expect(present).to.be.false;
+              expect(dropped).to.be.false;
+              expect(attendeeId).to.be.equal(`${fooAttendee}-${5}`);
+              expect(externalUserId).to.be.equal(`${fooExternal}-${5}`);
+              droppedAttendeeId.push(attendeeId);
+            } else {
+              expect(present).to.be.true;
+              expect(dropped).to.be.false;
+              presentAttendeeIds.push(attendeeId);
+              presentExternalUserIds.push(externalUserId);
+            }
+          }
+        }
+      );
+      const volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
+        new NoOpLogger(),
+        realtimeController,
+        minVolumeDecibels,
+        maxVolumeDecibels
+      );
+
+      expect(presentAttendeeIds).to.be.empty;
+      expect(presentExternalUserIds).to.be.empty;
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoJoins);
+      expect(presentAttendeeIds).to.have.members(
+        streamInfoJoins.streams.map(stream => stream.attendeeId)
+      );
+      expect(presentExternalUserIds).to.have.members(
+        streamInfoJoins.streams.map(stream => stream.externalUserId)
+      );
+      attendeeIdUpdate++;
+
+      presentAttendeeIds = [];
+      presentExternalUserIds = [];
+      droppedAttendeeId = [];
+      const streamInfoReconnect = SdkAudioStreamIdInfoFrame.create();
+      streamInfoReconnect.streams = [];
+      for (let i = 1; i <= 4; i++) {
+        const streamInfo = SdkAudioStreamIdInfo.create();
+        streamInfo.audioStreamId = i + streamInfoJoins.streams.length;
+        streamInfo.attendeeId = `${fooAttendee}-${i}`;
+        streamInfo.externalUserId = `${fooExternal}-${i}`;
+        streamInfoReconnect.streams.push(streamInfo);
+      }
+
+      volumeIndicatorAdapter.onReconnect();
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoReconnect);
+      expect(presentAttendeeIds).to.have.members(
+        streamInfoReconnect.streams.map(stream => stream.attendeeId)
+      );
+      expect(presentExternalUserIds).to.have.members(
+        streamInfoReconnect.streams.map(stream => stream.externalUserId)
+      );
+      expect(droppedAttendeeId).to.have.members([`${fooAttendee}-${5}`]);
+    });
+
+    it('presence leave event not be fired for partial frames during non reconnects', () => {
+      const streamInfoJoins = SdkAudioStreamIdInfoFrame.create();
+      streamInfoJoins.streams = [];
+      for (let i = 1; i <= 5; i++) {
+        const streamInfo = SdkAudioStreamIdInfo.create();
+        streamInfo.audioStreamId = i;
+        streamInfo.attendeeId = `${fooAttendee}-${i}`;
+        streamInfo.externalUserId = `${fooExternal}-${i}`;
+        streamInfoJoins.streams.push(streamInfo);
+      }
+
+      let attendeeIdUpdate = 0;
+      let presentAttendeeIds: Array<string> = [];
+      let presentExternalUserIds: Array<string> = [];
+      let droppedAttendeeId: Array<string> = [];
+      const realtimeController = new DefaultRealtimeController();
+      realtimeController.realtimeSubscribeToAttendeeIdPresence(
+        (attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => {
+          if (attendeeIdUpdate === 0) {
+            expect(present).to.be.true;
+            expect(dropped).to.be.false;
+            presentAttendeeIds.push(attendeeId);
+            presentExternalUserIds.push(externalUserId);
+          } else if (attendeeIdUpdate === 1) {
+            if (attendeeId === `${fooAttendee}-${5}`) {
+              expect(present).to.be.false;
+              expect(dropped).to.be.false;
+              expect(attendeeId).to.be.equal(`${fooAttendee}-${5}`);
+              expect(externalUserId).to.be.equal(`${fooExternal}-${5}`);
+              droppedAttendeeId.push(attendeeId);
+            } else {
+              expect(present).to.be.true;
+              expect(dropped).to.be.false;
+              presentAttendeeIds.push(attendeeId);
+              presentExternalUserIds.push(externalUserId);
+            }
+          } else if (attendeeIdUpdate === 2) {
+            expect(present).to.be.true;
+            expect(dropped).to.be.false;
+            expect(attendeeId).to.be.equal(`${fooAttendee}-${11}`);
+            expect(externalUserId).to.be.equal(`${fooExternal}-${11}`);
+            presentAttendeeIds.push(attendeeId);
+            presentExternalUserIds.push(externalUserId);
+          }
+        }
+      );
+
+      const volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
+        new NoOpLogger(),
+        realtimeController,
+        minVolumeDecibels,
+        maxVolumeDecibels
+      );
+
+      expect(presentAttendeeIds).to.be.empty;
+      expect(presentExternalUserIds).to.be.empty;
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoJoins);
+      expect(presentAttendeeIds).to.have.members(
+        streamInfoJoins.streams.map(stream => stream.attendeeId)
+      );
+      expect(presentExternalUserIds).to.have.members(
+        streamInfoJoins.streams.map(stream => stream.externalUserId)
+      );
+      attendeeIdUpdate++;
+
+      presentAttendeeIds = [];
+      presentExternalUserIds = [];
+      droppedAttendeeId = [];
+      const streamInfoReconnect = SdkAudioStreamIdInfoFrame.create();
+      streamInfoReconnect.streams = [];
+      for (let i = 1; i <= 4; i++) {
+        const streamInfo = SdkAudioStreamIdInfo.create();
+        streamInfo.audioStreamId = i + streamInfoJoins.streams.length;
+        streamInfo.attendeeId = `${fooAttendee}-${i}`;
+        streamInfo.externalUserId = `${fooExternal}-${i}`;
+        streamInfoReconnect.streams.push(streamInfo);
+      }
+
+      volumeIndicatorAdapter.onReconnect();
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoReconnect);
+      expect(presentAttendeeIds).to.have.members(
+        streamInfoReconnect.streams.map(stream => stream.attendeeId)
+      );
+      expect(presentExternalUserIds).to.have.members(
+        streamInfoReconnect.streams.map(stream => stream.externalUserId)
+      );
+      expect(droppedAttendeeId).to.have.members([`${fooAttendee}-${5}`]);
+      attendeeIdUpdate++;
+
+      presentAttendeeIds = [];
+      presentExternalUserIds = [];
+      const streamInfoFrameNotDuringReconnect = SdkAudioStreamIdInfoFrame.create();
+      const streamInfo = SdkAudioStreamIdInfo.create();
+      streamInfo.audioStreamId = 11;
+      streamInfo.attendeeId = `${fooAttendee}-${11}`;
+      streamInfo.externalUserId = `${fooExternal}-${11}`;
+      streamInfoFrameNotDuringReconnect.streams = [streamInfo];
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(
+        streamInfoFrameNotDuringReconnect
+      );
+      expect(presentAttendeeIds[0]).to.be.equal(`${fooAttendee}-${11}`);
+      expect(presentExternalUserIds[0]).to.be.equal(`${fooExternal}-${11}`);
+    });
   });
 
   describe('metadata frame', () => {
