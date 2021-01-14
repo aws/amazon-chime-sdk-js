@@ -122,6 +122,8 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
       delete this.warnedAboutMissingStreamIdMapping[streamId];
       delete this.attendeeIdToStreamId[deletedAttendeeId];
 
+      // The reconnect event does not have information whether the attendee is dropped/left.
+      // Defaulting to attendee leaving the meeting
       this.realtimeController.realtimeSetAttendeeIdPresence(
         deletedAttendeeId,
         false,
