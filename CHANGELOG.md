@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Disable reconnecting in AudioVideoControllerFacade's `stop` method.
   Add documentation for the `stop` method.
-
+- Fix dropped attendee presence during network reconnects.
 
 ## [2.4.0] - 2021-01-08
 

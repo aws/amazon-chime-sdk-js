@@ -702,6 +702,7 @@ export default class DefaultAudioVideoController
       });
     }
 
+    this.meetingSessionContext.volumeIndicatorAdapter.onReconnect();
     this.connectionHealthData.reset();
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoReconnect'), [
