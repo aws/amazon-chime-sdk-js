@@ -17,7 +17,7 @@
     "js-base64": "^2.5.1",
     "kite-common": "^0.1.8",
     "selenium-webdriver": "^4.0.0-alpha.5",
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.4.0",
     "uuid": "^8.2.0"
   }
 }
