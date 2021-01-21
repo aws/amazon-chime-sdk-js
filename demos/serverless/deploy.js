@@ -16,6 +16,7 @@ const packages = [
   // Use latest AWS SDK instead of default version provided by Lambda runtime
   'aws-sdk',
   'uuid',
+  'aws-embedded-metrics',
 ];
 
 function usage() {
