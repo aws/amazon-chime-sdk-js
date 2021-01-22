@@ -385,6 +385,7 @@ export default class DefaultAudioVideoController
             poorConnectionCount: this.meetingSessionContext.poorConnectionCount,
             retryCount: this.totalRetryCount,
             signalingOpenDurationMs: this.meetingSessionContext.signalingOpenDurationMs,
+            iceGatheringDurationMs: this.meetingSessionContext.iceGatheringDurationMs,
           });
         }
         this.meetingSessionContext.startTimeMs = Date.now();
@@ -635,12 +636,14 @@ export default class DefaultAudioVideoController
         signalingOpenDurationMs,
         poorConnectionCount,
         startTimeMs,
+        iceGatheringDurationMs,
       } = this.meetingSessionContext;
       const attributes: AudioVideoEventAttributes = {
         maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
         meetingDurationMs: startTimeMs === null ? 0 : Math.round(Date.now() - startTimeMs),
         meetingStatus: MeetingSessionStatusCode[status.statusCode()],
         signalingOpenDurationMs,
+        iceGatheringDurationMs,
         poorConnectionCount,
         retryCount: this.totalRetryCount,
       };
