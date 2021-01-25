@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Disable reconnecting in AudioVideoControllerFacade's `stop` method.
   Add documentation for the `stop` method.
 - Fix dropped attendee presence during network reconnects.
+- Add back `.play()` call explicitly for Safari browser to prevent video pause issue for local video.
 
 ## [2.4.0] - 2021-01-08
 
