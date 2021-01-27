@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CanvasVideoFrameBuffer, VideoFrameBuffer, VideoFrameProcessor } from 'amazon-chime-sdk-js';
+import {
+  CanvasVideoFrameBuffer,
+  VideoFrameBuffer,
+  VideoFrameProcessor,
+} from 'amazon-chime-sdk-js';
 
 /**
  * [[CircularCut]] is an implementation of {@link VideoFrameProcessor} for demonstration purpose.

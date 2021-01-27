@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- [DEMO] Add a image segmentation video filter based on Tensorflow BodyPix
 
 
 ### Changed
