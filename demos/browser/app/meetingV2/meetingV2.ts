@@ -52,11 +52,6 @@ import {
 
 import CircularCut from './videofilter/CircularCut';
 import EmojifyVideoFrameProcessor from './videofilter/EmojifyVideoFrameProcessor';
-import SegmentationProcessor from './videofilter/SegmentationProcessor';
-import {
-  loadBodyPixDependency,
-  platformCanSupportBodyPixWithoutDegradation,
-} from './videofilter/SegmentationUtil';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
 
 const SHOULD_DIE_ON_FATALS = (() => {
@@ -124,7 +119,7 @@ const VOICE_FOCUS_SPEC = {
   paths: VOICE_FOCUS_PATHS,
 };
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'None' | 'Segmentation';
+type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'None';
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp'];
 
@@ -217,9 +212,6 @@ export class DemoMeetingApp
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300000;
-
-  // ideally we don't need to change this. Keep this configurable in case users have super slow network.
-  loadingBodyPixDependencyTimeoutMs: number = 10000;
 
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
@@ -1596,16 +1588,6 @@ export class DemoMeetingApp
       this.enableUnifiedPlanForChromiumBasedBrowsers
     ) {
       filters = filters.concat(VIDEO_FILTERS);
-
-      if (platformCanSupportBodyPixWithoutDegradation()) {
-        try {
-          await loadBodyPixDependency(this.loadingBodyPixDependencyTimeoutMs);
-          filters.push('Segmentation');
-        } catch (error) {
-          fatal(error);
-          this.log('failed to load segmentation dependencies', error);
-        }
-      }
     }
 
     this.populateInMeetingDeviceList(
@@ -2046,10 +2028,6 @@ export class DemoMeetingApp
 
     if (videoFilter === 'NoOp') {
       return new NoOpVideoFrameProcessor();
-    }
-
-    if (videoFilter === 'Segmentation') {
-      return new SegmentationProcessor();
     }
 
     return null;
