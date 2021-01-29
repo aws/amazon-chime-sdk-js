@@ -2,3 +2,4 @@ src/aws-sdk
 src/uuid
 src/index.html
 src/indexV2.html
+src/aws-embedded-metrics
