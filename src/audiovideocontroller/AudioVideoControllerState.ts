@@ -122,6 +122,8 @@ export default class AudioVideoControllerState {
 
   iceGatheringDurationMs: number | null = null;
 
+  selfAttendeePresentDurationMs: number | null = null;
+
   poorConnectionCount: number = 0;
 
   maxVideoTileCount: number = 0;

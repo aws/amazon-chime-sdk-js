@@ -79,10 +79,30 @@ export default class MonitorTask
     this.context.realtimeController.realtimeSubscribeToLocalSignalStrengthChange(
       this.checkAndSendWeakSignalEvent
     );
-
     this.context.connectionMonitor.start();
     this.context.statsCollector.start(this.context.signalingClient, this.context.videoStreamIndex);
     this.context.signalingClient.registerObserver(this);
+    const attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
+
+    const startTimestampMs = Date.now();
+    this.context.realtimeController.realtimeSubscribeToAttendeeIdPresence(
+      (presentAttendeeId: string, present: boolean) => {
+        if (attendeeId === presentAttendeeId && present) {
+          this.context.selfAttendeePresentDurationMs = Date.now() - startTimestampMs;
+          this.publishEvent();
+        }
+      }
+    );
+  }
+
+  publishEvent(): void {
+    /* istanbul ignore else */
+    if (this.context.eventController) {
+      const selfAttendeePresentDurationMs = this.context.selfAttendeePresentDurationMs;
+      this.context.eventController.publishEvent('selfAttendeePresent', {
+        selfAttendeePresentDurationMs,
+      });
+    }
   }
 
   videoTileDidUpdate(_tileState: VideoTileState): void {

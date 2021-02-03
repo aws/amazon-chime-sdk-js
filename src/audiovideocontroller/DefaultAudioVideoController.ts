@@ -334,7 +334,6 @@ export default class DefaultAudioVideoController
     } else {
       this._reconnectController.startedConnectionAttempt(true);
     }
-
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStart'), [
         new MonitorTask(
@@ -637,6 +636,7 @@ export default class DefaultAudioVideoController
         poorConnectionCount,
         startTimeMs,
         iceGatheringDurationMs,
+        selfAttendeePresentDurationMs,
       } = this.meetingSessionContext;
       const attributes: AudioVideoEventAttributes = {
         maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
@@ -644,6 +644,7 @@ export default class DefaultAudioVideoController
         meetingStatus: MeetingSessionStatusCode[status.statusCode()],
         signalingOpenDurationMs,
         iceGatheringDurationMs,
+        selfAttendeePresentDurationMs,
         poorConnectionCount,
         retryCount: this.totalRetryCount,
       };

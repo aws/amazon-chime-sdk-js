@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add GatheringICECandidate Finish Duration to Meeting Event and to demo app
+- Add selfAttendeePresent, audioInputSelected, videoInputSelected, audioInputUnselected, videoInputUnselected
 
 ### Changed
 

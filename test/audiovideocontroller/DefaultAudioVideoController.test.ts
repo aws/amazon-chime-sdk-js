@@ -2069,7 +2069,12 @@ describe('DefaultAudioVideoController', () => {
       await stop();
 
       const eventNames = events.map(({ name }) => name);
-      expect(eventNames).to.eql(['meetingStartRequested', 'meetingStartSucceeded', 'meetingEnded']);
+      expect(eventNames).to.eql([
+        'meetingStartRequested',
+        'selfAttendeePresent',
+        'meetingStartSucceeded',
+        'meetingEnded',
+      ]);
     });
 
     it('sends failure events', async () => {
@@ -2102,10 +2107,11 @@ describe('DefaultAudioVideoController', () => {
       const eventNames = events.map(({ name }) => name);
       expect(eventNames).to.eql([
         'meetingStartRequested',
+        'selfAttendeePresent',
         'meetingStartSucceeded',
         'meetingFailed',
       ]);
-      expect(events[2].attributes.meetingErrorMessage).includes(errorMessage);
+      expect(events[3].attributes.meetingErrorMessage).includes(errorMessage);
     });
 
     it('sends failure events with an empty error message', async () => {
@@ -2137,10 +2143,11 @@ describe('DefaultAudioVideoController', () => {
       const eventNames = events.map(({ name }) => name);
       expect(eventNames).to.eql([
         'meetingStartRequested',
+        'selfAttendeePresent',
         'meetingStartSucceeded',
         'meetingFailed',
       ]);
-      expect(events[2].attributes.meetingErrorMessage).to.equal('');
+      expect(events[3].attributes.meetingErrorMessage).to.equal('');
     });
   });
 
