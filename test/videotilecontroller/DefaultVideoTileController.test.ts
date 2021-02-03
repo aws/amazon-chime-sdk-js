@@ -207,6 +207,8 @@ describe('DefaultVideoTileController', () => {
       expect(!tileController.getVideoTile(tileId).state().paused).to.equal(true);
       tileController.unpauseVideoTile(tileId);
       expect(spy.callCount).to.equal(1);
+      tileController.pauseVideoTile(tileId);
+      expect(spy.callCount).to.equal(1);
     });
 
     it('does not throw an error when a tile does not exist', () => {

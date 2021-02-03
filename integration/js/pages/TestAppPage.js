@@ -35,7 +35,10 @@ function findAllElements() {
     hasStartedLocalVideoTileElementId: By.id('has-started-local-video-tile-boolean'),
     haveVideoTileForAttendeeIdElementId: By.id('have-video-tile-for-attendeeId-boolean'),
     haveVideoTilesWithStreamsElementId: By.id('have-video-tiles-with-streams-boolean'),
-    
+    pinVideoTileAttendeeIdInput: By.id('pin-attendee-id'),
+    pinVideoTileButton: By.id('pin-video-tile'),
+    unpinVideoTileAttendeeIdInput: By.id('pin-attendee-id'),
+    unpinVideoTileButton: By.id('pin-video-tile'),
   };
 }
 
@@ -107,6 +110,22 @@ class TestAppPage {
     await unbindVideoElementButton.click();
   }
 
+  async clickPinVideoTileButton(attendeeId) {
+    let pinVideoTileButton = await this.driver.findElement(elements.pinVideoTileButton);
+    let pinVideoTileAttendeeIdInput = await this.driver.findElement(elements.pinVideoTileAttendeeIdInput);
+    await pinVideoTileAttendeeIdInput.clear();
+    await pinVideoTileAttendeeIdInput.sendKeys(attendeeId);
+    await pinVideoTileButton.click();
+  }
+
+  async clickUnpinVideoTileButton(attendeeId) {
+    let unpinVideoTileButton = await this.driver.findElement(elements.unpinVideoTileButton);
+    let unpinVideoTileAttendeeIdInput = await this.driver.findElement(elements.unpinVideoTileAttendeeIdInput);
+    await unpinVideoTileAttendeeIdInput.clear();
+    await unpinVideoTileAttendeeIdInput.sendKeys(attendeeId);
+    await unpinVideoTileButton.click();
+  }
+
   async clickBindVideoElementButton(tileId, videoElementId) {
     let bindVideoElementButton = await this.driver.findElement(elements.bindVideoElementButton);
     let bindVideoElementTileIdInput = await this.driver.findElement(elements.bindVideoElementTileIdInput);
@@ -119,6 +138,23 @@ class TestAppPage {
   }
 
   async tileStateCheck(tileStateElementId, tileStateAttribute, tileStateValue) {
+    let localVideoTileState = await this.driver.findElement(By.id(tileStateElementId));
+    if (!localVideoTileState) {
+      return false;
+    }
+    let tileState =  await localVideoTileState.getText();
+    if (!tileState) {
+      return false;
+    }
+    let tileStateJson = JSON.parse(tileState);
+    let tileStateJsonAttribute = tileStateJson[tileStateAttribute];
+    if (tileStateValue === tileStateJsonAttribute) {
+      return true;
+    }
+    return false;
+  }
+
+  async videoPreferenceCheck(tileStateElementId, tileStateAttribute, tileStateValue) {
     let localVideoTileState = await this.driver.findElement(By.id(tileStateElementId));
     if (!localVideoTileState) {
       return false;

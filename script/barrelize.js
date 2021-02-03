@@ -53,6 +53,12 @@ walk('src')
     importStrings.push(importLine);
     exportStrings.push(exportLine);
 
+    // Because these two types are very intertwined.
+    if (typeToImport === 'VideoPreferences') {
+      importStrings.push(`import { MutableVideoPreferences } from '${pathToImport}/VideoPreferences';`);
+      exportStrings.push(`  MutableVideoPreferences,`);
+    }
+
     // It's hard to add type guard functions to this Java-ish class model, so
     // forgive the hack.
     if (typeToImport === 'AudioTransformDevice') {

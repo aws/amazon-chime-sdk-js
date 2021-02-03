@@ -63,6 +63,21 @@
         </button>
       </form>
 
+      <form id="pin-video-tile-form">
+        <label for="pin-attendee-id">Attendee Id</label>
+        <input type="text" id="pin-attendee-id" placeholder="Attendee Id">
+        <button id="pin-video-tile" type="submit">
+          Pin Video Tile
+        </button>
+      </form>
+
+      <form id="unpin-video-tile-form">
+        <label for="unpin-attendee-id">Attendee Id</label>
+        <input type="text" id="unpin-attendee-id" placeholder="Attendee Id">
+        <button id="unpin-video-tile" type="submit">
+          Unpin Video Tile
+        </button>
+      </form>
        
       <form id="add-video-tile-form">
         <button id="add-video-tile-btn" type="submit">
@@ -138,6 +153,11 @@
     <div id="video-tiles-list">
       <h2>All Video Tiles</h2>
       <p id="all-video-tiles"></p>
+    </div>
+
+    <div id="video preference">
+      <h2>Video Preference</h2>
+      <p id="video-preference"></p>
     </div>
 
     <p id="sdk-version"></p>

@@ -1,0 +1,236 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>PriorityBased_Downlink_Policy | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="prioritybased_downlink_policy.html">PriorityBased_Downlink_Policy</a>
+				</li>
+			</ul>
+			<h1>Namespace PriorityBased_Downlink_Policy</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#user-guide-for-priority-based-downlink-policy" id="user-guide-for-priority-based-downlink-policy" style="color: inherit; text-decoration: none;">
+							<h1>User Guide for Priority-based Downlink Policy</h1>
+						</a>
+					</div>
+					<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+						<h2>Introduction</h2>
+					</a>
+					<p>Amazon Chime SDK for JavaScript allows builders to choose a downlink policy on each device when joining a meeting. Downlink policies control the way how a recipient subscribes to the remote video sources. This document explains how to use the <code>VideoPriorityBasedPolicy</code> introduced in version 2.8, how it differs from the existing policies and how builders can take advantage of it to meet their use cases.</p>
+					<p>Amazon Chime SDK for JavaScript defines <code>VideoPriorityBasedPolicy</code> as the central class providing the ability to request remote video sources to receive and set their respective priorities. The policy ensures bandwidth is reserved for video sources with higher priorities. This policy can be used in conjunction with clients sending simulcast renditions of sources, as well as single stream or mixed environments.</p>
+					<p>The existing <code>AllHighestVideoBandwidthPolicy</code> and <code>AdaptiveProbePolicy</code> both subscribe to a fixed number of available remote video sources. Builders listen to <code>videoTileDidUpdate</code> when a new remote video source becomes available and call <code>pauseVideoTile</code> if they don’t want it to be seen, otherwise video sources will be consumed automatically. <code>VideoPriorityBasedPolicy</code> relies on builders subscribing to <code>AudioVideoObserver.remoteVideoSourcesDidChange</code> to receive updates on available remote sources, and then calling <code>chooseRemoteVideoSources</code> to set which video sources to receive and their related preferences. Note that when using <code>VideoPriorityBasePolicy</code>, if builders do not call <code>chooseRemoteVideoSources</code>, no videos will be subscribed to. <code>videoTileDidUpdate</code> will then be called if we are able to successfully subscribe to the stream.</p>
+					<p>Under constrained networks where simulcast is in use, <code>VideoPriorityBasedPolicy</code> may lower the resolution of remote video sources, starting with the lowest priority sources. If all video sources are at the lowest resolution possible, or simulcast is not being used, the policy may further pause video tiles until the network has recovered, again starting from the lowest priority sources.</p>
+					<p>A typical workflow to use this policy would be:</p>
+					<ol>
+						<li>When creating <code>meetingSession.configuration</code>, construct and set a <code>VideoPriorityBasedPolicy</code> object as the<code> videoDownlinkBandwidthPolicy</code></li>
+						<li>Monitor callbacks on <code>AudioVideoObserver.remoteVideoSourcesDidChange</code> to receive updates on available sources.</li>
+						<li>Update <code>VideoPreference</code> for each video stream and then call <code>chooseRemoteVideoSources</code></li>
+						<li>Repeat step 2 as needed to update the desired receiving set of remote sources and their priorities, either due to changes indicated by <code>AudioVideoObserver.remoteVideoSourcesDidChange</code> or other application events (like switching the current page of videos).</li>
+					</ol>
+					<p>Note that applications still need to handle <code>videoTileDidUpdate</code> just as done without the policy. Detailed usage and explanation can be found below.</p>
+					<a href="#apis-and-usage" id="apis-and-usage" style="color: inherit; text-decoration: none;">
+						<h2>APIs and Usage</h2>
+					</a>
+					<p><strong>MeetingSessionConfiguration</strong>
+					When initializing the meeting, builders can specify the usage of the <code>VideoPriorityBasedPolicy</code> by allocating the policy in the application and passing it in through the <code>MeetingSessionConfiguration</code> when the meeting session is started.</p>
+					<p><strong>Notification of current available remote sources</strong>
+					Once you are connected to the meeting, builders will be notified of available remote video sources via the existing <code>remoteVideoSourcesDidChange</code> callback.</p>
+					<p><strong>Priority and max size for each remote stream</strong>
+					<code>VideoPreference</code> is used to contain the priority and size of remote video sources and content share to be received. There are three fields inside the <code>VideoPreference,</code> you could find more info for each field below.</p>
+					<ul>
+						<li><em><em>attendeeId:</em></em>  The attendee ID this video tile belongs to. Note that screen share video will have a suffix of #content</li>
+						<li><em><em>priority:</em></em> Provides relative priority of this attendee from 1 to x, where 1 is the highest priority. Remote videos are allowed to have the same priority signifying equal priority between them.</li>
+						<li><em><em>desiredMaxSize:</em></em> Optional parameter to control maximum simulcast layer to receive. Default value is Large.</li>
+					</ul>
+					<p><strong>Configuring the receipt and priority of remote video sources</strong>
+					The main API being used is:</p>
+					<pre><code><span class="hljs-function"><span class="hljs-title">chooseRemoteVideoSources</span><span class="hljs-params">(sources: VideoPreference[])</span></span>: void
+</code></pre>
+					<p>An array of <code>VideoPreference</code> is passed in to specify preference for each remote video.
+					Be aware of the following when calling this function:</p>
+					<ul>
+						<li>You must pass a complete array of VideoPreference objects each time you call chooseRemoteVideoSources. Each call overrides the behavior defined by any previous call. The AudioVideoController will unsubscribe from any existing video streams associated with attendee IDs that are not present in the new array. Do not modify the provided array after calling this function; for efficiency, the policy object does not clone the array.</li>
+						<li>Including a remote video stream in this list does not guarantee that the video will be received. If there is insufficient bandwidth then the lowest priority video(s) will be paused and the client will be notified.</li>
+						<li>A video tile will be created for all requested video streams. If there is insufficient bandwidth to receive the video then the policy will pause it and provide notification with a reason. <em>This is a difference in behavior from the current <code>AdaptiveProbePolicy</code> which removes the tile for this condition.</em></li>
+						<li>Content share is treated as another video stream**:** Builders will need to specify content video and its priority as well. It will not be auto subscribed to anymore when using priority based downlink policy.</li>
+						<li>Any newly added remote videos (e.g. a new <code>VideoPreference</code> was added to the list) to the list will result in a <code>videoTileDidUpdate</code> event, and any removed remote videos (e.g. a <code>VideoPreference</code> was removed from the list, or an attendee left the meeting) will trigger a <code>videoTileWasRemoved</code> event.</li>
+						<li>Any preferences entries associated with attendee IDs that are paused by the application or no longer available in the call will be ignored until unpaused.</li>
+						<li>The policy may limit how often it updates the list of actual streams it subscribes to.</li>
+					</ul>
+					<p><strong>Receiving notifications that a remote video was paused due to bandwidth constraint</strong>
+					If a remote video source is paused due to insufficient bandwidth, then the application will be notified through the existing notification mechanism by setting the VideoTileState to pausedDueToBandwidth. Note that there is already a member named <code>paused</code> in VideoTileState and that is used to track if the application paused the remote video.</p>
+					<a href="#builder-code-sample" id="builder-code-sample" style="color: inherit; text-decoration: none;">
+						<h2>Builder Code Sample</h2>
+					</a>
+					<p>Below, we are going to show one potential use case, “featured video”, that can be built on top of this policy.
+					A video tile can be featured by clicking a “Pin” button on it and its priority will be set to 1 whereas the rest unpinned tiles are set to 2 by default. The pinned tile will be displayed in a larger size and will not be paused/downgraded (if simulcast uplink policy being enabled on the remote side) until all of the rest are when encountering network constraint.</p>
+					<p>First create an instance of <code>VideoPriorityBasedPolicy</code> that you will share with the meeting session. Then create a meeting session configuration and set <code>videoDownlinkBandwidthPolicy</code> to that created policy.</p>
+					<pre><code><span class="hljs-comment">// `meetingLogger: Logger` created elsewhere</span>
+const priorityBasedDownlinkPolicy = <span class="hljs-keyword">new</span> <span class="hljs-constructor">VideoPriorityBasedPolicy(<span class="hljs-params">meetingLogger</span>)</span>;
+<span class="hljs-comment">// `configuration: MeetingSessionConfiguration` created elsewhere</span>
+configuration.videoDownlinkBandwidthPolicy = priorityBasedDownlinkPolicy;
+</code></pre>
+					<p>Once connected to the meeting, we can an observer on <code>remoteVideoSourcesDidChange</code> and keep track of if which clients in the roster list are publishing video.</p>
+					<pre><code>  <span class="hljs-comment">// Assumes we are storing roster in a member variable like `roster: any = {};`</span>
+  <span class="hljs-function"><span class="hljs-title">remoteVideoSourcesDidChange</span>(<span class="hljs-params">videoSources: VideoSource[]</span>)</span> {
+    <span class="hljs-comment">// Reset current hasVideo flag in roster list</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> <span class="hljs-built_in">this</span>.roster) {
+      <span class="hljs-built_in">this</span>.roster[attendeeId].hasVideo = <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-comment">// Update hasVideo flag based on latest data</span>
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">const</span> source <span class="hljs-keyword">of</span> videoSources) {
+      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.roster.hasOwnProperty(source.attendee.attendeeId)) {
+        <span class="hljs-built_in">this</span>.roster[source.attendee.attendeeId].hasVideo = <span class="hljs-literal">true</span>;
+      }
+    }
+    <span class="hljs-comment">// Update downlink policy preferences accordingly</span>
+    <span class="hljs-comment">// We will create this function below</span>
+    <span class="hljs-built_in">this</span>.updateDownlinkPreference();
+  }
+</code></pre>
+					<p>We can then add a pin button to our application, and wire it up to change the priority of the respective video.  Update the tile button <code>click</code> callback to set or unset the pin status.</p>
+					<pre><code>    pinButtonElement.addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>, () =&gt; {
+      <span class="hljs-comment">// Get the attendeeID associated with this tile</span>
+      <span class="hljs-keyword">const</span> attendeeId = tileState.boundAttendeeId;
+      <span class="hljs-comment">// Change pin state</span>
+      <span class="hljs-keyword">this</span>.roster[attendeeId].pinned = !<span class="hljs-keyword">this</span>.roster[attendeeId].pinned;
+      <span class="hljs-comment">// Update label</span>
+      pauseButtonElement.innerText =
+        (<span class="hljs-keyword">this</span>.roster[attendeeId].pinned) ? <span class="hljs-string">&#x27;Unpin&#x27;</span> : <span class="hljs-string">&#x27;Pin&#x27;</span>;
+      <span class="hljs-comment">// Update downlink policy to reflect pin/unpin change</span>
+      <span class="hljs-keyword">this</span>.updateDownlinkPreference();
+    });
+</code></pre>
+					<p>We can then write <code>updateDownlinkPreference</code> which is shared by the above two snippets. This logic simply sets featured tiles to priority <code>1</code> and all others to priority <code>2</code>. This will ensure featured tiles are requested first at the highest resolution allowed by bandwidth and other participants are requested as bandwidth allows. To store the <code>VideoPreference</code> objects we use <code>VideoPreferences</code>, a set like data structure that allows efficient modification of an existing list while only copying when necessary.</p>
+					<pre><code>  updateDownlinkPreference(): <span class="hljs-keyword">void</span> {
+    <span class="hljs-keyword">const</span> videoPreferences: MutableVideoPreferences = VideoPreferences.prepare();
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> <span class="hljs-built_in">this</span>.roster) {
+      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.roster[attendeeId].hasVideo) {
+        <span class="hljs-comment">// Make pinned videos of equal high importance and the rest as secondary</span>
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.roster[attendeeId].pinned) {
+          videoPreferences.add(<span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">1</span>, TargetDisplaySize.High));
+        } <span class="hljs-keyword">else</span> {
+          videoPreferences.add(<span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">2</span>, TargetDisplaySize.Low));
+        }
+      }
+    }
+    <span class="hljs-built_in">this</span>.priorityBasedDownlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
+  }
+</code></pre>
+					<p><code>chooseRemoteVideoSources</code> will trigger the remote selection logic based on the priority settings of each video tile then update the tile management accordingly. These steps are taken care of by the Amazon Chime SDK for JavaScript code.</p>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Priority%20Based_Downlink_Policy%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

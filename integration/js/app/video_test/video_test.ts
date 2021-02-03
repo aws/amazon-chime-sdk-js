@@ -10,7 +10,11 @@ import {
   AudioVideoFacade,
   MeetingSession,
   Versioning,
-  MeetingSessionStatusCode
+  MeetingSessionStatusCode,
+  VideoPriorityBasedPolicy,
+  VideoPreference,
+  VideoPreferences,
+  TargetDisplaySize
 } from 'amazon-chime-sdk-js';
 
 export class DemoMeetingApp implements AudioVideoObserver {
@@ -20,6 +24,7 @@ export class DemoMeetingApp implements AudioVideoObserver {
   region: string | null = 'us-east-1';
   audioVideo: AudioVideoFacade | null = null;
   meetingSession: MeetingSession | null = null;
+  priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
 
   previousTileState: { [tileId: string]: VideoTileState } = {};
 
@@ -60,6 +65,7 @@ export class DemoMeetingApp implements AudioVideoObserver {
     await this.audioVideo.chooseAudioOutputDevice(null);
     const videoInputDeviceInfo = videoInputDevices[0];
     await this.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+    this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(logger);
   }
 
 
@@ -111,6 +117,36 @@ export class DemoMeetingApp implements AudioVideoObserver {
       e.preventDefault();
       this.audioVideo.unbindVideoElement(parseInt(unbindVideoElementTile.value));
       unbindVideoElementForm.reset();
+    });
+
+    const pinVideoTileForm = document.getElementById('pin-video-tile-form') as HTMLFormElement;
+    const pinAttendeeId = document.getElementById('pin-attendee-id') as HTMLInputElement;
+    pinVideoTileForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const videoPreferences = VideoPreferences.prepare();
+      videoPreferences.add(new VideoPreference(pinAttendeeId.value, 1, TargetDisplaySize.High));
+      this.priorityBasedDownlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
+      const videoPreferenceObject = document.getElementById(`video-preference`);
+      videoPreferenceObject.innerText = '';
+      for (const preference of videoPreferences.build()) {
+        videoPreferenceObject.innerText += JSON.stringify(preference, null, '  ');
+      }
+      pinVideoTileForm.reset();
+    });
+
+    const unpinVideoTileForm = document.getElementById('unpin-video-tile-form') as HTMLFormElement;
+    const unpinAttendeeId = document.getElementById('unpin-attendee-id') as HTMLInputElement;
+    unpinVideoTileForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const videoPreferences = VideoPreferences.prepare();
+      videoPreferences.add(new VideoPreference(unpinAttendeeId.value, 2, TargetDisplaySize.High));
+      this.priorityBasedDownlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
+      const videoPreferenceObject = document.getElementById(`video-preference`);
+      videoPreferenceObject.innerText = '';
+      for (const preference of videoPreferences.build()) {
+        videoPreferenceObject.innerText += JSON.stringify(preference, null, '  ');
+      }
+      unpinVideoTileForm.reset();
     });
 
     const addVideoTileForm = document.getElementById('add-video-tile-form') as HTMLFormElement;

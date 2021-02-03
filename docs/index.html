@@ -248,9 +248,9 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 				<a href="#building-and-testing" id="building-and-testing" style="color: inherit; text-decoration: none;">
 					<h2>Building and testing</h2>
 				</a>
-				<pre><code>git fetch --tags https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/aws/</span>amazon-chime-sdk-js
-npm run build
-npm run test
+				<pre><code>git fetch --tags https://github.com/aws/amazon-chime-sdk-js
+npm <span class="hljs-keyword">run</span><span class="bash"> build</span>
+npm <span class="hljs-keyword">run</span><span class="bash"> <span class="hljs-built_in">test</span></span>
 </code></pre>
 				<p>After running <code>npm run test</code> the first time, you can use <code>npm run test:fast</code> to
 				speed up the test suite.</p>
@@ -261,8 +261,8 @@ npm run test
 					<h2>Generating the documentation</h2>
 				</a>
 				<p>To generate JavaScript API reference documentation run:</p>
-				<pre><code>npm <span class="hljs-builtin-name">run</span> build
-npm <span class="hljs-builtin-name">run</span> doc
+				<pre><code>npm <span class="hljs-keyword">run</span><span class="bash"> build</span>
+npm <span class="hljs-keyword">run</span><span class="bash"> doc</span>
 </code></pre>
 				<p>Then open <code>docs/index.html</code> in your browser.</p>
 				<a href="#reporting-a-suspected-vulnerability" id="reporting-a-suspected-vulnerability" style="color: inherit; text-decoration: none;">
@@ -1145,9 +1145,6 @@ messagingSession.start();
 						<a href="enums/meetingsessionstatuscode.html" class="tsd-kind-icon">Meeting<wbr>Session<wbr>Status<wbr>Code</a>
 					</li>
 					<li class=" tsd-kind-enum">
-						<a href="enums/rateprobestate.html" class="tsd-kind-icon">Rate<wbr>Probe<wbr>State</a>
-					</li>
-					<li class=" tsd-kind-enum">
 						<a href="enums/sdpcandidatetype.html" class="tsd-kind-icon">SDPCandidate<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-enum">
@@ -1169,10 +1166,10 @@ messagingSession.start();
 						<a href="enums/simulcastlayers.html" class="tsd-kind-icon">Simulcast<wbr>Layers</a>
 					</li>
 					<li class=" tsd-kind-enum">
-						<a href="enums/taskstatus.html" class="tsd-kind-icon">Task<wbr>Status</a>
+						<a href="enums/targetdisplaysize.html" class="tsd-kind-icon">Target<wbr>Display<wbr>Size</a>
 					</li>
 					<li class=" tsd-kind-enum">
-						<a href="enums/usereceiveset.html" class="tsd-kind-icon">Use<wbr>Receive<wbr>Set</a>
+						<a href="enums/taskstatus.html" class="tsd-kind-icon">Task<wbr>Status</a>
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/videologevent.html" class="tsd-kind-icon">Video<wbr>Log<wbr>Event</a>
@@ -1385,9 +1382,6 @@ messagingSession.start();
 						<a href="classes/leaveandreceiveleaveacktask.html" class="tsd-kind-icon">Leave<wbr>And<wbr>Receive<wbr>Leave<wbr>Ack<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/linkmediastats.html" class="tsd-kind-icon">Link<wbr>Media<wbr>Stats</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="classes/listenforvolumeindicatorstask.html" class="tsd-kind-icon">Listen<wbr>For<wbr>Volume<wbr>Indicators<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1436,6 +1430,9 @@ messagingSession.start();
 						<a href="classes/multilogger.html" class="tsd-kind-icon">Multi<wbr>Logger</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/mutablevideopreferences.html" class="tsd-kind-icon">Mutable<wbr>Video<wbr>Preferences</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/nscalevideouplinkbandwidthpolicy.html" class="tsd-kind-icon">NScale<wbr>Video<wbr>Uplink<wbr>Bandwidth<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1476,6 +1473,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/notreadableerror.html" class="tsd-kind-icon">Not<wbr>Readable<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/objectset.html" class="tsd-kind-icon">Object<wbr>Set</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/opensignalingconnectiontask.html" class="tsd-kind-icon">Open<wbr>Signaling<wbr>Connection<wbr>Task</a>
@@ -1521,6 +1521,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/serialgrouptask.html" class="tsd-kind-icon">Serial<wbr>Group<wbr>Task</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/setbuilder.html" class="tsd-kind-icon">Set<wbr>Builder</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/setlocaldescriptiontask.html" class="tsd-kind-icon">Set<wbr>Local<wbr>Description<wbr>Task</a>
@@ -1581,6 +1584,15 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/videoonlytransceivercontroller.html" class="tsd-kind-icon">Video<wbr>Only<wbr>Transceiver<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/videopreference.html" class="tsd-kind-icon">Video<wbr>Preference</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/videopreferences.html" class="tsd-kind-icon">Video<wbr>Preferences</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/videoprioritybasedpolicy.html" class="tsd-kind-icon">Video<wbr>Priority<wbr>Based<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/videoqualitysettings.html" class="tsd-kind-icon">Video<wbr>Quality<wbr>Settings</a>
@@ -1697,6 +1709,9 @@ messagingSession.start();
 						<a href="interfaces/devicepixelratiosource.html" class="tsd-kind-icon">Device<wbr>Pixel<wbr>Ratio<wbr>Source</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/eq.html" class="tsd-kind-icon">Eq</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/eventattributes.html" class="tsd-kind-icon">Event<wbr>Attributes</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1731,6 +1746,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/modality.html" class="tsd-kind-icon">Modality</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/partialord.html" class="tsd-kind-icon">Partial<wbr>Ord</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/pingpong.html" class="tsd-kind-icon">Ping<wbr>Pong</a>
@@ -1794,6 +1812,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/videodownlinkbandwidthpolicy.html" class="tsd-kind-icon">Video<wbr>Downlink<wbr>Bandwidth<wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/videodownlinkobserver.html" class="tsd-kind-icon">Video<wbr>Downlink<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/videoelementfactory.html" class="tsd-kind-icon">Video<wbr>Element<wbr>Factory</a>

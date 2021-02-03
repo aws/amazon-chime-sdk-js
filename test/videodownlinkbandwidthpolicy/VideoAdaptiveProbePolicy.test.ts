@@ -83,7 +83,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       new SdkStreamDescriptor({
         streamId: 22,
         groupId: 200,
-        maxBitrateKbps: 99,
+        maxBitrateKbps: 80,
         avgBitrateBps: 1400 * 1000,
         attendeeId: 'attendee2#content',
         mediaType: SdkStreamMediaType.VIDEO,
@@ -157,7 +157,8 @@ describe('VideoAdaptiveProbePolicy', () => {
     Date.now = mockDateNow;
     audioVideoController = new NoOpAudioVideoTileController();
     tileController = audioVideoController.videoTileController;
-    policy = new VideoAdaptiveProbePolicy(logger, tileController);
+    policy = new VideoAdaptiveProbePolicy(logger);
+    policy.bindToTileController(tileController);
     videoStreamIndex = new SimulcastVideoStreamIndex(logger);
   });
 
@@ -180,6 +181,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       let received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([1, 3, 11, 22]);
       policy.reset();
+      expect(resub).to.equal(true);
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([]);
     });
@@ -383,6 +385,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       }
 
       {
+        incrementTime(6100);
         metricReport.globalMetricReport = new GlobalMetricReport();
         metricReport.globalMetricReport.currentMetrics['googAvailableSendBandwidth'] = 5000 * 1000;
         metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 0;
@@ -418,7 +421,111 @@ describe('VideoAdaptiveProbePolicy', () => {
         }
         policy.updateMetrics(metricReport);
         policy.wantsResubscribe();
+        metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 0;
+        policy.updateMetrics(metricReport);
+        policy.wantsResubscribe();
       }
+    });
+
+    it('prefers content', () => {
+      prepareVideoStreamIndex(videoStreamIndex);
+      policy.updateIndex(videoStreamIndex);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2800 * 1000;
+      policy.updateMetrics(metricReport);
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1, 3, 11, 22]);
+
+      incrementTime(6100);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3000 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 300 * 1000;
+      setPacketLoss(metricReport, 42, 160);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([11]);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 1700 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([11, 22]);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2000 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([0, 11, 22]);
+    });
+  });
+
+  describe('Handle app paused streams', () => {
+    it('Includes paused stream in subscribe', () => {
+      updateIndexFrame(videoStreamIndex, 4, 300, 600);
+      policy.updateIndex(videoStreamIndex);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2800 * 1000;
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 6, 8]);
+
+      incrementTime(6100);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2800 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      incrementTime(2000);
+      const tile = tileController.addVideoTile();
+      tile.stateRef().boundAttendeeId = 'attendee-4';
+      const tileId = tile.id();
+      tileController.pauseVideoTile(tileId);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3000 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      // Include paused tile
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 300 * 1000;
+      setPacketLoss(metricReport, 42, 160);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1, 8]);
+
+      // Remove it from subscription after unpause
+      tileController.unpauseVideoTile(tileId);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1]);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 1200 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1, 3, 5, 7]);
     });
   });
 
@@ -531,6 +638,124 @@ describe('VideoAdaptiveProbePolicy', () => {
       incrementTime(2000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 400 * 1000;
       setPacketLoss(metricReport, 10, 10);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+
+      incrementTime(3000);
+      // @ts-ignore
+      expect(policy.setProbeState('Probe Pending')).to.equal(false);
+      incrementTime(4000);
+      // @ts-ignore
+      expect(policy.setProbeState('Probe Pending')).to.equal(true);
+      // @ts-ignore
+      expect(policy.setProbeState('Probing')).to.equal(false);
+    });
+
+    it('Probe canceled due to choices', () => {
+      updateIndexFrame(videoStreamIndex, 6, 0, 600);
+      policy.updateIndex(videoStreamIndex);
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 6, 8]);
+
+      incrementTime(6100);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 6, 8, 10, 12]);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
+      setPacketLoss(metricReport, 42, 160);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+
+      incrementTime(2000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      // Probe
+      incrementTime(7000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4]);
+
+      // Probe cancel
+      incrementTime(2000);
+      updateIndexFrame(videoStreamIndex, 4, 0, 600);
+      policy.updateIndex(videoStreamIndex);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+    });
+
+    it('Probe canceled due to time', () => {
+      updateIndexFrame(videoStreamIndex, 6, 0, 600);
+      policy.updateIndex(videoStreamIndex);
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 6, 8]);
+
+      incrementTime(6100);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 6, 8, 10, 12]);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
+      setPacketLoss(metricReport, 42, 160);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+
+      incrementTime(2000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
+      setPacketLoss(metricReport, 0, 0);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      // Probe
+      incrementTime(7000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4]);
+
+      incrementTime(60100);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
+      setPacketLoss(metricReport, 0, 0);
       policy.updateMetrics(metricReport);
       resub = policy.wantsResubscribe();
       expect(resub).to.equal(true);
