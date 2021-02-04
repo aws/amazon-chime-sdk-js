@@ -632,5 +632,12 @@ describe('DefaultAudioVideoFacade', () => {
       facade.getRemoteVideoSources();
       assert(spy.calledOnceWith());
     });
+
+    it('will call haveVideoTileForAttendeeId', () => {
+      const spy = sinon.spy(controller.videoTileController, 'haveVideoTileForAttendeeId');
+      const arg1 = '';
+      facade.haveVideoTileForAttendeeId(arg1);
+      assert(spy.calledOnceWith(arg1));
+    });
   });
 });
