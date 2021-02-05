@@ -219,6 +219,7 @@ export default class DefaultAudioVideoController
   private async actionConnect(reconnecting: boolean): Promise<void> {
     this.connectionHealthData.reset();
     this.meetingSessionContext = new AudioVideoControllerState();
+    this.meetingSessionContext.startAudioVideoTimestamp = Date.now();
     this.meetingSessionContext.logger = this.logger;
     this.meetingSessionContext.eventController = this.eventController;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior({
@@ -386,6 +387,7 @@ export default class DefaultAudioVideoController
             retryCount: this.totalRetryCount,
             signalingOpenDurationMs: this.meetingSessionContext.signalingOpenDurationMs,
             iceGatheringDurationMs: this.meetingSessionContext.iceGatheringDurationMs,
+            startDurationMs: Date.now() - this.meetingSessionContext.startAudioVideoTimestamp,
           });
         }
         this.meetingSessionContext.startTimeMs = Date.now();
@@ -637,6 +639,7 @@ export default class DefaultAudioVideoController
         poorConnectionCount,
         startTimeMs,
         iceGatheringDurationMs,
+        attendeePresenceDurationMs,
       } = this.meetingSessionContext;
       const attributes: AudioVideoEventAttributes = {
         maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
@@ -644,6 +647,7 @@ export default class DefaultAudioVideoController
         meetingStatus: MeetingSessionStatusCode[status.statusCode()],
         signalingOpenDurationMs,
         iceGatheringDurationMs,
+        attendeePresenceDurationMs,
         poorConnectionCount,
         retryCount: this.totalRetryCount,
       };
@@ -651,6 +655,7 @@ export default class DefaultAudioVideoController
       if (attributes.meetingDurationMs === 0) {
         attributes.meetingErrorMessage = (error && error.message) || '';
         delete attributes.meetingDurationMs;
+        delete attributes.attendeePresenceDurationMs;
         this.eventController.publishEvent('meetingStartFailed', attributes);
       } else if (status.isFailure() || status.isAudioConnectionFailure()) {
         attributes.meetingErrorMessage = (error && error.message) || '';

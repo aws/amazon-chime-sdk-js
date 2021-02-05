@@ -43,6 +43,9 @@ export default class MonitorTask
   private currentVideoDownlinkBandwidthEstimationKbps: number = 10000;
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
   private hasSignalingError: boolean = false;
+  private startTimestampMs: number;
+  private attendeeId: string;
+  private presenceHandlerCalled: boolean = false;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -69,6 +72,9 @@ export default class MonitorTask
     this.context.realtimeController.realtimeUnsubscribeToLocalSignalStrengthChange(
       this.checkAndSendWeakSignalEvent
     );
+    this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(
+      this.realtimeAttendeeIdPresenceHandler
+    );
     this.context.signalingClient.removeObserver(this);
   }
 
@@ -79,10 +85,26 @@ export default class MonitorTask
     this.context.realtimeController.realtimeSubscribeToLocalSignalStrengthChange(
       this.checkAndSendWeakSignalEvent
     );
+    this.startTimestampMs = Date.now();
+    this.attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
+    this.context.realtimeController.realtimeSubscribeToAttendeeIdPresence(
+      this.realtimeAttendeeIdPresenceHandler
+    );
 
     this.context.connectionMonitor.start();
     this.context.statsCollector.start(this.context.signalingClient, this.context.videoStreamIndex);
     this.context.signalingClient.registerObserver(this);
+  }
+
+  publishEvent(): void {
+    /* istanbul ignore else */
+    if (this.context.eventController) {
+      const attendeePresenceDurationMs = this.context.attendeePresenceDurationMs;
+
+      this.context.eventController.publishEvent('attendeePresenceReceived', {
+        attendeePresenceDurationMs,
+      });
+    }
   }
 
   videoTileDidUpdate(_tileState: VideoTileState): void {
@@ -383,5 +405,19 @@ export default class MonitorTask
       new MeetingSessionStatus(MeetingSessionStatusCode.RealtimeApiFailed),
       error
     );
+  };
+
+  private realtimeAttendeeIdPresenceHandler = (
+    presentAttendeeId: string,
+    present: boolean
+  ): void => {
+    if (this.attendeeId === presentAttendeeId && present && !this.presenceHandlerCalled) {
+      // this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(
+      //   this.realtimeAttendeeIdPresenceHandler
+      // );
+      this.presenceHandlerCalled = true;
+      this.context.attendeePresenceDurationMs = Date.now() - this.startTimestampMs;
+      this.publishEvent();
+    }
   };
 }

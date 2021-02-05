@@ -53,7 +53,7 @@ export default class MeetingSessionConfiguration {
    * Maximum amount of time in milliseconds to wait for the current attendee to be present
    * after initial connection.
    */
-  attendeePresenceTimeoutMs: number = 0;
+  attendeePresenceTimeoutMs: number = 1000;
 
   /**
    * Configuration for connection health policies: reconnection, unusable audio warning connection,

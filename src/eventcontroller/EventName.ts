@@ -8,6 +8,11 @@ type EventName =
   | 'meetingStartSucceeded'
   | 'meetingStartFailed'
   | 'meetingEnded'
-  | 'meetingFailed';
+  | 'meetingFailed'
+  | 'attendeePresenceReceived'
+  | 'audioInputSelected'
+  | 'videoInputSelected'
+  | 'audioInputUnselected'
+  | 'videoInputUnselected';
 
 export default EventName;

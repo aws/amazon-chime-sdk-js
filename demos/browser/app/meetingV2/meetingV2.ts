@@ -278,6 +278,7 @@ export class DemoMeetingApp
   selectedVideoFilterItem: VideoFilterName = 'None';
 
   meetingLogger: Logger | undefined = undefined;
+  audioVideoStartRequestTimestamp: number = null;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1057,7 +1058,12 @@ export class DemoMeetingApp
     switch (name) {
       case 'meetingStartRequested':
       case 'meetingStartSucceeded':
-      case 'meetingEnded': {
+      case 'meetingEnded':
+      case 'audioInputSelected':
+      case 'videoInputSelected':
+      case 'audioInputUnselected':
+      case 'videoInputUnselected':
+      case 'attendeePresenceReceived': {
         // Exclude the "meetingHistory" attribute for successful events.
         this.meetingEventPOSTLogger?.info(
           JSON.stringify({
@@ -1123,7 +1129,7 @@ export class DemoMeetingApp
       enableWebAudio: this.enableWebAudio,
     });
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
-    configuration.attendeePresenceTimeoutMs = 5000;
+    configuration.attendeePresenceTimeoutMs = 0;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(
       configuration,

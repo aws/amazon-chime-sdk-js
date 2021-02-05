@@ -90,6 +90,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#activeaudioinput" class="tsd-kind-icon">active<wbr>Audio<wbr>Input</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#activevideoinput" class="tsd-kind-icon">active<wbr>Video<wbr>Input</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#attendeepresencedurationms" class="tsd-kind-icon">attendee<wbr>Presence<wbr>Duration<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#audiodeviceinformation" class="tsd-kind-icon">audio<wbr>Device<wbr>Information</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#audiomixcontroller" class="tsd-kind-icon">audio<wbr>Mix<wbr>Controller</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#audioprofile" class="tsd-kind-icon">audio<wbr>Profile</a></li>
@@ -120,6 +121,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#sdpofferinit" class="tsd-kind-icon">sdp<wbr>Offer<wbr>Init</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#signalingclient" class="tsd-kind-icon">signaling<wbr>Client</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#signalingopendurationms" class="tsd-kind-icon">signaling<wbr>Open<wbr>Duration<wbr>Ms</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#startaudiovideotimestamp" class="tsd-kind-icon">start<wbr>Audio<wbr>Video<wbr>Timestamp</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#starttimems" class="tsd-kind-icon">start<wbr>Time<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#statscollector" class="tsd-kind-icon">stats<wbr>Collector</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audiovideocontrollerstate.html#transceivercontroller" class="tsd-kind-icon">transceiver<wbr>Controller</a></li>
@@ -160,6 +162,16 @@
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L61">src/audiovideocontroller/AudioVideoControllerState.ts:61</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="attendeepresencedurationms" class="tsd-anchor"></a>
+					<h3>attendee<wbr>Presence<wbr>Duration<wbr>Ms</h3>
+					<div class="tsd-signature tsd-kind-icon">attendee<wbr>Presence<wbr>Duration<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L127">src/audiovideocontroller/AudioVideoControllerState.ts:127</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -347,7 +359,7 @@
 					<div class="tsd-signature tsd-kind-icon">max<wbr>Video<wbr>Tile<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L127">src/audiovideocontroller/AudioVideoControllerState.ts:127</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L131">src/audiovideocontroller/AudioVideoControllerState.ts:131</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -387,7 +399,7 @@
 					<div class="tsd-signature tsd-kind-icon">poor<wbr>Connection<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L125">src/audiovideocontroller/AudioVideoControllerState.ts:125</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L129">src/audiovideocontroller/AudioVideoControllerState.ts:129</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -472,12 +484,22 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="startaudiovideotimestamp" class="tsd-anchor"></a>
+					<h3>start<wbr>Audio<wbr>Video<wbr>Timestamp</h3>
+					<div class="tsd-signature tsd-kind-icon">start<wbr>Audio<wbr>Video<wbr>Timestamp<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L125">src/audiovideocontroller/AudioVideoControllerState.ts:125</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="starttimems" class="tsd-anchor"></a>
 					<h3>start<wbr>Time<wbr>Ms</h3>
 					<div class="tsd-signature tsd-kind-icon">start<wbr>Time<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L129">src/audiovideocontroller/AudioVideoControllerState.ts:129</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideocontroller/AudioVideoControllerState.ts#L133">src/audiovideocontroller/AudioVideoControllerState.ts:133</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -663,6 +685,9 @@
 								<a href="audiovideocontrollerstate.html#activevideoinput" class="tsd-kind-icon">active<wbr>Video<wbr>Input</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="audiovideocontrollerstate.html#attendeepresencedurationms" class="tsd-kind-icon">attendee<wbr>Presence<wbr>Duration<wbr>Ms</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#audiodeviceinformation" class="tsd-kind-icon">audio<wbr>Device<wbr>Information</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -751,6 +776,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#signalingopendurationms" class="tsd-kind-icon">signaling<wbr>Open<wbr>Duration<wbr>Ms</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="audiovideocontrollerstate.html#startaudiovideotimestamp" class="tsd-kind-icon">start<wbr>Audio<wbr>Video<wbr>Timestamp</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audiovideocontrollerstate.html#starttimems" class="tsd-kind-icon">start<wbr>Time<wbr>Ms</a>

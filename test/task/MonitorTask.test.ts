@@ -25,6 +25,8 @@ import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventName from '../../src/eventcontroller/EventName';
 import Logger from '../../src/logger/Logger';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
+import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionVideoAvailability from '../../src/meetingsession/MeetingSessionVideoAvailability';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
@@ -190,6 +192,9 @@ describe('MonitorTask', () => {
       new ConnectionHealthPolicyConfiguration(),
       new ConnectionHealthData()
     );
+    context.meetingSessionConfiguration = new MeetingSessionConfiguration();
+    context.meetingSessionConfiguration.credentials = new MeetingSessionCredentials();
+    context.meetingSessionConfiguration.credentials.attendeeId = 'attendee-id';
   });
 
   afterEach(() => {
@@ -200,7 +205,8 @@ describe('MonitorTask', () => {
   });
 
   describe('run', () => {
-    it('registers an observer', async () => {
+    it('registers an observer when attendeePresenceTimeoutMs > 0', async () => {
+      context.meetingSessionConfiguration.attendeePresenceTimeoutMs = 5000;
       const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
       const spy2 = sinon.spy(task, 'connectionHealthDidChange');
       const connectionHealthData = new ConnectionHealthData();
@@ -212,7 +218,67 @@ describe('MonitorTask', () => {
         observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
         observer.connectionHealthDidChange(connectionHealthData);
       });
+      context.realtimeController.realtimeSetAttendeeIdPresence(
+        'attendee-id',
+        true,
+        'attendee-id',
+        false,
+        null
+      );
 
+      expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
+      expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
+    });
+
+    it('registers an observer when attendee already present', async () => {
+      const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
+      const spy2 = sinon.spy(task, 'connectionHealthDidChange');
+      const connectionHealthData = new ConnectionHealthData();
+      const oldBandwidthKbps = 512;
+      const newBandwidthKbps = 1024;
+
+      await task.run();
+      context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
+        observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
+        observer.connectionHealthDidChange(connectionHealthData);
+      });
+      context.realtimeController.realtimeSetAttendeeIdPresence(
+        'attendee-id',
+        true,
+        'attendee-id',
+        false,
+        null
+      );
+      context.realtimeController.realtimeSetAttendeeIdPresence(
+        'attendee-id',
+        true,
+        'attendee-id',
+        false,
+        null
+      );
+      expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
+      expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
+    });
+
+    it('registers an observer when attendee not present', async () => {
+      const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
+      const spy2 = sinon.spy(task, 'connectionHealthDidChange');
+      const connectionHealthData = new ConnectionHealthData();
+      const oldBandwidthKbps = 512;
+      const newBandwidthKbps = 1024;
+
+      await task.run();
+      context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
+        observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
+        observer.connectionHealthDidChange(connectionHealthData);
+      });
+      context.realtimeController.realtimeSetAttendeeIdPresence(
+        'attendee-id',
+        false,
+        'attendee-id',
+        false,
+        null
+      );
       expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
       expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
     });

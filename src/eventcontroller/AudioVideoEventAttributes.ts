@@ -13,4 +13,6 @@ export default interface AudioVideoEventAttributes {
   retryCount?: number;
   signalingOpenDurationMs?: number;
   iceGatheringDurationMs?: number;
+  attendeePresenceDurationMs?: number;
+  startDurationMs?: number;
 }

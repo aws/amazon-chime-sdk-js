@@ -92,6 +92,11 @@ Chime SDK sends these meeting events.
 |`meetingFailed`         |The meeting ended with one of the following failure [MeetingSessionStatusCode](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html): <br><ul><li>`AudioAuthenticationRejected`</li><li>`AudioCallAtCapacity`</li><li>`AudioDisconnected`</li><li>`AudioInternalServerError`</li><li>`AudioServiceUnavailable`</li><li>`ConnectionHealthReconnect`</li><li>`ICEGatheringTimeoutWorkaround`</li><li>`NoAttendeePresent`</li><li>`RealtimeApiFailed`</li><li>`SignalingBadRequest`</li><li>`SignalingInternalServerError`</li><li>`SignalingRequestFailed`</li><li>`StateMachineTransitionFailed`</li><li>`TaskFailed`</li><li>`VideoCallAtSourceCapacity`</li></ul>
 |`audioInputFailed`      |The microphone selection failed.
 |`videoInputFailed`      |The camera selection failed.
+|`attendeePresenceReceived`   |The attendee joined the meeting with the microphone.
+|`audioInputSelected`    |The microphone was selected.
+|`videoInputSelected`    |The camera was selected.
+|`audioInputUnselected`  |The microphone was removed. You called `meetingSession.audioVideo.chooseAudioInputDevice` with `null`.
+|`videoInputUnselected`  |The camera was removed. You called `meetingSession.audioVideo.chooseVideoInputDevice` with `null`.
 
 ### Standard attributes
 
@@ -128,6 +133,7 @@ The following table describes attributes for a meeting.
 |`retryCount`|The number of connection retries performed during the meeting.<br><br>Unit: Count|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`
 |`signalingOpenDurationMs`|The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`
 |`iceGatheringDurationMs`|The time taken for connection's ICE gathering state to complete.<br><br>Unit: Milliseconds|`meetingStartSucceeded`, `meetingStartFailed`, `meetingEnded`, `meetingFailed`
+|`attendeePresenceDurationMs`|The time taken for the attendee to be present in the meeting.<br><br>Unit: Milliseconds|`attendeePresenceReceived`
 
 ### Device attributes
 

@@ -122,6 +122,10 @@ export default class AudioVideoControllerState {
 
   iceGatheringDurationMs: number | null = null;
 
+  startAudioVideoTimestamp: number | null = null;
+
+  attendeePresenceDurationMs: number | null = null;
+
   poorConnectionCount: number = 0;
 
   maxVideoTileCount: number = 0;

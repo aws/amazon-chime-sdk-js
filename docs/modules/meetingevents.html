@@ -172,6 +172,26 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 								<td><code>videoInputFailed</code></td>
 								<td>The camera selection failed.</td>
 							</tr>
+							<tr>
+								<td><code>attendeePresenceReceived</code></td>
+								<td>The attendee joined the meeting with the microphone.</td>
+							</tr>
+							<tr>
+								<td><code>audioInputSelected</code></td>
+								<td>The microphone was selected.</td>
+							</tr>
+							<tr>
+								<td><code>videoInputSelected</code></td>
+								<td>The camera was selected.</td>
+							</tr>
+							<tr>
+								<td><code>audioInputUnselected</code></td>
+								<td>The microphone was removed. You called <code>meetingSession.audioVideo.chooseAudioInputDevice</code> with <code>null</code>.</td>
+							</tr>
+							<tr>
+								<td><code>videoInputUnselected</code></td>
+								<td>The camera was removed. You called <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with <code>null</code>.</td>
+							</tr>
 					</tbody></table>
 					<a href="#standard-attributes" id="standard-attributes" style="color: inherit; text-decoration: none;">
 						<h3>Standard attributes</h3>
@@ -292,6 +312,11 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 								<td><code>iceGatheringDurationMs</code></td>
 								<td>The time taken for connection&#39;s ICE gathering state to complete.<br><br>Unit: Milliseconds</td>
 								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>attendeePresenceDurationMs</code></td>
+								<td>The time taken for the attendee to be present in the meeting.<br><br>Unit: Milliseconds</td>
+								<td><code>attendeePresenceReceived</code></td>
 							</tr>
 					</tbody></table>
 					<a href="#device-attributes" id="device-attributes" style="color: inherit; text-decoration: none;">
