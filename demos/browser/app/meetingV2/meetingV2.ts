@@ -278,7 +278,6 @@ export class DemoMeetingApp
   selectedVideoFilterItem: VideoFilterName = 'None';
 
   meetingLogger: Logger | undefined = undefined;
-  audioVideoStartRequestTimestamp: number = null;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1129,7 +1128,7 @@ export class DemoMeetingApp
       enableWebAudio: this.enableWebAudio,
     });
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
-    configuration.attendeePresenceTimeoutMs = 0;
+    configuration.attendeePresenceTimeoutMs = 5000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(
       configuration,

@@ -43,8 +43,6 @@ export default class MonitorTask
   private currentVideoDownlinkBandwidthEstimationKbps: number = 10000;
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
   private hasSignalingError: boolean = false;
-  private startTimestampMs: number;
-  private attendeeId: string;
   private presenceHandlerCalled: boolean = false;
 
   constructor(
@@ -85,8 +83,6 @@ export default class MonitorTask
     this.context.realtimeController.realtimeSubscribeToLocalSignalStrengthChange(
       this.checkAndSendWeakSignalEvent
     );
-    this.startTimestampMs = Date.now();
-    this.attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
     this.context.realtimeController.realtimeSubscribeToAttendeeIdPresence(
       this.realtimeAttendeeIdPresenceHandler
     );
@@ -94,17 +90,6 @@ export default class MonitorTask
     this.context.connectionMonitor.start();
     this.context.statsCollector.start(this.context.signalingClient, this.context.videoStreamIndex);
     this.context.signalingClient.registerObserver(this);
-  }
-
-  publishEvent(): void {
-    /* istanbul ignore else */
-    if (this.context.eventController) {
-      const attendeePresenceDurationMs = this.context.attendeePresenceDurationMs;
-
-      this.context.eventController.publishEvent('attendeePresenceReceived', {
-        attendeePresenceDurationMs,
-      });
-    }
   }
 
   videoTileDidUpdate(_tileState: VideoTileState): void {
@@ -411,13 +396,16 @@ export default class MonitorTask
     presentAttendeeId: string,
     present: boolean
   ): void => {
-    if (this.attendeeId === presentAttendeeId && present && !this.presenceHandlerCalled) {
-      // this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(
-      //   this.realtimeAttendeeIdPresenceHandler
-      // );
+    const attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
+    if (attendeeId === presentAttendeeId && present && !this.presenceHandlerCalled) {
       this.presenceHandlerCalled = true;
-      this.context.attendeePresenceDurationMs = Date.now() - this.startTimestampMs;
-      this.publishEvent();
+      this.context.attendeePresenceDurationMs = Date.now() - this.context.startAudioVideoTimestamp;
+      /* istanbul ignore else */
+      if (this.context.eventController) {
+        this.context.eventController.publishEvent('attendeePresenceReceived', {
+          attendeePresenceDurationMs: this.context.attendeePresenceDurationMs,
+        });
+      }
     }
   };
 }

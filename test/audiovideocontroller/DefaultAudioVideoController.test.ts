@@ -2086,7 +2086,7 @@ describe('DefaultAudioVideoController', () => {
         reconnectController
       );
 
-      const errorMessage = 'Something went rong';
+      const errorMessage = 'Something went wrong';
       const events: { name: EventName; attributes: EventAttributes }[] = [];
       audioVideoController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {

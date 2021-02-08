@@ -102,6 +102,7 @@ export default class DefaultAudioVideoController
 
   private enableSimulcast: boolean = false;
   private totalRetryCount = 0;
+  private startAudioVideoTimestamp: number = 0;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -219,7 +220,6 @@ export default class DefaultAudioVideoController
   private async actionConnect(reconnecting: boolean): Promise<void> {
     this.connectionHealthData.reset();
     this.meetingSessionContext = new AudioVideoControllerState();
-    this.meetingSessionContext.startAudioVideoTimestamp = Date.now();
     this.meetingSessionContext.logger = this.logger;
     this.meetingSessionContext.eventController = this.eventController;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior({
@@ -320,6 +320,7 @@ export default class DefaultAudioVideoController
     if (!reconnecting) {
       this.totalRetryCount = 0;
       this._reconnectController.reset();
+      this.startAudioVideoTimestamp = Date.now();
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(false));
       });
@@ -328,7 +329,7 @@ export default class DefaultAudioVideoController
         this.eventController.publishEvent('meetingStartRequested');
       }
     }
-
+    this.meetingSessionContext.startAudioVideoTimestamp = this.startAudioVideoTimestamp;
     if (this._reconnectController.hasStartedConnectionAttempt()) {
       // This does not reset the reconnect deadline, but declare it's not the first connection.
       this._reconnectController.startedConnectionAttempt(false);
@@ -381,13 +382,15 @@ export default class DefaultAudioVideoController
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
         if (this.eventController) {
+          this.meetingSessionContext.meetingStartDurationMs =
+            Date.now() - this.startAudioVideoTimestamp;
           this.eventController.publishEvent('meetingStartSucceeded', {
             maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
             poorConnectionCount: this.meetingSessionContext.poorConnectionCount,
             retryCount: this.totalRetryCount,
             signalingOpenDurationMs: this.meetingSessionContext.signalingOpenDurationMs,
             iceGatheringDurationMs: this.meetingSessionContext.iceGatheringDurationMs,
-            startDurationMs: Date.now() - this.meetingSessionContext.startAudioVideoTimestamp,
+            meetingStartDurationMs: this.meetingSessionContext.meetingStartDurationMs,
           });
         }
         this.meetingSessionContext.startTimeMs = Date.now();
@@ -640,6 +643,7 @@ export default class DefaultAudioVideoController
         startTimeMs,
         iceGatheringDurationMs,
         attendeePresenceDurationMs,
+        meetingStartDurationMs,
       } = this.meetingSessionContext;
       const attributes: AudioVideoEventAttributes = {
         maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
@@ -649,6 +653,7 @@ export default class DefaultAudioVideoController
         iceGatheringDurationMs,
         attendeePresenceDurationMs,
         poorConnectionCount,
+        meetingStartDurationMs,
         retryCount: this.totalRetryCount,
       };
 
@@ -656,6 +661,7 @@ export default class DefaultAudioVideoController
         attributes.meetingErrorMessage = (error && error.message) || '';
         delete attributes.meetingDurationMs;
         delete attributes.attendeePresenceDurationMs;
+        delete attributes.meetingStartDurationMs;
         this.eventController.publishEvent('meetingStartFailed', attributes);
       } else if (status.isFailure() || status.isAudioConnectionFailure()) {
         attributes.meetingErrorMessage = (error && error.message) || '';

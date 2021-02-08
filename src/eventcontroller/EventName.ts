@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 type EventName =
-  | 'audioInputFailed'
-  | 'videoInputFailed'
   | 'meetingStartRequested'
   | 'meetingStartSucceeded'
   | 'meetingStartFailed'
@@ -11,8 +9,10 @@ type EventName =
   | 'meetingFailed'
   | 'attendeePresenceReceived'
   | 'audioInputSelected'
-  | 'videoInputSelected'
   | 'audioInputUnselected'
-  | 'videoInputUnselected';
+  | 'audioInputFailed'
+  | 'videoInputSelected'
+  | 'videoInputUnselected'
+  | 'videoInputFailed';
 
 export default EventName;

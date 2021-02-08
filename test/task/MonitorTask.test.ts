@@ -192,9 +192,6 @@ describe('MonitorTask', () => {
       new ConnectionHealthPolicyConfiguration(),
       new ConnectionHealthData()
     );
-    context.meetingSessionConfiguration = new MeetingSessionConfiguration();
-    context.meetingSessionConfiguration.credentials = new MeetingSessionCredentials();
-    context.meetingSessionConfiguration.credentials.attendeeId = 'attendee-id';
   });
 
   afterEach(() => {
@@ -205,8 +202,71 @@ describe('MonitorTask', () => {
   });
 
   describe('run', () => {
-    it('registers an observer when attendeePresenceTimeoutMs > 0', async () => {
+    beforeEach(() => {
+      context.meetingSessionConfiguration = new MeetingSessionConfiguration();
+      context.meetingSessionConfiguration.credentials = new MeetingSessionCredentials();
+      context.meetingSessionConfiguration.credentials.attendeeId = 'attendeeId';
+      context.meetingSessionConfiguration.credentials.joinToken = 'foo-join-token';
+      context.meetingSessionConfiguration.attendeePresenceTimeoutMs = 0;
+    });
+    it('registers an observer', async () => {
+      const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
+      const spy2 = sinon.spy(task, 'connectionHealthDidChange');
+      const connectionHealthData = new ConnectionHealthData();
+      const oldBandwidthKbps = 512;
+      const newBandwidthKbps = 1024;
+
+      await task.run();
+      context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
+        observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
+        observer.connectionHealthDidChange(connectionHealthData);
+      });
+
+      expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
+      expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
+    });
+
+    it('publish a meeting event when an attendeeId is present', async () => {
+      const spy = sinon.spy(context.realtimeController, 'realtimeSubscribeToAttendeeIdPresence');
+      const handleEventSpy = sinon.spy(context.eventController, 'publishEvent');
+      await task.run();
+      context.realtimeController.realtimeSetAttendeeIdPresence(
+        'attendeeId',
+        true,
+        null,
+        false,
+        null
+      );
+      assert(spy.called);
+      expect(handleEventSpy.called).to.be.true;
+    });
+
+    it('does not publish a meeting event when an attendeeId is not present', async () => {
+      const spy = sinon.spy(context.realtimeController, 'realtimeSubscribeToAttendeeIdPresence');
+      const handleEventSpy = sinon.spy(context.eventController, 'publishEvent');
+      await task.run();
+      context.realtimeController.realtimeSetAttendeeIdPresence(
+        'attendeeId',
+        false,
+        null,
+        false,
+        null
+      );
+      assert(spy.called);
+      expect(handleEventSpy.called).to.be.false;
+    });
+  });
+
+  describe('run for attendeePresenceTimeoutMs > 0', () => {
+    beforeEach(() => {
+      context.meetingSessionConfiguration = new MeetingSessionConfiguration();
+      context.meetingSessionConfiguration.credentials = new MeetingSessionCredentials();
+      context.meetingSessionConfiguration.credentials.attendeeId = 'attendeeId';
+      context.meetingSessionConfiguration.credentials.joinToken = 'foo-join-token';
       context.meetingSessionConfiguration.attendeePresenceTimeoutMs = 5000;
+    });
+
+    it('registers an observer', async () => {
       const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
       const spy2 = sinon.spy(task, 'connectionHealthDidChange');
       const connectionHealthData = new ConnectionHealthData();
@@ -218,69 +278,39 @@ describe('MonitorTask', () => {
         observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
         observer.connectionHealthDidChange(connectionHealthData);
       });
-      context.realtimeController.realtimeSetAttendeeIdPresence(
-        'attendee-id',
-        true,
-        'attendee-id',
-        false,
-        null
-      );
 
       expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
       expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
     });
 
-    it('registers an observer when attendee already present', async () => {
-      const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
-      const spy2 = sinon.spy(task, 'connectionHealthDidChange');
-      const connectionHealthData = new ConnectionHealthData();
-      const oldBandwidthKbps = 512;
-      const newBandwidthKbps = 1024;
-
+    it('publish a meeting event when an attendeeId is present', async () => {
+      const spy = sinon.spy(context.realtimeController, 'realtimeSubscribeToAttendeeIdPresence');
+      const handleEventSpy = sinon.spy(context.eventController, 'publishEvent');
       await task.run();
-      context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
-        observer.connectionHealthDidChange(connectionHealthData);
-      });
       context.realtimeController.realtimeSetAttendeeIdPresence(
-        'attendee-id',
+        'attendeeId',
         true,
-        'attendee-id',
+        null,
         false,
         null
       );
-      context.realtimeController.realtimeSetAttendeeIdPresence(
-        'attendee-id',
-        true,
-        'attendee-id',
-        false,
-        null
-      );
-      expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
-      expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
+      assert(spy.called);
+      expect(handleEventSpy.called).to.be.true;
     });
 
-    it('registers an observer when attendee not present', async () => {
-      const spy1 = sinon.spy(task, 'videoReceiveBandwidthDidChange');
-      const spy2 = sinon.spy(task, 'connectionHealthDidChange');
-      const connectionHealthData = new ConnectionHealthData();
-      const oldBandwidthKbps = 512;
-      const newBandwidthKbps = 1024;
-
+    it('does not publish a meeting event when an attendeeId is not present', async () => {
+      const spy = sinon.spy(context.realtimeController, 'realtimeSubscribeToAttendeeIdPresence');
+      const handleEventSpy = sinon.spy(context.eventController, 'publishEvent');
       await task.run();
-      context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
-        observer.videoReceiveBandwidthDidChange(oldBandwidthKbps, newBandwidthKbps);
-        observer.connectionHealthDidChange(connectionHealthData);
-      });
       context.realtimeController.realtimeSetAttendeeIdPresence(
-        'attendee-id',
+        'attendeeId',
         false,
-        'attendee-id',
+        null,
         false,
         null
       );
-      expect(spy1.calledOnceWith(oldBandwidthKbps, newBandwidthKbps)).to.be.true;
-      expect(spy2.calledOnceWith(connectionHealthData)).to.be.true;
+      assert(spy.called);
+      expect(handleEventSpy.called).to.be.false;
     });
   });
 
@@ -301,6 +331,19 @@ describe('MonitorTask', () => {
       realtimeSignalStrengthCallback(1);
       expect(spy.calledWith(AudioLogEvent.RedmicEndLoss)).to.be.true;
       realtimeSignalStrengthCallback(1);
+    });
+
+    it('subscribes to real-time attendee ID presence API', async () => {
+      const spy = sinon.spy(context.realtimeController, 'realtimeSubscribeToAttendeeIdPresence');
+      await task.run();
+      assert(spy.called);
+    });
+
+    it('unsubscribes from real-time attendee ID presence API', async () => {
+      const spy = sinon.spy(context.realtimeController, 'realtimeUnsubscribeToAttendeeIdPresence');
+      await task.run();
+      context.removableObservers[0].removeObserver();
+      expect(spy.called).to.be.true;
     });
   });
 

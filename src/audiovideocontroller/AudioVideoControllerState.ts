@@ -126,6 +126,8 @@ export default class AudioVideoControllerState {
 
   attendeePresenceDurationMs: number | null = null;
 
+  meetingStartDurationMs: number | null = null;
+
   poorConnectionCount: number = 0;
 
   maxVideoTileCount: number = 0;
