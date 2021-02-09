@@ -18,6 +18,23 @@ function findAllElements() {
     bindVideoElementIdInput: By.id('bind-video-element-video-element'),
     bindVideoElementButton: By.id('bind-video-element'),
     localVideoTileState: By.id('tile-1-state'),
+    addVideoTileButton: By.id('add-video-tile-btn'),
+    hasStartedLocalVideoTileButton: By.id('has-started-local-video-tile-btn'),
+    getLocalVideoTileButton: By.id('get-local-video-tile-btn'),
+    haveVideoTileForAttendeeIdButton: By.id('have-video-tile-for-attendeeId-btn'),
+    haveVideoTilesWithStreamsButton: By.id('have-video-tiles-with-streams-btn'),
+    sendTileStateUpdateButton: By.id('send-tile-state-update-btn'),
+    getAllVideoTilesButton: By.id('get-all-video-tiles-btn'),
+    getAllRemoteVideoTilesButton: By.id('get-all-remote-video-tiles-btn'),
+    removeAllVideoTilesButton: By.id('remove-all-video-tiles-btn'),
+    videoTileElementId: By.id('video-tile-id'),
+    totalRemoteVideoTilesElementId: By.id('total-remote-video-tiles-count'),
+    totalVideoTilesElementId: By.id('total-video-tiles-count'),
+    localVideoTileElementId: By.id('local-video-tile-id'),
+    hasStartedLocalVideoTileElementId: By.id('has-started-local-video-tile-boolean'),
+    haveVideoTileForAttendeeIdElementId: By.id('have-video-tile-for-attendeeId-boolean'),
+    haveVideoTilesWithStreamsElementId: By.id('have-video-tiles-with-streams-boolean'),
+    
   };
 }
 
@@ -51,6 +68,12 @@ class TestAppPage {
     let attendeeNameInputBox = await this.driver.findElement(elements.attendeeNameInput);
     await attendeeNameInputBox.clear();
     await attendeeNameInputBox.sendKeys(attendeeName);
+  }
+
+  async enterMeetingTitle(meetingTitle) {
+    await this.enterMeetingId(meetingTitle);
+    let joinMeetingButton = await this.driver.findElement(elements.joinMeetingButton);
+    await joinMeetingButton.click();
   }
 
   async authenticate() {
@@ -110,6 +133,153 @@ class TestAppPage {
     return false;
   }
 
+  async addVideoTileCheck(expectedTileId) {
+    let tileIdElement = await this.driver.findElement(elements.videoTileElementId);
+    if (!tileIdElement) {
+      return false;
+    }
+    let tileIdText =  await tileIdElement.getText();
+    if (!tileIdText) {
+      return false;
+    }
+    
+    if (expectedTileId === tileIdText) {
+      return true;
+    }
+    return false;
+  }
+
+  async getAllRemoteVideoTilesCheck(expectedTotalRemoteVideoTilesCount) {
+    let totalRemoteVideoTilesCountElement = await this.driver.findElement(elements.totalRemoteVideoTilesElementId);
+    if (!totalRemoteVideoTilesCountElement) {
+      return false;
+    }
+    let totalRemoteVideoTilesCount =  await totalRemoteVideoTilesCountElement.getText();
+    if (!totalRemoteVideoTilesCount) {
+      return false;
+    }
+    
+    if (expectedTotalRemoteVideoTilesCount === totalRemoteVideoTilesCount) {
+      return true;
+    }
+    return false;
+  }
+
+  async getAllVideoTilesCheck(expectedTotalVideoTilesCount) {
+    let totalVideoTilesCountElement = await this.driver.findElement(elements.totalVideoTilesElementId);
+    if (!totalVideoTilesCountElement) {
+      return false;
+    }
+    let totalVideoTilesCount =  await totalVideoTilesCountElement.getText();
+    if (!totalVideoTilesCount) {
+      return false;
+    }
+    
+    if (expectedTotalVideoTilesCount === totalVideoTilesCount) {
+      return true;
+    }
+    return false;
+  }
+
+  async getLocalVideoTileCheck(expectedLocalTileId) {
+    let localVideoTileIdElement = await this.driver.findElement(elements.localVideoTileElementId);
+    if (!localVideoTileIdElement) {
+      return false;
+    }
+    let localVideoTileId =  await localVideoTileIdElement.getText();
+    if (!localVideoTileId) {
+      return false;
+    }
+    
+    if (expectedLocalTileId === localVideoTileId) {
+      return true;
+    }
+    return false;
+  }
+
+  async hasStartedLocalVideoTileCheck(expectedHasStartedLocalVideoTileBoolean) {
+    let hasStartedLocalVideoTileBooleanElement = await this.driver.findElement(elements.hasStartedLocalVideoTileElementId);
+    if (!hasStartedLocalVideoTileBooleanElement) {
+      return false;
+    }
+    let hasStartedLocalVideoTileBoolean =  await hasStartedLocalVideoTileBooleanElement.getText();
+    
+    if (expectedHasStartedLocalVideoTileBoolean === hasStartedLocalVideoTileBoolean) {
+      return true;
+    }
+    return false;
+  }
+
+  async haveVideoTileForAttendeeIdCheck(expectedHaveVideoTileForAttendeeIdBoolean) {
+    let haveVideoTileForAttendeeIdBooleanElement = await this.driver.findElement(elements.haveVideoTileForAttendeeIdElementId);
+    if (!haveVideoTileForAttendeeIdBooleanElement) {
+      return false;
+    }
+    let haveVideoTileForAttendeeIdBoolean =  await haveVideoTileForAttendeeIdBooleanElement.getText();
+    
+    if (expectedHaveVideoTileForAttendeeIdBoolean === haveVideoTileForAttendeeIdBoolean) {
+      return true;
+    }
+    return false;
+  }
+
+  async haveVideoTilesWithStreamsCheck(expectedHaveVideoTilesWithStreamsBoolean) {
+    let haveVideoTilesWithStreamsBooleanElement = await this.driver.findElement(elements.haveVideoTilesWithStreamsElementId);
+    if (!haveVideoTilesWithStreamsBooleanElement) {
+      return false;
+    }
+    let haveVideoTilesWithStreamsBoolean =  await haveVideoTilesWithStreamsBooleanElement.getText();
+
+    if (expectedHaveVideoTilesWithStreamsBoolean === haveVideoTilesWithStreamsBoolean) {
+      return true;
+    }
+    return false;
+  }
+
+  async clickAddVideoTileButton() {
+    let addVideoTileButton = await this.driver.findElement(elements.addVideoTileButton);
+    await addVideoTileButton.click();
+  }
+
+  async clickHasStartedLocalVideoTileButton() {
+    let hasStartedLocalVideoTileButton = await this.driver.findElement(elements.hasStartedLocalVideoTileButton);
+    await hasStartedLocalVideoTileButton.click();
+  }
+
+  async clickGetLocalVideoTileButton() {
+    let getLocalVideoTileButton = await this.driver.findElement(elements.getLocalVideoTileButton);
+    await getLocalVideoTileButton.click();
+  }
+
+  async clickHaveVideoTileForAttendeeIdButton() {
+    let haveVideoTileForAttendeeIdButton = await this.driver.findElement(elements.haveVideoTileForAttendeeIdButton);
+    await haveVideoTileForAttendeeIdButton.click();
+  }
+
+  async clickSendTileStateUpdateButton() {
+    let sendTileStateUpdateButton = await this.driver.findElement(elements.sendTileStateUpdateButton);
+    await sendTileStateUpdateButton.click();
+  }
+
+  async clickGetAllVideoTilesButton() {
+    let getAllVideoTilesButton = await this.driver.findElement(elements.getAllVideoTilesButton);
+    await getAllVideoTilesButton.click();
+  }
+
+  async clickGetAllRemoteVideoTilesButton() {
+    let clickGetAllRemoteVideoTilesButton = await this.driver.findElement(elements.getAllRemoteVideoTilesButton);
+    await clickGetAllRemoteVideoTilesButton.click();
+  }
+
+  async clickHaveVideoTilesWithStreamsButton() {
+    let haveVideoTilesWithStreamsButton = await this.driver.findElement(elements.haveVideoTilesWithStreamsButton);
+    await haveVideoTilesWithStreamsButton.click();
+  }
+
+  async clickRemoveAllVideoTilesButton() {
+    let removeAllVideoTilesButton = await this.driver.findElement(elements.removeAllVideoTilesButton);
+    await removeAllVideoTilesButton.click();
+  }
 }
 
 module.exports = TestAppPage;

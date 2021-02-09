@@ -113,6 +113,90 @@ export class DemoMeetingApp implements AudioVideoObserver {
       unbindVideoElementForm.reset();
     });
 
+    const addVideoTileForm = document.getElementById('add-video-tile-form') as HTMLFormElement;
+    addVideoTileForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const tileId = this.audioVideo.addVideoTile().id();
+      let videoTileIdObject = document.getElementById(`video-tile-id`);
+      videoTileIdObject.innerText = JSON.stringify(tileId, null, '  ');;
+      addVideoTileForm.reset();
+    });
+
+    const hasStartedLocalVideoTileForm = document.getElementById('has-started-local-video-tile-form') as HTMLFormElement;
+    hasStartedLocalVideoTileForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const hasStartedLocalVideoTileValue = this.audioVideo.hasStartedLocalVideoTile();
+      let hasStartedLocalVideoTileBooleanObject = document.getElementById(`has-started-local-video-tile-boolean`);
+      hasStartedLocalVideoTileBooleanObject.innerText = JSON.stringify(hasStartedLocalVideoTileValue, null, '  ');;
+      hasStartedLocalVideoTileForm.reset();
+    });
+
+    const getLocalVideoTileForm = document.getElementById('get-local-video-tile-form') as HTMLFormElement;
+    getLocalVideoTileForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const localVideoTile = this.audioVideo.getLocalVideoTile().id();
+      let videoTileIdObject = document.getElementById(`local-video-tile-id`);
+      videoTileIdObject.innerText = JSON.stringify(localVideoTile, null, '  ');;
+      getLocalVideoTileForm.reset();
+    });
+
+    const getAllVideoTilesForm = document.getElementById('get-all-video-tiles-form') as HTMLFormElement;
+    getAllVideoTilesForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const totalVideoTilesCount = this.audioVideo.getAllVideoTiles().length;
+      let videoTilesCountObject = document.getElementById(`total-video-tiles-count`);
+      videoTilesCountObject.innerText = JSON.stringify(totalVideoTilesCount, null, '  ');;
+      getAllVideoTilesForm.reset();
+    });
+
+    const getAllRemoteVideoTilesForm = document.getElementById('get-all-remote-video-tiles-form') as HTMLFormElement;
+    getAllRemoteVideoTilesForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const totalRemoteVideoTilesCount = this.audioVideo.getAllRemoteVideoTiles().length;
+      let remoteVideoTilesCountObject = document.getElementById(`total-remote-video-tiles-count`);
+      remoteVideoTilesCountObject.innerText = JSON.stringify(totalRemoteVideoTilesCount, null, '  ');;
+      getAllRemoteVideoTilesForm.reset();
+    });
+
+
+    const haveVideoTileForAttendeeIdForm = document.getElementById('have-video-tile-for-attendeeId-form') as HTMLFormElement;
+    haveVideoTileForAttendeeIdForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const attendeeId = this.meetingSession.configuration.credentials.attendeeId;
+      // @ts-ignore
+      const haveVideoTileForAttendeeIdValue = this.audioVideo.videoTileController.haveVideoTileForAttendeeId(attendeeId);
+      let haveVideoTileForAttendeeIdValueObject = document.getElementById(`have-video-tile-for-attendeeId-boolean`);
+      haveVideoTileForAttendeeIdValueObject.innerText = JSON.stringify(haveVideoTileForAttendeeIdValue, null, '  ');;
+      haveVideoTileForAttendeeIdForm.reset();
+    });
+
+    const haveVideoTilesWithStreamsForm = document.getElementById('have-video-tiles-with-streams-form') as HTMLFormElement;
+    haveVideoTilesWithStreamsForm.addEventListener('submit', e => {
+      e.preventDefault();
+      // @ts-ignore
+      const haveVideoTilesWithStreamsBoolean = this.audioVideo.videoTileController.haveVideoTilesWithStreams();
+      let haveVideoTilesWithStreamsBooleanObject = document.getElementById(`have-video-tiles-with-streams-boolean`);
+      haveVideoTilesWithStreamsBooleanObject.innerText = JSON.stringify(haveVideoTilesWithStreamsBoolean, null, '  ');;
+      haveVideoTilesWithStreamsForm.reset();
+    });
+
+    const sendTileStateUpdateForm = document.getElementById('send-tile-state-update-form') as HTMLFormElement;
+    sendTileStateUpdateForm.addEventListener('submit', e => {
+      e.preventDefault();
+      // @ts-ignore
+      const videoTile = this.audioVideo.videoTileController.sendTileStateUpdate();
+      this.audioVideo.sendTileStateUpdate(videoTile.state());
+      sendTileStateUpdateForm.reset();
+    });
+
+    const removeAllVideoTilesForm = document.getElementById('remove-all-video-tiles-form') as HTMLFormElement;
+    removeAllVideoTilesForm.addEventListener('submit', e => {
+      e.preventDefault();
+      this.audioVideo.removeAllVideoTiles();
+      removeAllVideoTilesForm.reset();
+    });
+    
+
   }
 
   // eslint-disable-next-line
