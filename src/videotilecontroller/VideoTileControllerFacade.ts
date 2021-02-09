@@ -21,5 +21,4 @@ export default interface VideoTileControllerFacade {
   removeVideoTilesByAttendeeId(attendeeId: string): number[];
   removeAllVideoTiles(): void;
   captureVideoTile(tileId: number): ImageData | null;
-  haveVideoTileForAttendeeId(attendeeId: string): boolean;
 }

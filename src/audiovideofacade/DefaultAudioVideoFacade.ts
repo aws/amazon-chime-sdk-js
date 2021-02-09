@@ -472,10 +472,4 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('getRemoteVideoSources', null, result);
     return result;
   }
-
-  haveVideoTileForAttendeeId(attendeeId: string): boolean {
-    const result = this.videoTileController.haveVideoTileForAttendeeId(attendeeId);
-    this.trace('haveVideoTileForAttendeeId', null, result);
-    return result;
-  }
 }
