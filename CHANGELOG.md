@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add the file sharing workaround for Chrome 88 in FAQs
 
 ### Changed
+- Set attendeePresenceTimeoutMs to use value passed as parameter in the URL
 
 ### Removed
 
