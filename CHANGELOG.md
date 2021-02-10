@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add GatheringICECandidate Finish Duration to Meeting Event and to demo app
 - Add attendeePresenceReceived, audioInputSelected, videoInputSelected, audioInputUnselected, videoInputUnselected
 - Compute and add meetingStartDurationMs as part of the attributes of attendeePresenceReceived
+- Add the file sharing workaround for Chrome 88 in FAQs
 
 ### Changed
 
