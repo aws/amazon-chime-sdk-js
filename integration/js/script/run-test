@@ -21,8 +21,7 @@ function start_demo_meeting {
 }
 
 function did_server_start {
-    if ! lsof -i:$1 > /dev/null
-    then
+    if ! lsof -i:$1 > /dev/null; then
         echo 0
     else
         echo 1
@@ -41,8 +40,7 @@ function wait_for_demo_to_start {
       retry_count=$(($retry_count+1))
     done
 
-    if [ $retry_count -eq $threshold ]
-    then
+    if [ $retry_count -eq $threshold ]; then
      echo "meeting demo not started"
      exit 1
     fi
@@ -63,26 +61,21 @@ do
    do
       while read -r stem
       do
-         if [[ $stem =~ ^#.* ]]
-         then
+         if [[ $stem =~ ^#.* ]]; then
                continue
-         elif [[ $stem = "" ]]
-         then
+         elif [[ $stem = "" ]]; then
                continue
-         elif [[ $stem =~ ^!.* ]]
-         then
+         elif [[ $stem =~ ^!.* ]]; then
                stem_string="${stem:1}"
                if [[ $committed_file = $stem_string* ]]
                then
                   matches=false
                fi
-         elif [[ $committed_file = $stem* ]]
-         then
+         elif [[ $committed_file = $stem* ]]; then
                matches=true
          fi
       done < "../../.integration-watchlist"
-      if [[ $matches = true ]]
-      then
+      if [[ $matches = true ]]; then
          requires_integration_test=true
          break
       fi
@@ -90,8 +83,7 @@ do
 done
 
 echo 'Requires integ tests:' $requires_integration_test
-if [[ $requires_integration_test = false ]]
-then
+if [[ $requires_integration_test = false ]]; then
    exit 0
 fi
 }

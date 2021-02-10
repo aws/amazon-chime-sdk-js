@@ -277,7 +277,7 @@ function response(statusCode, contentType, body) {
 
 function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
   const logMsgJson = JSON.parse(logMsg);
-  const metricList = ['signalingOpenDurationMs'];
+  const metricList = ['signalingOpenDurationMs', 'iceGatheringDurationMs', 'attendeePresenceDurationMs', 'meetingStartDurationMs'];
   const putMetric =
     metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
       metrics.putDimensions({MeetingId: meetingId, AttendeeId: attendeeId});

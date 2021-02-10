@@ -102,6 +102,7 @@ export default class DefaultAudioVideoController
 
   private enableSimulcast: boolean = false;
   private totalRetryCount = 0;
+  private startAudioVideoTimestamp: number = 0;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -319,6 +320,7 @@ export default class DefaultAudioVideoController
     if (!reconnecting) {
       this.totalRetryCount = 0;
       this._reconnectController.reset();
+      this.startAudioVideoTimestamp = Date.now();
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(false));
       });
@@ -327,7 +329,7 @@ export default class DefaultAudioVideoController
         this.eventController.publishEvent('meetingStartRequested');
       }
     }
-
+    this.meetingSessionContext.startAudioVideoTimestamp = this.startAudioVideoTimestamp;
     if (this._reconnectController.hasStartedConnectionAttempt()) {
       // This does not reset the reconnect deadline, but declare it's not the first connection.
       this._reconnectController.startedConnectionAttempt(false);
@@ -380,11 +382,15 @@ export default class DefaultAudioVideoController
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
         if (this.eventController) {
+          this.meetingSessionContext.meetingStartDurationMs =
+            Date.now() - this.startAudioVideoTimestamp;
           this.eventController.publishEvent('meetingStartSucceeded', {
             maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
             poorConnectionCount: this.meetingSessionContext.poorConnectionCount,
             retryCount: this.totalRetryCount,
             signalingOpenDurationMs: this.meetingSessionContext.signalingOpenDurationMs,
+            iceGatheringDurationMs: this.meetingSessionContext.iceGatheringDurationMs,
+            meetingStartDurationMs: this.meetingSessionContext.meetingStartDurationMs,
           });
         }
         this.meetingSessionContext.startTimeMs = Date.now();
@@ -635,19 +641,27 @@ export default class DefaultAudioVideoController
         signalingOpenDurationMs,
         poorConnectionCount,
         startTimeMs,
+        iceGatheringDurationMs,
+        attendeePresenceDurationMs,
+        meetingStartDurationMs,
       } = this.meetingSessionContext;
       const attributes: AudioVideoEventAttributes = {
         maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
         meetingDurationMs: startTimeMs === null ? 0 : Math.round(Date.now() - startTimeMs),
         meetingStatus: MeetingSessionStatusCode[status.statusCode()],
         signalingOpenDurationMs,
+        iceGatheringDurationMs,
+        attendeePresenceDurationMs,
         poorConnectionCount,
+        meetingStartDurationMs,
         retryCount: this.totalRetryCount,
       };
 
       if (attributes.meetingDurationMs === 0) {
         attributes.meetingErrorMessage = (error && error.message) || '';
         delete attributes.meetingDurationMs;
+        delete attributes.attendeePresenceDurationMs;
+        delete attributes.meetingStartDurationMs;
         this.eventController.publishEvent('meetingStartFailed', attributes);
       } else if (status.isFailure() || status.isAudioConnectionFailure()) {
         attributes.meetingErrorMessage = (error && error.message) || '';
