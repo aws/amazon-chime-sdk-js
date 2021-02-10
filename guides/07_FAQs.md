@@ -138,6 +138,12 @@ Applications built with the Amazon Chime SDK for JavaScript can adjust video par
 
 You can use the [AudioVideoFacade.startContentShare(MediaStream)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare) API to stream audio and/or video content to the meetings. See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/ee8831f2fe7747e52fdef49db0dc1dfc2a4778f6/demos/browser/app/meetingV2/meetingV2.ts#L1266) for an example of how to achieve this.
 
+### When I stream video in Chrome, other attendees see a black screen. Is this a known issue?
+
+The [AudioVideoFacade.startContentShare(MediaStream)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare) API uses the HTMLMediaElement.captureStream API to stream video content content to the meeting. Chrome 88 and above have a [known issue](https://bugs.chromium.org/p/chromium/issues/detail?id=1156408) that the captureStream API does not send any data.
+
+As a workaround, you can turn hardware acceleration off in Chrome (88.0.4324.146 and above) and then stream video. Go to Settings (`chrome://settings`), scroll down to the System, and turn "Use hardware acceleration when available" off.
+
 ### How do I broadcast an Amazon Chime SDK meeting?
 
 You can deploy a web application broadcasting solution similar to the [Amazon Chime Meeting Broadcasting Demo](https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo) to broadcast an Amazon Chime SDK meeting to RTMP-enabled streaming services by instead using a `MEETING_URL` consisting of the URL to the meeting to be broadcasted.

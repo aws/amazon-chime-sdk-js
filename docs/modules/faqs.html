@@ -198,6 +198,11 @@
 						<h3>How can I stream music or video into a meeting?</h3>
 					</a>
 					<p>You can use the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare">AudioVideoFacade.startContentShare(MediaStream)</a> API to stream audio and/or video content to the meetings. See the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts#L1266">meeting demo application</a> for an example of how to achieve this.</p>
+					<a href="#when-i-stream-video-in-chrome-other-attendees-see-a-black-screen-is-this-a-known-issue" id="when-i-stream-video-in-chrome-other-attendees-see-a-black-screen-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>When I stream video in Chrome, other attendees see a black screen. Is this a known issue?</h3>
+					</a>
+					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare">AudioVideoFacade.startContentShare(MediaStream)</a> API uses the HTMLMediaElement.captureStream API to stream video content content to the meeting. Chrome 88 and above have a <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1156408">known issue</a> that the captureStream API does not send any data.</p>
+					<p>As a workaround, you can turn hardware acceleration off in Chrome (88.0.4324.146 and above) and then stream video. Go to Settings (<code>chrome://settings</code>), scroll down to the System, and turn &quot;Use hardware acceleration when available&quot; off.</p>
 					<a href="#how-do-i-broadcast-an-amazon-chime-sdk-meeting" id="how-do-i-broadcast-an-amazon-chime-sdk-meeting" style="color: inherit; text-decoration: none;">
 						<h3>How do I broadcast an Amazon Chime SDK meeting?</h3>
 					</a>
