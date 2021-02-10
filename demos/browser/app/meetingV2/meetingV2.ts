@@ -1128,7 +1128,11 @@ export class DemoMeetingApp
       enableWebAudio: this.enableWebAudio,
     });
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
-    configuration.attendeePresenceTimeoutMs = 5000;
+    const urlParameters = new URL(window.location.href).searchParams;
+    const timeoutMs = Number(urlParameters.get('attendee-presence-timeout-ms'));
+    if (!isNaN(timeoutMs)) {
+      configuration.attendeePresenceTimeoutMs = Number(timeoutMs);
+    }
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(
       configuration,
