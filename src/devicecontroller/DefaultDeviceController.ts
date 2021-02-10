@@ -125,13 +125,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   private pushAudioMeetingStateForPermissions(device: AudioInputDevice): void {
-    this.boundAudioVideoController?.eventController?.pushMeetingState(
+    this.boundAudioVideoController?.eventController?.publishEvent(
       device === null ? 'audioInputUnselected' : 'audioInputSelected'
     );
   }
 
   private pushVideoMeetingStateForPermissions(device: VideoInputDevice): void {
-    this.boundAudioVideoController?.eventController?.pushMeetingState(
+    this.boundAudioVideoController?.eventController?.publishEvent(
       device === null ? 'videoInputUnselected' : 'videoInputSelected'
     );
   }

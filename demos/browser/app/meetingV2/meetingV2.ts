@@ -1057,7 +1057,12 @@ export class DemoMeetingApp
     switch (name) {
       case 'meetingStartRequested':
       case 'meetingStartSucceeded':
-      case 'meetingEnded': {
+      case 'meetingEnded':
+      case 'audioInputSelected':
+      case 'videoInputSelected':
+      case 'audioInputUnselected':
+      case 'videoInputUnselected':
+      case 'attendeePresenceReceived': {
         // Exclude the "meetingHistory" attribute for successful events.
         this.meetingEventPOSTLogger?.info(
           JSON.stringify({
