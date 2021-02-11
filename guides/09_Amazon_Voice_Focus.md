@@ -45,6 +45,9 @@ Amazon Voice Focus does not support the release version of Safari on desktop or 
 |Safari                                                                 |14.1*                      |-                  |Technology Preview  |
 |Android browser                                                        |78*                        |87*                |Typically too slow. |
 |iOS Safari                                                             |Not supported              |-                  |                    |
+|iOS Chrome                                                             |Not supported              |-                  |                    |
+|iOS Firefox                                                            |Not supported              |-                  |                    |
+
 
 Amazon Voice Focus is more CPU-intensive than conventional noise suppression systems, and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful. The default configuration will adapt to available processor power and adjust quality accordingly, but some browsers and devices will simply be unable to enable the feature. Android browsers are theoretically compatible, but typically cannot meet the performance requirements.
 

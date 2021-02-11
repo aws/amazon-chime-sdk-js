@@ -55,7 +55,7 @@ Note that due to limitations in transpilers, requirements of the web platform mi
 
 ### I am unable to select an audio output device in some browsers, is this a known issue?
 
-[Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.
+[Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings. [Chrome and Firefox on iOS](https://bugs.webkit.org/show_bug.cgi?id=179415) also have the same issue.
 
 [Android Chrome](https://bugs.chromium.org/p/chromium/issues/detail?id=635686&sort=-stars&q=android%20chrome%20bluetooth%20headphone&can=2) has a known issue switching between Bluetooth audio output devices. While clients can continue the meeting using the default device, there is a [bug](https://bugs.chromium.org/p/chromium/issues/detail?id=635686&sort=-stars&q=android%20chrome%20bluetooth%20headphone&can=2) related to switching to a Bluetooth audio output.
 
@@ -82,7 +82,7 @@ Customers and end users must ensure that either (a) end users do not use SDK app
 
 ### Is the Amazon Chime SDK supported on mobile browsers?
 
-Amazon Chime SDK for JavaScript is supported on certain mobile browsers, specifically Chrome/Android and Safari/iOS. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
+Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
 
 Amazon Chime SDK for iOS https://github.com/aws/amazon-chime-sdk-ios
 
@@ -214,11 +214,7 @@ Amazon Chime SDK for JavaScript applications do not support content sharing on m
 
 ### Will Amazon Chime SDK for JavaScript meetings work in Chrome and Firefox in iOS?
 
-At present, Amazon Chime SDK for JavaScript is supported on Safari/iOS only. Other browsers are missing a key dependency, [GetUserMedia](https://bugs.webkit.org/show_bug.cgi?id=208667).
-
-### When loading a webpage in iOS WebView, my application gets a TypeError: undefined is not an object (evaluating 'navigator.mediaDevices.addEventListener'), what could be the issue ?
-
-This is because Safari embedded [web view does not support WebRTC](https://forums.developer.apple.com/thread/88052). The mitigation is to use the Amazon Chime SDK for iOS to build a native application: https://github.com/aws/amazon-chime-sdk-ios
+Yes, the Chime JS SDK supports Chrome and Firefox on iOS. Refer to the official Amazon Chime SDK Documentation for more information: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers.
 
 ### I notice that my clients lose audio and drop from the meeting if the Chrome browser on Android stays in background for several minutes, is that a known issue?
 
@@ -226,7 +222,7 @@ This is a known issue and happens primarily due to this [Chromium bug](https://b
 
 ### I only see iPhone or iPad microphone as audio input in iOS device, is that a known issue?
 
-iOS Safari has a known issue where it only lists one audio input device even when there are multiple. For example
+iOS Safari/Chrome/Firefox have a known issue where the device selection list only lists one audio input device even when there are multiple. For example
 , if you plug in a wired headset to your iPhone, it will show up as iPhone microphone replacing the internal mic. For
  more information, please refer to [the Webkit issue](https://bugs.webkit.org/show_bug.cgi?id=174833). 
 
@@ -236,10 +232,10 @@ This was a known issue on iPhone X devices (X, XS, and XR) when using AudioConte
 
 ### I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.
 
-iOS Safari has a known issue where it does not automatically switch to the iOS internal speaker after users unplug
+iOS Safari/Chrome/Firefox browsers have a known issue where they do not automatically switch to the iOS internal speaker after users unplug
  their wired headset. For more information, please refer to [the Webkit issue](https://bugs.webkit.org/show_bug.cgi?id=216389).
 
-### **I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari in iOS and frozen tile in Chrome in Android, is this a known issue?**
+### **I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari/Chrome/Firefox in iOS and frozen tile in Chrome in Android, is this a known issue?**
 
 This is the default behavior that is specific to each browser. In Android, the video stream is muted when in background and thus, the video will show the last frame.
 Note that for Android, if an attendee joins later after the video stream is in background, it will show as a blank tile since the last frame is blank.

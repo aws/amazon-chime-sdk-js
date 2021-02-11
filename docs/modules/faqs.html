@@ -121,7 +121,7 @@
 					<a href="#i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" id="i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I am unable to select an audio output device in some browsers, is this a known issue?</h3>
 					</a>
-					<p><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1152401">Firefox</a> and <a href="https://bugs.webkit.org/show_bug.cgi?id=179415">Safari</a> have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.</p>
+					<p><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1152401">Firefox</a> and <a href="https://bugs.webkit.org/show_bug.cgi?id=179415">Safari</a> have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings. <a href="https://bugs.webkit.org/show_bug.cgi?id=179415">Chrome and Firefox on iOS</a> also have the same issue.</p>
 					<p><a href="https://bugs.chromium.org/p/chromium/issues/detail?id=635686&amp;sort=-stars&amp;q=android%20chrome%20bluetooth%20headphone&amp;can=2">Android Chrome</a> has a known issue switching between Bluetooth audio output devices. While clients can continue the meeting using the default device, there is a <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=635686&amp;sort=-stars&amp;q=android%20chrome%20bluetooth%20headphone&amp;can=2">bug</a> related to switching to a Bluetooth audio output.</p>
 					<a href="#i-am-getting-cannot-select-audio-output-device-this-browser-does-not-support-setsinkid-error-on-the-browser-console-is-this-a-known-issue" id="i-am-getting-cannot-select-audio-output-device-this-browser-does-not-support-setsinkid-error-on-the-browser-console-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I am getting <code>Cannot select audio output device. This browser does not support setSinkId</code> error on the browser console. Is this a known issue?</h3>
@@ -143,7 +143,7 @@
 					<a href="#is-the-amazon-chime-sdk-supported-on-mobile-browsers" id="is-the-amazon-chime-sdk-supported-on-mobile-browsers" style="color: inherit; text-decoration: none;">
 						<h3>Is the Amazon Chime SDK supported on mobile browsers?</h3>
 					</a>
-					<p>Amazon Chime SDK for JavaScript is supported on certain mobile browsers, specifically Chrome/Android and Safari/iOS. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).</p>
+					<p>Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers</a>. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).</p>
 					<p>Amazon Chime SDK for iOS <a href="https://github.com/aws/amazon-chime-sdk-ios">https://github.com/aws/amazon-chime-sdk-ios</a></p>
 					<p>Amazon Chime SDK for Android <a href="https://github.com/aws/amazon-chime-sdk-android">https://github.com/aws/amazon-chime-sdk-android</a></p>
 					<a href="#meetings" id="meetings" style="color: inherit; text-decoration: none;">
@@ -276,11 +276,7 @@
 					<a href="#will-amazon-chime-sdk-for-javascript-meetings-work-in-chrome-and-firefox-in-ios" id="will-amazon-chime-sdk-for-javascript-meetings-work-in-chrome-and-firefox-in-ios" style="color: inherit; text-decoration: none;">
 						<h3>Will Amazon Chime SDK for JavaScript meetings work in Chrome and Firefox in iOS?</h3>
 					</a>
-					<p>At present, Amazon Chime SDK for JavaScript is supported on Safari/iOS only. Other browsers are missing a key dependency, <a href="https://bugs.webkit.org/show_bug.cgi?id=208667">GetUserMedia</a>.</p>
-					<a href="#when-loading-a-webpage-in-ios-webview-my-application-gets-a-typeerror-undefined-is-not-an-object-evaluating-39navigatormediadevicesaddeventlistener39-what-could-be-the-issue-" id="when-loading-a-webpage-in-ios-webview-my-application-gets-a-typeerror-undefined-is-not-an-object-evaluating-39navigatormediadevicesaddeventlistener39-what-could-be-the-issue-" style="color: inherit; text-decoration: none;">
-						<h3>When loading a webpage in iOS WebView, my application gets a TypeError: undefined is not an object (evaluating &#39;navigator.mediaDevices.addEventListener&#39;), what could be the issue ?</h3>
-					</a>
-					<p>This is because Safari embedded <a href="https://forums.developer.apple.com/thread/88052">web view does not support WebRTC</a>. The mitigation is to use the Amazon Chime SDK for iOS to build a native application: <a href="https://github.com/aws/amazon-chime-sdk-ios">https://github.com/aws/amazon-chime-sdk-ios</a></p>
+					<p>Yes, the Chime JS SDK supports Chrome and Firefox on iOS. Refer to the official Amazon Chime SDK Documentation for more information: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers</a>.</p>
 					<a href="#i-notice-that-my-clients-lose-audio-and-drop-from-the-meeting-if-the-chrome-browser-on-android-stays-in-background-for-several-minutes-is-that-a-known-issue" id="i-notice-that-my-clients-lose-audio-and-drop-from-the-meeting-if-the-chrome-browser-on-android-stays-in-background-for-several-minutes-is-that-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I notice that my clients lose audio and drop from the meeting if the Chrome browser on Android stays in background for several minutes, is that a known issue?</h3>
 					</a>
@@ -288,7 +284,7 @@
 					<a href="#i-only-see-iphone-or-ipad-microphone-as-audio-input-in-ios-device-is-that-a-known-issue" id="i-only-see-iphone-or-ipad-microphone-as-audio-input-in-ios-device-is-that-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I only see iPhone or iPad microphone as audio input in iOS device, is that a known issue?</h3>
 					</a>
-					<p>iOS Safari has a known issue where it only lists one audio input device even when there are multiple. For example
+					<p>iOS Safari/Chrome/Firefox have a known issue where the device selection list only lists one audio input device even when there are multiple. For example
 						, if you plug in a wired headset to your iPhone, it will show up as iPhone microphone replacing the internal mic. For
 					more information, please refer to <a href="https://bugs.webkit.org/show_bug.cgi?id=174833">the Webkit issue</a>.</p>
 					<a href="#i-can-hear-clicking-noise-from-an-attendee-using-iphone-x-devices-x-xs-and-xr" id="i-can-hear-clicking-noise-from-an-attendee-using-iphone-x-devices-x-xs-and-xr" style="color: inherit; text-decoration: none;">
@@ -298,10 +294,10 @@
 					<a href="#i-cannot-hear-audio-from-other-attendees-using-ios-devices-after-i-unplug-my-wired-headset" id="i-cannot-hear-audio-from-other-attendees-using-ios-devices-after-i-unplug-my-wired-headset" style="color: inherit; text-decoration: none;">
 						<h3>I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.</h3>
 					</a>
-					<p>iOS Safari has a known issue where it does not automatically switch to the iOS internal speaker after users unplug
+					<p>iOS Safari/Chrome/Firefox browsers have a known issue where they do not automatically switch to the iOS internal speaker after users unplug
 					their wired headset. For more information, please refer to <a href="https://bugs.webkit.org/show_bug.cgi?id=216389">the Webkit issue</a>.</p>
-					<a href="#i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safari-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" id="i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safari-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
-						<h3><strong>I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari in iOS and frozen tile in Chrome in Android, is this a known issue?</strong></h3>
+					<a href="#i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safarichromefirefox-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" id="i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safarichromefirefox-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3><strong>I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari/Chrome/Firefox in iOS and frozen tile in Chrome in Android, is this a known issue?</strong></h3>
 					</a>
 					<p>This is the default behavior that is specific to each browser. In Android, the video stream is muted when in background and thus, the video will show the last frame.
 						Note that for Android, if an attendee joins later after the video stream is in background, it will show as a blank tile since the last frame is blank.

@@ -23,6 +23,10 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Android 10; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0';
   const SAMSUNG_INTERNET_USERAGENT =
     'Mozilla/5.0 (Linux; Android 11; Pixel 3a XL) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/13.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
+  const CHROME_IOS_USERAGENT =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/88.0.4324.152 Mobile/14E5239e Safari/602.1';
+  const FIREFOX_IOS_USERAGENT =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/29.1.0 Mobile/16B91 Safari/605.1.15';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -171,6 +175,32 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.eq(true);
       expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.eq(true);
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(true);
+    });
+
+    it('can detect iOS Chrome', () => {
+      setUserAgent(CHROME_IOS_USERAGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('crios');
+      expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(88);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.eq(true);
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(true);
+    });
+
+    it('can detect iOS Firefox', () => {
+      setUserAgent(FIREFOX_IOS_USERAGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('fxios');
+      expect(new DefaultBrowserBehavior().isSupported()).to.eq(true);
+      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(29);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
