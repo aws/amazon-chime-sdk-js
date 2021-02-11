@@ -124,6 +124,8 @@ type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'None';
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp'];
 
 class TestSound {
+  static testAudioElement = new Audio();
+
   constructor(
     private logger: Logger,
     private sinkId: string | null,
@@ -164,7 +166,7 @@ class TestSound {
       }
     }
     try {
-      await audioMixController.bindAudioElement(new Audio());
+      await audioMixController.bindAudioElement(TestSound.testAudioElement);
     } catch (e) {
       fatal(e);
       this.logger?.error(`Failed to bind audio element: ${e}`);
