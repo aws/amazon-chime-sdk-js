@@ -18,7 +18,7 @@ class HasStartedLocalVideoTileCheck extends AppTestStep {
   }
 
   async run() {
-      const hasStartedLocalVideoTileCheckPassed = await this.page.hasStartedLocalVideoTileCheck(this.hasStartedLocalVideoTileBoolean);
+      const hasStartedLocalVideoTileCheckPassed = await this.page.elementBooleanCheck(this.hasStartedLocalVideoTileBoolean, 'hasStartedLocalVideoTileElementId');
       if (!hasStartedLocalVideoTileCheckPassed) {
         throw new KiteTestError(Status.FAILED, `HasStartedLocalVideoTileBoolean ${this.hasStartedLocalVideoTileBoolean} was not correct`);
       }

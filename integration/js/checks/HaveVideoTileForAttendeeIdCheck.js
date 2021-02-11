@@ -18,7 +18,7 @@ class HaveVideoTileForAttendeeIdCheck extends AppTestStep {
   }
 
   async run() {
-      const haveVideoTileForAttendeeIdCheckPassed = await this.page.haveVideoTileForAttendeeIdCheck(this.haveVideoTileForAttendeeIdBoolean);
+      const haveVideoTileForAttendeeIdCheckPassed = await this.page.elementBooleanCheck(this.haveVideoTileForAttendeeIdBoolean, 'haveVideoTileForAttendeeIdElementId');
       if (!haveVideoTileForAttendeeIdCheckPassed) {
         throw new KiteTestError(Status.FAILED, `HaveVideoTileForAttendeeIdBoolean ${this.haveVideoTileForAttendeeIdBoolean} was not correct`);
       }

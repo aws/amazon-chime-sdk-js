@@ -175,6 +175,7 @@ class TestAppPage {
       return false;
     }
     
+    console.log("totalVideoTilesCount " + totalVideoTilesCount);
     if (expectedTotalVideoTilesCount === totalVideoTilesCount) {
       return true;
     }
@@ -197,44 +198,19 @@ class TestAppPage {
     return false;
   }
 
-  async hasStartedLocalVideoTileCheck(expectedHasStartedLocalVideoTileBoolean) {
-    let hasStartedLocalVideoTileBooleanElement = await this.driver.findElement(elements.hasStartedLocalVideoTileElementId);
-    if (!hasStartedLocalVideoTileBooleanElement) {
+  async elementBooleanCheck(expectedValue, element) {
+    let booleanElement = await this.driver.findElement(elements[element]);
+    if (!booleanElement) {
       return false;
     }
-    let hasStartedLocalVideoTileBoolean =  await hasStartedLocalVideoTileBooleanElement.getText();
+    let value =  await booleanElement.getText();
     
-    if (expectedHasStartedLocalVideoTileBoolean === hasStartedLocalVideoTileBoolean) {
+    if (expectedValue === value) {
       return true;
     }
     return false;
   }
 
-  async haveVideoTileForAttendeeIdCheck(expectedHaveVideoTileForAttendeeIdBoolean) {
-    let haveVideoTileForAttendeeIdBooleanElement = await this.driver.findElement(elements.haveVideoTileForAttendeeIdElementId);
-    if (!haveVideoTileForAttendeeIdBooleanElement) {
-      return false;
-    }
-    let haveVideoTileForAttendeeIdBoolean =  await haveVideoTileForAttendeeIdBooleanElement.getText();
-    
-    if (expectedHaveVideoTileForAttendeeIdBoolean === haveVideoTileForAttendeeIdBoolean) {
-      return true;
-    }
-    return false;
-  }
-
-  async haveVideoTilesWithStreamsCheck(expectedHaveVideoTilesWithStreamsBoolean) {
-    let haveVideoTilesWithStreamsBooleanElement = await this.driver.findElement(elements.haveVideoTilesWithStreamsElementId);
-    if (!haveVideoTilesWithStreamsBooleanElement) {
-      return false;
-    }
-    let haveVideoTilesWithStreamsBoolean =  await haveVideoTilesWithStreamsBooleanElement.getText();
-
-    if (expectedHaveVideoTilesWithStreamsBoolean === haveVideoTilesWithStreamsBoolean) {
-      return true;
-    }
-    return false;
-  }
 
   async clickAddVideoTileButton() {
     let addVideoTileButton = await this.driver.findElement(elements.addVideoTileButton);

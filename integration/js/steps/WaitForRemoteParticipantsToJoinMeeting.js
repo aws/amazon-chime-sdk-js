@@ -15,7 +15,7 @@ class WaitForRemoteParticipantsToJoinMeeting extends AppWaitTestStep {
   }
 
   waitCompleteCondition() {
-    return this.test.numRemoteJoined.toString() === this.numberOfParticipant
+    return this.test.numRemoteJoined.toString() === this.numberOfParticipant;
   }
 
   waitCompleteMessage() {

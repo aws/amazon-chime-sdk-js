@@ -183,9 +183,9 @@ export class DemoMeetingApp implements AudioVideoObserver {
     const sendTileStateUpdateForm = document.getElementById('send-tile-state-update-form') as HTMLFormElement;
     sendTileStateUpdateForm.addEventListener('submit', e => {
       e.preventDefault();
+      const videoTile = this.audioVideo.getLocalVideoTile().state();
       // @ts-ignore
-      const videoTile = this.audioVideo.videoTileController.sendTileStateUpdate();
-      this.audioVideo.sendTileStateUpdate(videoTile.state());
+      this.audioVideo.videoTileController.sendTileStateUpdate(videoTile.state());
       sendTileStateUpdateForm.reset();
     });
 

@@ -18,7 +18,7 @@ class HaveVideoTilesWithStreamsCheck extends AppTestStep {
   }
 
   async run() {
-      const haveVideoTilesWithStreamsCheckPassed = await this.page.haveVideoTilesWithStreamsCheck(this.haveVideoTilesWithStreamsBoolean);
+      const haveVideoTilesWithStreamsCheckPassed = await this.page.elementBooleanCheck(this.haveVideoTilesWithStreamsBoolean, 'haveVideoTilesWithStreamsElementId');
       if (!haveVideoTilesWithStreamsCheckPassed) {
         throw new KiteTestError(Status.FAILED, `HaveVideoTilesWithStreamsBoolean ${this.haveVideoTilesWithStreamsBoolean} was not correct`);
       }
