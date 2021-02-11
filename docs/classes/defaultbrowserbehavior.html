@@ -96,6 +96,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#browser" class="tsd-kind-icon">browser</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#chromelike" class="tsd-kind-icon">chrome<wbr>Like</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#enableunifiedplanforchromiumbasedbrowsers" class="tsd-kind-icon">enable<wbr>Unified<wbr>Plan<wbr>For<wbr>Chromium<wbr>Based<wbr>Browsers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#webkitbrowsers" class="tsd-kind-icon">webkit<wbr>Browsers</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -104,10 +105,13 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultbrowserbehavior.html#getdisplaymediaaudiocapturesupport" class="tsd-kind-icon">get<wbr>Display<wbr>Media<wbr>Audio<wbr>Capture<wbr>Support</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultbrowserbehavior.html#haschromiumwebrtc" class="tsd-kind-icon">has<wbr>Chromium<wbr>WebRTC</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultbrowserbehavior.html#hasfirefoxwebrtc" class="tsd-kind-icon">has<wbr>Firefox<wbr>WebRTC</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultbrowserbehavior.html#haswebkitwebrtc" class="tsd-kind-icon">has<wbr>Web<wbr>Kit<wbr>WebRTC</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#isandroid" class="tsd-kind-icon">is<wbr>Android</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#ischrome" class="tsd-kind-icon">is<wbr>Chrome</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#isedge" class="tsd-kind-icon">is<wbr>Edge</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#isfirefox" class="tsd-kind-icon">is<wbr>Firefox</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#isioschrome" class="tsd-kind-icon">isIOSChrome</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#isiosfirefox" class="tsd-kind-icon">isIOSFirefox</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#isiossafari" class="tsd-kind-icon">isIOSSafari</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#ispixel3" class="tsd-kind-icon">is<wbr>Pixel3</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultbrowserbehavior.html#issafari" class="tsd-kind-icon">is<wbr>Safari</a></li>
@@ -158,7 +162,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L40">src/browserbehavior/DefaultBrowserBehavior.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L47">src/browserbehavior/DefaultBrowserBehavior.ts:47</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -195,7 +199,7 @@
 					<div class="tsd-signature tsd-kind-icon">chrome<wbr>Like<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = [&#x27;chrome&#x27;,&#x27;edge-chromium&#x27;,&#x27;chromium-webview&#x27;,&#x27;opera&#x27;,&#x27;samsung&#x27;,]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L33">src/browserbehavior/DefaultBrowserBehavior.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L37">src/browserbehavior/DefaultBrowserBehavior.ts:37</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -205,7 +209,17 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Unified<wbr>Plan<wbr>For<wbr>Chromium<wbr>Based<wbr>Browsers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L40">src/browserbehavior/DefaultBrowserBehavior.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L47">src/browserbehavior/DefaultBrowserBehavior.ts:47</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="webkitbrowsers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> webkit<wbr>Browsers</h3>
+					<div class="tsd-signature tsd-kind-icon">webkit<wbr>Browsers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = [&#x27;crios&#x27;, &#x27;fxios&#x27;, &#x27;safari&#x27;, &#x27;ios&#x27;]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L45">src/browserbehavior/DefaultBrowserBehavior.ts:45</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -222,7 +236,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L139">src/browserbehavior/DefaultBrowserBehavior.ts:139</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L156">src/browserbehavior/DefaultBrowserBehavior.ts:156</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -240,7 +254,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#haschromiumwebrtc">hasChromiumWebRTC</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L60">src/browserbehavior/DefaultBrowserBehavior.ts:60</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L67">src/browserbehavior/DefaultBrowserBehavior.ts:67</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -258,7 +272,24 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#hasfirefoxwebrtc">hasFirefoxWebRTC</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L69">src/browserbehavior/DefaultBrowserBehavior.ts:69</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L85">src/browserbehavior/DefaultBrowserBehavior.ts:85</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="haswebkitwebrtc" class="tsd-anchor"></a>
+					<h3>has<wbr>Web<wbr>Kit<wbr>WebRTC</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Web<wbr>Kit<wbr>WebRTC<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L76">src/browserbehavior/DefaultBrowserBehavior.ts:76</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -275,7 +306,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L223">src/browserbehavior/DefaultBrowserBehavior.ts:223</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L250">src/browserbehavior/DefaultBrowserBehavior.ts:250</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -292,7 +323,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L211">src/browserbehavior/DefaultBrowserBehavior.ts:211</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L238">src/browserbehavior/DefaultBrowserBehavior.ts:238</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -309,7 +340,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L215">src/browserbehavior/DefaultBrowserBehavior.ts:215</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L242">src/browserbehavior/DefaultBrowserBehavior.ts:242</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -326,7 +357,41 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L207">src/browserbehavior/DefaultBrowserBehavior.ts:207</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L226">src/browserbehavior/DefaultBrowserBehavior.ts:226</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="isioschrome" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> isIOSChrome</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">isIOSChrome<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L234">src/browserbehavior/DefaultBrowserBehavior.ts:234</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="isiosfirefox" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> isIOSFirefox</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">isIOSFirefox<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L230">src/browserbehavior/DefaultBrowserBehavior.ts:230</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -343,7 +408,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L199">src/browserbehavior/DefaultBrowserBehavior.ts:199</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L218">src/browserbehavior/DefaultBrowserBehavior.ts:218</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -360,7 +425,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L227">src/browserbehavior/DefaultBrowserBehavior.ts:227</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L254">src/browserbehavior/DefaultBrowserBehavior.ts:254</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -377,7 +442,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L203">src/browserbehavior/DefaultBrowserBehavior.ts:203</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L222">src/browserbehavior/DefaultBrowserBehavior.ts:222</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -394,7 +459,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L219">src/browserbehavior/DefaultBrowserBehavior.ts:219</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L246">src/browserbehavior/DefaultBrowserBehavior.ts:246</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -412,7 +477,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#issupported">isSupported</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L150">src/browserbehavior/DefaultBrowserBehavior.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L169">src/browserbehavior/DefaultBrowserBehavior.ts:169</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -429,7 +494,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L231">src/browserbehavior/DefaultBrowserBehavior.ts:231</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L258">src/browserbehavior/DefaultBrowserBehavior.ts:258</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -447,7 +512,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#majorversion">majorVersion</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L52">src/browserbehavior/DefaultBrowserBehavior.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L59">src/browserbehavior/DefaultBrowserBehavior.ts:59</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -465,7 +530,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#name">name</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L56">src/browserbehavior/DefaultBrowserBehavior.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L63">src/browserbehavior/DefaultBrowserBehavior.ts:63</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -483,7 +548,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requiresbundlepolicy">requiresBundlePolicy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L116">src/browserbehavior/DefaultBrowserBehavior.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L133">src/browserbehavior/DefaultBrowserBehavior.ts:133</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RTCBundlePolicy</span></h4>
@@ -501,7 +566,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requirescheckforsdpconnectionattributes">requiresCheckForSdpConnectionAttributes</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L92">src/browserbehavior/DefaultBrowserBehavior.ts:92</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L109">src/browserbehavior/DefaultBrowserBehavior.ts:109</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -518,7 +583,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L135">src/browserbehavior/DefaultBrowserBehavior.ts:135</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L152">src/browserbehavior/DefaultBrowserBehavior.ts:152</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -536,7 +601,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requiresicecandidategatheringtimeoutworkaround">requiresIceCandidateGatheringTimeoutWorkaround</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L96">src/browserbehavior/DefaultBrowserBehavior.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L113">src/browserbehavior/DefaultBrowserBehavior.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -554,7 +619,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requiresnoexactmediastreamconstraints">requiresNoExactMediaStreamConstraints</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L128">src/browserbehavior/DefaultBrowserBehavior.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L145">src/browserbehavior/DefaultBrowserBehavior.ts:145</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -572,7 +637,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requirespromisebasedwebrtcgetstats">requiresPromiseBasedWebRTCGetStats</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L120">src/browserbehavior/DefaultBrowserBehavior.ts:120</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L137">src/browserbehavior/DefaultBrowserBehavior.ts:137</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -589,7 +654,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L85">src/browserbehavior/DefaultBrowserBehavior.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L102">src/browserbehavior/DefaultBrowserBehavior.ts:102</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -616,7 +681,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requiressimulcastmunging">requiresSimulcastMunging</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L112">src/browserbehavior/DefaultBrowserBehavior.ts:112</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L129">src/browserbehavior/DefaultBrowserBehavior.ts:129</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -634,7 +699,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requiressortcodecpreferencesforsdpanswer">requiresSortCodecPreferencesForSdpAnswer</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L108">src/browserbehavior/DefaultBrowserBehavior.ts:108</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L125">src/browserbehavior/DefaultBrowserBehavior.ts:125</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -652,7 +717,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requiresunifiedplan">requiresUnifiedPlan</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L77">src/browserbehavior/DefaultBrowserBehavior.ts:77</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L93">src/browserbehavior/DefaultBrowserBehavior.ts:93</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -670,7 +735,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#requiresunifiedplanmunging">requiresUnifiedPlanMunging</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L100">src/browserbehavior/DefaultBrowserBehavior.ts:100</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L117">src/browserbehavior/DefaultBrowserBehavior.ts:117</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -687,7 +752,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L124">src/browserbehavior/DefaultBrowserBehavior.ts:124</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L141">src/browserbehavior/DefaultBrowserBehavior.ts:141</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -705,7 +770,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#screenshareunsupported">screenShareUnsupported</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L143">src/browserbehavior/DefaultBrowserBehavior.ts:143</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L161">src/browserbehavior/DefaultBrowserBehavior.ts:161</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -723,7 +788,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#supportstring">supportString</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L163">src/browserbehavior/DefaultBrowserBehavior.ts:163</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L182">src/browserbehavior/DefaultBrowserBehavior.ts:182</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -741,7 +806,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#supportedvideocodecs">supportedVideoCodecs</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L174">src/browserbehavior/DefaultBrowserBehavior.ts:174</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L193">src/browserbehavior/DefaultBrowserBehavior.ts:193</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -759,7 +824,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#supportscanvascapturedstreamplayback">supportsCanvasCapturedStreamPlayback</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L73">src/browserbehavior/DefaultBrowserBehavior.ts:73</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L89">src/browserbehavior/DefaultBrowserBehavior.ts:89</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -777,7 +842,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#supportssetsinkid">supportsSetSinkId</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L193">src/browserbehavior/DefaultBrowserBehavior.ts:193</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L212">src/browserbehavior/DefaultBrowserBehavior.ts:212</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -795,7 +860,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/browserbehavior.html">BrowserBehavior</a>.<a href="../interfaces/browserbehavior.html#version">version</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L48">src/browserbehavior/DefaultBrowserBehavior.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L55">src/browserbehavior/DefaultBrowserBehavior.ts:55</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -811,7 +876,7 @@
 					<div class="tsd-signature tsd-kind-icon">browser<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L22">src/browserbehavior/DefaultBrowserBehavior.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L24">src/browserbehavior/DefaultBrowserBehavior.ts:24</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -820,7 +885,17 @@
 						<div class="tsd-signature tsd-kind-icon">chrome<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Google Chrome&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L23">src/browserbehavior/DefaultBrowserBehavior.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L25">src/browserbehavior/DefaultBrowserBehavior.ts:25</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="browsername.crios" class="tsd-anchor"></a>
+						<h3>crios</h3>
+						<div class="tsd-signature tsd-kind-icon">crios<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Chrome iOS&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L33">src/browserbehavior/DefaultBrowserBehavior.ts:33</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -830,7 +905,7 @@
 						<div class="tsd-signature tsd-kind-icon">edge-<wbr>chromium<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Microsoft Edge&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L24">src/browserbehavior/DefaultBrowserBehavior.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L26">src/browserbehavior/DefaultBrowserBehavior.ts:26</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -840,7 +915,7 @@
 						<div class="tsd-signature tsd-kind-icon">electron<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Electron&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L25">src/browserbehavior/DefaultBrowserBehavior.ts:25</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L27">src/browserbehavior/DefaultBrowserBehavior.ts:27</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -850,7 +925,17 @@
 						<div class="tsd-signature tsd-kind-icon">firefox<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Mozilla Firefox&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L26">src/browserbehavior/DefaultBrowserBehavior.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L28">src/browserbehavior/DefaultBrowserBehavior.ts:28</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="browsername.fxios" class="tsd-anchor"></a>
+						<h3>fxios</h3>
+						<div class="tsd-signature tsd-kind-icon">fxios<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Firefox iOS&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L34">src/browserbehavior/DefaultBrowserBehavior.ts:34</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -860,7 +945,7 @@
 						<div class="tsd-signature tsd-kind-icon">ios<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Safari iOS&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L27">src/browserbehavior/DefaultBrowserBehavior.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L29">src/browserbehavior/DefaultBrowserBehavior.ts:29</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -870,7 +955,7 @@
 						<div class="tsd-signature tsd-kind-icon">opera<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Opera&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L29">src/browserbehavior/DefaultBrowserBehavior.ts:29</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L31">src/browserbehavior/DefaultBrowserBehavior.ts:31</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -880,7 +965,7 @@
 						<div class="tsd-signature tsd-kind-icon">safari<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Safari&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L28">src/browserbehavior/DefaultBrowserBehavior.ts:28</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L30">src/browserbehavior/DefaultBrowserBehavior.ts:30</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -890,7 +975,7 @@
 						<div class="tsd-signature tsd-kind-icon">samsung<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Samsung Internet&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L30">src/browserbehavior/DefaultBrowserBehavior.ts:30</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L32">src/browserbehavior/DefaultBrowserBehavior.ts:32</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -911,6 +996,16 @@
 						<aside class="tsd-sources">
 							<ul>
 								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L12">src/browserbehavior/DefaultBrowserBehavior.ts:12</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="browsersupport.crios-1" class="tsd-anchor"></a>
+						<h3>crios</h3>
+						<div class="tsd-signature tsd-kind-icon">crios<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 86</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L20">src/browserbehavior/DefaultBrowserBehavior.ts:20</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -941,6 +1036,16 @@
 						<aside class="tsd-sources">
 							<ul>
 								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L15">src/browserbehavior/DefaultBrowserBehavior.ts:15</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="browsersupport.fxios-1" class="tsd-anchor"></a>
+						<h3>fxios</h3>
+						<div class="tsd-signature tsd-kind-icon">fxios<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 23</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/browserbehavior/DefaultBrowserBehavior.ts#L21">src/browserbehavior/DefaultBrowserBehavior.ts:21</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1014,6 +1119,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultbrowserbehavior.html#enableunifiedplanforchromiumbasedbrowsers" class="tsd-kind-icon">enable<wbr>Unified<wbr>Plan<wbr>For<wbr>Chromium<wbr>Based<wbr>Browsers</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultbrowserbehavior.html#webkitbrowsers" class="tsd-kind-icon">webkit<wbr>Browsers</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultbrowserbehavior.html#getdisplaymediaaudiocapturesupport" class="tsd-kind-icon">get<wbr>Display<wbr>Media<wbr>Audio<wbr>Capture<wbr>Support</a>
 							</li>
@@ -1022,6 +1130,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultbrowserbehavior.html#hasfirefoxwebrtc" class="tsd-kind-icon">has<wbr>Firefox<wbr>WebRTC</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultbrowserbehavior.html#haswebkitwebrtc" class="tsd-kind-icon">has<wbr>Web<wbr>Kit<wbr>WebRTC</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultbrowserbehavior.html#isandroid" class="tsd-kind-icon">is<wbr>Android</a>
@@ -1034,6 +1145,12 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultbrowserbehavior.html#isfirefox" class="tsd-kind-icon">is<wbr>Firefox</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultbrowserbehavior.html#isioschrome" class="tsd-kind-icon">isIOSChrome</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultbrowserbehavior.html#isiosfirefox" class="tsd-kind-icon">isIOSFirefox</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultbrowserbehavior.html#isiossafari" class="tsd-kind-icon">isIOSSafari</a>

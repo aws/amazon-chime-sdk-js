@@ -17,7 +17,7 @@ A typical workflow would be:
 
 ### Browser compatibility
 
-The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari on iOS devices due to [Webkit Bug 181663](https://bugs.webkit.org/show_bug.cgi?id=181663). 
+The APIs for video processing in Amazon Chime SDK for JavaScript work in Firefox, Chrome, Chromium-based browsers (including Electron) on desktop, and Android operating systems. A full compatibility table is below. Currently, the APIs for video processing do not support Safari/Chrome/Firefox on iOS devices due to [Webkit Bug 181663](https://bugs.webkit.org/show_bug.cgi?id=181663). 
 WebRTC Unified Plan is also required. Unified Plan is by default enabled in [MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers). If Unified Plan is disabled in the meeting, the call `meetingSession.audioVideo.chooseVideoInputDevice` with the `VideoTransformDevice` will throw an error.
 
 
@@ -27,7 +27,9 @@ WebRTC Unified Plan is also required. Unified Plan is by default enabled in [Mee
 |Chromium-based browsers and environments, including Edge and Electron  |78                                             
 |Android Chrome                                                         |78       
 |Safari on MacOS                                                        |13.0                    
-|iOS Safari                                                             |Not supported             
+|iOS Safari                                                             |Not supported
+|iOS Chrome                                                             |Not supported             
+|iOS Firefox                                                            |Not supported             
 
 ## Video Processing APIs and Usage
 

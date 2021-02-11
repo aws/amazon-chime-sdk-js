@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add attendeePresenceReceived, audioInputSelected, videoInputSelected, audioInputUnselected, videoInputUnselected
 - Compute and add meetingStartDurationMs as part of the attributes of attendeePresenceReceived
 - Add the file sharing workaround for Chrome 88 in FAQs
+- Add support for iOS Chrome and iOS Firefox
 
 ### Changed
 - Set attendeePresenceTimeoutMs to use value passed as parameter in the URL
