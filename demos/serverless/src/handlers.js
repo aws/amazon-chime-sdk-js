@@ -280,11 +280,8 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
   const metricList = ['signalingOpenDurationMs', 'iceGatheringDurationMs', 'attendeePresenceDurationMs', 'meetingStartDurationMs'];
   const putMetric =
     metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
-      metrics.putDimensions({MeetingId: meetingId, AttendeeId: attendeeId});
-      metrics.putMetric(metricName, metricValue);
-    });
-  const putSignalMetric =
-    metricScope(metrics => (metricName, metricValue) => {
+      metrics.setProperty('MeetingId', meetingId);
+      metrics.setProperty('AttendeeId', attendeeId);
       metrics.putMetric(metricName, metricValue);
     });
   for (let metricIndex = 0; metricIndex <= metricList.length; metricIndex += 1) {
@@ -293,7 +290,6 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
       const metricValue = logMsgJson.attributes[metricName];
       console.log('Logging metric -> ', metricName, ': ', metricValue );
       putMetric(metricName, metricValue, meetingId, attendeeId);
-      putSignalMetric(metricName, metricValue);
     }
   }
 }
