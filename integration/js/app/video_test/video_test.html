@@ -76,7 +76,7 @@
         <button id="has-started-local-video-tile-btn" type="submit">
           hasStartedLocalVideoTile
         </button>
-        <label for="has-started-local-video-tile-label">Value: </label>
+        <label for="has-started-local-video-tile-boolean">Value: </label>
         <span id="has-started-local-video-tile-boolean"></span>
       </form>
 
@@ -84,7 +84,7 @@
         <button id="get-local-video-tile-btn" type="submit">
           getLocalVideoTile
         </button>
-        <label for="local-video-tile-label">Local VideoTile Id: </label>
+        <label for="local-video-tile-id">Local VideoTile Id: </label>
         <span id="local-video-tile-id"></span>
       </form>
 
@@ -92,7 +92,7 @@
         <button id="get-all-video-tiles-btn" type="submit">
           getAllVideoTiles
         </button>
-        <label for="total-video-tiles-label">Total Tiles Count: </label>
+        <label for="total-video-tiles-count">Total Tiles Count: </label>
         <span id="total-video-tiles-count"></span>
       </form>
 
@@ -100,15 +100,17 @@
         <button id="get-all-remote-video-tiles-btn" type="submit">
           getAllRemoteVideoTiles
         </button>
-        <label for="total-remote-video-tiles-label">Total Remote Tiles Count: </label>
+        <label for="total-remote-video-tiles-count">Total Remote Tiles Count: </label>
         <span id="total-remote-video-tiles-count"></span>
       </form>
 
       <form id="have-video-tile-for-attendeeId-form">
+        <label for="have-video-tile-for-attendee-id">Attendee Id</label>
+        <input type="text" id="have-video-tile-for-attendee-id" placeholder="Attendee Id">
         <button id="have-video-tile-for-attendeeId-btn" type="submit">
           haveVideoTileForAttendeeId
         </button>
-        <label for="have-video-tile-for-attendeeId-label">Value: </label>
+        <label for="have-video-tile-for-attendeeId-boolean">Value: </label>
         <span id="have-video-tile-for-attendeeId-boolean"></span>
       </form>
 
@@ -116,14 +118,8 @@
         <button id="have-video-tiles-with-streams-btn" type="submit">
           haveVideoTilesWithStreams
         </button>
-        <label for="have-video-tiles-with-streams-label">Value: </label>
+        <label for="have-video-tiles-with-streams-boolean">Value: </label>
         <span id="have-video-tiles-with-streams-boolean"></span>
-      </form>
-
-      <form id="send-tile-state-update-form">
-        <button id="send-tile-state-update-btn" type="submit">
-          sendTileStateUpdate
-        </button>
       </form>
 
       <form id="remove-all-video-tiles-form">
@@ -137,6 +133,11 @@
       <h2>Tile State Updates</h2>
       <p id="tile-1-state"></p>
       <p id="tile-2-state"></p>
+    </div>
+
+    <div id="video-tiles-list">
+      <h2>All Video Tiles</h2>
+      <p id="all-video-tiles"></p>
     </div>
 
     <p id="sdk-version"></p>

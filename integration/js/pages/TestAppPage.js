@@ -22,6 +22,7 @@ function findAllElements() {
     hasStartedLocalVideoTileButton: By.id('has-started-local-video-tile-btn'),
     getLocalVideoTileButton: By.id('get-local-video-tile-btn'),
     haveVideoTileForAttendeeIdButton: By.id('have-video-tile-for-attendeeId-btn'),
+    haveVideoTileForAttendeeIdInput: By.id('have-video-tile-for-attendee-id'),
     haveVideoTilesWithStreamsButton: By.id('have-video-tiles-with-streams-btn'),
     sendTileStateUpdateButton: By.id('send-tile-state-update-btn'),
     getAllVideoTilesButton: By.id('get-all-video-tiles-btn'),
@@ -227,8 +228,11 @@ class TestAppPage {
     await getLocalVideoTileButton.click();
   }
 
-  async clickHaveVideoTileForAttendeeIdButton() {
+  async clickHaveVideoTileForAttendeeIdButton(attendeeId) {
     let haveVideoTileForAttendeeIdButton = await this.driver.findElement(elements.haveVideoTileForAttendeeIdButton);
+    let haveVideoTileForAttendeeIdInput = await this.driver.findElement(elements.haveVideoTileForAttendeeIdInput);
+    await haveVideoTileForAttendeeIdInput.clear();
+    await haveVideoTileForAttendeeIdInput.sendKeys(attendeeId);
     await haveVideoTileForAttendeeIdButton.click();
   }
 

@@ -143,10 +143,14 @@ export class DemoMeetingApp implements AudioVideoObserver {
     const getAllVideoTilesForm = document.getElementById('get-all-video-tiles-form') as HTMLFormElement;
     getAllVideoTilesForm.addEventListener('submit', e => {
       e.preventDefault();
-      const totalVideoTilesCount = this.audioVideo.getAllVideoTiles().length;
+      const videoTiles = this.audioVideo.getAllVideoTiles();
       let videoTilesCountObject = document.getElementById(`total-video-tiles-count`);
-      videoTilesCountObject.innerText = JSON.stringify(totalVideoTilesCount, null, '  ');;
+      videoTilesCountObject.innerText = JSON.stringify(videoTiles.length, null, '  ');;
       getAllVideoTilesForm.reset();
+      let videoTilesListObject = document.getElementById(`all-video-tiles`);
+      for (const videoTile of videoTiles) {
+        videoTilesListObject.innerText += JSON.stringify(videoTile.state(), null, '  ');
+      }
     });
 
     const getAllRemoteVideoTilesForm = document.getElementById('get-all-remote-video-tiles-form') as HTMLFormElement;
@@ -160,11 +164,13 @@ export class DemoMeetingApp implements AudioVideoObserver {
 
 
     const haveVideoTileForAttendeeIdForm = document.getElementById('have-video-tile-for-attendeeId-form') as HTMLFormElement;
+    // const attendeeIdInput = document.getElementById('have-video-tile-for-attendee-id') as HTMLInputElement;
     haveVideoTileForAttendeeIdForm.addEventListener('submit', e => {
       e.preventDefault();
       const attendeeId = this.meetingSession.configuration.credentials.attendeeId;
       // @ts-ignore
       const haveVideoTileForAttendeeIdValue = this.audioVideo.videoTileController.haveVideoTileForAttendeeId(attendeeId);
+
       let haveVideoTileForAttendeeIdValueObject = document.getElementById(`have-video-tile-for-attendeeId-boolean`);
       haveVideoTileForAttendeeIdValueObject.innerText = JSON.stringify(haveVideoTileForAttendeeIdValue, null, '  ');;
       haveVideoTileForAttendeeIdForm.reset();
@@ -180,20 +186,13 @@ export class DemoMeetingApp implements AudioVideoObserver {
       haveVideoTilesWithStreamsForm.reset();
     });
 
-    const sendTileStateUpdateForm = document.getElementById('send-tile-state-update-form') as HTMLFormElement;
-    sendTileStateUpdateForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const videoTile = this.audioVideo.getLocalVideoTile().state();
-      // @ts-ignore
-      this.audioVideo.videoTileController.sendTileStateUpdate(videoTile.state());
-      sendTileStateUpdateForm.reset();
-    });
-
     const removeAllVideoTilesForm = document.getElementById('remove-all-video-tiles-form') as HTMLFormElement;
     removeAllVideoTilesForm.addEventListener('submit', e => {
       e.preventDefault();
       this.audioVideo.removeAllVideoTiles();
       removeAllVideoTilesForm.reset();
+      const videoTilesListObject = document.getElementById('video-tiles');
+      videoTilesListObject.innerText = '';
     });
     
 

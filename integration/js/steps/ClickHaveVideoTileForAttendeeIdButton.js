@@ -1,12 +1,13 @@
 const AppTestStep = require('../utils/AppTestStep');
 
 class ClickHaveVideoTileForAttendeeIdButton extends AppTestStep {
-  constructor(kiteBaseTest, sessionInfo) {
+  constructor(kiteBaseTest, sessionInfo, attendeeId) {
     super(kiteBaseTest, sessionInfo);
+    this.attendeeId = attendeeId;
   }
 
-  static async executeStep(KiteBaseTest, sessionInfo) {
-    const step = new ClickHaveVideoTileForAttendeeIdButton(KiteBaseTest, sessionInfo);
+  static async executeStep(KiteBaseTest, sessionInfo, attendeeId) {
+    const step = new ClickHaveVideoTileForAttendeeIdButton(KiteBaseTest, sessionInfo, attendeeId);
     await step.execute(KiteBaseTest);
   }
 
@@ -15,7 +16,7 @@ class ClickHaveVideoTileForAttendeeIdButton extends AppTestStep {
   }
 
   async run() {
-    await this.page.clickHaveVideoTileForAttendeeIdButton();
+    await this.page.clickHaveVideoTileForAttendeeIdButton(this.attendeeId);
     this.finished('have_video_tile_for_attendeeId');
   }
 }

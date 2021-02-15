@@ -21,7 +21,6 @@ exports.Reconnect = require('./Reconnect');
 exports.ClickHasStartedLocalVideoTileButton = require('./ClickHasStartedLocalVideoTileButton');
 exports.ClickGetLocalVideoTileButton = require('./ClickGetLocalVideoTileButton');
 exports.ClickHaveVideoTileForAttendeeIdButton = require('./ClickHaveVideoTileForAttendeeIdButton');
-exports.ClickSendTileStateUpdateButton = require('./ClickSendTileStateUpdateButton');
 exports.ClickGetAllVideoTilesButton = require('./ClickGetAllVideoTilesButton');
 exports.ClickGetAllRemoteVideoTilesButton = require('./ClickGetAllRemoteVideoTilesButton');
 exports.ClickHaveVideoTilesWithStreamsButton = require('./ClickHaveVideoTilesWithStreamsButton');

@@ -2,16 +2,16 @@ const {KiteTestError, Status} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class JoinVideoTestMeetingStep extends AppTestStep {
-  constructor(kiteBaseTest, sessionInfo, attendee_id, meeting_title, useSimulcastFlag = false, useWebAudioFlag = false) {
+  constructor(kiteBaseTest, sessionInfo, attendee_name, meeting_title, useSimulcastFlag = false, useWebAudioFlag = false) {
     super(kiteBaseTest, sessionInfo);
-    this.attendee_id = attendee_id;
+    this.attendee_name = attendee_name;
     this.meeting_title = meeting_title;
     this.useSimulcastFlag = useSimulcastFlag;
     this.useWebAudioFlag = useWebAudioFlag;
   }
 
-  static async executeStep(KiteBaseTest, sessionInfo, attendee_id, meeting_title, useSimulcastFlag) {
-    const step = new JoinVideoTestMeetingStep(KiteBaseTest, sessionInfo, attendee_id, meeting_title, useSimulcastFlag);
+  static async executeStep(KiteBaseTest, sessionInfo, attendee_name, meeting_title, useSimulcastFlag) {
+    const step = new JoinVideoTestMeetingStep(KiteBaseTest, sessionInfo, attendee_name, meeting_title, useSimulcastFlag);
     await step.execute(KiteBaseTest);
   }
 
@@ -24,8 +24,7 @@ class JoinVideoTestMeetingStep extends AppTestStep {
   }
 
   async run() {
-    this.logger("attendee id: " + this.attendee_id);
-    await this.page.enterAttendeeName(this.attendee_id);
+    await this.page.enterAttendeeName(this.attendee_name);
     if (this.useSimulcastFlag) {
       this.logger("choose to use simulcast");
       await this.page.chooseUseSimulcast();
