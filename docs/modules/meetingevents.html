@@ -165,8 +165,28 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 								<td>The meeting ended with one of the following failure <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a>: <br><ul><li><code>AudioAuthenticationRejected</code></li><li><code>AudioCallAtCapacity</code></li><li><code>AudioDisconnected</code></li><li><code>AudioInternalServerError</code></li><li><code>AudioServiceUnavailable</code></li><li><code>ConnectionHealthReconnect</code></li><li><code>ICEGatheringTimeoutWorkaround</code></li><li><code>NoAttendeePresent</code></li><li><code>RealtimeApiFailed</code></li><li><code>SignalingBadRequest</code></li><li><code>SignalingInternalServerError</code></li><li><code>SignalingRequestFailed</code></li><li><code>StateMachineTransitionFailed</code></li><li><code>TaskFailed</code></li><li><code>VideoCallAtSourceCapacity</code></li></ul></td>
 							</tr>
 							<tr>
+								<td><code>attendeePresenceReceived</code></td>
+								<td>The attendee joined the meeting with the microphone.</td>
+							</tr>
+							<tr>
+								<td><code>audioInputSelected</code></td>
+								<td>The microphone was selected.</td>
+							</tr>
+							<tr>
+								<td><code>audioInputUnselected</code></td>
+								<td>The microphone was removed. You called <code>meetingSession.audioVideo.chooseAudioInputDevice</code> with <code>null</code>.</td>
+							</tr>
+							<tr>
 								<td><code>audioInputFailed</code></td>
 								<td>The microphone selection failed.</td>
+							</tr>
+							<tr>
+								<td><code>videoInputSelected</code></td>
+								<td>The camera was selected.</td>
+							</tr>
+							<tr>
+								<td><code>videoInputUnselected</code></td>
+								<td>The camera was removed. You called <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with <code>null</code>.</td>
 							</tr>
 							<tr>
 								<td><code>videoInputFailed</code></td>
@@ -254,6 +274,16 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 							</tr>
 						</thead>
 						<tbody><tr>
+								<td><code>attendeePresenceDurationMs</code></td>
+								<td>The time taken for the attendee to be present in the meeting.<br><br>Unit: Milliseconds</td>
+								<td><code>attendeePresenceReceived</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>iceGatheringDurationMs</code></td>
+								<td>The time taken for connection&#39;s ICE gathering state to complete.<br><br>Unit: Milliseconds</td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
 								<td><code>maxVideoTileCount</code></td>
 								<td>The maximum number of simultaneous video tiles shared during the meeting. This includes a local tile (your video), remote tiles, and content shares.<br><br>Unit: Count</td>
 								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
@@ -267,6 +297,11 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 								<td><code>meetingErrorMessage</code></td>
 								<td>The error message that explains why the meeting has failed.</td>
 								<td><code>meetingStartFailed</code>, <code>meetingFailed</code></td>
+							</tr>
+							<tr>
+								<td><code>meetingStartDurationMs</code></td>
+								<td>The time that elapsed between the start request <code>meetingSession.audioVideo.start</code> and the beginning of the meeting <code>AudioVideoObserver.audioVideoDidStart</code>.<br><br>Unit: Milliseconds</td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
 							</tr>
 							<tr>
 								<td><code>meetingStatus</code></td>
@@ -286,11 +321,6 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 							<tr>
 								<td><code>signalingOpenDurationMs</code></td>
 								<td>The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
-							</tr>
-							<tr>
-								<td><code>iceGatheringDurationMs</code></td>
-								<td>The time taken for connection&#39;s ICE gathering state to complete.<br><br>Unit: Milliseconds</td>
 								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
 							</tr>
 					</tbody></table>
