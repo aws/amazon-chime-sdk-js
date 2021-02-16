@@ -165,6 +165,25 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     }
 
     const context = DefaultDeviceController.getAudioContext();
+
+    if (context instanceof OfflineAudioContext) {
+      // Nothing to do.
+    } else {
+      switch (context.state) {
+        case 'running':
+          // Nothing to do.
+          break;
+        case 'closed':
+          // A closed context cannot be used for creating nodes, so the correct
+          // thing to do is to raise a descriptive error sooner.
+          throw new Error('Cannot choose a transform device with a closed audio context.');
+        case 'suspended':
+          // A context might be suspended after page load. We try to resume it
+          // here, otherwise audio won't work.
+          await context.resume();
+      }
+    }
+
     let nodes;
     try {
       nodes = await device.createAudioNode(context);
@@ -1338,7 +1357,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   static closeAudioContext(): void {
     if (DefaultDeviceController.audioContext) {
-      DefaultDeviceController.audioContext.close();
+      try {
+        DefaultDeviceController.audioContext.close();
+      } catch (e) {
+        // Nothing we can do.
+      }
     }
     DefaultDeviceController.audioContext = null;
   }
