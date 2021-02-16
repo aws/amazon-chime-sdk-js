@@ -954,6 +954,7 @@ export default class DOMMockBuilder {
 
     GlobalAny.AudioContext = class MockAudioContext {
       sampleRate: number = 48000;
+      state: 'running' | 'suspended' | 'closed' = 'running';
 
       constructor(contextOptions?: AudioContextOptions) {
         if (contextOptions && contextOptions.sampleRate) {
@@ -1037,7 +1038,61 @@ export default class DOMMockBuilder {
         return new GlobalAny.AudioBuffer();
       }
 
-      close(): void {}
+      resume(): Promise<void> {
+        if (this.state === 'closed') {
+          return Promise.reject('Already closed.');
+        }
+        this.state = 'running';
+        return Promise.resolve();
+      }
+
+      suspend(): Promise<void> {
+        if (this.state === 'closed') {
+          return Promise.reject('Already closed.');
+        }
+        this.state = 'suspended';
+        return Promise.resolve();
+      }
+
+      close(): Promise<void> {
+        this.state = 'closed';
+        return Promise.resolve();
+      }
+    };
+
+    GlobalAny.OfflineAudioContext = class OfflineAudioContext {
+      state: 'running' | 'suspended' | 'closed' = 'running';
+
+      suspend(): Promise<void> {
+        return Promise.reject('INVALID_STATE_ERR: cannot suspend an offline context');
+      }
+
+      close(): Promise<void> {
+        return Promise.reject('INVALID_STATE_ERR: cannot close an offline context');
+      }
+
+      resume(): Promise<void> {
+        return Promise.reject('INVALID_STATE_ERR: cannot resume an offline context');
+      }
+
+      createGain(): GainNode {
+        // @ts-ignore
+        return {
+          context: (this as unknown) as BaseAudioContext,
+          // @ts-ignore
+          connect(_destinationParam: AudioParam, _output?: number): void {},
+          // @ts-ignore
+          disconnect(_destinationParam: AudioParam): void {},
+          // @ts-ignore
+          gain: {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            linearRampToValueAtTime(value: number, endTime: number): AudioParam {
+              // @ts-ignore
+              return {};
+            },
+          },
+        };
+      }
     };
 
     GlobalAny.AudioBufferSourceNode = class MockAudioBufferSourceNode {
@@ -1247,6 +1302,7 @@ export default class DOMMockBuilder {
     delete GlobalAny.requestAnimationFrame;
     delete GlobalAny.Audio;
     delete GlobalAny.AudioContext;
+    delete GlobalAny.OfflineAudioContext;
     delete GlobalAny.AudioBufferSourceNode;
     delete GlobalAny.AudioBuffer;
     delete GlobalAny.MediaStreamAudioDestinationNode;

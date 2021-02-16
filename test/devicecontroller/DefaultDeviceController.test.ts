@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -36,6 +37,9 @@ import {
   MutingTransformDevice,
 } from '../transformdevicemock/MockTransformDevice';
 import WatchingLogger from './WatchingLogger';
+
+chai.use(chaiAsPromised);
+chai.should();
 
 describe('DefaultDeviceController', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -344,6 +348,46 @@ describe('DefaultDeviceController', () => {
       expect(createAudioNodeSpy.calledOnce).to.be.true;
       expect(intrinsicDeviceSpy.calledOnce).to.be.true;
       expect(stopSpy.notCalled).to.be.true;
+    });
+  });
+
+  describe('handling broken audio contexts', () => {
+    it('throws for stopped contexts', async () => {
+      enableWebAudio(true);
+      const device: AudioTransformDevice = new MockNodeTransformDevice(null);
+
+      const context = DefaultDeviceController.getAudioContext();
+      context.close();
+
+      const choose = deviceController.chooseAudioInputDevice(device);
+      expect(choose).to.eventually.be.rejectedWith(
+        'Cannot choose a transform device with a closed audio context.'
+      );
+    });
+
+    it('resumes suspended contexts', async () => {
+      enableWebAudio(true);
+      const device: AudioTransformDevice = new MockNodeTransformDevice(null);
+
+      const context = DefaultDeviceController.getAudioContext();
+      context.suspend();
+
+      await deviceController.chooseAudioInputDevice(device);
+      expect(context.state).to.equal('running');
+    });
+
+    it('does nothing for suspended offline contexts', async () => {
+      enableWebAudio(true);
+      const device: AudioTransformDevice = new MockNodeTransformDevice(null);
+
+      // @ts-ignore
+      const offline = new OfflineAudioContext();
+
+      // @ts-ignore
+      DefaultDeviceController.audioContext = offline;
+
+      const choose = deviceController.chooseAudioInputDevice(device);
+      expect(choose).to.eventually.be.rejectedWith('INVALID_STATE_ERR');
     });
   });
 

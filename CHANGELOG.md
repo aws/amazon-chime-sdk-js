@@ -8,18 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Add GatheringICECandidate Finish Duration to Meeting Event and to demo app
-- Add attendeePresenceReceived, audioInputSelected, videoInputSelected, audioInputUnselected, videoInputUnselected
-- Compute and add meetingStartDurationMs as part of the attributes of attendeePresenceReceived
-- Add the file sharing workaround for Chrome 88 in FAQs
-- Add support for iOS Chrome and iOS Firefox
+- Add GatheringICECandidate Finish Duration to Meeting Event and to demo app.
+- Add `attendeePresenceReceived`, `audioInputSelected`, `videoInputSelected`,
+  `audioInputUnselected`, and `videoInputUnselected` meeting events.
+- Compute and add `meetingStartDurationMs` as part of the attributes of the
+  `attendeePresenceReceived` meeting event.
+- Add the file sharing workaround for Chrome 88 in FAQs.
+- Add support for Chrome for iOS and Firefox for iOS.
 
 ### Changed
-- Set attendeePresenceTimeoutMs to use value passed as parameter in the URL
+- [Demo] Set `attendeePresenceTimeoutMs` to use value passed as parameter in the URL.
 
 ### Removed
 
 ### Fixed
+- `DefaultDeviceController` now attempts to resume a suspended `AudioContext`
+  when choosing a transform device (#1062).
 
 
 ## [2.4.1] - 2021-01-28
