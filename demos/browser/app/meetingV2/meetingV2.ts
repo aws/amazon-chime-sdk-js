@@ -63,6 +63,13 @@ const SHOULD_DIE_ON_FATALS = (() => {
 
 let fatal: (e: Error) => void;
 
+// This shim is needed to avoid warnings when supporting Safari.
+declare global {
+  interface Window {
+    webkitAudioContext: typeof AudioContext
+  }
+}
+
 class DemoTileOrganizer {
   // this is index instead of length
   static MAX_TILES = 17;
@@ -136,7 +143,6 @@ class TestSound {
   ) {}
 
   async init(): Promise<void> {
-    // @ts-ignore
     const audioContext: AudioContext = new (window.AudioContext || window.webkitAudioContext)();
     const gainNode = audioContext.createGain();
     gainNode.gain.value = 0;
@@ -2120,6 +2126,18 @@ export class DemoMeetingApp
     });
   }
 
+  private async playToStream(videoFile: HTMLVideoElement): Promise<MediaStream> {
+    await videoFile.play();
+
+    if (this.defaultBrowserBehaviour.hasFirefoxWebRTC()) {
+      // @ts-ignore
+      return videoFile.mozCaptureStream();
+    }
+
+    // @ts-ignore
+    return videoFile.captureStream();
+  }
+
   private async contentShareStart(videoUrl?: string): Promise<void> {
     switch (this.contentShareType) {
       case ContentShareType.ScreenCapture:
@@ -2130,15 +2148,8 @@ export class DemoMeetingApp
         if (videoUrl) {
           videoFile.src = videoUrl;
         }
-        await videoFile.play();
-        let mediaStream: MediaStream;
-        if (this.defaultBrowserBehaviour.hasFirefoxWebRTC()) {
-          // @ts-ignore
-          mediaStream = videoFile.mozCaptureStream();
-        } else {
-          // @ts-ignore
-          mediaStream = videoFile.captureStream();
-        }
+
+        const mediaStream = await this.playToStream(videoFile);
         this.audioVideo.startContentShare(mediaStream);
         break;
     }
