@@ -18,7 +18,18 @@ exports.ClickContentSharePauseButton = require('./ClickContentSharePauseButton')
 exports.SendDataMessage = require('./SendDataMessage');
 exports.GetSipUriForCallStep = require('./GetSipUriForCallStep');
 exports.Reconnect = require('./Reconnect');
-
+exports.ClickHasStartedLocalVideoTileButton = require('./ClickHasStartedLocalVideoTileButton');
+exports.ClickGetLocalVideoTileButton = require('./ClickGetLocalVideoTileButton');
+exports.ClickHaveVideoTileForAttendeeIdButton = require('./ClickHaveVideoTileForAttendeeIdButton');
+exports.ClickGetAllVideoTilesButton = require('./ClickGetAllVideoTilesButton');
+exports.ClickGetAllRemoteVideoTilesButton = require('./ClickGetAllRemoteVideoTilesButton');
+exports.ClickHaveVideoTilesWithStreamsButton = require('./ClickHaveVideoTilesWithStreamsButton');
+exports.ClickRemoveAllVideoTilesButton = require('./ClickRemoveAllVideoTilesButton');
+exports.ClickAddVideoTileButton = require('./ClickAddVideoTileButton');
+exports.JoinVideoTestMeetingStep = require('./JoinVideoTestMeetingStep');
+exports.WaitForAllParticipantsToJoinMeeting = require('./WaitForAllParticipantsToJoinMeeting');
+exports.WaitForAllParticipantsToTurnVideoOn = require('./WaitForAllParticipantsToTurnVideoOn');
+exports.WaitForAllParticipantsToTurnVideoOff = require('./WaitForAllParticipantsToTurnVideoOff');
 
 exports.WaitForRemoteVideoCheckToComplete = require('./WaitForRemoteVideoCheckToComplete');
 exports.WaitForRemoteAudioCheckToComplete = require('./WaitForRemoteAudioCheckToComplete');

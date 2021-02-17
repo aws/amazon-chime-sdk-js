@@ -113,6 +113,89 @@ export class DemoMeetingApp implements AudioVideoObserver {
       unbindVideoElementForm.reset();
     });
 
+    const addVideoTileForm = document.getElementById('add-video-tile-form') as HTMLFormElement;
+    addVideoTileForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const tileId = this.audioVideo.addVideoTile().id();
+      let videoTileIdObject = document.getElementById(`video-tile-id`);
+      videoTileIdObject.innerText = JSON.stringify(tileId, null, '  ');;
+      addVideoTileForm.reset();
+    });
+
+    const hasStartedLocalVideoTileForm = document.getElementById('has-started-local-video-tile-form') as HTMLFormElement;
+    hasStartedLocalVideoTileForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const hasStartedLocalVideoTileValue = this.audioVideo.hasStartedLocalVideoTile();
+      let hasStartedLocalVideoTileBooleanObject = document.getElementById(`has-started-local-video-tile-boolean`);
+      hasStartedLocalVideoTileBooleanObject.innerText = JSON.stringify(hasStartedLocalVideoTileValue, null, '  ');;
+      hasStartedLocalVideoTileForm.reset();
+    });
+
+    const getLocalVideoTileForm = document.getElementById('get-local-video-tile-form') as HTMLFormElement;
+    getLocalVideoTileForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const localVideoTile = this.audioVideo.getLocalVideoTile().id();
+      let videoTileIdObject = document.getElementById(`local-video-tile-id`);
+      videoTileIdObject.innerText = JSON.stringify(localVideoTile, null, '  ');;
+      getLocalVideoTileForm.reset();
+    });
+
+    const getAllVideoTilesForm = document.getElementById('get-all-video-tiles-form') as HTMLFormElement;
+    getAllVideoTilesForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const videoTiles = this.audioVideo.getAllVideoTiles();
+      let videoTilesCountObject = document.getElementById(`total-video-tiles-count`);
+      videoTilesCountObject.innerText = JSON.stringify(videoTiles.length, null, '  ');;
+      getAllVideoTilesForm.reset();
+      let videoTilesListObject = document.getElementById(`all-video-tiles`);
+      for (const videoTile of videoTiles) {
+        videoTilesListObject.innerText += JSON.stringify(videoTile.state(), null, '  ');
+      }
+    });
+
+    const getAllRemoteVideoTilesForm = document.getElementById('get-all-remote-video-tiles-form') as HTMLFormElement;
+    getAllRemoteVideoTilesForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const totalRemoteVideoTilesCount = this.audioVideo.getAllRemoteVideoTiles().length;
+      let remoteVideoTilesCountObject = document.getElementById(`total-remote-video-tiles-count`);
+      remoteVideoTilesCountObject.innerText = JSON.stringify(totalRemoteVideoTilesCount, null, '  ');;
+      getAllRemoteVideoTilesForm.reset();
+    });
+
+
+    const haveVideoTileForAttendeeIdForm = document.getElementById('have-video-tile-for-attendeeId-form') as HTMLFormElement;
+    haveVideoTileForAttendeeIdForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const attendeeIdInput = document.getElementById('have-video-tile-for-attendee-id') as HTMLInputElement;
+      console.log("attendeeIdInput: " + attendeeIdInput.value);
+      // @ts-ignore
+      const haveVideoTileForAttendeeIdValue = this.audioVideo.videoTileController.haveVideoTileForAttendeeId(attendeeIdInput.value);
+
+      let haveVideoTileForAttendeeIdValueObject = document.getElementById(`have-video-tile-for-attendeeId-boolean`);
+      haveVideoTileForAttendeeIdValueObject.innerText = JSON.stringify(haveVideoTileForAttendeeIdValue, null, '  ');;
+      haveVideoTileForAttendeeIdForm.reset();
+    });
+
+    const haveVideoTilesWithStreamsForm = document.getElementById('have-video-tiles-with-streams-form') as HTMLFormElement;
+    haveVideoTilesWithStreamsForm.addEventListener('submit', e => {
+      e.preventDefault();
+      // @ts-ignore
+      const haveVideoTilesWithStreamsBoolean = this.audioVideo.videoTileController.haveVideoTilesWithStreams();
+      let haveVideoTilesWithStreamsBooleanObject = document.getElementById(`have-video-tiles-with-streams-boolean`);
+      haveVideoTilesWithStreamsBooleanObject.innerText = JSON.stringify(haveVideoTilesWithStreamsBoolean, null, '  ');;
+      haveVideoTilesWithStreamsForm.reset();
+    });
+
+    const removeAllVideoTilesForm = document.getElementById('remove-all-video-tiles-form') as HTMLFormElement;
+    removeAllVideoTilesForm.addEventListener('submit', e => {
+      e.preventDefault();
+      this.audioVideo.removeAllVideoTiles();
+      removeAllVideoTilesForm.reset();
+      const videoTilesListObject = document.getElementById('video-tiles');
+      videoTilesListObject.innerText = '';
+    });
+    
+
   }
 
   // eslint-disable-next-line
