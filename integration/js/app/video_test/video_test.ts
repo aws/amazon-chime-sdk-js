@@ -167,7 +167,6 @@ export class DemoMeetingApp implements AudioVideoObserver {
     haveVideoTileForAttendeeIdForm.addEventListener('submit', e => {
       e.preventDefault();
       const attendeeIdInput = document.getElementById('have-video-tile-for-attendee-id') as HTMLInputElement;
-      console.log("attendeeIdInput: " + attendeeIdInput.value);
       // @ts-ignore
       const haveVideoTileForAttendeeIdValue = this.audioVideo.videoTileController.haveVideoTileForAttendeeId(attendeeIdInput.value);
 

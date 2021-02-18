@@ -16,13 +16,11 @@ class WaitForAllParticipantsToJoinMeeting extends AppWaitTestStep {
   }
 
   waitCompleteCondition() {
-    console.log("participantCount " + this.participantCount);
-    console.log("numberOfParticipant " + this.numberOfParticipant);
     return this.numberOfParticipant.toString() === this.participantCount;
   }
 
   waitCompleteMessage() {
-    return "all all participants present"
+    return "all participants present including remote participants"
   }
 
 }

@@ -65,10 +65,11 @@ class TestAppPage {
     await meetingIdInputBox.sendKeys(meetingId);
   }
 
-  async enterAttendeeName(attendeeName) {
+  async enterAttendeeName() {
+    this.attendeeName = uuidv4();
     let attendeeNameInputBox = await this.driver.findElement(elements.attendeeNameInput);
     await attendeeNameInputBox.clear();
-    await attendeeNameInputBox.sendKeys(attendeeName);
+    await attendeeNameInputBox.sendKeys(this.attendeeName);
   }
 
   async enterMeetingTitle(meetingTitle) {
@@ -228,15 +229,11 @@ class TestAppPage {
     await getLocalVideoTileButton.click();
   }
 
-  async clickHaveVideoTileForAttendeeIdButton() {
-    let localVideoTileState = await this.driver.findElement(By.id('tile-1-state'));
+  async clickHaveVideoTileForAttendeeIdButton(attendeeId) {
     let haveVideoTileForAttendeeIdButton = await this.driver.findElement(elements.haveVideoTileForAttendeeIdButton);
     let haveVideoTileForAttendeeIdInput = await this.driver.findElement(elements.haveVideoTileForAttendeeIdInput);
-    let tileState =  await localVideoTileState.getText();
-    let tileStateJson = JSON.parse(tileState);
-    let tileStateBoundAttendeeId = tileStateJson["boundAttendeeId"];
     await haveVideoTileForAttendeeIdInput.clear();
-    await haveVideoTileForAttendeeIdInput.sendKeys(tileStateBoundAttendeeId);
+    await haveVideoTileForAttendeeIdInput.sendKeys(attendeeId);
     await haveVideoTileForAttendeeIdButton.click();
   }
 
@@ -263,6 +260,14 @@ class TestAppPage {
   async clickRemoveAllVideoTilesButton() {
     let removeAllVideoTilesButton = await this.driver.findElement(elements.removeAllVideoTilesButton);
     await removeAllVideoTilesButton.click();
+  }
+
+  async getBoundAttendeeIdStep() {
+    let localVideoTileState = await this.driver.findElement(By.id('tile-1-state'));
+    let tileState =  await localVideoTileState.getText();
+    let tileStateJson = JSON.parse(tileState);
+    let tileStateBoundAttendeeId = tileStateJson["boundAttendeeId"];
+    return tileStateBoundAttendeeId;
   }
 }
 

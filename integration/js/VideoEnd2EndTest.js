@@ -1,4 +1,4 @@
-const {OpenAppStep, WaitForMeetingToBeCreated, JoinVideoTestMeetingStep, ClickStartLocalVideoButton, ClickStopLocalVideoButton, ClickHasStartedLocalVideoTileButton, ClickAddVideoTileButton, ClickGetLocalVideoTileButton, ClickHaveVideoTileForAttendeeIdButton, ClickGetAllVideoTilesButton, ClickGetAllRemoteVideoTilesButton, ClickHaveVideoTilesWithStreamsButton, ClickRemoveAllVideoTilesButton, WaitForAllParticipantsToJoinMeeting, WaitForAllParticipantsToTurnVideoOn, WaitForAllParticipantsToTurnVideoOff} = require('./steps');
+const {OpenAppStep, WaitForMeetingToBeCreated, JoinVideoTestMeetingStep, ClickStartLocalVideoButton, ClickStopLocalVideoButton, ClickHasStartedLocalVideoTileButton, ClickAddVideoTileButton, ClickGetLocalVideoTileButton, ClickHaveVideoTileForAttendeeIdButton, ClickGetAllVideoTilesButton, ClickGetAllRemoteVideoTilesButton, ClickHaveVideoTilesWithStreamsButton, ClickRemoveAllVideoTilesButton, WaitForAllParticipantsToJoinMeeting, WaitForAllParticipantsToTurnVideoOn, WaitForAllParticipantsToTurnVideoOff, GetBoundAttendeeIdStep} = require('./steps');
 const {TestUtils} = require('kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {TileStateCheck, AddVideoTileCheck, GetAllVideoTilesCheck, HasStartedLocalVideoTileCheck, HaveVideoTilesWithStreamsCheck, GetAllRemoteVideoTilesCheck, GetLocalVideoTileCheck, HaveVideoTileForAttendeeIdCheck} = require('./checks');
@@ -10,12 +10,11 @@ class VideoTestEnd2End extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    const attendeeName = uuidv4();
     const session = this.seleniumSessions[0];
     const useSimulcast = this.useSimulcast;
     await WaitForMeetingToBeCreated.executeStep(this, session);
     await OpenAppStep.executeStep(this, session);
-    await JoinVideoTestMeetingStep.executeStep(this, session, attendeeName, this.meetingTitle, useSimulcast);
+    await JoinVideoTestMeetingStep.executeStep(this, session, this.meetingTitle, useSimulcast);
     // 2 attendees join from 2 different browser sessions
     await WaitForAllParticipantsToJoinMeeting.executeStep(this, session, '2');
 
@@ -29,7 +28,8 @@ class VideoTestEnd2End extends SdkBaseTest {
     await ClickGetLocalVideoTileButton.executeStep(this, session);
     await GetLocalVideoTileCheck.executeStep(this, session, '1')
    
-    await ClickHaveVideoTileForAttendeeIdButton.executeStep(this, session);
+    await GetBoundAttendeeIdStep.executeStep(this, session);
+    await ClickHaveVideoTileForAttendeeIdButton.executeStep(this, session, this.boundAttendeeId);
     await HaveVideoTileForAttendeeIdCheck.executeStep(this, session, 'true');
     await ClickHaveVideoTilesWithStreamsButton.executeStep(this, session);
     await HaveVideoTilesWithStreamsCheck.executeStep(this, session, 'true');
