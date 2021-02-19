@@ -299,5 +299,31 @@ describe('MeetingSessionConfiguration', () => {
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
       expect(configuration.credentials.joinToken).to.eq('join-token');
     });
+
+    it('an attribute contains empty array', () => {
+        const configuration = new MeetingSessionConfiguration(
+          {
+            MeetingId: 'meeting-id',
+            ExternalMeetingId: null,
+            MediaPlacement: {
+              AudioHostUrl: 'audio-host-url',
+              ScreenDataUrl: null,
+              ScreenSharingUrl: 'screen-sharing-url',
+              ScreenViewingUrl: 'screen-viewing-url',
+              SignalingUrl: 'signaling-url',
+              TurnControlUrl: 'turn-control-url',
+            },
+            UnexpectedProperty: []
+          },
+          {
+            AttendeeId: 'attendee-id',
+            JoinToken: 'join-token',
+            ExternalUserId: null,
+          }
+        );
+        expect(configuration.meetingId).to.eq('meeting-id');
+        expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
+        expect(configuration.credentials.externalUserId).to.eq(null);
+      });
   });
 });
