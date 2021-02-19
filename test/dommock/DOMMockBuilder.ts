@@ -204,6 +204,7 @@ export default class DOMMockBuilder {
           height: mockBehavior.mediaStreamTrackSettings.height,
           deviceId: mockBehavior.mediaStreamTrackSettings.deviceId,
           facingMode: mockBehavior.mediaStreamTrackSettings.facingMode,
+          groupId: mockBehavior.mediaStreamTrackSettings.groupId,
         };
       }
 
@@ -358,6 +359,7 @@ export default class DOMMockBuilder {
               // @ts-ignore
               mediaStreamTrack.kind = 'video';
             }
+            mediaStreamTrack;
             mediaStream.addTrack(mediaStreamTrack);
             mediaStream.constraints = constraints;
             mediaStream.active = true;

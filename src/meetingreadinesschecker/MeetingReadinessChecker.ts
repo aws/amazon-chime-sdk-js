@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import Device from '../devicecontroller/Device';
 import CheckAudioConnectivityFeedback from './CheckAudioConnectivityFeedback';
 import CheckAudioInputFeedback from './CheckAudioInputFeedback';
 import CheckAudioOutputFeedback from './CheckAudioOutputFeedback';
@@ -15,13 +16,13 @@ export default interface MeetingReadinessChecker {
   /**
    * Tests microphone (audio input) locally
    */
-  checkAudioInput(audioInputDeviceInfo: MediaDeviceInfo): Promise<CheckAudioInputFeedback>;
+  checkAudioInput(audioInputDevice: Device): Promise<CheckAudioInputFeedback>;
 
   /**
    * Tests speaker (audio output) locally
    */
   checkAudioOutput(
-    audioInputDeviceInfo: MediaDeviceInfo,
+    audioInputDeviceInfo: MediaDeviceInfo | string,
     audioOutputVerificationCallback: () => Promise<boolean>,
     audioElement?: HTMLAudioElement
   ): Promise<CheckAudioOutputFeedback>;
@@ -29,13 +30,13 @@ export default interface MeetingReadinessChecker {
   /**
    * Tests camera (video input) locally
    */
-  checkVideoInput(videoInputDevice: MediaDeviceInfo): Promise<CheckVideoInputFeedback>;
+  checkVideoInput(videoInputDevice: Device): Promise<CheckVideoInputFeedback>;
 
   /**
    * Tests supported camera resolution locally
    */
   checkCameraResolution(
-    videoInputDevice: MediaDeviceInfo,
+    videoInputDevice: MediaDeviceInfo | string,
     width: number,
     height: number
   ): Promise<CheckCameraResolutionFeedback>;
@@ -49,16 +50,12 @@ export default interface MeetingReadinessChecker {
   /**
    * Tests audio connection
    */
-  checkAudioConnectivity(
-    audioInputDeviceInfo: MediaDeviceInfo
-  ): Promise<CheckAudioConnectivityFeedback>;
+  checkAudioConnectivity(audioInputDevice: Device): Promise<CheckAudioConnectivityFeedback>;
 
   /**
    * Test video connection
    */
-  checkVideoConnectivity(
-    videoInputDeviceInfo: MediaDeviceInfo
-  ): Promise<CheckVideoConnectivityFeedback>;
+  checkVideoConnectivity(videoInputDevice: Device): Promise<CheckVideoConnectivityFeedback>;
 
   /**
    * Tests for UDP network connectivity

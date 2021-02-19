@@ -6,6 +6,7 @@ import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
 import DefaultDeviceController from '../devicecontroller/DefaultDeviceController';
+import Device from '../devicecontroller/Device';
 import PermissionDeniedError from '../devicecontroller/PermissionDeniedError';
 import Logger from '../logger/Logger';
 import MeetingSession from '../meetingsession/MeetingSession';
@@ -43,9 +44,9 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     private configuration: MeetingReadinessCheckerConfiguration = new MeetingReadinessCheckerConfiguration()
   ) {}
 
-  async checkAudioInput(audioInputDeviceInfo: MediaDeviceInfo): Promise<CheckAudioInputFeedback> {
+  async checkAudioInput(audioInputDevice: Device): Promise<CheckAudioInputFeedback> {
     try {
-      await this.meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo);
+      await this.meetingSession.audioVideo.chooseAudioInputDevice(audioInputDevice);
       await this.meetingSession.audioVideo.chooseAudioInputDevice(null);
       return CheckAudioInputFeedback.Succeeded;
     } catch (error) {
@@ -58,15 +59,14 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   }
 
   async checkAudioOutput(
-    audioOutputDeviceInfo: MediaDeviceInfo,
+    audioOutputDeviceInfo: MediaDeviceInfo | string,
     audioOutputVerificationCallback: () => Promise<boolean>,
     audioElement: HTMLAudioElement = null
   ): Promise<CheckAudioOutputFeedback> {
     try {
-      const audioOutputDeviceId =
-        audioOutputDeviceInfo && audioOutputDeviceInfo.deviceId
-          ? audioOutputDeviceInfo.deviceId
-          : '';
+      const audioOutputDeviceId = audioOutputDeviceInfo
+        ? (DefaultDeviceController.getIntrinsicDeviceId(audioOutputDeviceInfo) as string)
+        : '';
       await this.playTone(audioOutputDeviceId, 440, audioElement);
       const userFeedback = await audioOutputVerificationCallback();
       if (userFeedback) {
@@ -146,9 +146,9 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     this.destinationStream = null;
   }
 
-  async checkVideoInput(videoInputDeviceInfo: MediaDeviceInfo): Promise<CheckVideoInputFeedback> {
+  async checkVideoInput(videoInputDevice: Device): Promise<CheckVideoInputFeedback> {
     try {
-      await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo);
+      await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDevice);
       await this.meetingSession.audioVideo.chooseVideoInputDevice(null);
       return CheckVideoInputFeedback.Succeeded;
     } catch (error) {
@@ -161,15 +161,18 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   }
 
   async checkCameraResolution(
-    videoInputDevice: MediaDeviceInfo,
+    videoInputDevice: MediaDeviceInfo | string,
     width: number,
     height: number
   ): Promise<CheckCameraResolutionFeedback> {
-    const videoConstraint = {
-      video: this.calculateVideoConstraint(videoInputDevice, width, height),
-    };
     let stream: MediaStream;
     try {
+      const videoInputDeviceId = DefaultDeviceController.getIntrinsicDeviceId(
+        videoInputDevice
+      ) as string;
+      const videoConstraint = {
+        video: this.calculateVideoConstraint(videoInputDeviceId, width, height),
+      };
       stream = await navigator.mediaDevices.getUserMedia(videoConstraint);
     } catch (error) {
       this.logger.error(
@@ -193,18 +196,18 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
   }
 
   private calculateVideoConstraint(
-    videoInputDevice: MediaDeviceInfo,
+    videoInputDeviceId: string,
     width: number,
     height: number
   ): MediaTrackConstraints {
     const dimension = this.browserBehavior.requiresResolutionAlignment(width, height);
     const trackConstraints: MediaTrackConstraints = {};
     if (this.browserBehavior.requiresNoExactMediaStreamConstraints()) {
-      trackConstraints.deviceId = videoInputDevice.deviceId;
+      trackConstraints.deviceId = videoInputDeviceId;
       trackConstraints.width = width;
       trackConstraints.height = height;
     } else {
-      trackConstraints.deviceId = { exact: videoInputDevice.deviceId };
+      trackConstraints.deviceId = { exact: videoInputDeviceId };
       trackConstraints.width = { exact: dimension[0] };
       trackConstraints.height = { exact: dimension[1] };
     }
@@ -260,9 +263,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
     }
   }
 
-  async checkAudioConnectivity(
-    audioInputDeviceInfo: MediaDeviceInfo
-  ): Promise<CheckAudioConnectivityFeedback> {
+  async checkAudioConnectivity(audioInputDevice: Device): Promise<CheckAudioConnectivityFeedback> {
     let audioPresence = false;
     const audioVideo = this.meetingSession.audioVideo;
     const attendeePresenceHandler = (
@@ -276,7 +277,7 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       }
     };
     try {
-      await audioVideo.chooseAudioInputDevice(audioInputDeviceInfo);
+      await audioVideo.chooseAudioInputDevice(audioInputDevice);
     } catch (error) {
       this.logger.error(
         `MeetingReadinessChecker: Failed to get audio input device with error ${error}`
@@ -311,13 +312,11 @@ export default class DefaultMeetingReadinessChecker implements MeetingReadinessC
       : CheckAudioConnectivityFeedback.AudioNotReceived;
   }
 
-  async checkVideoConnectivity(
-    videoInputDeviceInfo: MediaDeviceInfo
-  ): Promise<CheckVideoConnectivityFeedback> {
+  async checkVideoConnectivity(videoInputDevice: Device): Promise<CheckVideoConnectivityFeedback> {
     const audioVideo = this.meetingSession.audioVideo;
 
     try {
-      await audioVideo.chooseVideoInputDevice(videoInputDeviceInfo);
+      await audioVideo.chooseVideoInputDevice(videoInputDevice);
     } catch (error) {
       this.logger.error(
         `MeetingReadinessChecker: Failed to get video input device with error ${error}`

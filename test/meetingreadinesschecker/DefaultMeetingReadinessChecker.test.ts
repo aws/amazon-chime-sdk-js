@@ -277,6 +277,16 @@ describe('DefaultMeetingReadinessChecker', () => {
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
     });
 
+    it('successful after playing tone with string deviceId', async () => {
+      const successCallback = (): Promise<boolean> => Promise.resolve(true);
+
+      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
+        'deviceId',
+        successCallback
+      );
+      expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
+    });
+
     it('can be called multiple times', async () => {
       const successCallback = (): Promise<boolean> => {
         return new Promise(resolve => {
@@ -432,7 +442,17 @@ describe('DefaultMeetingReadinessChecker', () => {
     it('checks for 240 x 320 resolution - success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
+        240,
+        320
+      );
+      expect(cameraResolutionFeedback).to.equal(CheckCameraResolutionFeedback.Succeeded);
+    });
+
+    it('checks for 240 x 320 resolution with string input - success', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
+        'deviceId',
         240,
         320
       );
@@ -443,7 +463,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.Failure;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
         240,
         320
       );
@@ -454,7 +474,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
         7680,
         4320
       );
@@ -467,7 +487,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.NotAllowedError;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
         240,
         320
       );
@@ -483,7 +503,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         meetingSession
       );
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
         240,
         320
       );
