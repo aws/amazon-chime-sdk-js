@@ -173,12 +173,11 @@ export default class MeetingSessionConfiguration {
     } else if (typeof input !== 'object') {
       return input;
     } else if (Array.isArray(input)) {
-        if (input.length) {
-            return input.map(this.toLowerCasePropertyNames);
-        } else {
-            return input;
-        }
-      
+      if (input.length) {
+        return input.map(this.toLowerCasePropertyNames);
+      } else {
+        return input;
+      }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return Object.keys(input).reduce((result: any, key: string) => {

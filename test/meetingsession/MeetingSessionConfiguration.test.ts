@@ -301,29 +301,29 @@ describe('MeetingSessionConfiguration', () => {
     });
 
     it('an attribute contains empty array', () => {
-        const configuration = new MeetingSessionConfiguration(
-          {
-            MeetingId: 'meeting-id',
-            ExternalMeetingId: null,
-            MediaPlacement: {
-              AudioHostUrl: 'audio-host-url',
-              ScreenDataUrl: null,
-              ScreenSharingUrl: 'screen-sharing-url',
-              ScreenViewingUrl: 'screen-viewing-url',
-              SignalingUrl: 'signaling-url',
-              TurnControlUrl: 'turn-control-url',
-            },
-            UnexpectedProperty: []
+      const configuration = new MeetingSessionConfiguration(
+        {
+          MeetingId: 'meeting-id',
+          ExternalMeetingId: null,
+          MediaPlacement: {
+            AudioHostUrl: 'audio-host-url',
+            ScreenDataUrl: null,
+            ScreenSharingUrl: 'screen-sharing-url',
+            ScreenViewingUrl: 'screen-viewing-url',
+            SignalingUrl: 'signaling-url',
+            TurnControlUrl: 'turn-control-url',
           },
-          {
-            AttendeeId: 'attendee-id',
-            JoinToken: 'join-token',
-            ExternalUserId: null,
-          }
-        );
-        expect(configuration.meetingId).to.eq('meeting-id');
-        expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-        expect(configuration.credentials.externalUserId).to.eq(null);
-      });
+          UnexpectedProperty: [],
+        },
+        {
+          AttendeeId: 'attendee-id',
+          JoinToken: 'join-token',
+          ExternalUserId: null,
+        }
+      );
+      expect(configuration.meetingId).to.eq('meeting-id');
+      expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
+      expect(configuration.credentials.externalUserId).to.eq(null);
+    });
   });
 });
