@@ -244,6 +244,7 @@ describe('DefaultTransceiverController', () => {
             groupId: id,
             maxBitrateKbps: 100,
             mediaType: SdkStreamMediaType.VIDEO,
+            attendeeId: `attendee-${id}`,
           })
         );
       }
