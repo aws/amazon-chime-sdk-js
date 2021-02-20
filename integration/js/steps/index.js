@@ -27,9 +27,6 @@ exports.ClickHaveVideoTilesWithStreamsButton = require('./ClickHaveVideoTilesWit
 exports.ClickRemoveAllVideoTilesButton = require('./ClickRemoveAllVideoTilesButton');
 exports.ClickAddVideoTileButton = require('./ClickAddVideoTileButton');
 exports.JoinVideoTestMeetingStep = require('./JoinVideoTestMeetingStep');
-exports.WaitForAllParticipantsToJoinMeeting = require('./WaitForAllParticipantsToJoinMeeting');
-exports.WaitForAllParticipantsToTurnVideoOn = require('./WaitForAllParticipantsToTurnVideoOn');
-exports.WaitForAllParticipantsToTurnVideoOff = require('./WaitForAllParticipantsToTurnVideoOff');
 exports.GetBoundAttendeeIdStep = require('./GetBoundAttendeeIdStep');
 
 exports.WaitForRemoteVideoCheckToComplete = require('./WaitForRemoteVideoCheckToComplete');

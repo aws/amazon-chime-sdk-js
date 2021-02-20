@@ -177,7 +177,6 @@ class TestAppPage {
       return false;
     }
     
-    console.log("totalVideoTilesCount " + totalVideoTilesCount);
     if (expectedTotalVideoTilesCount === totalVideoTilesCount) {
       return true;
     }

@@ -1,4 +1,4 @@
-const {OpenAppStep, WaitForMeetingToBeCreated, JoinVideoTestMeetingStep, ClickStartLocalVideoButton, ClickStopLocalVideoButton, ClickHasStartedLocalVideoTileButton, ClickAddVideoTileButton, ClickGetLocalVideoTileButton, ClickHaveVideoTileForAttendeeIdButton, ClickGetAllVideoTilesButton, ClickGetAllRemoteVideoTilesButton, ClickHaveVideoTilesWithStreamsButton, ClickRemoveAllVideoTilesButton, WaitForAllParticipantsToJoinMeeting, WaitForAllParticipantsToTurnVideoOn, WaitForAllParticipantsToTurnVideoOff, GetBoundAttendeeIdStep} = require('./steps');
+const {OpenAppStep, WaitForMeetingToBeCreated, JoinVideoTestMeetingStep, ClickStartLocalVideoButton, ClickStopLocalVideoButton, ClickHasStartedLocalVideoTileButton, ClickAddVideoTileButton, ClickGetLocalVideoTileButton, ClickHaveVideoTileForAttendeeIdButton, ClickGetAllVideoTilesButton, ClickGetAllRemoteVideoTilesButton, ClickHaveVideoTilesWithStreamsButton, ClickRemoveAllVideoTilesButton, WaitForRemoteParticipantsToJoinMeeting, WaitForRemoteParticipantsToTurnVideoOn, WaitForRemoteParticipantsToTurnVideoOff, GetBoundAttendeeIdStep} = require('./steps');
 const {TestUtils} = require('kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {TileStateCheck, AddVideoTileCheck, GetAllVideoTilesCheck, HasStartedLocalVideoTileCheck, HaveVideoTilesWithStreamsCheck, GetAllRemoteVideoTilesCheck, GetLocalVideoTileCheck, HaveVideoTileForAttendeeIdCheck} = require('./checks');
@@ -16,11 +16,11 @@ class VideoTestEnd2End extends SdkBaseTest {
     await OpenAppStep.executeStep(this, session);
     await JoinVideoTestMeetingStep.executeStep(this, session, this.meetingTitle, useSimulcast);
     // 2 attendees join from 2 different browser sessions
-    await WaitForAllParticipantsToJoinMeeting.executeStep(this, session, '2');
+    await WaitForRemoteParticipantsToJoinMeeting.executeStep(this, session);
 
     // Both attendees turn on their local video
     await ClickStartLocalVideoButton.executeStep(this, session);
-    await WaitForAllParticipantsToTurnVideoOn.executeStep(this, session, '1');
+    await WaitForRemoteParticipantsToTurnVideoOn.executeStep(this, session);
 
     // Verify that both attendees can see their local video on
     await ClickHasStartedLocalVideoTileButton.executeStep(this, session);
@@ -43,7 +43,7 @@ class VideoTestEnd2End extends SdkBaseTest {
 
     // Both attendees turn off their video
     await ClickStopLocalVideoButton.executeStep(this, session);
-    await WaitForAllParticipantsToTurnVideoOff.executeStep(this, session, '1');
+    await WaitForRemoteParticipantsToTurnVideoOff.executeStep(this, session);
 
     // Verify that both attendees’ local videos off
     await ClickHasStartedLocalVideoTileButton.executeStep(this, session);
