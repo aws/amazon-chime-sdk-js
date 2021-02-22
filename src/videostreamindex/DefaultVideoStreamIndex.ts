@@ -73,6 +73,41 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
 
   integrateIndexFrame(indexFrame: SdkIndexFrame): void {
     this.currentIndex = indexFrame;
+
+    // In the Amazon Chime SDKs, we assume a one to one mapping of group ID to profile ID when creating
+    // video tiles (multiple video sources are supported through applying a `Modality` to a given profile/session token)
+    //
+    // We enforce this here to mitigate any possible duplicate group IDs left from a reconnection where the previous
+    // signal channel hasn't been timed out yet.  To guarantee we receive the latest stream we use the highest group ID
+    // since they are monotonically increasing.
+    const attendeeIdToMainGroupIdMap = new Map<string, number>();
+    // Improve performance by not filtering sources unless
+    // we know the list will actually change
+    let attendeeWithMultipleGroupIdsExists = false;
+    for (const source of indexFrame.sources) {
+      if (!attendeeIdToMainGroupIdMap.has(source.attendeeId)) {
+        // We haven't see this attendee ID so just keep track of it
+        attendeeIdToMainGroupIdMap.set(source.attendeeId, source.groupId);
+        continue;
+      }
+
+      // Otherwise see if we should use the group ID corresponding to this source (we prefer the highest for each attendee)
+      const currentGroupId = attendeeIdToMainGroupIdMap.get(source.attendeeId);
+      if (currentGroupId < source.groupId) {
+        this.logger.warn(
+          `Old group ID ${currentGroupId} found for attendee ID ${source.attendeeId}, replacing with newer group ID ${source.groupId}`
+        );
+        attendeeIdToMainGroupIdMap.set(source.attendeeId, source.groupId);
+      }
+      attendeeWithMultipleGroupIdsExists = true;
+    }
+    if (attendeeWithMultipleGroupIdsExists) {
+      // Only use the sources corresponding to the main group IDs for the given attendee ID
+      this.currentIndex.sources = this.currentIndex.sources.filter(
+        source => attendeeIdToMainGroupIdMap.get(source.attendeeId) === source.groupId
+      );
+    }
+
     this.streamToAttendeeMap = null;
     this.streamToExternalUserIdMap = null;
   }

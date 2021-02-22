@@ -62,11 +62,82 @@
           Unbind Video Element
         </button>
       </form>
+
+       
+      <form id="add-video-tile-form">
+        <button id="add-video-tile-btn" type="submit">
+          addVideoTile
+        </button>
+        <label for="add-video-tile-label">Added Tile Id: </label>
+        <span id="video-tile-id"></span>
+      </form>
+
+      <form id="has-started-local-video-tile-form">
+        <button id="has-started-local-video-tile-btn" type="submit">
+          hasStartedLocalVideoTile
+        </button>
+        <label for="has-started-local-video-tile-boolean">Value: </label>
+        <span id="has-started-local-video-tile-boolean"></span>
+      </form>
+
+      <form id="get-local-video-tile-form">
+        <button id="get-local-video-tile-btn" type="submit">
+          getLocalVideoTile
+        </button>
+        <label for="local-video-tile-id">Local VideoTile Id: </label>
+        <span id="local-video-tile-id"></span>
+      </form>
+
+      <form id="get-all-video-tiles-form">
+        <button id="get-all-video-tiles-btn" type="submit">
+          getAllVideoTiles
+        </button>
+        <label for="total-video-tiles-count">Total Tiles Count: </label>
+        <span id="total-video-tiles-count"></span>
+      </form>
+
+      <form id="get-all-remote-video-tiles-form">
+        <button id="get-all-remote-video-tiles-btn" type="submit">
+          getAllRemoteVideoTiles
+        </button>
+        <label for="total-remote-video-tiles-count">Total Remote Tiles Count: </label>
+        <span id="total-remote-video-tiles-count"></span>
+      </form>
+
+      <form id="have-video-tile-for-attendeeId-form">
+        <label for="have-video-tile-for-attendee-id">Attendee Id</label>
+        <input type="text" id="have-video-tile-for-attendee-id" placeholder="Attendee Id">
+        <button id="have-video-tile-for-attendeeId-btn" type="submit">
+          haveVideoTileForAttendeeId
+        </button>
+        <label for="have-video-tile-for-attendeeId-boolean">Value: </label>
+        <span id="have-video-tile-for-attendeeId-boolean"></span>
+      </form>
+
+      <form id="have-video-tiles-with-streams-form">
+        <button id="have-video-tiles-with-streams-btn" type="submit">
+          haveVideoTilesWithStreams
+        </button>
+        <label for="have-video-tiles-with-streams-boolean">Value: </label>
+        <span id="have-video-tiles-with-streams-boolean"></span>
+      </form>
+
+      <form id="remove-all-video-tiles-form">
+        <button id="remove-all-video-tiles-btn" type="submit">
+          removeAllVideoTiles
+        </button>
+      </form>
+      
     </div>
     <div id="video-tile-state-updates">
       <h2>Tile State Updates</h2>
       <p id="tile-1-state"></p>
       <p id="tile-2-state"></p>
+    </div>
+
+    <div id="video-tiles-list">
+      <h2>All Video Tiles</h2>
+      <p id="all-video-tiles"></p>
     </div>
 
     <p id="sdk-version"></p>

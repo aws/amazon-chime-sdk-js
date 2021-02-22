@@ -228,6 +228,7 @@ describe('SimulcastTransceiverController', () => {
             groupId: id,
             maxBitrateKbps: 100,
             mediaType: SdkStreamMediaType.VIDEO,
+            attendeeId: `attendee-${id}`,
           })
         );
       }
@@ -252,6 +253,7 @@ describe('SimulcastTransceiverController', () => {
             groupId: id.groupId,
             maxBitrateKbps: 100,
             mediaType: SdkStreamMediaType.VIDEO,
+            attendeeId: `attendee-${id.groupId}`,
           })
         );
       }

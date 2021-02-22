@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Add `SingleNodeAudioTransformDevice` to make simple audio transforms easier to write.
+- Add End-to-end Integration test for Video Test App
+
+### Changed
+
+- Enable SIMD autodetection for Amazon Voice Focus in Chrome 90+.
+
+### Removed
+
+### Fixed
+
+
 ## [2.5.0] - 2021-02-16
 
 ### Added
@@ -24,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `DefaultDeviceController` now attempts to resume a suspended `AudioContext`
   when choosing a transform device (#1062).
+- `DefaultVideoStreamIndex` now ignores old group IDs from a given attendee ID (#1029).
 
 
 ## [2.4.1] - 2021-01-28
