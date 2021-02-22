@@ -351,7 +351,13 @@ describe('DefaultDeviceController', () => {
     });
   });
 
-  describe('handling broken audio contexts', () => {
+  describe('handling broken audio contexts', async () => {
+    afterEach(() => {
+      // @ts-ignore
+      // Singletons are painful.
+      DefaultDeviceController.audioContext = undefined;
+    });
+
     it('throws for stopped contexts', async () => {
       enableWebAudio(true);
       const device: AudioTransformDevice = new MockNodeTransformDevice(null);
