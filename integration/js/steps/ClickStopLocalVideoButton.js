@@ -16,6 +16,7 @@ class ClickStopLocalVideoButton extends AppTestStep {
 
   async run() {
     await this.page.clickStopLocalVideoButton();
+    this.test.numVideoRemoteOff++;
     this.finished('stop_local_video_tile');
   }
 }
