@@ -16,6 +16,7 @@ class ClickStartLocalVideoButton extends AppTestStep {
 
   async run() {
     await this.page.clickStartLocalVideoButton();
+    this.test.numVideoRemoteOn++;
     this.finished('start_local_video_tile');
   }
 }

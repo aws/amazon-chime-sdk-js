@@ -8,14 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
 - Add `SingleNodeAudioTransformDevice` to make simple audio transforms easier to write.
+- Add End-to-end Integration test for Video Test App
 
 ### Changed
+
+- Enable SIMD autodetection for Amazon Voice Focus in Chrome 90+.
 
 ### Removed
 
 ### Fixed
+
 
 ## [2.5.0] - 2021-02-16
 
