@@ -44,6 +44,10 @@ export default interface AudioTransformDevice {
    * Optionally return a pair of `AudioNode`s that should be connected to the applied inner
    * device. The two nodes can be the same, indicating the smallest possible subgraph.
    *
+   * Each device can be used no more than once at a time in an audio graph. It is acceptable
+   * to reuse audio nodes for successive calls to `createAudioNode`, so long as the context
+   * does not differ.
+   *
    * @param context The `AudioContext` to use when instantiating the nodes.
    */
   createAudioNode?(context: AudioContext): Promise<AudioNodeSubgraph | undefined>;

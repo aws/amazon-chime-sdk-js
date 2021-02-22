@@ -478,10 +478,39 @@ describe('VoiceFocusDeviceTransformer', () => {
       expect(fifthDefault).to.not.eq(sixthDefault);
     });
 
+    it('reuses nodes if the context is reused', async () => {
+      const device = await getDevice('foo');
+
+      expect(device).to.not.be.undefined;
+
+      const contextA = ({ foo: 1 } as unknown) as AudioContext;
+      const contextC = ({ foo: 2 } as unknown) as AudioContext;
+
+      const { start: startA, end: endA } = await device.createAudioNode(contextA);
+
+      // If you call again with the same context, you get the same node.
+
+      const { start: startB, end: endB } = await device.createAudioNode(contextA);
+
+      expect(startA).to.eq(endA);
+      expect(startA).to.eq(startB);
+      expect(endA).to.eq(endB);
+
+      // Different context, different nodes.
+      const { start: startC, end: endC } = await device.createAudioNode(contextC);
+
+      expect(startA).to.not.eq(startC);
+      expect(endA).to.not.eq(endC);
+
+      await device.stop();
+    });
+
     it('gives a node via its inner VoiceFocus instance', async () => {
       const device = await getDevice('foo');
 
-      const { start, end } = await device.createAudioNode(({} as unknown) as AudioContext);
+      const context = ({} as unknown) as AudioContext;
+
+      const { start, end } = await device.createAudioNode(context);
 
       // Because we created it with a MockVoiceFocus.
       expect(start).to.be.instanceof(MockVoiceFocusNode);
@@ -720,13 +749,13 @@ class MockVoiceFocus {
   throwInCreateNode: boolean = false;
 
   async createNode(
-    _context: AudioContext,
+    context: AudioContext,
     _options?: NodeArguments
   ): Promise<VoiceFocusAudioWorkletNode> {
     if (this.throwInCreateNode) {
       throw new Error('Oh no');
     }
-    return (new MockVoiceFocusNode() as unknown) as VoiceFocusAudioWorkletNode;
+    return (new MockVoiceFocusNode(context) as unknown) as VoiceFocusAudioWorkletNode;
   }
 
   async applyToStream(
@@ -752,6 +781,8 @@ class MockVoiceFocus {
 }
 
 class MockVoiceFocusNode {
+  constructor(public context: AudioContext) {}
+
   // VF.
   enable = spy();
   disable = spy();
