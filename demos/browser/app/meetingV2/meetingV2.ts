@@ -667,8 +667,16 @@ export class DemoMeetingApp
       new AsyncScheduler().start(async () => {
         if (this.toggleButton('button-pause-content-share')) {
           this.audioVideo.pauseContentShare();
+          if (this.contentShareType === ContentShareType.VideoFile) {
+            const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
+            videoFile.pause();
+          }
         } else {
           this.audioVideo.unpauseContentShare();
+          if (this.contentShareType === ContentShareType.VideoFile) {
+            const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
+            await videoFile.play();
+          }
         }
       });
     });
