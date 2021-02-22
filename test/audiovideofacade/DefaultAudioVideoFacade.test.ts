@@ -125,16 +125,16 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith());
     });
 
-    it('will call getRTCPeerConnectionStats', () => {
+    it('will call getRTCPeerConnectionStats', async () => {
       const spy = sinon.spy(controller, 'getRTCPeerConnectionStats');
-      facade.getRTCPeerConnectionStats();
+      await facade.getRTCPeerConnectionStats();
       assert(spy.calledOnceWith());
     });
 
-    it('will call getRTCPeerConnectionStats with media stream track', () => {
+    it('will call getRTCPeerConnectionStats with media stream track', async () => {
       const spy = sinon.spy(controller, 'getRTCPeerConnectionStats');
       const track = new MediaStreamTrack();
-      facade.getRTCPeerConnectionStats(track);
+      await facade.getRTCPeerConnectionStats(track);
       assert(spy.calledOnceWith(track));
     });
 
@@ -463,39 +463,45 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(arg2));
     });
 
-    it('will call listAudioInputDevices', () => {
+    it('will call listAudioInputDevices', async () => {
       const spy = sinon.spy(deviceController, 'listAudioInputDevices');
-      facade.listAudioInputDevices();
+      await facade.listAudioInputDevices();
       assert(spy.calledOnceWith());
     });
 
-    it('will call listVideoInputDevices', () => {
+    it('will call listVideoInputDevices', async () => {
       const spy = sinon.spy(deviceController, 'listVideoInputDevices');
-      facade.listVideoInputDevices();
+      await facade.listVideoInputDevices();
       assert(spy.calledOnceWith());
     });
 
-    it('will call listAudioOutputDevices', () => {
+    it('will call listAudioOutputDevices', async () => {
       const spy = sinon.spy(deviceController, 'listAudioOutputDevices');
-      facade.listAudioOutputDevices();
+      await facade.listAudioOutputDevices();
       assert(spy.calledOnceWith());
     });
 
-    it('will call chooseAudioInputDevice', () => {
+    it('will call chooseAudioInputDevice', async () => {
       const spy = sinon.spy(deviceController, 'chooseAudioInputDevice');
       const arg1 = '';
-      facade.chooseAudioInputDevice(arg1);
+      try {
+        await facade.chooseAudioInputDevice(arg1);
+      } catch (e) {}
       assert(spy.calledOnceWith(arg1));
     });
 
-    it('will call chooseVideoInputDevice', () => {
+    it('will call chooseVideoInputDevice', async () => {
       const spy = sinon.spy(deviceController, 'chooseVideoInputDevice');
       const arg1 = '';
-      facade.chooseVideoInputDevice(arg1);
+      try {
+        await facade.chooseVideoInputDevice(arg1);
+      } catch (e) {}
       assert(spy.calledOnceWith(arg1));
 
       const arg2 = new DefaultVideoTransformDevice(null, '', []);
-      facade.chooseVideoInputDevice(arg2);
+      try {
+        await facade.chooseVideoInputDevice(arg2);
+      } catch (e) {}
       assert(spy.calledWith(arg2));
     });
 
@@ -515,10 +521,12 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnce);
     });
 
-    it('will call chooseAudioOutputDevice', () => {
+    it('will call chooseAudioOutputDevice', async () => {
       const spy = sinon.spy(deviceController, 'chooseAudioOutputDevice');
       const arg1 = '';
-      facade.chooseAudioOutputDevice(arg1);
+      try {
+        await facade.chooseAudioOutputDevice(arg1);
+      } catch (e) {}
       assert(spy.calledOnceWith(arg1));
     });
 
@@ -582,16 +590,16 @@ describe('DefaultAudioVideoFacade', () => {
       assert(spy.calledOnceWith(profile));
     });
 
-    it('will call startContentShare', () => {
+    it('will call startContentShare', async () => {
       const spy = sinon.spy(contentShareController, 'startContentShare');
       const mediaStream = new MediaStream();
-      facade.startContentShare(mediaStream);
+      await facade.startContentShare(mediaStream);
       spy.calledOnceWith(mediaStream);
     });
 
-    it('will call startContentShareFromScreenCapture', () => {
+    it('will call startContentShareFromScreenCapture', async () => {
       const spy = sinon.spy(contentShareController, 'startContentShareFromScreenCapture');
-      facade.startContentShareFromScreenCapture();
+      await facade.startContentShareFromScreenCapture();
       expect(spy.calledOnce).to.be.true;
     });
 

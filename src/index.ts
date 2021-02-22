@@ -205,6 +205,7 @@ import SimulcastTransceiverController from './transceivercontroller/SimulcastTra
 import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplinkObserver';
 import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
+import SingleNodeAudioTransformDevice from './devicecontroller/SingleNodeAudioTransformDevice';
 import Some from './maybe/Some';
 import StatsCollector from './statscollector/StatsCollector';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
@@ -463,6 +464,7 @@ export {
   SimulcastUplinkObserver,
   SimulcastUplinkPolicy,
   SimulcastVideoStreamIndex,
+  SingleNodeAudioTransformDevice,
   Some,
   StatsCollector,
   StreamMetricReport,
