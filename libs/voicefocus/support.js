@@ -94,6 +94,7 @@ const supportsWASMStreaming = (scope = globalThis, logger) => {
     }
 };
 exports.supportsWASMStreaming = supportsWASMStreaming;
+const SUPPORTED_CHROME_VERSION = 90;
 const isOldChrome = (global = globalThis, logger) => {
     try {
         if (!global.chrome) {
@@ -107,6 +108,10 @@ const isOldChrome = (global = globalThis, logger) => {
         logger === null || logger === void 0 ? void 0 : logger.debug('Unknown Chrome version.');
         return true;
     }
-    return true;
+    if (parseInt(versionCheck[1], 10) < SUPPORTED_CHROME_VERSION) {
+        logger === null || logger === void 0 ? void 0 : logger.debug(`Chrome ${versionCheck[1]} has incomplete SIMD support.`);
+        return true;
+    }
+    return false;
 };
 exports.isOldChrome = isOldChrome;
