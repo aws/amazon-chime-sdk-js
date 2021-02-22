@@ -126,7 +126,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/AudioTransformDevice.ts#L49">src/devicecontroller/AudioTransformDevice.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/AudioTransformDevice.ts#L53">src/devicecontroller/AudioTransformDevice.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -134,6 +134,9 @@
 									<p>Optionally return a pair of <code>AudioNode</code>s that should be connected to the applied inner
 									device. The two nodes can be the same, indicating the smallest possible subgraph.</p>
 								</div>
+								<p>Each device can be used no more than once at a time in an audio graph. It is acceptable
+									to reuse audio nodes for successive calls to <code>createAudioNode</code>, so long as the context
+								does not differ.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">

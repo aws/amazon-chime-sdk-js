@@ -156,6 +156,13 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
   }
 
   async createAudioNode(context: AudioContext): Promise<AudioNodeSubgraph> {
+    if (this.node?.context === context) {
+      return {
+        start: this.node,
+        end: this.node,
+      };
+    }
+
     const agc: AGCOptions = { useVoiceFocusAGC: false };
     const options = {
       enabled: true,
@@ -164,6 +171,7 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
     };
 
     try {
+      this.node?.disconnect();
       this.node = await this.voiceFocus.createNode(context, options);
       const start = this.node;
       const end = this.node;
