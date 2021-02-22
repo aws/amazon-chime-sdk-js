@@ -91,26 +91,28 @@ export default class DOMMockBuilder {
 
       send(data: ArrayBuffer | string): void {
         if (mockBehavior.webSocketSendSucceeds) {
+          // Create the event in advance so that when the `asyncWait` below runs
+          // after test cleanup, we don't die with
+          //      Uncaught ReferenceError: MessageEvent is not defined
+          const event = new MessageEvent('server::message', {
+            data: data,
+            origin: this.url,
+          });
           asyncWait(() => {
             if (mockBehavior.webSocketSendEcho && this.listeners.hasOwnProperty('message')) {
-              this.listeners.message.forEach((listener: MockListener) =>
-                listener(
-                  new MessageEvent('server::message', {
-                    data: data,
-                    origin: this.url,
-                  })
-                )
-              );
+              for (const listener of this.listeners.message) {
+                listener(event);
+              }
             }
           });
         } else {
           if (this.listeners.hasOwnProperty('error')) {
-            this.listeners.error.forEach((listener: MockListener) =>
+            for (const listener of this.listeners.error) {
               listener({
                 ...Substitute.for(),
                 type: 'error',
-              })
-            );
+              });
+            }
           }
           throw new Error();
         }
