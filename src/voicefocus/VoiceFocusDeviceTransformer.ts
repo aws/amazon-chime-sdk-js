@@ -111,13 +111,39 @@ export class VoiceFocusDeviceTransformer {
    */
   static async create(
     spec: VoiceFocusSpec = {},
-    options: VoiceFocusDeviceOptions = {}
+    options: VoiceFocusDeviceOptions = {},
+    config?: VoiceFocusConfig
   ): Promise<VoiceFocusDeviceTransformer> {
-    const transformer = new VoiceFocusDeviceTransformer(spec, options);
+    const transformer = new VoiceFocusDeviceTransformer(spec, options, config);
 
-    // This also preps the first VoiceFocus instance.
+    // This also preps the first `VoiceFocus` instance.
     await transformer.init();
     return transformer;
+  }
+
+  /**
+   * Given a spec and options, perform the configuration work that is
+   * ordinarily performed during creation of a transformer.
+   *
+   * The computed configuration is not portable between devices or sessions,
+   * but is useful for 'moving' transformers between windows.
+   *
+   * Pass the returned configuration as the third argument to a call to
+   * {@link VoiceFocusDeviceTransformer.create} with the matching spec.
+   */
+  static async configure(
+    spec: VoiceFocusSpec = {},
+    options: VoiceFocusDeviceOptions = {}
+  ): Promise<VoiceFocusConfig> {
+    const transformer = new VoiceFocusDeviceTransformer(spec, options, undefined);
+    return transformer.configure(true);
+  }
+
+  /**
+   * Return the computed configuration for this transformer.
+   */
+  getConfiguration(): Promise<VoiceFocusConfig> {
+    return this.configuration;
   }
 
   /**
@@ -166,7 +192,8 @@ export class VoiceFocusDeviceTransformer {
       preload = true,
       logger,
       fetchBehavior = VoiceFocusDeviceTransformer.defaultFetchBehavior(),
-    }: VoiceFocusDeviceOptions
+    }: VoiceFocusDeviceOptions,
+    config: VoiceFocusConfig | undefined
   ) {
     this.logger = logger;
     this.vfLogger = logger ? new LoggerAdapter(logger) : undefined;
@@ -176,6 +203,10 @@ export class VoiceFocusDeviceTransformer {
     // If the user didn't specify one, add the default, which is
     // identified by the major and minor SDK version.
     this.spec = VoiceFocusDeviceTransformer.augmentSpec(this.spec);
+
+    if (config) {
+      this.configuration = Promise.resolve(config);
+    }
   }
 
   private static augmentSpec(spec: VoiceFocusSpec): VoiceFocusSpec {
@@ -188,9 +219,10 @@ export class VoiceFocusDeviceTransformer {
     return spec;
   }
 
-  private async configure(): Promise<VoiceFocusConfig> {
+  private async configure(preResolve: boolean = false): Promise<VoiceFocusConfig> {
     const options = {
       fetchBehavior: this.fetchBehavior,
+      preResolve,
       logger: this.vfLogger,
     };
 
@@ -198,7 +230,9 @@ export class VoiceFocusDeviceTransformer {
   }
 
   private async init(): Promise<void> {
-    this.configuration = this.configure();
+    if (!this.configuration) {
+      this.configuration = this.configure();
+    }
 
     const config = await this.configuration;
     if (!config.supported) {

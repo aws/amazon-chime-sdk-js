@@ -68,7 +68,7 @@
     "ts-loader": "^8.0.4",
     "ts-node": "^9.0.0",
     "typedoc": "0.19.2",
-    "typescript": "^4.0.0"
+    "typescript": "^4.2.0"
   },
   "dependencies": {
     "@types/dom-mediacapture-record": "^1.0.4",

@@ -323,7 +323,7 @@ const measureAndDecideExecutionApproach = (spec, fetchConfig, logger, thresholds
         executionQuantaPreference }), thresholds, logger);
 });
 exports.measureAndDecideExecutionApproach = measureAndDecideExecutionApproach;
-const decideModel = ({ category, name, variant, simd }) => {
+const decideModel = ({ category, name, variant, simd, url }) => {
     return `${category}-${name}-${variant}-v1${simd ? '_simd' : ''}`;
 };
 exports.decideModel = decideModel;

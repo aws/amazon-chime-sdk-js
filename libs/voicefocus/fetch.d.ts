@@ -5,5 +5,6 @@ export declare function withQueryString(url: string, fetchBehavior?: VoiceFocusF
 export declare function addQueryParams(fetchBehavior: VoiceFocusFetchBehavior | undefined, queryParams: {
     [key: string]: string;
 }): VoiceFocusFetchBehavior | undefined;
+export declare function resolveURL(url: string, fetchBehavior?: VoiceFocusFetchBehavior): Promise<string>;
 export declare function isValidAssetGroup(assetGroup: string): boolean;
 export declare function isValidRevisionID(revisionID: string): boolean;

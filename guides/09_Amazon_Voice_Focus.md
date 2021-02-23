@@ -185,9 +185,11 @@ As noted above, the device controller must support Web Audio.
 
 ## Configuration
 
-Both `isSupported` and `create` accept `VoiceFocusSpec` structures as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.
+Both `isSupported` and `create` accept _specifications_ — `VoiceFocusSpec` structures — as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.
 
 Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. Some options are described in the section “[Adapting to performance constraints](#adapting-to-performance-constraints)”.
+
+A specification is used to derive a runtime _configuration_ when a transformer is created. A configuration is an opaque blob derived within a particular runtime context. The configuration drives exactly how noise suppression will be applied to an input stream. Applications can access these configurations in order to support unusual interaction patterns; see “[Accessing and using configurations](#accessing-and-using-configurations)”.
 
 ## Disabling Amazon Voice Focus and switching devices
 
@@ -298,3 +300,42 @@ AGC in mainstream browsers is fairly simplistic: it periodically adjusts your de
 Amazon Voice enables the built-in AGC by default. If you need additional control of the user’s volume, you can apply a [`GainNode`](https://developer.mozilla.org/en-US/docs/Web/API/GainNode) in a custom `AudioTransformDevice` in series *after* the Amazon Voice Focus node.
 
 If the interaction of the built-in AGC with Amazon Voice Focus produces undesirable effects, you can disable it by passing `{ agc: { useBuiltInAGC: false } }` when constructing the transform device.
+
+## Accessing and using configurations
+
+Configurations — instances of `VoiceFocusConfig` — are opaque blobs derived by resolving a specification against a runtime environment. They are exact descriptions of exactly how Amazon Voice Focus will operate. As such, they are extremely specific to a point in time, hardware capabilities, browser version, and SDK version. They should not be persisted, transferred between browsers, or mutated.
+
+You can retrieve the configuration of a `VoiceFocusDeviceTransformer` with the `getConfiguration` method, and you can retrieve a configuration without instantiating a transformer by calling the `VoiceFocusDeviceTransformer.configure` static method instead of `VoiceFocusDeviceTransformer.create`. The latter accepts a configuration as a third argument to instantiate a transformer with an existing configuration.
+
+These functions allow the work of creating a transformer to be split or reused across execution contexts. For example, you might compute a configuration from a spec each time your app launches, making subsequent initialization faster, or you might reuse a configuration in a second window by sending an existing transformer's configuration via `postMessage`.
+
+Creating a configuration via `VoiceFocusDeviceTransformer.configure` also supports pre-resolving model URLs, which can be useful when a new browser execution context needs to be rapidly built in order to join a meeting, and saving even a single HTTP request is worthwhile.
+
+The send side might look like this:
+
+```javascript
+const spec = {};
+const options = { logger };
+
+const config = await VoiceFocusDeviceTransformer.configure(spec, options);
+const newWindow = window.open('/other');
+newWindow.postMessage({
+  message: 'vf',
+  config,
+});
+```
+
+and the receiver like this:
+
+```javascript
+const spec = {};
+const options = { logger };
+let transformerPromise;
+
+window.onmessage = (m) => {
+  const { message, config } = m;
+  if (message === 'vf') {
+    transformerPromise = VoiceFocusDeviceTransformer.create(spec, options, config);
+  }
+};
+```
