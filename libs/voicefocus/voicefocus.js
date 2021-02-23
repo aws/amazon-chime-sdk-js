@@ -85,6 +85,9 @@ const mungeConstraints = (constraints, agc) => {
     }
     return Object.assign(Object.assign({}, constraints), { audio: constraints.audio === true ? defaultConstraints : Object.assign(Object.assign({}, constraints.audio), defaultConstraints) });
 };
+const urlForModel = (model, paths) => {
+    return `${paths.models}${decider_js_1.decideModel(model)}.wasm`;
+};
 class VoiceFocus {
     constructor(worker, processorURL, nodeConstructor, nodeOptions, executionQuanta) {
         this.processorURL = processorURL;
@@ -137,7 +140,7 @@ class VoiceFocus {
     }
     static configure(spec, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { fetchBehavior, logger } = options || {};
+            const { fetchBehavior, preResolve, logger, } = options || {};
             const { category = 'voicefocus', name = 'default', variant: variantPreference = 'auto', assetGroup = DEFAULT_ASSET_GROUP, revisionID, simd = 'detect', executionPreference = 'auto', executionQuantaPreference, usagePreference = 'interactivity', estimatorBudget = 100, paths = DEFAULT_PATHS, thresholds, } = spec || {};
             logger === null || logger === void 0 ? void 0 : logger.debug('Configuring Voice Focus with spec', spec);
             if (category !== undefined && category !== 'voicefocus') {
@@ -179,14 +182,19 @@ class VoiceFocus {
             }
             logger === null || logger === void 0 ? void 0 : logger.info('Decided execution approach', executionDefinition);
             const { useSIMD, processor, variant, executionQuanta } = executionDefinition;
+            const model = {
+                category: category || 'voicefocus',
+                name: name || 'default',
+                variant,
+                simd: useSIMD,
+            };
+            if (preResolve) {
+                const startingURL = urlForModel(model, paths);
+                model.url = yield fetch_js_1.resolveURL(startingURL, updatedFetchBehavior);
+            }
             return {
                 fetchConfig,
-                model: {
-                    category: category || 'voicefocus',
-                    name: name || 'default',
-                    variant,
-                    simd: useSIMD,
-                },
+                model,
                 processor,
                 executionQuanta,
                 supported: true,
@@ -206,9 +214,8 @@ class VoiceFocus {
                 processor !== 'voicefocus-worker-sab-processor') {
                 throw new Error(`Unknown processor ${processor}`);
             }
-            const modelFile = decider_js_1.decideModel(model);
-            logger === null || logger === void 0 ? void 0 : logger.debug(`Decided model ${modelFile}.`);
-            const modelURL = `${paths.models}${modelFile}.wasm`;
+            const modelURL = model.url || urlForModel(model, paths);
+            logger === null || logger === void 0 ? void 0 : logger.debug(`Using model URL ${modelURL}.`);
             const audioBufferURL = `${paths.wasm}audio_buffer-v1${simd ? '_simd' : ''}.wasm`;
             const resamplerURL = `${paths.wasm}resampler-v1${simd ? '_simd' : ''}.wasm`;
             const workerURL = `${paths.workers}worker-v1.js`;

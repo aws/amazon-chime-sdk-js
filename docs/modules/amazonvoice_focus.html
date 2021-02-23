@@ -255,8 +255,9 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 					<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
 						<h2>Configuration</h2>
 					</a>
-					<p>Both <code>isSupported</code> and <code>create</code> accept <code>VoiceFocusSpec</code> structures as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.</p>
+					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>VoiceFocusSpec</code> structures — as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.</p>
 					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. Some options are described in the section “<a href="#adapting-to-performance-constraints">Adapting to performance constraints</a>”.</p>
+					<p>A specification is used to derive a runtime <em>configuration</em> when a transformer is created. A configuration is an opaque blob derived within a particular runtime context. The configuration drives exactly how noise suppression will be applied to an input stream. Applications can access these configurations in order to support unusual interaction patterns; see “<a href="#accessing-and-using-configurations">Accessing and using configurations</a>”.</p>
 					<a href="#disabling-amazon-voice-focus-and-switching-devices" id="disabling-amazon-voice-focus-and-switching-devices" style="color: inherit; text-decoration: none;">
 						<h2>Disabling Amazon Voice Focus and switching devices</h2>
 					</a>
@@ -342,6 +343,36 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 					<p>AGC in mainstream browsers is fairly simplistic: it periodically adjusts your device input volume to improve the situation when your microphone is too quiet or too loud. As a developer you can control this with <code>[MediaTrackConstraints.autoGainControl](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/autoGainControl)</code>. This is enabled by default when your application asks for a microphone input.</p>
 					<p>Amazon Voice enables the built-in AGC by default. If you need additional control of the user’s volume, you can apply a <a href="https://developer.mozilla.org/en-US/docs/Web/API/GainNode"><code>GainNode</code></a> in a custom <code>AudioTransformDevice</code> in series <em>after</em> the Amazon Voice Focus node.</p>
 					<p>If the interaction of the built-in AGC with Amazon Voice Focus produces undesirable effects, you can disable it by passing <code>{ agc: { useBuiltInAGC: false } }</code> when constructing the transform device.</p>
+					<a href="#accessing-and-using-configurations" id="accessing-and-using-configurations" style="color: inherit; text-decoration: none;">
+						<h2>Accessing and using configurations</h2>
+					</a>
+					<p>Configurations — instances of <code>VoiceFocusConfig</code> — are opaque blobs derived by resolving a specification against a runtime environment. They are exact descriptions of exactly how Amazon Voice Focus will operate. As such, they are extremely specific to a point in time, hardware capabilities, browser version, and SDK version. They should not be persisted, transferred between browsers, or mutated.</p>
+					<p>You can retrieve the configuration of a <code>VoiceFocusDeviceTransformer</code> with the <code>getConfiguration</code> method, and you can retrieve a configuration without instantiating a transformer by calling the <code>VoiceFocusDeviceTransformer.configure</code> static method instead of <code>VoiceFocusDeviceTransformer.create</code>. The latter accepts a configuration as a third argument to instantiate a transformer with an existing configuration.</p>
+					<p>These functions allow the work of creating a transformer to be split or reused across execution contexts. For example, you might compute a configuration from a spec each time your app launches, making subsequent initialization faster, or you might reuse a configuration in a second window by sending an existing transformer&#39;s configuration via <code>postMessage</code>.</p>
+					<p>Creating a configuration via <code>VoiceFocusDeviceTransformer.configure</code> also supports pre-resolving model URLs, which can be useful when a new browser execution context needs to be rapidly built in order to join a meeting, and saving even a single HTTP request is worthwhile.</p>
+					<p>The send side might look like this:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> spec = {};
+<span class="hljs-keyword">const</span> options = { logger };
+
+<span class="hljs-keyword">const</span> config = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer.configure(spec, options);
+<span class="hljs-keyword">const</span> newWindow = <span class="hljs-built_in">window</span>.open(<span class="hljs-string">&#x27;/other&#x27;</span>);
+newWindow.postMessage({
+  <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;vf&#x27;</span>,
+  config,
+});
+</code></pre>
+					<p>and the receiver like this:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> spec = {};
+<span class="hljs-keyword">const</span> options = { logger };
+<span class="hljs-keyword">let</span> transformerPromise;
+
+<span class="hljs-built_in">window</span>.onmessage = <span class="hljs-function">(<span class="hljs-params">m</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> { message, config } = m;
+  <span class="hljs-keyword">if</span> (message === <span class="hljs-string">&#x27;vf&#x27;</span>) {
+    transformerPromise = VoiceFocusDeviceTransformer.create(spec, options, config);
+  }
+};
+</code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Amazon%20Voice_Focus%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>

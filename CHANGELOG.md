@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add `SingleNodeAudioTransformDevice` to make simple audio transforms easier to write.
 - Reuse `VoiceFocusAudioNode` instances across transform device operations.
+- Allow a complete configuration to be retrieved from and passed to a
+  `VoiceFocusDeviceTransformer`, making it easier to instantiate a new
+  transformer in a different scope with the same measured settings.
 - Add End-to-end Integration test for Video Test App
 
 ### Changed

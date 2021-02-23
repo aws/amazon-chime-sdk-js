@@ -142,9 +142,11 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicefocusdevicetransformer.html#configure" class="tsd-kind-icon">configure</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocusdevicetransformer.html#createtransformdevice" class="tsd-kind-icon">create<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicefocusdevicetransformer.html#createvoicefocus" class="tsd-kind-icon">create<wbr>Voice<wbr>Focus</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocusdevicetransformer.html#getconfiguration" class="tsd-kind-icon">get<wbr>Configuration</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicefocusdevicetransformer.html#init" class="tsd-kind-icon">init</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocusdevicetransformer.html#issupported" class="tsd-kind-icon">is<wbr>Supported</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="voicefocusdevicetransformer.html#augmentspec" class="tsd-kind-icon">augment<wbr>Spec</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="voicefocusdevicetransformer.html#configure-1" class="tsd-kind-icon">configure</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="voicefocusdevicetransformer.html#create" class="tsd-kind-icon">create</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="voicefocusdevicetransformer.html#currentsdkassetgroup" class="tsd-kind-icon">currentSDKAsset<wbr>Group</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="voicefocusdevicetransformer.html#defaultfetchbehavior" class="tsd-kind-icon">default<wbr>Fetch<wbr>Behavior</a></li>
@@ -162,13 +164,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Voice<wbr>Focus<wbr>Device<wbr>Transformer<span class="tsd-signature-symbol">(</span>spec<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">VoiceFocusSpec</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>fetchBehavior<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">VoiceFocusFetchBehavior</span><span class="tsd-signature-symbol">; </span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">; </span>preload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="voicefocusdevicetransformer.html" class="tsd-signature-type">VoiceFocusDeviceTransformer</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Voice<wbr>Focus<wbr>Device<wbr>Transformer<span class="tsd-signature-symbol">(</span>spec<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">VoiceFocusSpec</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>fetchBehavior<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">VoiceFocusFetchBehavior</span><span class="tsd-signature-symbol">; </span>logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol">; </span>preload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span>, config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="voicefocusdevicetransformer.html" class="tsd-signature-type">VoiceFocusDeviceTransformer</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L161">src/voicefocus/VoiceFocusDeviceTransformer.ts:161</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L187">src/voicefocus/VoiceFocusDeviceTransformer.ts:187</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -189,6 +191,9 @@
 											<h5>preload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
 										</li>
 									</ul>
+								</li>
+								<li>
+									<h5>config: <span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="voicefocusdevicetransformer.html" class="tsd-signature-type">VoiceFocusDeviceTransformer</a></h4>
@@ -254,7 +259,7 @@
 					<div class="tsd-signature tsd-kind-icon">spec<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">VoiceFocusSpec</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L164">src/voicefocus/VoiceFocusDeviceTransformer.ts:164</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L190">src/voicefocus/VoiceFocusDeviceTransformer.ts:190</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -291,7 +296,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L232">src/voicefocus/VoiceFocusDeviceTransformer.ts:232</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L266">src/voicefocus/VoiceFocusDeviceTransformer.ts:266</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -308,15 +313,21 @@
 					<a name="configure" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> configure</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>preResolve<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L191">src/voicefocus/VoiceFocusDeviceTransformer.ts:191</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L222">src/voicefocus/VoiceFocusDeviceTransformer.ts:222</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> preResolve: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -331,7 +342,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L143">src/voicefocus/VoiceFocusDeviceTransformer.ts:143</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L169">src/voicefocus/VoiceFocusDeviceTransformer.ts:169</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -367,7 +378,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L223">src/voicefocus/VoiceFocusDeviceTransformer.ts:223</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L257">src/voicefocus/VoiceFocusDeviceTransformer.ts:257</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -383,6 +394,28 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getconfiguration" class="tsd-anchor"></a>
+					<h3>get<wbr>Configuration</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Configuration<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L145">src/voicefocus/VoiceFocusDeviceTransformer.ts:145</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Return the computed configuration for this transformer.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="init" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> init</h3>
@@ -393,7 +426,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L200">src/voicefocus/VoiceFocusDeviceTransformer.ts:200</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L232">src/voicefocus/VoiceFocusDeviceTransformer.ts:232</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -410,7 +443,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L129">src/voicefocus/VoiceFocusDeviceTransformer.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L155">src/voicefocus/VoiceFocusDeviceTransformer.ts:155</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -435,7 +468,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L181">src/voicefocus/VoiceFocusDeviceTransformer.ts:181</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L212">src/voicefocus/VoiceFocusDeviceTransformer.ts:212</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -449,10 +482,46 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="configure-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> configure</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>spec<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">VoiceFocusSpec</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/voicefocusdeviceoptions.html" class="tsd-signature-type">VoiceFocusDeviceOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L134">src/voicefocus/VoiceFocusDeviceTransformer.ts:134</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Given a spec and options, perform the configuration work that is
+									ordinarily performed during creation of a transformer.</p>
+								</div>
+								<p>The computed configuration is not portable between devices or sessions,
+								but is useful for &#39;moving&#39; transformers between windows.</p>
+								<p>Pass the returned configuration as the third argument to a call to
+								<a href="voicefocusdevicetransformer.html#create">VoiceFocusDeviceTransformer.create</a> with the matching spec.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> spec: <span class="tsd-signature-type">VoiceFocusSpec</span><span class="tsd-signature-symbol"> = {}</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/voicefocusdeviceoptions.html" class="tsd-signature-type">VoiceFocusDeviceOptions</a><span class="tsd-signature-symbol"> = {}</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="create" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>spec<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">VoiceFocusSpec</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/voicefocusdeviceoptions.html" class="tsd-signature-type">VoiceFocusDeviceOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="voicefocusdevicetransformer.html" class="tsd-signature-type">VoiceFocusDeviceTransformer</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>spec<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">VoiceFocusSpec</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/voicefocusdeviceoptions.html" class="tsd-signature-type">VoiceFocusDeviceOptions</a>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">VoiceFocusConfig</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="voicefocusdevicetransformer.html" class="tsd-signature-type">VoiceFocusDeviceTransformer</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -486,6 +555,9 @@
 										<p>Additional named arguments, including <code>logger</code> and <code>preload</code>.</p>
 									</div>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> config: <span class="tsd-signature-type">VoiceFocusConfig</span></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="voicefocusdevicetransformer.html" class="tsd-signature-type">VoiceFocusDeviceTransformer</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -501,7 +573,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L259">src/voicefocus/VoiceFocusDeviceTransformer.ts:259</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L293">src/voicefocus/VoiceFocusDeviceTransformer.ts:293</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -518,7 +590,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L276">src/voicefocus/VoiceFocusDeviceTransformer.ts:276</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L310">src/voicefocus/VoiceFocusDeviceTransformer.ts:310</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">VoiceFocusFetchBehavior</span></h4>
@@ -584,7 +656,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L255">src/voicefocus/VoiceFocusDeviceTransformer.ts:255</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L289">src/voicefocus/VoiceFocusDeviceTransformer.ts:289</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -601,7 +673,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L251">src/voicefocus/VoiceFocusDeviceTransformer.ts:251</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceTransformer.ts#L285">src/voicefocus/VoiceFocusDeviceTransformer.ts:285</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -664,6 +736,9 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="voicefocusdevicetransformer.html#createvoicefocus" class="tsd-kind-icon">create<wbr>Voice<wbr>Focus</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="voicefocusdevicetransformer.html#getconfiguration" class="tsd-kind-icon">get<wbr>Configuration</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="voicefocusdevicetransformer.html#init" class="tsd-kind-icon">init</a>
 							</li>
@@ -672,6 +747,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
 								<a href="voicefocusdevicetransformer.html#augmentspec" class="tsd-kind-icon">augment<wbr>Spec</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="voicefocusdevicetransformer.html#configure-1" class="tsd-kind-icon">configure</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="voicefocusdevicetransformer.html#create" class="tsd-kind-icon">create</a>

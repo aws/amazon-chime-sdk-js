@@ -18,6 +18,7 @@ export interface ModelConfig {
     name: ModelName;
     variant: ModelVariant;
     simd: boolean;
+    url?: string;
 }
 export interface VoiceFocusExecutionSpec {
     variantPreference: ModelVariant | 'auto';
@@ -47,6 +48,7 @@ export interface PerformanceThresholds {
 }
 export interface VoiceFocusConfigureOptions {
     fetchBehavior?: VoiceFocusFetchBehavior;
+    preResolve?: boolean;
     logger?: Logger;
 }
 export interface VoiceFocusDelegate {
