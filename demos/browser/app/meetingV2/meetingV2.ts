@@ -2148,18 +2148,31 @@ export class DemoMeetingApp
 
   private async contentShareStart(videoUrl?: string): Promise<void> {
     switch (this.contentShareType) {
-      case ContentShareType.ScreenCapture:
-        await this.audioVideo.startContentShareFromScreenCapture();
+      case ContentShareType.ScreenCapture: {
+        try {
+          await this.audioVideo.startContentShareFromScreenCapture();
+        } catch (e) {
+          this.meetingLogger?.error(`Could not start content share: ${e}`);
+          return;
+        }
         break;
-      case ContentShareType.VideoFile:
+      }
+      case ContentShareType.VideoFile: {
         const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
         if (videoUrl) {
           videoFile.src = videoUrl;
         }
 
         const mediaStream = await this.playToStream(videoFile);
-        this.audioVideo.startContentShare(mediaStream);
+        try {
+          // getDisplayMedia can throw.
+          await this.audioVideo.startContentShare(mediaStream);
+        } catch (e) {
+          this.meetingLogger?.error(`Could not start content share: ${e}`);
+          return;
+        }
         break;
+      }
     }
 
     this.toggleButton('button-content-share', 'on');
