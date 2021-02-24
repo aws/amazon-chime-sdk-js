@@ -8,7 +8,6 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
 import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
@@ -22,6 +21,7 @@ import SendAndReceiveDataMessagesTask from '../../src/task/SendAndReceiveDataMes
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { delay } from '../utils';
 
 describe('SendAndReceiveDataMessagesTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -89,7 +89,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
       new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth')
     );
 
-    await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+    await delay(behavior.asyncWaitMs + 10);
     expect(context.signalingClient.ready()).to.equal(true);
   });
 
@@ -107,7 +107,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text1));
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text2));
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text3));
-    await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+    await delay(behavior.asyncWaitMs + 10);
     expect(spy.callCount).to.equal(3);
     expect(spy.getCall(0).args[0].text()).to.eql(text1);
     expect(spy.getCall(1).args[0].text()).to.eql(text2);
@@ -121,7 +121,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
     const text2 = 'Test message 2';
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text1));
     task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text2, true));
-    await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+    await delay(behavior.asyncWaitMs + 10);
     expect(spy.callCount).to.equal(2);
     expect(spy.getCall(0).args[0].text()).to.eql(text1);
     expect(spy.getCall(0).args[0].throttled).to.be.false;

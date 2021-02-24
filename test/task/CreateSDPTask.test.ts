@@ -57,7 +57,7 @@ describe('CreateSDPTask', () => {
           expect(options.offerToReceiveAudio).to.be.equal(true);
           expect(options.offerToReceiveVideo).to.be.equal(false);
           return new Promise<RTCSessionDescriptionInit>((resolve, _reject) => {
-            resolve();
+            resolve(undefined as RTCSessionDescriptionInit);
           });
         }
       }

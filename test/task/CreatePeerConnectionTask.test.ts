@@ -11,7 +11,6 @@ import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessionTURNCredentials';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
@@ -23,6 +22,7 @@ import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTile
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import SDPMock from '../sdp/SDPMock';
+import { delay } from '../utils';
 
 describe('CreatePeerConnectionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -179,9 +179,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(addVideoTileSpy.called).to.be.false;
       });
 
@@ -210,9 +208,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(addVideoTileSpy.called).to.be.false;
       });
 
@@ -237,9 +233,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(addVideoTileSpy.called).to.be.true;
       });
 
@@ -260,9 +254,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(addVideoTileSpy.called).to.be.false;
       });
 
@@ -275,9 +267,7 @@ describe('CreatePeerConnectionTask', () => {
         domMockBehavior.hasInactiveTransceiver = true;
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(addVideoTileSpy.called).to.be.false;
       });
 
@@ -312,9 +302,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(called).to.be.true;
         expect(addVideoTileSpy.called).to.be.false;
       });
@@ -346,9 +334,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(tile.state().streamId).to.equal(streamId);
       });
 
@@ -383,9 +369,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(tile.state().videoStreamContentWidth).to.equal(
           domMockBehavior.mediaStreamTrackCapabilities.width
         );
@@ -428,9 +412,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(tile.state().videoStreamContentWidth).to.equal(
           domMockBehavior.mediaStreamTrackSettings.width
         );
@@ -454,9 +436,7 @@ describe('CreatePeerConnectionTask', () => {
           track.stop();
         });
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
       });
 
       it('has externalUserId for an attendee', async () => {
@@ -481,9 +461,7 @@ describe('CreatePeerConnectionTask', () => {
           track.stop();
         });
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
         expect(called).to.be.true;
         expect(addVideoTileSpy.called).to.be.true;
       });
@@ -511,9 +489,7 @@ describe('CreatePeerConnectionTask', () => {
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
-        await new Promise(resolve =>
-          new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(domMockBehavior.asyncWaitMs + 10);
 
         expect(called1).to.be.true;
         expect(called2).to.be.true;
@@ -645,9 +621,7 @@ describe('CreatePeerConnectionTask', () => {
       const spy: sinon.SinonSpy = sinon.spy(context.audioMixController, 'bindAudioStream');
       await task.run();
       await context.peer.setRemoteDescription(audioRemoteDescription);
-      await new Promise(resolve =>
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-      );
+      await delay(domMockBehavior.asyncWaitMs + 10);
       expect(spy.called).to.be.true;
     });
   });
@@ -667,9 +641,7 @@ describe('CreatePeerConnectionTask', () => {
       await task.run();
       context.removableObservers[0].removeObserver();
       await context.peer.setRemoteDescription(videoRemoteDescription);
-      await new Promise(resolve =>
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-      );
+      await delay(domMockBehavior.asyncWaitMs + 10);
       expect(called).to.be.false;
     });
 
@@ -699,9 +671,7 @@ describe('CreatePeerConnectionTask', () => {
         track.stop();
       });
       await context.peer.setRemoteDescription(videoRemoteDescription);
-      await new Promise(resolve =>
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-      );
+      await delay(domMockBehavior.asyncWaitMs + 10);
       expect(called).to.be.true;
       expect(peerRemoveEventListenerSpy.called).to.be.true;
     });
@@ -733,9 +703,7 @@ describe('CreatePeerConnectionTask', () => {
         track.stop();
       });
       await context.peer.setRemoteDescription(videoRemoteDescription);
-      await new Promise(resolve =>
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(resolve)
-      );
+      await delay(domMockBehavior.asyncWaitMs + 10);
       expect(called).to.be.true;
       expect(peerRemoveEventListenerSpy.called).to.be.false;
     });

@@ -11,7 +11,6 @@ import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/Si
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import PingPong from '../../src/pingpong/PingPong';
 import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
 import CleanRestartedSessionTask from '../../src/task/CleanRestartedSessionTask';
 import Task from '../../src/task/Task';
@@ -21,6 +20,7 @@ import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVid
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { delay } from '../utils';
 
 class TestPingPong implements PingPong {
   addObserver(_observer: PingPongObserver): void {}
@@ -79,9 +79,7 @@ describe('CleanRestartedSessionTask', () => {
       const peer = new RTCPeerConnection();
       context.peer = peer;
       await task.run();
-      await new Promise(resolve =>
-        new TimeoutScheduler(domMockBehavior.asyncWaitMs * 2).start(resolve)
-      );
+      await delay(domMockBehavior.asyncWaitMs * 2);
       expect(peer.connectionState).to.equal('closed');
       expect(context.peer).to.equal(null);
     });

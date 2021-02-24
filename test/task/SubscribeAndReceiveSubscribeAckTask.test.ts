@@ -24,6 +24,7 @@ import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStre
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { delay } from '../utils';
 
 describe('SubscribeAndReceiveSubscribeAckTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -101,7 +102,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
 
   describe('run', () => {
     it('can subscribe SdkSubscribeAckFrame', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
@@ -118,7 +119,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('can subscribe SdkSubscribeAckFrame with SDP', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
 
       const description: RTCSessionDescriptionInit = { type: 'offer', sdp: 'sdp-offer' };
       context.peer = new RTCPeerConnection();
@@ -138,7 +139,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('can receive SdkSubscribeAckFrame', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
       new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
@@ -149,7 +150,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     it('can subscribe without videoCaptureAndEncodeParameter', async () => {
       context.videoCaptureAndEncodeParameter = null;
 
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
@@ -170,7 +171,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       navigator.userAgent =
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
       context.browserBehavior = new DefaultBrowserBehavior();
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
 
       const description: RTCSessionDescriptionInit = { type: 'offer', sdp: 'sdp-offer' };
       context.peer = new RTCPeerConnection();
@@ -192,7 +193,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
 
   describe('cancel', () => {
     it('should cancel the task and throw the reject', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
       new TimeoutScheduler(waitTimeMs).start(() => task.cancel());
@@ -203,7 +204,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     });
 
     it('will cancel idempotently', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
       task.cancel();
