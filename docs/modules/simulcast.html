@@ -180,18 +180,21 @@
 <span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-comment">// The response from the CreateAttendee or BatchCreateAttendee API action.</span>
 
 <span class="hljs-comment">// This meeting session configuration will be used to enable simulcast in the next step.</span>
-<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);</code></pre>
+<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+</code></pre>
 					<p>Now you have to enable <code>enableUnifiedPlanForChromiumBasedBrowsers</code> and <code>enableSimulcastForUnifiedPlanChromiumBasedBrowsers</code> feature flags
 					in the created <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html">MeetingSessionConfiguration</a>.</p>
 					<pre><code class="language-javascript">configuration.enableUnifiedPlanForChromiumBasedBrowsers = <span class="hljs-literal">true</span>;
-configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = <span class="hljs-literal">true</span>;</code></pre>
+configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = <span class="hljs-literal">true</span>;
+</code></pre>
 					<p>Now create a meeting session with the simulcast enabled meeting session configuration.</p>
 					<pre><code class="language-javascript"><span class="hljs-comment">// In the examples below, you will use this meetingSession object.</span>
 <span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
   configuration,
   logger,
   deviceController
-);</code></pre>
+);
+</code></pre>
 					<p>This <code>meetingSession</code> is now simulcast enabled and will have the <code>videoUplinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/defaultsimulcastuplinkPolicy.html">DefaultSimulcastUplinkPolicy</a> and <code>videoDownlinkBandwidthPolicy</code> set to <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>. Due to these policies, the local and remote video resolutions may change. The video resolution depends on the available simulcast streams. The available simlucast streams are dependent on the number of attendees and the current bandwidth estimations. Check &quot;Simulcast resolutions and behavior&quot; section in this guide for more information.</p>
 					<a href="#receive-upstream-simulcast-layer-change-notification" id="receive-upstream-simulcast-layer-change-notification" style="color: inherit; text-decoration: none;">
 						<h3>Receive upstream simulcast layer change notification</h3>
@@ -222,7 +225,8 @@ configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = <span class="
   }
 }
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Simulcast%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>

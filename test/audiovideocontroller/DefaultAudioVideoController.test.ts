@@ -68,7 +68,7 @@ describe('DefaultAudioVideoController', () => {
   }
 
   async function delay(timeoutMs: number = domMockBehavior.asyncWaitMs * 5): Promise<void> {
-    await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
+    return new Promise(resolve => setTimeout(resolve, timeoutMs));
   }
 
   function setUserAgent(userAgent: string): void {

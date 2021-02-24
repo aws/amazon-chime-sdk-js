@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Don't automatically upgrade dev-dependencies to avoid a breaking typedoc upgrade.
+
 
 ## [2.5.0] - 2021-02-16
 

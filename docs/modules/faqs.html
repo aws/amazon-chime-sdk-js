@@ -342,22 +342,24 @@
 						<h3>After leaving a meeting, the camera LED is still on indicating that the camera has not been released. What could be wrong?</h3>
 					</a>
 					<p>When the camera LED remains on, it does not necessarily mean the device is broadcasting to the remote attendees. The LED will remain on until all media streams that use the device are released (its tracks are stopped). The following API methods release media streams.</p>
-					<pre><code>// <span class="hljs-keyword">Select</span> <span class="hljs-keyword">no</span> video device (releases <span class="hljs-keyword">any</span> previously selected device)
-meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
+					<pre><code><span class="hljs-comment">// Select no video device (releases any previously selected device)</span>
+meetingSession.audioVideo.choose<span class="hljs-constructor">VideoInputDevice(<span class="hljs-params">null</span>)</span>;
 
-// <span class="hljs-keyword">Stop</span> <span class="hljs-keyword">local</span> video tile (stops sharing the video tile <span class="hljs-keyword">in</span> the meeting)
-meetingSession.audioVideo.stopLocalVideoTile();
+<span class="hljs-comment">// Stop local video tile (stops sharing the video tile in the meeting)</span>
+meetingSession.audioVideo.stop<span class="hljs-constructor">LocalVideoTile()</span>;
 
-// <span class="hljs-keyword">Stop</span> a video preview that was previously started (<span class="hljs-keyword">before</span> <span class="hljs-keyword">session</span> starts)
-meetingSession.audioVideo.stopVideoPreviewForVideoInput(previewVideoElement);
+<span class="hljs-comment">// Stop a video preview that was previously started (before session starts)</span>
+meetingSession.audioVideo.stop<span class="hljs-constructor">VideoPreviewForVideoInput(<span class="hljs-params">previewVideoElement</span>)</span>;
 
-// <span class="hljs-keyword">Stop</span> the meeting <span class="hljs-keyword">session</span> (audio <span class="hljs-keyword">and</span> video)
-meetingSession.audioVideo.stop();</code></pre>
+<span class="hljs-comment">// Stop the meeting session (audio and video)</span>
+meetingSession.audioVideo.stop<span class="hljs-literal">()</span>;
+</code></pre>
 					<a href="#my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" id="my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" style="color: inherit; text-decoration: none;">
 						<h3>My clients are unable to successfully join audio calls from Safari, they get a <code>failed to get audio device for constraints null: Type error</code>, what could be the issue?</h3>
 					</a>
 					<p>This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the <code>chooseVideoInputDevice</code> API. In this case you will see the following entry in the log where an empty string after <code>chooseVideoInputDevice</code>:</p>
-					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">&quot;&quot;</span> -&gt; <span class="hljs-string">&quot;PermissionDeniedByBrowser&quot;</span></code></pre>
+					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">&quot;&quot;</span> -&gt; <span class="hljs-string">&quot;PermissionDeniedByBrowser&quot;</span>
+</code></pre>
 					<p>This applies for video input as well.</p>
 					<a href="#how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" id="how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" style="color: inherit; text-decoration: none;">
 						<h3>How can I show a custom UX when the browser prompts the user for permission to use microphone and camera?</h3>
@@ -372,7 +374,8 @@ meetingSession.audioVideo.stop();</code></pre>
     hideCustomUX();
     <span class="hljs-keyword">return</span> stream;
   }
-);</code></pre>
+);
+</code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>

@@ -6,7 +6,6 @@ import * as chai from 'chai';
 import DefaultActiveSpeakerDetector from '../../src/activespeakerdetector/DefaultActiveSpeakerDetector';
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 
 describe('DefaultActiveSpeakerDetector', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -15,7 +14,7 @@ describe('DefaultActiveSpeakerDetector', () => {
   const attendeeId = 'self';
   const bandwidthPriorityCallback = (): void => {};
   async function delay(timeoutMs: number): Promise<void> {
-    await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
+    return new Promise(resolve => setTimeout(resolve, timeoutMs));
   }
   const talkingVolumeSimulator = (i: number, volume: number): number =>
     volume * (0.5 + 0.5 * (i % 2));

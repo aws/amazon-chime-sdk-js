@@ -77,7 +77,8 @@
 						<h2>Installation</h2>
 					</a>
 					<p>Installation involves adjusting your <code>package.json</code> to depend on version <code>2.0.0</code>.</p>
-					<pre><code class="language-shell">npm install --save amazon-chime-sdk-js@2</code></pre>
+					<pre><code class="language-shell">npm install --save amazon-chime-sdk-js@2
+</code></pre>
 					<a href="#interface-changes" id="interface-changes" style="color: inherit; text-decoration: none;">
 						<h2>Interface changes</h2>
 					</a>
@@ -111,13 +112,15 @@ configuration.enableWebAudio = <span class="hljs-literal">true</span>;
 …
 <span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
 <span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
-<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;</code></pre>
+<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+</code></pre>
 					<p>change it to</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
 …
 <span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger, { <span class="hljs-attr">enableWebAudio</span>: <span class="hljs-literal">true</span> });
 <span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
-<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;</code></pre>
+<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+</code></pre>
 					<p>If your code looked like this:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
 …
@@ -126,7 +129,8 @@ configuration.enableWebAudio = <span class="hljs-literal">true</span>;
 <span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
 …
 <span class="hljs-keyword">const</span> enableWebAudio = <span class="hljs-keyword">await</span> checkWhetherWebAudioNeeded();
-deviceController.enableWebAudio(enableWebAudio);</code></pre>
+deviceController.enableWebAudio(enableWebAudio);
+</code></pre>
 					<p>change it to</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
 <span class="hljs-comment">// …</span>
@@ -134,7 +138,8 @@ deviceController.enableWebAudio(enableWebAudio);</code></pre>
 <span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger, { enableWebAudio });
 <span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
 <span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
-…</code></pre>
+…
+</code></pre>
 					<hr>
 					<a href="#update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promiseltvoidgt-instead-of-boolean" id="update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promiseltvoidgt-instead-of-boolean" style="color: inherit; text-decoration: none;">
 						<h3>Update <code>bindAudioElement()</code>, <code>bindAudioStream()</code> and <code>bindAudioDevice()</code> to return <code>Promise&lt;void&gt;</code> instead of <code>boolean</code></h3>
@@ -151,14 +156,17 @@ bindAudioDevice(device: MediaDeviceInfo | <span class="hljs-literal">null</span>
 <span class="hljs-comment">// New Syntax</span>
 bindAudioElement(element: HTMLAudioElement): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
 bindAudioStream(stream: MediaStream): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
-bindAudioDevice(device: MediaDeviceInfo | <span class="hljs-literal">null</span>): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;</code></pre>
+bindAudioDevice(device: MediaDeviceInfo | <span class="hljs-literal">null</span>): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
+</code></pre>
 					<p>Additionally, <code>AudioMixController</code>&#39;s constructor now takes an additional optional <code>logger</code> parameter.
 					If the <code>logger</code> is passed, it will log the errors for any of the operations in <code>AudioMixController</code>.</p>
-					<pre><code class="language-typescript"><span class="hljs-function"><span class="hljs-title">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> logger?: Logger</span>)</span> {}</code></pre>
+					<pre><code class="language-typescript"><span class="hljs-function"><span class="hljs-title">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> logger?: Logger</span>)</span> {}
+</code></pre>
 					<p>If your code looked like this</p>
 					<pre><code class="language-typescript">audioMixController.bindAudioDevice({ <span class="hljs-attr">deviceId</span>: sinkId });
 audioMixController.bindAudioElement(<span class="hljs-keyword">new</span> Audio());
-audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
+audioMixController.bindAudioStream(destinationStream.stream);
+</code></pre>
 					<p>change it to</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">try</span> {
   <span class="hljs-keyword">await</span> audioMixController.bindAudioDevice({ <span class="hljs-attr">deviceId</span>: <span class="hljs-built_in">this</span>.sinkId });
@@ -170,7 +178,8 @@ audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
 } <span class="hljs-keyword">catch</span> (e) {
   <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Failed to bind audio element&#x27;</span>, e);
 }
-<span class="hljs-keyword">await</span> audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
+<span class="hljs-keyword">await</span> audioMixController.bindAudioStream(destinationStream.stream);
+</code></pre>
 					<p>Additionally, if the browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a> API, the <code>bindAudioDevice()</code> will throw an
 						error with a message &#39;Cannot select audio output device. This browser does not support setSinkId.&#39;
 					Check <a href="https://caniuse.com/?search=setSinkId">https://caniuse.com/?search=setSinkId</a> for the setSinkId browser support.</p>
@@ -194,7 +203,8 @@ audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
     <span class="hljs-comment">// …</span>
     <span class="hljs-keyword">return</span> permission;
   }
-}</code></pre>
+}
+</code></pre>
 					<p>you must change your code to be:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {
   <span class="hljs-comment">// …</span>
@@ -210,7 +220,8 @@ audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
     <span class="hljs-comment">// Previous code can remain unchanged.</span>
     <span class="hljs-comment">// …</span>
   }
-}</code></pre>
+}
+</code></pre>
 					<p>A similar adjustment is needed for <code>VideoInputDevice</code>. v2.0 does not include any
 					<code>VideoTransformDevice</code>s.</p>
 					<p>If you use the type <code>Device</code> for a field or variable and pass that value to
@@ -238,7 +249,8 @@ audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
   <span class="hljs-keyword">if</span> (e <span class="hljs-keyword">instanceof</span> PermissionDeniedError) {
     <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Permission denied&#x27;</span>, e);
   }
-}</code></pre>
+}
+</code></pre>
 					<hr>
 					<a href="#introducing-supportssetsinkid-in-defaultbrowserbehavior" id="introducing-supportssetsinkid-in-defaultbrowserbehavior" style="color: inherit; text-decoration: none;">
 						<h3>Introducing <code>supportsSetSinkId()</code> in <code>DefaultBrowserBehavior</code></h3>
@@ -251,7 +263,8 @@ audioMixController.bindAudioStream(destinationStream.stream);</code></pre>
   );
 } <span class="hljs-keyword">else</span> {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;The browser supports setSinkId() API&#x27;</span>);
-}</code></pre>
+}
+</code></pre>
 					<hr>
 					<a href="#deprecating-legacy-screen-share" id="deprecating-legacy-screen-share" style="color: inherit; text-decoration: none;">
 						<h3>Deprecating legacy screen share</h3>

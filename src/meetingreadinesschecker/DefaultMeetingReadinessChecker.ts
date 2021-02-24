@@ -10,7 +10,6 @@ import PermissionDeniedError from '../devicecontroller/PermissionDeniedError';
 import Logger from '../logger/Logger';
 import MeetingSession from '../meetingsession/MeetingSession';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
-import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 import BaseTask from '../task/BaseTask';
 import TimeoutTask from '../task/TimeoutTask';
 import CheckAudioConnectivityFeedback from './CheckAudioConnectivityFeedback';
@@ -27,7 +26,7 @@ import MeetingReadinessCheckerConfiguration from './MeetingReadinessCheckerConfi
 
 export default class DefaultMeetingReadinessChecker implements MeetingReadinessChecker {
   private static async delay(timeoutMs: number): Promise<void> {
-    await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
+    return new Promise(resolve => setTimeout(resolve, timeoutMs));
   }
 
   private audioContext: AudioContext;
