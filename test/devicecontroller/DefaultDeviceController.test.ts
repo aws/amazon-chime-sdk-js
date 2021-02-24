@@ -36,6 +36,7 @@ import {
   MockThrowingTransformDevice,
   MutingTransformDevice,
 } from '../transformdevicemock/MockTransformDevice';
+import { delay } from '../utils';
 import WatchingLogger from './WatchingLogger';
 
 chai.use(chaiAsPromised);
@@ -796,9 +797,9 @@ describe('DefaultDeviceController', () => {
       domMockBehavior.asyncWaitMs = 100;
       deviceController.chooseAudioInputDevice(stringDeviceIds[0]).then(async () => {
         deviceController.chooseAudioInputDevice(stringDeviceIds[1]);
-        await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
+        await delay(10);
         deviceController.chooseAudioInputDevice(stringDeviceIds[2]);
-        await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
+        await delay(10);
         deviceController.chooseAudioInputDevice(stringDeviceIds[3]);
       });
       new TimeoutScheduler(500).start(() => {
@@ -835,9 +836,9 @@ describe('DefaultDeviceController', () => {
       deviceController = new TestDeviceControllerWithIOSSafari12(logger);
       deviceController.chooseAudioInputDevice(stringDeviceIds[0]).then(async () => {
         deviceController.chooseAudioInputDevice(stringDeviceIds[1]);
-        await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
+        await delay(10);
         deviceController.chooseAudioInputDevice(stringDeviceIds[2]);
-        await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
+        await delay(10);
         deviceController.chooseAudioInputDevice(stringDeviceIds[3]);
       });
       new TimeoutScheduler(500).start(() => {
@@ -1181,7 +1182,7 @@ describe('DefaultDeviceController', () => {
 
       const stream = await deviceController.acquireVideoInputStream();
       deviceController.releaseMediaStream(stream);
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await delay(200);
       await deviceController.chooseVideoInputDevice(null);
 
       expect(called).to.be.true;
@@ -1474,9 +1475,9 @@ describe('DefaultDeviceController', () => {
       domMockBehavior.asyncWaitMs = 100;
       deviceController.chooseVideoInputDevice(stringDeviceIds[0]).then(async () => {
         deviceController.chooseVideoInputDevice(stringDeviceIds[1]);
-        await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
+        await delay(10);
         deviceController.chooseVideoInputDevice(stringDeviceIds[2]);
-        await new Promise(resolve => new TimeoutScheduler(10).start(resolve));
+        await delay(10);
         deviceController.chooseVideoInputDevice(stringDeviceIds[3]);
       });
       new TimeoutScheduler(500).start(() => {
@@ -1639,7 +1640,7 @@ describe('DefaultDeviceController', () => {
       };
       // @ts-ignore
       await deviceController.acquireDisplayInputStream(constraints as MediaStreamConstraints);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(spy.calledOnceWith(constraints as MediaStreamConstraints)).to.be.true;
     });
 
@@ -1653,7 +1654,7 @@ describe('DefaultDeviceController', () => {
       };
       // @ts-ignore
       await deviceController.acquireDisplayInputStream(constraints as MediaStreamConstraints);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       // @ts-ignore
       expect(spy.calledOnceWith(constraints as MediaStreamConstraints)).to.be.true;
     });
@@ -1683,11 +1684,11 @@ describe('DefaultDeviceController', () => {
 
       navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
 
       deviceController.removeDeviceChangeObserver(observer);
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
 
       // Dispatched "devicechange" three times before removing observers.
       expect(audioInputsChangedCallCount).to.equal(2);
@@ -1724,7 +1725,7 @@ describe('DefaultDeviceController', () => {
       deviceController.addDeviceChangeObserver(observer);
 
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
 
       expect(audioInputsChangedCallCount).to.equal(0);
       expect(audioOutputsChangedCallCount).to.equal(0);
@@ -1744,7 +1745,7 @@ describe('DefaultDeviceController', () => {
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       // Right before calling observer methods, remove observers.
       deviceController.removeDeviceChangeObserver(observer);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(callCount).to.equal(0);
     });
   });
@@ -1863,7 +1864,7 @@ describe('DefaultDeviceController', () => {
       const spy = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       deviceController.startVideoPreviewForVideoInput(element);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(spy.calledOnce).to.be.true;
       spy.restore();
     });
@@ -1873,7 +1874,7 @@ describe('DefaultDeviceController', () => {
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       domMockBehavior.getUserMediaSucceeds = false;
       deviceController.startVideoPreviewForVideoInput(element);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(spy.called).to.be.false;
       spy.restore();
     });
@@ -1882,7 +1883,7 @@ describe('DefaultDeviceController', () => {
       const spy1 = sinon.spy(DefaultVideoTile, 'disconnectVideoStreamFromVideoElement');
       const spy2 = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
       deviceController.startVideoPreviewForVideoInput(element);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(spy1.called).to.be.false;
       expect(spy2.called).to.be.false;
       spy1.restore();
@@ -1896,7 +1897,7 @@ describe('DefaultDeviceController', () => {
       // @ts-ignore
       element.srcObject = stream;
       deviceController.stopVideoPreviewForVideoInput(element);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(spy.calledOnceWith(element, false)).to.be.true;
     });
 
@@ -1904,7 +1905,7 @@ describe('DefaultDeviceController', () => {
       deviceController.bindToAudioVideoController(audioVideoController);
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       deviceController.stopVideoPreviewForVideoInput(element);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
 
       try {
         await deviceController.acquireVideoInputStream();
@@ -1923,7 +1924,7 @@ describe('DefaultDeviceController', () => {
         return new MediaStream();
       });
       await deviceController.listAudioInputDevices();
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(called).to.be.true;
     });
   });
@@ -1937,10 +1938,10 @@ describe('DefaultDeviceController', () => {
       domMockBehavior.createElementCaptureStream = stream;
       const device: VideoInputDevice = DefaultDeviceController.createEmptyVideoDevice();
       expect(device).to.equal(stream);
-      await new Promise(resolve => new TimeoutScheduler(1500).start(resolve));
+      await delay(1500);
 
       track.stop();
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
     });
 
     it('can create a smpte video device', async () => {
@@ -1950,11 +1951,11 @@ describe('DefaultDeviceController', () => {
 
       domMockBehavior.createElementCaptureStream = stream;
       const device: VideoInputDevice = DefaultDeviceController.synthesizeVideoDevice('smpte');
-      await new Promise(resolve => new TimeoutScheduler(1500).start(resolve));
+      await delay(1500);
       expect(device).to.equal(stream);
 
       track.stop();
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
     });
 
     it('cannot create an empty video device if the stream is not available in the canvas', () => {
@@ -1965,7 +1966,7 @@ describe('DefaultDeviceController', () => {
 
     it('synthesizes the audio device', async () => {
       DefaultDeviceController.synthesizeAudioDevice(100);
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
     });
 
     it('succeeds even when using the sample rate outside the supported range', async () => {
@@ -2001,7 +2002,7 @@ describe('DefaultDeviceController', () => {
       await deviceController.chooseAudioInputDevice(stringDeviceId);
       const stream = await deviceController.acquireAudioInputStream();
       stream.getAudioTracks()[0].stop();
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(audioInputStreamEndedCallCount).to.equal(1);
     });
 
@@ -2019,7 +2020,7 @@ describe('DefaultDeviceController', () => {
       audioVideoController.videoTileController.startLocalVideoTile();
       const stream = await deviceController.acquireVideoInputStream();
       stream.getVideoTracks()[0].stop();
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(videoInputStreamEndedCallCount).to.equal(1);
       expect(spy.called).to.be.true;
     });
@@ -2037,7 +2038,7 @@ describe('DefaultDeviceController', () => {
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       const stream = await deviceController.acquireVideoInputStream();
       stream.getVideoTracks()[0].stop();
-      await new Promise(resolve => new TimeoutScheduler(100).start(resolve));
+      await delay(100);
       expect(videoInputStreamEndedCallCount).to.equal(1);
       expect(spy.called).to.be.false;
     });

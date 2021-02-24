@@ -34,11 +34,11 @@ import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCr
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DisplayMediaState from '../dommock/DisplayMediaState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import UserMediaState from '../dommock/UserMediaState';
+import { delay } from '../utils';
 
 interface AudioElementWithSinkId extends HTMLAudioElement {
   sinkId: string;
@@ -90,10 +90,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       label,
       groupId,
     };
-  }
-
-  async function delay(timeoutMs: number): Promise<void> {
-    await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
   }
 
   class TestAudioVideoController extends NoOpAudioVideoController {

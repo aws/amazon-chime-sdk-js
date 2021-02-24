@@ -19,6 +19,7 @@ import DefaultTransceiverController from '../../src/transceivercontroller/Defaul
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { delay } from '../utils';
 
 describe('LeaveAndReceiveLeaveAckTask', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -68,7 +69,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
 
   describe('run', () => {
     it('can be run', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
@@ -78,7 +79,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
     });
 
     it('completes when the connection is closed while waiting for ack', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
@@ -87,7 +88,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
     });
 
     it('completes when receiving closing event while waiting for ack', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
@@ -96,7 +97,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
     });
 
     it('completes when receiving error event while waiting for ack', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
@@ -108,7 +109,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
     });
 
     it('completes when receiving failed event while waiting for ack', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       const task = new LeaveAndReceiveLeaveAckTask(context);
@@ -126,7 +127,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
     });
 
     it('completes when the connection is already closed', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
 
       context.signalingClient.closeConnection();
@@ -137,7 +138,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
 
   describe('cancel', () => {
     it('should cancel the task and throw the reject', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.be.true;
       const task = new LeaveAndReceiveLeaveAckTask(context);
       new TimeoutScheduler(100).start(() => task.cancel());
@@ -148,7 +149,7 @@ describe('LeaveAndReceiveLeaveAckTask', () => {
     });
 
     it('will cancel idempotently', async () => {
-      await new Promise(resolve => new TimeoutScheduler(waitTimeMs).start(resolve));
+      await delay(waitTimeMs);
       const task = new LeaveAndReceiveLeaveAckTask(context);
       task.cancel();
       task.cancel();

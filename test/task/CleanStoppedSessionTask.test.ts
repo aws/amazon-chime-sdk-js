@@ -29,6 +29,7 @@ import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTile
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { delay } from '../utils';
 
 describe('CleanStoppedSessionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -117,7 +118,7 @@ describe('CleanStoppedSessionTask', () => {
     context.peer = new RTCPeerConnection();
     request = new SignalingClientConnectionRequest('ws://localhost:9999/control', 'test-auth');
     context.signalingClient.openConnection(request);
-    await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+    await delay(behavior.asyncWaitMs + 10);
 
     task = new CleanStoppedSessionTask(context);
   });

@@ -24,6 +24,7 @@ import JoinAndReceiveIndexTask from '../../src/task/JoinAndReceiveIndexTask';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { delay } from '../utils';
 
 describe('JoinAndReceiveIndexTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -102,7 +103,7 @@ describe('JoinAndReceiveIndexTask', () => {
         receivedStatus = true;
         return true;
       };
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
       new TimeoutScheduler(100).start(() => {
         webSocketAdapter.close(4410, 'meeting unavailable');
@@ -132,7 +133,7 @@ describe('JoinAndReceiveIndexTask', () => {
         receivedStatus = true;
         return true;
       };
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
       new TimeoutScheduler(100).start(() => {
         webSocketAdapter.close(4500, 'service unavailable');
@@ -162,7 +163,7 @@ describe('JoinAndReceiveIndexTask', () => {
         receivedStatus = true;
         return true;
       };
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
       new TimeoutScheduler(100).start(() => {
         webSocketAdapter.close(4400, 'bad request');
@@ -182,7 +183,7 @@ describe('JoinAndReceiveIndexTask', () => {
     });
 
     it('can run and receive join ack and index frame', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
       new TimeoutScheduler(100).start(() => {
         webSocketAdapter.send(joinAckSignalBuffer);
@@ -199,7 +200,7 @@ describe('JoinAndReceiveIndexTask', () => {
     });
 
     it('can run and only handle SdkIndexFrame', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
       const leaveSignalTimer = new TimeoutScheduler(100);
       leaveSignalTimer.start(() => {
@@ -219,7 +220,7 @@ describe('JoinAndReceiveIndexTask', () => {
 
   describe('cancel', () => {
     it('should cancel the task and throw the reject', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
       const timer = new TimeoutScheduler(100);
       timer.start(() => {
@@ -235,7 +236,7 @@ describe('JoinAndReceiveIndexTask', () => {
     });
 
     it('should immediately throw the reject if task was canceled before running', async () => {
-      await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+      await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
 
       task.cancel();

@@ -129,7 +129,7 @@ describe('SerialGroupTask', () => {
         }
         setParent(_parentTask: Task): void {}
         async run(): Promise<void> {
-          await new Promise((resolve, reject) => {
+          await new Promise<void>((resolve, reject) => {
             new TimeoutScheduler(waitTimeMs).start(() => {
               if (this.canceled) {
                 resolve();

@@ -7,6 +7,7 @@ import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import BaseTask from '../../src/task/BaseTask';
 import TaskStatus from '../../src/task/TaskStatus';
+import { delay } from '../utils';
 
 describe('BaseTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -94,8 +95,8 @@ describe('BaseTask', () => {
           return 'TestTask';
         }
 
-        async run(): Promise<void> {
-          await new Promise(resolve => new TimeoutScheduler(waitTimeMs).start(resolve));
+        run(): Promise<void> {
+          return delay(waitTimeMs);
         }
       }
 

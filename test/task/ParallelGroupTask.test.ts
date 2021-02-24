@@ -45,7 +45,7 @@ describe('ParallelGroupTask', () => {
         cancel(): void {}
         setParent(_parentTask: Task): void {}
         async run(): Promise<void> {
-          await new Promise(resolve => {
+          await new Promise<void>(resolve => {
             new TimeoutScheduler(waitTimeMs * this.id).start(() => {
               currentTask += 1;
               expect(this.id).to.equal(currentTask);
@@ -134,7 +134,7 @@ describe('ParallelGroupTask', () => {
         }
         setParent(_parentTask: Task): void {}
         async run(): Promise<void> {
-          await new Promise((resolve, reject) => {
+          await new Promise<void>((resolve, reject) => {
             new TimeoutScheduler(waitTimeMs).start(() => {
               if (this.canceled) {
                 resolve();
