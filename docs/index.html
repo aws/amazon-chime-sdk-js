@@ -128,7 +128,8 @@
 				<p>Make sure you have Node.js version 10 or higher. Node 14 is recommended and supported.</p>
 				<p>To add the Amazon Chime SDK for JavaScript into an existing application,
 				install the package directly from npm:</p>
-				<pre><code>npm <span class="hljs-keyword">install </span>amazon-chime-sdk-<span class="hljs-keyword">js </span>--save</code></pre>
+				<pre><code>npm <span class="hljs-keyword">install </span>amazon-chime-sdk-<span class="hljs-keyword">js </span>--save
+</code></pre>
 				<p>Note that the Amazon Chime SDK for JavaScript targets ES2015, which is fully compatible with
 				all supported browsers.</p>
 				<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
@@ -159,7 +160,8 @@
   configuration,
   logger,
   deviceController
-);</code></pre>
+);
+</code></pre>
 				<a href="#getting-responses-from-your-server-application" id="getting-responses-from-your-server-application" style="color: inherit; text-decoration: none;">
 					<h4>Getting responses from your server application</h4>
 				</a>
@@ -184,7 +186,8 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 <span class="hljs-keyword">const</span> attendeeResponse = <span class="hljs-keyword">await</span> chime.createAttendee({
   <span class="hljs-attr">MeetingId</span>: meetingResponse.Meeting.MeetingId,
   <span class="hljs-attr">ExternalUserId</span>: uuid() <span class="hljs-comment">// Link the attendee to an identity managed by your application.</span>
-}).promise();</code></pre>
+}).promise();
+</code></pre>
 				<p>Now securely transfer the <code>meetingResponse</code> and <code>attendeeResponse</code> objects to your client application.
 				These objects contain all the information needed for a client application using the Amazon Chime SDK for JavaScript to join the meeting.</p>
 				<p>The value of the MediaRegion parameter in the createMeeting() should ideally be set to the one of the media regions which is closest to the user creating a meeting. An implementation can be found under the topic &#39;Choosing the nearest media Region&#39; in the <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-sdk-meetings-regions.html">Amazon Chime SDK Media Regions documentation</a>.</p>
@@ -209,13 +212,15 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 <span class="hljs-keyword">const</span> userArn = <span class="hljs-comment">/* The userArn */</span>;
 <span class="hljs-keyword">const</span> sessionId = <span class="hljs-comment">/* The sessionId */</span>;
 <span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MessagingSessionConfiguration(userArn, sessionId, endpoint.Endpoint.Url, chime, AWS);
-<span class="hljs-keyword">const</span> messagingSession = <span class="hljs-keyword">new</span> DefaultMessagingSession(configuration, logger);</code></pre>
+<span class="hljs-keyword">const</span> messagingSession = <span class="hljs-keyword">new</span> DefaultMessagingSession(configuration, logger);
+</code></pre>
 				<a href="#building-and-testing" id="building-and-testing" style="color: inherit; text-decoration: none;">
 					<h2>Building and testing</h2>
 				</a>
-				<pre><code>git fetch --tags https://github.com/aws/amazon-chime-sdk-js
-npm <span class="hljs-keyword">run</span><span class="bash"> build</span>
-npm <span class="hljs-keyword">run</span><span class="bash"> <span class="hljs-built_in">test</span></span></code></pre>
+				<pre><code>git fetch --tags https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/aws/</span>amazon-chime-sdk-js
+npm run build
+npm run test
+</code></pre>
 				<p>After running <code>npm run test</code> the first time, you can use <code>npm run test:fast</code> to
 				speed up the test suite.</p>
 				<p>Tags are fetched in order to correctly generate versioning metadata.</p>
@@ -225,8 +230,9 @@ npm <span class="hljs-keyword">run</span><span class="bash"> <span class="hljs-b
 					<h2>Generating the documentation</h2>
 				</a>
 				<p>To generate JavaScript API reference documentation run:</p>
-				<pre><code>npm <span class="hljs-keyword">run</span><span class="bash"> build</span>
-npm <span class="hljs-keyword">run</span><span class="bash"> doc</span></code></pre>
+				<pre><code>npm <span class="hljs-builtin-name">run</span> build
+npm <span class="hljs-builtin-name">run</span> doc
+</code></pre>
 				<p>Then open <code>docs/index.html</code> in your browser.</p>
 				<a href="#reporting-a-suspected-vulnerability" id="reporting-a-suspected-vulnerability" style="color: inherit; text-decoration: none;">
 					<h2>Reporting a suspected vulnerability</h2>
@@ -264,13 +270,15 @@ npm <span class="hljs-keyword">run</span><span class="bash"> doc</span></code></
 <span class="hljs-comment">// An array of MediaDeviceInfo objects</span>
 audioInputDevices.forEach(<span class="hljs-function"><span class="hljs-params">mediaDeviceInfo</span> =&gt;</span> {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Device ID: <span class="hljs-subst">${mediaDeviceInfo.deviceId}</span> Microphone: <span class="hljs-subst">${mediaDeviceInfo.label}</span>`</span>);
-});</code></pre>
+});
+</code></pre>
 				<p><strong>Use case 2.</strong> Choose audio input and audio output devices by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> audioInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioInputDevices */</span>;
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
 
 <span class="hljs-keyword">const</span> audioOutputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioOutputDevices */</span>;
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);</code></pre>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+</code></pre>
 				<p><strong>Use case 3.</strong> Choose a video input device by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.</p>
 				<p>If there is an LED light next to the attendee&#39;s camera, it will be turned on indicating that it is now capturing from the camera.
 				You probably want to choose a video input device when you start sharing your video.</p>
@@ -279,7 +287,8 @@ audioInputDevices.forEach(<span class="hljs-function"><span class="hljs-params">
 
 <span class="hljs-comment">// You can pass null to choose none. If the previously chosen camera has an LED light on,</span>
 <span class="hljs-comment">// it will turn off indicating the camera is no longer capturing.</span>
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);</code></pre>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
+</code></pre>
 				<p><strong>Use case 4.</strong> Add a device change observer to receive the updated device list.
 					For example, when you pair Bluetooth headsets with your computer, <code>audioInputsChanged</code> and <code>audioOutputsChanged</code> are called
 				with the device list including headsets.</p>
@@ -298,7 +307,8 @@ audioInputDevices.forEach(<span class="hljs-function"><span class="hljs-params">
   }
 };
 
-meetingSession.audioVideo.addDeviceChangeObserver(observer);</code></pre>
+meetingSession.audioVideo.addDeviceChangeObserver(observer);
+</code></pre>
 				<a href="#starting-a-session" id="starting-a-session" style="color: inherit; text-decoration: none;">
 					<h3>Starting a session</h3>
 				</a>
@@ -316,7 +326,8 @@ meetingSession.audioVideo.bindAudioElement(audioElement);
 
 meetingSession.audioVideo.addObserver(observer);
 
-meetingSession.audioVideo.start();</code></pre>
+meetingSession.audioVideo.start();
+</code></pre>
 				<p><strong>Use case 6.</strong> Add an observer to receive session lifecycle events: connecting, start, and stop.</p>
 				<blockquote>
 					<p>Note: You can remove an observer by calling <code>meetingSession.audioVideo.removeObserver(observer)</code>.
@@ -339,7 +350,8 @@ meetingSession.audioVideo.start();</code></pre>
   }
 };
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 				<a href="#audio" id="audio" style="color: inherit; text-decoration: none;">
 					<h3>Audio</h3>
 				</a>
@@ -358,14 +370,16 @@ meetingSession.audioVideo.realtimeMuteLocalAudio();
 } <span class="hljs-keyword">else</span> {
   <span class="hljs-comment">// See the realtimeSetCanUnmuteLocalAudio use case below.</span>
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;You cannot unmute yourself&#x27;</span>);
-}</code></pre>
+}
+</code></pre>
 				<p><strong>Use case 8.</strong> To check whether the local microphone is muted, use this method rather than keeping track of your own mute state.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> muted = meetingSession.audioVideo.realtimeIsLocalAudioMuted();
 <span class="hljs-keyword">if</span> (muted) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;You are muted&#x27;</span>);
 } <span class="hljs-keyword">else</span> {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Other attendees can hear your audio&#x27;</span>);
-}</code></pre>
+}
+</code></pre>
 				<p><strong>Use case 9.</strong> Disable unmute. If you want to prevent users from unmuting themselves (for example during a presentation), use these methods rather than keeping track of your own can-unmute state.</p>
 				<pre><code class="language-js">meetingSession.audioVideo.realtimeSetCanUnmuteLocalAudio(<span class="hljs-literal">false</span>);
 
@@ -373,7 +387,8 @@ meetingSession.audioVideo.realtimeMuteLocalAudio();
 meetingSession.audioVideo.realtimeMuteLocalAudio();
 
 <span class="hljs-keyword">const</span> unmuted = meetingSession.audioVideo.realtimeUnmuteLocalAudio();
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${unmuted}</span> is false. You cannot unmute yourself`</span>)</code></pre>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${unmuted}</span> is false. You cannot unmute yourself`</span>)
+</code></pre>
 				<p><strong>Use case 10.</strong> Subscribe to volume changes of a specific attendee. You can use this to build a real-time volume indicator UI.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { DefaultModality } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
@@ -398,7 +413,8 @@ meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
       signalStrength <span class="hljs-comment">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
     });
   }
-);</code></pre>
+);
+</code></pre>
 				<p><strong>Use case 11.</strong> Subscribe to mute or signal strength changes of a specific attendee. You can use this to build UI for only mute or only signal strength changes.</p>
 				<pre><code class="language-js"><span class="hljs-comment">// This is your attendee ID. You can also subscribe to another attendee&#x27;s ID.</span>
 <span class="hljs-comment">// See the &quot;Attendees&quot; section for an example on how to retrieve other attendee IDs</span>
@@ -437,7 +453,8 @@ meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
       signalStrength <span class="hljs-comment">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
     });
   }
-);</code></pre>
+);
+</code></pre>
 				<p><strong>Use case 12.</strong> Detect the most active speaker. For example, you can enlarge the active speaker&#39;s video element if available.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { DefaultActiveSpeakerPolicy } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
@@ -450,7 +467,8 @@ meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
 meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
   <span class="hljs-keyword">new</span> DefaultActiveSpeakerPolicy(),
   activeSpeakerCallback
-);</code></pre>
+);
+</code></pre>
 				<a href="#video" id="video" style="color: inherit; text-decoration: none;">
 					<h3>Video</h3>
 				</a>
@@ -487,7 +505,8 @@ meetingSession.audioVideo.subscribeToActiveSpeakerDetector(
 
 meetingSession.audioVideo.addObserver(observer);
 
-meetingSession.audioVideo.startLocalVideoTile();</code></pre>
+meetingSession.audioVideo.startLocalVideoTile();
+</code></pre>
 				<p><strong>Use case 14.</strong> Stop sharing your video.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> videoElement = <span class="hljs-comment">/* HTMLVideoElement object e.g. document.getElementById(&#x27;video-element-id&#x27;) */</span>;
 
@@ -518,7 +537,8 @@ meetingSession.audioVideo.addObserver(observer);
 meetingSession.audioVideo.stopLocalVideoTile();
 
 <span class="hljs-comment">// Optional: You can remove the local tile from the session.</span>
-meetingSession.audioVideo.removeLocalVideoTile();</code></pre>
+meetingSession.audioVideo.removeLocalVideoTile();
+</code></pre>
 				<p><strong>Use case 15.</strong> View one attendee video, e.g. in a 1-on-1 session.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> videoElement = <span class="hljs-comment">/* HTMLVideoElement object e.g. document.getElementById(&#x27;video-element-id&#x27;) */</span>;
 
@@ -534,7 +554,8 @@ meetingSession.audioVideo.removeLocalVideoTile();</code></pre>
   }
 };
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 				<p><strong>Use case 16.</strong> View up to 16 attendee videos. Assume that you have 16 video elements in your application,
 				and that an empty cell means it&#39;s taken.</p>
 				<pre><code class="language-js"><span class="hljs-comment">/*
@@ -601,7 +622,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
   }
 };
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 				<p><strong>Use case 17.</strong> Add an observer to know all the remote video sources when changed.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
   <span class="hljs-attr">remoteVideoSourcesDidChange</span>: <span class="hljs-function"><span class="hljs-params">videoSources</span> =&gt;</span> {
@@ -612,7 +634,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
   }
 };
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 				<p>You can also call below method to know all the remote video sources:</p>
 				<blockquote>
 					<p>Note: <code>getRemoteVideoSources</code> method is different from <code>getAllRemoteVideoTiles</code>,
@@ -623,7 +646,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 videoSources.forEach(<span class="hljs-function"><span class="hljs-params">videoSource</span> =&gt;</span> {
   <span class="hljs-keyword">const</span> { attendee } = videoSource;
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`An attendee (<span class="hljs-subst">${attendee.attendeeId}</span> <span class="hljs-subst">${attendee.externalUserId}</span>) is sending video`</span>);
-});</code></pre>
+});
+</code></pre>
 				<a href="#screen-and-content-share" id="screen-and-content-share" style="color: inherit; text-decoration: none;">
 					<h3>Screen and content share</h3>
 				</a>
@@ -669,14 +693,17 @@ meetingSession.audioVideo.addContentShareObserver(observer);
 meetingSession.audioVideo.addObserver(observer);
 
 <span class="hljs-comment">// A browser will prompt the user to choose the screen.</span>
-<span class="hljs-keyword">const</span> contentShareStream = <span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture();</code></pre>
+<span class="hljs-keyword">const</span> contentShareStream = <span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture();
+</code></pre>
 				<p>If you want to display the content share stream for the sharer, you can bind the returned content share stream to a
 				video element using <code>connectVideoStreamToVideoElement</code> from DefaultVideoTile.</p>
-				<pre><code class="language-js">DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, <span class="hljs-literal">false</span>);</code></pre>
+				<pre><code class="language-js">DefaultVideoTile.connectVideoStreamToVideoElement(contentShareStream, videoElement, <span class="hljs-literal">false</span>);
+</code></pre>
 				<p><strong>Use case 19.</strong> Start sharing your screen in an environment that does not support a screen picker dialog. e.g. Electron</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> sourceId = <span class="hljs-comment">/* Window or screen ID e.g. the ID of a DesktopCapturerSource object in Electron */</span>;
 
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture(sourceId);</code></pre>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShareFromScreenCapture(sourceId);
+</code></pre>
 				<p><strong>Use case 20.</strong> Start streaming your video file from an <code>&lt;input&gt;</code> element of type <code>file</code>.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> videoElement = <span class="hljs-comment">/* HTMLVideoElement object e.g. document.getElementById(&#x27;video-element-id&#x27;) */</span>;
 <span class="hljs-keyword">const</span> inputElement = <span class="hljs-comment">/* HTMLInputElement object e.g. document.getElementById(&#x27;input-element-id&#x27;) */</span>;
@@ -690,7 +717,8 @@ inputElement.addEventListener(<span class="hljs-string">&#x27;change&#x27;</span
   <span class="hljs-keyword">const</span> mediaSream = videoElement.captureStream(); <span class="hljs-comment">/* use mozCaptureStream for Firefox e.g. videoElement.mozCaptureStream(); */</span>
   <span class="hljs-keyword">await</span> meetingSession.audioVideo.startContentShare(mediaSream);
   inputElement.value = <span class="hljs-string">&#x27;&#x27;</span>;
-});</code></pre>
+});
+</code></pre>
 				<p><strong>Use case 21.</strong> Stop sharing your screen or content.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
   <span class="hljs-attr">contentShareDidStop</span>: <span class="hljs-function">() =&gt;</span> {
@@ -700,7 +728,8 @@ inputElement.addEventListener(<span class="hljs-string">&#x27;change&#x27;</span
 
 meetingSession.audioVideo.addContentShareObserver(observer);
 
-<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopContentShare();</code></pre>
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.stopContentShare();
+</code></pre>
 				<p><strong>Use case 22.</strong> View up to 2 attendee content or screens. Chime SDK allows 2 simultaneous content shares per meeting.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { DefaultModality } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
@@ -746,7 +775,8 @@ meetingSession.audioVideo.addContentShareObserver(observer);
   }
 };
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 				<a href="#attendees" id="attendees" style="color: inherit; text-decoration: none;">
 					<h3>Attendees</h3>
 				</a>
@@ -762,7 +792,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
   }
 };
 
-meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(callback);</code></pre>
+meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(callback);
+</code></pre>
 				<p><strong>Use case 24.</strong> Create a simple roster by subscribing to attendee presence and volume changes.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { DefaultModality } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
@@ -804,7 +835,8 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
       }
     );
   }
-);</code></pre>
+);
+</code></pre>
 				<a href="#monitoring-and-alerts" id="monitoring-and-alerts" style="color: inherit; text-decoration: none;">
 					<h3>Monitoring and alerts</h3>
 				</a>
@@ -822,7 +854,8 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
   }
 };
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 				<p><strong>Use case 26.</strong> Add an observer to receive alerts. You can use these alerts to notify users of connection problems.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
   <span class="hljs-attr">connectionDidBecomePoor</span>: <span class="hljs-function">() =&gt;</span> {
@@ -847,7 +880,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
   }
 };
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 				<a href="#stopping-a-session" id="stopping-a-session" style="color: inherit; text-decoration: none;">
 					<h3>Stopping a session</h3>
 				</a>
@@ -871,7 +905,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 
 meetingSession.audioVideo.addObserver(observer);
 
-meetingSession.audioVideo.stop();</code></pre>
+meetingSession.audioVideo.stop();
+</code></pre>
 				<p><strong>Use case 28.</strong> Add an observer to get notified when a session has ended.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { MeetingSessionStatusCode } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
@@ -895,7 +930,8 @@ meetingSession.audioVideo.stop();</code></pre>
   }
 };
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 				<a href="#meeting-readiness-checker" id="meeting-readiness-checker" style="color: inherit; text-decoration: none;">
 					<h3>Meeting readiness checker</h3>
 				</a>
@@ -903,7 +939,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { DefaultMeetingReadinessChecker } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
 <span class="hljs-comment">// In the usage examples below, you will use this meetingReadinessChecker object.</span>
-<span class="hljs-keyword">const</span> meetingReadinessChecker = <span class="hljs-keyword">new</span> DefaultMeetingReadinessChecker(logger, meetingSession);</code></pre>
+<span class="hljs-keyword">const</span> meetingReadinessChecker = <span class="hljs-keyword">new</span> DefaultMeetingReadinessChecker(logger, meetingSession);
+</code></pre>
 				<p><strong>Use case 30.</strong> Use the meeting readiness checker to perform local checks.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { CheckAudioInputFeedback } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
@@ -920,7 +957,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
   <span class="hljs-keyword">case</span> CheckAudioInputFeedback.PermissionDenied:
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Permission denied&#x27;</span>);
     <span class="hljs-keyword">break</span>;
-}</code></pre>
+}
+</code></pre>
 				<p><strong>Use case 31.</strong> Use the meeting readiness checker to perform end-to-end checks, e.g. audio, video, and content share.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> {
   CheckAudioConnectivityFeedback,
@@ -940,7 +978,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 
 <span class="hljs-comment">// Tests content share connectivity</span>
 <span class="hljs-keyword">const</span> contentShareFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkContentShareConnectivity();
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckContentShareConnectivityFeedback[contentShareFeedback]}</span>`</span>);</code></pre>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckContentShareConnectivityFeedback[contentShareFeedback]}</span>`</span>);
+</code></pre>
 				<p><strong>Use case 32.</strong> Use the meeting readiness checker to perform network checks, e.g. TCP and UDP.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> {
   CheckNetworkUDPConnectivityFeedback,
@@ -953,16 +992,19 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 
 <span class="hljs-comment">// Tests for TCP network connectivity</span>
 <span class="hljs-keyword">const</span> networkTCPFeedback = <span class="hljs-keyword">await</span> meetingReadinessChecker.checkNetworkTCPConnectivity();
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}</span>`</span>);</code></pre>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Feedback result: <span class="hljs-subst">${CheckNetworkTCPConnectivityFeedback[networkTCPFeedback]}</span>`</span>);
+</code></pre>
 				<a href="#selecting-an-audio-profile" id="selecting-an-audio-profile" style="color: inherit; text-decoration: none;">
 					<h3>Selecting an audio profile</h3>
 				</a>
 				<p><strong>Use case 32.</strong> Set the audio quality of the main audio input to optimize for speech or music:</p>
 				<p>Use the following setting to optimize the audio bitrate of the main audio input for fullband speech with a mono channel:</p>
-				<pre><code class="language-js">meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());</code></pre>
+				<pre><code class="language-js">meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
+</code></pre>
 				<p><strong>Use case 33.</strong> Set the audio quality of content share audio to optimize for speech or music:</p>
 				<p>Use the following setting to optimize the audio bitrate of content share audio for fullband music with a mono channel:</p>
-				<pre><code class="language-js">meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());</code></pre>
+				<pre><code class="language-js">meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
+</code></pre>
 				<a href="#starting-a-messaging-session" id="starting-a-messaging-session" style="color: inherit; text-decoration: none;">
 					<h3>Starting a messaging session</h3>
 				</a>
@@ -993,7 +1035,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
 };
 
 messagingSession.addObserver(observer);
-messagingSession.start();</code></pre>
+messagingSession.start();
+</code></pre>
 				<a href="#notice" id="notice" style="color: inherit; text-decoration: none;">
 					<h2>Notice</h2>
 				</a>

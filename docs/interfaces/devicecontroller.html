@@ -93,9 +93,10 @@
 						implementation calls getUserMedia for audio and video and returns the promise
 						to the stream so that the stream can be cleaned up once the labels are
 					detected.</p>
-					<pre><code><span class="hljs-string">():</span> <span class="hljs-string">Promise&lt;MediaStream&gt;</span> <span class="hljs-string">=&gt;</span> {
-  <span class="hljs-string">return</span> <span class="hljs-string">navigator.mediaDevices.getUserMedia(</span>{ <span class="hljs-attr">audio:</span> <span class="hljs-literal">true</span>, <span class="hljs-attr">video:</span> <span class="hljs-literal">true</span> }<span class="hljs-string">);</span>
-}</code></pre>
+					<pre><code>(): <span class="hljs-built_in">Promise</span>&lt;MediaStream&gt; =&gt; {
+  <span class="hljs-keyword">return</span> navigator.mediaDevices.getUserMedia({ audio: <span class="hljs-literal">true</span>, video: <span class="hljs-literal">true</span> });
+}
+</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">

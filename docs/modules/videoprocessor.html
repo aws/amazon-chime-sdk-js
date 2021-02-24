@@ -190,7 +190,8 @@
 
   <span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): VideoFrameBuffer[];
   <span class="hljs-keyword">async</span> destroy(): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
-}</code></pre>
+}
+</code></pre>
 					<p>To keep the properties of the original video, the processor has to copy the frame onto its own staging buffer in <code>process</code>:</p>
 					<pre><code class="language-typescript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">VideoResizeProcessor</span> <span class="hljs-title">implements</span> <span class="hljs-title">VideoFrameProcessor</span> </span>{
   <span class="hljs-keyword">private</span> targetCanvas: HTMLCanvasElement = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&#x27;canvas&#x27;</span>) <span class="hljs-keyword">as</span> HTMLCanvasElement;
@@ -203,7 +204,8 @@
   <span class="hljs-keyword">private</span> sourceHeight: <span class="hljs-built_in">number</span> = <span class="hljs-number">0</span>;
 
   <span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): <span class="hljs-built_in">Promise</span>&lt;VideoFrameBuffer[]&gt;;
-}</code></pre>
+}
+</code></pre>
 					<p>During processing, the incoming video is painted onto the internal canvas like in the following abbreviated:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): <span class="hljs-built_in">Promise</span>&lt;VideoFrameBuffer[]&gt; {
   <span class="hljs-keyword">const</span> canvas = buffers[<span class="hljs-number">0</span>].asCanvasElement();
@@ -225,7 +227,8 @@
   <span class="hljs-comment">// replace the video frame with the resized one for subsequent processor</span>
   buffers[<span class="hljs-number">0</span>] = <span class="hljs-built_in">this</span>.canvasVideoFrameBuffer;
   <span class="hljs-keyword">return</span> buffers;
-}</code></pre>
+}
+</code></pre>
 					<p>Usage of the custom processor looks like the following:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {
   DefaultVideoTransformDevice

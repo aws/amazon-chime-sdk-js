@@ -185,18 +185,21 @@
 					<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then Amazon Voice Focus will not be able to initialize, and will either appear to be unsupported or will fail to create a suppressed audio device. You will see errors in your browser console like:</p>
 					<pre><code>Refused <span class="hljs-built_in">to</span> connect <span class="hljs-built_in">to</span>
 <span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/workers/worker-v1.js…&#x27;</span>
-because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> document<span class="hljs-string">&#x27;s Content Security Policy.</span></code></pre>
+because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> document<span class="hljs-string">&#x27;s Content Security Policy.</span>
+</code></pre>
 					<p>or</p>
 					<pre><code>Refused <span class="hljs-built_in">to</span> <span class="hljs-built_in">load</span> <span class="hljs-keyword">the</span> script
 <span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/processors/worklet-inline-processor…&#x27;</span>
-because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> following Content Security Policy directive…</code></pre>
+because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> following Content Security Policy directive…
+</code></pre>
 					<p>If you need guidance with correct CSP configuration to use Amazon Voice Focus, contact AWS Support.</p>
 					<a href="#cross-origin-opener-policy" id="cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
 						<h3>Cross-Origin Opener Policy</h3>
 					</a>
 					<p>Some execution modes require careful configuration of web security, including less common headers like <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy"><code>Cross-Origin-Opener-Policy</code></a>. To opt in to these execution modes, send</p>
 					<pre><code><span class="hljs-keyword">Cross</span>-Origin-Opener-<span class="hljs-keyword">Policy</span>: same-origin
-<span class="hljs-keyword">Cross</span>-Origin-Embedder-<span class="hljs-keyword">Policy</span>: require-corp</code></pre>
+<span class="hljs-keyword">Cross</span>-Origin-Embedder-<span class="hljs-keyword">Policy</span>: require-corp
+</code></pre>
 					<p>when serving your application HTML. These headers are optional but advised: they improve web security, as well as allowing the browser to support technologies like <code>SharedArrayBuffer</code>.</p>
 					<a href="#checking-for-support-before-offering-noise-suppression" id="checking-for-support-before-offering-noise-suppression" style="color: inherit; text-decoration: none;">
 						<h2>Checking for support before offering noise suppression</h2>
@@ -205,7 +208,8 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					<p>The SDK provides a static method to allow you to cheaply check for the required browser features:</p>
 					<pre><code class="language-typescript"><span class="hljs-string">`import { VoiceFocusDeviceTransformer } from &#x27;amazon-chime-sdk-js&#x27;;`</span>
 …
-<span class="hljs-string">`const isVoiceFocusSupported = await VoiceFocusDeviceTransformer.isSupported();`</span></code></pre>
+<span class="hljs-string">`const isVoiceFocusSupported = await VoiceFocusDeviceTransformer.isSupported();`</span>
+</code></pre>
 					<p>If <code>isSupported</code> returns <code>true</code>, you can instantiate a transformer. This will measure the runtime environment and perform some initialization, and so its <code>isSupported</code> method is more accurate.</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">let</span> transformer: VoiceFocusDeviceTransformer;
 <span class="hljs-keyword">try</span> {
@@ -214,7 +218,8 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 } <span class="hljs-keyword">catch</span> (e) {
   <span class="hljs-comment">// Will only occur due to invalid input or transient errors (e.g., network).</span>
   isVoiceFocusSupported = <span class="hljs-literal">false</span>;
-}</code></pre>
+}
+</code></pre>
 					<p>By default this will also pre-load the model file and prepare Amazon Voice Focus for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. If you do not want to pre-load resources — <em>e.g.</em>, if you would rather the download occur later, or you are not sure if the user will use noise suppression — pass the optional <code>preload</code> argument:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec = {};
 <span class="hljs-keyword">const</span> options = {
@@ -222,26 +227,30 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
   logger,
 };
 
-transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer(spec, options);</code></pre>
+transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer(spec, options);
+</code></pre>
 					<p>Check for both of these kinds of support prior to offering noise suppression to users. The ideal time to do so is during pre-meeting setup.</p>
 					<p>Your device controller must support Web Audio to use Amazon Voice Focus. If you do not wish to enable Web Audio universally, you can use your support check as a condition:</p>
 					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController({
   <span class="hljs-attr">enableWebAudio</span>: isVoiceFocusSupported
-});</code></pre>
+});
+</code></pre>
 					<a href="#adding-amazon-voice-focus-to-your-application" id="adding-amazon-voice-focus-to-your-application" style="color: inherit; text-decoration: none;">
 						<h2>Adding Amazon Voice Focus to your application</h2>
 					</a>
 					<p>Amazon Voice Focus integrates with the SDK by providing a new kind of audio input device: one that wraps another audio input and applies noise suppression to it.</p>
 					<p>Once you have checked for support and created a transformer, you create a <code>VoiceFocusTransformDevice</code> from a user’s selected audio input as follows:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> chosenAudioInput = <span class="hljs-string">&#x27;abcdef&#x27;</span>;    <span class="hljs-comment">// Device ID, stream, or constraints</span>
-<span class="hljs-keyword">const</span> vfDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);</code></pre>
+<span class="hljs-keyword">const</span> vfDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
+</code></pre>
 					<p>If the transformer returned that Amazon Voice Focus is not supported, or it failed to initialize, this method returns <code>undefined</code>. In that case, fall back to the user&#39;s chosen audio input and indicate to the user that noise suppression is not enabled.</p>
 					<p>The returned <code>VoiceFocusTransformDevice</code> can be supplied to a <code>chooseAudioInputDevice</code> call in the usual way:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> deviceToUse = vfDevice || chosenAudioInput;
 <span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(deviceToUse);
 <span class="hljs-keyword">if</span> (vfDevice) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus enabled&#x27;</span>);
-}</code></pre>
+}
+</code></pre>
 					<p>As noted above, the device controller must support Web Audio.</p>
 					<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
 						<h2>Configuration</h2>
@@ -254,17 +263,20 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 					<p>In some cases you might wish to temporarily or permanently disable noise suppression during a call: perhaps to reduce CPU utilization or to allow background noise to be heard.</p>
 					<p>You can do so by simply selecting the inner device without Amazon Voice Focus, which will fall back to the browser’s own simple noise suppressor:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(chosenAudioInput);
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus disabled&#x27;</span>);</code></pre>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus disabled&#x27;</span>);
+</code></pre>
 					<p>You can re-enable Amazon Voice Focus again by reselecting the transform device:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(vfDevice);
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus re-enabled&#x27;</span>);</code></pre>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus re-enabled&#x27;</span>);
+</code></pre>
 					<p>If a user switches microphone inputs, <em>e.g.</em>, after plugging in a headset, you can reuse the setup work involved in building the transform device by choosing a new inner device:</p>
 					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.voiceFocusDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
 …
 <span class="hljs-comment">// New device selected. Swap it out.</span>
 <span class="hljs-built_in">this</span>.voiceFocusDevice = <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.voiceFocusDevice.chooseNewInnerDevice(newDevice);
 <span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(<span class="hljs-built_in">this</span>.voiceFocusDevice);
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus switched to new device&#x27;</span>, newDevice);</code></pre>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus switched to new device&#x27;</span>, newDevice);
+</code></pre>
 					<a href="#adapting-to-performance-constraints" id="adapting-to-performance-constraints" style="color: inherit; text-decoration: none;">
 						<h2>Adapting to performance constraints</h2>
 					</a>
@@ -303,7 +315,8 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
   <span class="hljs-attr">simd</span>: <span class="hljs-string">&#x27;force&#x27;</span>,
 };
 
-<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });</code></pre>
+<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+</code></pre>
 					<p>or to force the use of the highest quality model, which typically requires offload to a Web Worker:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
   <span class="hljs-attr">variant</span>: <span class="hljs-string">&#x27;c100&#x27;</span>,
@@ -311,7 +324,8 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
   <span class="hljs-attr">simd</span>: <span class="hljs-string">&#x27;force&#x27;</span>,
 };
 
-<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });</code></pre>
+<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+</code></pre>
 					<p>We recommend that you allow estimation to adapt to the runtime environment: it is difficult to predict in advance the correct execution preference and model complexity, and choosing a too-complex model or the wrong execution approach can result in audio glitches or high CPU utilization that affects the rest of the application.</p>
 					<a href="#observer-notifications" id="observer-notifications" style="color: inherit; text-decoration: none;">
 						<h2>Observer notifications</h2>

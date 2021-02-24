@@ -82,7 +82,8 @@
   }
 }
 
-meetingSession.audioVideo.addObserver(observer);</code></pre>
+meetingSession.audioVideo.addObserver(observer);
+</code></pre>
 					<p>In the <code>eventDidReceive</code> observer method, we recommend that you handle each meeting event so that
 					you don&#39;t have to worry about how your event processing would scale when the later versions of Chime SDK introduce new meeting events.</p>
 					<p>For example, the code outputs error information for four failure events at the &quot;error&quot; log level.</p>
@@ -102,7 +103,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
       <span class="hljs-keyword">break</span>;
     <span class="hljs-keyword">default</span>:
       <span class="hljs-keyword">break</span>;
-}</code></pre>
+}
+</code></pre>
 					<p>Ensure that you are familiar with the attributes you want to use. See the following two examples.</p>
 					<p>The code logs the last 5 minutes of the <code>meetingHistory</code> attribute when a failure event occurs.
 					It&#39;s helpful to reduce the amount of data sent to your server application or analytics tool.</p>
@@ -125,14 +127,16 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
     <span class="hljs-keyword">default</span>:
       <span class="hljs-keyword">break</span>;
   }
-}</code></pre>
+}
+</code></pre>
 					<p>This example prints out the <code>meetingStatus</code> attribute if it&#39;s available.
 					See the &quot;Included in&quot; column in the meeting and device attribute tables below for more information.</p>
 					<pre><code class="language-js"><span class="hljs-function"><span class="hljs-title">eventDidReceive</span>(<span class="hljs-params">name, attributes</span>)</span> {
   <span class="hljs-keyword">if</span> (attributes.hasOwnProperty(<span class="hljs-string">&#x27;meetingStatus&#x27;</span>)) {
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`The meeting ended with the status: <span class="hljs-subst">${attributes.meetingStatus}</span> in `</span>, attributes);
   }
-}</code></pre>
+}
+</code></pre>
 					<a href="#meeting-events-and-attributes" id="meeting-events-and-attributes" style="color: inherit; text-decoration: none;">
 						<h2>Meeting events and attributes</h2>
 					</a>
@@ -364,7 +368,8 @@ meetingSession.audioVideo.addObserver(observer);</code></pre>
     <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;meetingEnded&#x27;</span>,
     <span class="hljs-attr">timestampMs</span>: <span class="hljs-number">1612167900000</span>
   }
-]</code></pre>
+]
+</code></pre>
 					<p>You can use the meeting history to track user actions and events from the creation of the <code>DefaultMeetingSession</code> object.
 						For example, if you started a meeting twice using the same <code>DefaultMeetingSession</code> object,
 					the meeting history will include two <code>meetingStartSucceeded</code>.</p>
