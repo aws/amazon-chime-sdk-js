@@ -11,6 +11,21 @@ const app = process.env.npm_config_app || 'meetingV2';
 
 module.exports = env => {
   return {
+    devServer: {
+      hot: true,
+      index: 'meetingV2.html',
+      onListening: (server) => {
+        const { serve } = require('./server.js');
+        serve('127.0.0.1:8081');
+      },
+      publicPath: '/',
+      port: 8080,
+      proxy: {
+        '/join': 'http://127.0.0.1:8081',
+        '/end': 'http://127.0.0.1:8081',
+        '/fetch_credentials': 'http://127.0.0.1:8081',
+      }
+    },
     plugins: [
       new HtmlWebpackPlugin({
         inlineSource: '.(js|css)$',
