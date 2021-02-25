@@ -19,11 +19,13 @@ For messaging session, make sure your role policy contains `chime:Connect` and `
 
 1. Navigate to the `demos/browser` folder: `cd demos/browser`
 
-2. Start the demo application: `npm run start`
+2. Start the demo application in 'hot reload' mode: `npm run start:hot`
 
 3. Open http://localhost:8080 in your browser.
 
 The meeting created with a local server is only available within your browser.
+
+Changes to `meetingV2.html` and `meetingV2.ts` will be hot-reloaded. To force changes to the library itself to be hot-reloaded, run `npm run tsc:watch` in the SDK repository root.
 
 ### Demo applications
 
@@ -38,7 +40,7 @@ To run a specific demo application use:
 npm run start --app=<app>
 ```
 
-For example, 
+For example,
 1. To run the `meeting` demo, run:
     ```
     npm run start --app=meeting
@@ -47,7 +49,7 @@ For example,
     ```
     npm run start --app=meetingReadinessChecker
     ```
-   
+
 If you don't specify the `--app` option, it will run the `meetingV2` demo
 
 After running `start` the first time, you can speed things up on subsequent iterations by using `start:fast`, e.g.
