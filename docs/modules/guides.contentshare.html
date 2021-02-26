@@ -1,0 +1,217 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ContentShare | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">amazon-chime-sdk-js</a>
+				</li>
+				<li>
+					<a href="guides.html">Guides</a>
+				</li>
+				<li>
+					<a href="guides.contentshare.html">ContentShare</a>
+				</li>
+			</ul>
+			<h1>Namespace ContentShare</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#content-share" id="content-share" style="color: inherit; text-decoration: none;">
+							<h3>Content Share</h3>
+						</a>
+					</div>
+					<p>This guide explains how to share audio and video content such as screen capture or
+						media files in a meeting. This guide assumes you have already created a meeting and
+						added attendees to the meeting (see
+						<a href="https://aws.github.io/amazon-chime-sdk-js/modules/gettingstarted.html">Getting Started</a>
+					for more information).</p>
+					<p>Content share methods are accessed from the
+						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html">audio-video facade</a>
+					belonging to the meeting session.</p>
+					<a href="#share-content" id="share-content" style="color: inherit; text-decoration: none;">
+						<h4>Share content</h4>
+					</a>
+					<p>Using the audio-video facade, start sharing content by calling
+						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare">startContentShare</a>
+						and provide a
+					<a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream">MediaStream</a>:</p>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShare</span><span style="color: #000000">(</span><span style="color: #001080">mediaStream</span><span style="color: #000000">);</span>
+</code></pre>
+					<p>To start a screen capture, call the convenience method
+					<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentsharefromscreencapture">startContentShareFromScreenCapture</a>.</p>
+					<p>When calling from a browser, leave <code>sourceId</code> empty. This will launch the
+					browser&#39;s native screen capture picker.</p>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">();</span>
+</code></pre>
+					<p>When calling from Electron, build a screen capture picker into your application and
+						pass the <code>sourceId</code> of the chosen screen capture to the method. See the
+						<a href="https://github.com/hokein/electron-sample-apps/tree/master/desktop-capture">desktop-capture</a>
+					sample application for more information.</p>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">sourceId</span><span style="color: #000000"> = </span><span style="color: #008000">// get this from your custom Electron screen capture picker</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">. </span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">startContentShareFromScreenCapture</span><span style="color: #000000">(</span><span style="color: #001080">sourceId</span><span style="color: #000000">);</span>
+</code></pre>
+					<a href="#view-the-content-share" id="view-the-content-share" style="color: inherit; text-decoration: none;">
+						<h4>View the content share</h4>
+					</a>
+					<p>Content shares are treated as regular audio-video attendees. The attendee ID of a
+						content share has a suffix of
+						<a href="https://aws.github.io/amazon-chime-sdk-js/enums/contentshareconstants.html#modality">#content</a>.
+						You receive real-time attendee presence and volume indicator callbacks
+					for content audio and video tile updates for content video.</p>
+					<p>To view the content share:</p>
+					<ul>
+						<li>Create an instance of <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html">AudioVideoObserver</a> that implements <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videotiledidupdate">videoTileDidUpdate</a> to receive callbacks when the video tile is created and updated</li>
+						<li>Add the observer with <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addobserver">addObserver</a> method to receive events.</li>
+						<li>In <code>videoTileDidUpdate</code>, bind the video tile to a video element in your app:</li>
+					</ul>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">tileState</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to tileState parameter in videoTileDidUpdate</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">videoElement</span><span style="color: #000000"> = </span><span style="color: #001080">document</span><span style="color: #000000">.</span><span style="color: #795E26">getElementById</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;video-element-id&#039;</span><span style="color: #000000">);</span>
+<span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">bindVideoElement</span><span style="color: #000000">(</span><span style="color: #001080">tileState</span><span style="color: #000000">.</span><span style="color: #001080">tileId</span><span style="color: #000000"> , </span><span style="color: #001080">videoElement</span><span style="color: #000000">);</span>
+</code></pre>
+					<p>Use the
+						<a href="https://aws.github.io/amazon-chime-sdk-js/classes/videotilestate.html#iscontent">isContent</a>
+						property of the
+						<a href="https://aws.github.io/amazon-chime-sdk-js/classes/videotilestate.html">TileState</a>
+						to check if the video tile is a content share, and any add special logic you need
+					to handle the content share.</p>
+					<p>You can also use the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/modality.html">Modality</a>
+					class to determine that an attendee ID is a content share:</p>
+					<pre><code class="language-javascript"><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">DefaultModality</span><span style="color: #000000">(</span><span style="color: #001080">attendeeId</span><span style="color: #000000">).</span><span style="color: #795E26">hasModality</span><span style="color: #000000">(</span><span style="color: #001080">DefaultModality</span><span style="color: #000000">.</span><span style="color: #0070C1">MODALITY_CONTENT</span><span style="color: #000000">)) {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// ...special handling for content share...</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<a href="#pause-and-unpause-the-content-share" id="pause-and-unpause-the-content-share" style="color: inherit; text-decoration: none;">
+						<h4>Pause and unpause the content share</h4>
+					</a>
+					<p>To pause and unpause the content share, call
+						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausecontentshare">pauseContentShare</a> and
+					<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#unpausecontentshare">unpauseContentShare</a>.</p>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">pauseContentShare</span><span style="color: #000000">();</span>
+</code></pre>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">unpauseContentShare</span><span style="color: #000000">();</span>
+</code></pre>
+					<a href="#stop-the-content-share" id="stop-the-content-share" style="color: inherit; text-decoration: none;">
+						<h4>Stop the content share</h4>
+					</a>
+					<p>To stop the content share, call
+					<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stopcontentshare">stopContentShare</a>.</p>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">meetingSession</span><span style="color: #000000"> = </span><span style="color: #008000">// reference to MeetingSession</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">meetingSession</span><span style="color: #000000">.</span><span style="color: #001080">audioVideo</span><span style="color: #000000">.</span><span style="color: #795E26">stopContentShare</span><span style="color: #000000">();</span>
+</code></pre>
+					<a href="#receive-content-share-events" id="receive-content-share-events" style="color: inherit; text-decoration: none;">
+						<h4>Receive content share events</h4>
+					</a>
+					<p>Implement methods from <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/contentshareobserver.html">ContentShareObserver</a> and
+						add an instance of the observer using
+						<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#addcontentshareobserver">addContentShareObserver</a>
+					to receive events.</p>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Content%20Share%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Modules</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

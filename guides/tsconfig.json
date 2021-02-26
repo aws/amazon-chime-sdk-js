@@ -5,6 +5,21 @@
   },
   "include": [
     "../src/**/*",
-    "./docs.ts"
-  ]
+    "./docs.ts",
+    "./index.ts"
+  ],
+  "typedocOptions": {
+    "out": "./docs",
+    "readme": "README.md",
+    "entryPoints": [
+      "src/index.ts",
+      "guides/index.ts"
+    ],
+    "exclude": [
+      "src/signalingprotocol/SignalingProtocol.js",
+      "src/signalingprotocol/SignalingProtocol.d.ts",
+      "src/signalingprotocol/ScreenSignalingProtocol.js",
+      "src/signalingprotocol/ScreenSignalingProtocol.d.ts"
+    ]
+  }
 }

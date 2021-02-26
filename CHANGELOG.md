@@ -17,8 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MeetingSessionPOSTLogger` now matches the regular `Logger` API signature.
 
 ### Changed
-
 - Enable SIMD autodetection for Amazon Voice Focus in Chrome 90+.
+- Updates `typedoc` to fix a security vulnerability associated with the `marked` library.
 
 ### Removed
 

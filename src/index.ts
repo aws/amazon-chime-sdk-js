@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module amazon-chime-sdk-js
+ */
+
 import AGCOptions from './voicefocus/AGCOptions';
 import ActiveSpeakerDetector from './activespeakerdetector/ActiveSpeakerDetector';
 import ActiveSpeakerDetectorFacade from './activespeakerdetector/ActiveSpeakerDetectorFacade';
