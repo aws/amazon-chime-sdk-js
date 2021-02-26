@@ -178,7 +178,7 @@ class SdkBaseTest extends KiteBaseTest {
 
   writeCompletionTimeTo(filePath) {
     try {
-      const epochTimeInSeconds = Math.round(new Date().getTime() / 1000);
+      const epochTimeInSeconds = Math.round(Date.now() / 1000);
       fs.appendFileSync(`${filePath}/last_run_timestamp`, `${epochTimeInSeconds}\n`, {flag: 'a+'});
       console.log(`Wrote canary completion timestamp : ${epochTimeInSeconds}`);
     } catch (e) {

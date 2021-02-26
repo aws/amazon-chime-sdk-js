@@ -30,11 +30,18 @@ export default class MeetingSessionPOSTLogger {
       });
   }
 
-  debug(debugFunction: () => string): void {
+  debug(debugFunction: string | (() => string)): void {
     if (LogLevel.DEBUG < this.level) {
       return;
     }
-    this.log(LogLevel.DEBUG, debugFunction());
+
+    if (typeof debugFunction === 'string') {
+      this.log(LogLevel.DEBUG, debugFunction);
+    } else if (debugFunction) {
+      this.log(LogLevel.DEBUG, debugFunction());
+    } else {
+      this.log(LogLevel.DEBUG, '' + debugFunction);
+    }
   }
 
   info(msg: string): void {
@@ -104,8 +111,10 @@ export default class MeetingSessionPOSTLogger {
     if (type < this.level) {
       return;
     }
-    const date = new Date();
-    this.logCapture.push(new Log(this.sequenceNumber, msg, date.getTime(), LogLevel[type]));
+    const now = Date.now();
+
+    // Handle undefined.
+    this.logCapture.push(new Log(this.sequenceNumber, msg, now, LogLevel[type]));
     this.sequenceNumber += 1;
   }
 }

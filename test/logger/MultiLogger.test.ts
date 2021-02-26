@@ -128,6 +128,16 @@ describe('MultiLogger', () => {
       expect(called).to.eq(1);
     });
 
+    it('accepts undefined for debug', () => {
+      const internalLogger1: Logger = new NoOpLogger(LogLevel.DEBUG);
+      const internalLogger2: Logger = new NoOpLogger(LogLevel.DEBUG);
+      const spy1 = sinon.spy(internalLogger1, 'debug');
+      const spy2 = sinon.spy(internalLogger2, 'debug');
+      new MultiLogger(internalLogger1, internalLogger2).debug(undefined);
+      expect(spy1.withArgs('undefined').calledOnce).to.be.true;
+      expect(spy2.withArgs('undefined').calledOnce).to.be.true;
+    });
+
     it('accepts debug strings', () => {
       const internalLogger1: Logger = new NoOpLogger(LogLevel.DEBUG);
       const internalLogger2: Logger = new NoOpLogger(LogLevel.DEBUG);
