@@ -30,16 +30,16 @@ To get started, see the following resources:
 
 And review the following guides:
 
-* [Getting Started](https://aws.github.io/amazon-chime-sdk-js/modules/gettingstarted.html)
-* [API Overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html)
-* [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html)
-* [Quality, Bandwidth, and Connectivity](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html)
-* [Simulcast](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html)
-* [Meeting events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html)
-* [Frequently Asked Questions](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
-* [Migrating from v1.0 to v2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
-* [Integrating Amazon Voice Focus into your application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
-* [Adding frame-by-frame processing to an outgoing video stream](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/10_Video_Processor.md)
+* [Getting Started](https://aws.github.io/amazon-chime-sdk-js/modules/guides.gettingstarted.html)
+* [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/guides.contentshare.html)
+* [API Overview](https://aws.github.io/amazon-chime-sdk-js/modules/guides.apioverview.html)
+* [Quality Bandwidth_Connectivity](https://aws.github.io/amazon-chime-sdk-js/modules/guides.qualitybandwidth_connectivity.html)
+* [Simulcast](https://aws.github.io/amazon-chime-sdk-js/modules/guides.simulcast.html)
+* [Meeting Events](https://aws.github.io/amazon-chime-sdk-js/modules/guides.meetingevents.html)
+* [FAQs](https://aws.github.io/amazon-chime-sdk-js/modules/guides.faqs.html)
+* [Migration to_2_0](https://aws.github.io/amazon-chime-sdk-js/modules/guides.migrationto_2_0.html)
+* [Amazon Voice_Focus](https://aws.github.io/amazon-chime-sdk-js/modules/guides.amazonvoice_focus.html)
+* [Video Processor](https://aws.github.io/amazon-chime-sdk-js/modules/guides.videoprocessor.html)
 
 ## Examples
 

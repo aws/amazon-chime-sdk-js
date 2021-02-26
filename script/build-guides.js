@@ -21,6 +21,7 @@ const walk = function(dir) {
 
 let result = '';
 let namespaces = [];
+const customModuleNameForGuides = 'Guides';
 let guides = '';
 
 walk('guides')
@@ -45,7 +46,7 @@ walk('guides')
     const feedback = `\n[Give feedback on this guide](https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&labels=documentation&template=documentation-request.md&title=${urlName}%20feedback)`;
     const data = ' * ' + (fs.readFileSync(file, 'utf8') + feedback).split('\n').join('\n * ');
     console.log(file);
-    guides += `* [${visibleName}](https://aws.github.io/amazon-chime-sdk-js/modules/${webFilename})\n`;
+    guides += `* [${visibleName}](https://aws.github.io/amazon-chime-sdk-js/modules/${customModuleNameForGuides.toLowerCase()}.${webFilename})\n`;
     result += `/**\n${data}\n */\nnamespace ${namespaceName} {}\n\n`;
     namespaces.push(namespaceName);
   });
@@ -55,13 +56,13 @@ fs.writeFileSync('./guides/docs.ts', `${result+namespaceExports};`, 'utf8');
 const customModuleNameAnnotation =
 `/**
  * @packageDocumentation
- * @module Guides
+ * @module ${customModuleNameForGuides}
  */`;
 fs.writeFileSync('./guides/index.ts', `${customModuleNameAnnotation}\n${namespaceExports} from './docs';`, 'utf8');
 
 let readme = fs.readFileSync('./README.md', 'utf8');
 readme = readme.replace(
-  /the following guides[:][\s\S]*[#][#][#] Prerequisites/m,
-  `the following guides:\n\n${guides}\n### Prerequisites`
+  /the following guides[:][\s\S]*[#][#] Examples/m,
+  `the following guides:\n\n${guides}\n## Examples`
 );
 fs.writeFileSync('./README.md', readme, 'utf8');
