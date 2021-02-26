@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `VoiceFocusDeviceTransformer`, making it easier to instantiate a new
   transformer in a different scope with the same measured settings.
 - Add End-to-end Integration test for Video Test App
+- `MeetingSessionPOSTLogger` now matches the regular `Logger` API signature.
 
 ### Changed
 
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Don't automatically upgrade dev-dependencies to avoid a breaking typedoc upgrade.
+- Safely handle calling logger `debug` methods with `undefined`.
 
 
 ## [2.5.0] - 2021-02-16

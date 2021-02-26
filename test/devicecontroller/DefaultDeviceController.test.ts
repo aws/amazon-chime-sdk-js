@@ -1381,7 +1381,7 @@ describe('DefaultDeviceController', () => {
     });
   });
 
-  describe(' Samsung Internet brower', () => {
+  describe(' Samsung Internet browser', () => {
     it('chooses audio and video devices without error', async () => {
       domMockBehavior.browserName = 'samsung';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);

@@ -53,6 +53,7 @@ describe('ConsoleLogger', () => {
       warnSpy = sinon.spy(console, 'warn');
       errorSpy = sinon.spy(console, 'error');
     });
+
     after(() => {
       debugSpy.restore();
       infoSpy.restore();
@@ -63,6 +64,13 @@ describe('ConsoleLogger', () => {
       console.info = originalConsole.info;
       console.warn = originalConsole.warn;
       console.error = originalConsole.error;
+    });
+
+    afterEach(() => {
+      debugSpy.resetHistory();
+      infoSpy.resetHistory();
+      warnSpy.resetHistory();
+      errorSpy.resetHistory();
     });
 
     it('should log nothing with LogLevel.OFF', () => {
@@ -86,6 +94,12 @@ describe('ConsoleLogger', () => {
       expect(debugSpy.calledOnce).to.not.be.true;
       expect(warnSpy.calledOnce).to.be.true;
       expect(errorSpy.calledOnce).to.be.true;
+    });
+
+    it('does not throw if you pass null or undefined to a logger call', () => {
+      const logger: ConsoleLogger = new ConsoleLogger('testLogger', LogLevel.DEBUG);
+      logger.debug(undefined);
+      logger.debug(null);
     });
 
     it('should have debug and info logs after setting DEBUG log level', () => {

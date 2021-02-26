@@ -262,6 +262,36 @@ describe('MeetingSessionPOSTLogger', () => {
       });
     });
 
+    it('does not die if you pass undefined', () => {
+      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL
+      );
+      logger.setLogLevel(LogLevel.DEBUG);
+
+      logger.debug(undefined);
+      expect(logger.getLogCaptureSize()).to.equal(1);
+      logger.stop();
+    });
+
+    it('does not die if you pass a string', () => {
+      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL
+      );
+      logger.setLogLevel(LogLevel.DEBUG);
+
+      logger.debug('foo');
+      expect(logger.getLogCaptureSize()).to.equal(1);
+      logger.stop();
+    });
+
     it('will call stop when unloading the page', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const GlobalAny = global as any;
