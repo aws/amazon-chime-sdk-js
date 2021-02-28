@@ -37,7 +37,8 @@ export default class ReceiveAudioInputTask extends BaseTask {
         this.context.audioDeviceInformation['current_mic_name'] = track.label;
         this.context.audioDeviceInformation['current_mic_id'] = track.id;
         this.context.audioDeviceInformation['is_default_input_device'] =
-          track.label.indexOf('Default') !== -1 || track.label.indexOf('default') !== -1
+          !!track.label &&
+          (track.label.indexOf('Default') !== -1 || track.label.indexOf('default') !== -1)
             ? 'true'
             : 'false';
       }
