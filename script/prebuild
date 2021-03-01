@@ -55,5 +55,5 @@ else
 end
 
 # Pull in package fixes automatically.
-verbose('npm audit fix')
+verbose('npm audit fix --only=prod')
 

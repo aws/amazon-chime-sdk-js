@@ -1,0 +1,11 @@
+{
+  "out": "./docs",
+  "readme": "README.md",
+  "exclude": [
+    "src/signalingprotocol/SignalingProtocol.js",
+    "src/signalingprotocol/SignalingProtocol.d.ts",
+    "src/signalingprotocol/ScreenSignalingProtocol.js",
+    "src/signalingprotocol/ScreenSignalingProtocol.d.ts"
+  ],
+  "mode": "file"
+}
