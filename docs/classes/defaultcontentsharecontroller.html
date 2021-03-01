@@ -1,0 +1,612 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>DefaultContentShareController | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="defaultcontentsharecontroller.html">DefaultContentShareController</a>
+				</li>
+			</ul>
+			<h1>Class DefaultContentShareController</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">DefaultContentShareController</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/contentsharecontroller.html" class="tsd-signature-type">ContentShareController</a></li>
+					<li><a href="../interfaces/audiovideoobserver.html" class="tsd-signature-type">AudioVideoObserver</a></li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultcontentsharecontroller.html#attendeeaudiovideo" class="tsd-kind-icon">attendee<wbr>Audio<wbr>Video</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultcontentsharecontroller.html#contentaudiovideo" class="tsd-kind-icon">content<wbr>Audio<wbr>Video</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultcontentsharecontroller.html#contentsharetile" class="tsd-kind-icon">content<wbr>Share<wbr>Tile</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultcontentsharecontroller.html#mediastreambroker" class="tsd-kind-icon">media<wbr>Stream<wbr>Broker</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultcontentsharecontroller.html#observerqueue" class="tsd-kind-icon">observer<wbr>Queue</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#addcontentshareobserver" class="tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#audiovideodidstop" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Stop</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#foreachcontentshareobserver" class="tsd-kind-icon">for<wbr>Each<wbr>Content<wbr>Share<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#pausecontentshare" class="tsd-kind-icon">pause<wbr>Content<wbr>Share</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#removecontentshareobserver" class="tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#setcontentaudioprofile" class="tsd-kind-icon">set<wbr>Content<wbr>Audio<wbr>Profile</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultcontentsharecontroller.html#setupcontentshareevents" class="tsd-kind-icon">setup<wbr>Content<wbr>Share<wbr>Events</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#startcontentshare" class="tsd-kind-icon">start<wbr>Content<wbr>Share</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#startcontentsharefromscreencapture" class="tsd-kind-icon">start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#stopcontentshare" class="tsd-kind-icon">stop<wbr>Content<wbr>Share</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultcontentsharecontroller.html#unpausecontentshare" class="tsd-kind-icon">unpause<wbr>Content<wbr>Share</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultcontentsharecontroller.html#createcontentsharemeetingsessionconfigure" class="tsd-kind-icon">create<wbr>Content<wbr>Share<wbr>Meeting<wbr>Session<wbr>Configure</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Content<wbr>Share<wbr>Controller<span class="tsd-signature-symbol">(</span>mediaStreamBroker<span class="tsd-signature-symbol">: </span><a href="contentsharemediastreambroker.html" class="tsd-signature-type">ContentShareMediaStreamBroker</a>, contentAudioVideo<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a>, attendeeAudioVideo<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultcontentsharecontroller.html" class="tsd-signature-type">DefaultContentShareController</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L38">src/contentsharecontroller/DefaultContentShareController.ts:38</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>mediaStreamBroker: <a href="contentsharemediastreambroker.html" class="tsd-signature-type">ContentShareMediaStreamBroker</a></h5>
+								</li>
+								<li>
+									<h5>contentAudioVideo: <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></h5>
+								</li>
+								<li>
+									<h5>attendeeAudioVideo: <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="defaultcontentsharecontroller.html" class="tsd-signature-type">DefaultContentShareController</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="attendeeaudiovideo" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> attendee<wbr>Audio<wbr>Video</h3>
+					<div class="tsd-signature tsd-kind-icon">attendee<wbr>Audio<wbr>Video<span class="tsd-signature-symbol">:</span> <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L43">src/contentsharecontroller/DefaultContentShareController.ts:43</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="contentaudiovideo" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> content<wbr>Audio<wbr>Video</h3>
+					<div class="tsd-signature tsd-kind-icon">content<wbr>Audio<wbr>Video<span class="tsd-signature-symbol">:</span> <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L42">src/contentsharecontroller/DefaultContentShareController.ts:42</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="contentsharetile" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> content<wbr>Share<wbr>Tile</h3>
+					<div class="tsd-signature tsd-kind-icon">content<wbr>Share<wbr>Tile<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videotile.html" class="tsd-signature-type">VideoTile</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L38">src/contentsharecontroller/DefaultContentShareController.ts:38</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="mediastreambroker" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> media<wbr>Stream<wbr>Broker</h3>
+					<div class="tsd-signature tsd-kind-icon">media<wbr>Stream<wbr>Broker<span class="tsd-signature-symbol">:</span> <a href="contentsharemediastreambroker.html" class="tsd-signature-type">ContentShareMediaStreamBroker</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L41">src/contentsharecontroller/DefaultContentShareController.ts:41</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="observerqueue" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> observer<wbr>Queue</h3>
+					<div class="tsd-signature tsd-kind-icon">observer<wbr>Queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Set&lt;ContentShareObserver&gt;()</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L37">src/contentsharecontroller/DefaultContentShareController.ts:37</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="addcontentshareobserver" class="tsd-anchor"></a>
+					<h3>add<wbr>Content<wbr>Share<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/contentsharecontroller.html">ContentShareController</a>.<a href="../interfaces/contentsharecontroller.html#addcontentshareobserver">addContentShareObserver</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L102">src/contentsharecontroller/DefaultContentShareController.ts:102</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="audiovideodidstop" class="tsd-anchor"></a>
+					<h3>audio<wbr>Video<wbr>Did<wbr>Stop</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Stop<span class="tsd-signature-symbol">(</span>_sessionStatus<span class="tsd-signature-symbol">: </span><a href="meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/audiovideoobserver.html">AudioVideoObserver</a>.<a href="../interfaces/audiovideoobserver.html#audiovideodidstop">audioVideoDidStop</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L120">src/contentsharecontroller/DefaultContentShareController.ts:120</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>_sessionStatus: <a href="meetingsessionstatus.html" class="tsd-signature-type">MeetingSessionStatus</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="foreachcontentshareobserver" class="tsd-anchor"></a>
+					<h3>for<wbr>Each<wbr>Content<wbr>Share<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">for<wbr>Each<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observerFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L110">src/contentsharecontroller/DefaultContentShareController.ts:110</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observerFunc: <span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>observer: <a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="pausecontentshare" class="tsd-anchor"></a>
+					<h3>pause<wbr>Content<wbr>Share</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">pause<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/contentsharecontroller.html">ContentShareController</a>.<a href="../interfaces/contentsharecontroller.html#pausecontentshare">pauseContentShare</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L81">src/contentsharecontroller/DefaultContentShareController.ts:81</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="removecontentshareobserver" class="tsd-anchor"></a>
+					<h3>remove<wbr>Content<wbr>Share<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/contentsharecontroller.html">ContentShareController</a>.<a href="../interfaces/contentsharecontroller.html#removecontentshareobserver">removeContentShareObserver</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L106">src/contentsharecontroller/DefaultContentShareController.ts:106</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="../interfaces/contentshareobserver.html" class="tsd-signature-type">ContentShareObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setcontentaudioprofile" class="tsd-anchor"></a>
+					<h3>set<wbr>Content<wbr>Audio<wbr>Profile</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Content<wbr>Audio<wbr>Profile<span class="tsd-signature-symbol">(</span>audioProfile<span class="tsd-signature-symbol">: </span><a href="audioprofile.html" class="tsd-signature-type">AudioProfile</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/contentsharecontroller.html">ContentShareController</a>.<a href="../interfaces/contentsharecontroller.html#setcontentaudioprofile">setContentAudioProfile</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L49">src/contentsharecontroller/DefaultContentShareController.ts:49</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>audioProfile: <a href="audioprofile.html" class="tsd-signature-type">AudioProfile</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="setupcontentshareevents" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> setup<wbr>Content<wbr>Share<wbr>Events</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">setup<wbr>Content<wbr>Share<wbr>Events<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L133">src/contentsharecontroller/DefaultContentShareController.ts:133</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="startcontentshare" class="tsd-anchor"></a>
+					<h3>start<wbr>Content<wbr>Share</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/contentsharecontroller.html">ContentShareController</a>.<a href="../interfaces/contentsharecontroller.html#startcontentshare">startContentShare</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L53">src/contentsharecontroller/DefaultContentShareController.ts:53</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>stream: <span class="tsd-signature-type">MediaStream</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="startcontentsharefromscreencapture" class="tsd-anchor"></a>
+					<h3>start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture<span class="tsd-signature-symbol">(</span>sourceId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, frameRate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/contentsharecontroller.html">ContentShareController</a>.<a href="../interfaces/contentsharecontroller.html#startcontentsharefromscreencapture">startContentShareFromScreenCapture</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L69">src/contentsharecontroller/DefaultContentShareController.ts:69</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> sourceId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> frameRate: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="stopcontentshare" class="tsd-anchor"></a>
+					<h3>stop<wbr>Content<wbr>Share</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/contentsharecontroller.html">ContentShareController</a>.<a href="../interfaces/contentsharecontroller.html#stopcontentshare">stopContentShare</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L97">src/contentsharecontroller/DefaultContentShareController.ts:97</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="unpausecontentshare" class="tsd-anchor"></a>
+					<h3>unpause<wbr>Content<wbr>Share</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">unpause<wbr>Content<wbr>Share<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/contentsharecontroller.html">ContentShareController</a>.<a href="../interfaces/contentsharecontroller.html#unpausecontentshare">unpauseContentShare</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L89">src/contentsharecontroller/DefaultContentShareController.ts:89</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="createcontentsharemeetingsessionconfigure" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> create<wbr>Content<wbr>Share<wbr>Meeting<wbr>Session<wbr>Configure</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Content<wbr>Share<wbr>Meeting<wbr>Session<wbr>Configure<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/contentsharecontroller/DefaultContentShareController.ts#L21">src/contentsharecontroller/DefaultContentShareController.ts:21</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>configuration: <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="defaultcontentsharecontroller.html" class="tsd-kind-icon">Default<wbr>Content<wbr>Share<wbr>Controller</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultcontentsharecontroller.html#attendeeaudiovideo" class="tsd-kind-icon">attendee<wbr>Audio<wbr>Video</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultcontentsharecontroller.html#contentaudiovideo" class="tsd-kind-icon">content<wbr>Audio<wbr>Video</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultcontentsharecontroller.html#contentsharetile" class="tsd-kind-icon">content<wbr>Share<wbr>Tile</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultcontentsharecontroller.html#mediastreambroker" class="tsd-kind-icon">media<wbr>Stream<wbr>Broker</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultcontentsharecontroller.html#observerqueue" class="tsd-kind-icon">observer<wbr>Queue</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#addcontentshareobserver" class="tsd-kind-icon">add<wbr>Content<wbr>Share<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#audiovideodidstop" class="tsd-kind-icon">audio<wbr>Video<wbr>Did<wbr>Stop</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#foreachcontentshareobserver" class="tsd-kind-icon">for<wbr>Each<wbr>Content<wbr>Share<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#pausecontentshare" class="tsd-kind-icon">pause<wbr>Content<wbr>Share</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#removecontentshareobserver" class="tsd-kind-icon">remove<wbr>Content<wbr>Share<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#setcontentaudioprofile" class="tsd-kind-icon">set<wbr>Content<wbr>Audio<wbr>Profile</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultcontentsharecontroller.html#setupcontentshareevents" class="tsd-kind-icon">setup<wbr>Content<wbr>Share<wbr>Events</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#startcontentshare" class="tsd-kind-icon">start<wbr>Content<wbr>Share</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#startcontentsharefromscreencapture" class="tsd-kind-icon">start<wbr>Content<wbr>Share<wbr>From<wbr>Screen<wbr>Capture</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#stopcontentshare" class="tsd-kind-icon">stop<wbr>Content<wbr>Share</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultcontentsharecontroller.html#unpausecontentshare" class="tsd-kind-icon">unpause<wbr>Content<wbr>Share</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="defaultcontentsharecontroller.html#createcontentsharemeetingsessionconfigure" class="tsd-kind-icon">create<wbr>Content<wbr>Share<wbr>Meeting<wbr>Session<wbr>Configure</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
