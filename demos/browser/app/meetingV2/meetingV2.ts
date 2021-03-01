@@ -52,6 +52,11 @@ import {
 
 import CircularCut from './videofilter/CircularCut';
 import EmojifyVideoFrameProcessor from './videofilter/EmojifyVideoFrameProcessor';
+import SegmentationProcessor from './videofilter/SegmentationProcessor';
+import {
+  loadBodyPixDependency,
+  platformCanSupportBodyPixWithoutDegradation,
+} from './videofilter/SegmentationUtil';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
 
 const SHOULD_DIE_ON_FATALS = (() => {
@@ -126,7 +131,7 @@ const VOICE_FOCUS_SPEC = {
   paths: VOICE_FOCUS_PATHS,
 };
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'None';
+type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'None';
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp'];
 
@@ -221,6 +226,11 @@ export class DemoMeetingApp
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300000;
 
+
+  // ideally we don't need to change this. Keep this configurable in case users have super slow network.
+  loadingBodyPixDependencyTimeoutMs: number = 10000;
+  loadingBodyPixDependencyPromise: undefined | Promise<void>;
+
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
   meeting: string | null = null;
@@ -308,7 +318,6 @@ export class DemoMeetingApp
       this.fatal(new Error('Testing fatal.'));
       return;
     }
-
     (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
       'amazon-chime-sdk-js@' + Versioning.sdkVersion;
     this.initEventListeners();
@@ -1605,6 +1614,23 @@ export class DemoMeetingApp
     await this.populateAudioOutputList();
   }
 
+  private async selectVideoFilterByName(name: VideoFilterName): Promise<void> {
+    this.selectedVideoFilterItem = name;
+    this.log(`clicking video filter ${this.selectedVideoFilterItem}`);
+    this.toggleButton(
+      'button-video-filter',
+      this.selectedVideoFilterItem === 'None' ? 'off' : 'on'
+    );
+    if (this.isButtonOn('button-camera')) {
+      try {
+        await this.openVideoInputFromSelection(this.selectedVideoInput, false);
+      } catch (err) {
+        fatal(err);
+        this.log('Failed to choose VideoTransformDevice', err);
+      }
+    }
+  }
+
   private async populateVideoFilterInputList(): Promise<void> {
     const genericName = 'Filter';
     let filters: VideoFilterName[] = ['None'];
@@ -1614,6 +1640,27 @@ export class DemoMeetingApp
       this.enableUnifiedPlanForChromiumBasedBrowsers
     ) {
       filters = filters.concat(VIDEO_FILTERS);
+      if (platformCanSupportBodyPixWithoutDegradation()) {
+        if (!this.loadingBodyPixDependencyPromise) {
+          this.loadingBodyPixDependencyPromise = loadBodyPixDependency(this.loadingBodyPixDependencyTimeoutMs);
+        }
+        // do not use `await` to avoid blocking page loading
+        this.loadingBodyPixDependencyPromise.then(() => {
+          filters.push('Segmentation');
+          this.populateInMeetingDeviceList(
+            'dropdown-menu-filter',
+            genericName,
+            [],
+            filters,
+            undefined,
+            async (name: VideoFilterName) => {
+              await this.selectVideoFilterByName(name);
+            }
+          );
+        }).catch(err => {
+          this.log('Could not load BodyPix dependency', err);
+        });
+      }
     }
 
     this.populateInMeetingDeviceList(
@@ -1623,20 +1670,7 @@ export class DemoMeetingApp
       filters,
       undefined,
       async (name: VideoFilterName) => {
-        this.selectedVideoFilterItem = name;
-        this.log(`clicking video filter ${this.selectedVideoFilterItem}`);
-        this.toggleButton(
-          'button-video-filter',
-          this.selectedVideoFilterItem === 'None' ? 'off' : 'on'
-        );
-        if (this.isButtonOn('button-camera')) {
-          try {
-            await this.openVideoInputFromSelection(this.selectedVideoInput, false);
-          } catch (err) {
-            fatal(err);
-            this.log('Failed to choose VideoTransformDevice', err);
-          }
-        }
+        await this.selectVideoFilterByName(name);
       }
     );
   }
@@ -2054,6 +2088,10 @@ export class DemoMeetingApp
 
     if (videoFilter === 'NoOp') {
       return new NoOpVideoFrameProcessor();
+    }
+
+    if (videoFilter === 'Segmentation') {
+      return new SegmentationProcessor();
     }
 
     return null;
