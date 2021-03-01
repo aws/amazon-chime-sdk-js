@@ -1,0 +1,332 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Migrationto_2_0 | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="migrationto_2_0.html">Migrationto_2_0</a>
+				</li>
+			</ul>
+			<h1>Namespace Migrationto_2_0</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#migration-from-sdk-v1-to-sdk-v2" id="migration-from-sdk-v1-to-sdk-v2" style="color: inherit; text-decoration: none;">
+							<h1>Migration from SDK v1 to SDK v2</h1>
+						</a>
+					</div>
+					<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+						<h2>Installation</h2>
+					</a>
+					<p>Installation involves adjusting your <code>package.json</code> to depend on version <code>2.0.0</code>.</p>
+					<pre><code class="language-shell">npm install --save amazon-chime-sdk-js@2
+</code></pre>
+					<a href="#interface-changes" id="interface-changes" style="color: inherit; text-decoration: none;">
+						<h2>Interface changes</h2>
+					</a>
+					<p>Version 2 of the Amazon Chime SDK for JavaScript makes a small number of interface
+					changes, as well as removing some deprecated interfaces.</p>
+					<p>In many cases you should not need to adjust your application code at all. This will be the case if:</p>
+					<ul>
+						<li>You do not implement <code>AudioVideoFacade</code> or <code>DeviceController</code> yourself.</li>
+						<li>You do not explicitly call <code>enableWebAudio</code> on any instances of <code>DeviceController</code> or
+						<code>AudioVideoFacade</code>, or use the <code>MeetingSessionConfiguration</code> field <code>enableWebAudio</code>.</li>
+						<li>You already handle errors in <code>chooseAudioInputDevice</code> with <code>catch</code>.</li>
+						<li>You neither directly call, nor implement, the <code>bindAudio*</code> methods on <code>AudioMixController</code>.</li>
+					</ul>
+					<p>If your application does not meet all four criteria, read on.</p>
+					<a href="#removing-enablewebaudio" id="removing-enablewebaudio" style="color: inherit; text-decoration: none;">
+						<h3>Removing <code>enableWebAudio</code></h3>
+					</a>
+					<p>The <code>enableWebAudio</code> method on <code>DefaultDeviceController</code> would produce unexpected results if
+						called after the first audio device was selected, and as a synchronous API it was not possible
+					to reimplement it to behave correctly.</p>
+					<p>Additionally, it was not documented how the API should behave if Web Audio were to be disabled
+					while in use, or how it should be implemented correctly by other <code>DeviceController</code> classes.</p>
+					<p>This API method has been removed entirely, along with the corresponding field on
+						<code>MeetingSessionConfiguration</code>. The <code>MeetingSession</code> will no longer call <code>enableWebAudio</code> on the
+					corresponding <code>DeviceController</code>.</p>
+					<p>Applications should instead use the constructor argument added to
+					<code>DefaultDeviceConfiguration</code> to enable Web Audio at point of construction.</p>
+					<p>If your code looked like this:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+configuration.enableWebAudio = <span class="hljs-literal">true</span>;
+…
+<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
+<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+</code></pre>
+					<p>change it to</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+…
+<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger, { <span class="hljs-attr">enableWebAudio</span>: <span class="hljs-literal">true</span> });
+<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
+<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+</code></pre>
+					<p>If your code looked like this:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+…
+<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
+<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+…
+<span class="hljs-keyword">const</span> enableWebAudio = <span class="hljs-keyword">await</span> checkWhetherWebAudioNeeded();
+deviceController.enableWebAudio(enableWebAudio);
+</code></pre>
+					<p>change it to</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+<span class="hljs-comment">// …</span>
+<span class="hljs-keyword">const</span> enableWebAudio = <span class="hljs-keyword">await</span> checkWhetherWebAudioNeeded();
+<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger, { enableWebAudio });
+<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
+<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+…
+</code></pre>
+					<hr>
+					<a href="#update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promiseltvoidgt-instead-of-boolean" id="update-bindaudioelement-bindaudiostream-and-bindaudiodevice-to-return-promiseltvoidgt-instead-of-boolean" style="color: inherit; text-decoration: none;">
+						<h3>Update <code>bindAudioElement()</code>, <code>bindAudioStream()</code> and <code>bindAudioDevice()</code> to return <code>Promise&lt;void&gt;</code> instead of <code>boolean</code></h3>
+					</a>
+					<p>The <code>bindAudioElement()</code> API in <code>AudioMixControllerFacade</code> was previously a synchronous function which used to return <code>boolean</code>.
+						Under the hood, it used to call <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a>
+					which is an asynchronous function.</p>
+					<p>As part of this change, three APIs in <code>AudioMixController</code> were changed to return <code>Promise&lt;void&gt;</code>. These APIs are listed below.</p>
+					<pre><code class="language-typescript"><span class="hljs-comment">// Old Syntax</span>
+bindAudioElement(element: HTMLAudioElement): <span class="hljs-built_in">boolean</span>;
+bindAudioStream(stream: MediaStream): <span class="hljs-built_in">boolean</span>;
+bindAudioDevice(device: MediaDeviceInfo | <span class="hljs-literal">null</span>): <span class="hljs-built_in">boolean</span>;
+
+<span class="hljs-comment">// New Syntax</span>
+bindAudioElement(element: HTMLAudioElement): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
+bindAudioStream(stream: MediaStream): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
+bindAudioDevice(device: MediaDeviceInfo | <span class="hljs-literal">null</span>): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
+</code></pre>
+					<p>Additionally, <code>AudioMixController</code>&#39;s constructor now takes an additional optional <code>logger</code> parameter.
+					If the <code>logger</code> is passed, it will log the errors for any of the operations in <code>AudioMixController</code>.</p>
+					<pre><code class="language-typescript"><span class="hljs-function"><span class="hljs-title">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> logger?: Logger</span>)</span> {}
+</code></pre>
+					<p>If your code looked like this</p>
+					<pre><code class="language-typescript">audioMixController.bindAudioDevice({ <span class="hljs-attr">deviceId</span>: sinkId });
+audioMixController.bindAudioElement(<span class="hljs-keyword">new</span> Audio());
+audioMixController.bindAudioStream(destinationStream.stream);
+</code></pre>
+					<p>change it to</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">await</span> audioMixController.bindAudioDevice({ <span class="hljs-attr">deviceId</span>: <span class="hljs-built_in">this</span>.sinkId });
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Failed to bind audio device&#x27;</span>, e);
+}
+<span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">await</span> audioMixController.bindAudioElement(<span class="hljs-keyword">new</span> Audio());
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Failed to bind audio element&#x27;</span>, e);
+}
+<span class="hljs-keyword">await</span> audioMixController.bindAudioStream(destinationStream.stream);
+</code></pre>
+					<p>Additionally, if the browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a> API, the <code>bindAudioDevice()</code> will throw an
+						error with a message &#39;Cannot select audio output device. This browser does not support setSinkId.&#39;
+					Check <a href="https://caniuse.com/?search=setSinkId">https://caniuse.com/?search=setSinkId</a> for the setSinkId browser support.</p>
+					<hr>
+					<a href="#introducing-audioinputdevice-and-videoinputdevice" id="introducing-audioinputdevice-and-videoinputdevice" style="color: inherit; text-decoration: none;">
+						<h3>Introducing <code>AudioInputDevice</code> and <code>VideoInputDevice</code></h3>
+					</a>
+					<p>These two types describe <code>DeviceController</code>&#39;s methods for selecting audio and
+						video inputs respectively. They both include the space of <code>Device</code>s, which are the &#39;intrinsic&#39;
+						device kinds provided by the browser: identifiers, constraints, and streams. <code>AudioInputDevice</code>
+						extends these by adding the concept of an <code>AudioTransformDevice</code>, which can rewrite an inner
+						device on request, and optionally provide an arbitrary Web Audio graph to use as an additional
+					transformation pipeline.</p>
+					<p>You can use <code>AudioTransformDevice</code> to implement effects such as reverb, gain, <em>etc</em>.</p>
+					<p>Because <code>chooseAudioInputDevice</code> and <code>chooseVideoInputDevice</code> now have new type signatures, if
+					you implement the related interfaces (<code>AudioVideoFacade</code> or <code>DeviceController</code>) yourself, you will need to adjust your code.</p>
+					<p>If you have an implementation like:</p>
+					<pre><code class="language-typescript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyDeviceController</span> <span class="hljs-title">implements</span> <span class="hljs-title">DeviceController</span> </span>{
+  <span class="hljs-keyword">async</span> chooseAudioInputDevice(device: Device): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; {
+    <span class="hljs-comment">// device must be a string, stream, constraints, or null.</span>
+    <span class="hljs-comment">// …</span>
+    <span class="hljs-keyword">return</span> permission;
+  }
+}
+</code></pre>
+					<p>you must change your code to be:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {
+  <span class="hljs-comment">// …</span>
+  isAudioTransformDevice,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyDeviceController</span> <span class="hljs-title">implements</span> <span class="hljs-title">DeviceController</span> </span>{
+  <span class="hljs-keyword">async</span> chooseAudioInputDevice(device: AudioInputDevice): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; {
+    <span class="hljs-keyword">if</span> (isAudioTransformDevice(device)) {
+      <span class="hljs-comment">// Handle transform devices, should you need to.</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&#x27;My app does not use transform devices.&#x27;</span>);
+    }
+    <span class="hljs-comment">// Previous code can remain unchanged.</span>
+    <span class="hljs-comment">// …</span>
+  }
+}
+</code></pre>
+					<p>A similar adjustment is needed for <code>VideoInputDevice</code>. v2.0 does not include any
+					<code>VideoTransformDevice</code>s.</p>
+					<p>If you use the type <code>Device</code> for a field or variable and pass that value to
+					<code>choose{Audio,Video}InputDevice</code>, your code should continue to work without changes.</p>
+					<hr>
+					<a href="#introducing-the-getusermediaerror-type" id="introducing-the-getusermediaerror-type" style="color: inherit; text-decoration: none;">
+						<h3>Introducing the <code>GetUserMediaError</code> type</h3>
+					</a>
+					<p>v2.0 introduces new error types which will be thrown in case of any failures in <code>chooseAudioInputDevice</code> and <code>chooseVideoInputDevice</code> APIs in the <code>DeviceController</code>.</p>
+					<p>Here is the list of new error classes introduced in version 2.0:</p>
+					<ul>
+						<li><code>GetUserMediaError</code><ul>
+								<li><code>NotFoundError</code></li>
+								<li><code>NotReadableError</code></li>
+								<li><code>OverconstrainedError</code></li>
+								<li><code>PermissionDeniedError</code></li>
+								<li><code>TypeError</code></li>
+							</ul>
+						</li>
+					</ul>
+					<p>Here is an example of handling <code>PermissionDeniedError</code>:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.audiovideo.chooseAudioInputDevice(device);
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-keyword">if</span> (e <span class="hljs-keyword">instanceof</span> PermissionDeniedError) {
+    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Permission denied&#x27;</span>, e);
+  }
+}
+</code></pre>
+					<hr>
+					<a href="#introducing-supportssetsinkid-in-defaultbrowserbehavior" id="introducing-supportssetsinkid-in-defaultbrowserbehavior" style="color: inherit; text-decoration: none;">
+						<h3>Introducing <code>supportsSetSinkId()</code> in <code>DefaultBrowserBehavior</code></h3>
+					</a>
+					<p>This new helper API returns a boolean <code>true</code> if the browser supports <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a>, otherwise returning <code>false</code>.</p>
+					<p>Here is how the code would look like:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">if</span> (!<span class="hljs-built_in">this</span>.browserBehavior.supportsSetSinkId()) {
+  <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(
+    <span class="hljs-string">&#x27;Cannot select audio output device. This browser does not support setSinkId.&#x27;</span>
+  );
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;The browser supports setSinkId() API&#x27;</span>);
+}
+</code></pre>
+					<hr>
+					<a href="#deprecating-legacy-screen-share" id="deprecating-legacy-screen-share" style="color: inherit; text-decoration: none;">
+						<h3>Deprecating legacy screen share</h3>
+					</a>
+					<p>From version 2.0 onwards, the Amazon Chime SDK for JavaScript will no longer include the deprecated screen share API identified by <code>ScreenShareFacade</code> and <code>ScreenShareViewFacade</code> and all related code.
+					Customers should use our Video Based Content Sharing detailed in our <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/02_Content_Share.md">Content Share guide</a>.</p>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Migration%20to_2_0%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

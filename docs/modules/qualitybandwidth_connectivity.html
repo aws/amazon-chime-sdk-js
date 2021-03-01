@@ -1,0 +1,378 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>QualityBandwidth_Connectivity | amazon-chime-sdk-js</title>
+	<meta name="description" content="Documentation for amazon-chime-sdk-js">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">amazon-chime-sdk-js</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="qualitybandwidth_connectivity.html">QualityBandwidth_Connectivity</a>
+				</li>
+			</ul>
+			<h1>Namespace QualityBandwidth_Connectivity</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<a href="#quality-bandwidth-and-connectivity" id="quality-bandwidth-and-connectivity" style="color: inherit; text-decoration: none;">
+							<h1>Quality, Bandwidth, and Connectivity</h1>
+						</a>
+					</div>
+					<p>The Amazon Chime SDK for JavaScript, in conjunction with WebRTC, allows you to configure quality and bandwidth options for meeting sessions. It provides both automatic and manual controls to adapt to changing network conditions. Finding the right balance of quality and performance can be challenging when either the client&#39;s network or CPU is constrained. As network reliability and available bandwidth decrease, quality and functionality trade-offs must be made in real time to preserve the viability of the meeting. This guide gives an overview of challenges associated with devices and networks, degradation detection mechanisms, and mitigations for various levels of degradation.</p>
+					<a href="#goals" id="goals" style="color: inherit; text-decoration: none;">
+						<h2>Goals</h2>
+					</a>
+					<p>When designing an application that shares audio and video you should determine which functionality is most important to your end users. Just as responsive web design allows a single web application to adapt to changing screen sizes, the audio-video component of your application can also be responsive to changing device and network conditions. For example, in a collaborative meeting it may be acceptable to gracefully degrade to an audio-only experience. However, in a presentation where the screen is shared, the presenter audio and screen share video may be the most important.</p>
+					<a href="#challenges" id="challenges" style="color: inherit; text-decoration: none;">
+						<h2>Challenges</h2>
+					</a>
+					<p>To join an Amazon Chime SDK meeting, each client traverses the public internet to connect to the media services for that meeting which are hosted by the <a href="https://aws.amazon.com/about-aws/global-infrastructure/">AWS Global Infrastructure</a> in one of the available SDK media regions. The following key factors influence the client experience:</p>
+					<ul>
+						<li><strong>Application performance:</strong> if your client application is consuming a lot of CPU, then it may hinder the device from simultaneously processing media and transmitting and receiving network packets.</li>
+						<li><strong>Client device performance:</strong> transcoding audio and video in real-time is CPU intensive and may both decrease performance and further constrain the device&#39;s network adapter. Browsers may or may not support hardware acceleration depending on the codec profile and device hardware. Furthermore, browsers do not allow you to directly monitor CPU usage, so it can be difficult to tell whether CPU consumption is a factor in performance issues for your end-user devices.</li>
+						<li><strong>Differences in uplink and downlink:</strong> In order for an attendee to send audio or video to a remote attendee, both the sender&#39;s uplink and the receiver&#39;s downlink must have enough bandwidth. However, most end users will be on a network that has more downlink (receiving) bandwidth than uplink (sending) bandwidth. It can be challenging to determine whether a drop in quality is due to constraints of the sender, the receiver, or both.</li>
+						<li><strong>Last mile network connectivity:</strong> issues with WiFi, local area network, or the internet service provider may limit the effective bandwidth due to packet loss, bandwidth caps, or other hardware limitations.</li>
+						<li><strong>Complexity and length of the network path:</strong> meeting attendees that are geographically distant from the SDK media region may experience higher packet loss, jitter, and round-trip times due to the number of intermediate networks, which may vary in quality.</li>
+					</ul>
+					<a href="#detection-mechanisms" id="detection-mechanisms" style="color: inherit; text-decoration: none;">
+						<h2>Detection Mechanisms</h2>
+					</a>
+					<p>The Amazon Chime SDK for JavaScript produces several kinds of events on the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts">AudioVideoObserver</a> to monitor connectivity and quality. Use the following events and key health metrics to monitor the performance of the meeting session in real time. For code snippets showing how to subscribe to these events, see <a href="https://github.com/aws/amazon-chime-sdk-js#monitoring-and-alerts">Monitoring and Alerts</a>.</p>
+					<p><em>Metrics derived from WebRTC stats are not guaranteed to be present in all browsers. In such cases the value may be missing.</em></p>
+					<p><em>For the browser support columns below, &quot;All&quot; refers to the browsers officially supported by the Chime SDK.</em></p>
+					<a href="#events-for-monitoring-local-attendee-uplink" id="events-for-monitoring-local-attendee-uplink" style="color: inherit; text-decoration: none;">
+						<h3>Events for monitoring local attendee uplink</h3>
+					</a>
+					<table>
+						<thead>
+							<tr>
+								<th>Event</th>
+								<th>Notes</th>
+								<th>Browsers</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L48">videoSendHealthDidChange</a></td>
+								<td>Indicates the current average upstream video bitrate being utilized</td>
+								<td>Chromium-based</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L53">videoSendBandwidthDidChange</a></td>
+								<td>Indicates the estimated amount of upstream bandwidth</td>
+								<td>Chromium-based</td>
+							</tr>
+					</tbody></table>
+					<a href="#events-for-monitoring-local-attendee-downlink" id="events-for-monitoring-local-attendee-downlink" style="color: inherit; text-decoration: none;">
+						<h3>Events for monitoring local attendee downlink</h3>
+					</a>
+					<table>
+						<thead>
+							<tr>
+								<th>Event</th>
+								<th>Notes</th>
+								<th>Browsers</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L92">connectionDidSuggestStopVideo</a></td>
+								<td>Indicates that the audio connection is experiencing packet loss. Stopping local video and pausing remote video tiles may help the connection recover by reducing CPU usage and network consumption.</td>
+								<td>All</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L98">connectionDidBecomeGood</a></td>
+								<td>Indicates that the audio connection has improved.</td>
+								<td>All</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L86">connectionDidBecomePoor</a></td>
+								<td>Similar to the previous metric, but is fired when local video is already turned off.</td>
+								<td>All</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L71">videoNotReceivingEnoughData</a></td>
+								<td>Called when one or more remote attendee video streams do not meet the expected average bitrate which may be due to downlink packet loss.</td>
+								<td>All</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L63">estimatedDownlinkBandwidthLessThanRequired</a></td>
+								<td>Aggregated across all attendees, this event fires when more bandwidth is requested than what the WebRTC estimated downlink bandwidth supports. It is recommended to use this event over <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L71">videoNotReceivingEnoughData</a>.</td>
+								<td>Chromium-based</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L58">videoReceiveBandwidthDidChange</a></td>
+								<td>This is the estimated amount of downstream bandwidth</td>
+								<td>Chromium-based</td>
+							</tr>
+					</tbody></table>
+					<a href="#events-for-monitoring-remote-attendee-uplink" id="events-for-monitoring-remote-attendee-uplink" style="color: inherit; text-decoration: none;">
+						<h3>Events for monitoring remote attendee uplink</h3>
+					</a>
+					<table>
+						<thead>
+							<tr>
+								<th>Event</th>
+								<th>Notes</th>
+								<th>Browsers</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade.ts#L220">realtimeSubscribeToVolumeIndicator</a></td>
+								<td>The <code>signalStrength</code> field indicates whether the server is receiving the remote attendee&#39;s audio. A value of 1 indicates a good connection, a value of 0.5 or 0 indicates some or total packet loss. Since each attendee receives the signal strength for all attendees, this event can be used to monitor the ability of attendees to share their audio in real-time.</td>
+								<td>All</td>
+							</tr>
+					</tbody></table>
+					<a href="#metrics-exposed-directly-from-the-webrtc-peer-connection" id="metrics-exposed-directly-from-the-webrtc-peer-connection" style="color: inherit; text-decoration: none;">
+						<h3>Metrics exposed directly from the WebRTC peer connection</h3>
+					</a>
+					<table>
+						<thead>
+							<tr>
+								<th>Event</th>
+								<th>Notes</th>
+								<th>Browsers</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L76">metricsDidReceive</a></td>
+								<td>Exposes the WebRTC getStats metrics. There may be differences among browsers as to which metrics are reported.</td>
+								<td>All</td>
+							</tr>
+					</tbody></table>
+					<blockquote>
+						<p>Note: We have built a video WebRTC statistics widget in the demo browser meeting app. This widget is shown as an overlay on the video, when the video is enabled. This is currently only implemented for Chrome.</p>
+						<p>You get the following WebRTC stats in the video stats widget:</p>
+						<p>Upstream video information: Resolution, Bitrate (kbps), Packets Sent, Frame Rate (fps).</p>
+						<p>Downstream video information: Resolution, Bitrate (kbps), Packet Loss (%), Frame Rate (fps).</p>
+						<p>You can check the implementation in the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts">demo app</a> to build your own custom widget (look for <code>getAndShowWebRTCStats</code> method in the demo). This video stats widget is built using the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideocontroller.html#getrtcpeerconnectionstats">getRTCPeerConnectionStats</a> and the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L76">metricsDidReceive</a> APIs. Through the information provided in these stats, the application can monitor key attributes and take action. For instance if the bitrate or resolution falls below a certain threshold, the user could be notified in some manner, or diagnostic reporting could take place.</p>
+					</blockquote>
+					<a href="#events-for-monitoring-currently-active-simulast-layers" id="events-for-monitoring-currently-active-simulast-layers" style="color: inherit; text-decoration: none;">
+						<h3>Events for monitoring currently active simulast layers</h3>
+					</a>
+					<table>
+						<thead>
+							<tr>
+								<th>Event</th>
+								<th>Notes</th>
+								<th>Browsers</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#encodingsimulcastlayersdidchange">encodingSimulcastLayersDidChange</a></td>
+								<td>Called when simulcast is enabled and simulcast uplink encoding layers are changed. Check the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#receive-upstream-simulcast-layer-change-notification">simulcast guide</a> for more information on simulcast.</td>
+								<td>Chromium-based</td>
+							</tr>
+					</tbody></table>
+					<a href="#mitigations" id="mitigations" style="color: inherit; text-decoration: none;">
+						<h2>Mitigations</h2>
+					</a>
+					<a href="#automatic-mitigations" id="automatic-mitigations" style="color: inherit; text-decoration: none;">
+						<h3>Automatic mitigations</h3>
+					</a>
+					<p>WebRTC will automatically reduce video frame rate, resolution, and bandwidth if it detects that it is unable to send video at the specified rate due to bandwidth or CPU.</p>
+					<a href="#mitigations-to-conserve-cpu" id="mitigations-to-conserve-cpu" style="color: inherit; text-decoration: none;">
+						<h3>Mitigations to conserve CPU</h3>
+					</a>
+					<a href="#application-profiling" id="application-profiling" style="color: inherit; text-decoration: none;">
+						<h4>Application profiling</h4>
+					</a>
+					<p>Use the browser&#39;s built-in developer tools to profile your application and determine whether there are any hotspots. When handling real-time events (prefixed with <code>realtime</code>) ensure that you are doing as little processing as possible. See the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#5-build-a-roster-of-participants-using-the-real-time-api">API Overview section on building a roster</a> for more information. In particular, look out for expensive DOM updates (such as when manipulating the roster or video tile layout).</p>
+					<p>When possible, profile on devices that have similar performance characteristics to the ones you expect to be used by your end users.</p>
+					<a href="#choose-a-lower-local-video-quality" id="choose-a-lower-local-video-quality" style="color: inherit; text-decoration: none;">
+						<h4>Choose a lower local video quality</h4>
+					</a>
+					<p>Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade.ts#L372">chooseVideoInputQuality</a>(width, height, frameRate, maxBandwidthKbps) and lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for <code>chooseVideoInputQuality</code>.</p>
+					<a href="#pause-remote-videos" id="pause-remote-videos" style="color: inherit; text-decoration: none;">
+						<h4>Pause remote videos</h4>
+					</a>
+					<p>Calling <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#pausevideotile">pauseVideoTile</a>  on remote video tiles will reduce the amount of CPU consumed due to decoding remote attendee video.</p>
+					<a href="#mitigations-to-conserve-bandwidth" id="mitigations-to-conserve-bandwidth" style="color: inherit; text-decoration: none;">
+						<h3>Mitigations to conserve bandwidth</h3>
+					</a>
+					<p>In the absence of packet loss, keep in mind that the sender uplink and receiver downlink consume the same bandwidth for each video tile. Mitigations affecting one sender&#39;s uplink can benefit all receiver&#39;s downlinks. This means that in order to help receiver&#39;s, sometimes the best course of action is to lower the bandwidth consumed by the sender.</p>
+					<a href="#adjust-local-video-quality" id="adjust-local-video-quality" style="color: inherit; text-decoration: none;">
+						<h4>Adjust local video quality</h4>
+					</a>
+					<p>You can choose a video quality of up to 1280x720 (720p) at 30 fps and 2500 Kbps using <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade.ts#L372">chooseVideoInputQuality</a>(width, height, frameRate, maxBandwidthKbps) API before the meeting session begins. However, in some cases it is not necessary to send the highest quality and you can use a lower values. For example, if the size of the video tile is small then the highest quality may not be worth the additional bandwidth and CPU overhead.</p>
+					<p>The default resolution in the SDK is 540p at 15 fps and 1400 Kbps. Lower resolutions can be set if you anticipate a low bandwidth situation. Browser and codec support for very low resolutions may vary.</p>
+					<p>The value <code>maxBandwidthKbps</code> is a recommendation you make to WebRTC to use as the upper limit for upstream sending bandwidth. The Chime SDK default is 1400 Kbps for this value. The following table provides recommendations of minimum and maximum bandwidth value per resolution for typical video-conferencing scenarios. Note that when low values are selected the video can be appear pixelated. Using 15 fps instead of 30 fps will substantially decrease the required bit rate and may be acceptable for low-motion content.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Resolution</th>
+								<th>Frame Rate Per Sec</th>
+								<th>Min Kbps</th>
+								<th>Max Kbps</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>180p</td>
+								<td>30</td>
+								<td>100</td>
+								<td>250</td>
+							</tr>
+							<tr>
+								<td>360p</td>
+								<td>30</td>
+								<td>250</td>
+								<td>800</td>
+							</tr>
+							<tr>
+								<td>480p</td>
+								<td>30</td>
+								<td>400</td>
+								<td>1500</td>
+							</tr>
+							<tr>
+								<td>540p</td>
+								<td>30</td>
+								<td>500</td>
+								<td>2000</td>
+							</tr>
+							<tr>
+								<td>720p</td>
+								<td>30</td>
+								<td>1400</td>
+								<td>2500</td>
+							</tr>
+					</tbody></table>
+					<p>Setting a frame rate below 15 is not recommend and will cause the video to appear jerky and will not significantly improve the bandwidth consumed since key frames will still be sent occasionally. It would be better to adjust the resolution than set a very low frame rate.</p>
+					<a href="#turning-off-local-video" id="turning-off-local-video" style="color: inherit; text-decoration: none;">
+						<h4>Turning off local video</h4>
+					</a>
+					<p>In some situations it may be best to turn off the local video tile to improve audio uplink, CPU consumption, or remote attendee downlink.</p>
+					<p>You can also observe the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideoobserver/AudioVideoObserver.ts#L92">connectionDidSuggestStopVideo</a> event to monitor audio packet loss and use that as a cue to turn off local video using <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade.ts#L82">stopLocalVideoTile</a>.</p>
+					<a href="#configure-a-video-uplink-policy" id="configure-a-video-uplink-policy" style="color: inherit; text-decoration: none;">
+						<h4>Configure a video uplink policy</h4>
+					</a>
+					<p>The SDK by default uses the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts">NScaleVideoUplinkBandwidthPolicy</a> which monitors number of participants in the meeting and automatically scales down the maxBandwidthKbps as the number of remote video tiles increases. This can be customized by implementing a <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L80">VideoUplinkBandwidth Policy</a> and setting it in the <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy">MeetingSessionConfiguration</a> class.</p>
+					<a href="#pause-remote-attendee-video" id="pause-remote-attendee-video" style="color: inherit; text-decoration: none;">
+						<h4>Pause remote attendee video</h4>
+					</a>
+					<p>When more video is being received than available estimated downlink bandwidth can support, the event <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts#L596">videoNotReceivingEnoughData</a> can is triggered with a list of attendee IDs and the bandwidth being consumed due to them. You can use this information to selectively pause attendees that are sending the highest bitrate video streams using <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade.ts#L104">pauseVideoTile</a>. When a video tile is paused, the action only affects your client. It does not pause the video for other attendees.</p>
+					<a href="#use-active-speaker-detection" id="use-active-speaker-detection" style="color: inherit; text-decoration: none;">
+						<h4>Use active speaker detection</h4>
+					</a>
+					<p>You can use the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#5d-subscribe-to-an-active-speaker-detector-optional">active speaker detector</a> to show only the video of the active speakers and pause other videos.</p>
+					<a href="#configure-a-video-downlink-policy" id="configure-a-video-downlink-policy" style="color: inherit; text-decoration: none;">
+						<h4>Configure a video downlink policy</h4>
+					</a>
+					<p>By default the SDK uses the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy.ts">AllHighestVideoBandwidthPolicy</a> which subscribes to the highest quality video of all participants. This can be customized by setting the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L74">VideoDownlinkBandwidthPolicy</a> in MeetingSessionConfiguration class.</p>
+					<p><em>Browser clients currently only send one stream resolution. You would only need to use this function if you were also using the Amazon Chime SDK for iOS or the Amazon Chime SDK for Android.</em></p>
+					<a href="#use-video-simulcast" id="use-video-simulcast" style="color: inherit; text-decoration: none;">
+						<h3>Use video simulcast</h3>
+					</a>
+					<p>Simulcast is a standardized technique in WebRTC to enhance video quality in a multi-party call. Amazon Chime SDK for JavaScript provides a video simulcast solution for Chromium-based browsers. To use simulcast, please refer to the documentation <a href="https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html#">here</a>.
+					<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Quality%20Bandwidth_Connectivity%20feedback">Give feedback on this guide</a></p>
+				</div>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -69,12 +69,5 @@ walk('src')
 importStrings.sort();
 exportStrings.sort();
 
-const customModuleNameAnnotation =
-`/**
- * @packageDocumentation
- * @module amazon-chime-sdk-js
- */\n\n`;
-
-
-const indexFile = customModuleNameAnnotation + importStrings.join('\n') + '\n\nexport {\n' + exportStrings.join('\n') + '\n}\n';
+const indexFile = importStrings.join('\n') + '\n\nexport {\n' + exportStrings.join('\n') + '\n}\n';
 fs.writeFileSync('src/index.ts', indexFile);

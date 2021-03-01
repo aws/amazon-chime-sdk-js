@@ -20,7 +20,6 @@ const walk = function(dir) {
 };
 
 let result = '';
-let namespaces = [];
 let guides = '';
 
 walk('guides')
@@ -47,17 +46,9 @@ walk('guides')
     console.log(file);
     guides += `* [${visibleName}](https://aws.github.io/amazon-chime-sdk-js/modules/${webFilename})\n`;
     result += `/**\n${data}\n */\nnamespace ${namespaceName} {}\n\n`;
-    namespaces.push(namespaceName);
   });
 
-let namespaceExports = `\nexport {\n ${namespaces.join(',\n ')}\n}`;
-fs.writeFileSync('./guides/docs.ts', `${result+namespaceExports};`, 'utf8');
-const customModuleNameAnnotation =
-`/**
- * @packageDocumentation
- * @module Guides
- */`;
-fs.writeFileSync('./guides/index.ts', `${customModuleNameAnnotation}\n${namespaceExports} from './docs';`, 'utf8');
+fs.writeFileSync('./guides/docs.ts', result, 'utf8');
 
 let readme = fs.readFileSync('./README.md', 'utf8');
 readme = readme.replace(
