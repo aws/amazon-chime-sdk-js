@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enable SIMD autodetection for Amazon Voice Focus in Chrome 90+.
 
 ### Removed
+- Removed audioDeviceInformation from AudioVideoControllerState.
 
 ### Fixed
 
