@@ -314,7 +314,6 @@ export default class DefaultAudioVideoController
       this.meetingSessionContext.statsCollector
     );
     this.meetingSessionContext.reconnectController = this._reconnectController;
-    this.meetingSessionContext.audioDeviceInformation = {};
     this.meetingSessionContext.videoDeviceInformation = {};
 
     if (!reconnecting) {
