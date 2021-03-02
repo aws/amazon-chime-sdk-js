@@ -34,6 +34,9 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
   async run(): Promise<void> {
     if (this.context.turnCredentials) {
       this.context.logger.info('TURN credentials available, skipping credentials fetch');
+      this.context.logger.info(
+        `TURN URIs: ${this.context.turnCredentials.uris} and Username: ${this.context.turnCredentials.username}`
+      );
       return;
     }
 
@@ -104,5 +107,8 @@ export default class ReceiveTURNCredentialsTask extends BaseTask {
         return !!uri;
       });
     this.context.turnCredentials.username = responseBodyJson.username;
+    this.context.logger.info(
+      `TURN URIs: ${this.context.turnCredentials.uris} and Username: ${this.context.turnCredentials.username}`
+    );
   }
 }
