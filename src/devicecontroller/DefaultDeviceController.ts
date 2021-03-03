@@ -552,6 +552,48 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     );
   }
 
+  static getIntrinsicDeviceId(device: Device): string | string[] | null {
+    if (device === undefined) {
+      return undefined;
+    }
+
+    if (device === null) {
+      return null;
+    }
+
+    if (typeof device === 'string') {
+      return device;
+    }
+
+    if ((device as MediaStream).id) {
+      return (device as MediaStream).id;
+    }
+
+    const constraints: MediaTrackConstraints = device as MediaTrackConstraints;
+    const deviceIdConstraints = constraints.deviceId;
+    if (deviceIdConstraints === undefined) {
+      return undefined;
+    }
+
+    if (deviceIdConstraints === null) {
+      return null;
+    }
+
+    if (typeof deviceIdConstraints === 'string' || Array.isArray(deviceIdConstraints)) {
+      return deviceIdConstraints;
+    }
+
+    const constraintStringParams: ConstrainDOMStringParameters = deviceIdConstraints as ConstrainDOMStringParameters;
+    if (
+      typeof constraintStringParams.exact === 'string' ||
+      Array.isArray(constraintStringParams.exact)
+    ) {
+      return constraintStringParams.exact;
+    }
+
+    return undefined;
+  }
+
   static createEmptyAudioDevice(): MediaStream {
     return DefaultDeviceController.synthesizeAudioDevice(0);
   }
@@ -797,49 +839,25 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   private hasSameGroupId(groupId: string, kind: string, device: Device): boolean {
-    device = this.getIntrinsicDeviceIdStr(device);
-    if (groupId === this.getGroupIdFromDeviceId(kind, device) || groupId === '') {
+    if (groupId === '') {
+      return true;
+    }
+    const deviceIds = DefaultDeviceController.getIntrinsicDeviceId(device);
+    if (typeof deviceIds === 'string' && groupId === this.getGroupIdFromDeviceId(kind, deviceIds)) {
       return true;
     }
     return false;
   }
 
-  private getGroupIdFromDeviceId(kind: string, device: string): string {
+  private getGroupIdFromDeviceId(kind: string, deviceId: string): string {
     if (this.deviceInfoCache !== null) {
       const cachedDeviceInfo = this.listCachedDevicesOfKind(`${kind}input`).find(
-        (cachedDevice: MediaDeviceInfo) => cachedDevice.deviceId === device
+        (cachedDevice: MediaDeviceInfo) => cachedDevice.deviceId === deviceId
       );
       if (cachedDeviceInfo && cachedDeviceInfo.groupId) {
         return cachedDeviceInfo.groupId;
       }
     }
-    return '';
-  }
-
-  private getIntrinsicDeviceIdStr(device: Device): string | null {
-    if (device === null) {
-      return null;
-    }
-    if (typeof device === 'string') {
-      return device;
-    }
-    if ((device as MediaStream).id) {
-      return (device as MediaStream).id;
-    }
-
-    const constraints: MediaTrackConstraints = device as MediaTrackConstraints;
-    if (!constraints.deviceId) {
-      return '';
-    }
-    if (typeof constraints.deviceId === 'string') {
-      return constraints.deviceId;
-    }
-
-    const deviceIdConstraint: ConstrainDOMStringParameters = constraints.deviceId as ConstrainDOMStringParameters;
-    if (typeof deviceIdConstraint.exact === 'string') {
-      return deviceIdConstraint.exact;
-    }
-
     return '';
   }
 
@@ -1011,7 +1029,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
           }
         });
       }
-      newDevice.groupId = this.getGroupIdFromDeviceId(kind, this.getIntrinsicDeviceIdStr(device));
+      newDevice.groupId = this.getMediaTrackSettings(newDevice.stream)?.groupId || '';
     } catch (error) {
       let errorMessage: string;
       if (error?.name && error.message) {
@@ -1271,9 +1289,20 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       return stream.id === (device as MediaStream).id;
     }
 
-    const settings = stream.getTracks()[0].getSettings();
+    const settings = this.getMediaTrackSettings(stream);
     // If a device does not specify deviceId, we have to assume the stream is not reusable.
-    return settings.deviceId === this.getIntrinsicDeviceIdStr(device);
+    if (!settings.deviceId) {
+      return false;
+    }
+    const deviceIds = DefaultDeviceController.getIntrinsicDeviceId(device);
+    if (typeof deviceIds === 'string') {
+      return settings.deviceId === deviceIds;
+    }
+    return false;
+  }
+
+  private getMediaTrackSettings(stream: MediaStream): MediaTrackSettings {
+    return stream.getTracks()[0]?.getSettings();
   }
 
   private reconnectAudioInputs(): void {

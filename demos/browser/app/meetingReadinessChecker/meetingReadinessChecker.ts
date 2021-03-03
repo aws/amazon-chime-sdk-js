@@ -181,35 +181,19 @@ export class DemoMeetingApp {
     }
   }
 
-  getAudioInputDevice = async (): Promise<MediaDeviceInfo> => {
-    const audioInputDevices = await this.deviceController.listAudioInputDevices();
+  getAudioInputDeviceID = (): string => {
     const dropdownList = document.getElementById('audio-input') as HTMLSelectElement;
-    return this.getDevice(audioInputDevices, dropdownList);
+    return dropdownList.value;
   };
 
-  getAudioOutputDevice = async (): Promise<MediaDeviceInfo> => {
-    const audioOutputDevices = await this.deviceController.listAudioOutputDevices();
+  getAudioOutputDeviceID = (): string => {
     const dropdownList = document.getElementById('audio-output') as HTMLSelectElement;
-    return this.getDevice(audioOutputDevices, dropdownList);
+    return dropdownList.value;
   };
 
-  getVideoInputDevice = async (): Promise<MediaDeviceInfo> => {
-    const videoInputDevices = await this.deviceController.listVideoInputDevices();
+  getVideoInputDeviceID = (): string => {
     const dropdownList = document.getElementById('video-input') as HTMLSelectElement;
-    return this.getDevice(videoInputDevices, dropdownList);
-  };
-
-  getDevice = async (
-    deviceList: MediaDeviceInfo[],
-    dropdownList: HTMLSelectElement
-  ): Promise<MediaDeviceInfo> => {
-    let device = deviceList[0];
-    for (let i = 0; i < deviceList.length; i++) {
-      if (deviceList[i].deviceId === dropdownList.value) {
-        device = deviceList[i];
-      }
-    }
-    return device;
+    return dropdownList.value;
   };
 
   speakerTest = async (): Promise<void> => {
@@ -221,7 +205,7 @@ export class DemoMeetingApp {
     const speakerTestResult = document.getElementById('speaker-test');
     speakerTestResult.style.display = 'inline-block';
     this.createReadinessHtml('speaker-test', 'spinner-border');
-    const audioOutput = await this.getAudioOutputDevice();
+    const audioOutput = this.getAudioOutputDeviceID();
     const speakerUserFeedbackHtml = document.getElementById('speaker-user-feedback');
     const audioElement = document.getElementById('speaker-test-audio-element') as HTMLAudioElement;
     speakerUserFeedbackHtml.style.display = 'inline-block';
@@ -250,7 +234,7 @@ export class DemoMeetingApp {
 
   micTest = async (): Promise<CheckAudioInputFeedback> => {
     this.createReadinessHtml('mic-test', 'spinner-border');
-    const audioInput = await this.getAudioInputDevice();
+    const audioInput = this.getAudioInputDeviceID();
     const audioInputResp = await this.meetingReadinessChecker.checkAudioInput(audioInput);
     this.createReadinessHtml('mic-test', CheckAudioInputFeedback[audioInputResp]);
     return audioInputResp;
@@ -258,7 +242,7 @@ export class DemoMeetingApp {
 
   videoTest = async (): Promise<CheckVideoInputFeedback> => {
     this.createReadinessHtml('video-test', 'spinner-border');
-    const videoInput = await this.getVideoInputDevice();
+    const videoInput = this.getVideoInputDeviceID();
     const videoInputResp = await this.meetingReadinessChecker.checkVideoInput(videoInput);
     const textToDisplay = CheckVideoInputFeedback[videoInputResp];
     this.createReadinessHtml('video-test', textToDisplay);
@@ -267,7 +251,7 @@ export class DemoMeetingApp {
 
   cameraTest = async (): Promise<void> => {
     this.createReadinessHtml('camera-test2', 'spinner-border');
-    const videoInput = await this.getVideoInputDevice();
+    const videoInput = this.getVideoInputDeviceID();
     const cameraResolutionResp1 = await this.meetingReadinessChecker.checkCameraResolution(
       videoInput,
       640,
@@ -299,7 +283,7 @@ export class DemoMeetingApp {
 
   audioConnectivityTest = async (): Promise<CheckAudioConnectivityFeedback> => {
     this.createReadinessHtml('audioconnectivity-test', 'spinner-border');
-    const audioInput = await this.getAudioInputDevice();
+    const audioInput = this.getAudioInputDeviceID();
     const audioConnectivityResp = await this.meetingReadinessChecker.checkAudioConnectivity(
       audioInput
     );
@@ -312,7 +296,7 @@ export class DemoMeetingApp {
 
   videoConnectivityTest = async (): Promise<CheckVideoConnectivityFeedback> => {
     this.createReadinessHtml('videoconnectivity-test', 'spinner-border');
-    const videoInput = await this.getVideoInputDevice();
+    const videoInput = this.getVideoInputDeviceID();
     const videoConnectivityResp = await this.meetingReadinessChecker.checkVideoConnectivity(
       videoInput
     );

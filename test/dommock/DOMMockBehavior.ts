@@ -43,15 +43,17 @@ export default class DOMMockBehavior {
     height: 0,
   };
   mediaStreamTrackSettings: {
-    width: number;
-    height: number;
+    width?: number;
+    height?: number;
     deviceId: string;
     facingMode?: string;
+    groupId?: string;
   } = {
     width: 0,
     height: 0,
     deviceId: 'test',
     facingMode: 'user',
+    groupId: '',
   };
   deviceCounter: number = 0;
   enumerateDevicesSucceeds: boolean = true;

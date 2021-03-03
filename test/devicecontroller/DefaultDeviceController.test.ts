@@ -733,6 +733,10 @@ describe('DefaultDeviceController', () => {
       domMockBehavior.enumerateDeviceList = [
         getMediaDeviceInfo('default', 'audioinput', 'label', 'group-id-1'),
       ];
+      domMockBehavior.mediaStreamTrackSettings = {
+        deviceId: 'default',
+        groupId: 'group-id-1',
+      };
       await deviceController.listAudioInputDevices();
       try {
         await deviceController.chooseAudioInputDevice('default');
@@ -741,11 +745,14 @@ describe('DefaultDeviceController', () => {
       }
       domMockBehavior.enumerateDeviceList.pop();
       // add external default device
-      domMockBehavior.enumerateDeviceList = [
-        getMediaDeviceInfo('default', 'audioinput', 'default - label2', 'group-id-2'),
-      ];
+      domMockBehavior.enumerateDeviceList.push(
+        getMediaDeviceInfo('default', 'audioinput', 'default - label2', 'group-id-2')
+      );
+      domMockBehavior.mediaStreamTrackSettings = {
+        deviceId: 'default',
+        groupId: 'group-id-2',
+      };
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      await deviceController.listAudioInputDevices();
       try {
         await deviceController.chooseAudioInputDevice('default');
       } catch (e) {
@@ -845,6 +852,73 @@ describe('DefaultDeviceController', () => {
         expect(releasedDevices.size).to.equal(3);
         done();
       });
+    });
+
+    it('reuse existing device if passing in the same device id', async () => {
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('deviceId1', 'audioinput', 'label', 'group-id-1'),
+        getMediaDeviceInfo('deviceId12', 'audioinput', 'label', 'group-id-2'),
+      ];
+      domMockBehavior.mediaStreamTrackSettings = {
+        deviceId: 'deviceId1',
+        groupId: 'group-id-1',
+      };
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      await deviceController.listAudioInputDevices();
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      try {
+        await deviceController.chooseAudioInputDevice('deviceId1');
+        await deviceController.chooseAudioInputDevice('deviceId1');
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+      expect(spy.calledOnce).to.be.true;
+    });
+
+    it('do not reuse existing device if passing in the same device constraint', async () => {
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('deviceId1', 'audioinput', 'label', 'group-id-1'),
+        getMediaDeviceInfo('deviceId12', 'audioinput', 'label', 'group-id-2'),
+      ];
+      domMockBehavior.mediaStreamTrackSettings = {
+        deviceId: 'deviceId1',
+        groupId: 'group-id-1',
+      };
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      await deviceController.listAudioInputDevices();
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      const constraints: MediaTrackConstraints = {
+        deviceId: ['deviceId1', 'deviceId2'],
+        sampleRate: 44100,
+      };
+      try {
+        await deviceController.chooseAudioInputDevice(constraints);
+        await deviceController.chooseAudioInputDevice(constraints);
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+      expect(spy.calledTwice).to.be.true;
+    });
+
+    it('reuse existing device if groupId is not available', async () => {
+      domMockBehavior.browserName = 'samsung';
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('deviceId1', 'audioinput', 'label', ''),
+        getMediaDeviceInfo('deviceId12', 'audioinput', 'label', ''),
+      ];
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      await deviceController.listAudioInputDevices();
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      try {
+        await deviceController.chooseAudioInputDevice('deviceId1');
+        await deviceController.chooseAudioInputDevice('deviceId1');
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+      expect(spy.calledOnce).to.be.true;
     });
   });
 
@@ -1378,6 +1452,97 @@ describe('DefaultDeviceController', () => {
       audioVideoController.videoTileController.stopLocalVideoTile();
       await device.stop();
       expect(spy.called).to.equal(true);
+    });
+
+    it('can reuse the same stream for VideoTransformDevice', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 0,
+        height: 0,
+        deviceId: 'test-same-device',
+        facingMode: 'user',
+      };
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async replaceLocalVideo(): Promise<void> {
+          return;
+        }
+      }
+      const avController = new TestAudioVideoController();
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+
+      deviceController.bindToAudioVideoController(avController);
+      avController.videoTileController.startLocalVideoTile();
+
+      await deviceController.chooseVideoInputDevice('test-same-device');
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
+
+      await deviceController.chooseVideoInputDevice(device);
+
+      avController.videoTileController.stopLocalVideoTile();
+      await device.stop();
+      expect(spy.calledOnce).to.equal(true);
+    });
+
+    it('fail to reuse the same stream for VideoTransformDevice if deviceId is not available ', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 0,
+        height: 0,
+        deviceId: '',
+        facingMode: 'user',
+      };
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async replaceLocalVideo(): Promise<void> {
+          return;
+        }
+      }
+      const avController = new TestAudioVideoController();
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+
+      deviceController.bindToAudioVideoController(avController);
+      avController.videoTileController.startLocalVideoTile();
+
+      await deviceController.chooseVideoInputDevice('test-same-device');
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, 'test-same-device', [processor]);
+
+      await deviceController.chooseVideoInputDevice(device);
+
+      avController.videoTileController.stopLocalVideoTile();
+      await device.stop();
+      expect(spy.calledTwice).to.equal(true);
+    });
+
+    it('do not reuse the same stream for VideoTransformDevice if multiple device constraints', async () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 0,
+        height: 0,
+        deviceId: 'device-id-1',
+        facingMode: 'user',
+      };
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async replaceLocalVideo(): Promise<void> {
+          return;
+        }
+      }
+      const avController = new TestAudioVideoController();
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+
+      deviceController.bindToAudioVideoController(avController);
+      avController.videoTileController.startLocalVideoTile();
+
+      const constraints: MediaTrackConstraints = {
+        deviceId: ['device-id-1', 'device-id-2'],
+        sampleRate: 44100,
+      };
+      await deviceController.chooseVideoInputDevice(constraints);
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, constraints, [processor]);
+
+      await deviceController.chooseVideoInputDevice(device);
+
+      avController.videoTileController.stopLocalVideoTile();
+      await device.stop();
+      expect(spy.calledTwice).to.equal(true);
     });
   });
 
@@ -2105,6 +2270,85 @@ describe('DefaultDeviceController', () => {
       });
       deviceController.bindToAudioVideoController(audioVideoController);
       deviceController.chooseAudioInputDevice(stringDeviceId);
+    });
+  });
+
+  describe('getIntrinsicDeviceId', () => {
+    it('Return undefined if the input device is undefined', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId(undefined)).to.be.undefined;
+    });
+
+    it('Return null if the input device is null', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId(null)).to.be.null;
+    });
+
+    it('Return empty string if the input device is an empty string', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId('')).to.equal('');
+    });
+
+    it('Return default if the input device is default string', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId('default')).to.equal('default');
+    });
+
+    it('Return device id if the input device is string deviceId', () => {
+      expect(DefaultDeviceController.getIntrinsicDeviceId('deviceId')).to.equal('deviceId');
+    });
+
+    it('Return stream id if the input device is a media stream', () => {
+      expect(
+        DefaultDeviceController.getIntrinsicDeviceId(getMediaStreamDevice('deviceId'))
+      ).to.equal('deviceId');
+    });
+
+    it('Return undefined if the input constraint deviceId is undefined', () => {
+      const constraints: MediaTrackConstraints = {};
+      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.undefined;
+    });
+
+    it('Return null if the input constraint deviceId is null', () => {
+      const constraints: MediaTrackConstraints = { deviceId: null };
+      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.null;
+    });
+
+    it('Return string if the input constraint deviceId is of type string', () => {
+      const constraints: MediaTrackConstraints = { deviceId: 'deviceId' };
+      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.equal('deviceId');
+    });
+
+    it('Return a string array if the input constraint deviceId is of type string array', () => {
+      const constraints: MediaTrackConstraints = {
+        deviceId: ['deviceId1', 'deviceId2'],
+        sampleRate: 44100,
+      };
+      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.eql([
+        'deviceId1',
+        'deviceId2',
+      ]);
+    });
+
+    it('Return string if the input constraint deviceId is of type ConstrainDOMStringParameters', () => {
+      const constraints: MediaTrackConstraints = { deviceId: { exact: 'device1' } };
+      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.equal('device1');
+    });
+
+    it(
+      'Return a string array if the input constraint deviceId is of type ConstrainDOMStringParameters with string' +
+        ' array',
+      () => {
+        const constraints: MediaTrackConstraints = {
+          deviceId: { exact: ['deviceId1', 'deviceId2'] },
+          sampleRate: 44100,
+        };
+        expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.eql([
+          'deviceId1',
+          'deviceId2',
+        ]);
+      }
+    );
+
+    it('Return undefined if the input constraint deviceId is of ideal', () => {
+      const constraints: MediaTrackConstraints = { deviceId: { ideal: 'device1' } };
+      expect(DefaultDeviceController.getIntrinsicDeviceId(constraints)).to.be.undefined;
     });
   });
 });
