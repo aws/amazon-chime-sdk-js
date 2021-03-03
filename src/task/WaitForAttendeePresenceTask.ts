@@ -12,19 +12,24 @@ import BaseTask from './BaseTask';
 export default class WaitForAttendeePresenceTask extends BaseTask {
   protected taskName = 'WaitForAttendeePresenceTask';
 
-  private cancelPromise: (error: Error) => void;
+  private cancelPromise: undefined | ((error: Error) => void);
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
   }
 
   cancel(): void {
-    const error = new Error(
-      `canceling ${this.name()} due to the meeting status code: ${
-        MeetingSessionStatusCode.NoAttendeePresent
-      }`
-    );
-    this.cancelPromise && this.cancelPromise(error);
+    // Just in case. The baseCancel behavior should prevent this.
+    /* istanbul ignore else */
+    if (this.cancelPromise) {
+      const error = new Error(
+        `canceling ${this.name()} due to the meeting status code: ${
+          MeetingSessionStatusCode.NoAttendeePresent
+        }`
+      );
+      this.cancelPromise(error);
+      delete this.cancelPromise;
+    }
   }
 
   async run(): Promise<void> {
@@ -40,6 +45,7 @@ export default class WaitForAttendeePresenceTask extends BaseTask {
         if (attendeeId === presentAttendeeId && present) {
           this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
           resolve();
+          delete this.cancelPromise;
         }
       };
 

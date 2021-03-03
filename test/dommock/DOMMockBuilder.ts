@@ -1284,6 +1284,18 @@ export default class DOMMockBuilder {
   }
 
   cleanup(): void {
+    // This is a bit of an awful hack. Some of our tests end up adding listeners that
+    // subsequently cause uncaught exceptions because they rely on `WebSocket` being defined.
+    //
+    // Almost every test cleans up these mocks in `after` or `afterEach`, and so random
+    // tests will fail at the end of a test suite due to these asynchronous listeners.
+    //
+    // This is bad: our tests should not have these side-effect listeners.
+    // However, fixing them is tricky, so we instead do a small hack: don't undefine `WebSocket`.
+    //
+    //
+    // delete GlobalAny.WebSocket;
+
     delete GlobalAny.fetch;
     delete GlobalAny.Response;
     delete GlobalAny.RTCPeerConnectionIceEvent;
@@ -1293,7 +1305,6 @@ export default class DOMMockBuilder {
     delete GlobalAny.RTCRtpReceiver;
     delete GlobalAny.RTCRtpSender;
     delete GlobalAny.MessageEvent;
-    delete GlobalAny.WebSocket;
     delete GlobalAny.MediaStreamTrack;
     delete GlobalAny.MediaStream;
     delete GlobalAny.MediaDevices;
