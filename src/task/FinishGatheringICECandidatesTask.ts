@@ -16,7 +16,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
   private static CHROME_VPN_TIMEOUT_MS = 5000;
 
   private startTimestampMs: number;
-  private cancelPromise: (error: Error) => void;
+  private cancelPromise: undefined | ((error: Error) => void);
 
   constructor(
     private context: AudioVideoControllerState,
@@ -38,7 +38,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
   }
 
   cancel(): void {
-    let error = new Error(`canceling ${this.name()}`);
+    let error: Error;
     // TODO: Remove when the Chrome VPN reconnect bug is fixed.
     // In Chrome, SDK may fail to establish TURN session after VPN reconnect.
     // https://bugs.chromium.org/p/webrtc/issues/detail?id=9097
@@ -55,7 +55,13 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       }
     }
 
-    this.cancelPromise && this.cancelPromise(error);
+    // Just in case. The baseCancel behavior should prevent this.
+    /* istanbul ignore else */
+    if (this.cancelPromise) {
+      error = error || new Error(`canceling ${this.name()}`);
+      this.cancelPromise(error);
+      delete this.cancelPromise;
+    }
   }
 
   async run(): Promise<void> {
@@ -104,6 +110,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
             if (this.context.peer.iceGatheringState === 'complete') {
               this.removeEventListener();
               resolve();
+              delete this.cancelPromise;
               return;
             }
           };
@@ -131,6 +138,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
               this.context.logger.info('gathered at least one relay candidate');
               this.removeEventListener();
               resolve();
+              delete this.cancelPromise;
               return;
             }
           }
@@ -145,8 +153,10 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
               this.context.iceCandidates.length === 0
             ) {
               reject(new Error('no ice candidates were gathered'));
+              delete this.cancelPromise;
             } else {
               resolve();
+              delete this.cancelPromise;
             }
           }
         };

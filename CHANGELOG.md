@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Add `SingleNodeAudioTransformDevice` to make simple audio transforms easier to write.
 - Reuse `VoiceFocusAudioNode` instances across transform device operations.
 - Allow a complete configuration to be retrieved from and passed to a
@@ -21,8 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow device checker APIs to take devices as input, rather than only MediaDeviceInfo objects.
 
 - Enable SIMD autodetection for Amazon Voice Focus in Chrome 90+.
+- Clean up task cancel hooks after they cease to be relevant.
 
 ### Removed
+
 - Removed audioDeviceInformation from AudioVideoControllerState.
 
 ### Fixed
