@@ -238,6 +238,7 @@ export class DemoMeetingApp
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
   tileIdToTileIndex: { [id: number]: number } = {};
+  tileIndexToPauseEventListener: { [id: number]: (event: Event) => Promise<void> } = {};
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
 
   cameraDeviceIds: string[] = [];
@@ -2246,6 +2247,18 @@ export class DemoMeetingApp
     }
   }
 
+  createPauseResumeListener(tileState: VideoTileState): (event: Event) => Promise<void> {
+      return async (event: Event): Promise<void> => {
+        if (!tileState.paused) {
+            this.audioVideo.pauseVideoTile(tileState.tileId);
+            (event.target as HTMLButtonElement).innerText = 'Resume';
+          } else {
+            this.audioVideo.unpauseVideoTile(tileState.tileId);
+            (event.target as HTMLButtonElement).innerText = 'Pause';
+          }
+        }
+  }
+
   videoTileDidUpdate(tileState: VideoTileState): void {
     this.log(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
     if (!tileState.boundAttendeeId) {
@@ -2262,15 +2275,9 @@ export class DemoMeetingApp
       `video-pause-${tileIndex}`
     ) as HTMLButtonElement;
 
-    pauseButtonElement.addEventListener('click', () => {
-      if (!tileState.paused) {
-        this.audioVideo.pauseVideoTile(tileState.tileId);
-        pauseButtonElement.innerText = 'Resume';
-      } else {
-        this.audioVideo.unpauseVideoTile(tileState.tileId);
-        pauseButtonElement.innerText = 'Pause';
-      }
-    });
+    pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
+    this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
+    pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
 
     this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
