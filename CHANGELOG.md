@@ -20,9 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Allow device checker APIs to take devices as input, rather than only MediaDeviceInfo objects.
-
 - Enable SIMD autodetection for Amazon Voice Focus in Chrome 90+.
 - Clean up task cancel hooks after they cease to be relevant.
+- Enable sender-side bandwidth estimation in Safari.
 
 ### Removed
 

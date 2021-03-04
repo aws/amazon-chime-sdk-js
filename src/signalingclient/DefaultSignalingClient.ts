@@ -81,9 +81,8 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.protocolVersion = 2;
     joinFrame.maxNumOfVideos = settings.maxVideos;
     joinFrame.flags = SdkJoinFlags.HAS_STREAM_UPDATE;
-    // Only Chrome currently supports the new send side bandwidth estimation
     const browserBehavior = new DefaultBrowserBehavior();
-    if (browserBehavior.hasChromiumWebRTC()) {
+    if (browserBehavior.supportsSenderSideBandwidthEstimation()) {
       joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
     }
     joinFrame.flags |= settings.sendBitrates ? SdkJoinFlags.SEND_BITRATES : 0;

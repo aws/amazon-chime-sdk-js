@@ -101,4 +101,9 @@ export default interface BrowserBehavior {
    * Returns whether browser supports the playback of canvas-captured stream.
    */
   supportsCanvasCapturedStreamPlayback(): boolean;
+
+  /**
+   * Returns whether browser supports sender-side bandwidth estimation.
+   */
+  supportsSenderSideBandwidthEstimation(): boolean;
 }

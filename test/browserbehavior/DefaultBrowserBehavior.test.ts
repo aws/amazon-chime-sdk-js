@@ -56,6 +56,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(false);
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
     });
 
     it('can detect Firefox on Android', () => {
@@ -77,6 +78,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
       const enableUnifiedPlan = true;
       expect(
         new DefaultBrowserBehavior({
@@ -109,6 +111,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
       const enableUnifiedPlan = true;
       expect(
         new DefaultBrowserBehavior({
@@ -142,6 +145,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(true);
       expect(new DefaultBrowserBehavior().requiresGroupIdMediaStreamConstraints()).to.eq(true);
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
       expect(new DefaultBrowserBehavior().supportString()).to.eq(
         'Google Chrome 78+, Samsung Internet 12+'
       );
@@ -180,6 +184,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
       expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.eq(true);
       expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(true);
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
     });
 
     it('can detect iOS Chrome', () => {
@@ -193,6 +198,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
       expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.eq(true);
       expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(true);
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
     });
 
     it('can detect iOS Firefox', () => {
@@ -206,6 +212,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.eq(false);
       expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.eq(true);
       expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.eq(true);
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
     });
 
     it('can test Safari version 12', () => {

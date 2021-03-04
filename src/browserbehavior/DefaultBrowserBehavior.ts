@@ -157,6 +157,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return this.isChrome() || this.isEdge();
   }
 
+  supportsSenderSideBandwidthEstimation(): boolean {
+    return this.hasChromiumWebRTC() || this.isSafari();
+  }
+
   // TODO: Deprecated, needs to be removed
   screenShareUnsupported(): boolean {
     console.warn('This function is no longer supported.');
