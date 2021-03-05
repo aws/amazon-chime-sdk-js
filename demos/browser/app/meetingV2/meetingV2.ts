@@ -238,7 +238,7 @@ export class DemoMeetingApp
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
   tileIdToTileIndex: { [id: number]: number } = {};
-  tileIndexToPauseEventListener: { [id: number]: (event: Event) => Promise<void> } = {};
+  tileIndexToPauseEventListener: { [id: number]: (event: Event) => void } = {};
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
 
   cameraDeviceIds: string[] = [];
@@ -2247,8 +2247,8 @@ export class DemoMeetingApp
     }
   }
 
-  createPauseResumeListener(tileState: VideoTileState): (event: Event) => Promise<void> {
-      return async (event: Event): Promise<void> => {
+  createPauseResumeListener(tileState: VideoTileState): (event: Event) => void {
+      return (event: Event): void => {
         if (!tileState.paused) {
             this.audioVideo.pauseVideoTile(tileState.tileId);
             (event.target as HTMLButtonElement).innerText = 'Resume';
