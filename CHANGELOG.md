@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed audioDeviceInformation from AudioVideoControllerState.
 
 ### Fixed
+- Upgrade ua-parser-js package version to latest 
 
 - Don't automatically upgrade dev-dependencies to avoid a breaking typedoc upgrade.
 - Safely handle calling logger `debug` methods with `undefined`.
