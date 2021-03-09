@@ -23,14 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enable SIMD autodetection for Amazon Voice Focus in Chrome 90+.
 - Clean up task cancel hooks after they cease to be relevant.
 - Enable sender-side bandwidth estimation in Safari.
+- Clean up usage of audioDeviceInformation in ReceiveAudioInputTask.
 
 ### Removed
-
 - Removed audioDeviceInformation from AudioVideoControllerState.
 
 ### Fixed
 - Upgrade ua-parser-js package version to latest 
-
 - Don't automatically upgrade dev-dependencies to avoid a breaking typedoc upgrade.
 - Safely handle calling logger `debug` methods with `undefined`.
 
