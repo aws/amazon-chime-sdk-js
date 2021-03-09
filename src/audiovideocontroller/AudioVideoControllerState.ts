@@ -110,6 +110,8 @@ export default class AudioVideoControllerState {
 
   videoInputAttachedTimestampMs: number = 0;
 
+  audioDeviceInformation: { [id: string]: string } = {};
+
   videoDeviceInformation: { [id: string]: string } = {};
 
   enableSimulcast: boolean = false;
