@@ -921,6 +921,10 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   private handleGetUserMediaError(error: Error, errorTimeMs?: number): void {
+    if (!error) {
+      throw new GetUserMediaError(error);
+    }
+
     switch (error.name) {
       case 'NotReadableError':
       case 'TrackStartError':
@@ -1021,6 +1025,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
         await this.handleDeviceChange();
         newDevice.stream.getTracks()[0].addEventListener('ended', () => {
+          // Hard to test, but the safety check is worthwhile.
+          /* istanbul ignore else */
           if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
             this.logger.warn(
               `${kind} input device which was active is no longer available, resetting to null device`
@@ -1059,7 +1065,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       );
 
       // This is effectively `error instanceof OverconstrainedError` but works in Node.
-      if ('constraint' in error) {
+      if (error && 'constraint' in error) {
         this.logger.error(`Over-constrained by constraint: ${error.constraint}`);
       }
 

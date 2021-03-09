@@ -130,13 +130,21 @@ describe('VoiceFocusDeviceTransformer', () => {
 
     describe('with working worker', () => {
       beforeEach(() => {
-        fetchMock.get(/\/worker-v1\.js/, (_url: string, _request: MockRequest) => {
-          return {
-            status: 200,
-            'content-type': 'application/javascript',
-            body: 'function(){}',
-          };
-        });
+        fetchMock
+          .get(/\/worker-v1\.js/, (_url: string, _request: MockRequest) => {
+            return {
+              status: 200,
+              'content-type': 'application/javascript',
+              body: 'function(){}',
+            };
+          })
+          .get(/\/estimator-v1.js/, (_url: string, _request: MockRequest) => {
+            return {
+              status: 200,
+              'content-type': 'application/javascript',
+              body: 'function(){}',
+            };
+          });
       });
 
       afterEach(() => {

@@ -27,7 +27,7 @@ import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVi
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
-import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 import MockError from '../dommock/MockError';
 import UserMediaState from '../dommock/UserMediaState';
 import {
@@ -394,7 +394,7 @@ describe('DefaultDeviceController', () => {
       DefaultDeviceController.audioContext = offline;
 
       const choose = deviceController.chooseAudioInputDevice(device);
-      expect(choose).to.eventually.be.rejectedWith('INVALID_STATE_ERR');
+      expect(choose).to.eventually.be.rejectedWith('Error fetching device.');
     });
   });
 
@@ -1546,7 +1546,7 @@ describe('DefaultDeviceController', () => {
     });
   });
 
-  describe(' Samsung Internet browser', () => {
+  describe('Samsung Internet browser', () => {
     it('chooses audio and video devices without error', async () => {
       domMockBehavior.browserName = 'samsung';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -2105,7 +2105,7 @@ describe('DefaultDeviceController', () => {
       expect(device).to.equal(stream);
       await delay(1500);
 
-      track.stop();
+      (track as StoppableMediaStreamTrack).externalStop();
       await delay(100);
     });
 
@@ -2119,7 +2119,7 @@ describe('DefaultDeviceController', () => {
       await delay(1500);
       expect(device).to.equal(stream);
 
-      track.stop();
+      (track as StoppableMediaStreamTrack).externalStop();
       await delay(100);
     });
 
@@ -2156,7 +2156,7 @@ describe('DefaultDeviceController', () => {
   });
 
   describe('input stream ended event', () => {
-    it('audio input stream ended', async () => {
+    it('calls ended for string device ID', async () => {
       let audioInputStreamEndedCallCount = 0;
       const observer: DeviceChangeObserver = {
         audioInputStreamEnded: (_deviceId: string): void => {
@@ -2166,7 +2166,22 @@ describe('DefaultDeviceController', () => {
       deviceController.addDeviceChangeObserver(observer);
       await deviceController.chooseAudioInputDevice(stringDeviceId);
       const stream = await deviceController.acquireAudioInputStream();
-      stream.getAudioTracks()[0].stop();
+      (stream.getAudioTracks()[0] as StoppableMediaStreamTrack).externalStop();
+      await delay(100);
+      expect(audioInputStreamEndedCallCount).to.equal(1);
+    });
+
+    it('calls ended for constraints', async () => {
+      let audioInputStreamEndedCallCount = 0;
+      const observer: DeviceChangeObserver = {
+        audioInputStreamEnded: (_deviceId: string): void => {
+          audioInputStreamEndedCallCount += 1;
+        },
+      };
+      deviceController.addDeviceChangeObserver(observer);
+      await deviceController.chooseAudioInputDevice({ deviceId: stringDeviceId });
+      const stream = await deviceController.acquireAudioInputStream();
+      (stream.getAudioTracks()[0] as StoppableMediaStreamTrack).externalStop();
       await delay(100);
       expect(audioInputStreamEndedCallCount).to.equal(1);
     });
@@ -2184,7 +2199,7 @@ describe('DefaultDeviceController', () => {
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       audioVideoController.videoTileController.startLocalVideoTile();
       const stream = await deviceController.acquireVideoInputStream();
-      stream.getVideoTracks()[0].stop();
+      (stream.getVideoTracks()[0] as StoppableMediaStreamTrack).externalStop();
       await delay(100);
       expect(videoInputStreamEndedCallCount).to.equal(1);
       expect(spy.called).to.be.true;
@@ -2202,7 +2217,7 @@ describe('DefaultDeviceController', () => {
       deviceController.bindToAudioVideoController(audioVideoController);
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       const stream = await deviceController.acquireVideoInputStream();
-      stream.getVideoTracks()[0].stop();
+      (stream.getVideoTracks()[0] as StoppableMediaStreamTrack).externalStop();
       await delay(100);
       expect(videoInputStreamEndedCallCount).to.equal(1);
       expect(spy.called).to.be.false;
@@ -2221,7 +2236,9 @@ describe('DefaultDeviceController', () => {
         },
       });
       deviceController.bindToAudioVideoController(audioVideoController);
-      deviceController.chooseAudioInputDevice(stringDeviceId);
+      expect(deviceController.chooseAudioInputDevice(stringDeviceId)).to.eventually.be.rejectedWith(
+        'Error fetching device.'
+      );
     });
 
     it('receives the error name and the message', done => {
@@ -2237,7 +2254,9 @@ describe('DefaultDeviceController', () => {
         },
       });
       deviceController.bindToAudioVideoController(audioVideoController);
-      deviceController.chooseAudioInputDevice(stringDeviceId);
+      expect(deviceController.chooseAudioInputDevice(stringDeviceId)).to.eventually.be.rejectedWith(
+        'Permission denied by browser'
+      );
     });
 
     it('receives the error name only if the message is empty', done => {
@@ -2252,7 +2271,9 @@ describe('DefaultDeviceController', () => {
         },
       });
       deviceController.bindToAudioVideoController(audioVideoController);
-      deviceController.chooseAudioInputDevice(stringDeviceId);
+      expect(deviceController.chooseAudioInputDevice(stringDeviceId)).to.eventually.be.rejectedWith(
+        'Permission denied by browser'
+      );
     });
 
     it('receives the error message only if the error name is empty', done => {
@@ -2269,7 +2290,9 @@ describe('DefaultDeviceController', () => {
         },
       });
       deviceController.bindToAudioVideoController(audioVideoController);
-      deviceController.chooseAudioInputDevice(stringDeviceId);
+      expect(deviceController.chooseAudioInputDevice(stringDeviceId)).to.eventually.be.rejectedWith(
+        'Error fetching device'
+      );
     });
   });
 

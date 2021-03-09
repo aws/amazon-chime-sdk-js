@@ -20,7 +20,7 @@ import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus'
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
-import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 import { delay } from '../utils';
 
 describe('DefaultContentShareController', () => {
@@ -341,7 +341,7 @@ describe('DefaultContentShareController', () => {
       const mediaVideoTrack = new MediaStreamTrack('video-track-id', 'video');
       mediaStream.addTrack(mediaVideoTrack);
       await contentShareController.startContentShare(mediaStream);
-      mediaVideoTrack.stop();
+      (mediaVideoTrack as StoppableMediaStreamTrack).externalStop();
       expect(contentShareControllerSpy.calledOnce).to.be.true;
       await delay(defaultDelay);
       expect(contentShareObserverSpy.calledOnce).to.be.true;
