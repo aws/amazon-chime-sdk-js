@@ -30,6 +30,7 @@ type MockListener = (event: Event | MessageEvent | CloseEvent) => void;
 type RawMetricReport = any;
 
 interface EventListenerObjectWrapper {
+  once: boolean;
   type: string;
   listener: EventListenerOrEventListenerObject;
 }
@@ -167,7 +168,7 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.MediaStreamTrack = class MockMediaStreamTrack implements StoppableMediaStreamTrack {
-      private listeners: { [type: string]: MockListener[] } = {};
+      listeners: { [type: string]: { once: boolean; listener: MockListener }[] } = {};
       readyState: MediaStreamTrackState = 'live';
 
       readonly id: string;
@@ -206,17 +207,29 @@ export default class DOMMockBuilder {
         if (!event.type || !this.listeners.hasOwnProperty(event.type)) {
           return;
         }
+
         const listeners = this.listeners[event.type];
         if (!listeners || !listeners.length) {
           return;
         }
-        for (const listener of listeners) {
+
+        const toRemove = new Set();
+        for (const obj of listeners) {
+          const { once, listener } = obj;
+          if (once) {
+            toRemove.add(obj);
+          }
           listener(event);
+        }
+
+        if (toRemove) {
+          this.listeners[event.type] = this.listeners[event.type].filter(v => !toRemove.has(v));
         }
 
         if (event.type === 'ended' && this.onended) {
           this.onended(event);
         }
+
         return !event.cancelable || event.defaultPrevented;
       }
 
@@ -254,17 +267,22 @@ export default class DOMMockBuilder {
         };
       }
 
-      addEventListener(type: string, listener: MockListener): void {
+      addEventListener(
+        type: string,
+        listener: MockListener,
+        options?: boolean | AddEventListenerOptions
+      ): void {
+        const once = options && typeof options === 'object' && options.once;
         if (!this.listeners.hasOwnProperty(type)) {
           this.listeners[type] = [];
         }
-        this.listeners[type].push(listener);
+        this.listeners[type].push({ once, listener });
       }
 
       removeEventListener(type: string, listener: MockListener): void {
         if (this.listeners.hasOwnProperty(type)) {
           this.listeners[type] = this.listeners[type].filter(
-            eachListener => eachListener !== listener
+            eachListener => eachListener.listener !== listener
           );
         }
       }
@@ -469,26 +487,25 @@ export default class DOMMockBuilder {
       addEventListener(
         type: string,
         listener?: EventListenerOrEventListenerObject,
-        _options?: boolean | AddEventListenerOptions
+        options?: boolean | AddEventListenerOptions
       ): void {
-        this.eventListeners.push({ type: type, listener: listener });
+        const once = options && typeof options === 'object' && options.once;
+        this.eventListeners.push({ type: type, listener: listener, once });
       }
 
       removeEventListener(type: string, listener: EventListenerOrEventListenerObject): void {
-        const newEventListeners: EventListenerObjectWrapper[] = [];
-        for (const eventListener of this.eventListeners) {
-          if (eventListener.type === type && eventListener.listener === listener) {
-            continue;
-          }
-          newEventListeners.push(eventListener);
-        }
-        this.eventListeners = newEventListeners;
+        this.eventListeners = this.eventListeners.filter(
+          e => e.type !== type || e.listener !== listener
+        );
       }
 
       async dispatchEvent(event: typeof GlobalAny.Event): Promise<boolean> {
-        for (const listenerWrapper of this.eventListeners) {
-          if (listenerWrapper.type === event.type) {
-            const callback = listenerWrapper.listener as EventListener;
+        for (const { type, once, listener } of this.eventListeners) {
+          if (type === event.type) {
+            const callback = listener as EventListener;
+            if (once) {
+              this.removeEventListener(type, listener);
+            }
             await callback(event);
           }
         }
@@ -700,9 +717,10 @@ export default class DOMMockBuilder {
       addEventListener(
         type: string,
         listener?: EventListenerOrEventListenerObject,
-        _options?: boolean | AddEventListenerOptions
+        options?: boolean | AddEventListenerOptions
       ): void {
-        this.eventListeners.push({ type: type, listener: listener });
+        const once = options && typeof options === 'object' && options.once;
+        this.eventListeners.push({ type: type, listener: listener, once });
       }
 
       removeEventListener(type: string, listener: EventListenerOrEventListenerObject): void {
@@ -1185,6 +1203,8 @@ export default class DOMMockBuilder {
         }
         this.listeners[type].push(listener);
       }
+
+      disconnect(): void {}
     };
 
     GlobalAny.MediaStreamAudioSourceNode = class MockMediaStreamAudioSourceNode {
