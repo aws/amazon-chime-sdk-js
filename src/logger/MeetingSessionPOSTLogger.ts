@@ -1,16 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import type { Destroyable } from '../destroyable/Destroyable';
 import LogLevel from '../logger/LogLevel';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import Log from './Log';
 
-export default class MeetingSessionPOSTLogger {
+/**
+ * `MeetingSessionPOSTLogger` publishes log messages in batches to a URL
+ * supplied during its construction.
+ *
+ * Be sure to call {@link MeetingSessionPOSTLogger.dispose} when you're done
+ * with the logger in order to avoid leaks.
+ */
+export default class MeetingSessionPOSTLogger implements Destroyable {
   private logCapture: Log[] = [];
   private sequenceNumber: number = 0;
   private lock = false;
   private intervalScheduler: IntervalScheduler;
+  private eventListener: undefined | (() => void);
 
   constructor(
     private name: string,
@@ -20,14 +29,27 @@ export default class MeetingSessionPOSTLogger {
     private url: string,
     private level = LogLevel.WARN
   ) {
-    this.intervalScheduler = new IntervalScheduler(this.intervalMs);
     this.startLogPublishScheduler(this.batchSize);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const GlobalAny = global as any;
-    GlobalAny['window']['addEventListener'] &&
-      window.addEventListener('unload', () => {
-        this.stop();
-      });
+
+    this.eventListener = () => {
+      this.stop();
+    };
+
+    this.addEventListener();
+  }
+
+  addEventListener(): void {
+    if (!this.eventListener || !('window' in global) || !window.addEventListener) {
+      return;
+    }
+    window.addEventListener('unload', this.eventListener);
+  }
+
+  removeEventListener(): void {
+    if (!this.eventListener || !('window' in global) || !window.removeEventListener) {
+      return;
+    }
+    window.removeEventListener('unload', this.eventListener);
   }
 
   debug(debugFunction: string | (() => string)): void {
@@ -69,6 +91,9 @@ export default class MeetingSessionPOSTLogger {
   }
 
   startLogPublishScheduler(batchSize: number): void {
+    this.addEventListener();
+    this.intervalScheduler?.stop();
+    this.intervalScheduler = new IntervalScheduler(this.intervalMs);
     this.intervalScheduler.start(async () => {
       if (this.lock === true || this.getLogCaptureSize() === 0) {
         return;
@@ -93,9 +118,25 @@ export default class MeetingSessionPOSTLogger {
   }
 
   stop(): void {
-    this.intervalScheduler.stop();
+    // Clean up to avoid resource leaks.
+    this.intervalScheduler?.stop();
+    this.intervalScheduler = undefined;
+    this.removeEventListener();
+
     const body = this.makeRequestBody(this.logCapture);
     navigator.sendBeacon(this.url, body);
+  }
+
+  /**
+   * Permanently clean up the logger. A new logger must be created to
+   * resume logging.
+   */
+  async destroy(): Promise<void> {
+    this.intervalScheduler?.stop();
+    this.intervalScheduler = undefined;
+    this.removeEventListener();
+    this.configuration = undefined;
+    this.logCapture = [];
   }
 
   private makeRequestBody(batch: Log[]): string {

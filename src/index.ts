@@ -93,6 +93,7 @@ import DefaultVideoTransformDevice from './videoframeprocessor/DefaultVideoTrans
 import DefaultVideoTransformDeviceObserver from './videoframeprocessor/DefaultVideoTransformDeviceObserver';
 import DefaultVolumeIndicatorAdapter from './volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import DefaultWebSocketAdapter from './websocketadapter/DefaultWebSocketAdapter';
+import Destroyable from './destroyable/Destroyable';
 import Device from './devicecontroller/Device';
 import DeviceChangeObserver from './devicechangeobserver/DeviceChangeObserver';
 import DeviceController from './devicecontroller/DeviceController';
@@ -254,6 +255,7 @@ import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
 import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
+import { isDestroyable } from './destroyable/Destroyable';
 import { isVideoTransformDevice } from './devicecontroller/VideoTransformDevice';
 
 export {
@@ -352,6 +354,7 @@ export {
   DefaultVideoTransformDeviceObserver,
   DefaultVolumeIndicatorAdapter,
   DefaultWebSocketAdapter,
+  Destroyable,
   Device,
   DeviceChangeObserver,
   DeviceController,
@@ -513,5 +516,6 @@ export {
   WebSocketAdapter,
   WebSocketReadyState,
   isAudioTransformDevice,
+  isDestroyable,
   isVideoTransformDevice,
 }

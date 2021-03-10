@@ -113,7 +113,7 @@ export default class MediaDeviceProxyHandler implements ProxyHandler<MediaDevice
 
   private handleDeviceChangeEvent(): void {
     for (const listener of this.deviceChangeListeners) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         /* istanbul ignore else */
         if (this.deviceChangeListeners.has(listener)) {
           const event = new Event('devicechange');

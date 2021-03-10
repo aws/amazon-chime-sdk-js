@@ -57,7 +57,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     }
 
     if (new DefaultBrowserBehavior().requiresVideoElementWorkaround()) {
-      new AsyncScheduler().start(async () => {
+      AsyncScheduler.nextTick(async () => {
         try {
           await videoElement.play();
         } catch (error) {}
@@ -98,7 +98,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       // Need to yield the message loop before clearing `srcObject` to
       // prevent Safari from crashing.
       if (new DefaultBrowserBehavior().requiresVideoElementWorkaround()) {
-        new AsyncScheduler().start(() => {
+        AsyncScheduler.nextTick(() => {
           videoElement.srcObject = null;
         });
       } else {

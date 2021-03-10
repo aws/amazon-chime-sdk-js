@@ -56,6 +56,9 @@ export default class CleanStoppedSessionTask extends BaseTask {
       this.context.turnCredentials = null;
       this.context.videoSubscriptions = null;
       this.context.transceiverController.reset();
+
+      // This should really be a _device selection_ operation that chooses no device,
+      // allowing the device controller to clean up any selected transform device.
       this.context.mediaStreamBroker.releaseMediaStream(this.context.activeAudioInput);
       this.context.activeAudioInput = null;
       this.context.mediaStreamBroker.releaseMediaStream(this.context.activeVideoInput);

@@ -10,6 +10,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ContentShareController from '../contentsharecontroller/ContentShareController';
 import ContentShareMediaStreamBroker from '../contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../contentsharecontroller/DefaultContentShareController';
+import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import DeviceController from '../devicecontroller/DeviceController';
 import Logger from '../logger/Logger';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
@@ -18,7 +19,7 @@ import DefaultWebSocketAdapter from '../websocketadapter/DefaultWebSocketAdapter
 import MeetingSession from './MeetingSession';
 import MeetingSessionConfiguration from './MeetingSessionConfiguration';
 
-export default class DefaultMeetingSession implements MeetingSession {
+export default class DefaultMeetingSession implements MeetingSession, Destroyable {
   private _configuration: MeetingSessionConfiguration;
   private _logger: Logger;
   private audioVideoController: AudioVideoController;
@@ -106,6 +107,15 @@ export default class DefaultMeetingSession implements MeetingSession {
 
   get deviceController(): DeviceController {
     return this._deviceController;
+  }
+
+  async destroy(): Promise<void> {
+    if (isDestroyable(this._deviceController)) {
+      await this._deviceController.destroy();
+    }
+    this._deviceController = undefined;
+    this.audioVideoController = undefined;
+    this.contentShareController = undefined;
   }
 
   private checkBrowserSupportAndFeatureConfiguration(): void {

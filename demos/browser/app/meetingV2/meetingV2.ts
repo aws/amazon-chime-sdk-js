@@ -221,15 +221,17 @@ export class DemoMeetingApp
   static testVideo: string =
     'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm';
   static readonly LOGGER_BATCH_SIZE: number = 85;
-  static readonly LOGGER_INTERVAL_MS: number = 2000;
+  static readonly LOGGER_INTERVAL_MS: number = 2_000;
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
-  static readonly DATA_MESSAGE_LIFETIME_MS: number = 300000;
+  static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
 
-
-  // ideally we don't need to change this. Keep this configurable in case users have super slow network.
-  loadingBodyPixDependencyTimeoutMs: number = 10000;
+  // Ideally we don't need to change this. Keep this configurable in case users have a super slow network.
+  loadingBodyPixDependencyTimeoutMs: number = 10_000;
   loadingBodyPixDependencyPromise: undefined | Promise<void>;
+
+  attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
+  activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
 
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
@@ -279,6 +281,7 @@ export class DemoMeetingApp
   markdown = require('markdown-it')({ linkify: true });
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
+  meetingSessionPOSTLogger: MeetingSessionPOSTLogger;
   meetingEventPOSTLogger: MeetingSessionPOSTLogger;
 
   hasChromiumWebRTC: boolean = this.defaultBrowserBehaviour.hasChromiumWebRTC();
@@ -298,26 +301,46 @@ export class DemoMeetingApp
 
   meetingLogger: Logger | undefined = undefined;
 
-  constructor() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (global as any).app = this;
+  // If you want to make this a repeatable SPA, change this to 'spa'
+  // and fix some state (e.g., video buttons).
+  behaviorAfterLeave: 'spa' | 'reload' | 'halt' = 'reload';
 
+  removeFatalHandlers: () => void;
+
+  addFatalHandlers(): void {
     fatal = this.fatal.bind(this);
 
-    // Listen for unhandled errors, too.
-    window.addEventListener('error', event => {
+    const onEvent = (event: ErrorEvent): void => {
       // In Safari there's only a message.
       fatal(event.error || event.message);
-    });
+    };
+
+    // Listen for unhandled errors, too.
+    window.addEventListener('error', onEvent);
 
     window.onunhandledrejection = (event: PromiseRejectionEvent) => {
       fatal(event.reason);
     };
 
+    this.removeFatalHandlers = () => {
+      window.onunhandledrejection = undefined;
+      window.removeEventListener('error', onEvent);
+      fatal = undefined;
+      this.removeFatalHandlers = undefined;
+    }
+  }
+
+  constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (global as any).app = this;
+
+    this.addFatalHandlers();
+
     if (document.location.search.includes('testfatal=1')) {
       this.fatal(new Error('Testing fatal.'));
       return;
     }
+
     (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
       'amazon-chime-sdk-js@' + Versioning.sdkVersion;
     this.initEventListeners();
@@ -432,7 +455,8 @@ export class DemoMeetingApp
       this.enableUnifiedPlanForChromiumBasedBrowsers = !(document.getElementById(
         'planB'
       ) as HTMLInputElement).checked;
-      new AsyncScheduler().start(
+
+      AsyncScheduler.nextTick(
         async (): Promise<void> => {
           let chimeMeetingId: string = '';
           this.showProgress('progress-authenticate');
@@ -786,7 +810,10 @@ export class DemoMeetingApp
     });
 
     const buttonMeetingLeave = document.getElementById('button-meeting-leave');
-    buttonMeetingLeave.addEventListener('click', _e => {
+    buttonMeetingLeave.addEventListener('click', e => {
+      if (e.shiftKey) {
+        this.behaviorAfterLeave = 'halt';
+      };
       new AsyncScheduler().start(async () => {
         (buttonMeetingLeave as HTMLButtonElement).disabled = true;
         await this.leave();
@@ -1130,16 +1157,17 @@ export class DemoMeetingApp
         this.createLogStream(configuration, 'create_browser_event_log_stream'),
       ]);
 
+      this.meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+        'SDK',
+        configuration,
+        DemoMeetingApp.LOGGER_BATCH_SIZE,
+        DemoMeetingApp.LOGGER_INTERVAL_MS,
+        `${DemoMeetingApp.BASE_URL}logs`,
+        logLevel
+      );
       this.meetingLogger = new MultiLogger(
+        this.meetingEventPOSTLogger,
         consoleLogger,
-        new MeetingSessionPOSTLogger(
-          'SDK',
-          configuration,
-          DemoMeetingApp.LOGGER_BATCH_SIZE,
-          DemoMeetingApp.LOGGER_INTERVAL_MS,
-          `${DemoMeetingApp.BASE_URL}logs`,
-          logLevel
-        )
       );
       this.meetingEventPOSTLogger = new MeetingSessionPOSTLogger(
         'SDKEvent',
@@ -1200,7 +1228,7 @@ export class DemoMeetingApp
   async leave(): Promise<void> {
     this.statsCollector.resetStats();
     this.audioVideo.stop();
-    this.voiceFocusDevice?.stop();
+    await this.voiceFocusDevice?.stop();
     this.voiceFocusDevice = undefined;
 
     await this.chosenVideoTransformDevice?.stop();
@@ -1330,8 +1358,12 @@ export class DemoMeetingApp
         }
       );
     };
+
+    this.attendeeIdPresenceHandler = handler;
     this.audioVideo.realtimeSubscribeToAttendeeIdPresence(handler);
-    const activeSpeakerHandler = (attendeeIds: string[]): void => {
+
+    // Hang on to this so we can unsubscribe later.
+    this.activeSpeakerHandler = (attendeeIds: string[]): void => {
       for (const attendeeId in this.roster) {
         this.roster[attendeeId].active = false;
       }
@@ -1343,17 +1375,20 @@ export class DemoMeetingApp
       }
       this.layoutFeaturedTile();
     };
+
+    const scoreHandler = (scores: { [attendeeId: string]: number }) => {
+      for (const attendeeId in scores) {
+        if (this.roster[attendeeId]) {
+          this.roster[attendeeId].score = scores[attendeeId];
+        }
+      }
+      this.updateRoster();
+    };
+
     this.audioVideo.subscribeToActiveSpeakerDetector(
       new DefaultActiveSpeakerPolicy(),
-      activeSpeakerHandler,
-      (scores: { [attendeeId: string]: number }) => {
-        for (const attendeeId in scores) {
-          if (this.roster[attendeeId]) {
-            this.roster[attendeeId].score = scores[attendeeId];
-          }
-        }
-        this.updateRoster();
-      },
+      this.activeSpeakerHandler,
+      scoreHandler,
       this.showActiveSpeakerScores ? 100 : 0
     );
   }
@@ -1824,7 +1859,7 @@ export class DemoMeetingApp
     await this.audioVideo.chooseAudioOutputDevice(device);
   }
 
-  private analyserNodeCallback = () => {};
+  private analyserNodeCallback: undefined | (() => void);
 
   async selectedAudioInput(): Promise<AudioInputDevice> {
     const audioInput = document.getElementById('audio-input') as HTMLSelectElement;
@@ -1879,7 +1914,7 @@ export class DemoMeetingApp
       return;
     }
 
-    this.analyserNodeCallback = () => {};
+    this.analyserNodeCallback = undefined;
 
     // Disconnect the analyser node from its inputs and outputs.
     this.analyserNode.disconnect();
@@ -1927,7 +1962,9 @@ export class DemoMeetingApp
         this.setAudioPreviewPercent(percent);
       }
       frameIndex = (frameIndex + 1) % 2;
-      requestAnimationFrame(this.analyserNodeCallback);
+      if (this.analyserNodeCallback) {
+        requestAnimationFrame(this.analyserNodeCallback);
+      }
     };
     requestAnimationFrame(this.analyserNodeCallback);
   }
@@ -2273,15 +2310,89 @@ export class DemoMeetingApp
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
     this.log(`resetting stats in WebRTCStatsCollector`);
     this.statsCollector.resetStats();
+
+    const returnToStart = () => {
+      switch (this.behaviorAfterLeave) {
+        case 'spa':
+          this.switchToFlow('flow-authenticate');
+          break;
+        case 'reload':
+          window.location.href = window.location.pathname;
+          break;
+        // This is useful for testing memory leaks.
+        case 'halt': {
+          // Wait a moment to make sure cleanup is done.
+          setTimeout(() => {
+            // Kill all references to code and content.
+            // @ts-ignore
+            window.app = undefined;
+            // @ts-ignore
+            window.app_meetingV2 = undefined;
+            // @ts-ignore
+            window.webpackHotUpdateapp_meetingV2 = undefined;
+            document.getElementsByTagName('body')[0].innerHTML = '<b>Gone</b>';
+            this.removeFatalHandlers();
+          }, 2000);
+          break;
+        }
+      }
+    };
+
+    /**
+     * This is approximately the inverse of the initialization method above.
+     * This work only needs to be done if you want to continue using the page; if
+     * your app navigates away or closes the tab when done, you can let the browser
+     * clean up.
+     */
+    const cleanUpResources = async () => {
+      // Clean up the timers for this.
+      this.audioVideo.unsubscribeFromActiveSpeakerDetector(this.activeSpeakerHandler);
+
+      // Stop listening to attendee presence.
+      this.audioVideo.realtimeUnsubscribeToAttendeeIdPresence(this.attendeeIdPresenceHandler);
+
+      // Stop watching device changes in the UI.
+      this.audioVideo.removeDeviceChangeObserver(this);
+
+      // Stop content share and local video.
+      await this.audioVideo.stopLocalVideoTile();
+      await this.audioVideo.stopContentShare();
+
+      // Drop the audio output.
+      await this.audioVideo.chooseAudioOutputDevice(null);
+      this.audioVideo.unbindAudioElement();
+
+      // If you joined and left the meeting, `CleanStoppedSessionTask` will have deselected
+      // any input streams. If you didn't, you need to call `chooseAudioInputDevice` here.
+
+      // Clean up the loggers so they don't keep their `onload` listeners around.
+      setTimeout(async () => {
+        await this.meetingEventPOSTLogger?.destroy();
+        await this.meetingSessionPOSTLogger?.destroy();
+      }, 500);
+
+      this.audioVideo = undefined;
+      this.voiceFocusDevice = undefined;
+      this.meetingSession = undefined;
+      this.activeSpeakerHandler = undefined;
+      this.currentAudioInputDevice = undefined;
+    };
+
+    const onLeftMeeting = async () => {
+      await cleanUpResources();
+      returnToStart();
+    };
+
     if (sessionStatus.statusCode() === MeetingSessionStatusCode.AudioCallEnded) {
       this.log(`meeting ended`);
-      // @ts-ignore
-      window.location = window.location.pathname;
-    } else if (sessionStatus.statusCode() === MeetingSessionStatusCode.Left) {
-      this.log('left meeting');
+      onLeftMeeting();
+      return;
+    }
 
-      // @ts-ignore
-      window.location = window.location.pathname;
+    if (sessionStatus.statusCode() === MeetingSessionStatusCode.Left) {
+      this.log('left meeting');
+      onLeftMeeting();
+      return;
     }
   }
 

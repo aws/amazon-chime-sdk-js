@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
+import type { Destroyable } from '../destroyable/Destroyable';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import ActiveSpeakerDetector from './ActiveSpeakerDetector';
@@ -12,7 +13,7 @@ import ActiveSpeakerDetector from './ActiveSpeakerDetector';
 type DetectorCallback = (attendeeIds: string[]) => void;
 type DetectorHandler = (attendeeId: string, present: boolean) => void;
 
-export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetector {
+export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetector, Destroyable {
   private speakerScores: { [attendeeId: string]: number } = {};
   private speakerMuteState: { [attendeeId: string]: boolean } = {};
 
@@ -173,5 +174,21 @@ export default class DefaultActiveSpeakerDetector implements ActiveSpeakerDetect
       scoresTimer.stop();
       this.detectorCallbackToHandler.delete(callback);
     }
+  }
+
+  async destroy(): Promise<void> {
+    for (const handler of this.detectorCallbackToHandler.values()) {
+      this.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);
+    }
+    for (const activityTimer of this.detectorCallbackToActivityTimer.values()) {
+      activityTimer.stop();
+    }
+    for (const scoresTimer of this.detectorCallbackToScoresTimer.values()) {
+      scoresTimer.stop();
+    }
+
+    this.detectorCallbackToHandler.clear();
+    this.detectorCallbackToActivityTimer.clear();
+    this.detectorCallbackToScoresTimer.clear();
   }
 }

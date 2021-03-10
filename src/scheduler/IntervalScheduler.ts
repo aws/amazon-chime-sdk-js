@@ -7,8 +7,7 @@ import Scheduler from './Scheduler';
  * [[IntervalScheduler]] calls the callback every intervalMs milliseconds.
  */
 export default class IntervalScheduler implements Scheduler {
-  // eslint-disable-next-line
-  timer: any = null;
+  timer: undefined | ReturnType<typeof setInterval>;
 
   constructor(private intervalMs: number) {}
 
@@ -18,8 +17,14 @@ export default class IntervalScheduler implements Scheduler {
   }
 
   stop(): void {
-    if (this.timer !== null) {
-      clearInterval(this.timer);
+    if (this.timer === undefined) {
+      return;
     }
+    clearInterval(this.timer);
+    this.timer = undefined;
+  }
+
+  running(): boolean {
+    return this.timer !== undefined;
   }
 }

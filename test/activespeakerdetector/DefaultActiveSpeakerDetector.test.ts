@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import DefaultActiveSpeakerDetector from '../../src/activespeakerdetector/DefaultActiveSpeakerDetector';
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
+import IntervalScheduler from '../../src/scheduler/IntervalScheduler';
 import { delay } from '../utils';
 
 describe('DefaultActiveSpeakerDetector', () => {
@@ -22,6 +23,29 @@ describe('DefaultActiveSpeakerDetector', () => {
       const rt = new DefaultRealtimeController();
       const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
       expect(detector).to.not.equal(null);
+    });
+  });
+
+  describe('disposal', () => {
+    it('can be disposed', async () => {
+      const rt = new DefaultRealtimeController();
+      const detector = new DefaultActiveSpeakerDetector(rt, attendeeId, bandwidthPriorityCallback);
+
+      // Make sure there's something to dispose.
+      const policy = new DefaultActiveSpeakerPolicy();
+      const callback = (_attendeeIds: string[]): void => {};
+      const scoresCallback = (): void => {};
+      detector.subscribe(policy, callback, scoresCallback, 1000);
+
+      // @ts-ignore
+      const timer = detector.detectorCallbackToActivityTimer.values().next().value;
+      expect(timer).to.be.instanceOf(IntervalScheduler);
+      expect(timer.timer).to.not.be.undefined;
+
+      await detector.destroy();
+      expect(timer.timer).to.be.undefined;
+      // @ts-ignore
+      expect(detector.detectorCallbackToActivityTimer.size).to.equal(0);
     });
   });
 

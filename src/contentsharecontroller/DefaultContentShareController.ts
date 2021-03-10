@@ -109,7 +109,7 @@ export default class DefaultContentShareController
 
   forEachContentShareObserver(observerFunc: (observer: ContentShareObserver) => void): void {
     for (const observer of this.observerQueue) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         if (this.observerQueue.has(observer)) {
           observerFunc(observer);
         }

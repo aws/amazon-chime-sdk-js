@@ -4,7 +4,9 @@
 import * as chai from 'chai';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
-import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
+import NoOpDeviceController, {
+  DestroyableNoOpDeviceController,
+} from '../../src/devicecontroller/NoOpDeviceController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultMeetingSession from '../../src/meetingsession/DefaultMeetingSession';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -21,12 +23,13 @@ describe('DefaultMeetingSession', () => {
   };
 
   describe('constructor', () => {
-    it('can be constructed', () => {
+    it('can be constructed and disposed of', async () => {
       const mockBuilder = new DOMMockBuilder();
+      const deviceController = new DestroyableNoOpDeviceController();
       const session = new DefaultMeetingSession(
         new NoOpAudioVideoController().configuration,
         new NoOpLogger(),
-        new NoOpDeviceController()
+        deviceController
       );
       expect(session).to.exist;
       expect(session.audioVideo).to.exist;
@@ -35,6 +38,13 @@ describe('DefaultMeetingSession', () => {
       expect(session.deviceController).to.exist;
       expect(session.contentShare).to.exist;
       mockBuilder.cleanup();
+      expect(deviceController.destroyed).to.be.false;
+      await session.destroy();
+      expect(session.deviceController).to.be.undefined;
+      expect(deviceController.destroyed).to.be.true;
+
+      // This is safe to call twice.
+      await session.destroy();
     });
 
     it('can be constructed with an unsupported browser', () => {

@@ -64,6 +64,11 @@ walk('src')
       importStrings.push(`import { isVideoTransformDevice } from '${pathToImport}/VideoTransformDevice';`);
       exportStrings.push(`  isVideoTransformDevice,`);
     }
+
+    if (typeToImport === 'Destroyable') {
+      importStrings.push(`import { isDestroyable } from '${pathToImport}/Destroyable';`);
+      exportStrings.push(`  isDestroyable,`);
+    }
   });
 
 importStrings.sort();

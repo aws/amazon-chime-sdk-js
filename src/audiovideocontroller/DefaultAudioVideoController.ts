@@ -126,12 +126,6 @@ export default class DefaultAudioVideoController
       configuration.credentials.externalUserId
     );
 
-    this._activeSpeakerDetector = new DefaultActiveSpeakerDetector(
-      this._realtimeController,
-      configuration.credentials.attendeeId,
-      this.handleHasBandwidthPriority.bind(this)
-    );
-
     this._mediaStreamBroker = mediaStreamBroker;
     this._reconnectController = reconnectController;
     this._videoTileController = new DefaultVideoTileController(
@@ -153,6 +147,14 @@ export default class DefaultAudioVideoController
   }
 
   get activeSpeakerDetector(): ActiveSpeakerDetector {
+    // Lazy init.
+    if (!this._activeSpeakerDetector) {
+      this._activeSpeakerDetector = new DefaultActiveSpeakerDetector(
+        this._realtimeController,
+        this._configuration.credentials.attendeeId,
+        this.handleHasBandwidthPriority.bind(this)
+      );
+    }
     return this._activeSpeakerDetector;
   }
 
@@ -203,7 +205,7 @@ export default class DefaultAudioVideoController
 
   forEachObserver(observerFunc: (observer: AudioVideoObserver) => void): void {
     for (const observer of this.observerQueue) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         if (this.observerQueue.has(observer)) {
           observerFunc(observer);
         }
@@ -212,6 +214,7 @@ export default class DefaultAudioVideoController
   }
 
   start(): void {
+    this.activeSpeakerDetector;
     this.sessionStateController.perform(SessionStateControllerAction.Connect, () => {
       this.actionConnect(false);
     });

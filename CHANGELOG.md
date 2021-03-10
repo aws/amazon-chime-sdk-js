@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update `SignalingProtocol` with optional video metric fields and optional join flags.
+- `DefaultDeviceController` and `DefaultActiveSpeakerDetector` now conform to a
+  new `Destroyable` interface, allowing resources to be explicitly discarded
+  when a meeting is over.
+- `MeetingSessionPOSTLogger` conforms to `Destroyable`. You should call
+  `destroy` when you are done logging unless you plan to close the window.
 
 ### Removed
 
@@ -24,7 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.6.1] - 2021-03-17
 
 ### Fixed
-- Fix infinite loop when calling `chooseAudioInputDevice` with a `MediaDeviceInfo` instance.
+- Fix infinite loop when calling `chooseAudioInputDevice` with a
+  `MediaDeviceInfo` instance.
+- Fewer observers are now retained after meetings end. This should reduce
+  leaks.
 
 ## [2.6.0] - 2021-03-09
 
