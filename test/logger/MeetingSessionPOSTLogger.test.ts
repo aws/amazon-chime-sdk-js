@@ -50,8 +50,8 @@ describe('MeetingSessionPOSTLogger', () => {
   );
 
   describe('construction', () => {
-    it('can be constructed', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+    it('can be constructed', () => {
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -62,10 +62,10 @@ describe('MeetingSessionPOSTLogger', () => {
       expect(logger).to.not.equal(null);
       expect(logger.getLogLevel()).to.equal(LogLevel.WARN);
       logger.stop();
-      done();
     });
-    it('can be with different level', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+
+    it('can be with different level', () => {
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -76,13 +76,12 @@ describe('MeetingSessionPOSTLogger', () => {
       expect(logger).to.not.equal(null);
       expect(logger.getLogLevel()).to.equal(LogLevel.WARN);
       logger.stop();
-      done();
     });
   });
 
   describe('logging level', () => {
     it('should log info with LogLevel.INFO and ignore the debug', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -98,7 +97,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('should log nothing with LogLevel.OFF', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -114,7 +113,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('should skip info and debug logs by default', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -133,7 +132,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('should have debug and info logs after setting DEBUG log level', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -157,7 +156,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('should start publishing logs', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -172,7 +171,7 @@ describe('MeetingSessionPOSTLogger', () => {
 
   describe('startLogPublishSchedulerSpy', () => {
     it('can call startLogPublishSchedulerSpy', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -187,7 +186,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('handles when the fetch call fails', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -205,7 +204,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('handles when the fetch call fails and logCapture array is empty', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -223,7 +222,7 @@ describe('MeetingSessionPOSTLogger', () => {
 
     it('handles when the fetch call succeeds and response returns 200', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -243,7 +242,7 @@ describe('MeetingSessionPOSTLogger', () => {
 
     it('handles when the fetch call succeeds and response returns 500', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -263,7 +262,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('does not die if you pass undefined', () => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -278,7 +277,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('does not die if you pass a string', () => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -306,7 +305,7 @@ describe('MeetingSessionPOSTLogger', () => {
         expect(type).to.equal('unload');
       };
       new TimeoutScheduler(200).start(() => {
-        const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+        const logger = new MeetingSessionPOSTLogger(
           'testLogger',
           configuration,
           batchSize,
@@ -340,7 +339,7 @@ describe('MeetingSessionPOSTLogger', () => {
         callbackToCall();
       });
       new TimeoutScheduler(80).start(() => {
-        const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+        const logger = new MeetingSessionPOSTLogger(
           'testLogger',
           configuration,
           batchSize,

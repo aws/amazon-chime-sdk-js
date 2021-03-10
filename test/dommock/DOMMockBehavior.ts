@@ -11,7 +11,6 @@ export default class DOMMockBehavior {
   getUserMediaSucceeds: boolean = true;
   getUserMediaError: Error = undefined;
   getUserMediaAudioLabel: string = 'Default';
-  getUserMediaVideoTrack: MediaStreamTrack = undefined;
   webSocketOpenSucceeds: boolean = true;
   webSocketSendSucceeds: boolean = true;
   webSocketCloseSucceeds: boolean = true;
