@@ -23,8 +23,7 @@ If you are building a React application, consider using the [Amazon Chime SDK Re
 Other resources:
 
 * [Amazon Chime SDK](https://aws.amazon.com/chime/chime-sdk/)
-* [Amazon Chime SDK for iOS](https://github.com/aws/amazon-chime-sdk-ios)
-* [Amazon Chime SDK for Android](https://github.com/aws/amazon-chime-sdk-android)
+* [High Level Architecture - Building a Meeting Application with Chime SDK](https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-using-the-amazon-chime-sdk/)
 * [Security](https://aws.amazon.com/blogs/business-productivity/understanding-security-in-the-amazon-chime-application-and-sdk/)
 * [Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_)
 * [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers)
@@ -42,9 +41,11 @@ You can also review the following guides:
 * [Simulcast](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html)
 * [Meeting events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html)
 * [Frequently Asked Questions](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
-* [Migrating from v1.0 to v2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
 * [Integrating Amazon Voice Focus into your application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
 * [Adding frame-by-frame processing to an outgoing video stream](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/10_Video_Processor.md)
+
+## Migration Guides
+* [Migrating from v1.0 to v2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
 
 ## Examples
 
@@ -60,6 +61,11 @@ You can also review the following guides:
 - [PSTN Dial In](https://github.com/aws-samples/chime-sipmediaapplication-samples) -  Add PSTN dialin capabilities to your Amazon Chime SDK Meeting using SIP Media Application
 - [Device Integration](https://aws.amazon.com/blogs/business-productivity/using-the-amazon-chime-sdk-for-3rd-party-devices/) - Using the Amazon Chime SDK for 3rd party devices
 - [Messaging](https://aws.amazon.com/blogs/business-productivity/build-chat-features-into-your-application-with-amazon-chime-sdk-messaging/) - Build chat features into your application with Amazon Chime SDK messaging
+
+## Troubleshooting and Support
+Review the resources given in the ReadMe and use our [client documentation](https://aws.github.io/amazon-chime-sdk-js/) for guidance on how to develop on the Chime SDK for JavaScript. Additionally, search our [issues database](https://github.com/aws/amazon-chime-sdk-js/issues) and [FAQs](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html) to see if your issue is already addressed. If not please cut us an [issue](https://github.com/aws/amazon-chime-sdk-js/issues/new/choose) using the provided templates.
+
+If you have more questions, or require support for your business, you can reach out to [AWS Customer support](https://pages.awscloud.com/GLOBAL-aware-GC-Amazon-Chime-SDK-2020-reg.html). You can review our support plans [here](https://aws.amazon.com/premiumsupport/plans/?nc=sn&loc=1).
 
 ## Installation
 
