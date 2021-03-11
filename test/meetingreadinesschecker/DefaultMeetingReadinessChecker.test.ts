@@ -532,7 +532,6 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('start content share success with source id', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.Success;
-      domMockBehavior.triggeredEndedEventForStopStreamTrack = false;
       const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity(
         'sourceId'
       );

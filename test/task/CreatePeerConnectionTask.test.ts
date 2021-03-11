@@ -20,7 +20,7 @@ import VideoTile from '../../src/videotile/VideoTile';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
-import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 import SDPMock from '../sdp/SDPMock';
 import { delay } from '../utils';
 
@@ -433,7 +433,7 @@ describe('CreatePeerConnectionTask', () => {
         await task.run();
         context.peer.addEventListener('track', (event: RTCTrackEvent) => {
           const track = event.track;
-          track.stop();
+          (track as StoppableMediaStreamTrack).externalStop();
         });
         await context.peer.setRemoteDescription(videoRemoteDescription);
         await delay(domMockBehavior.asyncWaitMs + 10);
@@ -458,7 +458,7 @@ describe('CreatePeerConnectionTask', () => {
         await task.run();
         context.peer.addEventListener('track', (event: RTCTrackEvent) => {
           const track = event.track;
-          track.stop();
+          (track as StoppableMediaStreamTrack).externalStop();
         });
         await context.peer.setRemoteDescription(videoRemoteDescription);
         await delay(domMockBehavior.asyncWaitMs + 10);
@@ -608,7 +608,7 @@ describe('CreatePeerConnectionTask', () => {
         task.run().then(() => {
           context.peer.addEventListener('track', (event: RTCTrackEvent) => {
             const track = event.track;
-            track.stop();
+            (track as StoppableMediaStreamTrack).externalStop();
           });
           context.peer.setRemoteDescription(videoRemoteDescription);
         });
@@ -668,7 +668,7 @@ describe('CreatePeerConnectionTask', () => {
         context.removableObservers[0].removeObserver();
 
         const track = event.track;
-        track.stop();
+        (track as StoppableMediaStreamTrack).externalStop();
       });
       await context.peer.setRemoteDescription(videoRemoteDescription);
       await delay(domMockBehavior.asyncWaitMs + 10);
@@ -700,7 +700,7 @@ describe('CreatePeerConnectionTask', () => {
         context.removableObservers[0].removeObserver();
 
         const track = event.track;
-        track.stop();
+        (track as StoppableMediaStreamTrack).externalStop();
       });
       await context.peer.setRemoteDescription(videoRemoteDescription);
       await delay(domMockBehavior.asyncWaitMs + 10);

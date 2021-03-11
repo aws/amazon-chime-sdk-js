@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+
+- Improve some unit tests.
+
 ## [2.6.0] - 2021-03-09
 
 ### Added
@@ -18,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MeetingSessionPOSTLogger` now matches the regular `Logger` API signature.
 
 ### Changed
+
 - Allow device checker APIs to take devices as input, rather than only MediaDeviceInfo objects.
 - Enable SIMD autodetection for Amazon Voice Focus in Chrome 90+.
 - Clean up task cancel hooks after they cease to be relevant.
@@ -25,10 +38,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean up usage of audioDeviceInformation in ReceiveAudioInputTask.
 
 ### Removed
+
 - Removed audioDeviceInformation from AudioVideoControllerState.
 
 ### Fixed
-- Upgrade ua-parser-js package version to latest 
+
+- Upgrade ua-parser-js package version to latest.
 - Don't automatically upgrade dev-dependencies to avoid a breaking typedoc upgrade.
 - Safely handle calling logger `debug` methods with `undefined`.
 

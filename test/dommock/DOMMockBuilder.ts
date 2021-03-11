@@ -11,6 +11,12 @@ import DOMMockBehavior from './DOMMockBehavior';
 import MockError, { OverconstrainedError } from './MockError';
 import UserMediaState from './UserMediaState';
 
+export interface StoppableMediaStreamTrack extends MediaStreamTrack {
+  // This stops the track _and dispatches 'ended'_.
+  // https://stackoverflow.com/a/55960232
+  externalStop(): void;
+}
+
 // eslint-disable-next-line
 const GlobalAny = global as any;
 // eslint-disable-next-line
@@ -160,9 +166,9 @@ export default class DOMMockBuilder {
       }
     };
 
-    GlobalAny.MediaStreamTrack = class MockMediaStreamTrack {
+    GlobalAny.MediaStreamTrack = class MockMediaStreamTrack implements StoppableMediaStreamTrack {
       private listeners: { [type: string]: MockListener[] } = {};
-      private readyState: string = 'live';
+      readyState: MediaStreamTrackState = 'live';
 
       readonly id: string;
       readonly kind: string = '';
@@ -174,20 +180,60 @@ export default class DOMMockBuilder {
         this.kind = kind;
       }
 
+      enabled: boolean = true;
+      isolated: boolean = false;
+      muted: boolean = false;
+
+      // @ts-ignore
+      onended: (this: MediaStreamTrack, ev: Event) => void = () => {};
+
+      // These are not implemented.
+      onisolationchange: (this: MediaStreamTrack, ev: Event) => void = () => {};
+      // @ts-ignore
+      onmute: (this: MediaStreamTrack, ev: Event) => void = () => {};
+      // @ts-ignore
+      onunmute: (this: MediaStreamTrack, ev: Event) => void = () => {};
+
+      clone(): MediaStreamTrack {
+        throw new Error('Method not implemented.');
+      }
+
+      getConstraints(): MediaTrackConstraints {
+        throw new Error('Method not implemented.');
+      }
+
+      dispatchEvent(event: Event): boolean {
+        if (!event.type || !this.listeners.hasOwnProperty(event.type)) {
+          return;
+        }
+        const listeners = this.listeners[event.type];
+        if (!listeners || !listeners.length) {
+          return;
+        }
+        for (const listener of listeners) {
+          listener(event);
+        }
+
+        if (event.type === 'ended' && this.onended) {
+          this.onended(event);
+        }
+        return !event.cancelable || event.defaultPrevented;
+      }
+
+      // This stops the track _and dispatches 'ended'_.
+      // https://stackoverflow.com/a/55960232
+      externalStop(): void {
+        if (this.readyState === 'live') {
+          this.readyState = 'ended';
+          this.dispatchEvent({ ...Substitute.for(), type: 'ended' });
+        }
+      }
+
       stop(): void {
         if (this.readyState === 'live') {
           this.readyState = 'ended';
-          if (
-            this.listeners.hasOwnProperty('ended') &&
-            mockBehavior.triggeredEndedEventForStopStreamTrack
-          ) {
-            this.listeners.ended.forEach((listener: MockListener) =>
-              listener({
-                ...Substitute.for(),
-                type: 'ended',
-              })
-            );
-          }
+          // This stops the track _but does not dispatch 'ended'_.
+          // https://stackoverflow.com/a/55960232
         }
       }
 
@@ -226,9 +272,8 @@ export default class DOMMockBuilder {
       applyConstraints(_constraints?: MediaTrackConstraints): Promise<void> {
         if (mockBehavior.applyConstraintSucceeds) {
           return;
-        } else {
-          throw Error('overconstrained');
         }
+        throw Error('overconstrained');
       }
     };
 

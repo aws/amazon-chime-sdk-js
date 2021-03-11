@@ -7,7 +7,6 @@ import UserMediaState from './UserMediaState';
 export default class DOMMockBehavior {
   asyncWaitMs: number = 10;
   getDisplayMediaResult: DisplayMediaState = DisplayMediaState.Success;
-  triggeredEndedEventForStopStreamTrack: boolean = true;
   getUserMediaResult: UserMediaState = null;
   getUserMediaSucceeds: boolean = true;
   getUserMediaError: Error = undefined;
