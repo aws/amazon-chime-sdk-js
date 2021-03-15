@@ -237,6 +237,7 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     },
     bytesSent: { transform: this.bitsPerSecond, type: SdkMetric.Type.VIDEO_SENT_BITRATE },
     droppedFrames: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_DROPPED_FPS },
+    qpSum: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_SENT_QP_SUM },
   };
 
   readonly videoDownstreamMetricMap: {
@@ -291,6 +292,10 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     jitter: {
       transform: this.secondsToMilliseconds,
       type: SdkMetric.Type.VIDEO_RECEIVED_JITTER_MS,
+    },
+    qpSum: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_RECEIVED_QP_SUM,
     },
   };
 
