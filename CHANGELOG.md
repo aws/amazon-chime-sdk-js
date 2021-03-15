@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update `SignalingProtocol` with optional video metric fields and optional join flags.
+
 ### Removed
 
 ### Fixed
