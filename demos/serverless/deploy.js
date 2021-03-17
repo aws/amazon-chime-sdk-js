@@ -147,7 +147,10 @@ function ensureApp(appName) {
 function ensureTools() {
   spawnOrFail('aws', ['--version']);
   spawnOrFail('sam', ['--version']);
-  spawnOrFail('npm', ['install']);
+
+  // Work around https://github.com/awslabs/aws-embedded-metrics-node/issues/84.
+  // When that issue is fixed, you can remove --legacy-peer-deps.
+  spawnOrFail('npm', ['install', '--legacy-peer-deps']);
 }
 
 parseArgs();
@@ -162,7 +165,11 @@ console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint 
 ensureBucket();
 
 for (const package of packages) {
-  spawnOrFail('npm', ['install', '--production'], {cwd: path.join(__dirname, 'node_modules', package)});
+  // Work around https://github.com/awslabs/aws-embedded-metrics-node/issues/84.
+  // When that issue is fixed, you can remove --legacy-peer-deps.
+  const installArgs = ['--production', '--legacy-peer-deps'];
+  spawnOrFail('npm', ['install', ...installArgs], {cwd: path.join(__dirname, 'node_modules', package)});
+
   fs.removeSync(path.join(__dirname, 'src', package));
   fs.copySync(path.join(__dirname, 'node_modules', package), path.join(__dirname, 'src', package));
 }
