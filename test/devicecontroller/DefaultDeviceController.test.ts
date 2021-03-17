@@ -760,6 +760,33 @@ describe('DefaultDeviceController', () => {
       }
     });
 
+    it('Can chooseAudioInputDevice if pass in MediaDeviceInfo', async () => {
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async restartLocalAudio(_callback: () => void): Promise<void> {
+          await deviceController.acquireAudioInputStream();
+        }
+      }
+      domMockBehavior.mediaStreamTrackSettings = {
+        deviceId: 'device-Id',
+        groupId: 'group-Id',
+      };
+      const mediaDeviceInfo = Object.create(
+        getMediaDeviceInfo('device-Id', 'audioinput', 'label', 'group-Id')
+      );
+      domMockBehavior.enumerateDeviceList = [mediaDeviceInfo];
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      // @ts-ignore
+      const spy = sinon.spy(deviceController, 'chooseInputIntrinsicDevice');
+      try {
+        deviceController.bindToAudioVideoController(new TestAudioVideoController());
+        await deviceController.listAudioInputDevices();
+        await deviceController.chooseAudioInputDevice(mediaDeviceInfo);
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+      expect(spy.calledTwice).to.be.true;
+    });
+
     it('sets to null device when an external device disconnects', async () => {
       enableWebAudio(true);
       try {

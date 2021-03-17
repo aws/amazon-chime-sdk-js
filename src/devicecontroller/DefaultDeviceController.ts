@@ -1164,6 +1164,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     } else if (stream) {
       // @ts-ignore - create a fake track constraint using the stream id
       trackConstraints.streamId = stream.id;
+    } else if (isMediaDeviceInfo(device)) {
+      trackConstraints.deviceId = device.deviceId;
+      trackConstraints.groupId = device.groupId;
     } else {
       // Take the input set of constraints. Note that this allows
       // the builder to specify overrides for properties like `autoGainControl`.
@@ -1418,4 +1421,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     }
     this.logger.info(s);
   }
+}
+
+function isMediaDeviceInfo(device: unknown): device is MediaDeviceInfo {
+  return (
+    typeof device === 'object' &&
+    'deviceId' in device &&
+    'groupId' in device &&
+    'kind' in device &&
+    'label' in device
+  );
 }
