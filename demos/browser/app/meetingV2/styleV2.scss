@@ -840,10 +840,6 @@ a.markdown:active {
   }
 }
 
-#tile-area video[id^='video-']:hover + .stats-info {
-  display: block;
-}
-
 .video-tile-attendeeid {
   display: none;
   position: absolute;
@@ -851,10 +847,10 @@ a.markdown:active {
   padding: 1rem;
 }
 
-.video-tile.active:hover .video-tile-attendeeid {
-  display: block;
+.vf-active::before {
+  content: "✓ ";
 }
 
-.vf-active::before {
-  content: "✓ "
+.input-group {
+  font-size: 12px;
 }
