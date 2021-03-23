@@ -86,6 +86,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
     }
     joinFrame.flags |= settings.sendBitrates ? SdkJoinFlags.SEND_BITRATES : 0;
+    joinFrame.flags |= SdkJoinFlags.COMPLETE_VIDEO_SOURCES_LIST;
     joinFrame.clientDetails = SdkClientDetails.create({
       platformName: browserBehavior.name(),
       platformVersion: browserBehavior.version(),

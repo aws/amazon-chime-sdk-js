@@ -58,6 +58,8 @@ import {
 } from './videofilter/SegmentationUtil';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
 
+const ADD_SYNTHETIC_TILES = false;
+
 const SHOULD_DIE_ON_FATALS = (() => {
   const isLocal = document.location.host === '127.0.0.1:8080';
   const fatalYes = document.location.search.includes('fatal=1');
@@ -76,7 +78,7 @@ declare global {
 
 class DemoTileOrganizer {
   // this is index instead of length
-  static MAX_TILES = 17;
+  static MAX_TILES = 26;
   tiles: { [id: number]: number } = {};
   tileStates: { [id: number]: boolean } = {};
   remoteTileCount = 0;
@@ -233,7 +235,6 @@ export class DemoMeetingApp
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
 
   showActiveSpeakerScores = false;
-  activeSpeakerLayout = true;
   meeting: string | null = null;
   name: string | null = null;
   voiceConnectorId: string | null = null;
@@ -1968,9 +1969,14 @@ export class DemoMeetingApp
 
   audioVideoDidStart(): void {
     this.log('session started');
+
+    // Camera on to start.
     this.openVideoInputFromSelection(undefined, false).then(() => {
       this.audioVideo.startLocalVideoTile();
       this.toggleButton('button-camera');
+      if (ADD_SYNTHETIC_TILES) {
+        setTimeout(() => addSyntheticTiles(this, 22), 2000);
+      }
     });
   }
 
@@ -2069,7 +2075,7 @@ export class DemoMeetingApp
       return;
     }
     const tileIndex = tileState.localTile
-      ? 16
+      ? 25
       : this.tileOrganizer.acquireTileIndex(tileState.tileId);
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
@@ -2172,7 +2178,7 @@ export class DemoMeetingApp
     const localTileId = this.localTileId();
     const activeTile = this.activeTileId();
 
-    this.tileArea.className = `v-grid size-${this.availablelTileSize()}`;
+    this.tileArea.className = `v-grid size-${this.availableTileSize()}`;
 
     if (activeTile && activeTile !== localTileId) {
       this.tileArea.classList.add('featured');
@@ -2181,7 +2187,7 @@ export class DemoMeetingApp
     }
   }
 
-  availablelTileSize(): number {
+  availableTileSize(): number {
     return (
       this.tileOrganizer.remoteTileCount + (this.audioVideo.hasStartedLocalVideoTile() ? 1 : 0)
     );
@@ -2254,3 +2260,39 @@ export class DemoMeetingApp
 window.addEventListener('load', () => {
   new DemoMeetingApp();
 });
+
+
+let SYNTH = 2;
+
+function synthesizeTile(n: number): VideoTileState {
+  return {
+    active: true,
+    boundAttendeeId: 'abcdef' + n,
+    boundVideoStream: DefaultDeviceController.synthesizeVideoDevice('#ffddaa'),
+    tileId: n,
+    isContent: false,
+    localTile: false,
+    localTileStarted: false,
+    paused: false,
+    poorConnection: false,
+    boundExternalUserId: 'abcdef' + n,
+    boundVideoElement: null,
+    nameplate: 'ABC',
+    videoStreamContentHeight: 480,
+    videoStreamContentWidth: 640,
+    devicePixelRatio: 0.75,
+    videoElementCSSHeightPixels: 480,
+    videoElementCSSWidthPixels: 640,
+    videoElementPhysicalHeightPixels: 480,
+    videoElementPhysicalWidthPixels: 640,
+    streamId: n,
+    clone: () => ({...this}),
+  }
+}
+
+function addSyntheticTiles(app: DemoMeetingApp, n: number) {
+  console.info('Adding tiles');
+  for (let i = 0; i < n; ++i) {
+    app.videoTileDidUpdate(synthesizeTile(SYNTH++));
+  }
+}

@@ -598,6 +598,21 @@ a.markdown:active {
   grid-template: repeat(4, 1fr) / repeat(4, 1fr);
 }
 
+.v-grid.size-17,
+.v-grid.size-18,
+.v-grid.size-19,
+.v-grid.size-20 {
+  grid-template: repeat(5, 1fr) / repeat(4, 1fr);
+}
+
+.v-grid.size-21,
+.v-grid.size-22,
+.v-grid.size-23,
+.v-grid.size-24,
+.v-grid.size-25 {
+  grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+}
+
 .v-grid.featured {
   grid-template: 1fr / 1fr;
   grid-template-areas: 'ft';
