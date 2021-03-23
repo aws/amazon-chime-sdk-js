@@ -33,7 +33,6 @@ import {
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
-  MultiLogger,
   NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
   SimulcastLayers,
@@ -949,36 +948,7 @@ export class DemoMeetingApp
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     const logLevel = LogLevel.INFO;
-    const consoleLogger = (this.meetingLogger = new ConsoleLogger('SDK', logLevel));
-    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-      this.meetingLogger = consoleLogger;
-    } else {
-      await Promise.all([
-        this.createLogStream(configuration, 'create_log_stream'),
-        this.createLogStream(configuration, 'create_browser_event_log_stream'),
-      ]);
-
-      this.meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
-        'SDK',
-        configuration,
-        DemoMeetingApp.LOGGER_BATCH_SIZE,
-        DemoMeetingApp.LOGGER_INTERVAL_MS,
-        `${DemoMeetingApp.BASE_URL}logs`,
-        logLevel
-      );
-      this.meetingLogger = new MultiLogger(
-        this.meetingEventPOSTLogger,
-        consoleLogger,
-      );
-      this.meetingEventPOSTLogger = new MeetingSessionPOSTLogger(
-        'SDKEvent',
-        configuration,
-        DemoMeetingApp.LOGGER_BATCH_SIZE,
-        DemoMeetingApp.LOGGER_INTERVAL_MS,
-        `${DemoMeetingApp.BASE_URL}log_meeting_event`,
-        logLevel
-      );
-    }
+    this.meetingLogger = new ConsoleLogger('SDK', logLevel);
     const deviceController = new DefaultDeviceController(this.meetingLogger, {
       enableWebAudio: this.enableWebAudio,
     });
