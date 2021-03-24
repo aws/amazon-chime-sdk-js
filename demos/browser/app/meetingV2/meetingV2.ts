@@ -33,7 +33,6 @@ import {
   MeetingSessionStatus,
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
-  NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
   SimulcastLayers,
   TimeoutScheduler,
@@ -49,7 +48,6 @@ import {
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
-import EmojifyVideoFrameProcessor from './videofilter/EmojifyVideoFrameProcessor';
 import SegmentationProcessor from './videofilter/SegmentationProcessor';
 import {
   loadBodyPixDependency,
@@ -131,9 +129,9 @@ const VOICE_FOCUS_SPEC = {
   paths: VOICE_FOCUS_PATHS,
 };
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'None';
+type VideoFilterName = 'CircularCut' | 'Segmentation' | 'None';
 
-const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp'];
+const VIDEO_FILTERS: VideoFilterName[] = ['CircularCut'];
 
 class TestSound {
   static testAudioElement = new Audio();
@@ -1464,7 +1462,6 @@ export class DemoMeetingApp
 
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
-    const additionalDevices = ['None', '440 Hz'];
     const additionalToggles = [];
 
     // This can't work unless Web Audio is enabled.
@@ -1482,14 +1479,14 @@ export class DemoMeetingApp
       'audio-input',
       genericName,
       await this.audioVideo.listAudioInputDevices(),
-      additionalDevices
+      []
     );
 
     this.populateInMeetingDeviceList(
       'dropdown-menu-microphone',
       genericName,
       await this.audioVideo.listAudioInputDevices(),
-      additionalDevices,
+      [],
       additionalToggles,
       async (name: string) => {
         await this.selectAudioInputDeviceByName(name);
@@ -1546,18 +1543,17 @@ export class DemoMeetingApp
 
   async populateVideoInputList(): Promise<void> {
     const genericName = 'Camera';
-    const additionalDevices = ['None', 'Blue', 'SMPTE Color Bars'];
     this.populateDeviceList(
       'video-input',
       genericName,
       await this.audioVideo.listVideoInputDevices(),
-      additionalDevices
+      []
     );
     this.populateInMeetingDeviceList(
       'dropdown-menu-camera',
       genericName,
       await this.audioVideo.listVideoInputDevices(),
-      additionalDevices,
+      [],
       undefined,
       async (name: string) => {
         try {
@@ -1772,14 +1768,6 @@ export class DemoMeetingApp
   }
 
   private async audioInputSelectionToIntrinsicDevice(value: string): Promise<Device> {
-    if (value === '440 Hz') {
-      return DefaultDeviceController.synthesizeAudioDevice(440);
-    }
-
-    if (value === 'None') {
-      return null;
-    }
-
     return value;
   }
 
@@ -1842,30 +1830,14 @@ export class DemoMeetingApp
   }
 
   private videoInputSelectionToIntrinsicDevice(value: string): Device {
-    if (value === 'Blue') {
-      return DefaultDeviceController.synthesizeVideoDevice('blue');
-    }
-
-    if (value === 'SMPTE Color Bars') {
-      return DefaultDeviceController.synthesizeVideoDevice('smpte');
-    }
-
     return value;
   }
 
   private videoFilterToProcessor(videoFilter: VideoFilterName): VideoFrameProcessor | null {
     this.log(`Choosing video filter ${videoFilter}`);
 
-    if (videoFilter === 'Emojify') {
-      return new EmojifyVideoFrameProcessor('🚀');
-    }
-
     if (videoFilter === 'CircularCut') {
       return new CircularCut();
-    }
-
-    if (videoFilter === 'NoOp') {
-      return new NoOpVideoFrameProcessor();
     }
 
     if (videoFilter === 'Segmentation') {
