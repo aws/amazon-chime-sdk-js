@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Improve some unit tests.
+- Calling `realtimeSetLocalAudioInput` as part of `AudioVideoController.restartLocalAudio()` to 
+  fix local mute/unmute issue while switching audio devices.
 
 ## [2.6.1] - 2021-03-17
 
