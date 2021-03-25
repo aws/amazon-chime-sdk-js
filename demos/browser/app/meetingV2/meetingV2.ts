@@ -45,6 +45,7 @@ import {
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
+  PermissionDeniedError
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -1589,7 +1590,7 @@ export class DemoMeetingApp
         try {
           await this.chooseAudioOutputDevice(name);
         } catch (e) {
-          fatal(e);
+
           this.log('Failed to chooseAudioOutputDevice', e);
         }
       }
@@ -1597,7 +1598,13 @@ export class DemoMeetingApp
   }
 
   private async chooseAudioOutputDevice(device: string): Promise<void> {
-    await this.audioVideo.chooseAudioOutputDevice(device);
+    try {
+      await this.audioVideo.chooseAudioOutputDevice(device);
+    } catch(e) {
+      if (e instanceof PermissionDeniedError) {
+        this.switchToFlow('flow-disabled-permissions');
+      }
+    }
   }
 
   private analyserNodeCallback: undefined | (() => void);
@@ -1614,7 +1621,10 @@ export class DemoMeetingApp
     try {
       await this.audioVideo.chooseAudioInputDevice(device);
     } catch (e) {
-      fatal(e);
+      if (e instanceof PermissionDeniedError) {
+        this.switchToFlow('flow-disabled-permissions');
+        return;
+      }
       this.log(`failed to choose audio input device ${device}`, e);
     }
     this.updateVoiceFocusDisplayState();
@@ -1751,7 +1761,6 @@ export class DemoMeetingApp
         fatal(e);
         this.log(`failed to chooseVideoInputDevice ${device}`, e);
       }
-      throw new Error('no video device selected');
     }
     try {
       await this.audioVideo.chooseVideoInputDevice(device);
