@@ -373,11 +373,11 @@ body {
 }
 
 .svg-active {
-  fill: $white;
+  fill: $white !important;
 }
 
 .svg-inactive {
-  fill: lighten($secondary, 15%);
+  fill: lighten($secondary, 15%) !important;
 }
 
 .flow {
@@ -785,5 +785,35 @@ a.markdown:active {
     &:hover {
       background-color: darken($green, 10%)
     }
+  }
+}
+
+.notif-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.notif {
+  display: none;
+  border-left: 0.3125rem solid $yellow;
+  background-color: $white;
+  color: $gray-900;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  border-radius: .25rem;
+  box-shadow: 0 0.3125rem 0.625rem rgba(154,160,185,.025),
+    0 0.9375 2.5rem rgba(166,173,201,.2);
+  animation: slide-up 250ms ease forwards;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(5rem);
+  }
+
+  to {
+    transform: translateY(0);
   }
 }
