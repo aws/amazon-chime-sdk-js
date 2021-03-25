@@ -147,7 +147,7 @@ export default class DefaultContentShareController
           return;
         }
         const stream = this.mediaStreamBroker.mediaStream;
-        if (stream.getVideoTracks().length > 0) {
+        if (stream && stream.getVideoTracks().length > 0) {
           this.contentShareTile = this.attendeeAudioVideo.videoTileController.addVideoTile();
           const track = stream.getVideoTracks()[0];
           let width, height;
