@@ -1158,13 +1158,17 @@ describe('DefaultAudioVideoController', () => {
       );
 
       let success = true;
+      const realtimeSetLocalAudioInput = sinon.spy(
+        audioVideoController.realtimeController,
+        'realtimeSetLocalAudioInput'
+      );
       try {
         await audioVideoController.restartLocalAudio(() => {});
       } catch (error) {
         success = false;
       }
-
       expect(success).to.be.false;
+      expect(realtimeSetLocalAudioInput.called).to.be.false;
 
       class TestDeviceController extends NoOpMediaStreamBroker {
         async acquireAudioInputStream(): Promise<MediaStream> {
@@ -1206,12 +1210,17 @@ describe('DefaultAudioVideoController', () => {
         reconnectController
       );
       let success = true;
+      const realtimeSetLocalAudioInput = sinon.spy(
+        audioVideoController.realtimeController,
+        'realtimeSetLocalAudioInput'
+      );
       try {
         await audioVideoController.restartLocalAudio(() => {});
       } catch (error) {
         success = false;
       }
       expect(success).to.be.false;
+      expect(realtimeSetLocalAudioInput.called).to.be.false;
     });
 
     it('replaces audio track for unified plan', async () => {
@@ -1242,6 +1251,10 @@ describe('DefaultAudioVideoController', () => {
         }
       }
       audioVideoController.addObserver(new TestObserver());
+      const realtimeSetLocalAudioInput = sinon.spy(
+        audioVideoController.realtimeController,
+        'realtimeSetLocalAudioInput'
+      );
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
@@ -1254,6 +1267,7 @@ describe('DefaultAudioVideoController', () => {
         callbackExecuted = true;
       });
       expect(callbackExecuted).to.be.true;
+      expect(realtimeSetLocalAudioInput.called).to.be.true;
       await stop();
     });
 
@@ -1289,6 +1303,10 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.addObserver(new TestObserver());
       expect(audioVideoController.configuration).to.equal(configuration);
       expect(audioVideoController.rtcPeerConnection).to.be.null;
+      const realtimeSetLocalAudioInput = sinon.spy(
+        audioVideoController.realtimeController,
+        'realtimeSetLocalAudioInput'
+      );
       await start();
 
       expect(sessionStarted).to.be.true;
@@ -1298,6 +1316,7 @@ describe('DefaultAudioVideoController', () => {
         callbackExecuted = true;
       });
       expect(callbackExecuted).to.be.true;
+      expect(realtimeSetLocalAudioInput.called).to.be.true;
 
       // @ts-ignore mutate the context state to trigger rejection
       audioVideoController.meetingSessionContext.localAudioSender = null;
