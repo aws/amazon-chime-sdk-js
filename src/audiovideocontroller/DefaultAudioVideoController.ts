@@ -564,7 +564,6 @@ export default class DefaultAudioVideoController
     if (!audioStream || audioStream.getAudioTracks().length < 1) {
       throw new Error('could not acquire audio track');
     }
-
     this.connectionHealthData.reset();
     this.connectionHealthData.setConnectionStartTime();
 
@@ -584,6 +583,7 @@ export default class DefaultAudioVideoController
         audioTrack
       );
     }
+    this._realtimeController.realtimeSetLocalAudioInput(audioStream);
     this.meetingSessionContext.activeAudioInput = audioStream;
     callback();
     if (replaceTrackSuccess) {
