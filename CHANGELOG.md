@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- Calling `realtimeSetLocalAudioInput` as part of `AudioVideoController.restartLocalAudio()` to 
-  fix local mute/unmute issue while switching audio devices.
-
-## [2.6.1] - 2021-03-17
-
 ### Added
 
 - [Demo] Add Tensorflow BodyPix segmentation demo for `VideoProcessor`.
@@ -26,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Improve some unit tests.
+
+## [2.6.2] - 2021-03-24
+
+### Fixed
 - Calling `realtimeSetLocalAudioInput` as part of `AudioVideoController.restartLocalAudio()` to 
   fix local mute/unmute issue while switching audio devices.
 
