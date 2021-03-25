@@ -873,3 +873,47 @@ a.markdown:active {
 .card-header {
   font-size: 140%;
 }
+
+#flow-disabled-permissions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+
+  .disabled-title {
+    margin-bottom: 3rem;
+    color: $gray-900;
+  }
+
+  .disabled-desc-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 880px;
+    padding: 80px;
+    border: 2px solid $green;
+    border-radius: 4px;
+  }
+
+  .disabled-desc {
+    color: $gray-800;
+    font-size: 18px;
+  }
+
+  .home-btn {
+    color: $white;
+    text-decoration: none;
+    background-color: $green;
+    display: inline-block;
+    margin: 80px auto 0;
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 4px;
+    text-align: center;
+    transition: background-color 225ms ease;
+
+    &:hover {
+      background-color: darken($green, 10%)
+    }
+  }
+}
