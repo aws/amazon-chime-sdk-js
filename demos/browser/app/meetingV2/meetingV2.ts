@@ -1758,15 +1758,23 @@ export class DemoMeetingApp
       try {
         await this.audioVideo.chooseVideoInputDevice(device);
       } catch (e) {
-        fatal(e);
         this.log(`failed to chooseVideoInputDevice ${device}`, e);
+        if (e instanceof PermissionDeniedError) {
+          this.switchToFlow('flow-disabled-permissions');
+          return;
+        }
+        fatal(e);
       }
     }
     try {
       await this.audioVideo.chooseVideoInputDevice(device);
     } catch (e) {
-      fatal(e);
       this.log(`failed to chooseVideoInputDevice ${device}`, e);
+      if (e instanceof PermissionDeniedError) {
+        this.switchToFlow('flow-disabled-permissions');
+        return;
+      }
+      fatal(e);
     }
 
     if (showPreview) {
