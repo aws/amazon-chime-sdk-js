@@ -2126,16 +2126,7 @@ export class DemoMeetingApp
   }
 
   updateGridClasses(): void {
-    const localTileId = this.localTileId();
-    const activeTile = this.activeTileId();
-
     this.tileArea.className = `v-grid size-${this.availableTileSize()}`;
-
-    if (activeTile && activeTile !== localTileId) {
-      this.tileArea.classList.add('featured');
-    } else {
-      this.tileArea.classList.remove('featured');
-    }
   }
 
   availableTileSize(): number {
