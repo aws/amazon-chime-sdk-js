@@ -36,7 +36,6 @@ import {
   RemovableAnalyserNode,
   SimulcastLayers,
   TimeoutScheduler,
-  Versioning,
   VideoFrameProcessor,
   VideoInputDevice,
   VideoSource,
@@ -129,6 +128,8 @@ const VOICE_FOCUS_SPEC = {
   revisionID: VOICE_FOCUS_REVISION_ID,
   paths: VOICE_FOCUS_PATHS,
 };
+
+const DEVICE_UNAVAILABLE = 'Device selection unavailable';
 
 type VideoFilterName = 'CircularCut' | 'Segmentation' | 'None';
 
@@ -335,8 +336,6 @@ export class DemoMeetingApp
       return;
     }
 
-    (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
-      'amazon-chime-sdk-js@' + Versioning.sdkVersion;
     this.initEventListeners();
     this.initParameters();
     this.setMediaRegion();
@@ -574,22 +573,41 @@ export class DemoMeetingApp
     });
 
     const buttonVideo = document.getElementById('button-camera');
+    const videoNotif = document.getElementById('no-video-notif');
+    let notifTimeout: number | null = null;
     buttonVideo.addEventListener('click', _e => {
       new AsyncScheduler().start(async () => {
-        if (this.toggleButton('button-camera') && this.canStartLocalVideo) {
+        const isCameraActive = this.buttonStates['button-camera'];
+        if (!isCameraActive && this.canStartLocalVideo) {
           try {
             let camera: string = videoInput.value;
             if (videoInput.value === 'None') {
               camera = this.cameraDeviceIds.length ? this.cameraDeviceIds[0] : 'None';
             }
             await this.openVideoInputFromSelection(camera, false);
+
+            if (this.selectedVideoInput === DEVICE_UNAVAILABLE) {
+              if (notifTimeout) {
+                return;
+              }
+              videoNotif.style.display = 'block';
+
+              notifTimeout = window.setTimeout(() => {
+                notifTimeout = null;
+                videoNotif.style.display = 'none';
+              }, 2500)
+             
+              return
+            }
             this.audioVideo.startLocalVideoTile();
+            this.toggleButton('button-camera', 'on');
           } catch (err) {
             fatal(err);
             this.log('no video input device selected');
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
+          this.toggleButton('button-camera', 'off');
           this.hideTile(DemoTileOrganizer.MAX_TILES);
         }
       });
@@ -1328,7 +1346,7 @@ export class DemoMeetingApp
     }
     if (!list.firstElementChild) {
       const option = document.createElement('option');
-      option.text = 'Device selection unavailable';
+      option.text = DEVICE_UNAVAILABLE;
       list.appendChild(option);
     }
   }
@@ -1372,7 +1390,7 @@ export class DemoMeetingApp
       }
     }
     if (!menu.firstElementChild) {
-      this.createDropdownMenuItem(menu, 'Device selection unavailable', () => {});
+      this.createDropdownMenuItem(menu, DEVICE_UNAVAILABLE, () => {});
     }
   }
 
@@ -1544,16 +1562,18 @@ export class DemoMeetingApp
 
   async populateVideoInputList(): Promise<void> {
     const genericName = 'Camera';
+    const videoDevices = await this.audioVideo.listVideoInputDevices();
+
     this.populateDeviceList(
       'video-input',
       genericName,
-      await this.audioVideo.listVideoInputDevices(),
+      videoDevices,
       []
     );
     this.populateInMeetingDeviceList(
       'dropdown-menu-camera',
       genericName,
-      await this.audioVideo.listVideoInputDevices(),
+      videoDevices,
       [],
       undefined,
       async (name: string) => {
@@ -1565,8 +1585,7 @@ export class DemoMeetingApp
         }
       }
     );
-    const cameras = await this.audioVideo.listVideoInputDevices();
-    this.cameraDeviceIds = cameras.map(deviceInfo => {
+    this.cameraDeviceIds = videoDevices.map(deviceInfo => {
       return deviceInfo.deviceId;
     });
   }
@@ -1744,6 +1763,11 @@ export class DemoMeetingApp
     if (selection) {
       this.selectedVideoInput = selection;
     }
+
+    if (this.selectedVideoInput === DEVICE_UNAVAILABLE) {
+      return;
+    }
+
     this.log(`Switching to: ${this.selectedVideoInput}`);
     const device = await this.videoInputSelectionToDevice(this.selectedVideoInput);
     if (device === null) {
@@ -1931,10 +1955,12 @@ export class DemoMeetingApp
 
     // Camera on to start.
     this.openVideoInputFromSelection(undefined, false).then(() => {
-      this.audioVideo.startLocalVideoTile();
-      this.toggleButton('button-camera');
-      if (ADD_SYNTHETIC_TILES) {
-        setTimeout(() => addSyntheticTiles(this, 22), 2000);
+      if (this.selectedVideoInput !== DEVICE_UNAVAILABLE) {
+        this.audioVideo.startLocalVideoTile();
+        this.toggleButton('button-camera');
+        if (ADD_SYNTHETIC_TILES) {
+          setTimeout(() => addSyntheticTiles(this, 22), 2000);
+        }
       }
     });
   }

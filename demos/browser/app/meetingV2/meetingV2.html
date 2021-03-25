@@ -19,7 +19,6 @@
 
 <!-- Initial meeting authentication screen with meeting and name inputs -->
 <div id="flow-authenticate" class="flow text-center p-2">
-  <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
   <div class="container">
     <form id="form-authenticate">
       <h1 class="h3 mb-3 font-weight-normal">Join a meeting</h1>
@@ -484,5 +483,12 @@
     </form>
   </div>
 </div>
+
+<div class="notif-container">
+  <div id="no-video-notif" class="notif">
+    <div class="notif-content">Could not find any available camera devices.</div>
+  </div>
+</div>
+
 </body>
 </html>
