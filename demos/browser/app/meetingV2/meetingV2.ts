@@ -412,6 +412,10 @@ export class DemoMeetingApp
       (document.getElementById('planB') as HTMLInputElement).disabled = true;
     }
 
+    document.querySelector('#back-to-home-btn').addEventListener('click', () =>{
+      window.location.href = window.location.pathname;
+    })
+
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
       this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
@@ -596,7 +600,7 @@ export class DemoMeetingApp
                 notifTimeout = null;
                 videoNotif.style.display = 'none';
               }, 2500)
-             
+
               return
             }
             this.audioVideo.startLocalVideoTile();
