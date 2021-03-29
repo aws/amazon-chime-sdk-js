@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - [Demo] Add Tensorflow BodyPix segmentation demo for `VideoProcessor`.
+- Added a workaround for a Chrome issue where Bluetooth audio would sound
+  choppy for other participants when audio transforms were applied.
 
 ### Changed
 
