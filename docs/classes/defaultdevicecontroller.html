@@ -78,6 +78,7 @@
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
 					<li><a href="../interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-signature-type">DeviceControllerBasedMediaStreamBroker</a></li>
+					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type">Destroyable</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -105,7 +106,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#inputdevicecount" class="tsd-kind-icon">input<wbr>Device<wbr>Count</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#lastnovideoinputdevicecount" class="tsd-kind-icon">last<wbr>NoVideo<wbr>Input<wbr>Device<wbr>Count</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#mediadevicewrapper" class="tsd-kind-icon">media<wbr>Device<wbr>Wrapper</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#mutecallback" class="tsd-kind-icon">mute<wbr>Callback</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#ondevicechangecallback" class="tsd-kind-icon">on<wbr>Device<wbr>Change<wbr>Callback</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#transform" class="tsd-kind-icon">transform</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#usewebaudio" class="tsd-kind-icon">use<wbr>Web<wbr>Audio</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#videoinputqualitysettings" class="tsd-kind-icon">video<wbr>Input<wbr>Quality<wbr>Settings</a></li>
@@ -144,8 +147,10 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#createanalysernodeforaudioinput" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Audio<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#createanalysernodeforrawaudioinput" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Raw<wbr>Audio<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#createanalysernodeforstream" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#destroy" class="tsd-kind-icon">destroy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#deviceinfofromdeviceid" class="tsd-kind-icon">device<wbr>Info<wbr>From<wbr>Device<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#devicelabeltrigger" class="tsd-kind-icon">device<wbr>Label<wbr>Trigger</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#ensurewatchingdevicechanges" class="tsd-kind-icon">ensure<wbr>Watching<wbr>Device<wbr>Changes</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#foreachobserver" class="tsd-kind-icon">for<wbr>Each<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#getactivedeviceid" class="tsd-kind-icon">get<wbr>Active<wbr>Device<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#getgroupidfromdeviceid" class="tsd-kind-icon">get<wbr>Group<wbr>IdFrom<wbr>Device<wbr>Id</a></li>
@@ -161,6 +166,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#hassamegroupid" class="tsd-kind-icon">has<wbr>Same<wbr>Group<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#intrinsicdeviceasmediastream" class="tsd-kind-icon">intrinsic<wbr>Device<wbr>AsMedia<wbr>Stream</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#ismediastreamreusablebydeviceid" class="tsd-kind-icon">is<wbr>Media<wbr>Stream<wbr>Reusable<wbr>ByDevice<wbr>Id</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#iswatchingfordevicechanges" class="tsd-kind-icon">is<wbr>Watching<wbr>For<wbr>Device<wbr>Changes</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#listaudioinputdevices" class="tsd-kind-icon">list<wbr>Audio<wbr>Input<wbr>Devices</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#listaudiooutputdevices" class="tsd-kind-icon">list<wbr>Audio<wbr>Output<wbr>Devices</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#listcacheddevicesofkind" class="tsd-kind-icon">list<wbr>Cached<wbr>Devices<wbr>OfKind</a></li>
@@ -170,14 +176,21 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#pushaudiomeetingstateforpermissions" class="tsd-kind-icon">push<wbr>Audio<wbr>Meeting<wbr>State<wbr>For<wbr>Permissions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#pushvideomeetingstateforpermissions" class="tsd-kind-icon">push<wbr>Video<wbr>Meeting<wbr>State<wbr>For<wbr>Permissions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#reconnectaudioinputs" class="tsd-kind-icon">reconnect<wbr>Audio<wbr>Inputs</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#releaseactivedevice" class="tsd-kind-icon">release<wbr>Active<wbr>Device</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#releaseaudiotransformstream" class="tsd-kind-icon">release<wbr>Audio<wbr>Transform<wbr>Stream</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#releasemediastream" class="tsd-kind-icon">release<wbr>Media<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#releaseordinarystream" class="tsd-kind-icon">release<wbr>Ordinary<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#releasevideotransformstream" class="tsd-kind-icon">release<wbr>Video<wbr>Transform<wbr>Stream</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#removedevicechangeobserver" class="tsd-kind-icon">remove<wbr>Device<wbr>Change<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#removetransform" class="tsd-kind-icon">remove<wbr>Transform</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#restartlocalvideoafterselection" class="tsd-kind-icon">restart<wbr>Local<wbr>Video<wbr>After<wbr>Selection</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#setdevicelabeltrigger" class="tsd-kind-icon">set<wbr>Device<wbr>Label<wbr>Trigger</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#settransform" class="tsd-kind-icon">set<wbr>Transform</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#shouldobservedevicechanges" class="tsd-kind-icon">should<wbr>Observe<wbr>Device<wbr>Changes</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#startvideopreviewforvideoinput" class="tsd-kind-icon">start<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#stoptracksandremovecallback" class="tsd-kind-icon">stop<wbr>Tracks<wbr>And<wbr>Remove<wbr>Callback</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultdevicecontroller.html#stopvideopreviewforvideoinput" class="tsd-kind-icon">stop<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#stopwatchingdevicechanges" class="tsd-kind-icon">stop<wbr>Watching<wbr>Device<wbr>Changes</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#subscribetomuteandunmutelocalaudio" class="tsd-kind-icon">subscribe<wbr>ToMute<wbr>And<wbr>Unmute<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#supportchannelcountconstraint" class="tsd-kind-icon">support<wbr>Channel<wbr>Count<wbr>Constraint</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#supportsamplerateconstraint" class="tsd-kind-icon">support<wbr>Sample<wbr>Rate<wbr>Constraint</a></li>
@@ -186,10 +199,10 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#unsubscribefrommuteandunmutelocalaudio" class="tsd-kind-icon">unsubscribe<wbr>From<wbr>Mute<wbr>And<wbr>Unmute<wbr>Local<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#updatedeviceinfocachefrombrowser" class="tsd-kind-icon">update<wbr>Device<wbr>Info<wbr>Cache<wbr>From<wbr>Browser</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#updatemaxbandwidthkbps" class="tsd-kind-icon">update<wbr>Max<wbr>Bandwidth<wbr>Kbps</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultdevicecontroller.html#watchfordevicechangesifnecessary" class="tsd-kind-icon">watch<wbr>For<wbr>Device<wbr>Changes<wbr>IfNecessary</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#closeaudiocontext" class="tsd-kind-icon">close<wbr>Audio<wbr>Context</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#createemptyaudiodevice" class="tsd-kind-icon">create<wbr>Empty<wbr>Audio<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#createemptyvideodevice" class="tsd-kind-icon">create<wbr>Empty<wbr>Video<wbr>Device</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="defaultdevicecontroller.html#fillsmptecolorbars" class="tsd-kind-icon">fillSMPTEColor<wbr>Bars</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#getaudiocontext" class="tsd-kind-icon">get<wbr>Audio<wbr>Context</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#getintrinsicdeviceid" class="tsd-kind-icon">get<wbr>Intrinsic<wbr>Device<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="defaultdevicecontroller.html#synthesizeaudiodevice" class="tsd-kind-icon">synthesize<wbr>Audio<wbr>Device</a></li>
@@ -217,7 +230,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L68">src/devicecontroller/DefaultDeviceController.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L155">src/devicecontroller/DefaultDeviceController.ts:155</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -247,7 +260,7 @@
 					<div class="tsd-signature tsd-kind-icon">already<wbr>Handling<wbr>Device<wbr>Change<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L772">src/devicecontroller/DefaultDeviceController.ts:772</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L971">src/devicecontroller/DefaultDeviceController.ts:971</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -257,7 +270,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Input<wbr>Destination<wbr>Node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaStreamAudioDestinationNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L57">src/devicecontroller/DefaultDeviceController.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L141">src/devicecontroller/DefaultDeviceController.ts:141</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -267,7 +280,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Input<wbr>Source<wbr>Node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaStreamAudioSourceNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L58">src/devicecontroller/DefaultDeviceController.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L142">src/devicecontroller/DefaultDeviceController.ts:142</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -277,7 +290,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Output<wbr>Device<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L51">src/devicecontroller/DefaultDeviceController.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L135">src/devicecontroller/DefaultDeviceController.ts:135</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -287,7 +300,7 @@
 					<div class="tsd-signature tsd-kind-icon">bound<wbr>Audio<wbr>Video<wbr>Controller<span class="tsd-signature-symbol">:</span> <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L53">src/devicecontroller/DefaultDeviceController.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L137">src/devicecontroller/DefaultDeviceController.ts:137</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -297,7 +310,7 @@
 					<div class="tsd-signature tsd-kind-icon">browser<wbr>Behavior<span class="tsd-signature-symbol">:</span> <a href="defaultbrowserbehavior.html" class="tsd-signature-type">DefaultBrowserBehavior</a><span class="tsd-signature-symbol"> = new DefaultBrowserBehavior()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L68">src/devicecontroller/DefaultDeviceController.ts:68</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L155">src/devicecontroller/DefaultDeviceController.ts:155</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -307,7 +320,7 @@
 					<div class="tsd-signature tsd-kind-icon">chosen<wbr>Video<wbr>Transform<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videotransformdevice.html" class="tsd-signature-type">VideoTransformDevice</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L50">src/devicecontroller/DefaultDeviceController.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L134">src/devicecontroller/DefaultDeviceController.ts:134</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -317,7 +330,7 @@
 					<div class="tsd-signature tsd-kind-icon">device<wbr>Change<wbr>Observers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/devicechangeobserver.html" class="tsd-signature-type">DeviceChangeObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Set&lt;DeviceChangeObserver&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L52">src/devicecontroller/DefaultDeviceController.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L136">src/devicecontroller/DefaultDeviceController.ts:136</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -327,7 +340,7 @@
 					<div class="tsd-signature tsd-kind-icon">device<wbr>Info<wbr>Cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L41">src/devicecontroller/DefaultDeviceController.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L125">src/devicecontroller/DefaultDeviceController.ts:125</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -337,7 +350,7 @@
 					<div class="tsd-signature tsd-kind-icon">input<wbr>Device<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L65">src/devicecontroller/DefaultDeviceController.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L152">src/devicecontroller/DefaultDeviceController.ts:152</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -347,7 +360,7 @@
 					<div class="tsd-signature tsd-kind-icon">last<wbr>NoVideo<wbr>Input<wbr>Device<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L66">src/devicecontroller/DefaultDeviceController.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L153">src/devicecontroller/DefaultDeviceController.ts:153</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -357,7 +370,17 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L70">src/devicecontroller/DefaultDeviceController.ts:70</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L157">src/devicecontroller/DefaultDeviceController.ts:157</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="mediadevicewrapper" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> media<wbr>Device<wbr>Wrapper</h3>
+					<div class="tsd-signature tsd-kind-icon">media<wbr>Device<wbr>Wrapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MediaDevices</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L144">src/devicecontroller/DefaultDeviceController.ts:144</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -367,7 +390,7 @@
 					<div class="tsd-signature tsd-kind-icon">mute<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>muted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L59">src/devicecontroller/DefaultDeviceController.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L146">src/devicecontroller/DefaultDeviceController.ts:146</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -393,12 +416,22 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="ondevicechangecallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Device<wbr>Change<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Device<wbr>Change<wbr>Callback<span class="tsd-signature-symbol">:</span> <a href="../globals.html#thunk" class="tsd-signature-type">Thunk</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L145">src/devicecontroller/DefaultDeviceController.ts:145</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="transform" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> transform</h3>
 					<div class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>device<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiotransformdevice.html" class="tsd-signature-type">AudioTransformDevice</a><span class="tsd-signature-symbol">; </span>nodes<span class="tsd-signature-symbol">: </span><a href="../interfaces/audionodesubgraph.html" class="tsd-signature-type">AudioNodeSubgraph</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L44">src/devicecontroller/DefaultDeviceController.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L128">src/devicecontroller/DefaultDeviceController.ts:128</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -419,7 +452,7 @@
 					<div class="tsd-signature tsd-kind-icon">use<wbr>Web<wbr>Audio<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L63">src/devicecontroller/DefaultDeviceController.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L150">src/devicecontroller/DefaultDeviceController.ts:150</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -429,7 +462,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Input<wbr>Quality<wbr>Settings<span class="tsd-signature-symbol">:</span> <a href="videoqualitysettings.html" class="tsd-signature-type">VideoQualitySettings</a><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L61">src/devicecontroller/DefaultDeviceController.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L148">src/devicecontroller/DefaultDeviceController.ts:148</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -439,7 +472,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AudioContext</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L39">src/devicecontroller/DefaultDeviceController.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L123">src/devicecontroller/DefaultDeviceController.ts:123</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -449,7 +482,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Channel<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L38">src/devicecontroller/DefaultDeviceController.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L122">src/devicecontroller/DefaultDeviceController.ts:122</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -459,7 +492,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Sample<wbr>Rate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 48000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L36">src/devicecontroller/DefaultDeviceController.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L120">src/devicecontroller/DefaultDeviceController.ts:120</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -469,7 +502,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Sample<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 16</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L37">src/devicecontroller/DefaultDeviceController.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L121">src/devicecontroller/DefaultDeviceController.ts:121</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -479,7 +512,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Video<wbr>Frame<wbr>Rate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 15</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L34">src/devicecontroller/DefaultDeviceController.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L118">src/devicecontroller/DefaultDeviceController.ts:118</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -489,7 +522,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Video<wbr>Height<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 540</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L33">src/devicecontroller/DefaultDeviceController.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L117">src/devicecontroller/DefaultDeviceController.ts:117</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -499,7 +532,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Video<wbr>Max<wbr>Bandwidth<wbr>Kbps<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1400</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L35">src/devicecontroller/DefaultDeviceController.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L119">src/devicecontroller/DefaultDeviceController.ts:119</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -509,7 +542,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Video<wbr>Width<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 960</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L32">src/devicecontroller/DefaultDeviceController.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L116">src/devicecontroller/DefaultDeviceController.ts:116</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -519,7 +552,7 @@
 					<div class="tsd-signature tsd-kind-icon">permission<wbr>Denied<wbr>Origin<wbr>Detection<wbr>Threshold<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 500</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L31">src/devicecontroller/DefaultDeviceController.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L115">src/devicecontroller/DefaultDeviceController.ts:115</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -537,7 +570,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#acquireaudioinputstream">acquireAudioInputStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L440">src/devicecontroller/DefaultDeviceController.ts:440</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L595">src/devicecontroller/DefaultDeviceController.ts:595</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -555,7 +588,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#acquiredisplayinputstream">acquireDisplayInputStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L448">src/devicecontroller/DefaultDeviceController.ts:448</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L603">src/devicecontroller/DefaultDeviceController.ts:603</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -578,7 +611,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1246">src/devicecontroller/DefaultDeviceController.ts:1246</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1474">src/devicecontroller/DefaultDeviceController.ts:1474</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -602,7 +635,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#acquirevideoinputstream">acquireVideoInputStream</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L444">src/devicecontroller/DefaultDeviceController.ts:444</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L599">src/devicecontroller/DefaultDeviceController.ts:599</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -620,7 +653,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#adddevicechangeobserver">addDeviceChangeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L301">src/devicecontroller/DefaultDeviceController.ts:301</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L449">src/devicecontroller/DefaultDeviceController.ts:449</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -643,7 +676,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L829">src/devicecontroller/DefaultDeviceController.ts:829</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1034">src/devicecontroller/DefaultDeviceController.ts:1034</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -669,7 +702,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1355">src/devicecontroller/DefaultDeviceController.ts:1355</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1583">src/devicecontroller/DefaultDeviceController.ts:1583</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -692,7 +725,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1136">src/devicecontroller/DefaultDeviceController.ts:1136</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1364">src/devicecontroller/DefaultDeviceController.ts:1364</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -710,7 +743,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#bindtoaudiovideocontroller">bindToAudioVideoController</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L514">src/devicecontroller/DefaultDeviceController.ts:514</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L761">src/devicecontroller/DefaultDeviceController.ts:761</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -733,7 +766,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1144">src/devicecontroller/DefaultDeviceController.ts:1144</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1372">src/devicecontroller/DefaultDeviceController.ts:1372</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -760,7 +793,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#chooseaudioinputdevice">chooseAudioInputDevice</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L139">src/devicecontroller/DefaultDeviceController.ts:139</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L286">src/devicecontroller/DefaultDeviceController.ts:286</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -784,7 +817,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#chooseaudiooutputdevice">chooseAudioOutputDevice</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L294">src/devicecontroller/DefaultDeviceController.ts:294</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L441">src/devicecontroller/DefaultDeviceController.ts:441</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -807,7 +840,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L158">src/devicecontroller/DefaultDeviceController.ts:158</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L305">src/devicecontroller/DefaultDeviceController.ts:305</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -830,7 +863,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L957">src/devicecontroller/DefaultDeviceController.ts:957</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1179">src/devicecontroller/DefaultDeviceController.ts:1179</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -863,7 +896,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#choosevideoinputdevice">chooseVideoInputDevice</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L269">src/devicecontroller/DefaultDeviceController.ts:269</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L416">src/devicecontroller/DefaultDeviceController.ts:416</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -887,7 +920,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#choosevideoinputquality">chooseVideoInputQuality</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L420">src/devicecontroller/DefaultDeviceController.ts:420</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L575">src/devicecontroller/DefaultDeviceController.ts:575</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -919,7 +952,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L204">src/devicecontroller/DefaultDeviceController.ts:204</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L351">src/devicecontroller/DefaultDeviceController.ts:351</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -942,7 +975,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L510">src/devicecontroller/DefaultDeviceController.ts:510</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L757">src/devicecontroller/DefaultDeviceController.ts:757</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -960,7 +993,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#createanalysernodeforaudioinput">createAnalyserNodeForAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L313">src/devicecontroller/DefaultDeviceController.ts:313</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L463">src/devicecontroller/DefaultDeviceController.ts:463</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/removableanalysernode.html" class="tsd-signature-type">RemovableAnalyserNode</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
@@ -977,7 +1010,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L341">src/devicecontroller/DefaultDeviceController.ts:341</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L491">src/devicecontroller/DefaultDeviceController.ts:491</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/removableanalysernode.html" class="tsd-signature-type">RemovableAnalyserNode</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
@@ -994,7 +1027,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L348">src/devicecontroller/DefaultDeviceController.ts:348</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L498">src/devicecontroller/DefaultDeviceController.ts:498</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1004,6 +1037,24 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/removableanalysernode.html" class="tsd-signature-type">RemovableAnalyserNode</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="destroy" class="tsd-anchor"></a>
+					<h3>destroy</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">destroy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/destroyable.html">Destroyable</a>.<a href="../interfaces/destroyable.html#destroy">destroy</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L239">src/devicecontroller/DefaultDeviceController.ts:239</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1017,7 +1068,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1231">src/devicecontroller/DefaultDeviceController.ts:1231</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1459">src/devicecontroller/DefaultDeviceController.ts:1459</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1043,10 +1094,27 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L54">src/devicecontroller/DefaultDeviceController.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L138">src/devicecontroller/DefaultDeviceController.ts:138</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="ensurewatchingdevicechanges" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> ensure<wbr>Watching<wbr>Device<wbr>Changes</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">ensure<wbr>Watching<wbr>Device<wbr>Changes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L197">src/devicecontroller/DefaultDeviceController.ts:197</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1060,7 +1128,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L818">src/devicecontroller/DefaultDeviceController.ts:818</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1023">src/devicecontroller/DefaultDeviceController.ts:1023</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1101,7 +1169,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L864">src/devicecontroller/DefaultDeviceController.ts:864</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1069">src/devicecontroller/DefaultDeviceController.ts:1069</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1124,7 +1192,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L852">src/devicecontroller/DefaultDeviceController.ts:852</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1057">src/devicecontroller/DefaultDeviceController.ts:1057</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1150,7 +1218,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1367">src/devicecontroller/DefaultDeviceController.ts:1367</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1595">src/devicecontroller/DefaultDeviceController.ts:1595</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1172,7 +1240,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1378">src/devicecontroller/DefaultDeviceController.ts:1378</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1606">src/devicecontroller/DefaultDeviceController.ts:1606</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1195,7 +1263,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1313">src/devicecontroller/DefaultDeviceController.ts:1313</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1541">src/devicecontroller/DefaultDeviceController.ts:1541</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1219,7 +1287,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#getvideoinputqualitysettings">getVideoInputQualitySettings</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L436">src/devicecontroller/DefaultDeviceController.ts:436</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L591">src/devicecontroller/DefaultDeviceController.ts:591</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="videoqualitysettings.html" class="tsd-signature-type">VideoQualitySettings</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
@@ -1236,7 +1304,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L773">src/devicecontroller/DefaultDeviceController.ts:773</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L972">src/devicecontroller/DefaultDeviceController.ts:972</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1253,7 +1321,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L805">src/devicecontroller/DefaultDeviceController.ts:805</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1004">src/devicecontroller/DefaultDeviceController.ts:1004</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1279,7 +1347,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L923">src/devicecontroller/DefaultDeviceController.ts:923</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1128">src/devicecontroller/DefaultDeviceController.ts:1128</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1305,7 +1373,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1099">src/devicecontroller/DefaultDeviceController.ts:1099</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1328">src/devicecontroller/DefaultDeviceController.ts:1328</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1337,7 +1405,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1287">src/devicecontroller/DefaultDeviceController.ts:1287</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1515">src/devicecontroller/DefaultDeviceController.ts:1515</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1354,7 +1422,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L841">src/devicecontroller/DefaultDeviceController.ts:841</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1046">src/devicecontroller/DefaultDeviceController.ts:1046</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1383,7 +1451,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L836">src/devicecontroller/DefaultDeviceController.ts:836</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1041">src/devicecontroller/DefaultDeviceController.ts:1041</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1406,7 +1474,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1291">src/devicecontroller/DefaultDeviceController.ts:1291</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1519">src/devicecontroller/DefaultDeviceController.ts:1519</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1422,6 +1490,23 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="iswatchingfordevicechanges" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Watching<wbr>For<wbr>Device<wbr>Changes</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Watching<wbr>For<wbr>Device<wbr>Changes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L193">src/devicecontroller/DefaultDeviceController.ts:193</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="listaudioinputdevices" class="tsd-anchor"></a>
 					<h3>list<wbr>Audio<wbr>Input<wbr>Devices</h3>
@@ -1433,7 +1518,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#listaudioinputdevices">listAudioInputDevices</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L109">src/devicecontroller/DefaultDeviceController.ts:109</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L256">src/devicecontroller/DefaultDeviceController.ts:256</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1451,7 +1536,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#listaudiooutputdevices">listAudioOutputDevices</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L121">src/devicecontroller/DefaultDeviceController.ts:121</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L268">src/devicecontroller/DefaultDeviceController.ts:268</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1468,7 +1553,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L762">src/devicecontroller/DefaultDeviceController.ts:762</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L961">src/devicecontroller/DefaultDeviceController.ts:961</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1491,7 +1576,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L726">src/devicecontroller/DefaultDeviceController.ts:726</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L923">src/devicecontroller/DefaultDeviceController.ts:923</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1515,7 +1600,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#listvideoinputdevices">listVideoInputDevices</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L115">src/devicecontroller/DefaultDeviceController.ts:115</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L262">src/devicecontroller/DefaultDeviceController.ts:262</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaDeviceInfo</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1533,7 +1618,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#mixintoaudioinput">mixIntoAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L407">src/devicecontroller/DefaultDeviceController.ts:407</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L562">src/devicecontroller/DefaultDeviceController.ts:562</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1556,7 +1641,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L127">src/devicecontroller/DefaultDeviceController.ts:127</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L274">src/devicecontroller/DefaultDeviceController.ts:274</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1579,7 +1664,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L133">src/devicecontroller/DefaultDeviceController.ts:133</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L280">src/devicecontroller/DefaultDeviceController.ts:280</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1602,9 +1687,65 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1317">src/devicecontroller/DefaultDeviceController.ts:1317</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1545">src/devicecontroller/DefaultDeviceController.ts:1545</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="releaseactivedevice" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> release<wbr>Active<wbr>Device</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">release<wbr>Active<wbr>Device<span class="tsd-signature-symbol">(</span>device<span class="tsd-signature-symbol">: </span><a href="deviceselection.html" class="tsd-signature-type">DeviceSelection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1162">src/devicecontroller/DefaultDeviceController.ts:1162</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>device: <a href="deviceselection.html" class="tsd-signature-type">DeviceSelection</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="releaseaudiotransformstream" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> release<wbr>Audio<wbr>Transform<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">release<wbr>Audio<wbr>Transform<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L636">src/devicecontroller/DefaultDeviceController.ts:636</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This function helps <code>releaseMediaStream</code> do the right thing.</p>
+								</div>
+								<p>We need to do three things:</p>
+								<ul>
+									<li>Close the tracks of the source stream.</li>
+									<li>Remove the transform.</li>
+									<li>Clean up the <em>source</em> stream&#39;s callback, as if <code>releaseMediaStream</code> had
+										been called with that stream -- that&#39;s the stream that&#39;s tracked in
+									<code>activeDevices</code> and needs to have its callbacks removed.</li>
+								</ul>
+								<p>This is a little fiddly because the stream broker interface doesn&#39;t
+									know about the innards of the device controller, and only has the
+								meeting session state&#39;s stream to work with.</p>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -1619,7 +1760,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L465">src/devicecontroller/DefaultDeviceController.ts:465</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L715">src/devicecontroller/DefaultDeviceController.ts:715</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1628,6 +1769,46 @@
 									<h5>mediaStreamToRelease: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								</li>
 							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="releaseordinarystream" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> release<wbr>Ordinary<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">release<wbr>Ordinary<wbr>Stream<span class="tsd-signature-symbol">(</span>mediaStreamToRelease<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L681">src/devicecontroller/DefaultDeviceController.ts:681</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>mediaStreamToRelease: <span class="tsd-signature-type">MediaStream</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="releasevideotransformstream" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> release<wbr>Video<wbr>Transform<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">release<wbr>Video<wbr>Transform<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L652">src/devicecontroller/DefaultDeviceController.ts:652</a></li>
+								</ul>
+							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -1643,7 +1824,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#removedevicechangeobserver">removeDeviceChangeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L307">src/devicecontroller/DefaultDeviceController.ts:307</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L456">src/devicecontroller/DefaultDeviceController.ts:456</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1666,7 +1847,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1339">src/devicecontroller/DefaultDeviceController.ts:1339</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1567">src/devicecontroller/DefaultDeviceController.ts:1567</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span>device<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiotransformdevice.html" class="tsd-signature-type">AudioTransformDevice</a><span class="tsd-signature-symbol">; </span>nodes<span class="tsd-signature-symbol">: </span><a href="../interfaces/audionodesubgraph.html" class="tsd-signature-type">AudioNodeSubgraph</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
@@ -1677,19 +1858,19 @@
 					<a name="restartlocalvideoafterselection" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> restart<wbr>Local<wbr>Video<wbr>After<wbr>Selection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">restart<wbr>Local<wbr>Video<wbr>After<wbr>Selection<span class="tsd-signature-symbol">(</span>oldStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span>, fromAcquire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, fromVideoTransformDevice<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">restart<wbr>Local<wbr>Video<wbr>After<wbr>Selection<span class="tsd-signature-symbol">(</span>oldDevice<span class="tsd-signature-symbol">: </span><a href="deviceselection.html" class="tsd-signature-type">DeviceSelection</a>, fromAcquire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, fromVideoTransformDevice<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L885">src/devicecontroller/DefaultDeviceController.ts:885</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1090">src/devicecontroller/DefaultDeviceController.ts:1090</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>oldStream: <span class="tsd-signature-type">MediaStream</span></h5>
+									<h5>oldDevice: <a href="deviceselection.html" class="tsd-signature-type">DeviceSelection</a></h5>
 								</li>
 								<li>
 									<h5>fromAcquire: <span class="tsd-signature-type">boolean</span></h5>
@@ -1712,7 +1893,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L402">src/devicecontroller/DefaultDeviceController.ts:402</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L557">src/devicecontroller/DefaultDeviceController.ts:557</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1747,7 +1928,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1327">src/devicecontroller/DefaultDeviceController.ts:1327</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1555">src/devicecontroller/DefaultDeviceController.ts:1555</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1763,6 +1944,23 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="shouldobservedevicechanges" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> should<wbr>Observe<wbr>Device<wbr>Changes</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">should<wbr>Observe<wbr>Device<wbr>Changes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L219">src/devicecontroller/DefaultDeviceController.ts:219</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="startvideopreviewforvideoinput" class="tsd-anchor"></a>
 					<h3>start<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</h3>
@@ -1774,13 +1972,36 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#startvideopreviewforvideoinput">startVideoPreviewForVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L366">src/devicecontroller/DefaultDeviceController.ts:366</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L516">src/devicecontroller/DefaultDeviceController.ts:516</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>element: <span class="tsd-signature-type">HTMLVideoElement</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="stoptracksandremovecallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> stop<wbr>Tracks<wbr>And<wbr>Remove<wbr>Callback</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>Tracks<wbr>And<wbr>Remove<wbr>Callback<span class="tsd-signature-symbol">(</span>kind<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"video"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audio"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L662">src/devicecontroller/DefaultDeviceController.ts:662</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>kind: <span class="tsd-signature-type">"video"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audio"</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1798,7 +2019,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/devicecontrollerbasedmediastreambroker.html">DeviceControllerBasedMediaStreamBroker</a>.<a href="../interfaces/devicecontrollerbasedmediastreambroker.html#stopvideopreviewforvideoinput">stopVideoPreviewForVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L390">src/devicecontroller/DefaultDeviceController.ts:390</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L540">src/devicecontroller/DefaultDeviceController.ts:540</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1807,6 +2028,29 @@
 									<h5>element: <span class="tsd-signature-type">HTMLVideoElement</span></h5>
 								</li>
 							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="stopwatchingdevicechanges" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> stop<wbr>Watching<wbr>Device<wbr>Changes</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>Watching<wbr>Device<wbr>Changes<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L210">src/devicecontroller/DefaultDeviceController.ts:210</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unsubscribe from the <code>devicechange</code> event, which allows the device controller to
+									update its device cache.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -1821,7 +2065,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L527">src/devicecontroller/DefaultDeviceController.ts:527</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L774">src/devicecontroller/DefaultDeviceController.ts:774</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1838,7 +2082,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1415">src/devicecontroller/DefaultDeviceController.ts:1415</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1643">src/devicecontroller/DefaultDeviceController.ts:1643</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1855,7 +2099,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1407">src/devicecontroller/DefaultDeviceController.ts:1407</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1635">src/devicecontroller/DefaultDeviceController.ts:1635</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1872,7 +2116,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1411">src/devicecontroller/DefaultDeviceController.ts:1411</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1639">src/devicecontroller/DefaultDeviceController.ts:1639</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1889,7 +2133,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1420">src/devicecontroller/DefaultDeviceController.ts:1420</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1648">src/devicecontroller/DefaultDeviceController.ts:1648</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1918,7 +2162,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L543">src/devicecontroller/DefaultDeviceController.ts:543</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L790">src/devicecontroller/DefaultDeviceController.ts:790</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1935,7 +2179,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L733">src/devicecontroller/DefaultDeviceController.ts:733</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L930">src/devicecontroller/DefaultDeviceController.ts:930</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1952,7 +2196,24 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L718">src/devicecontroller/DefaultDeviceController.ts:718</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L915">src/devicecontroller/DefaultDeviceController.ts:915</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="watchfordevicechangesifnecessary" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> watch<wbr>For<wbr>Device<wbr>Changes<wbr>IfNecessary</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">watch<wbr>For<wbr>Device<wbr>Changes<wbr>IfNecessary<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L231">src/devicecontroller/DefaultDeviceController.ts:231</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1969,7 +2230,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1396">src/devicecontroller/DefaultDeviceController.ts:1396</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1624">src/devicecontroller/DefaultDeviceController.ts:1624</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1986,7 +2247,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L597">src/devicecontroller/DefaultDeviceController.ts:597</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L844">src/devicecontroller/DefaultDeviceController.ts:844</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MediaStream</span></h4>
@@ -2003,36 +2264,10 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L601">src/devicecontroller/DefaultDeviceController.ts:601</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L848">src/devicecontroller/DefaultDeviceController.ts:848</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-					<a name="fillsmptecolorbars" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> fillSMPTEColor<wbr>Bars</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">fillSMPTEColor<wbr>Bars<span class="tsd-signature-symbol">(</span>canvas<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLCanvasElement</span>, xShift<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L675">src/devicecontroller/DefaultDeviceController.ts:675</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>canvas: <span class="tsd-signature-type">HTMLCanvasElement</span></h5>
-								</li>
-								<li>
-									<h5>xShift: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2046,7 +2281,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1382">src/devicecontroller/DefaultDeviceController.ts:1382</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1610">src/devicecontroller/DefaultDeviceController.ts:1610</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AudioContext</span></h4>
@@ -2063,7 +2298,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L555">src/devicecontroller/DefaultDeviceController.ts:555</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L802">src/devicecontroller/DefaultDeviceController.ts:802</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2086,7 +2321,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L605">src/devicecontroller/DefaultDeviceController.ts:605</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L852">src/devicecontroller/DefaultDeviceController.ts:852</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2109,7 +2344,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L651">src/devicecontroller/DefaultDeviceController.ts:651</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L898">src/devicecontroller/DefaultDeviceController.ts:898</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2131,7 +2366,7 @@
 					<div class="tsd-signature tsd-kind-icon">active<wbr>Devices<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L46">src/devicecontroller/DefaultDeviceController.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L130">src/devicecontroller/DefaultDeviceController.ts:130</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -2140,7 +2375,7 @@
 						<div class="tsd-signature tsd-kind-icon">audio<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L46">src/devicecontroller/DefaultDeviceController.ts:46</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L130">src/devicecontroller/DefaultDeviceController.ts:130</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -2150,7 +2385,7 @@
 						<div class="tsd-signature tsd-kind-icon">video<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L46">src/devicecontroller/DefaultDeviceController.ts:46</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L130">src/devicecontroller/DefaultDeviceController.ts:130</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -2212,7 +2447,13 @@
 								<a href="defaultdevicecontroller.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#mediadevicewrapper" class="tsd-kind-icon">media<wbr>Device<wbr>Wrapper</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#mutecallback" class="tsd-kind-icon">mute<wbr>Callback</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#ondevicechangecallback" class="tsd-kind-icon">on<wbr>Device<wbr>Change<wbr>Callback</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#transform" class="tsd-kind-icon">transform</a>
@@ -2313,11 +2554,17 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#createanalysernodeforstream" class="tsd-kind-icon">create<wbr>Analyser<wbr>Node<wbr>For<wbr>Stream</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaultdevicecontroller.html#destroy" class="tsd-kind-icon">destroy</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#deviceinfofromdeviceid" class="tsd-kind-icon">device<wbr>Info<wbr>From<wbr>Device<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#devicelabeltrigger" class="tsd-kind-icon">device<wbr>Label<wbr>Trigger</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#ensurewatchingdevicechanges" class="tsd-kind-icon">ensure<wbr>Watching<wbr>Device<wbr>Changes</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#foreachobserver" class="tsd-kind-icon">for<wbr>Each<wbr>Observer</a>
@@ -2364,6 +2611,9 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#ismediastreamreusablebydeviceid" class="tsd-kind-icon">is<wbr>Media<wbr>Stream<wbr>Reusable<wbr>ByDevice<wbr>Id</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#iswatchingfordevicechanges" class="tsd-kind-icon">is<wbr>Watching<wbr>For<wbr>Device<wbr>Changes</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultdevicecontroller.html#listaudioinputdevices" class="tsd-kind-icon">list<wbr>Audio<wbr>Input<wbr>Devices</a>
 							</li>
@@ -2391,8 +2641,20 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#reconnectaudioinputs" class="tsd-kind-icon">reconnect<wbr>Audio<wbr>Inputs</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#releaseactivedevice" class="tsd-kind-icon">release<wbr>Active<wbr>Device</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#releaseaudiotransformstream" class="tsd-kind-icon">release<wbr>Audio<wbr>Transform<wbr>Stream</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultdevicecontroller.html#releasemediastream" class="tsd-kind-icon">release<wbr>Media<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#releaseordinarystream" class="tsd-kind-icon">release<wbr>Ordinary<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#releasevideotransformstream" class="tsd-kind-icon">release<wbr>Video<wbr>Transform<wbr>Stream</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultdevicecontroller.html#removedevicechangeobserver" class="tsd-kind-icon">remove<wbr>Device<wbr>Change<wbr>Observer</a>
@@ -2409,11 +2671,20 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#settransform" class="tsd-kind-icon">set<wbr>Transform</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#shouldobservedevicechanges" class="tsd-kind-icon">should<wbr>Observe<wbr>Device<wbr>Changes</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultdevicecontroller.html#startvideopreviewforvideoinput" class="tsd-kind-icon">start<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#stoptracksandremovecallback" class="tsd-kind-icon">stop<wbr>Tracks<wbr>And<wbr>Remove<wbr>Callback</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultdevicecontroller.html#stopvideopreviewforvideoinput" class="tsd-kind-icon">stop<wbr>Video<wbr>Preview<wbr>For<wbr>Video<wbr>Input</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#stopwatchingdevicechanges" class="tsd-kind-icon">stop<wbr>Watching<wbr>Device<wbr>Changes</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#subscribetomuteandunmutelocalaudio" class="tsd-kind-icon">subscribe<wbr>ToMute<wbr>And<wbr>Unmute<wbr>Local<wbr>Audio</a>
@@ -2439,6 +2710,9 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="defaultdevicecontroller.html#updatemaxbandwidthkbps" class="tsd-kind-icon">update<wbr>Max<wbr>Bandwidth<wbr>Kbps</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="defaultdevicecontroller.html#watchfordevicechangesifnecessary" class="tsd-kind-icon">watch<wbr>For<wbr>Device<wbr>Changes<wbr>IfNecessary</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="defaultdevicecontroller.html#closeaudiocontext" class="tsd-kind-icon">close<wbr>Audio<wbr>Context</a>
 							</li>
@@ -2447,9 +2721,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="defaultdevicecontroller.html#createemptyvideodevice" class="tsd-kind-icon">create<wbr>Empty<wbr>Video<wbr>Device</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
-								<a href="defaultdevicecontroller.html#fillsmptecolorbars" class="tsd-kind-icon">fillSMPTEColor<wbr>Bars</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="defaultdevicecontroller.html#getaudiocontext" class="tsd-kind-icon">get<wbr>Audio<wbr>Context</a>
@@ -2486,12 +2757,13 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>

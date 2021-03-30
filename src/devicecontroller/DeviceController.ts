@@ -39,6 +39,15 @@ import VideoQualitySettings from './VideoQualitySettings';
  *   return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
  * }
  * ```
+ *
+ * When you are done using a `DeviceController`, you should perform some
+ * cleanup steps in order to avoid memory leaks:
+ *
+ * 1. Deselect any audio input or output devices by calling {@link
+ *    chooseAudioInputDevice} and {@link chooseAudioOutputDevice} with `null`.
+ * 2. Remove any device change observers that you registered by using
+ *    {@link removeDeviceChangeObserver}.
+ * 3. Drop your reference to the controller to allow it to be garbage collected.
  */
 export default interface DeviceController {
   /**

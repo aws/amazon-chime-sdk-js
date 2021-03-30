@@ -79,6 +79,27 @@ describe('MeetingSessionPOSTLogger', () => {
     });
   });
 
+  describe('disposal', () => {
+    it('can be disposed', async () => {
+      const logger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL,
+        LogLevel.WARN
+      );
+      // @ts-ignore
+      expect(logger.intervalScheduler.running()).to.be.true;
+      await logger.destroy();
+      // @ts-ignore
+      expect(!!logger.intervalScheduler?.running()).to.be.false;
+
+      // This is safe to call twice.
+      await logger.destroy();
+    });
+  });
+
   describe('logging level', () => {
     it('should log info with LogLevel.INFO and ignore the debug', done => {
       const logger = new MeetingSessionPOSTLogger(

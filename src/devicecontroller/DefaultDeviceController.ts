@@ -3,6 +3,7 @@
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import type { Destroyable } from '../destroyable/Destroyable';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
@@ -27,7 +28,90 @@ import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
 import VideoTransformDevice, { isVideoTransformDevice } from './VideoTransformDevice';
 
-export default class DefaultDeviceController implements DeviceControllerBasedMediaStreamBroker {
+type Thunk = () => void;
+
+function fillSMPTEColorBars(canvas: HTMLCanvasElement, xShift: number): void {
+  const w = canvas.width;
+  const h = canvas.height;
+  const h1 = (h * 2) / 3;
+  const h2 = (h * 3) / 4;
+  const h3 = h;
+  const top = ['#c0c0c0', '#c0c000', '#00c0c0', '#00c000', '#c000c0', '#c00000', '#0000c0'];
+  const middle = ['#0000c0', '#000000', '#c000c0', '#000000', '#00c0c0', '#000000', '#c0c0c0'];
+  const bottom = [
+    '#00214c',
+    '#ffffff',
+    '#32006a',
+    '#131313',
+    '#090909',
+    '#131313',
+    '#1d1d1d',
+    '#131313',
+  ];
+  const bottomX = [
+    w * 0,
+    ((w * 1) / 4) * (5 / 7),
+    ((w * 2) / 4) * (5 / 7),
+    ((w * 3) / 4) * (5 / 7),
+    w * (5 / 7),
+    w * (5 / 7 + 1 / 21),
+    w * (5 / 7 + 2 / 21),
+    w * (6 / 7),
+    w * 1,
+  ];
+  const segmentWidth = w / top.length;
+  const ctx = canvas.getContext('2d');
+  for (let i = 0; i < top.length; i++) {
+    ctx.fillStyle = top[i];
+    ctx.fillRect(xShift + i * segmentWidth, 0, segmentWidth, h1);
+    ctx.fillStyle = middle[i];
+    ctx.fillRect(xShift + i * segmentWidth, h1, segmentWidth, h2 - h1);
+  }
+  for (let i = 0; i < bottom.length; i++) {
+    ctx.fillStyle = bottom[i];
+    ctx.fillRect(xShift + bottomX[i], h2, bottomX[i + 1] - bottomX[i], h3 - h2);
+  }
+}
+
+// This is a top-level function so that its captured environment is as small as possible,
+// minimizing leaks -- the interval scheduler will cause everything here to be retained
+// until it is stopped.
+function makeColorBars(
+  canvas: HTMLCanvasElement,
+  colorOrPattern: string
+): undefined | { listener: Thunk; scheduler: IntervalScheduler; stream: MediaStream } {
+  const scheduler = new IntervalScheduler(1000);
+  const context = canvas.getContext('2d');
+
+  // @ts-ignore
+  const stream: MediaStream | null = canvas.captureStream(5) || null;
+  if (!stream) {
+    return undefined;
+  }
+
+  const onTick = (): void => {
+    if (colorOrPattern === 'smpte') {
+      fillSMPTEColorBars(canvas, 0);
+    } else {
+      context.fillStyle = colorOrPattern;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  };
+
+  scheduler.start(onTick);
+
+  const listener = (): void => {
+    scheduler.stop();
+  };
+
+  // This event listener will leak unless you remove it.
+  stream.getVideoTracks()[0].addEventListener('ended', listener);
+
+  return { listener, scheduler, stream };
+}
+
+export default class DefaultDeviceController
+  implements DeviceControllerBasedMediaStreamBroker, Destroyable {
   private static permissionDeniedOriginDetectionThresholdMs = 500;
   private static defaultVideoWidth = 960;
   private static defaultVideoHeight = 540;
@@ -56,6 +140,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   };
   private audioInputDestinationNode: MediaStreamAudioDestinationNode | null = null;
   private audioInputSourceNode: MediaStreamAudioSourceNode | null = null;
+
+  private mediaDeviceWrapper: MediaDevices;
+  private onDeviceChangeCallback?: Thunk;
   private muteCallback: (muted: boolean) => void;
 
   private videoInputQualitySettings: VideoQualitySettings = null;
@@ -93,10 +180,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     );
 
     try {
-      const mediaDeviceWrapper = new DefaultMediaDeviceFactory().create();
-      mediaDeviceWrapper.addEventListener('devicechange', () => {
-        this.handleDeviceChange();
-      });
+      this.mediaDeviceWrapper = new DefaultMediaDeviceFactory().create();
       const supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
       this.logger.info(
         `Supported Constraints in this browser ${JSON.stringify(supportedConstraints)}`
@@ -104,6 +188,69 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     } catch (error) {
       logger.error(error.message);
     }
+  }
+
+  private isWatchingForDeviceChanges(): boolean {
+    return !!this.onDeviceChangeCallback;
+  }
+
+  private ensureWatchingDeviceChanges(): void {
+    if (this.isWatchingForDeviceChanges()) {
+      return;
+    }
+    this.logger.info('Starting devicechange listener.');
+    this.onDeviceChangeCallback = () => this.handleDeviceChange();
+    this.mediaDeviceWrapper.addEventListener('devicechange', this.onDeviceChangeCallback);
+  }
+
+  /**
+   * Unsubscribe from the `devicechange` event, which allows the device controller to
+   * update its device cache.
+   */
+  private stopWatchingDeviceChanges(): void {
+    if (!this.isWatchingForDeviceChanges()) {
+      return;
+    }
+    this.logger.info('Stopping devicechange listener.');
+    this.mediaDeviceWrapper.removeEventListener('devicechange', this.onDeviceChangeCallback);
+    this.onDeviceChangeCallback = undefined;
+  }
+
+  private shouldObserveDeviceChanges(): boolean {
+    if (this.deviceChangeObservers.size) {
+      return true;
+    }
+
+    const hasActiveDevices =
+      (this.activeDevices['audio'] && this.activeDevices['audio'].constraints !== null) ||
+      (this.activeDevices['video'] && this.activeDevices['video'].constraints !== null) ||
+      !!this.audioOutputDeviceId;
+    return hasActiveDevices;
+  }
+
+  private watchForDeviceChangesIfNecessary(): void {
+    if (this.shouldObserveDeviceChanges()) {
+      this.ensureWatchingDeviceChanges();
+    } else {
+      this.stopWatchingDeviceChanges();
+    }
+  }
+
+  async destroy(): Promise<void> {
+    // Remove device change callbacks.
+    this.stopWatchingDeviceChanges();
+
+    // Deselect any audio input devices and throw away the streams.
+    // Discard the current video device, if there is one.
+    // Discard any audio or video transforms.
+    await this.chooseAudioInputDevice(null);
+    await this.chooseVideoInputDevice(null);
+
+    // Tear down any Web Audio infrastructure we have hanging around.
+    this.audioInputSourceNode?.disconnect();
+    this.audioInputDestinationNode?.disconnect();
+    this.audioInputSourceNode = undefined;
+    this.audioInputDestinationNode = undefined;
   }
 
   async listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
@@ -293,6 +440,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   async chooseAudioOutputDevice(deviceId: string | null): Promise<void> {
     this.audioOutputDeviceId = deviceId;
+    this.watchForDeviceChangesIfNecessary();
     await this.bindAudioOutput();
     this.trace('chooseAudioOutputDevice', deviceId, null);
     return;
@@ -301,12 +449,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   addDeviceChangeObserver(observer: DeviceChangeObserver): void {
     this.logger.info('adding device change observer');
     this.deviceChangeObservers.add(observer);
+    this.watchForDeviceChangesIfNecessary();
     this.trace('addDeviceChangeObserver');
   }
 
   removeDeviceChangeObserver(observer: DeviceChangeObserver): void {
     this.logger.info('removing device change observer');
     this.deviceChangeObservers.delete(observer);
+    this.watchForDeviceChangesIfNecessary();
     this.trace('removeDeviceChangeObserver');
   }
 
@@ -389,12 +539,17 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   stopVideoPreviewForVideoInput(element: HTMLVideoElement): void {
     const stream: MediaStream = element.srcObject as MediaStream;
+    const activeVideoDevice = this.activeDevices['video'];
+
+    // Safety.
+    /* istanbul ignore else */
+    if (activeVideoDevice) {
+      this.releaseActiveDevice(activeVideoDevice);
+    }
+
     if (stream) {
       this.releaseMediaStream(stream);
       DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
-    }
-    if (this.activeDevices['video']) {
-      this.releaseMediaStream(this.activeDevices['video'].stream);
     }
     this.trace('stopVideoPreviewForVideoInput', element.id);
   }
@@ -437,12 +592,12 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     return this.videoInputQualitySettings;
   }
 
-  async acquireAudioInputStream(): Promise<MediaStream> {
-    return await this.acquireInputStream('audio');
+  acquireAudioInputStream(): Promise<MediaStream> {
+    return this.acquireInputStream('audio');
   }
 
-  async acquireVideoInputStream(): Promise<MediaStream> {
-    return await this.acquireInputStream('video');
+  acquireVideoInputStream(): Promise<MediaStream> {
+    return this.acquireInputStream('video');
   }
 
   async acquireDisplayInputStream(streamConstraints: MediaStreamConstraints): Promise<MediaStream> {
@@ -462,48 +617,140 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     return navigator.mediaDevices.getDisplayMedia(streamConstraints);
   }
 
+  /**
+   * This function helps `releaseMediaStream` do the right thing.
+   *
+   * We need to do three things:
+   *
+   * * Close the tracks of the source stream.
+   * * Remove the transform.
+   * * Clean up the _source_ stream's callback, as if `releaseMediaStream` had
+   *   been called with that stream -- that's the stream that's tracked in
+   *   `activeDevices` and needs to have its callbacks removed.
+   *
+   * This is a little fiddly because the stream broker interface doesn't
+   * know about the innards of the device controller, and only has the
+   * meeting session state's stream to work with.
+   *
+   */
+  private releaseAudioTransformStream(): void {
+    this.logger.info('Stopping audio track for Web Audio graph');
+
+    this.stopTracksAndRemoveCallback('audio');
+
+    this.logger.info('Removing audio transform, if there is one.');
+    this.removeTransform();
+
+    // Remove the input and output nodes. They will be recreated later if
+    // needed.
+    this.audioInputSourceNode.disconnect();
+    this.audioInputSourceNode = undefined;
+    this.audioInputDestinationNode.disconnect();
+    this.audioInputDestinationNode = undefined;
+  }
+
+  private releaseVideoTransformStream(): void {
+    this.logger.info('Stopping video track for transform');
+
+    this.stopTracksAndRemoveCallback('video');
+
+    this.logger.info('Disconnecting video transform');
+    this.chosenVideoTransformDevice.onOutputStreamDisconnect();
+    this.chosenVideoTransformDevice = null;
+  }
+
+  private stopTracksAndRemoveCallback(kind: 'video' | 'audio'): void {
+    const activeDevice = this.activeDevices[kind];
+
+    /* istanbul ignore next */
+    const endedCallback = activeDevice?.endedCallback;
+
+    for (const track of activeDevice.stream.getTracks()) {
+      track.stop();
+
+      /* istanbul ignore else */
+      if (endedCallback) {
+        track.removeEventListener('ended', endedCallback);
+        delete activeDevice.endedCallback;
+      }
+
+      delete this.activeDevices[kind];
+    }
+  }
+
+  private releaseOrdinaryStream(mediaStreamToRelease: MediaStream): void {
+    const tracksToStop = mediaStreamToRelease.getTracks();
+
+    if (!tracksToStop.length) {
+      return;
+    }
+
+    for (const track of tracksToStop) {
+      track.stop();
+    }
+
+    // This function is called from `CleanStoppedSessionTask` using the
+    // session state, which does not allow us to clean up any associated 'ended'
+    // callbacks in advance. Look here to see if we have any to clean up.
+    for (const kind in this.activeDevices) {
+      const activeDevice = this.activeDevices[kind];
+      if (activeDevice?.stream !== mediaStreamToRelease) {
+        continue;
+      }
+      if (activeDevice.endedCallback) {
+        tracksToStop[0].removeEventListener('ended', activeDevice.endedCallback);
+        delete activeDevice.endedCallback;
+      }
+      delete this.activeDevices[kind];
+
+      if (
+        kind === 'video' &&
+        this.boundAudioVideoController?.videoTileController.hasStartedLocalVideoTile()
+      ) {
+        this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
+      }
+    }
+  }
+
   releaseMediaStream(mediaStreamToRelease: MediaStream | null): void {
     if (!mediaStreamToRelease) {
       return;
     }
-    let tracksToStop: MediaStreamTrack[] | null = null;
 
-    if (
-      !!this.audioInputDestinationNode &&
-      mediaStreamToRelease === this.audioInputDestinationNode.stream
-    ) {
-      // release the true audio stream if WebAudio is used.
-      this.logger.info('stopping audio track');
-      tracksToStop = this.audioInputSourceNode.mediaStream.getTracks();
-      this.audioInputSourceNode.disconnect();
-    } else {
-      tracksToStop = mediaStreamToRelease.getTracks();
-    }
+    try {
+      // This method can be called with the output of an audio transform's
+      // Web Audio graph. That graph runs from a `MediaStreamSourceNode`, through
+      // the transform (if present), to a `MediaStreamDestinationNode`, and out to
+      // WebRTC.
+      //
+      // The call teardown task will call `releaseMediaStream` with the stream it
+      // receives — the destination stream.
+      //
+      // This function detects with this comparison:
+      const isReleasingAudioDestinationStream =
+        mediaStreamToRelease === this.audioInputDestinationNode?.stream;
 
-    // similar to WebAudio's stream, we need to release the actual input stream to really stop it.
-    // looks like switching VideoTransformDevice, the original device is closed because oldStream is the actual stream
-    if (mediaStreamToRelease === this.chosenVideoTransformDevice?.outputMediaStream) {
-      this.chosenVideoTransformDevice.onOutputStreamDisconnect();
-      this.chosenVideoTransformDevice = null;
-      tracksToStop = [];
-    }
-
-    for (const track of tracksToStop) {
-      this.logger.info(`stopping ${track.kind} track`);
-      track.stop();
-    }
-
-    for (const kind in this.activeDevices) {
-      if (this.activeDevices[kind] && this.activeDevices[kind].stream === mediaStreamToRelease) {
-        this.activeDevices[kind] = null;
-        if (
-          kind === 'video' &&
-          this.boundAudioVideoController &&
-          this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
-        ) {
-          this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
-        }
+      if (isReleasingAudioDestinationStream) {
+        this.releaseAudioTransformStream();
+        return;
       }
+
+      // Similarly, it can be called with a video transform's output stream.
+      // As with the Web Audio case, we need to release the actual input stream to
+      // really stop it.
+      const isReleasingVideoOutputStream =
+        mediaStreamToRelease === this.chosenVideoTransformDevice?.outputMediaStream;
+
+      if (isReleasingVideoOutputStream) {
+        this.releaseVideoTransformStream();
+        return;
+      }
+
+      // Otherwise, this is one of our inputs that was plumbed straight through to
+      // WebRTC. Go ahead and release it track by track.
+      this.releaseOrdinaryStream(mediaStreamToRelease);
+    } finally {
+      this.watchForDeviceChangesIfNecessary();
     }
   }
 
@@ -518,7 +765,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     this.boundAudioVideoController = audioVideoController;
     this.subscribeToMuteAndUnmuteLocalAudio();
     if (this.browserBehavior.supportsSetSinkId()) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         this.bindAudioOutput();
       });
     }
@@ -652,67 +899,17 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     const canvas = document.createElement('canvas') as HTMLCanvasElement;
     canvas.width = 480;
     canvas.height = (canvas.width / 16) * 9;
-    const scheduler = new IntervalScheduler(1000);
-    const context = canvas.getContext('2d');
-    // @ts-ignore
-    const stream: MediaStream | null = canvas.captureStream(5) || null;
-    if (stream) {
-      scheduler.start(() => {
-        if (colorOrPattern === 'smpte') {
-          DefaultDeviceController.fillSMPTEColorBars(canvas, 0);
-        } else {
-          context.fillStyle = colorOrPattern;
-          context.fillRect(0, 0, canvas.width, canvas.height);
-        }
-      });
-      stream.getVideoTracks()[0].addEventListener('ended', () => {
-        scheduler.stop();
-      });
-    }
-    return stream;
-  }
 
-  private static fillSMPTEColorBars(canvas: HTMLCanvasElement, xShift: number): void {
-    const w = canvas.width;
-    const h = canvas.height;
-    const h1 = (h * 2) / 3;
-    const h2 = (h * 3) / 4;
-    const h3 = h;
-    const top = ['#c0c0c0', '#c0c000', '#00c0c0', '#00c000', '#c000c0', '#c00000', '#0000c0'];
-    const middle = ['#0000c0', '#000000', '#c000c0', '#000000', '#00c0c0', '#000000', '#c0c0c0'];
-    const bottom = [
-      '#00214c',
-      '#ffffff',
-      '#32006a',
-      '#131313',
-      '#090909',
-      '#131313',
-      '#1d1d1d',
-      '#131313',
-    ];
-    const bottomX = [
-      w * 0,
-      ((w * 1) / 4) * (5 / 7),
-      ((w * 2) / 4) * (5 / 7),
-      ((w * 3) / 4) * (5 / 7),
-      w * (5 / 7),
-      w * (5 / 7 + 1 / 21),
-      w * (5 / 7 + 2 / 21),
-      w * (6 / 7),
-      w * 1,
-    ];
-    const segmentWidth = w / top.length;
-    const ctx = canvas.getContext('2d');
-    for (let i = 0; i < top.length; i++) {
-      ctx.fillStyle = top[i];
-      ctx.fillRect(xShift + i * segmentWidth, 0, segmentWidth, h1);
-      ctx.fillStyle = middle[i];
-      ctx.fillRect(xShift + i * segmentWidth, h1, segmentWidth, h2 - h1);
+    const colorBars = makeColorBars(canvas, colorOrPattern);
+
+    if (!colorBars) {
+      return null;
     }
-    for (let i = 0; i < bottom.length; i++) {
-      ctx.fillStyle = bottom[i];
-      ctx.fillRect(xShift + bottomX[i], h2, bottomX[i + 1] - bottomX[i], h3 - h2);
-    }
+
+    // `scheduler` and `listener` will leak.
+    const { stream } = colorBars;
+
+    return stream;
   }
 
   private updateMaxBandwidthKbps(): void {
@@ -724,7 +921,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   private async listDevicesOfKind(deviceKind: string): Promise<MediaDeviceInfo[]> {
-    if (this.deviceInfoCache === null) {
+    if (this.deviceInfoCache === null || !this.isWatchingForDeviceChanges()) {
       await this.updateDeviceInfoCacheFromBrowser();
     }
     return this.listCachedDevicesOfKind(deviceKind);
@@ -736,7 +933,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       this.deviceInfoCache = [];
       return;
     }
+
     let devices = await navigator.mediaDevices.enumerateDevices();
+
     let hasDeviceLabels = true;
     for (const device of devices) {
       if (!device.label) {
@@ -775,7 +974,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       return;
     }
     if (this.alreadyHandlingDeviceChange) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         this.handleDeviceChange();
       });
       return;
@@ -803,7 +1002,13 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   private async handleDeviceStreamEnded(kind: string, deviceId: string): Promise<void> {
-    await this.chooseInputIntrinsicDevice(kind, null, false);
+    try {
+      await this.chooseInputIntrinsicDevice(kind, null, false);
+    } catch (e) {
+      /* istanbul ignore next */
+      this.logger.error('Failed to choose null device after stream ended.');
+    }
+
     if (kind === 'audio') {
       this.forEachObserver((observer: DeviceChangeObserver) => {
         Maybe.of(observer.audioInputStreamEnded).map(f => f.bind(observer)(deviceId));
@@ -817,7 +1022,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
   private forEachObserver(observerFunc: (observer: DeviceChangeObserver) => void): void {
     for (const observer of this.deviceChangeObservers) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         /* istanbul ignore else */
         if (this.deviceChangeObservers.has(observer)) {
           observerFunc(observer);
@@ -883,7 +1088,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
   }
 
   private async restartLocalVideoAfterSelection(
-    oldStream: MediaStream,
+    oldDevice: DeviceSelection,
     fromAcquire: boolean,
     fromVideoTransformDevice: boolean
   ): Promise<void> {
@@ -898,9 +1103,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         // calls replaceLocalVideo to avoid a full stop-start update.
         await this.boundAudioVideoController.replaceLocalVideo();
         this.logger.info('successfully replaced video track');
-        if (oldStream && oldStream.active) {
+        if (oldDevice?.stream.active) {
           this.logger.warn('previous media stream is not stopped during restart video');
-          this.releaseMediaStream(oldStream);
+          this.releaseActiveDevice(oldDevice);
         }
       } else {
         // not from VideoTransformDevice, usual behavior.
@@ -909,14 +1114,14 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
           // TODO: implement MediaStreamDestroyer
           // tracks of oldStream should be stopped when video tile is disconnected from MediaStream
           // otherwise, camera is still being accessed and we need to stop it here.
-          if (oldStream && oldStream.active) {
+          if (oldDevice?.stream.active) {
             this.logger.warn('previous media stream is not stopped during restart video');
-            this.releaseMediaStream(oldStream);
+            this.releaseActiveDevice(oldDevice);
           }
         });
       }
     } else {
-      this.releaseMediaStream(oldStream);
+      this.releaseActiveDevice(oldDevice);
     }
   }
 
@@ -954,6 +1159,23 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     }
   }
 
+  private releaseActiveDevice(device: DeviceSelection): void {
+    if (!device || !device.stream) {
+      return;
+    }
+    if (device.endedCallback) {
+      const track = device.stream.getTracks()[0];
+      // Safety.
+      /* istanbul ignore else */
+      if (track) {
+        track.removeEventListener('ended', device.endedCallback);
+      }
+    }
+    delete device.endedCallback;
+    this.releaseMediaStream(device.stream);
+    delete device.stream;
+  }
+
   private async chooseInputIntrinsicDevice(
     kind: string,
     device: Device,
@@ -965,9 +1187,11 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
 
     if (device === null && kind === 'video') {
       this.lastNoVideoInputDeviceCount = this.inputDeviceCount;
-      if (this.activeDevices[kind]) {
-        this.releaseMediaStream(this.activeDevices[kind].stream);
+      const active = this.activeDevices[kind];
+      if (active) {
+        this.releaseActiveDevice(active);
         delete this.activeDevices[kind];
+        this.watchForDeviceChangesIfNecessary();
       }
       return;
     }
@@ -994,7 +1218,7 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       return;
     }
     if (kind === 'audio' && this.activeDevices[kind] && this.activeDevices[kind].stream) {
-      this.releaseMediaStream(this.activeDevices[kind].stream);
+      this.releaseActiveDevice(this.activeDevices[kind]);
     }
     const startTimeMs = Date.now();
     const newDevice: DeviceSelection = new DeviceSelection();
@@ -1024,7 +1248,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         }
 
         await this.handleDeviceChange();
-        newDevice.stream.getTracks()[0].addEventListener('ended', () => {
+        const track = newDevice.stream.getTracks()[0];
+        newDevice.endedCallback = (): void => {
           // Hard to test, but the safety check is worthwhile.
           /* istanbul ignore else */
           if (this.activeDevices[kind] && this.activeDevices[kind].stream === newDevice.stream) {
@@ -1032,8 +1257,10 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
               `${kind} input device which was active is no longer available, resetting to null device`
             );
             this.handleDeviceStreamEnded(kind, this.getActiveDeviceId(kind));
+            delete newDevice.endedCallback;
           }
-        });
+        };
+        track.addEventListener('ended', newDevice.endedCallback, { once: true });
       }
       newDevice.groupId = this.getMediaTrackSettings(newDevice.stream)?.groupId || '';
     } catch (error) {
@@ -1089,6 +1316,8 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
       }
 
       this.handleGetUserMediaError(error, Date.now() - startTimeMs);
+    } finally {
+      this.watchForDeviceChangesIfNecessary();
     }
 
     this.logger.info(`got ${kind} device for constraints ${JSON.stringify(proposedConstraints)}`);
@@ -1102,11 +1331,10 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
     fromAcquire: boolean,
     fromVideoTransformDevice: boolean = false
   ): Promise<void> {
-    const oldStream: MediaStream | null = this.activeDevices[kind]
-      ? this.activeDevices[kind].stream
-      : null;
+    const oldDevice = this.activeDevices[kind];
 
     this.activeDevices[kind] = newDevice;
+    this.watchForDeviceChangesIfNecessary();
 
     if (kind === 'video') {
       // attempts to mirror `this.useWebAudio`. The difference is that audio destination stream stays the same
@@ -1115,9 +1343,9 @@ export default class DefaultDeviceController implements DeviceControllerBasedMed
         this.logger.info('apply processors to transform');
         await this.chosenVideoTransformDevice.transformStream(this.activeDevices['video'].stream);
       }
-      await this.restartLocalVideoAfterSelection(oldStream, fromAcquire, fromVideoTransformDevice);
+      await this.restartLocalVideoAfterSelection(oldDevice, fromAcquire, fromVideoTransformDevice);
     } else {
-      this.releaseMediaStream(oldStream);
+      this.releaseActiveDevice(oldDevice);
 
       if (this.useWebAudio) {
         this.attachAudioInputStreamToAudioContext(this.activeDevices[kind].stream);

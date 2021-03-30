@@ -26,6 +26,13 @@ import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
  * are muted when they are not. Creating a direct path from the mute button
  * to the place where the underlying media stream is disabled ensures that
  * muting is instantaneous and cannot fail.
+ *
+ * When you are done using a `RealtimeController`, you should perform some
+ * cleanup steps in order to avoid memory leaks:
+ *
+ * 1. Unsubscribe from listeners; e.g., presence callbacks via
+ *    {@link realtimeUnsubscribeToAttendeeIdPresence}.
+ * 2. Drop your reference to the controller to allow it to be garbage collected.
  */
 export default interface RealtimeController {
   // Attendee Id

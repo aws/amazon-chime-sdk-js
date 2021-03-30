@@ -111,9 +111,93 @@ describe('DefaultDeviceController', () => {
     });
   });
 
+  describe('disposal', () => {
+    it('unsubscribes from streams and global when disposed', async () => {
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+
+      await deviceController.listAudioInputDevices();
+      await deviceController.chooseAudioInputDevice('abcdef');
+
+      const device = await gUM.returnValues.pop();
+      expect(device.getAudioTracks().length).to.equal(1);
+
+      // @ts-ignore
+      expect(device.getAudioTracks()[0].listeners['ended'].length).to.equal(1);
+
+      await deviceController.chooseVideoInputDevice('vabcdef');
+
+      await deviceController.destroy();
+
+      await delay(1);
+
+      // @ts-ignore
+      expect(device.getAudioTracks()[0].listeners['ended'].length).to.equal(0);
+
+      // Calling it again is safe.
+      await deviceController.destroy();
+    });
+
+    it('unsubscribes from transform devices and global when disposed', async () => {
+      enableWebAudio(true);
+
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+
+      const tf = new MockNodeTransformDevice('abdef', 1);
+      await deviceController.chooseAudioInputDevice(tf);
+
+      // @ts-ignore
+      expect(deviceController.audioInputSourceNode).to.not.be.undefined;
+
+      const device = await gUM.returnValues.pop();
+      expect(device.getAudioTracks().length).to.equal(1);
+
+      // @ts-ignore
+      expect(device.getAudioTracks()[0].listeners['ended'].length).to.equal(1);
+
+      await deviceController.destroy();
+
+      await delay(1);
+
+      // @ts-ignore
+      expect(deviceController.audioInputSourceNode).to.be.undefined;
+
+      // @ts-ignore
+      expect(device.getAudioTracks()[0].listeners['ended'].length).to.equal(0);
+
+      // Calling it again is safe.
+      await deviceController.destroy();
+    });
+  });
+
   describe('list devices', () => {
     it('lists audio input devices', async () => {
       const devices: MediaDeviceInfo[] = await deviceController.listAudioInputDevices();
+      expect(devices.length).to.equal(2);
+      for (const device of devices) {
+        expect(device.kind).to.equal('audioinput');
+      }
+    });
+
+    it('lists devices after observers exist', async () => {
+      const obs: DeviceChangeObserver = {};
+      await deviceController.addDeviceChangeObserver(obs);
+
+      // @ts-ignore
+      const spy = sinon.spy(deviceController, 'updateDeviceInfoCacheFromBrowser');
+
+      expect(spy.called).to.be.false;
+
+      // This will establish the cache.
+      await deviceController.listVideoInputDevices();
+
+      // @ts-ignore
+      expect(deviceController.deviceInfoCache).to.not.be.null;
+      expect(spy.calledOnce).to.be.true;
+
+      // This will use it.
+      const devices = await deviceController.listAudioInputDevices();
+      expect(spy.calledOnce).to.be.true;
+
       expect(devices.length).to.equal(2);
       for (const device of devices) {
         expect(device.kind).to.equal('audioinput');
@@ -1603,14 +1687,17 @@ describe('DefaultDeviceController', () => {
       deviceController.chooseVideoInputDevice(null);
     });
 
-    it('does not release the video input stream acquired after no device request', done => {
-      const spy = sinon.spy(deviceController, 'releaseMediaStream');
+    it('does not release the video input stream acquired after no device request', async () => {
+      // @ts-ignore
+      const spyRAD = sinon.spy(deviceController, 'releaseActiveDevice');
+      const spyRMS = sinon.spy(deviceController, 'releaseMediaStream');
       domMockBehavior.asyncWaitMs = 500;
-      deviceController.chooseVideoInputDevice(null);
-      deviceController.chooseVideoInputDevice(stringDeviceId).then(() => {
-        expect(spy.calledOnceWith(null)).to.be.true;
-        done();
-      });
+      await deviceController.chooseVideoInputDevice(null);
+      expect(spyRAD.notCalled).to.be.true;
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      // @ts-ignore
+      expect(spyRAD.calledOnceWith(null)).to.be.true;
+      expect(spyRMS.notCalled).to.be.true;
     });
 
     it('releases 3 video input streams acquired before no device request', done => {
@@ -1713,15 +1800,21 @@ describe('DefaultDeviceController', () => {
       expect(spy.called).to.be.false;
     });
 
-    it("disconnects the audio input source node instead of the given stream's tracks", async () => {
+    it("disconnects the audio input source node, not the given stream's tracks", async () => {
       enableWebAudio(true);
       await deviceController.chooseAudioInputDevice(stringDeviceId);
       const stream = await deviceController.acquireAudioInputStream();
 
-      // If the web audio is disabled, it stops the given stream's tracks.
-      const spy = sinon.spy(stream, 'getTracks');
+      // If the web audio is disabled, it stops only the input tracks --
+      // the output comes from a MediaStreamDestinationNode.
+
+      // @ts-ignore
+      const getInputTracks = sinon.spy(deviceController.activeDevices['audio'].stream, 'getTracks');
+      const getOutputTracks = sinon.spy(stream, 'getTracks');
+
       deviceController.releaseMediaStream(stream);
-      expect(spy.called).to.be.false;
+      expect(getOutputTracks.called).to.be.false;
+      expect(getInputTracks.called).to.be.true;
     });
   });
 
@@ -1873,6 +1966,8 @@ describe('DefaultDeviceController', () => {
         },
       };
       deviceController.addDeviceChangeObserver(observer);
+
+      expect(audioInputsChangedCallCount).to.equal(0);
 
       navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
       await navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
