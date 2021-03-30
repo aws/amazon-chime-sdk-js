@@ -10,6 +10,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ContentShareController from '../contentsharecontroller/ContentShareController';
 import ContentShareMediaStreamBroker from '../contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../contentsharecontroller/DefaultContentShareController';
+import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import DeviceController from '../devicecontroller/DeviceController';
 import Logger from '../logger/Logger';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
@@ -18,7 +19,7 @@ import DefaultWebSocketAdapter from '../websocketadapter/DefaultWebSocketAdapter
 import MeetingSession from './MeetingSession';
 import MeetingSessionConfiguration from './MeetingSessionConfiguration';
 
-export default class DefaultMeetingSession implements MeetingSession {
+export default class DefaultMeetingSession implements MeetingSession, Destroyable {
   private _configuration: MeetingSessionConfiguration;
   private _logger: Logger;
   private audioVideoController: AudioVideoController;
@@ -106,6 +107,27 @@ export default class DefaultMeetingSession implements MeetingSession {
 
   get deviceController(): DeviceController {
     return this._deviceController;
+  }
+
+  /**
+   * Clean up this instance and resources that it created.
+   *
+   * After calling `destroy`, internal fields like `audioVideoController` will be unavailable.
+   */
+  async destroy(): Promise<void> {
+    if (isDestroyable(this.contentShareController)) {
+      await this.contentShareController.destroy();
+    }
+    if (isDestroyable(this.audioVideoController)) {
+      await this.audioVideoController.destroy();
+    }
+
+    this._logger = undefined;
+    this._configuration = undefined;
+    this._deviceController = undefined;
+    this.audioVideoFacade = undefined;
+    this.audioVideoController = undefined;
+    this.contentShareController = undefined;
   }
 
   private checkBrowserSupportAndFeatureConfiguration(): void {

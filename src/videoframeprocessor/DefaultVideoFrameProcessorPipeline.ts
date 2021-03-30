@@ -72,16 +72,19 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     // null input media stream stops the pipeline.
     this.videoInput.removeEventListener('loadedmetadata', this.process);
     this.videoInput.srcObject = null;
-    // clean input stream and buffers
+
+    // Clean the input stream and buffers.
     this.destroyInputMediaStreamAndBuffers();
+
+    // Stop all the output tracks, but don't discard the media stream,
+    // because it's how other parts of the codebase recognize when
+    // a selected stream is part of this transform device.
     if (this.outputMediaStream) {
       for (const track of this.outputMediaStream.getVideoTracks()) {
         track.stop();
       }
     }
 
-    // clear output stream
-    this.outputMediaStream = new MediaStream();
     if (this.lastTimeOut) {
       clearTimeout(this.lastTimeOut);
       this.lastTimeOut = undefined;

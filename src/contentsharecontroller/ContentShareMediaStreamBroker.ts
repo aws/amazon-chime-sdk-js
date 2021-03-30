@@ -109,7 +109,8 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
   cleanup(): void {
     if (this.mediaStream) {
       for (let i = 0; i < this.mediaStream.getTracks().length; i++) {
-        this.mediaStream.getTracks()[i].stop();
+        const track = this.mediaStream.getTracks()[i];
+        track.stop();
       }
     }
     this.mediaStream = null;

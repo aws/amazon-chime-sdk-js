@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import Destroyable from '../destroyable/Destroyable';
 import VideoFrameBuffer from './VideoFrameBuffer';
 
 /**
@@ -8,7 +9,7 @@ import VideoFrameBuffer from './VideoFrameBuffer';
  * It transforms an array of {@link VideoFrameBuffer} and produces an array of {@link VideoFrameBuffer}.
  * It can be chained together to be used with {@link VideoFrameProcessorPipeline}.
  */
-export default interface VideoFrameProcessor {
+export default interface VideoFrameProcessor extends Destroyable {
   /**
    * Processes the array of {@link VideoFrameBuffer} and returns an array of {@link VideoFrameBuffer}.
    */

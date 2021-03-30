@@ -11,6 +11,7 @@ import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
+import Destroyable from '../destroyable/Destroyable';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
 import DefaultEventController from '../eventcontroller/DefaultEventController';
 import EventController from '../eventcontroller/EventController';
@@ -78,7 +79,7 @@ import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
 
 export default class DefaultAudioVideoController
-  implements AudioVideoController, SimulcastUplinkObserver {
+  implements AudioVideoController, SimulcastUplinkObserver, Destroyable {
   private _logger: Logger;
   private _configuration: MeetingSessionConfiguration;
   private _webSocketAdapter: WebSocketAdapter;
@@ -103,6 +104,7 @@ export default class DefaultAudioVideoController
   private enableSimulcast: boolean = false;
   private totalRetryCount = 0;
   private startAudioVideoTimestamp: number = 0;
+  destroyed = false;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -126,12 +128,6 @@ export default class DefaultAudioVideoController
       configuration.credentials.externalUserId
     );
 
-    this._activeSpeakerDetector = new DefaultActiveSpeakerDetector(
-      this._realtimeController,
-      configuration.credentials.attendeeId,
-      this.handleHasBandwidthPriority.bind(this)
-    );
-
     this._mediaStreamBroker = mediaStreamBroker;
     this._reconnectController = reconnectController;
     this._videoTileController = new DefaultVideoTileController(
@@ -144,6 +140,11 @@ export default class DefaultAudioVideoController
     this._eventController = new DefaultEventController(this);
   }
 
+  async destroy(): Promise<void> {
+    this.observerQueue.clear();
+    this.destroyed = true;
+  }
+
   get configuration(): MeetingSessionConfiguration {
     return this._configuration;
   }
@@ -153,6 +154,14 @@ export default class DefaultAudioVideoController
   }
 
   get activeSpeakerDetector(): ActiveSpeakerDetector {
+    // Lazy init.
+    if (!this._activeSpeakerDetector) {
+      this._activeSpeakerDetector = new DefaultActiveSpeakerDetector(
+        this._realtimeController,
+        this._configuration.credentials.attendeeId,
+        this.handleHasBandwidthPriority.bind(this)
+      );
+    }
     return this._activeSpeakerDetector;
   }
 
@@ -203,7 +212,7 @@ export default class DefaultAudioVideoController
 
   forEachObserver(observerFunc: (observer: AudioVideoObserver) => void): void {
     for (const observer of this.observerQueue) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         if (this.observerQueue.has(observer)) {
           observerFunc(observer);
         }
@@ -212,6 +221,7 @@ export default class DefaultAudioVideoController
   }
 
   start(): void {
+    this.activeSpeakerDetector;
     this.sessionStateController.perform(SessionStateControllerAction.Connect, () => {
       this.actionConnect(false);
     });
@@ -549,7 +559,7 @@ export default class DefaultAudioVideoController
       );
     }
 
-    // Update  the active video input on subscription context to match what we just changed
+    // Update the active video input on subscription context to match what we just changed
     // so that subsequent meeting actions can reuse and destroy it.
     this.meetingSessionContext.activeVideoInput = videoStream;
   }

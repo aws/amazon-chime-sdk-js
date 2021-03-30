@@ -4,7 +4,6 @@
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import DefaultDevicePixelRatioMonitor from '../devicepixelratiomonitor/DefaultDevicePixelRatioMonitor';
-import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioWindowSource from '../devicepixelratiosource/DevicePixelRatioWindowSource';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
@@ -17,18 +16,32 @@ export default class DefaultVideoTileController implements VideoTileController {
   private tileMap = new Map<number, VideoTile>();
   private nextTileId: number = 1;
   private currentLocalTile: VideoTile | null = null;
-  private devicePixelRatioMonitor: DevicePixelRatioMonitor;
+  private devicePixelRatioMonitor: undefined | DefaultDevicePixelRatioMonitor;
   private currentPausedTilesByIds: Set<number> = new Set<number>();
 
   constructor(
     private tileFactory: VideoTileFactory,
     private audioVideoController: AudioVideoController,
     private logger: Logger
-  ) {
+  ) {}
+
+  private createDevicePixelRatioMonitorIfNeeded(): void {
+    if (this.devicePixelRatioMonitor) {
+      return;
+    }
     this.devicePixelRatioMonitor = new DefaultDevicePixelRatioMonitor(
       new DevicePixelRatioWindowSource(),
-      logger
+      this.logger
     );
+  }
+
+  private async discardDevicePixelRatioMonitorIfNotNeeded(): Promise<void> {
+    if (this.tileMap.size || !this.devicePixelRatioMonitor) {
+      return;
+    }
+    const monitor = this.devicePixelRatioMonitor;
+    this.devicePixelRatioMonitor = undefined;
+    return monitor.destroy();
   }
 
   bindVideoElement(tileId: number, videoElement: HTMLVideoElement | null): void {
@@ -136,6 +149,7 @@ export default class DefaultVideoTileController implements VideoTileController {
   addVideoTile(localTile: boolean = false): VideoTile {
     const tileId = this.nextTileId;
     this.nextTileId += 1;
+    this.createDevicePixelRatioMonitorIfNeeded();
     const tile = this.tileFactory.makeTile(tileId, localTile, this, this.devicePixelRatioMonitor);
     this.tileMap.set(tileId, tile);
     return tile;
@@ -154,6 +168,7 @@ export default class DefaultVideoTileController implements VideoTileController {
     this.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
       Maybe.of(observer.videoTileWasRemoved).map(f => f.bind(observer)(tileId));
     });
+    this.discardDevicePixelRatioMonitorIfNotNeeded();
   }
 
   removeVideoTilesByAttendeeId(attendeeId: string): number[] {

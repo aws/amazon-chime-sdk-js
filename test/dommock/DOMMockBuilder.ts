@@ -965,6 +965,10 @@ export default class DOMMockBuilder {
     GlobalAny.MediaQueryList = class MockMediaQueryList {
       constructor() {}
 
+      removeEventListener(_type: string, _listener: () => void): void {}
+
+      removeListener(_listener: () => void): void {}
+
       addEventListener(_type: string, listener: () => void): void {
         asyncWait(() => {
           listener();
