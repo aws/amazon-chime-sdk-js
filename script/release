@@ -83,7 +83,7 @@ puts
 if release_option != "5"
   verbose("git push origin HEAD:release -f")
 else
-  verbose("git push -f")
+  verbose("git push origin HEAD:hotfix -f")
 end
 
 Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '../demos/serverless')))
