@@ -4,8 +4,9 @@
 import { detect } from 'detect-browser';
 
 import BrowserBehavior from './BrowserBehavior';
+import ExtendedBrowserBehavior from './ExtendedBrowserBehavior';
 
-export default class DefaultBrowserBehavior implements BrowserBehavior {
+export default class DefaultBrowserBehavior implements BrowserBehavior, ExtendedBrowserBehavior {
   private readonly browser = detect();
 
   private browserSupport: { [id: string]: number } = {
@@ -151,6 +152,26 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   requiresGroupIdMediaStreamConstraints(): boolean {
     return this.isSamsungInternet();
+  }
+
+  requiresContextRecreationForAudioWorklet(): boolean {
+    // Definitely not Chrome; no worries.
+    if (!('chrome' in global)) {
+      return false;
+    }
+
+    // Everything seems to work fine on platforms other than macOS.
+    if (this.browser.os !== 'Mac OS') {
+      return false;
+    }
+
+    // Electron or Chromium.
+    if (this.isChrome() || this.isEdge()) {
+      return true;
+    }
+
+    // All other browsers are fine.
+    return false;
   }
 
   getDisplayMediaAudioCaptureSupport(): boolean {

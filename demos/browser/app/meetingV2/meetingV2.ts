@@ -66,6 +66,8 @@ const SHOULD_DIE_ON_FATALS = (() => {
   return fatalYes || (isLocal && !fatalNo);
 })();
 
+let DEBUG_LOG_PPS = false;
+
 let fatal: (e: Error) => void;
 
 // This shim is needed to avoid warnings when supporting Safari.
@@ -649,6 +651,11 @@ export class DemoMeetingApp
           this.hideProgress('progress-join');
           this.displayButtonStates();
           this.switchToFlow('flow-meeting');
+
+          if (DEBUG_LOG_PPS) {
+            this.logPPS();
+            DEBUG_LOG_PPS = false;   // Only do this once.
+          }
         } catch (error) {
           document.getElementById('failed-join').innerText = `Meeting ID: ${this.meeting}`;
           document.getElementById('failed-join-error').innerText = `Error: ${error.message}`;
@@ -822,6 +829,40 @@ export class DemoMeetingApp
         (buttonMeetingLeave as HTMLButtonElement).disabled = false;
       });
     });
+  }
+
+  logPPS() {
+    let start = 0;
+    let packets = 0;
+    setInterval(async () => {
+      if (!this.audioVideo) {
+        return;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const stats = await this.audioVideo.getRTCPeerConnectionStats() as RTCStatsReport & RTCStats & Map<string, any>;
+
+      if (!stats) {
+        return;
+      }
+
+      if (!start) {
+        start = Date.now();
+        return;
+      }
+
+      for (const [_, entry] of stats.entries()) {
+        if (entry.type === 'outbound-rtp') {
+          const now = Date.now();
+          const deltat = now - start;
+          const deltap = entry.packetsSent - packets;
+          console.info('PPS:', (1000 * deltap) / deltat);
+          start = now;
+          packets = entry.packetsSent;
+          return;
+        }
+      }
+    }, 1_000);
   }
 
   getSupportedMediaRegions(): string[] {

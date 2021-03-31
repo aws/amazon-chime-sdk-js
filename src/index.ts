@@ -107,6 +107,7 @@ import DeviceSelection from './devicecontroller/DeviceSelection';
 import EventAttributes from './eventcontroller/EventAttributes';
 import EventController from './eventcontroller/EventController';
 import EventName from './eventcontroller/EventName';
+import ExtendedBrowserBehavior from './browserbehavior/ExtendedBrowserBehavior';
 import FinishGatheringICECandidatesTask from './task/FinishGatheringICECandidatesTask';
 import FullJitterBackoff from './backoff/FullJitterBackoff';
 import FullJitterBackoffFactory from './backoff/FullJitterBackoffFactory';
@@ -368,6 +369,7 @@ export {
   EventAttributes,
   EventController,
   EventName,
+  ExtendedBrowserBehavior,
   FinishGatheringICECandidatesTask,
   FullJitterBackoff,
   FullJitterBackoffFactory,

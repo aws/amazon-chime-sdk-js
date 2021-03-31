@@ -3,6 +3,7 @@
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
+import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import type { Destroyable } from '../destroyable/Destroyable';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Logger from '../logger/Logger';
@@ -152,9 +153,11 @@ export default class DefaultDeviceController
   private inputDeviceCount: number = 0;
   private lastNoVideoInputDeviceCount: number;
 
-  private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior();
-
-  constructor(private logger: Logger, options?: { enableWebAudio?: boolean }) {
+  constructor(
+    private logger: Logger,
+    options?: { enableWebAudio?: boolean },
+    private browserBehavior: ExtendedBrowserBehavior = new DefaultBrowserBehavior()
+  ) {
     const { enableWebAudio = false } = options || {};
     this.useWebAudio = enableWebAudio;
 
@@ -288,11 +291,77 @@ export default class DefaultDeviceController
       this.logger.error('Audio input device cannot be undefined');
       return;
     }
+
     if (isAudioTransformDevice(device)) {
       // N.B., do not JSON.stringify here — for some kinds of devices this
       // will cause a cyclic object reference error.
       this.logger.info(`Choosing transform input device ${device}`);
+
+      /*
+       * This block of code is a workaround for a Chromium bug:
+       * https://bugs.chromium.org/p/chromium/issues/detail?id=1173656
+       *
+       * In short: if we are about to select an audio device with a transform, which we assume for
+       * safety's sake uses AudioWorklet, we recreate the audio context and the nodes that
+       * are linked to it.
+       *
+       * This causes Chrome to rejig its buffers and the second context works correctly.
+       *
+       * This is theoretically worse for performance, but in practice it is fine.
+       *
+       * This is not safe in the general case: an application that already
+       * retrieved the audio context in order to build an audio graph for some other purpose
+       * will fail at this point as we pull the context out from under it.
+       *
+       * An application that always uses the supplied context in an
+       * `AudioTransformDevice.createAudioNode` call should work correctly.
+       *
+       * If you are confident that your application does not use AudioWorklet, does not run in
+       * an un-fixed Chromium version, or will never be used with sample-rate-switching Bluetooth
+       * devices, you can disable this workaround by suppling a custom {@link ExtendedBrowserBehavior}
+       * when you create your device controller.
+       *
+       * We can't tell in advance whether we need to give the device a different audio context,
+       * because checking whether the resulting node is an AudioWorkletNode needs it to have been
+       * created first.
+       */
+      const recreateAudioContext = this.browserBehavior.requiresContextRecreationForAudioWorklet();
+
+      if (recreateAudioContext) {
+        this.logger.info('Recreating audio context when selecting transform device.');
+
+        if (this.transform) {
+          /* istanbul ignore else */
+          if (this.transform.nodes) {
+            this.transform.nodes.end.disconnect();
+            this.transform.nodes = undefined;
+          }
+          this.transform = undefined;
+        }
+
+        /* istanbul ignore else */
+        if (this.audioInputSourceNode) {
+          this.audioInputSourceNode.disconnect();
+          this.audioInputSourceNode = undefined;
+        }
+
+        /* istanbul ignore else */
+        if (this.audioInputDestinationNode) {
+          this.audioInputDestinationNode.disconnect();
+          this.audioInputDestinationNode = undefined;
+        }
+
+        DefaultDeviceController.closeAudioContext();
+      }
+
       await this.chooseAudioTransformInputDevice(device);
+
+      if (recreateAudioContext && this.boundAudioVideoController) {
+        this.boundAudioVideoController.restartLocalAudio(() => {
+          this.logger.info('Local audio restarted.');
+        });
+      }
+
       return this.pushAudioMeetingStateForPermissions(device);
     }
 
@@ -1543,11 +1612,11 @@ export default class DefaultDeviceController
   }
 
   private reconnectAudioInputs(): void {
-    // It is never possible to get here without first establishing `audioInputSourceNode` via
-    // choosing an inner stream, so we do not check for undefined here in order to avoid
-    // creating an un-testable branch!
-    this.audioInputSourceNode.disconnect();
+    if (!this.audioInputSourceNode) {
+      return;
+    }
 
+    this.audioInputSourceNode.disconnect();
     const output = this.getMediaStreamOutputNode();
     this.audioInputSourceNode.connect(output);
   }

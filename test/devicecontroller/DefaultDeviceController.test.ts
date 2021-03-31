@@ -6,6 +6,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import DeviceChangeObserver from '../../src/devicechangeobserver/DeviceChangeObserver';
 import AudioInputDevice from '../../src/devicecontroller/AudioInputDevice';
 import AudioTransformDevice from '../../src/devicecontroller/AudioTransformDevice';
@@ -41,6 +42,12 @@ import WatchingLogger from './WatchingLogger';
 
 chai.use(chaiAsPromised);
 chai.should();
+
+class ContextRecreatingBrowserBehavior extends DefaultBrowserBehavior {
+  requiresContextRecreationForAudioWorklet(): boolean {
+    return true;
+  }
+}
 
 describe('DefaultDeviceController', () => {
   const assert: Chai.AssertStatic = chai.assert;
@@ -479,6 +486,75 @@ describe('DefaultDeviceController', () => {
 
       const choose = deviceController.chooseAudioInputDevice(device);
       expect(choose).to.eventually.be.rejectedWith('Error fetching device.');
+    });
+  });
+
+  describe('recreates audio context if needed', async () => {
+    it('does so with a transform', async () => {
+      deviceController = new DefaultDeviceController(
+        logger,
+        { enableWebAudio: true },
+        new ContextRecreatingBrowserBehavior()
+      );
+
+      const transform = new MockNodeTransformDevice('default');
+      await deviceController.chooseAudioInputDevice(transform);
+
+      let called = false;
+
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async restartLocalAudio(callback: () => void): Promise<void> {
+          called = true;
+          callback();
+        }
+      }
+
+      const avController = new TestAudioVideoController();
+
+      deviceController.bindToAudioVideoController(avController);
+
+      const oldContext = DefaultDeviceController.getAudioContext();
+      expect(called).to.be.false;
+      const device: AudioTransformDevice = new MockNodeTransformDevice('default');
+      const choose = deviceController.chooseAudioInputDevice(device);
+
+      await expect(choose).to.eventually.be.undefined;
+
+      expect(oldContext).to.not.eql(DefaultDeviceController.getAudioContext());
+      expect(called).to.be.true;
+    });
+
+    it('does so without a transform', async () => {
+      deviceController = new DefaultDeviceController(
+        logger,
+        { enableWebAudio: true },
+        new ContextRecreatingBrowserBehavior()
+      );
+
+      await deviceController.chooseAudioInputDevice('default');
+
+      let called = false;
+
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async restartLocalAudio(callback: () => void): Promise<void> {
+          called = true;
+          callback();
+        }
+      }
+
+      const avController = new TestAudioVideoController();
+
+      deviceController.bindToAudioVideoController(avController);
+
+      const oldContext = DefaultDeviceController.getAudioContext();
+      expect(called).to.be.false;
+      const device: AudioTransformDevice = new MockNodeTransformDevice('default');
+      const choose = deviceController.chooseAudioInputDevice(device);
+
+      await expect(choose).to.eventually.be.undefined;
+
+      expect(oldContext).to.not.eql(DefaultDeviceController.getAudioContext());
+      expect(called).to.be.true;
     });
   });
 
