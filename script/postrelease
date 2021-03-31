@@ -12,9 +12,6 @@ puts "Enter the version to deploy to prod"
 puts
 npm_version = STDIN.gets.strip
 puts "Are you sure to deploy '#{npm_version}' this to prod?"
-puts
-puts "This will reset the HEAD to origin/master?"
-puts
 puts "Current staged and local changes will be lost!"
 puts
 puts "Type 'yes' to continue"
@@ -23,7 +20,6 @@ exit(1) unless x.strip == 'yes'
 puts
 
 verbose('git fetch origin')
-verbose('git reset --hard origin/master')
 verbose('git clean -ffxd .')
 
 verbose("git checkout tags/v#{npm_version} -b deploy-to-prod")
