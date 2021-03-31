@@ -23,7 +23,7 @@
     },
     {
       "browserName": "firefox",
-      "version": "latest",
+      "version": "86",
       "platform": "MAC"
     }
   ]
