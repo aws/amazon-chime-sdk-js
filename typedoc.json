@@ -1,6 +1,7 @@
 {
   "out": "./docs",
   "readme": "README.md",
+  "excludePrivate": true,
   "exclude": [
     "src/signalingprotocol/SignalingProtocol.js",
     "src/signalingprotocol/SignalingProtocol.d.ts",

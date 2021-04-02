@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DefaultDeviceController` recreates the `AudioContext` as needed when
   selecting non-transform devices, and does not do so when the `AudioContext`
   is suspended.
+- Generated documentation no longer includes private members.
 
 ## [2.7.0] - 2021-04-05
 
