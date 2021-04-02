@@ -11,7 +11,7 @@ import VoiceFocusTransformDeviceDelegate from './VoiceFocusTransformDeviceDelega
 import VoiceFocusTransformDeviceObserver from './VoiceFocusTransformDeviceObserver';
 
 /**
- * A device that augments an {@link Device} to apply Amazon Voice Focus
+ * A device that augments a {@link Device} to apply Amazon Voice Focus
  * noise suppression to an audio input.
  */
 class VoiceFocusTransformDevice implements AudioTransformDevice {
@@ -28,7 +28,8 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
 
   /**
    * Return the inner device as provided during construction, or updated via
-   * {@link chooseNewInnerDevice}. Do not confuse this method with {@link intrinsicDevice}.
+   * {@link VoiceFocusTransformDevice.chooseNewInnerDevice}. Do not confuse
+   * this method with {@link VoiceFocusTransformDevice.intrinsicDevice}.
    */
   getInnerDevice(): Device {
     return this.device;

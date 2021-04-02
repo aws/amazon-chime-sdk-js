@@ -13,9 +13,9 @@ export default class SignalingClientEvent {
 
   /** Initializes a SignalingClientEvent with the given SignalingClientEventType.
    *
-   * @param {SignalingClient} client Indicates the SignalingClient associated with the event.
-   * @param {SignalingClientEventType} type Indicates the kind of event.
-   * @param {SdkSignalFrame} message SdkSignalFrame if type is ReceivedSignalFrame
+   * @param client Indicates the SignalingClient associated with the event.
+   * @param type Indicates the kind of event.
+   * @param message SdkSignalFrame if type is ReceivedSignalFrame
    */
   constructor(
     public client: SignalingClient,

@@ -14,7 +14,7 @@ export default interface ReconnectController {
   /**
    * Indicates that a connection attempt has started so that the reconnect deadline
    * can be set.
-   * @param{boolean} isFirstConnection whether this is the first attempt to connect for this session
+   * @param isFirstConnection whether this is the first attempt to connect for this session
    */
   startedConnectionAttempt(isFirstConnection: boolean): void;
 
@@ -48,14 +48,14 @@ export default interface ReconnectController {
 
   /**
    * Returns whether only the peer connection should be restarted at this time.
-   * @returns{boolean} Whether only the peer connection should be restarted
+   * @returns Whether only the peer connection should be restarted
    */
   shouldOnlyRestartPeerConnection(): boolean;
 
   /**
    * Decides whether to retry the retryFunc after some amount of backoff depending
    * on the controller.
-   * @returns{boolean} Whether the retry will be attempted
+   * @returns Whether the retry will be attempted
    */
   retryWithBackoff(retryFunc: () => void, cancelFunc: () => void): boolean;
 

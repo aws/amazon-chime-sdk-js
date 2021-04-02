@@ -23,7 +23,7 @@ import VoiceFocusTransformDeviceDelegate from './VoiceFocusTransformDeviceDelega
  * This transformer captures relevant configuration. You should check for support, initialize,
  * and then create a device as follows:
  *
- * ```
+ * ```typescript
  * const deviceID = null;
  *
  * // This check for support is cheap and quick, and should be used to gate use
@@ -55,7 +55,7 @@ import VoiceFocusTransformDeviceDelegate from './VoiceFocusTransformDeviceDelega
  */
 export class VoiceFocusDeviceTransformer {
   // The Voice Focus logger is a bit more sophisticated, allowing following args,
-  // and allows drop-in use of `console`. We create an adapter to allow SDK loggers
+  // and allows drop-in use of {@link console}. We create an adapter to allow SDK loggers
   // to be used until they match.
   private logger: Logger;
   private vfLogger: VoiceFocusLogger;
@@ -73,13 +73,14 @@ export class VoiceFocusDeviceTransformer {
    * necessarily mean that adding Amazon Voice Focus will succeed: it is still possible that the
    * configuration of the page or the CPU speed of the device are limiting factors.
    *
-   * `VoiceFocusDeviceTransformer.create` will return an instance whose `isSupported()`
-   * method more accurately reflects whether Amazon Voice Focus is supported in the current environment.
+   * {@link VoiceFocusDeviceTransformer.create} will return an instance whose
+   * `isSupported` method more accurately reflects whether Amazon Voice Focus
+   * is supported in the current environment.
    *
    * This method will only reject if you provide invalid inputs.
    *
    * @param spec An optional asset group and URL paths to use when fetching. You can pass
-   *             a complete `VoiceFocusSpec` here for convenience, matching the signature of `create`.
+   *             a complete {@link VoiceFocusSpec} here for convenience, matching the signature of {@link VoiceFocusDeviceTransformer.create}.
    * @param options Additional named arguments, including `logger`.
    */
   static isSupported(
@@ -102,11 +103,11 @@ export class VoiceFocusDeviceTransformer {
    * checking for support or estimating fails (e.g., because the network is unreachable).
    *
    * If Amazon Voice Focus is not supported on this device, this call will not reject and
-   * `isSupported()` will return `false` on the returned instance. That instance will
+   * `isSupported` will return `false` on the returned instance. That instance will
    * pass through devices unmodified.
    *
    * @param spec A definition of how you want Amazon Voice Focus to behave. See the declaration of
-   *             {@link VoiceFocusSpec}` for details.
+   *             {@link VoiceFocusSpec} for details.
    * @param options Additional named arguments, including `logger` and `preload`.
    */
   static async create(
@@ -149,7 +150,7 @@ export class VoiceFocusDeviceTransformer {
   /**
    * Return whether this transformer is able to function in this environment.
    * If not, calls to
-   * {@link VoiceFocusDeviceTransformer.createTransformDevice|createTransformDevice}`
+   * {@link VoiceFocusDeviceTransformer.createTransformDevice|createTransformDevice}
    * will pass through an unmodified device.
    */
   isSupported(): boolean {

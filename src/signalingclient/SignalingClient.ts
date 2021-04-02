@@ -18,14 +18,14 @@ export default interface SignalingClient {
   /**
    * Adds an observer to the observer queue with immediate effect.
    *
-   * @param {SignalingClientObserver} observer The observer to add to the queue.
+   * @param observer The observer to add to the queue.
    */
   registerObserver(observer: SignalingClientObserver): void;
 
   /**
    * Removes an observer from the observer queue with immediate effect.
    *
-   * @param {SignalingClientObserver} observer The observer to remove from the queue.
+   * @param observer The observer to remove from the queue.
    */
   removeObserver(observer: SignalingClientObserver): void;
 
@@ -38,29 +38,29 @@ export default interface SignalingClient {
    * is open, then that is first closed (and the WebSocketClosed event is sent out) before the
    * open is tried.
    *
-   * @param {SignalingClientConnectionRequest} request The request to enqueue.
+   * @param request The request to enqueue.
    */
   openConnection(request: SignalingClientConnectionRequest): void;
 
   /**
    * Sends a ping or pong with an id.
    *
-   * @param {SdkPingPongFrame} the ping or pong frame to send.
-   * @return number the ms timestamp when the message was sent.
+   * @param pingPongFrame ping or pong frame to send.
+   * @returns the ms timestamp when the message was sent.
    */
   pingPong(pingPongFrame: SdkPingPongFrame): number;
 
   /**
    * Sends a join frame with the given settings.
    *
-   * @param {SignalingClientJoin} settings How to configure the Join frame.
+   * @param settings How to configure the Join frame.
    */
   join(settings: SignalingClientJoin): void;
 
   /**
    * Sends a subscribe frame with the given settings.
    *
-   * @param {SignalingClientSubscribe} settings How to configure the Subscribe frame.
+   * @param settings How to configure the Subscribe frame.
    */
   subscribe(settings: SignalingClientSubscribe): void;
 
@@ -91,14 +91,14 @@ export default interface SignalingClient {
   /**
    * Mute or unmute the client
    *
-   * @param {boolean} muted Whether the client is to be muted (true) or unmuted (false)
+   * @param muted Whether the client is to be muted (true) or unmuted (false)
    */
   mute(muted: boolean): void;
 
   /**
    * Returns whether the client has a connection open in the ready state
    *
-   * @return {boolean} Whether the client has a connection open in the ready state
+   * @returns Whether the client has a connection open in the ready state
    */
   ready(): boolean;
 

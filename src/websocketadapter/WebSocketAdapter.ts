@@ -9,17 +9,17 @@ export default interface WebSocketAdapter {
   /**
    * Opens a WebSocket connection to the URL with the given protocols.
    *
-   * @param{string} url URL to connect to
-   * @param{string[]} protocols Protocols to send when establishing the connection
-   * @param{boolean} isSignedUrl whether the URL is signed
+   * @param url URL to connect to
+   * @param protocols Protocols to send when establishing the connection
+   * @param isSignedUrl whether the URL is signed
    */
   create(url: string, protocols: string[], isSignedUrl?: boolean): void;
 
   /**
    * Sends a raw byte message.
    *
-   * @param{Uint8Array | string} Raw byte or string message to send
-   * @return{boolean} Whether the data was queued for sending
+   * @param send byte or string message to send
+   * @returns Whether the data was queued for sending
    */
   send(message: Uint8Array | string): boolean;
 
@@ -36,15 +36,15 @@ export default interface WebSocketAdapter {
   /**
    * Add an event listener for one of the handler types.
    *
-   * @param{string} handler The handler being assigned.
-   * @param{EventListener} eventListener
+   * @param handler The handler being assigned.
+   * @param eventListener The event listener to add.
    */
   addEventListener(handler: string, eventListener: EventListener): void;
 
   /**
    * Returns the ready state.
    *
-   * @return{WebSocketReadyState} The state of the WebSocketConnection
+   * @returns The state of the WebSocketConnection
    */
   readyState(): WebSocketReadyState;
 }

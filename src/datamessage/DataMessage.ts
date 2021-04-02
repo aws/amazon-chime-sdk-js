@@ -4,7 +4,7 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 export default class DataMessage {
   /**
-   * Monotonically increasing server injest time
+   * Monotonically increasing server ingest time
    */
   readonly timestampMs: number;
 
@@ -31,7 +31,7 @@ export default class DataMessage {
   /**
    * true if server throttled or rejected message
    * false if server has posted the message to its recipients
-   * Throttling soft limit: Rate:100, Burst:200
+   * Throttling soft limit: Rate: 100, Burst:200
    * Throttling hard limit: Rate: 100 * 5, Burst: 200 * 50 (i.e Rate: 500, Burst: 10000)
    */
   readonly throttled: boolean;
@@ -53,14 +53,14 @@ export default class DataMessage {
   }
 
   /**
-   * Helper conversion methods to convert Uint8Array data to string
+   * Helper conversion methods to convert {@link Uint8Array} data to string
    */
   text(): string {
     return new TextDecoder().decode(this.data);
   }
 
   /**
-   * Helper conversion methods to convert Uint8Array data to JSON
+   * Helper conversion methods to convert {@link Uint8Array} data to JSON
    */
   json(): any {
     return JSON.parse(new TextDecoder().decode(this.data));
