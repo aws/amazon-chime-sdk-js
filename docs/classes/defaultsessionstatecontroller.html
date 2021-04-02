@@ -90,25 +90,11 @@
 								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="defaultsessionstatecontroller.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#currentstate" class="tsd-kind-icon">current<wbr>State</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#deferredaction" class="tsd-kind-icon">deferred<wbr>Action</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#deferredwork" class="tsd-kind-icon">deferred<wbr>Work</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#logger" class="tsd-kind-icon">logger</a></li>
-							</ul>
-						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#candefer" class="tsd-kind-icon">can<wbr>Defer</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#deferaction" class="tsd-kind-icon">defer<wbr>Action</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#deferpriority" class="tsd-kind-icon">defer<wbr>Priority</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsessionstatecontroller.html#perform" class="tsd-kind-icon">perform</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#performdeferredaction" class="tsd-kind-icon">perform<wbr>Deferred<wbr>Action</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaultsessionstatecontroller.html#state" class="tsd-kind-icon">state</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="defaultsessionstatecontroller.html#transition" class="tsd-kind-icon">transition</a></li>
 							</ul>
 						</section>
 					</div>
@@ -140,150 +126,8 @@
 					</ul>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="currentstate" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> current<wbr>State</h3>
-					<div class="tsd-signature tsd-kind-icon">current<wbr>State<span class="tsd-signature-symbol">:</span> <a href="../enums/sessionstatecontrollerstate.html" class="tsd-signature-type">SessionStateControllerState</a><span class="tsd-signature-symbol"> = SessionStateControllerState.NotConnected</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L105">src/sessionstatecontroller/DefaultSessionStateController.ts:105</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="deferredaction" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> deferred<wbr>Action</h3>
-					<div class="tsd-signature tsd-kind-icon">deferred<wbr>Action<span class="tsd-signature-symbol">:</span> <a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L106">src/sessionstatecontroller/DefaultSessionStateController.ts:106</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="deferredwork" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> deferred<wbr>Work</h3>
-					<div class="tsd-signature tsd-kind-icon">deferred<wbr>Work<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L107">src/sessionstatecontroller/DefaultSessionStateController.ts:107</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="logger" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> logger</h3>
-					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L12">src/sessionstatecontroller/DefaultSessionStateController.ts:12</a></li>
-						</ul>
-					</aside>
-				</section>
-			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="candefer" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> can<wbr>Defer</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">can<wbr>Defer<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L147">src/sessionstatecontroller/DefaultSessionStateController.ts:147</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>action: <a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="deferaction" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> defer<wbr>Action</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">defer<wbr>Action<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a>, work<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L136">src/sessionstatecontroller/DefaultSessionStateController.ts:136</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>action: <a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a></h5>
-								</li>
-								<li>
-									<h5>work: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="deferpriority" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> defer<wbr>Priority</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">defer<wbr>Priority<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrollerdeferpriority.html" class="tsd-signature-type">SessionStateControllerDeferPriority</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L121">src/sessionstatecontroller/DefaultSessionStateController.ts:121</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>action: <a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../enums/sessionstatecontrollerdeferpriority.html" class="tsd-signature-type">SessionStateControllerDeferPriority</a></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="perform" class="tsd-anchor"></a>
 					<h3>perform</h3>
@@ -322,23 +166,6 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="performdeferredaction" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> perform<wbr>Deferred<wbr>Action</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">perform<wbr>Deferred<wbr>Action<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrollertransitionresult.html" class="tsd-signature-type">SessionStateControllerTransitionResult</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L155">src/sessionstatecontroller/DefaultSessionStateController.ts:155</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../enums/sessionstatecontrollertransitionresult.html" class="tsd-signature-type">SessionStateControllerTransitionResult</a></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="state" class="tsd-anchor"></a>
 					<h3>state</h3>
@@ -354,32 +181,6 @@
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../enums/sessionstatecontrollerstate.html" class="tsd-signature-type">SessionStateControllerState</a></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="transition" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> transition</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">transition<span class="tsd-signature-symbol">(</span>newState<span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrollerstate.html" class="tsd-signature-type">SessionStateControllerState</a>, action<span class="tsd-signature-symbol">: </span><a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sessionstatecontroller/DefaultSessionStateController.ts#L109">src/sessionstatecontroller/DefaultSessionStateController.ts:109</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>newState: <a href="../enums/sessionstatecontrollerstate.html" class="tsd-signature-type">SessionStateControllerState</a></h5>
-								</li>
-								<li>
-									<h5>action: <a href="../enums/sessionstatecontrolleraction.html" class="tsd-signature-type">SessionStateControllerAction</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -403,38 +204,11 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="defaultsessionstatecontroller.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#currentstate" class="tsd-kind-icon">current<wbr>State</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#deferredaction" class="tsd-kind-icon">deferred<wbr>Action</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#deferredwork" class="tsd-kind-icon">deferred<wbr>Work</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#logger" class="tsd-kind-icon">logger</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#candefer" class="tsd-kind-icon">can<wbr>Defer</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#deferaction" class="tsd-kind-icon">defer<wbr>Action</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#deferpriority" class="tsd-kind-icon">defer<wbr>Priority</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultsessionstatecontroller.html#perform" class="tsd-kind-icon">perform</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#performdeferredaction" class="tsd-kind-icon">perform<wbr>Deferred<wbr>Action</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaultsessionstatecontroller.html#state" class="tsd-kind-icon">state</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="defaultsessionstatecontroller.html#transition" class="tsd-kind-icon">transition</a>
 							</li>
 						</ul>
 					</li>
@@ -467,10 +241,6 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
