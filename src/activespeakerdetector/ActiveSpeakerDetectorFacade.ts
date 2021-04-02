@@ -10,7 +10,7 @@ import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
  * cleanup steps in order to avoid memory leaks:
  *
  * 1. Unsubscribe from listeners; e.g., from active speaker callbacks via
- *    {@link unsubscribeFromActiveSpeakerDetector}.
+ *    {@link ActiveSpeakerDetectorFacade.unsubscribeFromActiveSpeakerDetector}.
  * 2. Drop your reference to the facade to allow it to be garbage collected.
  */
 export default interface ActiveSpeakerDetectorFacade {

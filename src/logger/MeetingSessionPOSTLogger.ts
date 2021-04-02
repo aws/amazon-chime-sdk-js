@@ -11,7 +11,7 @@ import Log from './Log';
  * `MeetingSessionPOSTLogger` publishes log messages in batches to a URL
  * supplied during its construction.
  *
- * Be sure to call {@link MeetingSessionPOSTLogger.dispose} when you're done
+ * Be sure to call {@link MeetingSessionPOSTLogger.destroy} when you're done
  * with the logger in order to avoid leaks.
  */
 export default class MeetingSessionPOSTLogger implements Destroyable {

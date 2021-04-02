@@ -34,7 +34,7 @@ import VideoQualitySettings from './VideoQualitySettings';
  * to the stream so that the stream can be cleaned up once the labels are
  * detected.
  *
- * ```
+ * ```typescript
  * (): Promise<MediaStream> => {
  *   return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
  * }
@@ -43,10 +43,11 @@ import VideoQualitySettings from './VideoQualitySettings';
  * When you are done using a `DeviceController`, you should perform some
  * cleanup steps in order to avoid memory leaks:
  *
- * 1. Deselect any audio input or output devices by calling {@link
- *    chooseAudioInputDevice} and {@link chooseAudioOutputDevice} with `null`.
+ * 1. Deselect any audio input or output devices by calling
+ *    {@link DeviceController.chooseAudioInputDevice} and {@link
+ *    DeviceController.chooseAudioOutputDevice} with `null`.
  * 2. Remove any device change observers that you registered by using
- *    {@link removeDeviceChangeObserver}.
+ *    {@link DeviceController.removeDeviceChangeObserver}.
  * 3. Drop your reference to the controller to allow it to be garbage collected.
  */
 export default interface DeviceController {
@@ -110,7 +111,7 @@ export default interface DeviceController {
    * audio input. Dispose of this one and fetch another by calling this method again.
    *
    * Note that this node should be cleaned up after use, and as such a
-   * `{@link RemovableAnalyserNode}` is returned. Call
+   * {@link RemovableAnalyserNode} is returned. Call
    * {@link RemovableAnalyserNode.removeOriginalInputs} to disconnect the node from the Web Audio
    * graph.
    */
@@ -145,7 +146,7 @@ export default interface DeviceController {
 
   /**
    * Sets the video input quality parameters to request when enabling video. These settings
-   * take effect the next time a video input device is chosen. The default is 960x540 @ 15 fps
+   * take effect the next time a video input device is chosen. The default is 960x540 \@ 15 fps
    * with a max bandwidth of 1400 kbps.
    */
   chooseVideoInputQuality(

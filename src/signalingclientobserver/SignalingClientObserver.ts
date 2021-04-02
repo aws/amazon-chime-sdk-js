@@ -10,7 +10,7 @@ import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 export default interface SignalingClientObserver {
   /** Handles the events from the SignalingClient this observer is registered with.
    *
-   * @param {SignalingClientEvent} event The event being notified.
+   * @param event The event being notified.
    */
   handleSignalingClientEvent(event: SignalingClientEvent): void;
 }

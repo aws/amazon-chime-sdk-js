@@ -7,8 +7,8 @@
 export default class SignalingClientConnectionRequest {
   /** Creates a request with the given URL, conference id, and join token.
    *
-   * @param {string} signalingURL The URL of the signaling proxy.
-   * @param {string} joinToken The join token that will authenticate the connection.
+   * @param signalingURL The URL of the signaling proxy.
+   * @param joinToken The join token that will authenticate the connection.
    */
   constructor(public signalingURL: string, public joinToken: string) {}
 
