@@ -60,7 +60,7 @@ import {
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
 
 const SHOULD_DIE_ON_FATALS = (() => {
-  const isLocal = document.location.host === '127.0.0.1:8080';
+  const isLocal = document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
   const fatalYes = document.location.search.includes('fatal=1');
   const fatalNo = document.location.search.includes('fatal=0');
   return fatalYes || (isLocal && !fatalNo);
