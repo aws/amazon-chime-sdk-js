@@ -356,7 +356,7 @@ export default class DefaultDeviceController
 
       await this.chooseAudioTransformInputDevice(device);
 
-      if (recreateAudioContext && this.boundAudioVideoController) {
+      if (recreateAudioContext && this.boundAudioVideoController?.rtcPeerConnection) {
         this.boundAudioVideoController.restartLocalAudio(() => {
           this.logger.info('Local audio restarted.');
         });
