@@ -490,6 +490,46 @@ describe('DefaultDeviceController', () => {
   });
 
   describe('recreates audio context if needed', async () => {
+    class TestAudioVideoController extends NoOpAudioVideoController {
+      private conn: RTCPeerConnection | null = null;
+      restartLocalAudioCalled: boolean = false;
+
+      constructor(hasConnection: boolean) {
+        super();
+        if (hasConnection) {
+          this.conn = {} as RTCPeerConnection;
+        }
+      }
+
+      get rtcPeerConnection(): RTCPeerConnection | null {
+        return this.conn;
+      }
+
+      async restartLocalAudio(callback: () => void): Promise<void> {
+        this.restartLocalAudioCalled = true;
+        callback();
+      }
+    }
+
+    it('does not so without a peer connection', async () => {
+      deviceController = new DefaultDeviceController(
+        logger,
+        { enableWebAudio: true },
+        new ContextRecreatingBrowserBehavior()
+      );
+
+      const transform = new MockNodeTransformDevice('default');
+
+      await deviceController.chooseAudioInputDevice(transform);
+      const avController = new TestAudioVideoController(false);
+      deviceController.bindToAudioVideoController(avController);
+
+      await DefaultDeviceController.getAudioContext();
+      const device: AudioTransformDevice = new MockNodeTransformDevice('default');
+      await deviceController.chooseAudioInputDevice(device);
+      expect(avController.restartLocalAudioCalled).to.be.false;
+    });
+
     it('does so with a transform', async () => {
       deviceController = new DefaultDeviceController(
         logger,
@@ -498,30 +538,20 @@ describe('DefaultDeviceController', () => {
       );
 
       const transform = new MockNodeTransformDevice('default');
+
       await deviceController.chooseAudioInputDevice(transform);
-
-      let called = false;
-
-      class TestAudioVideoController extends NoOpAudioVideoController {
-        async restartLocalAudio(callback: () => void): Promise<void> {
-          called = true;
-          callback();
-        }
-      }
-
-      const avController = new TestAudioVideoController();
-
+      const avController = new TestAudioVideoController(true);
       deviceController.bindToAudioVideoController(avController);
 
       const oldContext = DefaultDeviceController.getAudioContext();
-      expect(called).to.be.false;
+      expect(avController.restartLocalAudioCalled).to.be.false;
       const device: AudioTransformDevice = new MockNodeTransformDevice('default');
       const choose = deviceController.chooseAudioInputDevice(device);
 
       await expect(choose).to.eventually.be.undefined;
 
       expect(oldContext).to.not.eql(DefaultDeviceController.getAudioContext());
-      expect(called).to.be.true;
+      expect(avController.restartLocalAudioCalled).to.be.true;
     });
 
     it('does so without a transform', async () => {
@@ -532,29 +562,18 @@ describe('DefaultDeviceController', () => {
       );
 
       await deviceController.chooseAudioInputDevice('default');
-
-      let called = false;
-
-      class TestAudioVideoController extends NoOpAudioVideoController {
-        async restartLocalAudio(callback: () => void): Promise<void> {
-          called = true;
-          callback();
-        }
-      }
-
-      const avController = new TestAudioVideoController();
-
+      const avController = new TestAudioVideoController(true);
       deviceController.bindToAudioVideoController(avController);
 
       const oldContext = DefaultDeviceController.getAudioContext();
-      expect(called).to.be.false;
+      expect(avController.restartLocalAudioCalled).to.be.false;
       const device: AudioTransformDevice = new MockNodeTransformDevice('default');
       const choose = deviceController.chooseAudioInputDevice(device);
 
       await expect(choose).to.eventually.be.undefined;
 
       expect(oldContext).to.not.eql(DefaultDeviceController.getAudioContext());
-      expect(called).to.be.true;
+      expect(avController.restartLocalAudioCalled).to.be.true;
     });
   });
 
