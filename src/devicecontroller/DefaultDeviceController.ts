@@ -292,82 +292,112 @@ export default class DefaultDeviceController
       return;
     }
 
+    /*
+     * This block of code is a workaround for a Chromium bug:
+     * https://bugs.chromium.org/p/chromium/issues/detail?id=1173656
+     *
+     * In short: if we are about to select an audio device with a transform, which we assume for
+     * safety's sake uses AudioWorklet, we recreate the audio context and the nodes that
+     * are linked to it.
+     *
+     * This causes Chrome to rejig its buffers and the second context works correctly.
+     *
+     * This is theoretically worse for performance, but in practice it is fine.
+     *
+     * This is not safe in the general case: an application that already
+     * retrieved the audio context in order to build an audio graph for some other purpose
+     * will fail at this point as we pull the context out from under it.
+     *
+     * An application that always uses the supplied context in an
+     * `AudioTransformDevice.createAudioNode` call should work correctly.
+     *
+     * If you are confident that your application does not use AudioWorklet, does not run in
+     * an un-fixed Chromium version, or will never be used with sample-rate-switching Bluetooth
+     * devices, you can disable this workaround by suppling a custom {@link ExtendedBrowserBehavior}
+     * when you create your device controller.
+     *
+     * We can't tell in advance whether we need to give the device a different audio context,
+     * because checking whether the resulting node is an AudioWorkletNode needs it to have been
+     * created first.
+     */
+
+    // Ideally we would only do this work if we knew the device was going to change.
+
+    // By definition, this is only needed for Web Audio.
+    let recreateAudioContext = this.useWebAudio;
+
+    if (!this.useWebAudio) {
+      this.logger.debug('Not using Web Audio. No need to recreate audio context.');
+    }
+
+    // We have a suspended audio context. There's nothing we can do, and there's
+    // certainly no point in recreating it. Choosing the transform device will try to resume.
+    if (DefaultDeviceController.audioContext?.state === 'suspended') {
+      recreateAudioContext = false;
+    }
+
+    // Only Chrome needs this fix.
+    if (recreateAudioContext && !this.browserBehavior.requiresContextRecreationForAudioWorklet()) {
+      this.logger.debug('Browser does not require audio context recreation hack.');
+      recreateAudioContext = false;
+    }
+
+    // Only need to do this if either device has an audio worklet.
+    if (recreateAudioContext && !this.transform && isAudioTransformDevice(device)) {
+      this.logger.debug('Neither device is a transform. No need to recreate audio context.');
+      recreateAudioContext = false;
+    }
+
+    if (recreateAudioContext) {
+      this.logger.info('Recreating audio context when selecting new device.');
+
+      /* istanbul ignore else */
+      if (this.transform) {
+        /* istanbul ignore else */
+        if (this.transform.nodes) {
+          this.transform.nodes.end.disconnect();
+          this.transform.nodes = undefined;
+        }
+        this.transform = undefined;
+      }
+
+      /* istanbul ignore else */
+      if (this.audioInputSourceNode) {
+        this.audioInputSourceNode.disconnect();
+        this.audioInputSourceNode = undefined;
+      }
+
+      /* istanbul ignore else */
+      if (this.audioInputDestinationNode) {
+        this.audioInputDestinationNode.disconnect();
+        this.audioInputDestinationNode = undefined;
+      }
+
+      DefaultDeviceController.closeAudioContext();
+    }
+
     if (isAudioTransformDevice(device)) {
       // N.B., do not JSON.stringify here — for some kinds of devices this
       // will cause a cyclic object reference error.
       this.logger.info(`Choosing transform input device ${device}`);
 
-      /*
-       * This block of code is a workaround for a Chromium bug:
-       * https://bugs.chromium.org/p/chromium/issues/detail?id=1173656
-       *
-       * In short: if we are about to select an audio device with a transform, which we assume for
-       * safety's sake uses AudioWorklet, we recreate the audio context and the nodes that
-       * are linked to it.
-       *
-       * This causes Chrome to rejig its buffers and the second context works correctly.
-       *
-       * This is theoretically worse for performance, but in practice it is fine.
-       *
-       * This is not safe in the general case: an application that already
-       * retrieved the audio context in order to build an audio graph for some other purpose
-       * will fail at this point as we pull the context out from under it.
-       *
-       * An application that always uses the supplied context in an
-       * `AudioTransformDevice.createAudioNode` call should work correctly.
-       *
-       * If you are confident that your application does not use AudioWorklet, does not run in
-       * an un-fixed Chromium version, or will never be used with sample-rate-switching Bluetooth
-       * devices, you can disable this workaround by suppling a custom {@link ExtendedBrowserBehavior}
-       * when you create your device controller.
-       *
-       * We can't tell in advance whether we need to give the device a different audio context,
-       * because checking whether the resulting node is an AudioWorkletNode needs it to have been
-       * created first.
-       */
-      const recreateAudioContext = this.browserBehavior.requiresContextRecreationForAudioWorklet();
-
-      if (recreateAudioContext) {
-        this.logger.info('Recreating audio context when selecting transform device.');
-
-        if (this.transform) {
-          /* istanbul ignore else */
-          if (this.transform.nodes) {
-            this.transform.nodes.end.disconnect();
-            this.transform.nodes = undefined;
-          }
-          this.transform = undefined;
-        }
-
-        /* istanbul ignore else */
-        if (this.audioInputSourceNode) {
-          this.audioInputSourceNode.disconnect();
-          this.audioInputSourceNode = undefined;
-        }
-
-        /* istanbul ignore else */
-        if (this.audioInputDestinationNode) {
-          this.audioInputDestinationNode.disconnect();
-          this.audioInputDestinationNode = undefined;
-        }
-
-        DefaultDeviceController.closeAudioContext();
-      }
-
       await this.chooseAudioTransformInputDevice(device);
-
-      if (recreateAudioContext && this.boundAudioVideoController?.rtcPeerConnection) {
-        this.boundAudioVideoController.restartLocalAudio(() => {
-          this.logger.info('Local audio restarted.');
-        });
-      }
-
-      return this.pushAudioMeetingStateForPermissions(device);
+    } else {
+      this.logger.info(`Choosing intrinsic input device ${device}`);
+      this.removeTransform();
+      await this.chooseInputIntrinsicDevice('audio', device, false);
+      this.trace('chooseAudioInputDevice', device, `success`);
     }
 
-    this.removeTransform();
-    await this.chooseInputIntrinsicDevice('audio', device, false);
-    this.trace('chooseAudioInputDevice', device, `success`);
+    // Only recreate if there's a peer connection, otherwise `restartLocalAudio` will throw.
+    // This hack is off by default, so tests don't cover it. We can remove this skip soon.
+    /* istanbul ignore next */
+    if (recreateAudioContext && this.boundAudioVideoController?.rtcPeerConnection) {
+      this.boundAudioVideoController.restartLocalAudio(() => {
+        this.logger.info('Local audio restarted.');
+      });
+    }
+
     this.pushAudioMeetingStateForPermissions(device);
   }
 
@@ -1245,6 +1275,34 @@ export default class DefaultDeviceController
     delete device.stream;
   }
 
+  /**
+   * Check whether a device is already selected.
+   *
+   * @param kind typically 'audio' or 'video'.
+   * @param device the device about to be selected.
+   * @param selection the existing device selection of this kind.
+   * @param proposedConstraints the constraints that will be used when this device is selected.
+   * @returns whether `device` matches `selection` — that is, whether this device is already selected.
+   */
+  private matchesDeviceSelection(
+    kind: string,
+    device: Device,
+    selection: DeviceSelection | undefined,
+    proposedConstraints: MediaStreamConstraints
+  ): boolean {
+    if (
+      selection &&
+      selection.stream.active &&
+      selection.groupId !== null &&
+      this.hasSameGroupId(selection.groupId, kind, device)
+    ) {
+      // TODO: this should be computed within this function.
+      return selection.matchesConstraints(proposedConstraints);
+    }
+
+    return false;
+  }
+
   private async chooseInputIntrinsicDevice(
     kind: string,
     device: Device,
@@ -1268,24 +1326,16 @@ export default class DefaultDeviceController
     // N.B.,: the input device might already have augmented constraints supplied
     // by an `AudioTransformDevice`. `calculateMediaStreamConstraints` will respect
     // settings supplied by the device.
-    const proposedConstraints: MediaStreamConstraints | null = this.calculateMediaStreamConstraints(
-      kind,
-      device
-    );
+    const proposedConstraints = this.calculateMediaStreamConstraints(kind, device);
 
     // TODO: `matchesConstraints` should really return compatible/incompatible/exact --
     // `applyConstraints` can be used to reuse the active device while changing the
     // requested constraints.
-    if (
-      this.activeDevices[kind] &&
-      this.activeDevices[kind].matchesConstraints(proposedConstraints) &&
-      this.activeDevices[kind].stream.active &&
-      this.activeDevices[kind].groupId !== null &&
-      this.hasSameGroupId(this.activeDevices[kind].groupId, kind, device)
-    ) {
+    if (this.matchesDeviceSelection(kind, device, this.activeDevices[kind], proposedConstraints)) {
       this.logger.info(`reusing existing ${kind} device`);
       return;
     }
+
     if (kind === 'audio' && this.activeDevices[kind] && this.activeDevices[kind].stream) {
       this.releaseActiveDevice(this.activeDevices[kind]);
     }

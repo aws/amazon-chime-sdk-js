@@ -18,24 +18,28 @@ interface LimitedWindow {
 describe('DefaultBrowserBehavior', () => {
   const expect: Chai.ExpectStatic = chai.expect;
 
-  const CHROME_WINDOWS_USERAGENT =
+  const CHROME_WINDOWS_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
-  const CHROME_MAC_USERAGENT =
+  const CHROME_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
-  const FIREFOX_USERAGENT =
+  const FIREFOX_WINDOWS_USER_AGENT =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/68.0';
+  const FIREFOX_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
-  const SAFARI_USERAGENT =
+  const SAFARI_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
-  const CHROMIUM_EDGE_WINDOWS_USERAGENT =
+  const CHROMIUM_EDGE_WINDOWS_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3729.48 Safari/537.36 Edg/79.1.96.24';
-  const OPERA_USERAGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
-  const FIREFOX_ANDROID_USERAGENT =
+  const CHROMIUM_EDGE_MAC_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.63';
+  const OPERA_USER_AGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
+  const FIREFOX_ANDROID_USER_AGENT =
     'Mozilla/5.0 (Android 10; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0';
-  const SAMSUNG_INTERNET_USERAGENT =
+  const SAMSUNG_INTERNET_USER_AGENT =
     'Mozilla/5.0 (Linux; Android 11; Pixel 3a XL) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/13.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
-  const CHROME_IOS_USERAGENT =
+  const CHROME_IOS_USER_AGENT =
     'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/88.0.4324.152 Mobile/14E5239e Safari/602.1';
-  const FIREFOX_IOS_USERAGENT =
+  const FIREFOX_IOS_USER_AGENT =
     'Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/29.1.0 Mobile/16B91 Safari/605.1.15';
   const ELECTRON_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.9.0 Chrome/85.0.4183.93 Electron/10.1.1 Safari/537.36 Sonic Slack_SSB/4.9.0';
@@ -69,7 +73,7 @@ describe('DefaultBrowserBehavior', () => {
 
   describe('platforms', () => {
     it('can detect Firefox', () => {
-      setUserAgent(FIREFOX_USERAGENT);
+      setUserAgent(FIREFOX_MAC_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
@@ -83,7 +87,7 @@ describe('DefaultBrowserBehavior', () => {
     });
 
     it('can detect Firefox on Android', () => {
-      setUserAgent(FIREFOX_ANDROID_USERAGENT);
+      setUserAgent(FIREFOX_ANDROID_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
@@ -93,7 +97,7 @@ describe('DefaultBrowserBehavior', () => {
     });
 
     it('can detect Chrome', () => {
-      setUserAgent(CHROME_MAC_USERAGENT);
+      setUserAgent(CHROME_MAC_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('chrome');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
@@ -126,15 +130,25 @@ describe('DefaultBrowserBehavior', () => {
     });
 
     it('can detect Edge Chromium', () => {
-      setUserAgent(CHROMIUM_EDGE_WINDOWS_USERAGENT);
-      expect(new DefaultBrowserBehavior().name()).to.eq('edge-chromium');
-      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
+      function check(): void {
+        expect(new DefaultBrowserBehavior().name()).to.eq('edge-chromium');
+        expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+        expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
+        expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+        expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
+        expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
+        expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
+      }
+
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(79);
-      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
-      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
+      check();
+
+      setUserAgent(CHROMIUM_EDGE_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(89);
+      check();
+
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
       const enableUnifiedPlan = true;
       expect(
         new DefaultBrowserBehavior({
@@ -159,7 +173,7 @@ describe('DefaultBrowserBehavior', () => {
     });
 
     it('can detect Samsung Internet', () => {
-      setUserAgent(SAMSUNG_INTERNET_USERAGENT);
+      setUserAgent(SAMSUNG_INTERNET_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('samsung');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
@@ -196,7 +210,7 @@ describe('DefaultBrowserBehavior', () => {
     });
 
     it('can detect Safari', () => {
-      setUserAgent(SAFARI_USERAGENT);
+      setUserAgent(SAFARI_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
@@ -214,7 +228,7 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(ELECTRON_WINDOWS_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.not.eq('crios');
 
-      setUserAgent(CHROME_IOS_USERAGENT);
+      setUserAgent(CHROME_IOS_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('crios');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
@@ -228,7 +242,7 @@ describe('DefaultBrowserBehavior', () => {
     });
 
     it('can detect iOS Firefox', () => {
-      setUserAgent(FIREFOX_IOS_USERAGENT);
+      setUserAgent(FIREFOX_IOS_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('fxios');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
@@ -302,7 +316,7 @@ describe('DefaultBrowserBehavior', () => {
     });
 
     it('can handle an unknown user agent', () => {
-      setUserAgent(OPERA_USERAGENT);
+      setUserAgent(OPERA_USER_AGENT);
       expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
     });
   });
@@ -317,9 +331,9 @@ describe('DefaultBrowserBehavior', () => {
 
   describe('requiresSimulcastMunging', () => {
     it('can determine if simulcast requires munging', () => {
-      setUserAgent(CHROME_WINDOWS_USERAGENT);
+      setUserAgent(CHROME_WINDOWS_USER_AGENT);
       expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.be.false;
-      setUserAgent(SAFARI_USERAGENT);
+      setUserAgent(SAFARI_USER_AGENT);
       expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.be.true;
     });
   });
@@ -330,39 +344,59 @@ describe('DefaultBrowserBehavior', () => {
     });
   });
 
+  describe('edge', () => {
+    it('is not Chrome', () => {
+      setHasGlobalChrome(true);
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      // @ts-ignore
+      expect(new DefaultBrowserBehavior().isChrome()).to.be.false;
+      // @ts-ignore
+      expect(new DefaultBrowserBehavior().isEdge()).to.be.true;
+    });
+  });
+
   describe('requiresContextRecreationForAudioWorklet', () => {
+    const dbb = (): DefaultBrowserBehavior =>
+      new DefaultBrowserBehavior({ recreateAudioContextIfNeeded: true });
+
     it('detects working browsers', () => {
       setHasGlobalChrome(true);
-      setUserAgent(CHROME_IOS_USERAGENT);
-      expect(new DefaultBrowserBehavior().requiresContextRecreationForAudioWorklet()).to.be.false;
+      setUserAgent(CHROME_IOS_USER_AGENT);
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
 
       // It's a Windows UA.
-      setUserAgent(CHROMIUM_EDGE_WINDOWS_USERAGENT);
-      expect(new DefaultBrowserBehavior().requiresContextRecreationForAudioWorklet()).to.be.false;
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
 
       // Again, Windows.
       setUserAgent(ELECTRON_WINDOWS_USER_AGENT);
-      expect(new DefaultBrowserBehavior().requiresContextRecreationForAudioWorklet()).to.be.false;
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
 
-      setUserAgent(CHROME_WINDOWS_USERAGENT);
-      expect(new DefaultBrowserBehavior().requiresContextRecreationForAudioWorklet()).to.be.false;
+      setUserAgent(CHROME_WINDOWS_USER_AGENT);
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
 
       setHasGlobalChrome(false);
 
-      setUserAgent(FIREFOX_ANDROID_USERAGENT);
-      expect(new DefaultBrowserBehavior().requiresContextRecreationForAudioWorklet()).to.be.false;
+      setUserAgent(FIREFOX_ANDROID_USER_AGENT);
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
 
-      setUserAgent(FIREFOX_USERAGENT);
-      expect(new DefaultBrowserBehavior().requiresContextRecreationForAudioWorklet()).to.be.false;
+      setUserAgent(FIREFOX_WINDOWS_USER_AGENT);
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
+
+      setUserAgent(FIREFOX_MAC_USER_AGENT);
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.false;
     });
 
     it('detects broken browsers', () => {
       setHasGlobalChrome(true);
       setUserAgent(ELECTRON_MAC_USER_AGENT);
-      expect(new DefaultBrowserBehavior().requiresContextRecreationForAudioWorklet()).to.be.true;
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.true;
 
-      setUserAgent(CHROME_MAC_USERAGENT);
-      expect(new DefaultBrowserBehavior().requiresContextRecreationForAudioWorklet()).to.be.true;
+      setUserAgent(CHROMIUM_EDGE_MAC_USER_AGENT);
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.true;
+
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.true;
     });
   });
 });
