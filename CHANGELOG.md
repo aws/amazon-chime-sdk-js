@@ -5,13 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+
+- `DefaultDeviceController` recreates the `AudioContext` as needed when
+  selecting non-transform devices, and does not do so when the `AudioContext`
+  is suspended.
+
 ## [2.7.0] - 2021-04-05
 
 ### Added
 
 - [Demo] Add Tensorflow BodyPix segmentation demo for `VideoProcessor`.
 - Added a workaround for a Chrome issue where Bluetooth audio would sound
-  choppy for other participants when Web Audio was enabled.
+  choppy for other participants when Web Audio was enabled. This workaround
+  recreates the Web Audio context each time an input device is selected.
 
 ### Changed
 

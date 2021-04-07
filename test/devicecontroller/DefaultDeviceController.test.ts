@@ -490,6 +490,10 @@ describe('DefaultDeviceController', () => {
   });
 
   describe('recreates audio context if needed', async () => {
+    beforeEach(() => {
+      DefaultDeviceController.closeAudioContext();
+    });
+
     class TestAudioVideoController extends NoOpAudioVideoController {
       private conn: RTCPeerConnection | null = null;
       restartLocalAudioCalled: boolean = false;
@@ -530,7 +534,7 @@ describe('DefaultDeviceController', () => {
       expect(avController.restartLocalAudioCalled).to.be.false;
     });
 
-    it('does so with a transform', async () => {
+    it('does so with non-transform then transform', async () => {
       deviceController = new DefaultDeviceController(
         logger,
         { enableWebAudio: true },
@@ -550,29 +554,31 @@ describe('DefaultDeviceController', () => {
 
       await expect(choose).to.eventually.be.undefined;
 
-      expect(oldContext).to.not.eql(DefaultDeviceController.getAudioContext());
+      expect(oldContext).to.not.eq(DefaultDeviceController.getAudioContext());
       expect(avController.restartLocalAudioCalled).to.be.true;
     });
 
-    it('does so without a transform', async () => {
+    it('does so with transform then non-transform', async () => {
       deviceController = new DefaultDeviceController(
         logger,
         { enableWebAudio: true },
         new ContextRecreatingBrowserBehavior()
       );
 
-      await deviceController.chooseAudioInputDevice('default');
+      const transform = new MockNodeTransformDevice('default');
+
+      const choose = deviceController.chooseAudioInputDevice(transform);
       const avController = new TestAudioVideoController(true);
       deviceController.bindToAudioVideoController(avController);
 
-      const oldContext = DefaultDeviceController.getAudioContext();
       expect(avController.restartLocalAudioCalled).to.be.false;
-      const device: AudioTransformDevice = new MockNodeTransformDevice('default');
-      const choose = deviceController.chooseAudioInputDevice(device);
+      const oldContext = DefaultDeviceController.getAudioContext();
 
       await expect(choose).to.eventually.be.undefined;
 
-      expect(oldContext).to.not.eql(DefaultDeviceController.getAudioContext());
+      await deviceController.chooseAudioInputDevice('default');
+
+      expect(oldContext).to.not.eq(DefaultDeviceController.getAudioContext());
       expect(avController.restartLocalAudioCalled).to.be.true;
     });
   });

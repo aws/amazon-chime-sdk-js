@@ -46,11 +46,19 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios'];
 
   private enableUnifiedPlanForChromiumBasedBrowsers: boolean;
+  private recreateAudioContextIfNeeded: boolean;
 
   constructor({
     enableUnifiedPlanForChromiumBasedBrowsers = false,
-  }: { enableUnifiedPlanForChromiumBasedBrowsers?: boolean } = {}) {
+
+    // Temporarily disable this workaround while we work out the kinks.
+    recreateAudioContextIfNeeded = false,
+  }: {
+    enableUnifiedPlanForChromiumBasedBrowsers?: boolean;
+    recreateAudioContextIfNeeded?: boolean;
+  } = {}) {
     this.enableUnifiedPlanForChromiumBasedBrowsers = enableUnifiedPlanForChromiumBasedBrowsers;
+    this.recreateAudioContextIfNeeded = recreateAudioContextIfNeeded;
   }
 
   version(): string {
@@ -155,6 +163,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   requiresContextRecreationForAudioWorklet(): boolean {
+    if (!this.recreateAudioContextIfNeeded) {
+      return false;
+    }
+
     // Definitely not Chrome; no worries.
     if (!('chrome' in global)) {
       return false;
@@ -166,11 +178,16 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     }
 
     // Electron or Chromium.
+    // All other browsers are fine. But you'd have to be super weird --
+    // faking global.chrome but not having a Chrome UA -- to get this far,
+    // so we have some Istanbul directives on these.
+
+    /* istanbul ignore else */
     if (this.isChrome() || this.isEdge()) {
       return true;
     }
 
-    // All other browsers are fine.
+    /* istanbul ignore next */
     return false;
   }
 
