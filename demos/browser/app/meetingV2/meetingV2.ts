@@ -417,7 +417,6 @@ export class DemoMeetingApp
         if (this.supportsVoiceFocus) {
           logger.info('[DEMO] Amazon Voice Focus is supported.');
           document.getElementById('voice-focus-setting').classList.remove('hidden');
-          await this.populateAllDeviceLists();
           return;
         }
       }
@@ -428,7 +427,6 @@ export class DemoMeetingApp
     logger.warn('[DEMO] Does not support Amazon Voice Focus.');
     this.supportsVoiceFocus = false;
     document.getElementById('voice-focus-setting').classList.toggle('hidden', true);
-    await this.populateAllDeviceLists();
   }
 
   private async onVoiceFocusSettingChanged(): Promise<void> {
@@ -497,6 +495,8 @@ export class DemoMeetingApp
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
 
           await this.initVoiceFocus();
+          await this.populateAllDeviceLists();
+          await this.populateVideoFilterInputList();
 
           this.switchToFlow('flow-devices');
           await this.openAudioInputFromSelectionAndPreview();
@@ -1257,7 +1257,6 @@ export class DemoMeetingApp
     }
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
-    await this.populateAllDeviceLists();
     this.setupMuteHandler();
     this.setupCanUnmuteHandler();
     this.setupSubscribeToAttendeeIdPresenceHandler();
@@ -1694,7 +1693,6 @@ export class DemoMeetingApp
   async populateAllDeviceLists(): Promise<void> {
     await this.populateAudioInputList();
     await this.populateVideoInputList();
-    await this.populateVideoFilterInputList();
     await this.populateAudioOutputList();
   }
 
