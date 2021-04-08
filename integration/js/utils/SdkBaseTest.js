@@ -7,14 +7,13 @@ const {LocalSession} = require('./WebdriverLocal');
 const {emitMetric} = require('./CloudWatch');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
-const { getTransformedURL } = require('./util');
 
 class SdkBaseTest extends KiteBaseTest {
   constructor(name, kiteConfig, testName) {
     super(name, kiteConfig);
     this.baseUrl = this.url;
     if (testName === 'ContentShareOnlyAllowTwoTest') {
-      this.url = getTransformedURL(this.url, 'max-content-share', 'true');
+      this.url = this.getTransformedURL(this.url, 'max-content-share', 'true');
     }
 
     if (testName === 'MessagingSessionTest') {
@@ -81,7 +80,7 @@ class SdkBaseTest extends KiteBaseTest {
       this.io.on("meeting_created", meetingId => {
         this.meetingCreated = true;
         this.meetingTitle = meetingId;
-        this.url = getTransformedURL(this.originalURL, 'm', this.meetingTitle);
+        this.url = this.getTransformedURL(this.originalURL, 'm', this.meetingTitle);
       });
       this.io.on("finished", () => {
         this.testFinish = true;
@@ -108,7 +107,7 @@ class SdkBaseTest extends KiteBaseTest {
       this.io.emit("setup_test", this.baseUrl, this.attendeeId);
     } else {
       this.meetingTitle = uuidv4();
-      this.url = getTransformedURL(this.originalURL, 'm', this.meetingTitle);
+      this.url = this.getTransformedURL(this.originalURL, 'm', this.meetingTitle);
     }
   }
 
@@ -299,6 +298,11 @@ class SdkBaseTest extends KiteBaseTest {
     } else {
         return 'meeting'
     };
+  }
+
+  getTransformedURL = (url, key, value) => {
+    const sep = url.includes('?') ? '&' : '?';
+    return `${url}${sep}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
   }
 }
 
