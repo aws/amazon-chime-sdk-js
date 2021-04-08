@@ -10,7 +10,7 @@
       "noOfThreads": 1,
       "testImpl": "MessagingSessionTest.js",
       "payload": {
-        "url": "https://jhx8q8tmz4.execute-api.us-east-1.amazonaws.com/Prod/",
+        "url": "http://localhost:8080/",
         "retry": 1,
         "userArn": ""
       }
