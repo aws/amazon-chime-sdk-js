@@ -326,6 +326,43 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
+    it('can be started with null audio host url', async () => {
+      configuration.videoUplinkBandwidthPolicy = null;
+      configuration.videoDownlinkBandwidthPolicy = null;
+      configuration.urls.audioHostURL = null;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      await delay(defaultDelay);
+      webSocketAdapter.send(makeJoinAckFrame());
+      await delay(defaultDelay);
+      webSocketAdapter.send(makeIndexFrame());
+      webSocketAdapter.send(makeAudioStreamIdInfoFrame());
+      webSocketAdapter.send(makeAudioMetadataFrame());
+
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+      await stop();
+    });
+
     it('can be started without a join ack frame containing turn credentials', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,

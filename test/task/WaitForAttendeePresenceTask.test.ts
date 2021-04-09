@@ -13,6 +13,7 @@ import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealt
 import WaitForAttendeePresenceTask from '../../src/task/WaitForAttendeePresenceTask';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import CreateMeetingResponseMock from '../meetingsession/CreateMeetingResponseMock';
 
 chai.use(chaiAsPromised);
 
@@ -31,7 +32,10 @@ describe('WaitForAttendeePresenceTask', () => {
     context = new AudioVideoControllerState();
     context.logger = new NoOpDebugLogger();
     context.realtimeController = new DefaultRealtimeController();
-    context.meetingSessionConfiguration = new MeetingSessionConfiguration();
+    context.meetingSessionConfiguration = new MeetingSessionConfiguration(
+      CreateMeetingResponseMock.MeetingResponseMock,
+      CreateMeetingResponseMock.AttendeeResponseMock
+    );
     context.meetingSessionConfiguration.credentials = new MeetingSessionCredentials();
     context.meetingSessionConfiguration.credentials.attendeeId = 'attendee-id';
     context.meetingSessionConfiguration.attendeePresenceTimeoutMs = 5000;

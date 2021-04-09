@@ -38,9 +38,9 @@ export default class WaitForAttendeePresenceTask extends BaseTask {
       const handler = (
         presentAttendeeId: string,
         present: boolean,
-        _externalUserId: string,
-        _dropped: boolean,
-        _pos: RealtimeAttendeePositionInFrame
+        _externalUserId: string | undefined,
+        _dropped: boolean | undefined,
+        _pos: RealtimeAttendeePositionInFrame | undefined
       ): void => {
         if (attendeeId === presentAttendeeId && present) {
           this.context.realtimeController.realtimeUnsubscribeToAttendeeIdPresence(handler);

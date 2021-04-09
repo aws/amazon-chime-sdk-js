@@ -61,6 +61,7 @@ import TimeoutTask from '../task/TimeoutTask';
 import WaitForAttendeePresenceTask from '../task/WaitForAttendeePresenceTask';
 import DefaultTransceiverController from '../transceivercontroller/DefaultTransceiverController';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
+import VideoOnlyTransceiverController from '../transceivercontroller/VideoOnlyTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
@@ -236,6 +237,7 @@ export default class DefaultAudioVideoController
       enableUnifiedPlanForChromiumBasedBrowsers: this.configuration
         .enableUnifiedPlanForChromiumBasedBrowsers,
     });
+
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
       this._webSocketAdapter,
@@ -245,16 +247,21 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.realtimeController = this._realtimeController;
     this.meetingSessionContext.audioMixController = this._audioMixController;
     this.meetingSessionContext.audioVideoController = this;
-    if (this.enableSimulcast) {
-      this.meetingSessionContext.transceiverController = new SimulcastTransceiverController(
+
+    const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
+
+    if (!useAudioConnection) {
+      this.meetingSessionContext.transceiverController = new VideoOnlyTransceiverController(
         this.logger,
         this.meetingSessionContext.browserBehavior
       );
     } else {
-      this.meetingSessionContext.transceiverController = new DefaultTransceiverController(
-        this.logger,
-        this.meetingSessionContext.browserBehavior
-      );
+      this.meetingSessionContext.transceiverController = this.enableSimulcast
+        ? new SimulcastTransceiverController(
+            this.logger,
+            this.meetingSessionContext.browserBehavior
+          )
+        : new DefaultTransceiverController(this.logger, this.meetingSessionContext.browserBehavior);
     }
 
     this.meetingSessionContext.volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
@@ -346,6 +353,12 @@ export default class DefaultAudioVideoController
       this._reconnectController.startedConnectionAttempt(true);
     }
 
+    // No attendee presence event will be triggered if there is no audio connection.
+    // Waiting for attendee presence is explicitly executed
+    // if `attendeePresenceTimeoutMs` is configured to larger than 0.
+    const needsToWaitForAttendeePresence =
+      useAudioConnection &&
+      this.meetingSessionContext.meetingSessionConfiguration.attendeePresenceTimeoutMs > 0;
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStart'), [
         new MonitorTask(
@@ -373,7 +386,7 @@ export default class DefaultAudioVideoController
               new SetLocalDescriptionTask(this.meetingSessionContext),
               new FinishGatheringICECandidatesTask(this.meetingSessionContext),
               new SubscribeAndReceiveSubscribeAckTask(this.meetingSessionContext),
-              this.meetingSessionContext.meetingSessionConfiguration.attendeePresenceTimeoutMs > 0
+              needsToWaitForAttendeePresence
                 ? new TimeoutTask(
                     this.logger,
                     new ParallelGroupTask(this.logger, 'FinalizeConnection', [

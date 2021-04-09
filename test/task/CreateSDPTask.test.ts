@@ -7,6 +7,7 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import CreateSDPTask from '../../src/task/CreateSDPTask';
 import Task from '../../src/task/Task';
@@ -14,6 +15,7 @@ import DefaultTransceiverController from '../../src/transceivercontroller/Defaul
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import CreateMeetingResponseMock from '../meetingsession/CreateMeetingResponseMock';
 
 describe('CreateSDPTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -35,6 +37,10 @@ describe('CreateSDPTask', () => {
     const peer: RTCPeerConnection = new RTCPeerConnection();
     context.peer = peer;
     task = new CreateSDPTask(context);
+    context.meetingSessionConfiguration = new MeetingSessionConfiguration(
+      CreateMeetingResponseMock.MeetingResponseMock,
+      CreateMeetingResponseMock.AttendeeResponseMock
+    );
   });
 
   afterEach(() => {
@@ -64,6 +70,26 @@ describe('CreateSDPTask', () => {
       const peer: RTCPeerConnection = new TestPeerConnectionMock();
       context.peer = peer;
       task.run().then(() => done());
+    });
+
+    it('can be run without audio in peer connection', async () => {
+      context.meetingSessionConfiguration.urls = null;
+      class TestPeerConnectionMock extends RTCPeerConnection {
+        createOffer(options?: RTCOfferOptions): Promise<RTCSessionDescriptionInit> {
+          expect(options.offerToReceiveAudio).to.be.equal(false);
+          expect(options.offerToReceiveVideo).to.be.equal(false);
+          return new Promise<RTCSessionDescriptionInit>((resolve, _reject) => {
+            resolve(undefined as RTCSessionDescriptionInit);
+          });
+        }
+      }
+      const peer: RTCPeerConnection = new TestPeerConnectionMock();
+      context.peer = peer;
+      await new CreateSDPTask(context).run();
+      context.meetingSessionConfiguration.urls = null;
+      await new CreateSDPTask(context).run();
+      context.meetingSessionConfiguration = null;
+      await new CreateSDPTask(context).run();
     });
 
     it('can be run and the created offer SDP is correct', done => {
