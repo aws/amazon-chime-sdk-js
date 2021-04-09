@@ -29,7 +29,7 @@ export default class CreateSDPTask extends BaseTask {
   }
 
   sessionUsesAudio(): boolean {
-    return true;
+    return !!this.context.meetingSessionConfiguration?.urls?.audioHostURL;
   }
 
   sessionUsesVideo(): boolean {

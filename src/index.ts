@@ -231,6 +231,7 @@ import VideoFrameProcessorPipeline from './videoframeprocessor/VideoFrameProcess
 import VideoFrameProcessorPipelineObserver from './videoframeprocessor/VideoFrameProcessorPipelineObserver';
 import VideoInputDevice from './devicecontroller/VideoInputDevice';
 import VideoLogEvent from './statscollector/VideoLogEvent';
+import VideoOnlyTransceiverController from './transceivercontroller/VideoOnlyTransceiverController';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
 import VideoSource from './videosource/VideoSource';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
@@ -493,6 +494,7 @@ export {
   VideoFrameProcessorPipelineObserver,
   VideoInputDevice,
   VideoLogEvent,
+  VideoOnlyTransceiverController,
   VideoQualitySettings,
   VideoSource,
   VideoStreamDescription,

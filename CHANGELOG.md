@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Disable audio properties on the peer connection if the join information does not include an audio host URL.
 - `package-lock.json` files now use the v2 lockfile format.
 - Configuration files now live in `/config`.
 
