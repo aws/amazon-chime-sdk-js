@@ -66,6 +66,30 @@ export PATH="$PATH:$KITE_HOME/scripts/mac/path/"
 c
 ```
 
+If you run into a build error here, do the following:
+
+Credits: https://github.com/webrtc/KITE/issues/181
+1. Create the `settings.xml` file in the `.m2` directory.
+This `.m2` directory holds settings for maven executions.
+```
+cd ~/.m2
+touch settings.xml
+```
+2. Put below content in the created `settings.xml` file.
+```xml
+<settings>
+  <mirrors>
+    <mirror>
+      <id>internal-repository</id>
+      <name>Maven Repository Manager running on repo.mycompany.com</name>
+      <url>http://repository.springsource.com/maven/bundles/external</url>
+      <mirrorOf>com.springsource.repository.bundles.external</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
+```
+3. Run `c` again mentioned in the "Finish KITE setup" steps above.
+
 ### Other platforms
 
 Please follow the KITE installation instructions.
