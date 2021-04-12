@@ -262,7 +262,11 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   private isSafari(): boolean {
-    return this.browser.name === 'safari' || this.browser.name === 'ios' || this.browser.name === 'ios-webview';
+    return (
+      this.browser.name === 'safari' ||
+      this.browser.name === 'ios' ||
+      this.browser.name === 'ios-webview'
+    );
   }
 
   private isFirefox(): boolean {
