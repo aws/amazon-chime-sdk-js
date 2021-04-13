@@ -22,7 +22,7 @@ class AppWaitTestStep extends AppTestStep {
 
   async run() {
     let i = 0;
-    let waitTime = 1000;
+    let waitTime = 100;
     while (i < this.timeoutThresholdInMilliSeconds() / waitTime) {
       i++;
       if (this.waitCompleteCondition()) {
