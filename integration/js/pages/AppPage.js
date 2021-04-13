@@ -347,7 +347,7 @@ class AppPage {
     return await this.driver.findElement(elements.failedMeetingFlow).isDisplayed();
   }
 
-  async rosterCheck(numberOfParticipants, checkCount = 10, waitTimeMs = 100) {
+  async rosterCheck(numberOfParticipants, checkCount = 10, waitTimeMs = 1000) {
     let i = 0;
     let start = performance.now();
     while (i < checkCount) {
