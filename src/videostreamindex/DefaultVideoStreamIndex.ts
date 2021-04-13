@@ -53,11 +53,13 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     const streamInfos: VideoStreamDescription[] = [];
     this.currentIndex.sources.forEach(source => {
       const description = new VideoStreamDescription();
+      const avgBitrateBps = source.avgBitrateBps;
       description.attendeeId = source.attendeeId;
       description.groupId = source.groupId;
       description.streamId = source.streamId;
       description.maxBitrateKbps = source.maxBitrateKbps;
-      description.avgBitrateKbps = Math.floor(source.avgBitrateBps / 1000);
+      description.avgBitrateKbps =
+        avgBitrateBps > 0 && avgBitrateBps < 1000 ? 1 : Math.floor(avgBitrateBps / 1000);
       streamInfos.push(description);
     });
     return streamInfos;

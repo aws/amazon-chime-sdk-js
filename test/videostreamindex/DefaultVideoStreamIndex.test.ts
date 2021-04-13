@@ -1198,6 +1198,7 @@ describe('DefaultVideoStreamIndex', () => {
             streamId: 1,
             groupId: 1,
             maxBitrateKbps: 1400,
+            avgBitrateBps: 800,
             attendeeId: '688c',
             mediaType: SdkStreamMediaType.VIDEO,
           }),
@@ -1220,6 +1221,7 @@ describe('DefaultVideoStreamIndex', () => {
       index.integrateIndexFrame(indexFrame);
       const remoteDescriptions2 = index.remoteStreamDescriptions();
       expect(remoteDescriptions2.length).to.equal(3);
+      expect(remoteDescriptions2[0].avgBitrateKbps).to.equal(1);
     });
   });
 

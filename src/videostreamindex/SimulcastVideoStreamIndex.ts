@@ -95,9 +95,10 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
     const existingSet = new Set<number>(this.streamIdToBitrateKbpsMap.keys());
     for (const bitrateMsg of bitrateFrame.bitrates) {
       stillSending.add(bitrateMsg.sourceStreamId);
+      const avgBitrateBps = bitrateMsg.avgBitrateBps;
       this.streamIdToBitrateKbpsMap.set(
         bitrateMsg.sourceStreamId,
-        Math.trunc(bitrateMsg.avgBitrateBps / 1000)
+        avgBitrateBps > 0 && avgBitrateBps < 1000 ? 1 : Math.trunc(avgBitrateBps / 1000)
       );
     }
 
