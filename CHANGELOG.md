@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `package-lock.json` files now use the v2 lockfile format.
+- Configuration files now live in `/config`.
+
 ### Removed
 
 ### Fixed

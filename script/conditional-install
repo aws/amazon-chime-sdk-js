@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+require 'digest'
+
+def verbose command
+  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
+end
+
+# Why not read node_modules/.package-lock.json? Because it's not the same.
+hashfile = 'node_modules/.package-lock.json.hash'
+current = Digest::SHA2.file('package-lock.json').hexdigest
+expected = File.read(hashfile) if File.exists?(hashfile)
+
+if expected != current
+  puts 'Running npm ci to regenerate node_modules.'
+  verbose('npm ci')
+  File.write(hashfile, current)
+else
+  puts 'node_modules is up to date.'
+end

@@ -54,6 +54,4 @@ else
   puts "OK: No Changelog required"
 end
 
-# Pull in package fixes automatically.
-verbose('npm audit fix --only=prod')
-
+load 'script/audit-deps'
