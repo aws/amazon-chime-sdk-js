@@ -50,7 +50,16 @@ For example,
     npm run start --app=meetingReadinessChecker
     ```
 
-If you don't specify the `--app` option, it will run the `meetingV2` demo
+If you don't specify the `--app` option, it will run the `meetingV2` demo.
+
+When using npm v7 or higher, use `--env` instead of `--app`:
+
+```
+npm run start:hot -- --env app=meetingReadinessChecker
+npm run build -- --env app=meetingV2
+```
+
+`start:fast` is not currently supported for apps other than `meetingV2` with npm v7.
 
 After running `start` the first time, you can speed things up on subsequent iterations by using `start:fast`, e.g.
 

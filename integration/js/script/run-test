@@ -17,7 +17,7 @@ function start_demo_meeting {
         echo "Starting the meeting demo"
         ;;
     esac
-    npm run start $extra_args &> logs/$uuid.log &
+    npm run start $extra_args 2>&1 | tee -a logs/$uuid.log &
 }
 
 function did_server_start {
@@ -30,13 +30,13 @@ function did_server_start {
 
 function wait_for_demo_to_start {
     echo "Waiting for the demo to start"
-    threshold=40
+    threshold=60
     started=0
     retry_count=1
     while [ $started -eq 0 ] && [ $retry_count -lt $threshold ]
     do
       started=$(did_server_start $1)
-      sleep 3
+      sleep 5
       retry_count=$(($retry_count+1))
     done
 
