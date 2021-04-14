@@ -7,13 +7,15 @@ var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 /* eslint-enable */
 
-const app = process.env.npm_config_app || 'meetingV2';
-
 module.exports = env => {
+  console.info('Env:', JSON.stringify(env, null, 2));
+  console.info('App:', process.env.npm_config_app);
+  const app = env.app || process.env.npm_config_app || 'meetingV2';
+  console.info('Using app', app);
   return {
     devServer: {
       hot: true,
-      index: 'meetingV2.html',
+      index: `${app}.html`,
       onListening: (server) => {
         const { serve } = require('./server.js');
         serve('127.0.0.1:8081');

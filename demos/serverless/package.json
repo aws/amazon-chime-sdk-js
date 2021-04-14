@@ -6,10 +6,10 @@
     "deploy": "node ./deploy.js"
   },
   "dependencies": {
-    "aws-embedded-metrics": "^2.0.2",
-    "aws-sdk": "^2.875.0",
-    "fs-extra": "^9.0.0",
-    "uuid": "^8.2.0"
+    "aws-embedded-metrics": "^2.0.4",
+    "aws-sdk": "^2.886.0",
+    "fs-extra": "^9.1.0",
+    "uuid": "^8.3.2"
   },
   "license": "Apache-2.0",
   "repository": {
