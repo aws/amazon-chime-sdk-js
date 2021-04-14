@@ -13,7 +13,7 @@
     SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
     SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
     MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
-  
+
   jobs:
     integ-messaging:
       name: Messaging Integration Test
@@ -44,10 +44,10 @@
           uses: actions/checkout@v2
           with:
             fetch-depth: 0
-        - name: Setup Node.js - 12.x
+        - name: Setup Node.js - 14.x
           uses: actions/setup-node@v1
           with:
-            node-version: 12.x
+            node-version: 14.x
         - name: Install Kite
           run: integration/js/script/install-kite
         - name: Clean Install

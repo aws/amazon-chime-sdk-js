@@ -19,4 +19,4 @@ STDERR.puts "Generating docs against #{remote}/#{branch}."
 # Explicitly use the guides/tsconfig.json file, because it includes
 # both the source and docs. The build itself just uses the root tsconfig,
 # which just hits src.
-`node node_modules/typedoc/bin/typedoc --tsconfig guides/tsconfig.json --options typedoc.json --gitRemote #{remote} --gitRevision #{branch}`
+`node node_modules/typedoc/bin/typedoc --tsconfig guides/tsconfig.json --options config/typedoc.json --gitRemote #{remote} --gitRevision #{branch}`

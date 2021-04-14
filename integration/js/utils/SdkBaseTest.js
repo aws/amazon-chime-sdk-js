@@ -20,6 +20,10 @@ class SdkBaseTest extends KiteBaseTest {
       this.userArn = this.payload.userArn;
     }
 
+    if (['Video', 'Audio'].includes(testName)) {
+      this.url = this.getTransformedURL(this.url, 'attendee-presence-timeout-ms', 5000);
+    }
+
     this.originalURL = this.url;
     this.testReady = false;
     this.testFinish = false;

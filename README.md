@@ -79,7 +79,7 @@ If you have more questions, or require support for your business, you can reach 
 
 ## Installation
 
-Make sure you have Node.js version 10 or higher. Node 14 is recommended and supported.
+Make sure you have Node.js version 12 or higher. Node 14 is recommended and supported.
 
 To add the Amazon Chime SDK for JavaScript into an existing application,
 install the package directly from npm:

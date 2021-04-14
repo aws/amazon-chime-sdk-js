@@ -1,11 +1,11 @@
   name: Content Share Integration Workflow
-  
+
   on:
     pull_request:
       branches:
         - master
         - release-1.x
-  
+
   env:
     SELENIUM_GRID_PROVIDER: saucelabs
     CLOUD_WATCH_METRIC: false
@@ -43,10 +43,10 @@
           uses: actions/checkout@v2
           with:
             fetch-depth: 0
-        - name: Setup Node.js - 12.x
+        - name: Setup Node.js - 14.x
           uses: actions/setup-node@v1
           with:
-            node-version: 12.x
+            node-version: 14.x
         - name: Install Kite
           run: integration/js/script/install-kite
         - name: Clean Install
