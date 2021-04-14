@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+def verbose command
+  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
+end
+
+# Just so the devs can see.
+puts 'Auditing development dependencies. You should address any findings.'
+system('npm audit --only dev')
+
+puts '---'
+
+# Do not pull in package fixes automatically: it will cause the build to fail.
+puts 'Auditing production dependencies. You must address these.'
+verbose('npm audit --audit-level=moderate --production')
