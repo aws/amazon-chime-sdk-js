@@ -8,14 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Add the Messaging section in FAQs to describe how to receive messages without using the Chime SDK for JavaScript
+
+- Add the Messaging section in FAQs to describe how to receive messages
+  without using the Chime SDK for JavaScript.
+- `DefaultAudioVideoFacade.start` now takes an options argument. You can use
+  this to trigger a signaling socket connection prior to device selection: call
+  `audioVideo.start({ signalingOnly: true })`, and then later call
+  `audioVideo.start()` as usual.
 
 ### Changed
-- `startVideoPreviewForVideoInput` uses the active video input stream instead of calling `getUserMedia` again
+
+- `startVideoPreviewForVideoInput` uses the active video input stream instead
+  of calling `getUserMedia` again.
+- Meeting connections now do more work in parallel, which will improve
+  meeting join times.
 
 ### Removed
 
 ### Fixed
+
 - Fix `npm run start:hot` in the browser demo.
 
 ## [2.8.0] - 2021-04-23
@@ -35,7 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Disable audio properties on the peer connection if the join information does not include an audio host URL.
+- Disable audio properties on the peer connection if the join information
+  does not include an audio host URL.
 - `package-lock.json` files now use the v2 lockfile format.
 - Configuration files now live in `/config`.
 

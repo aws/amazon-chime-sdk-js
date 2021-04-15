@@ -376,6 +376,11 @@ meetingSession.audioVideo.stop<span class="hljs-literal">()</span>;
   }
 );
 </code></pre>
+					<a href="#how-can-i-speed-up-my-meeting-join-times" id="how-can-i-speed-up-my-meeting-join-times" style="color: inherit; text-decoration: none;">
+						<h3>How can I speed up my meeting join times?</h3>
+					</a>
+					<p>The most significant improvement comes from choosing the right region to host your meeting, as discussed earlier in this FAQ.</p>
+					<p>Meeting join comprises several steps, one of which is establishing a signaling connection. You can front-load this work by specifying <code>{ signalingOnly: true }</code> in a call to <code>start</code> as early as possible in your application — <em>e.g.</em>, in a device picker or lobby view — and then calling <code>start</code> again to finish joining the meeting. The attendee will not be shown as having joined the meeting until the second <code>start</code> call completes.</p>
 					<a href="#messaging" id="messaging" style="color: inherit; text-decoration: none;">
 						<h2>Messaging</h2>
 					</a>
@@ -383,8 +388,8 @@ meetingSession.audioVideo.stop<span class="hljs-literal">()</span>;
 						<h3>How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?</h3>
 					</a>
 					<p>Follow the instructions in the <a href="https://docs.aws.amazon.com/chime/latest/dg/websockets.html#connect-api">&quot;Using websockets to receive messages&quot; developer guide</a>.
-					To sign the URL in Python, use the example code in the <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541">GitHub issue #1241</a>.</p>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
+						To sign the URL in Python, use the example code in the <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541">GitHub issue #1241</a>.
+					<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>

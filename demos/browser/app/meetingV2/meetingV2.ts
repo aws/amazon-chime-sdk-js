@@ -63,6 +63,10 @@ import {
 } from './videofilter/SegmentationUtil';
 import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
 
+let SHOULD_EARLY_CONNECT = (() => {
+  return document.location.search.includes('earlyConnect=1');
+})();
+
 let SHOULD_DIE_ON_FATALS = (() => {
   const isLocal = document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
   const fatalYes = document.location.search.includes('fatal=1');
@@ -520,9 +524,21 @@ export class DemoMeetingApp
           }
           await this.openAudioOutputFromSelection();
           this.hideProgress('progress-authenticate');
+
+          // Open the signaling connection while the user is checking their input devices.
+          const preconnect = document.getElementById('preconnect') as HTMLInputElement;
+          if (preconnect.checked) {
+            this.audioVideo.start({ signalingOnly: true });
+          }
         }
       );
     });
+
+    const earlyConnectCheckbox = document.getElementById('preconnect') as HTMLInputElement;
+    earlyConnectCheckbox.checked = SHOULD_EARLY_CONNECT;
+    earlyConnectCheckbox.onchange = () => {
+      SHOULD_EARLY_CONNECT = !!earlyConnectCheckbox.checked;
+    }
 
     const dieCheckbox = document.getElementById('die') as HTMLInputElement;
     dieCheckbox.checked = SHOULD_DIE_ON_FATALS;
@@ -1284,6 +1300,7 @@ export class DemoMeetingApp
     window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
       this.log(event.reason);
     });
+
     this.audioVideo.start();
   }
 

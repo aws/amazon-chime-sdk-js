@@ -10,7 +10,7 @@
       "noOfThreads": 1,
       "testImpl": "AppQuitVideoTest.js",
       "payload": {
-        "url": "http://localhost:8080/",
+        "url": "http://localhost:8080/?earlyConnect=1",
         "retry": 2,
         "seleniumSessions": {
           "safari": 2,

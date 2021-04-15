@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
+import OnceTask from './OnceTask';
 import Task from './Task';
 import TaskStatus from './TaskStatus';
 
@@ -19,6 +20,10 @@ export default abstract class BaseTask implements Task {
   constructor(protected logger: Logger) {
     this.run = this.baseRun.bind(this, this.run);
     this.cancel = this.baseCancel.bind(this, this.cancel);
+  }
+
+  once(...dependencies: (Task | undefined)[]): OnceTask {
+    return new OnceTask(this.logger, this, dependencies);
   }
 
   cancel(): void {}
@@ -68,6 +73,7 @@ export default abstract class BaseTask implements Task {
 
   private baseCancel(originalCancel: () => void): void {
     if (this.status === TaskStatus.CANCELED || this.status === TaskStatus.FINISHED) {
+      this.logger.info(`Not canceling ${this.name()}: state is ${this.status}`);
       return;
     }
     this.logger.info(`canceling task ${this.name()}`);
