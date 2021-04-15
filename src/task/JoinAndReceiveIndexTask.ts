@@ -48,19 +48,20 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
 
         handleSignalingClientEvent(event: SignalingClientEvent): void {
           if (event.type === SignalingClientEventType.WebSocketClosed) {
-            context.logger.warn(
-              `signaling connection closed by server with code ${event.closeCode} and reason: ${event.closeReason}`
-            );
+            let message = `The signaling connection was closed with code ${event.closeCode} and reason: ${event.closeReason}`;
+            context.logger.warn(message);
+
             let statusCode: MeetingSessionStatusCode = MeetingSessionStatusCode.SignalingBadRequest;
             if (event.closeCode === 4410) {
-              context.logger.warn(`the meeting cannot be joined because it is has been ended`);
+              message = 'The meeting already ended.';
+              context.logger.warn(message);
               statusCode = MeetingSessionStatusCode.MeetingEnded;
             } else if (event.closeCode >= 4500 && event.closeCode < 4600) {
               statusCode = MeetingSessionStatusCode.SignalingInternalServerError;
             }
             context.audioVideoController.handleMeetingSessionStatus(
               new MeetingSessionStatus(statusCode),
-              null
+              new Error(message)
             );
             return;
           }

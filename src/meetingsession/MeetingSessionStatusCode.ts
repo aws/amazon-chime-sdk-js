@@ -18,8 +18,8 @@ export enum MeetingSessionStatusCode {
   AudioJoinedFromAnotherDevice = 2,
 
   /**
-   * The attendee should explicitly switch itself from joined with audio to
-   * checked-in.
+   * Deprecated. The attendee should explicitly switch itself from joined with audio to
+   * checked-in. This will be removed in v3.0.0.
    */
   AudioDisconnectAudio = 3,
 
@@ -35,13 +35,13 @@ export enum MeetingSessionStatusCode {
 
   /**
    * Deprecated. The meeting has ended. This is a legacy alias for MeetingEnded and will
-   * be removed in v2.0.0.
+   * be removed in v3.0.0.
    */
   AudioCallEnded = 6,
 
   /**
    * Deprecated. The meeting has ended. This is a legacy alias for MeetingEnded and will
-   * be removed in v2.0.0.
+   * be removed in v3.0.0.
    */
   TURNMeetingEnded = 6,
 
@@ -94,7 +94,8 @@ export enum MeetingSessionStatusCode {
   SignalingRequestFailed = 14,
 
   /**
-   * Failed to transition between two states for some reason
+   * Deprecated. Failed to transition between two states for some reason
+   * This will be removed in v3.0.0.
    */
   StateMachineTransitionFailed = 15,
 
@@ -122,7 +123,8 @@ export enum MeetingSessionStatusCode {
   TaskFailed = 19,
 
   /**
-   * Audio device has switched.
+   * Deprecated. Audio device has switched.
+   * This will be removed in v3.0.0.
    */
   AudioDeviceSwitched = 20,
 
