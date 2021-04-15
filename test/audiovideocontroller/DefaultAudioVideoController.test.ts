@@ -2132,7 +2132,7 @@ describe('DefaultAudioVideoController', () => {
       expect(events[3].attributes.meetingErrorMessage).includes(errorMessage);
     });
 
-    it('sends failure events with an empty error message', async () => {
+    it('sends failure events with a non-empty error message', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -2165,7 +2165,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingStartSucceeded',
         'meetingFailed',
       ]);
-      expect(events[3].attributes.meetingErrorMessage).to.equal('');
+      expect(events[3].attributes.meetingErrorMessage).not.to.be.empty;
     });
   });
 

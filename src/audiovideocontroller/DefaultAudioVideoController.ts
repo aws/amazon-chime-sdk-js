@@ -666,14 +666,16 @@ export default class DefaultAudioVideoController
         retryCount: this.totalRetryCount,
       };
 
+      /* istanbul ignore next: toString is optional */
+      const meetingErrorMessage = (error && error.message) || status.toString?.() || '';
       if (attributes.meetingDurationMs === 0) {
-        attributes.meetingErrorMessage = (error && error.message) || '';
+        attributes.meetingErrorMessage = meetingErrorMessage;
         delete attributes.meetingDurationMs;
         delete attributes.attendeePresenceDurationMs;
         delete attributes.meetingStartDurationMs;
         this.eventController.publishEvent('meetingStartFailed', attributes);
       } else if (status.isFailure() || status.isAudioConnectionFailure()) {
-        attributes.meetingErrorMessage = (error && error.message) || '';
+        attributes.meetingErrorMessage = meetingErrorMessage;
         this.eventController.publishEvent('meetingFailed', attributes);
       } else {
         this.eventController.publishEvent('meetingEnded', attributes);

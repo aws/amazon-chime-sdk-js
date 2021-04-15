@@ -21,6 +21,8 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.AudioDisconnectAudio,
     MeetingSessionStatusCode.AudioAuthenticationRejected,
     MeetingSessionStatusCode.AudioCallAtCapacity,
+    MeetingSessionStatusCode.AudioCallEnded,
+    MeetingSessionStatusCode.TURNMeetingEnded,
     MeetingSessionStatusCode.MeetingEnded,
     MeetingSessionStatusCode.AudioInternalServerError,
     MeetingSessionStatusCode.AudioServiceUnavailable,
@@ -31,10 +33,14 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.SignalingInternalServerError,
     MeetingSessionStatusCode.SignalingRequestFailed,
     MeetingSessionStatusCode.StateMachineTransitionFailed,
-    MeetingSessionStatusCode.TURNCredentialsForbidden,
     MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround,
     MeetingSessionStatusCode.ConnectionHealthReconnect,
     MeetingSessionStatusCode.RealtimeApiFailed,
+    MeetingSessionStatusCode.TaskFailed,
+    MeetingSessionStatusCode.AudioDeviceSwitched,
+    MeetingSessionStatusCode.IncompatibleSDP,
+    MeetingSessionStatusCode.TURNCredentialsForbidden,
+    MeetingSessionStatusCode.NoAttendeePresent,
   ];
 
   describe('isFailure', () => {
@@ -53,10 +59,13 @@ describe('MeetingSessionStatus', () => {
         MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround,
         MeetingSessionStatusCode.ConnectionHealthReconnect,
         MeetingSessionStatusCode.RealtimeApiFailed,
+        MeetingSessionStatusCode.TaskFailed,
+        MeetingSessionStatusCode.NoAttendeePresent,
       ]);
       for (const statusCode of statusCodes) {
         const status = new MeetingSessionStatus(statusCode);
         expect(status.isFailure()).to.equal(failureSet.has(status.statusCode()));
+        expect(status.toString()).not.to.be.empty;
       }
     });
   });
@@ -95,6 +104,7 @@ describe('MeetingSessionStatus', () => {
         MeetingSessionStatusCode.SignalingInternalServerError,
         MeetingSessionStatusCode.SignalingRequestFailed,
         MeetingSessionStatusCode.RealtimeApiFailed,
+        MeetingSessionStatusCode.NoAttendeePresent,
       ]);
       for (const statusCode of statusCodes) {
         const status = new MeetingSessionStatus(statusCode);
