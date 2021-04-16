@@ -88,6 +88,14 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
     }
   }
 
+  convertBpsToKbps(avgBitrateBps: number): number {
+    if (avgBitrateBps > 0 && avgBitrateBps < 1000) {
+      return 1;
+    } else {
+      return Math.trunc(avgBitrateBps / 1000);
+    }
+  }
+
   integrateBitratesFrame(bitrateFrame: SdkBitrateFrame): void {
     super.integrateBitratesFrame(bitrateFrame);
 
@@ -95,10 +103,9 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
     const existingSet = new Set<number>(this.streamIdToBitrateKbpsMap.keys());
     for (const bitrateMsg of bitrateFrame.bitrates) {
       stillSending.add(bitrateMsg.sourceStreamId);
-      const avgBitrateBps = bitrateMsg.avgBitrateBps;
       this.streamIdToBitrateKbpsMap.set(
         bitrateMsg.sourceStreamId,
-        avgBitrateBps > 0 && avgBitrateBps < 1000 ? 1 : Math.trunc(avgBitrateBps / 1000)
+        this.convertBpsToKbps(bitrateMsg.avgBitrateBps)
       );
     }
 
