@@ -88,14 +88,6 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
     }
   }
 
-  convertBpsToKbps(avgBitrateBps: number): number {
-    if (avgBitrateBps > 0 && avgBitrateBps < 1000) {
-      return 1;
-    } else {
-      return Math.trunc(avgBitrateBps / 1000);
-    }
-  }
-
   integrateBitratesFrame(bitrateFrame: SdkBitrateFrame): void {
     super.integrateBitratesFrame(bitrateFrame);
 
