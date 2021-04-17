@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is suspended.
 - Generated documentation no longer includes private members.
 - Include the default error message in "meetingStartFailed" and "meetingFailed" events.
+- Fix truncation in bps to kbps conversion that causes stream to stop under low bitrate.
 
 ## [2.7.0] - 2021-04-05
 

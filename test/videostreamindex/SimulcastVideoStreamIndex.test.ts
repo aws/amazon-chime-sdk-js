@@ -137,6 +137,37 @@ describe('SimulcastVideoStreamIndex', () => {
       expect(index.localStreamDescriptions().length).to.equal(3);
     });
 
+    it('updates stream description under low bitrate', () => {
+      const encodingParamArr: RTCRtpEncodingParameters[] = [];
+      const bitrateArr = [300, 500, 1500];
+      for (const bitrate of bitrateArr) {
+        const param: RTCRtpEncodingParameters = {
+          active: true,
+          maxBitrate: bitrate,
+        };
+        encodingParamArr.push(param);
+      }
+      const streamIdTestValue = 3;
+      const avgBitrateTestValue = 800;
+      const bitrateFrame = SdkBitrateFrame.create();
+      const bitrate = SdkBitrate.create();
+      bitrate.sourceStreamId = streamIdTestValue;
+      bitrate.avgBitrateBps = avgBitrateTestValue;
+      bitrateFrame.bitrates.push(bitrate);
+
+      const localDescs = index.localStreamDescriptions();
+      expect(localDescs.length).to.equal(0);
+
+      index.integrateUplinkPolicyDecision(encodingParamArr);
+      expect(index.localStreamDescriptions().length).to.equal(3);
+
+      index.integrateBitratesFrame(bitrateFrame);
+      expect(index.localStreamDescriptions().length).to.equal(3);
+
+      index.integrateBitratesFrame(bitrateFrame);
+      expect(index.localStreamDescriptions().length).to.equal(3);
+    });
+
     it('updates stream description and marks stream as disbableByWebRTC if two consecutive bitrate message do not contain stream id', () => {
       const encodingParamArr: RTCRtpEncodingParameters[] = [];
       const bitrateArr = [300, 0, 1500];
