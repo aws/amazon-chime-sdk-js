@@ -27,7 +27,8 @@ export default class MeetingSessionPOSTLogger implements Destroyable {
     private batchSize: number,
     private intervalMs: number,
     private url: string,
-    private level = LogLevel.WARN
+    private level = LogLevel.WARN,
+    private headers?: Record<string, string>
   ) {
     this.startLogPublishScheduler(this.batchSize);
 
@@ -105,6 +106,11 @@ export default class MeetingSessionPOSTLogger implements Destroyable {
         const response = await fetch(this.url, {
           method: 'POST',
           body,
+          ...(this.headers
+            ? {
+                headers: this.headers,
+              }
+            : {}),
         });
         if (response.status === 200) {
           this.logCapture = this.logCapture.slice(batch.length);
