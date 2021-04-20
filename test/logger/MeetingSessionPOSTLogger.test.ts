@@ -117,6 +117,23 @@ describe('MeetingSessionPOSTLogger', () => {
       done();
     });
 
+    it('should log when header is set', done => {
+      const logger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL,
+        LogLevel.INFO,
+        { 'Content-Type': 'application/json' }
+      );
+      logger.info('info');
+      logger.error('error');
+      expect(logger.getLogCaptureSize()).is.equal(2);
+      logger.stop();
+      done();
+    });
+
     it('should log nothing with LogLevel.OFF', done => {
       const logger = new MeetingSessionPOSTLogger(
         'testLogger',
@@ -249,6 +266,28 @@ describe('MeetingSessionPOSTLogger', () => {
         batchSize,
         intervalMs,
         BASE_URL
+      );
+      domMockBehavior.fetchSucceeds = true;
+      domMockBehavior.responseSuccess = true;
+      logger.error('error');
+      expect(logger.getLogCaptureSize()).is.equal(1);
+      logger.startLogPublishScheduler(batchSize);
+      new TimeoutScheduler(100).start(() => {
+        logger.stop();
+        done();
+      });
+    });
+
+    it('handles when the fetch call succeeds with header and response returns 200', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const logger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL,
+        LogLevel.INFO,
+        { 'Content-Type': 'application/json' }
       );
       domMockBehavior.fetchSucceeds = true;
       domMockBehavior.responseSuccess = true;
