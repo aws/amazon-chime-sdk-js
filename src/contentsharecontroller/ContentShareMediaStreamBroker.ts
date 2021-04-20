@@ -23,6 +23,7 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
 
   async acquireAudioInputStream(): Promise<MediaStream> {
     if (this._mediaStream.getAudioTracks().length === 0) {
+      this.logger.info('No audio stream available. Synthesizing an audio stream.');
       return DefaultDeviceController.synthesizeAudioDevice(0) as MediaStream;
     }
     return this._mediaStream;
