@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add optional header parameter to the MeetingPOSTLogger
+- Add extra logging for synthesizing an audio stream
 
 ### Changed
 
