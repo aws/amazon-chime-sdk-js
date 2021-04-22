@@ -397,6 +397,7 @@ export default class MonitorTask
     present: boolean
   ): void => {
     const attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
+    this.logger.info(`attendeePresenceReceived: ${attendeeId}`);
     if (attendeeId === presentAttendeeId && present && !this.presenceHandlerCalled) {
       this.presenceHandlerCalled = true;
       this.context.attendeePresenceDurationMs = Date.now() - this.context.startAudioVideoTimestamp;
