@@ -103,6 +103,10 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers" class="tsd-kind-icon">enable<wbr>Unified<wbr>Plan<wbr>For<wbr>Chromium<wbr>Based<wbr>Browsers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#externalmeetingid" class="tsd-kind-icon">external<wbr>Meeting<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#meetingid" class="tsd-kind-icon">meeting<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#reconnectfixedwaitms" class="tsd-kind-icon">reconnect<wbr>Fixed<wbr>Wait<wbr>Ms</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#reconnectlongbackoffms" class="tsd-kind-icon">reconnect<wbr>Long<wbr>Back<wbr>Off<wbr>Ms</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#reconnectshortbackoffms" class="tsd-kind-icon">reconnect<wbr>Short<wbr>Back<wbr>Off<wbr>Ms</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#reconnecttimeoutms" class="tsd-kind-icon">reconnect<wbr>Timeout<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#screensharingtimeoutms" class="tsd-kind-icon">screen<wbr>Sharing<wbr>Timeout<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#screenviewingtimeoutms" class="tsd-kind-icon">screen<wbr>Viewing<wbr>Timeout<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#urls" class="tsd-kind-icon">urls</a></li>
@@ -125,7 +129,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L84">src/meetingsession/MeetingSessionConfiguration.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L104">src/meetingsession/MeetingSessionConfiguration.ts:104</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -257,7 +261,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Simulcast<wbr>For<wbr>Unified<wbr>Plan<wbr>Chromium<wbr>Based<wbr>Browsers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L72">src/meetingsession/MeetingSessionConfiguration.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L92">src/meetingsession/MeetingSessionConfiguration.ts:92</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -272,7 +276,7 @@
 					<div class="tsd-signature tsd-kind-icon">enable<wbr>Unified<wbr>Plan<wbr>For<wbr>Chromium<wbr>Based<wbr>Browsers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L67">src/meetingsession/MeetingSessionConfiguration.ts:67</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L87">src/meetingsession/MeetingSessionConfiguration.ts:87</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -308,6 +312,66 @@
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The id of the meeting the session is joining.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="reconnectfixedwaitms" class="tsd-anchor"></a>
+					<h3>reconnect<wbr>Fixed<wbr>Wait<wbr>Ms</h3>
+					<div class="tsd-signature tsd-kind-icon">reconnect<wbr>Fixed<wbr>Wait<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L72">src/meetingsession/MeetingSessionConfiguration.ts:72</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Fixed wait amount in milliseconds between reconnecting attempts.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="reconnectlongbackoffms" class="tsd-anchor"></a>
+					<h3>reconnect<wbr>Long<wbr>Back<wbr>Off<wbr>Ms</h3>
+					<div class="tsd-signature tsd-kind-icon">reconnect<wbr>Long<wbr>Back<wbr>Off<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 5 * 1000</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L82">src/meetingsession/MeetingSessionConfiguration.ts:82</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The long back-off time in milliseconds between reconnecting attempts.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="reconnectshortbackoffms" class="tsd-anchor"></a>
+					<h3>reconnect<wbr>Short<wbr>Back<wbr>Off<wbr>Ms</h3>
+					<div class="tsd-signature tsd-kind-icon">reconnect<wbr>Short<wbr>Back<wbr>Off<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1 * 1000</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L77">src/meetingsession/MeetingSessionConfiguration.ts:77</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The short back-off time in milliseconds between reconnecting attempts.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="reconnecttimeoutms" class="tsd-anchor"></a>
+					<h3>reconnect<wbr>Timeout<wbr>Ms</h3>
+					<div class="tsd-signature tsd-kind-icon">reconnect<wbr>Timeout<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 120 * 1000</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L67">src/meetingsession/MeetingSessionConfiguration.ts:67</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Maximum amount of time in milliseconds to allow for reconnecting.</p>
 						</div>
 					</div>
 				</section>
@@ -362,7 +426,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Downlink<wbr>Bandwidth<wbr>Policy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videodownlinkbandwidthpolicy.html" class="tsd-signature-type">VideoDownlinkBandwidthPolicy</a><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L78">src/meetingsession/MeetingSessionConfiguration.ts:78</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L98">src/meetingsession/MeetingSessionConfiguration.ts:98</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -378,7 +442,7 @@
 					<div class="tsd-signature tsd-kind-icon">video<wbr>Uplink<wbr>Bandwidth<wbr>Policy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/videouplinkbandwidthpolicy.html" class="tsd-signature-type">VideoUplinkBandwidthPolicy</a><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L84">src/meetingsession/MeetingSessionConfiguration.ts:84</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L104">src/meetingsession/MeetingSessionConfiguration.ts:104</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -431,6 +495,18 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="meetingsessionconfiguration.html#meetingid" class="tsd-kind-icon">meeting<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="meetingsessionconfiguration.html#reconnectfixedwaitms" class="tsd-kind-icon">reconnect<wbr>Fixed<wbr>Wait<wbr>Ms</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="meetingsessionconfiguration.html#reconnectlongbackoffms" class="tsd-kind-icon">reconnect<wbr>Long<wbr>Back<wbr>Off<wbr>Ms</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="meetingsessionconfiguration.html#reconnectshortbackoffms" class="tsd-kind-icon">reconnect<wbr>Short<wbr>Back<wbr>Off<wbr>Ms</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="meetingsessionconfiguration.html#reconnecttimeoutms" class="tsd-kind-icon">reconnect<wbr>Timeout<wbr>Ms</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="meetingsessionconfiguration.html#screensharingtimeoutms" class="tsd-kind-icon">screen<wbr>Sharing<wbr>Timeout<wbr>Ms</a>

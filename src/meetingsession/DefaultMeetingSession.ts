@@ -27,11 +27,6 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
   private _deviceController: DeviceController;
   private audioVideoFacade: AudioVideoFacade;
 
-  private static RECONNECT_TIMEOUT_MS = 120 * 1000;
-  private static RECONNECT_FIXED_WAIT_MS = 0;
-  private static RECONNECT_SHORT_BACKOFF_MS = 1 * 1000;
-  private static RECONNECT_LONG_BACKOFF_MS = 5 * 1000;
-
   constructor(
     configuration: MeetingSessionConfiguration,
     logger: Logger,
@@ -49,11 +44,11 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       new DefaultWebSocketAdapter(this._logger),
       deviceController,
       new DefaultReconnectController(
-        DefaultMeetingSession.RECONNECT_TIMEOUT_MS,
+        this._configuration.reconnectTimeoutMs,
         new FullJitterBackoff(
-          DefaultMeetingSession.RECONNECT_FIXED_WAIT_MS,
-          DefaultMeetingSession.RECONNECT_SHORT_BACKOFF_MS,
-          DefaultMeetingSession.RECONNECT_LONG_BACKOFF_MS
+          this._configuration.reconnectFixedWaitMs,
+          this._configuration.reconnectShortBackOffMs,
+          this._configuration.reconnectLongBackOffMs
         )
       )
     );
@@ -69,11 +64,11 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
         new DefaultWebSocketAdapter(this._logger),
         contentShareMediaStreamBroker,
         new DefaultReconnectController(
-          DefaultMeetingSession.RECONNECT_TIMEOUT_MS,
+          this._configuration.reconnectTimeoutMs,
           new FullJitterBackoff(
-            DefaultMeetingSession.RECONNECT_FIXED_WAIT_MS,
-            DefaultMeetingSession.RECONNECT_SHORT_BACKOFF_MS,
-            DefaultMeetingSession.RECONNECT_LONG_BACKOFF_MS
+            this._configuration.reconnectFixedWaitMs,
+            this._configuration.reconnectShortBackOffMs,
+            this._configuration.reconnectLongBackOffMs
           )
         )
       ),

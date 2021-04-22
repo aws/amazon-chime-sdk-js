@@ -23,7 +23,7 @@ export default class MessagingSessionConfiguration {
   reconnectShortBackoffMs: number = 1 * 1000;
 
   /**
-   * The short back off time in milliseconds between reconnecting attempts.
+   * The long back off time in milliseconds between reconnecting attempts.
    */
   reconnectLongBackoffMs: number = 5 * 1000;
 
