@@ -730,8 +730,8 @@ inputElement.addEventListener('change', async () => {
   videoElement.src = url;
   await videoElement.play();
 
-  const mediaSream = videoElement.captureStream(); /* use mozCaptureStream for Firefox e.g. videoElement.mozCaptureStream(); */
-  await meetingSession.audioVideo.startContentShare(mediaSream);
+  const mediaStream = videoElement.captureStream(); /* use mozCaptureStream for Firefox e.g. videoElement.mozCaptureStream(); */
+  await meetingSession.audioVideo.startContentShare(mediaStream);
   inputElement.value = '';
 });
 ```
