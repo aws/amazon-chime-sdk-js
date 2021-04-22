@@ -12,13 +12,6 @@ let enableTerminationProtection = false;
 let disablePrintingLogs = false;
 let chimeEndpoint = 'https://service.chime.aws.amazon.com'
 
-const packages = [
-  // Use latest AWS SDK instead of default version provided by Lambda runtime
-  'aws-sdk',
-  'uuid',
-  'aws-embedded-metrics',
-];
-
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
   console.log(`  -r, --region                         Target region, default '${region}'`);
@@ -148,9 +141,7 @@ function ensureTools() {
   spawnOrFail('aws', ['--version']);
   spawnOrFail('sam', ['--version']);
 
-  // Work around https://github.com/awslabs/aws-embedded-metrics-node/issues/84.
-  // When that issue is fixed, you can remove --legacy-peer-deps.
-  spawnOrFail('npm', ['install', '--legacy-peer-deps']);
+  spawnOrFail('npm', ['install']);
 }
 
 parseArgs();
@@ -164,17 +155,8 @@ if (!fs.existsSync('build')) {
 console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}, disable-printing-logs ${disablePrintingLogs}`);
 ensureBucket();
 
-for (const package of packages) {
-  // Work around https://github.com/awslabs/aws-embedded-metrics-node/issues/84.
-  // When that issue is fixed, you can remove --legacy-peer-deps.
-  const installArgs = ['--production', '--legacy-peer-deps'];
-  spawnOrFail('npm', ['install', ...installArgs], {cwd: path.join(__dirname, 'node_modules', package)});
-
-  fs.removeSync(path.join(__dirname, 'src', package));
-  fs.copySync(path.join(__dirname, 'node_modules', package), path.join(__dirname, 'src', package));
-}
-
 fs.copySync(appHtml(app), 'src/index.html');
+spawnOrFail('npm', ['install'], {cwd: path.join(__dirname, 'src')});
 
 spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,

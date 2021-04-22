@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const AWS = require('./aws-sdk');
+const AWS = require('aws-sdk');
 const fs = require('fs');
-const { v4: uuidv4 } = require('./uuid');
-const { metricScope } = require('./aws-embedded-metrics');
+const { v4: uuidv4 } = require('uuid');
+const { metricScope } = require('aws-embedded-metrics');
 
 // Store meetings in a DynamoDB table so attendees can join by meeting title
 const ddb = new AWS.DynamoDB();
