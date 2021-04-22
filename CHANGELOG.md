@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional header parameter to the MeetingPOSTLogger
 - Add extra logging for synthesizing an audio stream
 - Add logging for attendeePresenceReceived
+- Add reconnection configuration in Meeting Session Configuration
 
 ### Changed
 
