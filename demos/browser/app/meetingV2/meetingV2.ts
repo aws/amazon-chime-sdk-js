@@ -1345,14 +1345,6 @@ export class DemoMeetingApp
       } else if (this.roster[attendeeId].active) {
         statusText = 'SPEAKING';
         statusClass += 'badge-success';
-      } else if (this.roster[attendeeId].volume > 0) {
-        statusClass += 'badge-success';
-      } else if (this.roster[attendeeId].pinned) {
-        statusText = 'PINNED';
-        statusClass += 'badge-success';
-      } else if (this.roster[attendeeId].bandwidthConstrained) {
-        statusText = 'PAUSED';
-        statusClass += 'badge-success';
       }
       this.updateProperty(spanName, 'innerText', this.roster[attendeeId].name);
       this.updateProperty(spanStatus, 'innerText', statusText);
@@ -2491,7 +2483,6 @@ export class DemoMeetingApp
           (event.target as HTMLButtonElement).innerText = 'Unpin';
           this.roster[attendeeId].pinned = true;
         }
-        this.updateRoster();
         this.updateDownlinkPreference();
       }
   }
@@ -2562,7 +2553,7 @@ export class DemoMeetingApp
     this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#')[1]);
     this.updateProperty(attendeeIdElement, 'innerText', tileState.boundAttendeeId);
     if (tileState.paused && this.roster[tileState.boundAttendeeId].bandwidthConstrained) {
-      this.updateProperty(pauseStateElement, 'innerText', 'PAUSED due to BW');
+      this.updateProperty(pauseStateElement, 'innerText', '⚡');
     } else {
       this.updateProperty(pauseStateElement, 'innerText', '');
     }
@@ -2775,7 +2766,6 @@ export class DemoMeetingApp
         this.roster[source.attendee.attendeeId].hasVideo = true;
       }
     }
-    this.updateRoster();
     this.updateDownlinkPreference();
   }
 
@@ -2783,14 +2773,12 @@ export class DemoMeetingApp
     this.log(`Tile ${tileId} will be paused due to insufficient bandwidth`);
     const attendeeId = this.audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
     this.roster[attendeeId].bandwidthConstrained = true;
-    this.updateRoster();
   }
 
   tileWillBeUnpausedByDownlinkPolicy(tileId: number): void {
     this.log(`Tile ${tileId} will be resumed due to sufficient bandwidth`);
     const attendeeId = this.audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
     this.roster[attendeeId].bandwidthConstrained = false;
-    this.updateRoster();
   }
 }
 

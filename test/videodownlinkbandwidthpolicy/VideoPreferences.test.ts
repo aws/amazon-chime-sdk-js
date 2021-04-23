@@ -73,6 +73,42 @@ describe('VideoPreferences', () => {
     expect(p1.equals(p2)).to.be.true;
   });
 
+  it('replaces only first occurance', () => {
+    const b1: MutableVideoPreferences = VideoPreferences.prepare();
+    b1.add(new VideoPreference('foo', 1));
+    b1.add(new VideoPreference('foo', 2));
+    b1.add(new VideoPreference('foo', 3));
+    b1.add(new VideoPreference('foo', 4));
+    b1.replaceFirst(new VideoPreference('foo', 1), (item: VideoPreference) => {
+      return item.priority % 2 === 0;
+    });
+    const p1 = b1.build();
+
+    const b2 = VideoPreferences.prepare();
+    b2.add(new VideoPreference('foo', 1));
+    b2.add(new VideoPreference('foo', 3));
+    b2.add(new VideoPreference('foo', 4));
+    const p2 = b2.build();
+
+    expect(p1.equals(p2)).to.be.true;
+  });
+
+  it("replace doesn't create duplicates", () => {
+    const b1: MutableVideoPreferences = VideoPreferences.prepare();
+    b1.add(new VideoPreference('foo', 3));
+    b1.replaceFirst(new VideoPreference('foo', 1), (item: VideoPreference) => {
+      return item.priority % 2 === 0;
+    });
+    const p1 = b1.build();
+
+    const b2 = VideoPreferences.prepare();
+    b2.add(new VideoPreference('foo', 1));
+    b2.add(new VideoPreference('foo', 3));
+    const p2 = b2.build();
+
+    expect(p1.equals(p2)).to.be.true;
+  });
+
   it('can handle duplicates', () => {
     const b1 = VideoPreferences.prepare();
     b1.add(new VideoPreference('foo', 1));

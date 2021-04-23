@@ -37,12 +37,20 @@ class ObjectSet<T extends Eq & PartialOrd> implements Iterable<T> {
   }
 
   add(item: T): void {
+    // If this is used elsewhere, there needs to be a duplicate check here
     this.items.push(item);
   }
 
   replaceFirst(newItem: T, f: (item: T) => boolean): void {
-    this.items = this.items.filter(a => !f(a));
-    this.add(newItem);
+    const pos = this.items.findIndex(f);
+    if (pos === -1) {
+      // If this is used elsewhere, there needs to be a duplicate check here
+      this.items.push(newItem);
+    } else if (!this.has(newItem)) {
+      this.items[pos] = newItem;
+    } else {
+      this.items.splice(pos, 1);
+    }
   }
 
   remove(item: T): void {
@@ -121,8 +129,8 @@ class SetBuilder<T extends Eq & PartialOrd> {
   }
 
   replaceFirst(newItem: T, f: (item: T) => boolean): void {
-    // Don't actually need to COW unless the item is there to add
-    // or the previous is there to remove
+    // Don't actually need to COW unless the item is already there
+    // and there are no items to replace
     if (this.items.has(newItem) && !this.items.some(f)) {
       return;
     }
