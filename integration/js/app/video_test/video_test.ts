@@ -14,7 +14,7 @@ import {
   VideoPriorityBasedPolicy,
   VideoPreference,
   VideoPreferences,
-  TargetDisplaySize
+  TargetDisplaySize,
 } from 'amazon-chime-sdk-js';
 
 export class DemoMeetingApp implements AudioVideoObserver {

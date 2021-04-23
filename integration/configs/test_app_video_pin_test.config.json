@@ -1,15 +1,15 @@
 {
     "`": 1,
-    "name": "test_app_video_end2end_test.config.json %ts",
+    "name": "test_app_video_pin_test.config.json %ts",
     "grids": [
     ],
     "tests": [
       {
-        "name": "Test App End2End Video Test %ts",
-        "description": "Test App End2End Video Test",
-        "tupleSize": 2,
+        "name": "Test App Video Pin Test %ts",
+        "description": "Test App Video Pin Test",
+        "tupleSize": 1,
         "noOfThreads": 1,
-        "testImpl": "VideoEnd2EndTest.js",
+        "testImpl": "VideoPinTest.js",
         "payload": {
           "url": "http://localhost:8080/",
           "port": 30002,

@@ -4,7 +4,6 @@ class ClickPinVideoTileButton extends AppTestStep {
   constructor(kiteBaseTest, sessionInfo, attendee_id) {
     super(kiteBaseTest, sessionInfo);
     this.attendee_id = attendee_id;
-    this.video_element_id = video_element_id;
   }
 
   static async executeStep(KiteBaseTest, sessionInfo, attendee_id) {

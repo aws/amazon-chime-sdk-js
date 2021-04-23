@@ -1,7 +1,7 @@
 const {TestUtils} = require('kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
-const {OpenAppStep, AuthenticateUserStep, ClickStartLocalVideoButton, ClickStopLocalVideoButton, ClickUnbindVideoElementButton, ClickBindVideoElementButton} = require('./steps');
-const {TileStateCheck} = require('./checks');
+const {OpenAppStep, AuthenticateUserStep, ClickStartLocalVideoButton, ClickPinVideoTileButton, ClickUnpinVideoTileButton} = require('./steps');
+const {VideoPreferenceCheck} = require('./checks');
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -11,14 +11,16 @@ class VideoPinTest extends SdkBaseTest {
   }
 
   async runIntegrationTest() {
-    const attendeeID = uuidv4();
+    const attendeeId = uuidv4();
     const session = this.seleniumSessions[0];
     const useSimulcast = this.useSimulcast;
     await OpenAppStep.executeStep(this, session);
-    await AuthenticateUserStep.executeStep(this, session, attendeeID, useSimulcast);
+    await AuthenticateUserStep.executeStep(this, session, attendeeId, useSimulcast);
     await ClickStartLocalVideoButton.executeStep(this, session);
-    await ClickPinVideoTileButton.executeStep(this, session, attendeeID);
-    await VideoPreferenceCheck.executeStep(this, session, 'attendeeId', 'priority', 'targetSize');
+    await ClickPinVideoTileButton.executeStep(this, session, attendeeId);
+    await VideoPreferenceCheck.executeStep(this, session, attendeeId, 1, 2);
+    await ClickUnpinVideoTileButton.executeStep(this, session, attendeeId);
+    await VideoPreferenceCheck.executeStep(this, session, attendeeId, 2, 2);
     await this.waitAllSteps();
   }
 }

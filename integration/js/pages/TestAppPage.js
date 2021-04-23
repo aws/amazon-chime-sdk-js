@@ -37,8 +37,9 @@ function findAllElements() {
     haveVideoTilesWithStreamsElementId: By.id('have-video-tiles-with-streams-boolean'),
     pinVideoTileAttendeeIdInput: By.id('pin-attendee-id'),
     pinVideoTileButton: By.id('pin-video-tile'),
-    unpinVideoTileAttendeeIdInput: By.id('pin-attendee-id'),
-    unpinVideoTileButton: By.id('pin-video-tile'),
+    unpinVideoTileAttendeeIdInput: By.id('unpin-attendee-id'),
+    unpinVideoTileButton: By.id('unpin-video-tile'),
+    videoPreference: By.id('video-preference'),
   };
 }
 
@@ -154,18 +155,22 @@ class TestAppPage {
     return false;
   }
 
-  async videoPreferenceCheck(tileStateElementId, tileStateAttribute, tileStateValue) {
-    let localVideoTileState = await this.driver.findElement(By.id(tileStateElementId));
-    if (!localVideoTileState) {
+  async videoPreferenceCheck(attendeeId, priority, targetSize) {
+    let videoPreference = await this.driver.findElement(elements.videoPreference);
+    if (!videoPreference) {
       return false;
     }
-    let tileState =  await localVideoTileState.getText();
-    if (!tileState) {
+    let preference =  await videoPreference.getText();
+    if (!preference) {
       return false;
     }
-    let tileStateJson = JSON.parse(tileState);
-    let tileStateJsonAttribute = tileStateJson[tileStateAttribute];
-    if (tileStateValue === tileStateJsonAttribute) {
+    let preferenceJson = JSON.parse(preference);
+    let attendeeIdAttribute = preferenceJson['attendeeId'];
+    let priorityAttribute = preferenceJson['priority'];
+    let targetSizeAttribute = preferenceJson['targetSize'];
+    if (attendeeIdAttribute === attendeeId &&
+        priorityAttribute === priority &&
+        targetSizeAttribute === targetSize) {
       return true;
     }
     return false;

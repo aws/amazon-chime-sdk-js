@@ -10,19 +10,19 @@ class VideoPreferenceCheck extends AppTestStep {
     this.targetSize = targetSize;
   }
 
-  static async executeStep(KiteBaseTest, sessionInfo, tileStateElementId, tileStateAttribute, tileStateValue) {
-    const step = new VideoPreferenceCheck(KiteBaseTest, sessionInfo, tileStateElementId, tileStateAttribute, tileStateValue);
+  static async executeStep(KiteBaseTest, sessionInfo, attendeeId, priority, targetSize) {
+    const step = new VideoPreferenceCheck(KiteBaseTest, sessionInfo, attendeeId, priority, targetSize);
     await step.execute(KiteBaseTest);
   }
 
   stepDescription() {
-    return 'Check tileState';
+    return 'Check videoPreference';
   }
 
   async run() {
-      const tileStateCheckPassed = await this.page.videoPreferenceCheck(this.tileStateElementId, this.tileStateAttribute, this.tileStateValue);
-      if (!tileStateCheckPassed) {
-        throw new KiteTestError(Status.FAILED, `TileState ${this.tileStateAttribute} was not correct`);
+      const videoPreferenceCheckPassed = await this.page.videoPreferenceCheck(this.attendeeId, this.priority, this.targetSize);
+      if (!videoPreferenceCheckPassed) {
+        throw new KiteTestError(Status.FAILED, `VideoPreference attendee: ${this.attendeeId}, priority: ${this.priority}, targetSize: ${this.targetSize} was not correct`);
       }
   }
 }

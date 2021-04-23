@@ -17,6 +17,7 @@ exports.MeetingReadinessCheckerNetworkUdpCheck = require('./MeetingReadinessChec
 exports.VoiceFocusOfferedCheck = require('./VoiceFocusOfferedCheck');
 exports.SocketSubscribeMessageCheck = require('./SocketSubscribeMessageCheck');
 exports.TileStateCheck = require('./TileStateCheck');
+exports.VideoPreferenceCheck = require('./VideoPreferenceCheck');
 exports.HasStartedLocalVideoTileCheck = require('./HasStartedLocalVideoTileCheck');
 exports.AddVideoTileCheck = require('./AddVideoTileCheck');
 exports.GetAllRemoteVideoTilesCheck = require('./GetAllRemoteVideoTilesCheck');
