@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RateProbeState | amazon-chime-sdk-js</title>
+	<title>TargetDisplaySize | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,16 +56,24 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="rateprobestate.html">RateProbeState</a>
+					<a href="targetdisplaysize.html">TargetDisplaySize</a>
 				</li>
 			</ul>
-			<h1>Enumeration RateProbeState</h1>
+			<h1>Enumeration TargetDisplaySize</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p><a href="targetdisplaysize.html">TargetDisplaySize</a> represents the max resolution that a video stream can have when simulcast is enabled in priority based downlink policy.
+						If there is only one stream being sent, then this field will get ignored.  Its values currently parallel <a href="simulcastlayers.html">SimulcastLayers</a>.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -73,9 +81,9 @@
 						<section class="tsd-index-section ">
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="rateprobestate.html#knotprobing" class="tsd-kind-icon">k<wbr>Not<wbr>Probing</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="rateprobestate.html#kprobepending" class="tsd-kind-icon">k<wbr>Probe<wbr>Pending</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="rateprobestate.html#kprobing" class="tsd-kind-icon">k<wbr>Probing</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="targetdisplaysize.html#high" class="tsd-kind-icon">High</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="targetdisplaysize.html#low" class="tsd-kind-icon">Low</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="targetdisplaysize.html#medium" class="tsd-kind-icon">Medium</a></li>
 							</ul>
 						</section>
 					</div>
@@ -84,34 +92,49 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Enumeration members</h2>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="knotprobing" class="tsd-anchor"></a>
-					<h3>k<wbr>Not<wbr>Probing</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>Not<wbr>Probing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;Not Probing&quot;</span></div>
+					<a name="high" class="tsd-anchor"></a>
+					<h3>High</h3>
+					<div class="tsd-signature tsd-kind-icon">High<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L31">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/TargetDisplaySize.ts#L22">src/videodownlinkbandwidthpolicy/TargetDisplaySize.ts:22</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>High resolution video stream.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="kprobepending" class="tsd-anchor"></a>
-					<h3>k<wbr>Probe<wbr>Pending</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>Probe<wbr>Pending<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;Probe Pending&quot;</span></div>
+					<a name="low" class="tsd-anchor"></a>
+					<h3>Low</h3>
+					<div class="tsd-signature tsd-kind-icon">Low<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L32">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/TargetDisplaySize.ts#L12">src/videodownlinkbandwidthpolicy/TargetDisplaySize.ts:12</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Low resolution video stream.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="kprobing" class="tsd-anchor"></a>
-					<h3>k<wbr>Probing</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>Probing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;Probing&quot;</span></div>
+					<a name="medium" class="tsd-anchor"></a>
+					<h3>Medium</h3>
+					<div class="tsd-signature tsd-kind-icon">Medium<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L33">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/TargetDisplaySize.ts#L17">src/videodownlinkbandwidthpolicy/TargetDisplaySize.ts:17</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Medium resolution video stream.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -128,16 +151,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-enum">
-						<a href="rateprobestate.html" class="tsd-kind-icon">Rate<wbr>Probe<wbr>State</a>
+						<a href="targetdisplaysize.html" class="tsd-kind-icon">Target<wbr>Display<wbr>Size</a>
 						<ul>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="rateprobestate.html#knotprobing" class="tsd-kind-icon">k<wbr>Not<wbr>Probing</a>
+								<a href="targetdisplaysize.html#high" class="tsd-kind-icon">High</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="rateprobestate.html#kprobepending" class="tsd-kind-icon">k<wbr>Probe<wbr>Pending</a>
+								<a href="targetdisplaysize.html#low" class="tsd-kind-icon">Low</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="rateprobestate.html#kprobing" class="tsd-kind-icon">k<wbr>Probing</a>
+								<a href="targetdisplaysize.html#medium" class="tsd-kind-icon">Medium</a>
 							</li>
 						</ul>
 					</li>

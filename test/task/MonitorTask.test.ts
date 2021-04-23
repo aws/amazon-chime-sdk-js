@@ -561,7 +561,7 @@ describe('MonitorTask', () => {
       context.videoStreamIndex = new SimulcastVideoStreamIndex(logger);
 
       context.videoUplinkBandwidthPolicy = new TestVideoUplinkPolicy('self', logger);
-      context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger, null);
+      context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger);
       const spy = sinon.spy(context.audioVideoController, 'update');
       // task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
       const metric = 'bytesReceived';

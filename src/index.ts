@@ -212,6 +212,7 @@ import Some from './maybe/Some';
 import StatsCollector from './statscollector/StatsCollector';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
 import SubscribeAndReceiveSubscribeAckTask from './task/SubscribeAndReceiveSubscribeAckTask';
+import TargetDisplaySize from './videodownlinkbandwidthpolicy/TargetDisplaySize';
 import Task from './task/Task';
 import TaskCanceler from './taskcanceler/TaskCanceler';
 import TaskStatus from './task/TaskStatus';
@@ -224,6 +225,7 @@ import Versioning from './versioning/Versioning';
 import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
+import VideoDownlinkObserver from './videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoElementFactory from './videoelementfactory/VideoElementFactory';
 import VideoFrameBuffer from './videoframeprocessor/VideoFrameBuffer';
 import VideoFrameProcessor from './videoframeprocessor/VideoFrameProcessor';
@@ -232,6 +234,9 @@ import VideoFrameProcessorPipelineObserver from './videoframeprocessor/VideoFram
 import VideoInputDevice from './devicecontroller/VideoInputDevice';
 import VideoLogEvent from './statscollector/VideoLogEvent';
 import VideoOnlyTransceiverController from './transceivercontroller/VideoOnlyTransceiverController';
+import VideoPreference from './videodownlinkbandwidthpolicy/VideoPreference';
+import VideoPreferences from './videodownlinkbandwidthpolicy/VideoPreferences';
+import VideoPriorityBasedPolicy from './videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
 import VideoSource from './videosource/VideoSource';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
@@ -256,6 +261,7 @@ import VolumeIndicatorCallback from './realtimecontroller/VolumeIndicatorCallbac
 import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
+import { MutableVideoPreferences } from './videodownlinkbandwidthpolicy/VideoPreferences';
 import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
 import { isDestroyable } from './destroyable/Destroyable';
 import { isVideoTransformDevice } from './devicecontroller/VideoTransformDevice';
@@ -410,6 +416,7 @@ export {
   Modality,
   MonitorTask,
   MultiLogger,
+  MutableVideoPreferences,
   NScaleVideoUplinkBandwidthPolicy,
   NoOpAudioVideoController,
   NoOpDebugLogger,
@@ -475,6 +482,7 @@ export {
   StatsCollector,
   StreamMetricReport,
   SubscribeAndReceiveSubscribeAckTask,
+  TargetDisplaySize,
   Task,
   TaskCanceler,
   TaskStatus,
@@ -487,6 +495,7 @@ export {
   VideoAdaptiveProbePolicy,
   VideoCaptureAndEncodeParameter,
   VideoDownlinkBandwidthPolicy,
+  VideoDownlinkObserver,
   VideoElementFactory,
   VideoFrameBuffer,
   VideoFrameProcessor,
@@ -495,6 +504,9 @@ export {
   VideoInputDevice,
   VideoLogEvent,
   VideoOnlyTransceiverController,
+  VideoPreference,
+  VideoPreferences,
+  VideoPriorityBasedPolicy,
   VideoQualitySettings,
   VideoSource,
   VideoStreamDescription,

@@ -38,6 +38,7 @@ import {
   NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
   SimulcastLayers,
+  TargetDisplaySize,
   TimeoutScheduler,
   Versioning,
   VideoFrameProcessor,
@@ -47,6 +48,9 @@ import {
   VoiceFocusDeviceTransformer,
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
+  VideoPreference,
+  VideoPreferences,
+  VideoPriorityBasedPolicy,
   isAudioTransformDevice,
 } from 'amazon-chime-sdk-js';
 
@@ -243,6 +247,7 @@ export class DemoMeetingApp
   sipURI: string | null = null;
   region: string | null = null;
   meetingSession: MeetingSession | null = null;
+  priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
   audioVideo: AudioVideoFacade | null = null;
   tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
   canStartLocalVideo: boolean = true;
@@ -253,6 +258,7 @@ export class DemoMeetingApp
   tileIndexToTileId: { [id: number]: number } = {};
   tileIdToTileIndex: { [id: number]: number } = {};
   tileIndexToPauseEventListener: { [id: number]: (event: Event) => void } = {};
+  tileIndexToPinEventListener: { [id: number]: (event: Event) => void } = {};
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
 
   cameraDeviceIds: string[] = [];
@@ -275,6 +281,7 @@ export class DemoMeetingApp
   enableWebAudio = false;
   enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
+  usePriorityBasedDownlinkPolicy = false;
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
@@ -457,6 +464,8 @@ export class DemoMeetingApp
       this.enableUnifiedPlanForChromiumBasedBrowsers = !(document.getElementById(
         'planB'
       ) as HTMLInputElement).checked;
+
+      this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
 
       AsyncScheduler.nextTick(
         async (): Promise<void> => {
@@ -1242,6 +1251,11 @@ export class DemoMeetingApp
       this.meetingLogger,
       deviceController
     );
+    if (this.usePriorityBasedDownlinkPolicy) {
+      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
+      configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
+    }
+    
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
       this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono());
@@ -1330,8 +1344,6 @@ export class DemoMeetingApp
         statusClass += 'badge-secondary';
       } else if (this.roster[attendeeId].active) {
         statusText = 'SPEAKING';
-        statusClass += 'badge-success';
-      } else if (this.roster[attendeeId].volume > 0) {
         statusClass += 'badge-success';
       }
       this.updateProperty(spanName, 'innerText', this.roster[attendeeId].name);
@@ -2461,6 +2473,49 @@ export class DemoMeetingApp
         }
   }
 
+  createPinUnpinListener(tileState: VideoTileState): (event: Event) => void {
+    return (event: Event): void => {
+      const attendeeId = tileState.boundAttendeeId;
+        if (this.roster[attendeeId].pinned ) {
+          (event.target as HTMLButtonElement).innerText = 'Pin';
+          this.roster[attendeeId].pinned = false;
+        } else {
+          (event.target as HTMLButtonElement).innerText = 'Unpin';
+          this.roster[attendeeId].pinned = true;
+        }
+        this.updateDownlinkPreference();
+      }
+  }
+
+  updateDownlinkPreference(): void {
+    const videoPreferences = VideoPreferences.prepare();
+    for (const attendeeId in this.roster) {
+      if (this.roster[attendeeId].hasVideo) {
+        if (this.roster[attendeeId].pinned) {
+          videoPreferences.add(new VideoPreference(attendeeId, 1, TargetDisplaySize.High));
+          this.log(`Pinned video: bwe: new preferences: ${JSON.stringify(videoPreferences)}`);
+        }
+        else {
+          videoPreferences.add(new VideoPreference(attendeeId, 2, TargetDisplaySize.Low));
+          this.log(`Unpinned: bwe: new preferences: ${JSON.stringify(videoPreferences)}`);
+        }
+      }
+    }
+    this.priorityBasedDownlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
+  }
+
+  isContentTile(tileIndex: number): boolean {
+    const tileId = this.tileIndexToTileId[tileIndex];
+    if (!tileId) {
+      return false;
+    }
+    const tile = this.audioVideo.getVideoTile(tileId);
+    if (!tile) {
+      return false;
+    }
+    return tile.state().isContent;
+  }
+
   videoTileDidUpdate(tileState: VideoTileState): void {
     this.log(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
     if (!tileState.boundAttendeeId) {
@@ -2472,21 +2527,36 @@ export class DemoMeetingApp
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
     const nameplateElement = document.getElementById(`nameplate-${tileIndex}`) as HTMLDivElement;
+    const pauseStateElement = document.getElementById(`pause-state-${tileIndex}`) as HTMLDivElement;
     const attendeeIdElement = document.getElementById(`attendeeid-${tileIndex}`) as HTMLDivElement;
     const pauseButtonElement = document.getElementById(
       `video-pause-${tileIndex}`
     ) as HTMLButtonElement;
+    const pinButtonElement = document.getElementById(
+      `video-pin-${tileIndex}`
+    ) as HTMLButtonElement;
+
 
     pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
     this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
     pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
-
+    if (this.usePriorityBasedDownlinkPolicy) {
+      this.log('pinButtonElement addEventListener for tileIndex ' + tileIndex);
+      pinButtonElement.removeEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
+      this.tileIndexToPinEventListener[tileIndex] = this.createPinUnpinListener(tileState);
+      pinButtonElement.addEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
+    }
     this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
     this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#')[1]);
     this.updateProperty(attendeeIdElement, 'innerText', tileState.boundAttendeeId);
+    if (tileState.paused && this.roster[tileState.boundAttendeeId].bandwidthConstrained) {
+      this.updateProperty(pauseStateElement, 'innerText', '⚡');
+    } else {
+      this.updateProperty(pauseStateElement, 'innerText', '');
+    }
     this.showTile(tileElement, tileState);
     this.updateGridClasses();
     this.layoutFeaturedTile();
@@ -2495,6 +2565,10 @@ export class DemoMeetingApp
   videoTileWasRemoved(tileId: number): void {
     const tileIndex = this.tileOrganizer.releaseTileIndex(tileId);
     this.log(`video tileId removed: ${tileId} from tile-${tileIndex}`);
+    if (this.usePriorityBasedDownlinkPolicy) {
+      const pinButtonElement = document.getElementById(`video-pin-${tileIndex}`) as HTMLButtonElement;
+      pinButtonElement.removeEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
+    }
     this.hideTile(tileIndex);
     this.updateGridClasses();
   }
@@ -2675,6 +2749,36 @@ export class DemoMeetingApp
 
   remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
     this.log(`available remote video sources changed: ${JSON.stringify(videoSources)}`);
+    if (!this.usePriorityBasedDownlinkPolicy) {
+      return;
+    }
+    for (const attendeeId in this.roster) {
+      this.roster[attendeeId].hasVideo = false;
+    }
+    for (const source of videoSources) {
+      if (!(this.roster.hasOwnProperty(source.attendee.attendeeId))) {
+        this.roster[source.attendee.attendeeId] = {
+          name: (source.attendee.attendeeId),
+          hasVideo: true
+        };
+      }
+      else {
+        this.roster[source.attendee.attendeeId].hasVideo = true;
+      }
+    }
+    this.updateDownlinkPreference();
+  }
+
+  tileWillBePausedByDownlinkPolicy(tileId: number): void {
+    this.log(`Tile ${tileId} will be paused due to insufficient bandwidth`);
+    const attendeeId = this.audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
+    this.roster[attendeeId].bandwidthConstrained = true;
+  }
+
+  tileWillBeUnpausedByDownlinkPolicy(tileId: number): void {
+    this.log(`Tile ${tileId} will be resumed due to sufficient bandwidth`);
+    const attendeeId = this.audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
+    this.roster[attendeeId].bandwidthConstrained = false;
   }
 }
 

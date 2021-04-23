@@ -35,7 +35,11 @@ function findAllElements() {
     hasStartedLocalVideoTileElementId: By.id('has-started-local-video-tile-boolean'),
     haveVideoTileForAttendeeIdElementId: By.id('have-video-tile-for-attendeeId-boolean'),
     haveVideoTilesWithStreamsElementId: By.id('have-video-tiles-with-streams-boolean'),
-    
+    pinVideoTileAttendeeIdInput: By.id('pin-attendee-id'),
+    pinVideoTileButton: By.id('pin-video-tile'),
+    unpinVideoTileAttendeeIdInput: By.id('unpin-attendee-id'),
+    unpinVideoTileButton: By.id('unpin-video-tile'),
+    videoPreference: By.id('video-preference'),
   };
 }
 
@@ -107,6 +111,22 @@ class TestAppPage {
     await unbindVideoElementButton.click();
   }
 
+  async clickPinVideoTileButton(attendeeId) {
+    let pinVideoTileButton = await this.driver.findElement(elements.pinVideoTileButton);
+    let pinVideoTileAttendeeIdInput = await this.driver.findElement(elements.pinVideoTileAttendeeIdInput);
+    await pinVideoTileAttendeeIdInput.clear();
+    await pinVideoTileAttendeeIdInput.sendKeys(attendeeId);
+    await pinVideoTileButton.click();
+  }
+
+  async clickUnpinVideoTileButton(attendeeId) {
+    let unpinVideoTileButton = await this.driver.findElement(elements.unpinVideoTileButton);
+    let unpinVideoTileAttendeeIdInput = await this.driver.findElement(elements.unpinVideoTileAttendeeIdInput);
+    await unpinVideoTileAttendeeIdInput.clear();
+    await unpinVideoTileAttendeeIdInput.sendKeys(attendeeId);
+    await unpinVideoTileButton.click();
+  }
+
   async clickBindVideoElementButton(tileId, videoElementId) {
     let bindVideoElementButton = await this.driver.findElement(elements.bindVideoElementButton);
     let bindVideoElementTileIdInput = await this.driver.findElement(elements.bindVideoElementTileIdInput);
@@ -130,6 +150,27 @@ class TestAppPage {
     let tileStateJson = JSON.parse(tileState);
     let tileStateJsonAttribute = tileStateJson[tileStateAttribute];
     if (tileStateValue === tileStateJsonAttribute) {
+      return true;
+    }
+    return false;
+  }
+
+  async videoPreferenceCheck(attendeeId, priority, targetSize) {
+    let videoPreference = await this.driver.findElement(elements.videoPreference);
+    if (!videoPreference) {
+      return false;
+    }
+    let preference =  await videoPreference.getText();
+    if (!preference) {
+      return false;
+    }
+    let preferenceJson = JSON.parse(preference);
+    let attendeeIdAttribute = preferenceJson['attendeeId'];
+    let priorityAttribute = preferenceJson['priority'];
+    let targetSizeAttribute = preferenceJson['targetSize'];
+    if (attendeeIdAttribute === attendeeId &&
+        priorityAttribute === priority &&
+        targetSizeAttribute === targetSize) {
       return true;
     }
     return false;

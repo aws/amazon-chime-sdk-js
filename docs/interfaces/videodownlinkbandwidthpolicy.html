@@ -88,6 +88,7 @@
 					<li><a href="../classes/allhighestvideobandwidthpolicy.html" class="tsd-signature-type">AllHighestVideoBandwidthPolicy</a></li>
 					<li><a href="../classes/novideodownlinkbandwidthpolicy.html" class="tsd-signature-type">NoVideoDownlinkBandwidthPolicy</a></li>
 					<li><a href="../classes/videoadaptiveprobepolicy.html" class="tsd-signature-type">VideoAdaptiveProbePolicy</a></li>
+					<li><a href="../classes/videoprioritybasedpolicy.html" class="tsd-signature-type">VideoPriorityBasedPolicy</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -97,7 +98,9 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#choosesubscriptions" class="tsd-kind-icon">choose<wbr>Subscriptions</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#reset" class="tsd-kind-icon">reset</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#updateindex" class="tsd-kind-icon">update<wbr>Index</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkbandwidthpolicy.html#updatemetrics" class="tsd-kind-icon">update<wbr>Metrics</a></li>
@@ -110,6 +113,34 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="addobserver" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> add<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L48">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:48</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>(Optional) Add VideoDownlinkObserver to observer resubscribe requests</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="choosesubscriptions" class="tsd-anchor"></a>
 					<h3>choose<wbr>Subscriptions</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -119,7 +150,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L39">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L43">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -127,8 +158,38 @@
 									<p>Updates the internal state with the set of streams we expect to be
 									subscribed to, and return the set.</p>
 								</div>
+								<p>When a policy is passed into a meeting session, this will be called
+								once every two seconds to check if the subscriptions have changed.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="videostreamidset.html" class="tsd-signature-type">VideoStreamIdSet</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="removeobserver" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> remove<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L53">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:53</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>(Optional) Removes the VideoDownlinkObserver.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="videodownlinkobserver.html" class="tsd-signature-type">VideoDownlinkObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -142,7 +203,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L16">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L17">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -164,7 +225,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L22">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L23">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -193,7 +254,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L27">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L28">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:28</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -221,7 +282,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L33">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts#L34">src/videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -252,7 +313,13 @@
 						<a href="videodownlinkbandwidthpolicy.html" class="tsd-kind-icon">Video<wbr>Downlink<wbr>Bandwidth<wbr>Policy</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videodownlinkbandwidthpolicy.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videodownlinkbandwidthpolicy.html#choosesubscriptions" class="tsd-kind-icon">choose<wbr>Subscriptions</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videodownlinkbandwidthpolicy.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videodownlinkbandwidthpolicy.html#reset" class="tsd-kind-icon">reset</a>

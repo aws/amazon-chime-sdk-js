@@ -37,6 +37,7 @@ import {
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
+import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoSource from '../../src/videosource/VideoSource';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
@@ -465,6 +466,90 @@ describe('DefaultAudioVideoController', () => {
         myUplinkPolicy
       );
 
+      await stop();
+    });
+
+    it('can be started with customized video simulcast downlink policy', async () => {
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      const logger = new NoOpDebugLogger();
+      const myDownlinkPolicy = new VideoAdaptiveProbePolicy(logger);
+      configuration.videoDownlinkBandwidthPolicy = myDownlinkPolicy;
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      await delay(defaultDelay);
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      // @ts-ignore
+      expect(audioVideoController.meetingSessionContext.videoDownlinkBandwidthPolicy).to.equal(
+        myDownlinkPolicy
+      );
+
+      await sendICEEventAndSubscribeAckFrame();
+      await delay(defaultDelay);
+      await stop();
+    });
+
+    it('can be started with default simulcast uplink and downlink policy', async () => {
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const logger = new NoOpDebugLogger();
+
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      await delay(defaultDelay);
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      await sendICEEventAndSubscribeAckFrame();
+      await delay(defaultDelay);
       await stop();
     });
 

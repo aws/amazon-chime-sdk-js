@@ -107,7 +107,6 @@ describe('AllHighestVideoBandwidthPolicy', () => {
           ],
         })
       );
-
       policy.updateIndex(index);
       expect(policy.wantsResubscribe()).to.equal(true);
     });

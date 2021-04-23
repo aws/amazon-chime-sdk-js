@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>UseReceiveSet | amazon-chime-sdk-js</title>
+	<title>VideoDownlinkObserver | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,62 +56,95 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="usereceiveset.html">UseReceiveSet</a>
+					<a href="videodownlinkobserver.html">VideoDownlinkObserver</a>
 				</li>
 			</ul>
-			<h1>Enumeration UseReceiveSet</h1>
+			<h1>Interface VideoDownlinkObserver</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">VideoDownlinkObserver</span>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Enumeration members</h3>
+							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="usereceiveset.html#knewoptimal" class="tsd-kind-icon">k<wbr>New<wbr>Optimal</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="usereceiveset.html#kpreprobe" class="tsd-kind-icon">k<wbr>Pre<wbr>Probe</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="usereceiveset.html#kpreviousoptimal" class="tsd-kind-icon">k<wbr>Previous<wbr>Optimal</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkobserver.html#tilewillbepausedbydownlinkpolicy" class="tsd-kind-icon">tile<wbr>Will<wbr>BePaused<wbr>ByDownlink<wbr>Policy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videodownlinkobserver.html#tilewillbeunpausedbydownlinkpolicy" class="tsd-kind-icon">tile<wbr>Will<wbr>BeUnpaused<wbr>ByDownlink<wbr>Policy</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Enumeration members</h2>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="knewoptimal" class="tsd-anchor"></a>
-					<h3>k<wbr>New<wbr>Optimal</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>New<wbr>Optimal<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L37">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:37</a></li>
-						</ul>
-					</aside>
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="tilewillbepausedbydownlinkpolicy" class="tsd-anchor"></a>
+					<h3>tile<wbr>Will<wbr>BePaused<wbr>ByDownlink<wbr>Policy</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">tile<wbr>Will<wbr>BePaused<wbr>ByDownlink<wbr>Policy<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkObserver.ts#L8">src/videodownlinkbandwidthpolicy/VideoDownlinkObserver.ts:8</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the downlink policy wants to pause the remote video tile</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="kpreprobe" class="tsd-anchor"></a>
-					<h3>k<wbr>Pre<wbr>Probe</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>Pre<wbr>Probe<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L39">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:39</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="kpreviousoptimal" class="tsd-anchor"></a>
-					<h3>k<wbr>Previous<wbr>Optimal</h3>
-					<div class="tsd-signature tsd-kind-icon">k<wbr>Previous<wbr>Optimal<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L38">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:38</a></li>
-						</ul>
-					</aside>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="tilewillbeunpausedbydownlinkpolicy" class="tsd-anchor"></a>
+					<h3>tile<wbr>Will<wbr>BeUnpaused<wbr>ByDownlink<wbr>Policy</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">tile<wbr>Will<wbr>BeUnpaused<wbr>ByDownlink<wbr>Policy<span class="tsd-signature-symbol">(</span>tileId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoDownlinkObserver.ts#L13">src/videodownlinkbandwidthpolicy/VideoDownlinkObserver.ts:13</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Called when the downlink policy wants to unpause the remote video tile</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>tileId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -127,17 +160,14 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-enum">
-						<a href="usereceiveset.html" class="tsd-kind-icon">Use<wbr>Receive<wbr>Set</a>
+					<li class="current tsd-kind-interface">
+						<a href="videodownlinkobserver.html" class="tsd-kind-icon">Video<wbr>Downlink<wbr>Observer</a>
 						<ul>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="usereceiveset.html#knewoptimal" class="tsd-kind-icon">k<wbr>New<wbr>Optimal</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videodownlinkobserver.html#tilewillbepausedbydownlinkpolicy" class="tsd-kind-icon">tile<wbr>Will<wbr>BePaused<wbr>ByDownlink<wbr>Policy</a>
 							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="usereceiveset.html#kpreprobe" class="tsd-kind-icon">k<wbr>Pre<wbr>Probe</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="usereceiveset.html#kpreviousoptimal" class="tsd-kind-icon">k<wbr>Previous<wbr>Optimal</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videodownlinkobserver.html#tilewillbeunpausedbydownlinkpolicy" class="tsd-kind-icon">tile<wbr>Will<wbr>BeUnpaused<wbr>ByDownlink<wbr>Policy</a>
 							</li>
 						</ul>
 					</li>
