@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to explicitly request remote video sources to receive and set their respective priorities.  See
   [this guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html)
   for more details and a code walkthrough of using the new policy.
+  *(Note that the exact internal behavior of this policy may slightly change in future releases.)*
 
 ### Added
 - Add optional header parameter to the MeetingPOSTLogger

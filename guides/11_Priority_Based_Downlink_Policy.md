@@ -53,6 +53,8 @@ Be aware of the following when calling this function:
 * Any preferences entries associated with attendee IDs that are paused by the application or no longer available in the call will be ignored until unpaused.
 * The policy may limit how often it updates the list of actual streams it subscribes to.
 
+*(Note that the exact internal behavior of this policy may slightly change in future releases)*
+
 
 **Receiving notifications that a remote video was paused due to bandwidth constraint**
 If a remote video source is paused due to insufficient bandwidth, then the application will be notified through the existing notification mechanism by setting the VideoTileState to pausedDueToBandwidth. Note that there is already a member named `paused` in VideoTileState and that is used to track if the application paused the remote video.
