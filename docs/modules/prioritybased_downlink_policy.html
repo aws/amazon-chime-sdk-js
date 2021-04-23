@@ -132,20 +132,20 @@ configuration.videoDownlinkBandwidthPolicy = priorityBasedDownlinkPolicy;
 </code></pre>
 					<p>Once connected to the meeting, we can an observer on <code>remoteVideoSourcesDidChange</code> and keep track of if which clients in the roster list are publishing video.</p>
 					<pre><code>  <span class="hljs-comment">// Assumes we are storing roster in a member variable like `roster: any = {};`</span>
-  <span class="hljs-function"><span class="hljs-title">remoteVideoSourcesDidChange</span>(<span class="hljs-params">videoSources: VideoSource[]</span>)</span> {
+  remoteVideoSourcesDidChange(videoSources: VideoSource[]) {
     <span class="hljs-comment">// Reset current hasVideo flag in roster list</span>
-    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> <span class="hljs-built_in">this</span>.roster) {
-      <span class="hljs-built_in">this</span>.roster[attendeeId].hasVideo = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.roster) {
+      <span class="hljs-keyword">this</span>.roster[attendeeId].hasVideo = <span class="hljs-literal">false</span>;
     }
     <span class="hljs-comment">// Update hasVideo flag based on latest data</span>
-    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">const</span> source <span class="hljs-keyword">of</span> videoSources) {
-      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.roster.hasOwnProperty(source.attendee.attendeeId)) {
-        <span class="hljs-built_in">this</span>.roster[source.attendee.attendeeId].hasVideo = <span class="hljs-literal">true</span>;
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">const</span> source of videoSources) {
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.roster.hasOwnProperty(source.attendee.attendeeId)) {
+        <span class="hljs-keyword">this</span>.roster[source.attendee.attendeeId].hasVideo = <span class="hljs-literal">true</span>;
       }
     }
     <span class="hljs-comment">// Update downlink policy preferences accordingly</span>
     <span class="hljs-comment">// We will create this function below</span>
-    <span class="hljs-built_in">this</span>.updateDownlinkPreference();
+    <span class="hljs-keyword">this</span>.updateDownlinkPreference();
   }
 </code></pre>
 					<p>We can then add a pin button to our application, and wire it up to change the priority of the respective video.  Update the tile button <code>click</code> callback to set or unset the pin status.</p>
@@ -162,19 +162,19 @@ configuration.videoDownlinkBandwidthPolicy = priorityBasedDownlinkPolicy;
     });
 </code></pre>
 					<p>We can then write <code>updateDownlinkPreference</code> which is shared by the above two snippets. This logic simply sets featured tiles to priority <code>1</code> and all others to priority <code>2</code>. This will ensure featured tiles are requested first at the highest resolution allowed by bandwidth and other participants are requested as bandwidth allows. To store the <code>VideoPreference</code> objects we use <code>VideoPreferences</code>, a set like data structure that allows efficient modification of an existing list while only copying when necessary.</p>
-					<pre><code>  updateDownlinkPreference(): <span class="hljs-keyword">void</span> {
-    <span class="hljs-keyword">const</span> videoPreferences: MutableVideoPreferences = VideoPreferences.prepare();
-    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> attendeeId <span class="hljs-keyword">in</span> <span class="hljs-built_in">this</span>.roster) {
-      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.roster[attendeeId].hasVideo) {
+					<pre><code>  update<span class="hljs-constructor">DownlinkPreference()</span>: void {
+    const videoPreferences: MutableVideoPreferences = <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">VideoPreferences</span>.</span></span>prepare<span class="hljs-literal">()</span>;
+    <span class="hljs-keyword">for</span> (const attendeeId <span class="hljs-keyword">in</span> this.roster) {
+      <span class="hljs-keyword">if</span> (this.roster<span class="hljs-literal">[<span class="hljs-identifier">attendeeId</span>]</span>.hasVideo) {
         <span class="hljs-comment">// Make pinned videos of equal high importance and the rest as secondary</span>
-        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.roster[attendeeId].pinned) {
-          videoPreferences.add(<span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">1</span>, TargetDisplaySize.High));
+        <span class="hljs-keyword">if</span> (this.roster<span class="hljs-literal">[<span class="hljs-identifier">attendeeId</span>]</span>.pinned) {
+          videoPreferences.add(<span class="hljs-keyword">new</span> <span class="hljs-constructor">VideoPreference(<span class="hljs-params">attendeeId</span>, 1, TargetDisplaySize.High)</span>);
         } <span class="hljs-keyword">else</span> {
-          videoPreferences.add(<span class="hljs-keyword">new</span> VideoPreference(attendeeId, <span class="hljs-number">2</span>, TargetDisplaySize.Low));
+          videoPreferences.add(<span class="hljs-keyword">new</span> <span class="hljs-constructor">VideoPreference(<span class="hljs-params">attendeeId</span>, 2, TargetDisplaySize.Low)</span>);
         }
       }
     }
-    <span class="hljs-built_in">this</span>.priorityBasedDownlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
+    this.priorityBasedDownlinkPolicy.choose<span class="hljs-constructor">RemoteVideoSources(<span class="hljs-params">videoPreferences</span>.<span class="hljs-params">build</span>()</span>);
   }
 </code></pre>
 					<p><code>chooseRemoteVideoSources</code> will trigger the remote selection logic based on the priority settings of each video tile then update the tile management accordingly. These steps are taken care of by the Amazon Chime SDK for JavaScript code.</p>
