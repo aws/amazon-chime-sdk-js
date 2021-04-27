@@ -48,6 +48,11 @@ import { delay } from '../utils';
 
 const defaultDelay = new DOMMockBehavior().asyncWaitMs * 5;
 
+// longjohn makes it possible for us to see async stack traces across timers,
+// which is exceptionally useful when working in this file.
+const longjohn = require('longjohn');
+longjohn.async_trace_limit = -1; // unlimited
+
 describe('DefaultAudioVideoController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
