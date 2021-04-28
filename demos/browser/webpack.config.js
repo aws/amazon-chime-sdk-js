@@ -15,12 +15,16 @@ module.exports = env => {
   return {
     devServer: {
       hot: true,
-      index: `${app}.html`,
+      dev: {
+        index: `${app}.html`,
+      },
       onListening: (server) => {
         const { serve } = require('./server.js');
         serve('127.0.0.1:8081');
       },
-      publicPath: '/',
+      static: {
+        publicPath: '/',
+      },
       port: 8080,
       proxy: {
         '/join': 'http://127.0.0.1:8081',

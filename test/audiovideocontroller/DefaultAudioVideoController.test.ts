@@ -36,6 +36,7 @@ import {
   SdkTurnCredentials,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
+import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoSource from '../../src/videosource/VideoSource';
@@ -47,6 +48,11 @@ import ChromeSDPMock from '../sdp/ChromeSDPMock';
 import { delay } from '../utils';
 
 const defaultDelay = new DOMMockBehavior().asyncWaitMs * 5;
+
+// longjohn makes it possible for us to see async stack traces across timers,
+// which is exceptionally useful when working in this file.
+const longjohn = require('longjohn');
+longjohn.async_trace_limit = -1; // unlimited
 
 describe('DefaultAudioVideoController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -2292,10 +2298,10 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('getRemoteVideoSources', () => {
-    const compare = (a: VideoSource, b: VideoSource): number =>
-      a.attendee.attendeeId.localeCompare(b.attendee.attendeeId);
-
     it('should match index frame sources excluding self', async () => {
+      const compare = (a: VideoSource, b: VideoSource): number =>
+        a.attendee.attendeeId.localeCompare(b.attendee.attendeeId);
+
       const expectedVideoSources = [{ attendee: { attendeeId: 'a', externalUserId: 'a' } }];
       const attendeesToMakeIndexFrame = [...expectedVideoSources].map(
         VideoSource => VideoSource.attendee
@@ -2307,13 +2313,24 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDeviceController(),
         reconnectController
       );
+
       await start();
+
+      reconnectController.disableReconnect();
+
       await delay(300);
       webSocketAdapter.send(makeIndexFrameWithAttendees(attendeesToMakeIndexFrame));
+
       await delay(300);
       const receivedVideoSources = audioVideoController.getRemoteVideoSources();
       expect(receivedVideoSources.sort(compare)).to.eql(expectedVideoSources.sort(compare));
+
       await stop();
+
+      // Forcibly clean up the stats collector so it doesn't spam after the test runs.
+      // This will _eventually_ get cleaned by the main CleanStoppedSessionTask, but that takes a while.
+      // @ts-ignore
+      await new CleanStoppedSessionTask(audioVideoController.meetingSessionContext).run();
     });
 
     it('should return an array of length 0, when videoStreamIndex is not initialized', async () => {
