@@ -58,6 +58,7 @@ const components = () => {
     .readdirSync('src')
     .filter(
       dir =>
+        path.basename(dir) !== 'tsconfig.json' &&
         path.basename(dir) !== 'index.ts' &&
         !path.basename(dir).startsWith('.') &&
         !path.basename(dir).includes('signalingprotocol') &&
