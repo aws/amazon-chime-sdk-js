@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Eq from './Eq';
-import PartialOrd from './PartialOrd';
+import type Eq from './Eq';
+import type PartialOrd from './PartialOrd';
 import TargetDisplaySize from './TargetDisplaySize';
 
 export default class VideoPreference implements Eq, PartialOrd {
