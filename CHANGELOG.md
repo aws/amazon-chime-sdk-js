@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Removed
+
+### Fixed
+- Fix `npm run start:hot` in the browser demo.
+
+## [2.8.0] - 2021-04-23
+
+### Added
+
 - Added new downlink policy `VideoPriorityBasedPolicy`, providing the ability
   to explicitly request remote video sources to receive and set their respective priorities.  See
   [this guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html)
@@ -36,7 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generated documentation no longer includes private members.
 - Include the default error message in "meetingStartFailed" and "meetingFailed" events.
 - Fix truncation in bps to kbps conversion that causes stream to stop under low bitrate.
-- Fix `npm run start:hot` in the browser demo.
 
 ## [2.7.0] - 2021-04-05
 
