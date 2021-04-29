@@ -8,15 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Added new downlink policy `VideoPriorityBasedPolicy`, providing the ability
   to explicitly request remote video sources to receive and set their respective priorities.  See
   [this guide](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html)
   for more details and a code walkthrough of using the new policy.
   *(Note that the exact internal behavior of this policy may slightly change in future releases.)*
-- Add optional header parameter to the MeetingPOSTLogger
-- Add extra logging for synthesizing an audio stream
-- Add logging for attendeePresenceReceived
-- Add reconnection configuration in Meeting Session Configuration
+- Add optional header parameter to the `MeetingSessionPOSTLogger`.
+- Add extra logging for synthesizing an audio stream.
+- Add logging for `attendeePresenceReceived`.
+- Add reconnection configuration in `MeetingSessionConfiguration`.
+- Add NodeJS 16 to supported engines.
 
 ### Changed
 
