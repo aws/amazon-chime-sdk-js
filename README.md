@@ -59,6 +59,7 @@ The following developer guides cover specific topics for a technical audience.
 
 ## Examples
 
+- [Amazon Chime SDK Samples](https://github.com/aws-samples/amazon-chime-sdk) - Amazon Chime SDK Samples repository
 - [Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser) — A browser
  meeting application with a local server
 - [Serverless Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless) — A self-contained serverless meeting application
