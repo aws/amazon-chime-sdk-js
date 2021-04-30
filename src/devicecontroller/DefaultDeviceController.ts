@@ -622,16 +622,11 @@ export default class DefaultDeviceController
     // TODO: implement MediaDestroyer to provide single release MediaStream function
     this.releaseMediaStream(element.srcObject as MediaStream);
     DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
-    navigator.mediaDevices
-      .getUserMedia(this.activeDevices['video'].constraints)
-      .then(previewStream => {
-        DefaultVideoTile.connectVideoStreamToVideoElement(previewStream, element, true);
-      })
-      .catch(error => {
-        this.logger.warn(
-          `Unable to reacquire video stream for preview to element ${element.id}: ${error}`
-        );
-      });
+    DefaultVideoTile.connectVideoStreamToVideoElement(
+      this.activeDevices['video'].stream,
+      element,
+      true
+    );
 
     this.trace('startVideoPreviewForVideoInput', element.id);
   }

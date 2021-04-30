@@ -104,6 +104,7 @@ import DevicePixelRatioObserver from './devicepixelratioobserver/DevicePixelRati
 import DevicePixelRatioSource from './devicepixelratiosource/DevicePixelRatioSource';
 import DevicePixelRatioWindowSource from './devicepixelratiosource/DevicePixelRatioWindowSource';
 import DeviceSelection from './devicecontroller/DeviceSelection';
+import Eq from './videodownlinkbandwidthpolicy/Eq';
 import EventAttributes from './eventcontroller/EventAttributes';
 import EventController from './eventcontroller/EventController';
 import EventName from './eventcontroller/EventName';
@@ -164,6 +165,7 @@ import NotReadableError from './devicecontroller/NotReadableError';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
 import OverconstrainedError from './devicecontroller/OverconstrainedError';
 import ParallelGroupTask from './task/ParallelGroupTask';
+import PartialOrd from './videodownlinkbandwidthpolicy/PartialOrd';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
@@ -373,6 +375,7 @@ export {
   DevicePixelRatioSource,
   DevicePixelRatioWindowSource,
   DeviceSelection,
+  Eq,
   EventAttributes,
   EventController,
   EventName,
@@ -434,6 +437,7 @@ export {
   OpenSignalingConnectionTask,
   OverconstrainedError,
   ParallelGroupTask,
+  PartialOrd,
   PermissionDeniedError,
   PingPong,
   PingPongObserver,

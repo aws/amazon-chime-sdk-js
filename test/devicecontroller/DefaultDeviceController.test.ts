@@ -2249,33 +2249,30 @@ describe('DefaultDeviceController', () => {
     });
 
     it('connects the video stream to the video element', async () => {
-      const spy = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
-      await deviceController.chooseVideoInputDevice(stringDeviceId);
-      deviceController.startVideoPreviewForVideoInput(element);
-      await delay(100);
-      expect(spy.calledOnce).to.be.true;
-      spy.restore();
-    });
-
-    it('cannot connect the video stream to the video element if getUserMedia API fails', async () => {
-      const spy = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
-      await deviceController.chooseVideoInputDevice(stringDeviceId);
-      domMockBehavior.getUserMediaSucceeds = false;
-      deviceController.startVideoPreviewForVideoInput(element);
-      await delay(100);
-      expect(spy.called).to.be.false;
-      spy.restore();
-    });
-
-    it('does not disconnect or connect the video stream for preview if no active video exsits', async () => {
       const spy1 = sinon.spy(DefaultVideoTile, 'disconnectVideoStreamFromVideoElement');
       const spy2 = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
       deviceController.startVideoPreviewForVideoInput(element);
-      await delay(100);
-      expect(spy1.called).to.be.false;
-      expect(spy2.called).to.be.false;
+      expect(spy1.calledOnce).to.be.true;
+      expect(spy2.calledOnce).to.be.true;
+      expect(gUM.calledOnce).to.be.true;
       spy1.restore();
       spy2.restore();
+      gUM.restore();
+    });
+
+    it('does not disconnect or connect the video stream for preview if no active video exists', () => {
+      const spy1 = sinon.spy(DefaultVideoTile, 'disconnectVideoStreamFromVideoElement');
+      const spy2 = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
+      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      deviceController.startVideoPreviewForVideoInput(element);
+      expect(spy1.called).to.be.false;
+      expect(spy2.called).to.be.false;
+      expect(gUM.calledOnce).to.be.false;
+      spy1.restore();
+      spy2.restore();
+      gUM.restore();
     });
 
     it('disconnects the video stream of the given element', async () => {
