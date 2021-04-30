@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "../build",
+    "paths": {
+      "amazon-chime-sdk-js": ["../build"]
+    }
+  },
+  "include": [
+    "./imports.test.ts"
+  ]
+}
