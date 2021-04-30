@@ -34,10 +34,6 @@ const ignoredTypes = [
   'SignalingProtocol',
   'index',
   'ScreenSignalingProtocol',
-
-  // Interfaces only used by VideoPreferences and internal classes
-  'PartialOrd',
-  'Eq',
 ];
 
 walk('src')
