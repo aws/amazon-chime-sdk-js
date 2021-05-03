@@ -321,3 +321,10 @@ meetingSession.audioVideo.setDeviceLabelTrigger(
   }
 );
 ```
+
+## Messaging
+
+### How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?
+
+Follow the instructions in the ["Using websockets to receive messages" developer guide](https://docs.aws.amazon.com/chime/latest/dg/websockets.html#connect-api).
+To sign the URL in Python, use the example code in the [GitHub issue #1241](https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541).

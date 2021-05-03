@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Add the Messaging section in FAQs to describe how to receive messages without using the Chime SDK for JavaScript
 
 ### Changed
 - `startVideoPreviewForVideoInput` uses the active video input stream instead of calling `getUserMedia` again
