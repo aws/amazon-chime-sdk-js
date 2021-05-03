@@ -5,9 +5,9 @@
   "scripts": {
     "deps": "cd ../.. && npm run build",
     "build:fast": "node script/webpack-wrapper.js",
-    "build": "npm run deps && npm install && npm run build:fast",
-    "start:fast": "npm run build:fast && node serve.js",
-    "start:hot": "tsc && webpack-cli serve --config ./webpack.config.js",
+    "build": "npm run deps && npm install && tsc && npm run build:fast",
+    "start:fast": "node script/webpack-wrapper.js --serve",
+    "start:hot": "webpack-cli serve --config ./webpack.config.js",
     "start": "npm run deps && npm install && npm run start:fast"
   },
   "devDependencies": {
