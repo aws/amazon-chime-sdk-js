@@ -19,6 +19,9 @@ module.exports = env => {
         index: `${app}.html`,
       },
       onListening: (server) => {
+        // Just so that the code in server.js isn't confused about
+        // which app finally made it through the gauntlet.
+        process.env.npm_config_app = app;
         const { serve } = require('./server.js');
         serve('127.0.0.1:8081');
       },
