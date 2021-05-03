@@ -1255,7 +1255,7 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
     }
-    
+
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
       this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono());
@@ -1389,7 +1389,7 @@ export class DemoMeetingApp
       ) {
         this.contentShareStop();
       }
-      if (!this.roster[attendeeId]) {
+      if (!this.roster[attendeeId] || !this.roster[attendeeId].name) {
         this.roster[attendeeId] = {
           name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : ''),
         };
@@ -2758,7 +2758,6 @@ export class DemoMeetingApp
     for (const source of videoSources) {
       if (!(this.roster.hasOwnProperty(source.attendee.attendeeId))) {
         this.roster[source.attendee.attendeeId] = {
-          name: (source.attendee.attendeeId),
           hasVideo: true
         };
       }
