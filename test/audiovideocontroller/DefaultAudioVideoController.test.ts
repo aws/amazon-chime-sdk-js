@@ -37,6 +37,7 @@ import {
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
 import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
+import OpenSignalingConnectionTask from '../../src/task/OpenSignalingConnectionTask';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoSource from '../../src/videosource/VideoSource';
@@ -268,7 +269,7 @@ describe('DefaultAudioVideoController', () => {
     await sendICEEventAndSubscribeAckFrame();
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     domMockBehavior = new DOMMockBehavior();
     // This will let FinishGatheringICECandidatesTask wait until receiving the ICE event.
     domMockBehavior.rtcPeerConnectionCreateOfferIncludesLocalHost = true;
@@ -279,6 +280,8 @@ describe('DefaultAudioVideoController', () => {
   });
 
   afterEach(() => {
+    webSocketAdapter.close();
+    webSocketAdapter.destroy();
     domMockBuilder.cleanup();
   });
 
@@ -333,6 +336,157 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
+    // This test is a total copy of the above, making it easier to remove.
+    it('can be started using the old task approach, which we will later remove', async () => {
+      configuration.videoUplinkBandwidthPolicy = null;
+      configuration.videoDownlinkBandwidthPolicy = null;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      audioVideoController.usePromises = false;
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          // use this opportunity to verify that start is idempotent
+          audioVideoController.start();
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      new TimeoutScheduler(10).start(() => {
+        // use this opportunity to verify that start cannot happen while connecting
+        audioVideoController.start();
+      });
+
+      await delay(defaultDelay);
+      // use this opportunity to test signaling mute state to the server
+      audioVideoController.realtimeController.realtimeMuteLocalAudio();
+      audioVideoController.realtimeController.realtimeUnmuteLocalAudio();
+
+      await delay(defaultDelay);
+      // use this opportunity to test volume indicators
+      webSocketAdapter.send(makeJoinAckFrame());
+      await delay(defaultDelay);
+      webSocketAdapter.send(makeIndexFrame());
+      webSocketAdapter.send(makeAudioStreamIdInfoFrame());
+      webSocketAdapter.send(makeAudioMetadataFrame());
+
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      await stop();
+    });
+
+    it('can be started with a pre-start', async () => {
+      configuration.videoUplinkBandwidthPolicy = null;
+      configuration.videoDownlinkBandwidthPolicy = null;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          // use this opportunity to verify that start is idempotent
+          audioVideoController.start();
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+
+      await audioVideoController.startReturningPromise({ signalingOnly: true });
+
+      // Give it a moment.
+      await delay(100);
+
+      // Now proceed with the start. Everything should still work.
+      await start();
+
+      await delay(defaultDelay);
+      webSocketAdapter.send(makeJoinAckFrame());
+      await delay(defaultDelay);
+      webSocketAdapter.send(makeIndexFrame());
+      webSocketAdapter.send(makeAudioStreamIdInfoFrame());
+      webSocketAdapter.send(makeAudioMetadataFrame());
+
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      await stop();
+    });
+
+    it('can stop after only pre-start', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      // This is a no-op.
+      await audioVideoController.stopReturningPromise();
+
+      // @ts-ignore
+      expect(audioVideoController.meetingSessionContext.signalingClient).to.be.null;
+
+      await audioVideoController.startReturningPromise({ signalingOnly: true });
+
+      // Only the signaling connection is opened.
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+
+      // It's ready.
+      // @ts-ignore
+      expect(audioVideoController.meetingSessionContext.signalingClient.ready()).to.be.true;
+
+      await audioVideoController.stopReturningPromise();
+
+      // The socket connection doesn't return a promise when it stops.
+      await delay(0);
+
+      // Now it's been closed.
+      // @ts-ignore
+      expect(audioVideoController.meetingSessionContext.signalingClient.ready()).to.be.false;
+    });
+
+    it('is resilient against pre-start errors', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      const fake = sinon.fake.rejects('oh no');
+      sinon.replace(OpenSignalingConnectionTask.prototype, 'run', fake);
+
+      // No worries.
+      await audioVideoController.startReturningPromise({ signalingOnly: true });
+
+      sinon.restore();
+
+      await stop();
+    });
+
     it('can be started with null audio host url', async () => {
       configuration.videoUplinkBandwidthPolicy = null;
       configuration.videoDownlinkBandwidthPolicy = null;
@@ -367,6 +521,7 @@ describe('DefaultAudioVideoController', () => {
 
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+
       await stop();
     });
 
@@ -700,7 +855,7 @@ describe('DefaultAudioVideoController', () => {
       expect(observed).to.equal(3);
     });
 
-    it('can fail but does not reconnect', done => {
+    it('can fail but does not reconnect', async () => {
       configuration.connectionTimeoutMs = 100;
       const logger = new NoOpDebugLogger();
       const spy = sinon.spy(logger, 'error');
@@ -713,27 +868,31 @@ describe('DefaultAudioVideoController', () => {
         new NoOpMediaStreamBroker(),
         reconnectController
       );
-      class TestObserver implements AudioVideoObserver {
-        eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          events.push({
-            name,
-            attributes,
-          });
+
+      const result = new Promise((resolve, _reject) => {
+        class TestObserver implements AudioVideoObserver {
+          eventDidReceive(name: EventName, attributes: EventAttributes): void {
+            events.push({
+              name,
+              attributes,
+            });
+          }
+
+          async audioVideoDidStop(sessionStatus: MeetingSessionStatus): Promise<void> {
+            await delay(defaultDelay);
+            expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
+            expect(spy.calledWith(sinon.match('failed with status code TaskFailed'))).to.be.true;
+            expect(events.map(({ name }) => name)).to.eql([
+              'meetingStartRequested',
+              'meetingStartFailed',
+            ]);
+            spy.restore();
+            resolve(undefined);
+          }
         }
 
-        async audioVideoDidStop(sessionStatus: MeetingSessionStatus): Promise<void> {
-          await delay(defaultDelay);
-          expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
-          expect(spy.calledWith(sinon.match('failed with status code TaskFailed'))).to.be.true;
-          expect(events.map(({ name }) => name)).to.eql([
-            'meetingStartRequested',
-            'meetingStartFailed',
-          ]);
-          spy.restore();
-          done();
-        }
-      }
-      audioVideoController.addObserver(new TestObserver());
+        audioVideoController.addObserver(new TestObserver());
+      });
 
       // Start and wait for the Join frame in JoinAndReceiveIndexTask.
       audioVideoController.start();
@@ -750,6 +909,8 @@ describe('DefaultAudioVideoController', () => {
         // Finish the start operation and stop this test.
         await stop();
       });
+
+      await result;
     });
   });
 
@@ -1579,7 +1740,9 @@ describe('DefaultAudioVideoController', () => {
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
 
-      configuration.connectionTimeoutMs = 6000;
+      // We need the attendee presence check to not fail before the ICE gathering times out, so bump it to 10 seconds.
+      configuration.connectionTimeoutMs = 6_000;
+      configuration.attendeePresenceTimeoutMs = 10_000;
       const logger = new NoOpDebugLogger();
       const spy = sinon.spy(logger, 'warn');
 
@@ -1604,6 +1767,7 @@ describe('DefaultAudioVideoController', () => {
 
       audioVideoController.addObserver(new TestObserver());
       audioVideoController.start();
+
       delay(200).then(() => {
         // Finish JoinAndReceiveIndexTask and then wait for the ICE event in FinishGatheringICECandidatesTask.
         webSocketAdapter.send(makeJoinAckFrame());

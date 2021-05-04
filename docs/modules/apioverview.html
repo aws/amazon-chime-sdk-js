@@ -190,10 +190,10 @@
 					<a href="#4-start-and-stop-the-session" id="4-start-and-stop-the-session" style="color: inherit; text-decoration: none;">
 						<h2>4. Start and stop the session</h2>
 					</a>
-					<p>Call this API after doing pre-requisite configuration (See previous sections). Otherwise, there will not be working audio and video.</p>
-					<p>To start the meeting session, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start">start()</a>. This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.</p>
-					<p>To stop the meeting session, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop">stop()</a>.</p>
+					<p>After completing configuration of audio and video (see previous sections) call <code>meetingSession.audioVideo.[start()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start)</code>. This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.</p>
+					<p>To stop the meeting session, call <code>meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop)</code>.</p>
 					<p>The <code>stop()</code> method does not clean up observers. You can start and stop a session multiple times using the same observers. In other words observers are not tied to the lifecycle of the session.</p>
+					<p>You can specify a <code>signalingOnly</code> option when calling <code>start</code> to cause only the initial signaling connection to be established, then complete meeting join with a second call to <code>start</code> after choosing audio and video sources. This can improve meeting join latency. You can use this approach if you know that the user wants to join a meeting prior to wanting to share media or having selected input devices — for example, you can initialize the signaling connection early if you have a &#39;lobby&#39; experience after choosing to join but before entering the interactive portion of the meeting.</p>
 					<a href="#5-build-a-roster-of-participants-using-the-real-time-api" id="5-build-a-roster-of-participants-using-the-real-time-api" style="color: inherit; text-decoration: none;">
 						<h2>5. Build a roster of participants using the real-time API</h2>
 					</a>

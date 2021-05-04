@@ -124,6 +124,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="runnabletask.html#getstatus" class="tsd-kind-icon">get<wbr>Status</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="runnabletask.html#logandthrow" class="tsd-kind-icon">log<wbr>And<wbr>Throw</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="runnabletask.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="runnabletask.html#once" class="tsd-kind-icon">once</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="runnabletask.html#run" class="tsd-kind-icon">run</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="runnabletask.html#setparent" class="tsd-kind-icon">set<wbr>Parent</a></li>
 							</ul>
@@ -185,7 +186,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="basetask.html">BaseTask</a>.<a href="basetask.html#logger">logger</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L19">src/task/BaseTask.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L20">src/task/BaseTask.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -196,7 +197,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="basetask.html">BaseTask</a>.<a href="basetask.html#taskname">taskName</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L12">src/task/BaseTask.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L13">src/task/BaseTask.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -215,7 +216,7 @@
 								<p>Implementation of <a href="../interfaces/task.html">Task</a>.<a href="../interfaces/task.html#cancel">cancel</a></p>
 								<p>Inherited from <a href="basetask.html">BaseTask</a>.<a href="basetask.html#cancel">cancel</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L24">src/task/BaseTask.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L29">src/task/BaseTask.ts:29</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -233,7 +234,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="basetask.html">BaseTask</a>.<a href="basetask.html#getstatus">getStatus</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L34">src/task/BaseTask.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L39">src/task/BaseTask.ts:39</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../enums/taskstatus.html" class="tsd-signature-type">TaskStatus</a></h4>
@@ -251,7 +252,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="basetask.html">BaseTask</a>.<a href="basetask.html#logandthrow">logAndThrow</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L38">src/task/BaseTask.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L43">src/task/BaseTask.ts:43</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -276,10 +277,34 @@
 								<p>Implementation of <a href="../interfaces/task.html">Task</a>.<a href="../interfaces/task.html#name">name</a></p>
 								<p>Inherited from <a href="basetask.html">BaseTask</a>.<a href="basetask.html#name">name</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L26">src/task/BaseTask.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L31">src/task/BaseTask.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="once" class="tsd-anchor"></a>
+					<h3>once</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">once<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>dependencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><a href="../interfaces/task.html" class="tsd-signature-type">Task</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="oncetask.html" class="tsd-signature-type">OnceTask</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="basetask.html">BaseTask</a>.<a href="basetask.html#once">once</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L25">src/task/BaseTask.ts:25</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>dependencies: <span class="tsd-signature-symbol">(</span><a href="../interfaces/task.html" class="tsd-signature-type">Task</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="oncetask.html" class="tsd-signature-type">OnceTask</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -314,7 +339,7 @@
 								<p>Implementation of <a href="../interfaces/task.html">Task</a>.<a href="../interfaces/task.html#setparent">setParent</a></p>
 								<p>Inherited from <a href="basetask.html">BaseTask</a>.<a href="basetask.html#setparent">setParent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L30">src/task/BaseTask.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/task/BaseTask.ts#L35">src/task/BaseTask.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -364,6 +389,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="runnabletask.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="runnabletask.html#once" class="tsd-kind-icon">once</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="runnabletask.html#run" class="tsd-kind-icon">run</a>

@@ -322,6 +322,12 @@ meetingSession.audioVideo.setDeviceLabelTrigger(
 );
 ```
 
+### How can I speed up my meeting join times?
+
+The most significant improvement comes from choosing the right region to host your meeting, as discussed earlier in this FAQ.
+
+Meeting join comprises several steps, one of which is establishing a signaling connection. You can front-load this work by specifying `{ signalingOnly: true }` in a call to `start` as early as possible in your application — _e.g._, in a device picker or lobby view — and then calling `start` again to finish joining the meeting. The attendee will not be shown as having joined the meeting until the second `start` call completes.
+
 ## Messaging
 
 ### How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?

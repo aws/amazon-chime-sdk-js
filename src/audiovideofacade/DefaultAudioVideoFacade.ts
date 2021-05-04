@@ -48,8 +48,8 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.audioVideoController.setAudioProfile(audioProfile);
   }
 
-  start(): void {
-    this.audioVideoController.start();
+  start(options?: { signalingOnly?: boolean }): void {
+    this.audioVideoController.start(options);
     this.trace('start');
   }
 

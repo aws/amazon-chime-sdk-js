@@ -11,7 +11,7 @@ export default class NoOpTask implements Task {
   }
 
   run(): Promise<void> {
-    return;
+    return Promise.resolve();
   }
 
   setParent(_parentTask: Task): void {}
