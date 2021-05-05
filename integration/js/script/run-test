@@ -1,7 +1,11 @@
 #!/bin/bash -i
 
 function start_demo_meeting {
-    cd $GITHUB_WORKSPACE/demos/browser
+    if [[ $1 == "videoTestApp" ]]; then
+      cd $GITHUB_WORKSPACE/integration/js/app
+    elif [[ $stem = "" ]]; then
+      cd $GITHUB_WORKSPACE/demos/browser
+    fi
     uuid=$(uuidgen)
     mkdir -p logs
     case $1 in
@@ -12,6 +16,9 @@ function start_demo_meeting {
       'meetingSession')
         extra_args='--app=messagingSession'
         echo "Starting messaging session demo"
+        ;;
+      'videoTestApp')
+        echo "Starting the video integration test app"
         ;;
       *)
         echo "Starting the meeting demo"
@@ -92,6 +99,9 @@ check_if_integ_tests_required
 curr=`pwd`
 
 case $1 in
+  video_test_app)
+    start_demo_meeting 'videoTestApp'
+    ;;
   meeting_readiness_checker)
     start_demo_meeting 'meetingReadinessChecker'
     ;;
@@ -122,6 +132,10 @@ case $1 in
       r app_quit_video_test.config.json
       r meeting_leave_video_test.config.json
       r reconnection_test.config.json
+      ;;
+   video_test_app)
+      r test_app_video_test.config.json
+      r test_app_video_pin_test.config.json
       ;;
    meeting_end)
       r meeting_end_test.config.json

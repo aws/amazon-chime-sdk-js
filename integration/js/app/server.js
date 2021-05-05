@@ -14,7 +14,9 @@ const meetingTable = {};
 const host = '127.0.0.1:8080';
 
 // Load the contents of the web application to be used as the index page
-const indexPage = fs.readFileSync(`dist/${process.env.npm_config_app || 'video_test'}.html`);
+const htmlPage = fs.readFileSync(`dist/${process.env.npm_config_app || 'video_test'}.html`);
+const javaScriptFileName = `${process.env.npm_config_app || 'video_test-bundle'}.js`;
+const javaScriptPage = fs.readFileSync(`dist/${javaScriptFileName}`);
 
 // Create ans AWS SDK Chime object. Region 'us-east-1' is currently required.
 // Use the MediaRegion property below in CreateMeeting to select the region
@@ -31,7 +33,9 @@ http.createServer({}, async (request, response) => {
     const requestUrl = url.parse(request.url, true);
     if (request.method === 'GET' && requestUrl.pathname === '/') {
       // Return the contents of the index page
-      respond(response, 200, 'text/html', indexPage);
+      respond(response, 200, 'text/html', htmlPage);
+    } else if (request.method === 'GET' && requestUrl.pathname === `/${javaScriptFileName}`) {
+      respond(response, 200, 'text/javascript', javaScriptPage);
     } else if (request.method === 'POST' && requestUrl.pathname === '/join') {
       if (!requestUrl.query.title || !requestUrl.query.name || !requestUrl.query.region) {
         throw new Error('Need parameters: title, name, region');

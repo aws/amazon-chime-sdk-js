@@ -1,4 +1,4 @@
-const {TestUtils} = require('kite-common');
+const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {OpenAppStep, AuthenticateUserStep, ClickStartLocalVideoButton, ClickPinVideoTileButton, ClickUnpinVideoTileButton} = require('./steps');
 const {VideoPreferenceCheck} = require('./checks');

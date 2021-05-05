@@ -1,5 +1,5 @@
 const {OpenAppStep, WaitForMeetingToBeCreated, JoinVideoTestMeetingStep, ClickStartLocalVideoButton, ClickStopLocalVideoButton, ClickHasStartedLocalVideoTileButton, ClickAddVideoTileButton, ClickGetLocalVideoTileButton, ClickHaveVideoTileForAttendeeIdButton, ClickGetAllVideoTilesButton, ClickGetAllRemoteVideoTilesButton, ClickHaveVideoTilesWithStreamsButton, ClickRemoveAllVideoTilesButton, WaitForRemoteParticipantsToJoinMeeting, WaitForRemoteParticipantsToTurnVideoOn, WaitForRemoteParticipantsToTurnVideoOff, GetBoundAttendeeIdStep} = require('./steps');
-const {TestUtils} = require('kite-common');
+const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const {TileStateCheck, AddVideoTileCheck, GetAllVideoTilesCheck, HasStartedLocalVideoTileCheck, HaveVideoTilesWithStreamsCheck, GetAllRemoteVideoTilesCheck, GetLocalVideoTileCheck, HaveVideoTileForAttendeeIdCheck} = require('./checks');
 const { v4: uuidv4 } = require('uuid');
@@ -27,7 +27,7 @@ class VideoTestEnd2End extends SdkBaseTest {
     await HasStartedLocalVideoTileCheck.executeStep(this, session, 'true');
     await ClickGetLocalVideoTileButton.executeStep(this, session);
     await GetLocalVideoTileCheck.executeStep(this, session, '1')
-   
+
     await GetBoundAttendeeIdStep.executeStep(this, session);
     await ClickHaveVideoTileForAttendeeIdButton.executeStep(this, session, this.boundAttendeeId);
     await HaveVideoTileForAttendeeIdCheck.executeStep(this, session, 'true');
