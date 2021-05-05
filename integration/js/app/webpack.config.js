@@ -3,7 +3,6 @@
 
 /* eslint-disable */
 var webpack = require('webpack');
-var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 /* eslint-enable */
 const app = process.env.npm_config_app || 'video_test';
@@ -16,10 +15,6 @@ module.exports = env => {
         template: __dirname + `/${app}/${app}.html`,
         filename: __dirname + `/dist/${app}.html`,
         inject: 'head',
-      }),
-      new HtmlWebpackInlineSourcePlugin(),
-      new webpack.EnvironmentPlugin({
-        IS_LOCAL: process.env.npm_config_is_local === 'true' ? 'true' : 'false'
       })
     ],
     entry: [`./${app}/${app}.ts`],
@@ -36,35 +31,13 @@ module.exports = env => {
     module: {
       rules: [
         {
-          test: /\.(scss)$/,
-          use: [{
-            loader: 'style-loader',
-            options: {
-              insert: 'head',
-            },
-          }, {
-            loader: 'css-loader',
-          }, {
-            loader: 'postcss-loader',
-            options: {
-              plugins: function () {
-                return [
-                  require('precss'),
-                  require('autoprefixer')
-                ];
-              },
-            },
-          }, {
-            loader: 'sass-loader',
-          }]
-        },
-        {
           test: /\.tsx?$/,
           loader: 'ts-loader',
         },
       ],
     },
     mode: 'development',
+    devtool: 'eval-cheap-module-source-map',
     performance: {
       hints: false,
     },
