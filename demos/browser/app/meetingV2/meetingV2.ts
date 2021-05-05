@@ -1408,7 +1408,8 @@ export class DemoMeetingApp
       }
       if (!this.roster[attendeeId] || !this.roster[attendeeId].name) {
         this.roster[attendeeId] = {
-          name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : ''),
+          ...this.roster[attendeeId],
+          ... {name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '')}
         };
       }
       this.audioVideo.realtimeSubscribeToVolumeIndicator(

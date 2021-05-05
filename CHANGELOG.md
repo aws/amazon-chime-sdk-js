@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Do not start local video tile if there is no stream for content share
 
 
 ## [2.9.0] - 2021-05-10
@@ -41,7 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `npm run start:hot` in the browser demo.
-- Do not start local video tile if there is no stream for content share
 
 ## [2.8.0] - 2021-04-23
 
