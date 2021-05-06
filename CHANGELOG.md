@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `npm run start:hot` in the browser demo.
+- Media streams are no longer discarded during reconnects. This fixes an issue
+  where initial signaling connection failures could cause a client to be unable
+  to join a meeting with audio if Web Audio were enabled.
 
 ## [2.8.0] - 2021-04-23
 
