@@ -20,6 +20,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     samsung: 12,
     crios: 86,
     fxios: 23,
+    'ios-webview': 605,
   };
 
   private browserName: { [id: string]: string } = {
@@ -33,6 +34,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     samsung: 'Samsung Internet',
     crios: 'Chrome iOS',
     fxios: 'Firefox iOS',
+    'ios-webview': 'WKWebView iOS',
   };
 
   private chromeLike: string[] = [
@@ -43,7 +45,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     'samsung',
   ];
 
-  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios'];
+  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
 
   private enableUnifiedPlanForChromiumBasedBrowsers: boolean;
   private recreateAudioContextIfNeeded: boolean;
@@ -258,7 +260,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   // These helpers should be kept private to encourage
   // feature detection instead of browser detection.
   private isIOSSafari(): boolean {
-    return this.browser.name === 'ios';
+    return this.browser.name === 'ios' || this.browser.name === 'ios-webview';
   }
 
   private isSafari(): boolean {
