@@ -52,6 +52,7 @@ import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
 import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from '../task/ReceiveVideoStreamIndexTask';
+import ReleaseMediaStreamsTask from '../task/ReleaseMediaStreamsTask';
 import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from '../task/SerialGroupTask';
 import SetLocalDescriptionTask from '../task/SetLocalDescriptionTask';
@@ -611,7 +612,9 @@ export default class DefaultAudioVideoController
     if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
       // Unfortunately, this does not return a promise.
       this.meetingSessionContext.signalingClient?.closeConnection();
-      return Promise.resolve();
+
+      // Clean up any open streams.
+      return new ReleaseMediaStreamsTask(this.meetingSessionContext).run();
     }
 
     /*
@@ -655,13 +658,19 @@ export default class DefaultAudioVideoController
     }
 
     try {
-      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), [
+      const subtasks: Task[] = [
         new TimeoutTask(
           this.logger,
           new CleanStoppedSessionTask(this.meetingSessionContext),
           this.configuration.connectionTimeoutMs
         ),
-      ]).run();
+      ];
+
+      if (!reconnecting) {
+        subtasks.push(new ReleaseMediaStreamsTask(this.meetingSessionContext));
+      }
+
+      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), subtasks).run();
     } catch (cleanError) {
       this.logger.info('fail to clean');
     }
