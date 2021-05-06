@@ -583,6 +583,23 @@ describe('DefaultDeviceController', () => {
     });
   });
 
+  describe('releasing', async () => {
+    it('idempotently releases transform devices', async () => {
+      deviceController = new DefaultDeviceController(
+        logger,
+        { enableWebAudio: true },
+        new ContextRecreatingBrowserBehavior()
+      );
+
+      const transform = new MockNodeTransformDevice('default');
+      await deviceController.chooseAudioInputDevice(transform);
+      const stream = await deviceController.acquireAudioInputStream();
+
+      deviceController.releaseMediaStream(stream);
+      deviceController.releaseMediaStream(stream);
+    });
+  });
+
   describe('chooseAudioInputDevice handling an OverconstrainedError', () => {
     it('logs appropriately', async () => {
       const watcher = new WatchingLogger('Over-constrained by constraint: testconstraint');
