@@ -530,6 +530,7 @@ export default class DefaultAudioVideoController
     try {
       await connect.run();
 
+      this.connectionHealthData.setConnectionStartTime();
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
         if (this.eventController) {
@@ -549,17 +550,29 @@ export default class DefaultAudioVideoController
       });
     } catch (error) {
       this.signalingTask = undefined;
+      const status = new MeetingSessionStatus(
+        this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
+      );
+      this.logger.info(`Start failed: ${status} due to error ${error}.`);
+
+      // I am not able to successfully reach this state in the test suite with mock
+      // websockets -- it always ends up in 'Disconnecting' instead. As such, this
+      // has to be marked for Istanbul.
+      /* istanbul ignore if */
+      if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
+        // There's no point trying to 'disconnect', because we're not connected.
+        // The session state controller will bail.
+        this.logger.info('Start failed and not connected. Not cleaning up.');
+        return;
+      }
+
       this.sessionStateController.perform(SessionStateControllerAction.Fail, async () => {
-        const status = new MeetingSessionStatus(
-          this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
-        );
         await this.actionDisconnect(status, true, error);
         if (!this.handleMeetingSessionStatus(status, error)) {
           this.notifyStop(status, error);
         }
       });
     }
-    this.connectionHealthData.setConnectionStartTime();
   }
 
   private createOrReuseSignalingTask(): Task {
