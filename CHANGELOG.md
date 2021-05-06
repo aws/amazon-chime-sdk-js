@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 
-- Add support for iOS WKWebView
+- Add support for `WKWebView` on iOS.
 
 ### Changed
 
@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Media streams are no longer discarded during reconnects. This fixes an issue
+  where initial signaling connection failures could cause a client to be unable
+  to join a meeting with audio if Web Audio were enabled.
 
 ## [2.9.0] - 2021-05-10
 
