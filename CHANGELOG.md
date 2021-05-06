@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of calling `getUserMedia` again.
 - Meeting connections now do more work in parallel, which will improve
   meeting join times.
+- Bump y18n and ssri dependency version
 
 ### Removed
 
