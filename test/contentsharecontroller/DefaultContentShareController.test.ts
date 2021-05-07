@@ -307,6 +307,21 @@ describe('DefaultContentShareController', () => {
       expect(selfVideoTileSpy.notCalled).to.be.true;
     });
 
+    it(' did not add local video tile for same attendee presence events if no media stream', async () => {
+      const selfVideoTileSpy = sinon.spy(
+        attendeeAudioVideoController.videoTileController,
+        'addVideoTile'
+      );
+      attendeeAudioVideoController.realtimeController.realtimeSetAttendeeIdPresence(
+        'foo-attendee#content',
+        true,
+        'foo-external-id',
+        null,
+        null
+      );
+      expect(selfVideoTileSpy.notCalled).to.be.true;
+    });
+
     it('startContentShareFromScreenCapture', async () => {
       const mediaStreamBrokerSpy = sinon.spy(
         contentShareMediaStreamBroker,
