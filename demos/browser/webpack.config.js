@@ -7,10 +7,34 @@ var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 /* eslint-enable */
 
-const app = process.env.npm_config_app || 'meetingV2';
-
 module.exports = env => {
+  console.info('Env:', JSON.stringify(env, null, 2));
+  console.info('App:', process.env.npm_config_app);
+  const app = env.app || process.env.npm_config_app || 'meetingV2';
+  console.info('Using app', app);
   return {
+    devServer: {
+      hot: true,
+      dev: {
+        index: `${app}.html`,
+      },
+      onListening: (server) => {
+        // Just so that the code in server.js isn't confused about
+        // which app finally made it through the gauntlet.
+        process.env.npm_config_app = app;
+        const { serve } = require('./server.js');
+        serve('127.0.0.1:8081');
+      },
+      static: {
+        publicPath: '/',
+      },
+      port: 8080,
+      proxy: {
+        '/join': 'http://127.0.0.1:8081',
+        '/end': 'http://127.0.0.1:8081',
+        '/fetch_credentials': 'http://127.0.0.1:8081',
+      }
+    },
     plugins: [
       new HtmlWebpackPlugin({
         inlineSource: '.(js|css)$',

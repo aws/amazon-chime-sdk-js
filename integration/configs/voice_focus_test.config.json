@@ -1,8 +1,7 @@
 {
   "`": 1,
   "name": "voice_focus_test.config.json %ts",
-  "grids": [
-  ],
+  "grids": [],
   "tests": [
     {
       "name": "Voice Focus Offered Test %ts",
@@ -32,12 +31,12 @@
   "clients": [
     {
       "browserName": "chrome",
-      "version": "78",
+      "version": "latest",
       "platform": "MAC"
     },
     {
       "browserName": "firefox",
-      "version": "76",
+      "version": "latest",
       "platform": "MAC"
     }
   ]

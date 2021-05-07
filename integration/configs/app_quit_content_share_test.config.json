@@ -1,8 +1,7 @@
 {
   "`": 1,
   "name": "app_quit_content_share_test.config.json %ts",
-  "grids": [
-  ],
+  "grids": [],
   "tests": [
     {
       "name": "App Quit Content Share Test %ts",
@@ -19,12 +18,12 @@
   "clients": [
     {
       "browserName": "chrome",
-      "version": "78",
+      "version": "latest",
       "platform": "MAC"
     },
     {
       "browserName": "firefox",
-      "version": "76",
+      "version": "86",
       "platform": "MAC"
     }
   ]

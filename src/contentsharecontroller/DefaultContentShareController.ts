@@ -5,6 +5,7 @@ import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ContentShareObserver from '../contentshareobserver/ContentShareObserver';
+import Destroyable from '../destroyable/Destroyable';
 import Maybe from '../maybe/Maybe';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../meetingsession/MeetingSessionCredentials';
@@ -17,7 +18,7 @@ import ContentShareController from './ContentShareController';
 import ContentShareMediaStreamBroker from './ContentShareMediaStreamBroker';
 
 export default class DefaultContentShareController
-  implements ContentShareController, AudioVideoObserver {
+  implements ContentShareController, AudioVideoObserver, Destroyable {
   static createContentShareMeetingSessionConfigure(
     configuration: MeetingSessionConfiguration
   ): MeetingSessionConfiguration {
@@ -36,6 +37,7 @@ export default class DefaultContentShareController
 
   private observerQueue: Set<ContentShareObserver> = new Set<ContentShareObserver>();
   private contentShareTile: VideoTile;
+  destroyed = false;
 
   constructor(
     private mediaStreamBroker: ContentShareMediaStreamBroker,
@@ -81,7 +83,7 @@ export default class DefaultContentShareController
   pauseContentShare(): void {
     if (this.mediaStreamBroker.toggleMediaStream(false)) {
       this.forEachContentShareObserver(observer => {
-        Maybe.of(observer.contentShareDidPause).map(f => f.bind(observer)());
+        Maybe.of(observer.contentShareDidPause).map(f => f.call(observer));
       });
     }
   }
@@ -89,9 +91,24 @@ export default class DefaultContentShareController
   unpauseContentShare(): void {
     if (this.mediaStreamBroker.toggleMediaStream(true)) {
       this.forEachContentShareObserver(observer => {
-        Maybe.of(observer.contentShareDidUnpause).map(f => f.bind(observer)());
+        Maybe.of(observer.contentShareDidUnpause).map(f => f.call(observer));
       });
     }
+  }
+
+  async destroy(): Promise<void> {
+    // Idempotency.
+    /* istanbul ignore if */
+    if (!this.contentAudioVideo) {
+      return;
+    }
+    this.destroyed = true;
+    this.contentAudioVideo.removeObserver(this);
+    this.stopContentShare();
+    this.observerQueue.clear();
+    this.contentAudioVideo = undefined;
+    this.attendeeAudioVideo = undefined;
+    this.mediaStreamBroker = undefined;
   }
 
   stopContentShare(): void {
@@ -109,7 +126,7 @@ export default class DefaultContentShareController
 
   forEachContentShareObserver(observerFunc: (observer: ContentShareObserver) => void): void {
     for (const observer of this.observerQueue) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         if (this.observerQueue.has(observer)) {
           observerFunc(observer);
         }
@@ -126,7 +143,7 @@ export default class DefaultContentShareController
       this.contentShareTile = null;
     }
     this.forEachContentShareObserver(observer => {
-      Maybe.of(observer.contentShareDidStop).map(f => f.bind(observer)());
+      Maybe.of(observer.contentShareDidStop).map(f => f.call(observer));
     });
   }
 
@@ -171,7 +188,7 @@ export default class DefaultContentShareController
           );
         }
         this.forEachContentShareObserver(observer => {
-          Maybe.of(observer.contentShareDidStart).map(f => f.bind(observer)());
+          Maybe.of(observer.contentShareDidStart).map(f => f.call(observer));
         });
       }
     );

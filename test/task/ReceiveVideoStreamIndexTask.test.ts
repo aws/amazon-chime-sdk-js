@@ -35,6 +35,7 @@ import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpoli
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { delay } from '../utils';
 
 describe('ReceiveVideoStreamIndexTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -110,7 +111,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
     signalingClient.openConnection(request);
 
-    await new Promise(resolve => new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve));
+    await delay(behavior.asyncWaitMs + 10);
     expect(signalingClient.ready()).to.equal(true);
   });
 
@@ -135,9 +136,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(videoDownlinkBandwidthPolicySpy.calledWith(context.videoStreamIndex)).to.be.true;
         expect(videoUplinkBandwidthPolicySpy.calledWith(context.videoStreamIndex)).to.be.true;
         done();
@@ -156,9 +155,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
     //
     //      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
     //        webSocketAdapter.send(createIndexSignalBuffer());
-    //        await new Promise(resolve =>
-    //          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-    //        );
+    //        await delay(behavior.asyncWaitMs + 10);
     //        expect(videoStreamIndexSpy.called).to.be.false;
     //        done();
     //      });
@@ -182,9 +179,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(ids))).to.be.true;
         done();
       });
@@ -217,9 +212,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(
           context.videoCaptureAndEncodeParameter.equal(
             new DefaultVideoCaptureAndEncodeParameter(
@@ -253,9 +246,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
       });
 
       task.run();
@@ -285,15 +276,13 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer(true));
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
       });
 
       task.run();
     });
 
-    describe('no udpate', () => {
+    describe('no update', () => {
       it('does not update video availability if videosToReceive does not exist in the context', () => {
         context.videosToReceive = null;
       });
@@ -318,9 +307,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
         new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
           webSocketAdapter.send(createIndexSignalBuffer());
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           done();
         });
 
@@ -338,9 +325,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(tile1.state().poorConnection).to.be.false;
         expect(tile2.state().poorConnection).to.be.false;
         done();
@@ -357,9 +342,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer(false, [1]));
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(tile.state().poorConnection).to.be.true;
         done();
       });
@@ -373,9 +356,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(tile1.state().poorConnection).to.be.false;
         done();
       });
@@ -391,9 +372,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer(false, [1]));
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(tile.state().poorConnection).to.be.true;
         done();
       });
@@ -411,9 +390,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(videoStreamIndexSpy.called).to.be.false;
         done();
       });
@@ -437,9 +414,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
       const videoStreamIndexSpy = sinon.spy(context.videoStreamIndex, 'integrateIndexFrame');
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(indexSignalBuffer);
-        await new Promise(resolve =>
-          new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-        );
+        await delay(behavior.asyncWaitMs + 10);
         expect(videoStreamIndexSpy.calledOnce).to.be.true;
         const inputIndexFrame = videoStreamIndexSpy.getCall(0).args[0];
         expect(inputIndexFrame.sources.length).to.be.eq(1);
@@ -485,9 +460,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
         ]);
         new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
           webSocketAdapter.send(indexSignalBuffer);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           expect(calledTimes).to.equal(1);
           done();
         });
@@ -529,21 +502,13 @@ describe('ReceiveVideoStreamIndexTask', () => {
         ]);
         new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
           webSocketAdapter.send(indexSignalBuffer1);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           webSocketAdapter.send(indexSignalBuffer2);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           webSocketAdapter.send(indexSignalBuffer2);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           webSocketAdapter.send(indexSignalBuffer3);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           expect(calledTimes).to.equal(3);
           done();
         });
@@ -559,10 +524,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
           selfAttendeeId,
           logger
         );
-        context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
-          logger,
-          context.videoTileController
-        );
+        context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(logger);
         let calledTimes = 0;
         class TestObserver implements AudioVideoObserver {
           remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
@@ -586,9 +548,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
         ]);
         new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
           webSocketAdapter.send(indexSignalBuffer);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           expect(calledTimes).to.equal(1);
           done();
         });
@@ -602,10 +562,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
           selfAttendeeId,
           logger
         );
-        context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
-          logger,
-          context.videoTileController
-        );
+        context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(logger);
         let calledTimes = 0;
         class TestObserver implements AudioVideoObserver {
           remoteVideoSourcesDidChange(_videoSources: VideoSource[]): void {
@@ -636,21 +593,13 @@ describe('ReceiveVideoStreamIndexTask', () => {
         ]);
         new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
           webSocketAdapter.send(indexSignalBuffer1);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           webSocketAdapter.send(indexSignalBuffer2);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           webSocketAdapter.send(indexSignalBuffer2);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           webSocketAdapter.send(indexSignalBuffer3);
-          await new Promise(resolve =>
-            new TimeoutScheduler(behavior.asyncWaitMs + 10).start(resolve)
-          );
+          await delay(behavior.asyncWaitMs + 10);
           expect(calledTimes).to.equal(3);
           done();
         });

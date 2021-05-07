@@ -1,0 +1,15 @@
+{
+  "name": "amazon-chime-sdk-js-serverless-demos-lambda",
+  "version": "0.1.0",
+  "description": "Amazon Chime SDK JavaScript Serverless Demos Lambda Handler",
+  "dependencies": {
+    "aws-embedded-metrics": "^2.0.4",
+    "aws-sdk": "^2.886.0",
+    "uuid": "^8.3.2"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/amazon-chime-sdk-js"
+  }
+}

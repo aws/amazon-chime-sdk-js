@@ -20,6 +20,7 @@ class MeetingReadinessCheckerAudioOutputCheck extends AppTestStep {
   }
 
   async run() {
+    await this.page.startSpeakerTest();
     const status = await this.page.checkSpeakerTestSucceed();
     this.logger('MeetingReadinessCheckerAudioOutputCheck: ' + (status ? 'Succeeded' : 'Failed'));
     if (!status) {

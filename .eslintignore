@@ -1,8 +1,9 @@
 build
+config
 coverage
 demos/aws-sdk
 demos/electron/*
-demos/browser/*
+demos/browser/*.*
 demos/serverless/*
 demos/videohelpdesk/*
 demos/components/*
@@ -13,8 +14,6 @@ guides
 index.ts
 integration
 modules
-node_modules
 rust
 screensignalingprotocol
 signalingprotocol
-!demos/browser/app/*/*.ts

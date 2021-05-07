@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const AWS = require('./aws-sdk');
+const AWS = require('aws-sdk');
 const fs = require('fs');
-const { v4: uuidv4 } = require('./uuid');
+const { v4: uuidv4 } = require('uuid');
+const { metricScope } = require('aws-embedded-metrics');
 
 // Store meetings in a DynamoDB table so attendees can join by meeting title
 const ddb = new AWS.DynamoDB();
@@ -139,6 +140,7 @@ exports.log_meeting_event = async (event, context) => {
         message: log.message,
         timestamp: log.timestampMs
       });
+      addSignalMetricsToCloudWatch(log.message, meetingId, attendeeId);
     }
     return logEvents;
   });
@@ -271,4 +273,23 @@ function response(statusCode, contentType, body) {
     body: body,
     isBase64Encoded: false
   };
+}
+
+function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
+  const logMsgJson = JSON.parse(logMsg);
+  const metricList = ['signalingOpenDurationMs', 'iceGatheringDurationMs', 'attendeePresenceDurationMs', 'meetingStartDurationMs'];
+  const putMetric =
+    metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
+      metrics.setProperty('MeetingId', meetingId);
+      metrics.setProperty('AttendeeId', attendeeId);
+      metrics.putMetric(metricName, metricValue);
+    });
+  for (let metricIndex = 0; metricIndex <= metricList.length; metricIndex += 1) {
+    const metricName = metricList[metricIndex];
+    if (logMsgJson.attributes.hasOwnProperty(metricName)) {
+      const metricValue = logMsgJson.attributes[metricName];
+      console.log('Logging metric -> ', metricName, ': ', metricValue );
+      putMetric(metricName, metricValue, meetingId, attendeeId);
+    }
+  }
 }

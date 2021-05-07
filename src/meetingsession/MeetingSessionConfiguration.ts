@@ -62,6 +62,26 @@ export default class MeetingSessionConfiguration {
   connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration = new ConnectionHealthPolicyConfiguration();
 
   /**
+   * Maximum amount of time in milliseconds to allow for reconnecting.
+   */
+  reconnectTimeoutMs = 120 * 1000;
+
+  /**
+   * Fixed wait amount in milliseconds between reconnecting attempts.
+   */
+  reconnectFixedWaitMs = 0;
+
+  /**
+   * The short back-off time in milliseconds between reconnecting attempts.
+   */
+  reconnectShortBackOffMs = 1 * 1000;
+
+  /**
+   * The long back-off time in milliseconds between reconnecting attempts.
+   */
+  reconnectLongBackOffMs = 5 * 1000;
+
+  /**
    * Feature flag to enable Chromium-based browsers
    */
   enableUnifiedPlanForChromiumBasedBrowsers: boolean = true;

@@ -58,6 +58,7 @@ const components = () => {
     .readdirSync('src')
     .filter(
       dir =>
+        path.basename(dir) !== 'tsconfig.json' &&
         path.basename(dir) !== 'index.ts' &&
         !path.basename(dir).startsWith('.') &&
         !path.basename(dir).includes('signalingprotocol') &&
@@ -177,7 +178,9 @@ components().forEach(component => {
       return;
     }
     let fileText = fs.readFileSync(filePath, 'utf-8').toString();
-    let lines = fileText.split('\n');
+
+    // Ignore comment lines, so you can have a block comment followed by ts-ignore.
+    let lines = fileText.split('\n').filter(s => !(s.match(/^\s*\/\//)));
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].trim()[0] !== '*') {
         let commentStartRegex = new RegExp(/\s+\w+\(.*[:]/);

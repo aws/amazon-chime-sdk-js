@@ -11,6 +11,12 @@ import DOMMockBehavior from './DOMMockBehavior';
 import MockError, { OverconstrainedError } from './MockError';
 import UserMediaState from './UserMediaState';
 
+export interface StoppableMediaStreamTrack extends MediaStreamTrack {
+  // This stops the track _and dispatches 'ended'_.
+  // https://stackoverflow.com/a/55960232
+  externalStop(): void;
+}
+
 // eslint-disable-next-line
 const GlobalAny = global as any;
 // eslint-disable-next-line
@@ -24,6 +30,7 @@ type MockListener = (event: Event | MessageEvent | CloseEvent) => void;
 type RawMetricReport = any;
 
 interface EventListenerObjectWrapper {
+  once: boolean;
   type: string;
   listener: EventListenerOrEventListenerObject;
 }
@@ -91,26 +98,28 @@ export default class DOMMockBuilder {
 
       send(data: ArrayBuffer | string): void {
         if (mockBehavior.webSocketSendSucceeds) {
+          // Create the event in advance so that when the `asyncWait` below runs
+          // after test cleanup, we don't die with
+          //      Uncaught ReferenceError: MessageEvent is not defined
+          const event = new MessageEvent('server::message', {
+            data: data,
+            origin: this.url,
+          });
           asyncWait(() => {
             if (mockBehavior.webSocketSendEcho && this.listeners.hasOwnProperty('message')) {
-              this.listeners.message.forEach((listener: MockListener) =>
-                listener(
-                  new MessageEvent('server::message', {
-                    data: data,
-                    origin: this.url,
-                  })
-                )
-              );
+              for (const listener of this.listeners.message) {
+                listener(event);
+              }
             }
           });
         } else {
           if (this.listeners.hasOwnProperty('error')) {
-            this.listeners.error.forEach((listener: MockListener) =>
+            for (const listener of this.listeners.error) {
               listener({
                 ...Substitute.for(),
                 type: 'error',
-              })
-            );
+              });
+            }
           }
           throw new Error();
         }
@@ -158,9 +167,9 @@ export default class DOMMockBuilder {
       }
     };
 
-    GlobalAny.MediaStreamTrack = class MockMediaStreamTrack {
-      private listeners: { [type: string]: MockListener[] } = {};
-      private readyState: string = 'live';
+    GlobalAny.MediaStreamTrack = class MockMediaStreamTrack implements StoppableMediaStreamTrack {
+      listeners: { [type: string]: { once: boolean; listener: MockListener }[] } = {};
+      readyState: MediaStreamTrackState = 'live';
 
       readonly id: string;
       readonly kind: string = '';
@@ -172,20 +181,72 @@ export default class DOMMockBuilder {
         this.kind = kind;
       }
 
+      enabled: boolean = true;
+      isolated: boolean = false;
+      muted: boolean = false;
+
+      // @ts-ignore
+      onended: (this: MediaStreamTrack, ev: Event) => void = () => {};
+
+      // These are not implemented.
+      onisolationchange: (this: MediaStreamTrack, ev: Event) => void = () => {};
+      // @ts-ignore
+      onmute: (this: MediaStreamTrack, ev: Event) => void = () => {};
+      // @ts-ignore
+      onunmute: (this: MediaStreamTrack, ev: Event) => void = () => {};
+
+      clone(): MediaStreamTrack {
+        throw new Error('Method not implemented.');
+      }
+
+      getConstraints(): MediaTrackConstraints {
+        throw new Error('Method not implemented.');
+      }
+
+      dispatchEvent(event: Event): boolean {
+        if (!event.type || !this.listeners.hasOwnProperty(event.type)) {
+          return;
+        }
+
+        const listeners = this.listeners[event.type];
+        if (!listeners || !listeners.length) {
+          return;
+        }
+
+        const toRemove = new Set();
+        for (const obj of listeners) {
+          const { once, listener } = obj;
+          if (once) {
+            toRemove.add(obj);
+          }
+          listener(event);
+        }
+
+        if (toRemove) {
+          this.listeners[event.type] = this.listeners[event.type].filter(v => !toRemove.has(v));
+        }
+
+        if (event.type === 'ended' && this.onended) {
+          this.onended(event);
+        }
+
+        return !event.cancelable || event.defaultPrevented;
+      }
+
+      // This stops the track _and dispatches 'ended'_.
+      // https://stackoverflow.com/a/55960232
+      externalStop(): void {
+        if (this.readyState === 'live') {
+          this.readyState = 'ended';
+          this.dispatchEvent({ ...Substitute.for(), type: 'ended' });
+        }
+      }
+
       stop(): void {
         if (this.readyState === 'live') {
           this.readyState = 'ended';
-          if (
-            this.listeners.hasOwnProperty('ended') &&
-            mockBehavior.triggeredEndedEventForStopStreamTrack
-          ) {
-            this.listeners.ended.forEach((listener: MockListener) =>
-              listener({
-                ...Substitute.for(),
-                type: 'ended',
-              })
-            );
-          }
+          // This stops the track _but does not dispatch 'ended'_.
+          // https://stackoverflow.com/a/55960232
         }
       }
 
@@ -202,20 +263,26 @@ export default class DOMMockBuilder {
           height: mockBehavior.mediaStreamTrackSettings.height,
           deviceId: mockBehavior.mediaStreamTrackSettings.deviceId,
           facingMode: mockBehavior.mediaStreamTrackSettings.facingMode,
+          groupId: mockBehavior.mediaStreamTrackSettings.groupId,
         };
       }
 
-      addEventListener(type: string, listener: MockListener): void {
+      addEventListener(
+        type: string,
+        listener: MockListener,
+        options?: boolean | AddEventListenerOptions
+      ): void {
+        const once = options && typeof options === 'object' && options.once;
         if (!this.listeners.hasOwnProperty(type)) {
           this.listeners[type] = [];
         }
-        this.listeners[type].push(listener);
+        this.listeners[type].push({ once, listener });
       }
 
       removeEventListener(type: string, listener: MockListener): void {
         if (this.listeners.hasOwnProperty(type)) {
           this.listeners[type] = this.listeners[type].filter(
-            eachListener => eachListener !== listener
+            eachListener => eachListener.listener !== listener
           );
         }
       }
@@ -223,9 +290,8 @@ export default class DOMMockBuilder {
       applyConstraints(_constraints?: MediaTrackConstraints): Promise<void> {
         if (mockBehavior.applyConstraintSucceeds) {
           return;
-        } else {
-          throw Error('overconstrained');
         }
+        throw Error('overconstrained');
       }
     };
 
@@ -235,9 +301,14 @@ export default class DOMMockBuilder {
       id: string = '';
       constraints: MockMediaStreamConstraints = {};
       tracks: typeof GlobalAny.MediaStreamTrack[] = [];
+      active: boolean = false;
 
       constructor(tracks: typeof GlobalAny.MediaStreamTrack[] = []) {
         this.tracks = tracks;
+      }
+
+      clone(): typeof GlobalAny.MediaStream {
+        return new MockMediaStream(this.tracks);
       }
 
       addTrack(track: MediaStreamTrack): void {
@@ -351,6 +422,7 @@ export default class DOMMockBuilder {
               // @ts-ignore
               mediaStreamTrack.kind = 'video';
             }
+            mediaStreamTrack;
             mediaStream.addTrack(mediaStreamTrack);
             mediaStream.constraints = constraints;
             mediaStream.active = true;
@@ -415,26 +487,25 @@ export default class DOMMockBuilder {
       addEventListener(
         type: string,
         listener?: EventListenerOrEventListenerObject,
-        _options?: boolean | AddEventListenerOptions
+        options?: boolean | AddEventListenerOptions
       ): void {
-        this.eventListeners.push({ type: type, listener: listener });
+        const once = options && typeof options === 'object' && options.once;
+        this.eventListeners.push({ type: type, listener: listener, once });
       }
 
       removeEventListener(type: string, listener: EventListenerOrEventListenerObject): void {
-        const newEventListeners: EventListenerObjectWrapper[] = [];
-        for (const eventListener of this.eventListeners) {
-          if (eventListener.type === type && eventListener.listener === listener) {
-            continue;
-          }
-          newEventListeners.push(eventListener);
-        }
-        this.eventListeners = newEventListeners;
+        this.eventListeners = this.eventListeners.filter(
+          e => e.type !== type || e.listener !== listener
+        );
       }
 
       async dispatchEvent(event: typeof GlobalAny.Event): Promise<boolean> {
-        for (const listenerWrapper of this.eventListeners) {
-          if (listenerWrapper.type === event.type) {
-            const callback = listenerWrapper.listener as EventListener;
+        for (const { type, once, listener } of this.eventListeners) {
+          if (type === event.type) {
+            const callback = listener as EventListener;
+            if (once) {
+              this.removeEventListener(type, listener);
+            }
             await callback(event);
           }
         }
@@ -474,6 +545,8 @@ export default class DOMMockBuilder {
       'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1';
     const IOS_SAFARI12_1_USERAGENT =
       'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1';
+    const SAMSUNG_INTERNET_USERAGENT =
+      'Mozilla/5.0 (Linux; Android 11; Pixel 3a XL) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/13.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
 
     const USER_AGENTS = new Map<string, string>();
     USER_AGENTS.set('chrome', CHROME_USERAGENT);
@@ -483,6 +556,7 @@ export default class DOMMockBuilder {
     USER_AGENTS.set('safari11', SAFARI11_USERAGENT);
     USER_AGENTS.set('ios12.0', IOS_SAFARI12_0_USERAGENT);
     USER_AGENTS.set('ios12.1', IOS_SAFARI12_1_USERAGENT);
+    USER_AGENTS.set('samsung', SAMSUNG_INTERNET_USERAGENT);
 
     GlobalAny.navigator = {
       mediaDevices: mockBehavior.mediaDevicesSupported ? new mediaDevicesMaker() : undefined,
@@ -643,9 +717,10 @@ export default class DOMMockBuilder {
       addEventListener(
         type: string,
         listener?: EventListenerOrEventListenerObject,
-        _options?: boolean | AddEventListenerOptions
+        options?: boolean | AddEventListenerOptions
       ): void {
-        this.eventListeners.push({ type: type, listener: listener });
+        const once = options && typeof options === 'object' && options.once;
+        this.eventListeners.push({ type: type, listener: listener, once });
       }
 
       removeEventListener(type: string, listener: EventListenerOrEventListenerObject): void {
@@ -890,6 +965,10 @@ export default class DOMMockBuilder {
     GlobalAny.MediaQueryList = class MockMediaQueryList {
       constructor() {}
 
+      removeEventListener(_type: string, _listener: () => void): void {}
+
+      removeListener(_listener: () => void): void {}
+
       addEventListener(_type: string, listener: () => void): void {
         asyncWait(() => {
           listener();
@@ -920,39 +999,19 @@ export default class DOMMockBuilder {
       }
     };
     if (!mockBehavior.setSinkIdSupported) {
-      GlobalAny.HTMLAudioElement.prototype.setSinkId = undefined;
+      delete GlobalAny.HTMLAudioElement.prototype.setSinkId;
     }
 
     GlobalAny.document = {
       createElement(_tagName: string): HTMLElement {
-        const element = {
-          getContext(_contextId: string): CanvasRenderingContext2D {
-            const context = {
-              drawImage(
-                _image: CanvasImageSource,
-                _dx: number,
-                _dy: number,
-                _dw: number,
-                _dh: number
-              ): void {},
-              getImageData(_sx: number, _sy: number, sw: number, sh: number): ImageData {
-                // @ts-ignore
-                return {
-                  width: sw,
-                  height: sh,
-                };
-              },
-              fillRect(_x: number, _y: number, _w: number, _h: number): void {},
-            };
-            // @ts-ignore
-            return context;
-          },
-          captureStream(_frameRate: number): MediaStream {
-            return mockBehavior.createElementCaptureStream;
-          },
-        };
-        // @ts-ignore
-        return element;
+        switch (_tagName) {
+          case 'video': {
+            return new GlobalAny.HTMLVideoElement();
+          }
+          case 'canvas': {
+            return new GlobalAny.HTMLCanvasElement();
+          }
+        }
       },
     };
 
@@ -966,6 +1025,7 @@ export default class DOMMockBuilder {
 
     GlobalAny.AudioContext = class MockAudioContext {
       sampleRate: number = 48000;
+      state: 'running' | 'suspended' | 'closed' = 'running';
 
       constructor(contextOptions?: AudioContextOptions) {
         if (contextOptions && contextOptions.sampleRate) {
@@ -1049,7 +1109,61 @@ export default class DOMMockBuilder {
         return new GlobalAny.AudioBuffer();
       }
 
-      close(): void {}
+      resume(): Promise<void> {
+        if (this.state === 'closed') {
+          return Promise.reject('Already closed.');
+        }
+        this.state = 'running';
+        return Promise.resolve();
+      }
+
+      suspend(): Promise<void> {
+        if (this.state === 'closed') {
+          return Promise.reject('Already closed.');
+        }
+        this.state = 'suspended';
+        return Promise.resolve();
+      }
+
+      close(): Promise<void> {
+        this.state = 'closed';
+        return Promise.resolve();
+      }
+    };
+
+    GlobalAny.OfflineAudioContext = class OfflineAudioContext {
+      state: 'running' | 'suspended' | 'closed' = 'running';
+
+      suspend(): Promise<void> {
+        return Promise.reject('INVALID_STATE_ERR: cannot suspend an offline context');
+      }
+
+      close(): Promise<void> {
+        return Promise.reject('INVALID_STATE_ERR: cannot close an offline context');
+      }
+
+      resume(): Promise<void> {
+        return Promise.reject('INVALID_STATE_ERR: cannot resume an offline context');
+      }
+
+      createGain(): GainNode {
+        // @ts-ignore
+        return {
+          context: (this as unknown) as BaseAudioContext,
+          // @ts-ignore
+          connect(_destinationParam: AudioParam, _output?: number): void {},
+          // @ts-ignore
+          disconnect(_destinationParam: AudioParam): void {},
+          // @ts-ignore
+          gain: {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            linearRampToValueAtTime(value: number, endTime: number): AudioParam {
+              // @ts-ignore
+              return {};
+            },
+          },
+        };
+      }
     };
 
     GlobalAny.AudioBufferSourceNode = class MockAudioBufferSourceNode {
@@ -1093,6 +1207,8 @@ export default class DOMMockBuilder {
         }
         this.listeners[type].push(listener);
       }
+
+      disconnect(): void {}
     };
 
     GlobalAny.MediaStreamAudioSourceNode = class MockMediaStreamAudioSourceNode {
@@ -1115,9 +1231,140 @@ export default class DOMMockBuilder {
         ]);
       },
     };
+
+    GlobalAny.HTMLVideoElement = class MockHTMLVideoElement {
+      refSrcObject: MediaStream;
+      width: number;
+      height: number;
+
+      poster: string;
+      videoHeight: number;
+      videoWidth: number;
+      private listeners: { [type: string]: MockListener[] } = {};
+
+      private clearAttribute(): void {
+        this.videoHeight = 0;
+        this.videoWidth = 0;
+        this.width = 0;
+        this.height = 0;
+      }
+
+      set srcObject(stream: MediaStream | null) {
+        if (stream === null) {
+          this.clearAttribute();
+        }
+        this.refSrcObject = stream;
+      }
+
+      get srcObject(): MediaStream {
+        return this.refSrcObject;
+      }
+
+      addEventListener(type: string, listener: (event?: Event) => void): void {
+        if (!this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = [];
+        }
+        this.listeners[type].push(listener);
+      }
+
+      pause(): void {}
+
+      play(): void {
+        if (this.refSrcObject) {
+          new TimeoutScheduler(mockBehavior.videoElementStartPlayDelay).start(() => {
+            this.dispatchEvent(new Event('timeupdate'));
+          });
+
+          new TimeoutScheduler(mockBehavior.videoElementSetWidthHeightAttributeDelay).start(() => {
+            this.videoWidth = 1280;
+            this.videoHeight = 720;
+          });
+        }
+      }
+      fired = false;
+      load(): void {
+        if (this.refSrcObject) {
+          if (!this.fired) {
+            this.fired = true;
+            new TimeoutScheduler(mockBehavior.videoElementStartPlayDelay).start(() => {
+              this.dispatchEvent(new Event('loadedmetadata'));
+            });
+          }
+        }
+      }
+
+      removeEventListener(type: string, listener: MockListener): void {
+        if (this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = this.listeners[type].filter(
+            eachListener => eachListener !== listener
+          );
+        }
+      }
+
+      attributes: { [index: string]: string } = {};
+      setAttribute(qualifiedName: string, value: string): void {
+        this.attributes[qualifiedName] = value;
+      }
+
+      hasAttribute(qualifiedName: string): boolean {
+        return this.attributes[qualifiedName] === 'true';
+      }
+
+      dispatchEvent(event: typeof GlobalAny.Event): boolean {
+        const eventType: string = event.type;
+        if (this.listeners.hasOwnProperty(eventType)) {
+          this.listeners[eventType].forEach((listener: MockListener) => {
+            listener(event);
+          });
+        }
+        return true;
+      }
+    };
+
+    GlobalAny.HTMLCanvasElement = class MockHTMLCanvasElement {
+      getContext(_contextId: string): CanvasRenderingContext2D {
+        const context = {
+          drawImage(
+            _image: CanvasImageSource,
+            _dx: number,
+            _dy: number,
+            _dw: number,
+            _dh: number
+          ): void {},
+          getImageData(_sx: number, _sy: number, sw: number, sh: number): ImageData {
+            // @ts-ignore
+            return {
+              width: sw,
+              height: sh,
+            };
+          },
+          fillRect(_x: number, _y: number, _w: number, _h: number): void {},
+        };
+        // @ts-ignore
+        return context;
+      }
+
+      captureStream(_frameRate: number): MediaStream {
+        return mockBehavior.createElementCaptureStream;
+      }
+    };
+
+    GlobalAny.performance = Date;
   }
 
   cleanup(): void {
+    // This is a bit of an awful hack. Some of our tests end up adding listeners that
+    // subsequently cause uncaught exceptions because they rely on `WebSocket` being defined.
+    //
+    // Almost every test cleans up these mocks in `after` or `afterEach`, and so random
+    // tests will fail at the end of a test suite due to these asynchronous listeners.
+    //
+    // This is bad: our tests should not have these side-effect listeners.
+    // However, fixing them is tricky, so we instead do a small hack: don't undefine `WebSocket`.
+    //
+    //
+    // delete GlobalAny.WebSocket;
+
     delete GlobalAny.fetch;
     delete GlobalAny.Response;
     delete GlobalAny.RTCPeerConnectionIceEvent;
@@ -1127,7 +1374,6 @@ export default class DOMMockBuilder {
     delete GlobalAny.RTCRtpReceiver;
     delete GlobalAny.RTCRtpSender;
     delete GlobalAny.MessageEvent;
-    delete GlobalAny.WebSocket;
     delete GlobalAny.MediaStreamTrack;
     delete GlobalAny.MediaStream;
     delete GlobalAny.MediaDevices;
@@ -1140,6 +1386,7 @@ export default class DOMMockBuilder {
     delete GlobalAny.requestAnimationFrame;
     delete GlobalAny.Audio;
     delete GlobalAny.AudioContext;
+    delete GlobalAny.OfflineAudioContext;
     delete GlobalAny.AudioBufferSourceNode;
     delete GlobalAny.AudioBuffer;
     delete GlobalAny.MediaStreamAudioDestinationNode;

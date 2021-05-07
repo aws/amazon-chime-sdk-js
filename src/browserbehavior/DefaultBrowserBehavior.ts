@@ -4,8 +4,9 @@
 import { detect } from 'detect-browser';
 
 import BrowserBehavior from './BrowserBehavior';
+import ExtendedBrowserBehavior from './ExtendedBrowserBehavior';
 
-export default class DefaultBrowserBehavior implements BrowserBehavior {
+export default class DefaultBrowserBehavior implements BrowserBehavior, ExtendedBrowserBehavior {
   private readonly browser = detect();
 
   private browserSupport: { [id: string]: number } = {
@@ -16,6 +17,9 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     ios: 12,
     safari: 12,
     opera: 66,
+    samsung: 12,
+    crios: 86,
+    fxios: 23,
   };
 
   private browserName: { [id: string]: string } = {
@@ -26,15 +30,35 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     ios: 'Safari iOS',
     safari: 'Safari',
     opera: 'Opera',
+    samsung: 'Samsung Internet',
+    crios: 'Chrome iOS',
+    fxios: 'Firefox iOS',
   };
 
-  private chromeLike: string[] = ['chrome', 'edge-chromium', 'chromium-webview', 'opera'];
+  private chromeLike: string[] = [
+    'chrome',
+    'edge-chromium',
+    'chromium-webview',
+    'opera',
+    'samsung',
+  ];
+
+  private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios'];
+
   private enableUnifiedPlanForChromiumBasedBrowsers: boolean;
+  private recreateAudioContextIfNeeded: boolean;
 
   constructor({
     enableUnifiedPlanForChromiumBasedBrowsers = false,
-  }: { enableUnifiedPlanForChromiumBasedBrowsers?: boolean } = {}) {
+
+    // Temporarily disable this workaround while we work out the kinks.
+    recreateAudioContextIfNeeded = false,
+  }: {
+    enableUnifiedPlanForChromiumBasedBrowsers?: boolean;
+    recreateAudioContextIfNeeded?: boolean;
+  } = {}) {
     this.enableUnifiedPlanForChromiumBasedBrowsers = enableUnifiedPlanForChromiumBasedBrowsers;
+    this.recreateAudioContextIfNeeded = recreateAudioContextIfNeeded;
   }
 
   version(): string {
@@ -58,12 +82,26 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return false;
   }
 
+  hasWebKitWebRTC(): boolean {
+    for (const browser of this.webkitBrowsers) {
+      if (browser === this.browser.name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   hasFirefoxWebRTC(): boolean {
     return this.isFirefox();
   }
 
+  supportsCanvasCapturedStreamPlayback(): boolean {
+    return !this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox();
+  }
+
   requiresUnifiedPlan(): boolean {
-    let shouldEnable = (this.isSafari() && this.isUnifiedPlanSupported()) || this.isFirefox();
+    let shouldEnable =
+      this.isFirefox() || (this.hasWebKitWebRTC() && this.isUnifiedPlanSupported());
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
       shouldEnable = shouldEnable || this.hasChromiumWebRTC();
     }
@@ -78,7 +116,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresCheckForSdpConnectionAttributes(): boolean {
-    return !this.isIOSSafari();
+    return !this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox();
   }
 
   requiresIceCandidateGatheringTimeoutWorkaround(): boolean {
@@ -86,7 +124,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresUnifiedPlanMunging(): boolean {
-    let shouldRequire = this.isSafari() && this.isUnifiedPlanSupported();
+    let shouldRequire = this.hasWebKitWebRTC() && this.isUnifiedPlanSupported();
     if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
       shouldRequire = shouldRequire || this.hasChromiumWebRTC();
     }
@@ -114,14 +152,56 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   requiresNoExactMediaStreamConstraints(): boolean {
-    return this.isIOSSafari() && (this.version() === '12.0.0' || this.version() === '12.1.0');
+    return (
+      this.isSamsungInternet() ||
+      (this.isIOSSafari() && (this.version() === '12.0.0' || this.version() === '12.1.0'))
+    );
+  }
+
+  requiresGroupIdMediaStreamConstraints(): boolean {
+    return this.isSamsungInternet();
+  }
+
+  requiresContextRecreationForAudioWorklet(): boolean {
+    if (!this.recreateAudioContextIfNeeded) {
+      return false;
+    }
+
+    // Definitely not Chrome; no worries.
+    if (!('chrome' in global)) {
+      return false;
+    }
+
+    // Everything seems to work fine on platforms other than macOS.
+    if (this.browser.os !== 'Mac OS') {
+      return false;
+    }
+
+    // Electron or Chromium.
+    // All other browsers are fine. But you'd have to be super weird --
+    // faking global.chrome but not having a Chrome UA -- to get this far,
+    // so we have some Istanbul directives on these.
+
+    /* istanbul ignore else */
+    if (this.isChrome() || this.isEdge()) {
+      return true;
+    }
+
+    /* istanbul ignore next */
+    return false;
   }
 
   getDisplayMediaAudioCaptureSupport(): boolean {
     return this.isChrome() || this.isEdge();
   }
 
+  supportsSenderSideBandwidthEstimation(): boolean {
+    return this.hasChromiumWebRTC() || this.isSafari();
+  }
+
+  // TODO: Deprecated, needs to be removed
   screenShareUnsupported(): boolean {
+    console.warn('This function is no longer supported.');
     if (this.isSafari()) {
       return true;
     }
@@ -143,7 +223,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
 
   supportString(): string {
     if (this.isAndroid()) {
-      return `${this.browserName['chrome']} ${this.browserSupport['chrome']}+`;
+      return `${this.browserName['chrome']} ${this.browserSupport['chrome']}+, ${this.browserName['samsung']} ${this.browserSupport['samsung']}+`;
     }
     const s: string[] = [];
     for (const k in this.browserSupport) {
@@ -172,8 +252,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
   }
 
   supportsSetSinkId(): boolean {
-    // @ts-ignore
-    return HTMLAudioElement.prototype.setSinkId !== undefined;
+    return 'setSinkId' in HTMLAudioElement.prototype;
   }
 
   // These helpers should be kept private to encourage
@@ -190,12 +269,24 @@ export default class DefaultBrowserBehavior implements BrowserBehavior {
     return this.browser.name === 'firefox';
   }
 
+  private isIOSFirefox(): boolean {
+    return this.browser.name === 'fxios';
+  }
+
+  private isIOSChrome(): boolean {
+    return this.browser.name === 'crios';
+  }
+
   private isChrome(): boolean {
     return this.browser.name === 'chrome';
   }
 
   private isEdge(): boolean {
     return this.browser.name === 'edge-chromium';
+  }
+
+  private isSamsungInternet(): boolean {
+    return this.browser.name === 'samsung';
   }
 
   private isAndroid(): boolean {

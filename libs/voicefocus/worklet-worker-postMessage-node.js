@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const support_js_1 = require("./support.js");
 const types_js_1 = require("./types.js");
 class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletNode {
     constructor(context, options) {
@@ -27,8 +28,9 @@ class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletN
             fetchBehavior,
             model: modelURL,
         });
+        const message = support_js_1.supportsWASMPostMessage(globalThis) ? 'get-module' : 'get-module-buffer';
         this.worker.postMessage({
-            message: 'get-module',
+            message,
             key: 'buffer',
             fetchBehavior,
             path: audioBufferURL,
@@ -70,6 +72,7 @@ class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletN
             case 'stopped':
                 this.worker.terminate();
                 break;
+            case 'module-buffer':
             case 'module':
                 this.port.postMessage(data);
                 break;

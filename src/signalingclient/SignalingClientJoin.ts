@@ -7,8 +7,8 @@
 export default class SignalingClientJoin {
   /** Initializes a SignalingClientJoin with the given properties.
    *
-   * @param {number} maxVideos The maximum number of video tiles to send.
-   * @param {boolean} sendBitrates Whether the server should send Bitrates messages.
+   * @param maxVideos The maximum number of video tiles to send.
+   * @param sendBitrates Whether the server should send Bitrates messages.
    */
   constructor(public maxVideos: number, public sendBitrates: boolean) {}
 }

@@ -10,15 +10,20 @@ import BaseTask from './BaseTask';
 export default class SetLocalDescriptionTask extends BaseTask {
   protected taskName = 'SetLocalDescriptionTask';
 
-  private cancelPromise: (error: Error) => void;
+  private cancelPromise: undefined | ((error: Error) => void);
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
   }
 
   cancel(): void {
-    const error = new Error(`canceling ${this.name()}`);
-    this.cancelPromise && this.cancelPromise(error);
+    // Just in case. The baseCancel behavior should prevent this.
+    /* istanbul ignore else */
+    if (this.cancelPromise) {
+      const error = new Error(`canceling ${this.name()}`);
+      this.cancelPromise(error);
+      delete this.cancelPromise;
+    }
   }
 
   async run(): Promise<void> {
@@ -38,6 +43,8 @@ export default class SetLocalDescriptionTask extends BaseTask {
         resolve();
       } catch (error) {
         reject(error);
+      } finally {
+        delete this.cancelPromise;
       }
     });
 

@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
+
+const test_config_path = path.join(__dirname, '..', '..', 'configs', 'messaging_session_test.config.json');
+const test_config_file = fs.readFileSync(test_config_path);
+
+const test_config = JSON.parse(test_config_file);
+
+test_config.tests[0].payload.userArn = process.env.MESSAGING_USER_ARN;
+fs.writeFileSync(test_config_path, JSON.stringify(test_config, null, 2));

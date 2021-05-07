@@ -381,7 +381,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
 
   forEachObserver(observerFunc: (observer: SimulcastUplinkObserver) => void): void {
     for (const observer of this.observerQueue) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         if (this.observerQueue.has(observer)) {
           observerFunc(observer);
         }

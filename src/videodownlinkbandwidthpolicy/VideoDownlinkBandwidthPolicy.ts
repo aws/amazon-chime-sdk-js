@@ -4,6 +4,7 @@
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import VideoDownlinkObserver from './VideoDownlinkObserver';
 
 /**
  * [[VideoDownlinkBandwidthPolicy]] makes decisions about downlink
@@ -35,6 +36,19 @@ export default interface VideoDownlinkBandwidthPolicy {
   /**
    * Updates the internal state with the set of streams we expect to be
    * subscribed to, and return the set.
+   *
+   * When a policy is passed into a meeting session, this will be called
+   * once every two seconds to check if the subscriptions have changed.
    */
   chooseSubscriptions(): VideoStreamIdSet;
+
+  /**
+   * (Optional) Add VideoDownlinkObserver to observer resubscribe requests
+   */
+  addObserver?(observer: VideoDownlinkObserver): void;
+
+  /**
+   * (Optional) Removes the VideoDownlinkObserver.
+   */
+  removeObserver?(observer: VideoDownlinkObserver): void;
 }

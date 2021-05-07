@@ -4,6 +4,7 @@
 .idea
 .nyc_output
 .npmrc
+__data*
 build
 coverage
 demos/browser/logs/

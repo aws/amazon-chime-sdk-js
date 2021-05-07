@@ -1,0 +1,27 @@
+{
+    "`": 1,
+    "name": "test_app_video_end2end_test.config.json %ts",
+    "grids": [
+    ],
+    "tests": [
+      {
+        "name": "Test App End2End Video Test %ts",
+        "description": "Test App End2End Video Test",
+        "tupleSize": 2,
+        "noOfThreads": 1,
+        "testImpl": "VideoEnd2EndTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "port": 30002,
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "version": "latest",
+        "platform": "MAC"
+      }
+    ]
+  }

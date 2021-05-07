@@ -73,6 +73,12 @@ export default interface BrowserBehavior {
   requiresNoExactMediaStreamConstraints(): boolean;
 
   /**
+   * Returns whether this browser requires a workaround for Audio Worklet usage
+   * with some Bluetooth devices.
+   */
+  requiresContextRecreationForAudioWorklet(): boolean;
+
+  /**
    * Returns whether screen share is unsupported by the browser
    */
   screenShareUnsupported(): boolean;
@@ -96,4 +102,14 @@ export default interface BrowserBehavior {
    * Returns whether browser supports setSinkId operation
    */
   supportsSetSinkId(): boolean;
+
+  /**
+   * Returns whether browser supports the playback of canvas-captured stream.
+   */
+  supportsCanvasCapturedStreamPlayback(): boolean;
+
+  /**
+   * Returns whether browser supports sender-side bandwidth estimation.
+   */
+  supportsSenderSideBandwidthEstimation(): boolean;
 }

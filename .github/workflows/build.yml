@@ -1,0 +1,29 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Build and Test Workflow
+
+on:
+  pull_request:
+    branches:
+      - master
+      - release-1.x
+
+jobs:
+  build:
+    name: Build and Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Using Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Clean Install
+        run: npm ci
+      - name: Build
+        run: npm run build:release

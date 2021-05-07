@@ -12,19 +12,24 @@ import BaseTask from './BaseTask';
 export default class CreateSDPTask extends BaseTask {
   protected taskName = 'CreateSDPTask';
 
-  private cancelPromise: (error: Error) => void;
+  private cancelPromise: undefined | ((error: Error) => void);
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
   }
 
   cancel(): void {
-    const error = new Error(`canceling ${this.name()}`);
-    this.cancelPromise && this.cancelPromise(error);
+    // Just in case. The baseCancel behavior should prevent this.
+    /* istanbul ignore else */
+    if (this.cancelPromise) {
+      const error = new Error(`canceling ${this.name()}`);
+      this.cancelPromise(error);
+      delete this.cancelPromise;
+    }
   }
 
   sessionUsesAudio(): boolean {
-    return true;
+    return !!this.context.meetingSessionConfiguration?.urls?.audioHostURL;
   }
 
   sessionUsesVideo(): boolean {
@@ -71,11 +76,14 @@ export default class CreateSDPTask extends BaseTask {
             );
             this.context.previousSdpOffer = null;
             reject(error);
+            return;
           }
         }
         resolve();
       } catch (error) {
         reject(error);
+      } finally {
+        delete this.cancelPromise;
       }
     });
   }

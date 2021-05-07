@@ -23,7 +23,7 @@ import VoiceFocusTransformDeviceDelegate from './VoiceFocusTransformDeviceDelega
  * This transformer captures relevant configuration. You should check for support, initialize,
  * and then create a device as follows:
  *
- * ```
+ * ```typescript
  * const deviceID = null;
  *
  * // This check for support is cheap and quick, and should be used to gate use
@@ -55,7 +55,7 @@ import VoiceFocusTransformDeviceDelegate from './VoiceFocusTransformDeviceDelega
  */
 export class VoiceFocusDeviceTransformer {
   // The Voice Focus logger is a bit more sophisticated, allowing following args,
-  // and allows drop-in use of `console`. We create an adapter to allow SDK loggers
+  // and allows drop-in use of {@link console}. We create an adapter to allow SDK loggers
   // to be used until they match.
   private logger: Logger;
   private vfLogger: VoiceFocusLogger;
@@ -73,13 +73,14 @@ export class VoiceFocusDeviceTransformer {
    * necessarily mean that adding Amazon Voice Focus will succeed: it is still possible that the
    * configuration of the page or the CPU speed of the device are limiting factors.
    *
-   * `VoiceFocusDeviceTransformer.create` will return an instance whose `isSupported()`
-   * method more accurately reflects whether Amazon Voice Focus is supported in the current environment.
+   * {@link VoiceFocusDeviceTransformer.create} will return an instance whose
+   * `isSupported` method more accurately reflects whether Amazon Voice Focus
+   * is supported in the current environment.
    *
    * This method will only reject if you provide invalid inputs.
    *
    * @param spec An optional asset group and URL paths to use when fetching. You can pass
-   *             a complete `VoiceFocusSpec` here for convenience, matching the signature of `create`.
+   *             a complete {@link VoiceFocusSpec} here for convenience, matching the signature of {@link VoiceFocusDeviceTransformer.create}.
    * @param options Additional named arguments, including `logger`.
    */
   static isSupported(
@@ -102,28 +103,54 @@ export class VoiceFocusDeviceTransformer {
    * checking for support or estimating fails (e.g., because the network is unreachable).
    *
    * If Amazon Voice Focus is not supported on this device, this call will not reject and
-   * `isSupported()` will return `false` on the returned instance. That instance will
+   * `isSupported` will return `false` on the returned instance. That instance will
    * pass through devices unmodified.
    *
    * @param spec A definition of how you want Amazon Voice Focus to behave. See the declaration of
-   *             {@link VoiceFocusSpec}` for details.
+   *             {@link VoiceFocusSpec} for details.
    * @param options Additional named arguments, including `logger` and `preload`.
    */
   static async create(
     spec: VoiceFocusSpec = {},
-    options: VoiceFocusDeviceOptions = {}
+    options: VoiceFocusDeviceOptions = {},
+    config?: VoiceFocusConfig
   ): Promise<VoiceFocusDeviceTransformer> {
-    const transformer = new VoiceFocusDeviceTransformer(spec, options);
+    const transformer = new VoiceFocusDeviceTransformer(spec, options, config);
 
-    // This also preps the first VoiceFocus instance.
+    // This also preps the first `VoiceFocus` instance.
     await transformer.init();
     return transformer;
   }
 
   /**
+   * Given a spec and options, perform the configuration work that is
+   * ordinarily performed during creation of a transformer.
+   *
+   * The computed configuration is not portable between devices or sessions,
+   * but is useful for 'moving' transformers between windows.
+   *
+   * Pass the returned configuration as the third argument to a call to
+   * {@link VoiceFocusDeviceTransformer.create} with the matching spec.
+   */
+  static async configure(
+    spec: VoiceFocusSpec = {},
+    options: VoiceFocusDeviceOptions = {}
+  ): Promise<VoiceFocusConfig> {
+    const transformer = new VoiceFocusDeviceTransformer(spec, options, undefined);
+    return transformer.configure(true);
+  }
+
+  /**
+   * Return the computed configuration for this transformer.
+   */
+  getConfiguration(): Promise<VoiceFocusConfig> {
+    return this.configuration;
+  }
+
+  /**
    * Return whether this transformer is able to function in this environment.
    * If not, calls to
-   * {@link VoiceFocusDeviceTransformer.createTransformDevice|createTransformDevice}`
+   * {@link VoiceFocusDeviceTransformer.createTransformDevice|createTransformDevice}
    * will pass through an unmodified device.
    */
   isSupported(): boolean {
@@ -149,7 +176,6 @@ export class VoiceFocusDeviceTransformer {
       return undefined;
     }
 
-    /* istanbul ignore catch */
     try {
       const preload = true;
       const [vf, delegate] = await this.allocateVoiceFocus(preload);
@@ -167,7 +193,8 @@ export class VoiceFocusDeviceTransformer {
       preload = true,
       logger,
       fetchBehavior = VoiceFocusDeviceTransformer.defaultFetchBehavior(),
-    }: VoiceFocusDeviceOptions
+    }: VoiceFocusDeviceOptions,
+    config: VoiceFocusConfig | undefined
   ) {
     this.logger = logger;
     this.vfLogger = logger ? new LoggerAdapter(logger) : undefined;
@@ -177,6 +204,10 @@ export class VoiceFocusDeviceTransformer {
     // If the user didn't specify one, add the default, which is
     // identified by the major and minor SDK version.
     this.spec = VoiceFocusDeviceTransformer.augmentSpec(this.spec);
+
+    if (config) {
+      this.configuration = Promise.resolve(config);
+    }
   }
 
   private static augmentSpec(spec: VoiceFocusSpec): VoiceFocusSpec {
@@ -189,9 +220,10 @@ export class VoiceFocusDeviceTransformer {
     return spec;
   }
 
-  private async configure(): Promise<VoiceFocusConfig> {
+  private async configure(preResolve: boolean = false): Promise<VoiceFocusConfig> {
     const options = {
       fetchBehavior: this.fetchBehavior,
+      preResolve,
       logger: this.vfLogger,
     };
 
@@ -199,7 +231,9 @@ export class VoiceFocusDeviceTransformer {
   }
 
   private async init(): Promise<void> {
-    this.configuration = this.configure();
+    if (!this.configuration) {
+      this.configuration = this.configure();
+    }
 
     const config = await this.configuration;
     if (!config.supported) {

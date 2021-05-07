@@ -1,8 +1,6 @@
 #!/bin/bash
 set -o xtrace
 
-cd ~/build
-
 mkdir GitHub
 cd GitHub
 git clone https://github.com/webrtc/KITE.git
@@ -10,9 +8,14 @@ cd KITE
 git checkout e9296165cd24bea92cddb59f2bf211c99f764d58
 
 chmod -R +x scripts/linux
+printf "n\n3.6.3" | ./scripts/linux/installMaven.sh
+#This is a temporary hack since maven 3.8.1 which is the default for GitHub Action VM does not work with kite
+export PATH=~/apache-maven-3.6.3/bin:$PATH
+source ~/.bashrc
+echo `mvn --version`
 
 chmod +x configureLinux.sh
 yes n | ./configureLinux.sh
 
 cd KITE-AppRTC-Test
-../scripts/linux/path/c all > /dev/null
+../scripts/linux/path/c all

@@ -85,11 +85,15 @@ const mungeConstraints = (constraints, agc) => {
     }
     return Object.assign(Object.assign({}, constraints), { audio: constraints.audio === true ? defaultConstraints : Object.assign(Object.assign({}, constraints.audio), defaultConstraints) });
 };
+const urlForModel = (model, paths) => {
+    return `${paths.models}${decider_js_1.decideModel(model)}.wasm`;
+};
 class VoiceFocus {
-    constructor(worker, processorURL, nodeConstructor, nodeOptions) {
+    constructor(worker, processorURL, nodeConstructor, nodeOptions, executionQuanta) {
         this.processorURL = processorURL;
         this.nodeConstructor = nodeConstructor;
         this.nodeOptions = nodeOptions;
+        this.executionQuanta = executionQuanta;
         this.internal = {
             worker,
             nodeOptions,
@@ -98,10 +102,19 @@ class VoiceFocus {
     static isSupported(spec, options) {
         const { fetchBehavior, logger } = options || {};
         if (typeof globalThis === 'undefined') {
+            logger === null || logger === void 0 ? void 0 : logger.debug('Browser does not have globalThis.');
             return Promise.resolve(false);
         }
-        if (!support_js_1.supportsAudioWorklet(globalThis, logger) || !support_js_1.supportsWASMStreaming(globalThis, logger)) {
+        if (!support_js_1.supportsAudioWorklet(globalThis, logger)) {
+            logger === null || logger === void 0 ? void 0 : logger.debug('Browser does not support Audio Worklet.');
             return Promise.resolve(false);
+        }
+        if (!support_js_1.supportsWASM(globalThis, logger)) {
+            logger === null || logger === void 0 ? void 0 : logger.debug('Browser does not support WASM.');
+            return Promise.resolve(false);
+        }
+        if (!support_js_1.supportsWASMStreaming(globalThis, logger)) {
+            logger === null || logger === void 0 ? void 0 : logger.debug('Browser does not support streaming WASM compilation.');
         }
         const { assetGroup = DEFAULT_ASSET_GROUP, revisionID, paths = DEFAULT_PATHS, } = spec || {};
         validateAssetSpec(assetGroup, revisionID);
@@ -110,10 +123,25 @@ class VoiceFocus {
         const fetchConfig = Object.assign(Object.assign({}, updatedFetchBehavior), { paths });
         return support_js_1.supportsVoiceFocusWorker(globalThis, fetchConfig, logger);
     }
+    static mungeExecutionPreference(preference, logger) {
+        const isAuto = (preference === undefined || preference === 'auto');
+        if (support_js_1.isSafari(globalThis)) {
+            if (isAuto || preference === 'inline') {
+                return 'inline';
+            }
+            if (!isAuto) {
+                throw new Error(`Unsupported execution preference ${preference}`);
+            }
+        }
+        if (preference === 'worker-sab' && !support_js_1.supportsSharedArrayBuffer(globalThis, globalThis, logger)) {
+            throw new Error(`Unsupported execution preference ${preference}`);
+        }
+        return preference || 'auto';
+    }
     static configure(spec, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { fetchBehavior, logger } = options || {};
-            const { category = 'voicefocus', name = 'default', variant: variantPreference = 'auto', assetGroup = DEFAULT_ASSET_GROUP, revisionID, simd = 'detect', executionPreference = 'auto', usagePreference = 'interactivity', estimatorBudget = 100, paths = DEFAULT_PATHS, thresholds, } = spec || {};
+            const { fetchBehavior, preResolve, logger, } = options || {};
+            const { category = 'voicefocus', name = 'default', variant: variantPreference = 'auto', assetGroup = DEFAULT_ASSET_GROUP, revisionID, simd = 'detect', executionPreference = 'auto', executionQuantaPreference, usagePreference = 'interactivity', estimatorBudget = 100, paths = DEFAULT_PATHS, thresholds, } = spec || {};
             logger === null || logger === void 0 ? void 0 : logger.debug('Configuring Voice Focus with spec', spec);
             if (category !== undefined && category !== 'voicefocus') {
                 throw new Error(`Unrecognized category ${category}`);
@@ -123,6 +151,9 @@ class VoiceFocus {
             }
             if (variantPreference !== undefined && !['auto', 'c100', 'c50', 'c20', 'c10'].includes(variantPreference)) {
                 throw new Error(`Unrecognized feature variant ${variantPreference}`);
+            }
+            if (executionQuantaPreference !== undefined && ![1, 2, 3].includes(executionQuantaPreference)) {
+                throw new Error(`Unrecognized execution quanta preference ${executionQuantaPreference}`);
             }
             validateAssetSpec(assetGroup, revisionID);
             if (simd !== undefined && !['detect', 'force', 'disable'].includes(simd)) {
@@ -135,8 +166,9 @@ class VoiceFocus {
                 throw new Error(`Unrecognized usage preference ${usagePreference}`);
             }
             const executionSpec = {
-                executionPreference,
+                executionPreference: this.mungeExecutionPreference(executionPreference, logger),
                 usagePreference,
+                executionQuantaPreference,
                 variantPreference,
                 simdPreference: simd,
                 estimatorBudget,
@@ -149,16 +181,22 @@ class VoiceFocus {
                 return { supported: false, reason: executionDefinition.reason };
             }
             logger === null || logger === void 0 ? void 0 : logger.info('Decided execution approach', executionDefinition);
-            const { useSIMD, processor, variant } = executionDefinition;
+            const { useSIMD, processor, variant, executionQuanta } = executionDefinition;
+            const model = {
+                category: category || 'voicefocus',
+                name: name || 'default',
+                variant,
+                simd: useSIMD,
+            };
+            if (preResolve) {
+                const startingURL = urlForModel(model, paths);
+                model.url = yield fetch_js_1.resolveURL(startingURL, updatedFetchBehavior);
+            }
             return {
                 fetchConfig,
-                model: {
-                    category: category || 'voicefocus',
-                    name: name || 'default',
-                    variant,
-                    simd: useSIMD,
-                },
+                model,
                 processor,
+                executionQuanta,
                 supported: true,
             };
         });
@@ -168,7 +206,7 @@ class VoiceFocus {
             if (configuration.supported === false) {
                 throw new Error('Voice Focus not supported. Reason: ' + configuration.reason);
             }
-            const { model, processor, fetchConfig, } = configuration;
+            const { model, processor, fetchConfig, executionQuanta, } = configuration;
             const { simd } = model;
             const { paths } = fetchConfig;
             if (processor !== 'voicefocus-inline-processor' &&
@@ -176,9 +214,8 @@ class VoiceFocus {
                 processor !== 'voicefocus-worker-sab-processor') {
                 throw new Error(`Unknown processor ${processor}`);
             }
-            const modelFile = decider_js_1.decideModel(model);
-            logger === null || logger === void 0 ? void 0 : logger.debug(`Decided model ${modelFile}.`);
-            const modelURL = `${paths.models}${modelFile}.wasm`;
+            const modelURL = model.url || urlForModel(model, paths);
+            logger === null || logger === void 0 ? void 0 : logger.debug(`Using model URL ${modelURL}.`);
             const audioBufferURL = `${paths.wasm}audio_buffer-v1${simd ? '_simd' : ''}.wasm`;
             const resamplerURL = `${paths.wasm}resampler-v1${simd ? '_simd' : ''}.wasm`;
             const workerURL = `${paths.workers}worker-v1.js`;
@@ -187,8 +224,9 @@ class VoiceFocus {
             const worker = yield loader_js_1.loadWorker(workerURL, 'VoiceFocusWorker', fetchConfig, logger);
             if (preload) {
                 logger === null || logger === void 0 ? void 0 : logger.debug('Preloading', modelURL);
+                let message = support_js_1.supportsWASMPostMessage(globalThis) ? 'get-module' : 'get-module-buffer';
                 worker.postMessage({
-                    message: 'get-module',
+                    message,
                     preload: true,
                     key: 'model',
                     fetchBehavior: fetchConfig,
@@ -204,7 +242,7 @@ class VoiceFocus {
                 modelURL,
                 delegate,
             };
-            const factory = new VoiceFocus(worker, processorURL, node, nodeOptions);
+            const factory = new VoiceFocus(worker, processorURL, node, nodeOptions, executionQuanta);
             return Promise.resolve(factory);
         });
     }
@@ -217,6 +255,7 @@ class VoiceFocus {
             sendBufferCount: 10,
             prefill: 6,
             agc,
+            executionQuanta: this.executionQuanta,
         };
         const url = fetch_js_1.withQueryString(this.processorURL, (_a = this.nodeOptions) === null || _a === void 0 ? void 0 : _a.fetchBehavior);
         return context.audioWorklet

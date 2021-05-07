@@ -55,9 +55,15 @@ Note that due to limitations in transpilers, requirements of the web platform mi
 
 ### I am unable to select an audio output device in some browsers, is this a known issue?
 
-[Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.
+[Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings. [Chrome and Firefox on iOS](https://bugs.webkit.org/show_bug.cgi?id=179415) also have the same issue.
 
-[Android Chrome](https://bugs.chromium.org/p/chromium/issues/detail?id=635686&sort=-stars&q=android%20chrome%20bluetooth%20headphone&can=2) has a known issue switching between bluetooth audio output devices. While clients can continue the meeting using the default device, there is a [bug](https://bugs.chromium.org/p/chromium/issues/detail?id=635686&sort=-stars&q=android%20chrome%20bluetooth%20headphone&can=2) related to switching to an bluetooth audio output.
+[Android Chrome](https://bugs.chromium.org/p/chromium/issues/detail?id=635686&sort=-stars&q=android%20chrome%20bluetooth%20headphone&can=2) has a known issue switching between Bluetooth audio output devices. While clients can continue the meeting using the default device, there is a [bug](https://bugs.chromium.org/p/chromium/issues/detail?id=635686&sort=-stars&q=android%20chrome%20bluetooth%20headphone&can=2) related to switching to a Bluetooth audio output.
+
+### I am getting `Cannot select audio output device. This browser does not support setSinkId` error on the browser console. Is this a known issue?
+
+In the background, `bindAudioElement()`, `bindAudioStream()`, and `bindAudioDevice()` call the browser API [`setSinkId()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId). The full list of browsers that support `setSinkId` API can be found [here](https://caniuse.com/?search=setsinkid). In Firefox, this feature is behind the `media.setsinkid.enabled` preference (needs to be set to `true`). To change preferences in Firefox, visit `about:config`.
+
+Use `BrowserBehavior.supportsSetSinkId()` to determine whether the browser supports `setSinkId()` before calling these methods.
 
 ### My video disappears in Safari browsers, is this a known issue?
 
@@ -76,7 +82,7 @@ Customers and end users must ensure that either (a) end users do not use SDK app
 
 ### Is the Amazon Chime SDK supported on mobile browsers?
 
-Amazon Chime SDK for JavaScript is supported on certain mobile browsers, specifically Chrome/Android and Safari/iOS. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
+Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
 
 Amazon Chime SDK for iOS https://github.com/aws/amazon-chime-sdk-ios
 
@@ -131,6 +137,12 @@ Applications built with the Amazon Chime SDK for JavaScript can adjust video par
 ### How can I stream music or video into a meeting?
 
 You can use the [AudioVideoFacade.startContentShare(MediaStream)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare) API to stream audio and/or video content to the meetings. See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/ee8831f2fe7747e52fdef49db0dc1dfc2a4778f6/demos/browser/app/meetingV2/meetingV2.ts#L1266) for an example of how to achieve this.
+
+### When I stream video in Chrome, other attendees see a black screen. Is this a known issue?
+
+The [AudioVideoFacade.startContentShare(MediaStream)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare) API uses the HTMLMediaElement.captureStream API to stream video content content to the meeting. Chrome 88 and above have a [known issue](https://bugs.chromium.org/p/chromium/issues/detail?id=1156408) that the captureStream API does not send any data.
+
+As a workaround, you can turn hardware acceleration off in Chrome (88.0.4324.146 and above) and then stream video. Go to Settings (`chrome://settings`), scroll down to the System, and turn "Use hardware acceleration when available" off.
 
 ### How do I broadcast an Amazon Chime SDK meeting?
 
@@ -202,11 +214,7 @@ Amazon Chime SDK for JavaScript applications do not support content sharing on m
 
 ### Will Amazon Chime SDK for JavaScript meetings work in Chrome and Firefox in iOS?
 
-At present, Amazon Chime SDK for JavaScript is supported on Safari/iOS only. Other browsers are missing a key dependency, [GetUserMedia](https://bugs.webkit.org/show_bug.cgi?id=208667).
-
-### When loading a webpage in iOS WebView, my application gets a TypeError: undefined is not an object (evaluating 'navigator.mediaDevices.addEventListener'), what could be the issue ?
-
-This is because Safari embedded [web view does not support WebRTC](https://forums.developer.apple.com/thread/88052). The mitigation is to use the Amazon Chime SDK for iOS to build a native application: https://github.com/aws/amazon-chime-sdk-ios
+Yes, the Chime JS SDK supports Chrome and Firefox on iOS. Refer to the official Amazon Chime SDK Documentation for more information: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers.
 
 ### I notice that my clients lose audio and drop from the meeting if the Chrome browser on Android stays in background for several minutes, is that a known issue?
 
@@ -214,7 +222,7 @@ This is a known issue and happens primarily due to this [Chromium bug](https://b
 
 ### I only see iPhone or iPad microphone as audio input in iOS device, is that a known issue?
 
-iOS Safari has a known issue where it only lists one audio input device even when there are multiple. For example
+iOS Safari/Chrome/Firefox have a known issue where the device selection list only lists one audio input device even when there are multiple. For example
 , if you plug in a wired headset to your iPhone, it will show up as iPhone microphone replacing the internal mic. For
  more information, please refer to [the Webkit issue](https://bugs.webkit.org/show_bug.cgi?id=174833). 
 
@@ -224,10 +232,10 @@ This was a known issue on iPhone X devices (X, XS, and XR) when using AudioConte
 
 ### I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.
 
-iOS Safari has a known issue where it does not automatically switch to the iOS internal speaker after users unplug
+iOS Safari/Chrome/Firefox browsers have a known issue where they do not automatically switch to the iOS internal speaker after users unplug
  their wired headset. For more information, please refer to [the Webkit issue](https://bugs.webkit.org/show_bug.cgi?id=216389).
 
-### **I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari in iOS and frozen tile in Chrome in Android, is this a known issue?**
+### **I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari/Chrome/Firefox in iOS and frozen tile in Chrome in Android, is this a known issue?**
 
 This is the default behavior that is specific to each browser. In Android, the video stream is muted when in background and thus, the video will show the last frame.
 Note that for Android, if an attendee joins later after the video stream is in background, it will show as a blank tile since the last frame is blank.
@@ -242,6 +250,15 @@ This seems to be a [bug](https://bugs.chromium.org/p/webrtc/issues/detail?id=116
 
 This error indicates that the device you are using does not support hardware acceleration decoding. However this does not impact the ability of this user to participate in Amazon Chime SDK meetings as the device can render and transmit VP8 streams to other parties in the call. Specifically for Chrome, you will need to enable Unified Plan support by setting this [flag](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers) to true or enable [Simulcast](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers).
 In some cases, H.264 may be missing from the initial SDP offer [tracking Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1047994)) causing this slate to appear. Rejoining the meeting can fix the videos to be rendered once again.
+
+### I am not able to join an Amazon Chime SDK meeting from an Android 11 device running Chromium 83 based browsers, such as Samsung Internet (Version 13) or Chrome (Version 83). Is this a known issue?
+
+This is a bug on Android 11 running Chromium 83 based browsers. You will observe this issue on the Samsung Internet browser (Version 13) since it is based on Chromium 83. Please check [ICE gathering stalls in Chrome on Android 11](https://bugs.chromium.org/p/chromium/issues/detail?id=1115498) bug for more information. This issue is not observed on the Samsung Internet browser (Version 12) or the latest Chrome for Android browser when tested on an Android 11 device.
+
+### Does Amazon Voice Focus support the Samsung Internet browser?
+
+Yes, Amazon Voice Focus supports the Samsung Internet browser (Chromium 83 or lower). However, it leads to a poor user experience because the preferred Chromium version is 87 or higher. Please check Amazon Voice Focus [browser compatibility matrix](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/09_Amazon_Voice_Focus.md#browser-compatibility) in Amazon Voice Focus guide.
+
 
 ## Audio and video
 
@@ -304,3 +321,16 @@ meetingSession.audioVideo.setDeviceLabelTrigger(
   }
 );
 ```
+
+### How can I speed up my meeting join times?
+
+The most significant improvement comes from choosing the right region to host your meeting, as discussed earlier in this FAQ.
+
+Meeting join comprises several steps, one of which is establishing a signaling connection. You can front-load this work by specifying `{ signalingOnly: true }` in a call to `start` as early as possible in your application — _e.g._, in a device picker or lobby view — and then calling `start` again to finish joining the meeting. The attendee will not be shown as having joined the meeting until the second `start` call completes.
+
+## Messaging
+
+### How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?
+
+Follow the instructions in the ["Using websockets to receive messages" developer guide](https://docs.aws.amazon.com/chime/latest/dg/websockets.html#connect-api).
+To sign the URL in Python, use the example code in the [GitHub issue #1241](https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541).

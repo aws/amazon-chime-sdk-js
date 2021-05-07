@@ -30,9 +30,37 @@ import {
   MeetingSessionPOSTLogger,
   MultiLogger,
   Versioning,
-} from '../../../../src/index';
+} from 'amazon-chime-sdk-js';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { v4: uuidv4 } = require('uuid');
+
+class SwappableLogger implements Logger {
+  constructor(public inner: Logger) {}
+  debug(debugFunction: string | (() => string)): void {
+    this.inner.debug(debugFunction);
+  }
+
+  info(msg: string): void {
+    this.inner.info(msg);
+  }
+
+  error(msg: string): void {
+    this.inner.error(msg);
+  }
+
+  warn(msg: string): void {
+    this.inner.warn(msg);
+  }
+
+  setLogLevel(level: LogLevel): void {
+    this.inner.setLogLevel(level);
+  }
+
+  getLogLevel(): LogLevel {
+    return this.inner.getLogLevel();
+  }
+}
 
 export class DemoMeetingApp {
   static readonly BASE_URL: string = [
@@ -52,7 +80,7 @@ export class DemoMeetingApp {
   region: string | null = null;
   meetingSession: MeetingSession | null = null;
   audioVideo: AudioVideoFacade | null = null;
-  logger: Logger;
+  logger: SwappableLogger;
   deviceController: DefaultDeviceController;
   meetingReadinessChecker: MeetingReadinessChecker | null = null;
   canStartLocalVideo: boolean = true;
@@ -64,6 +92,7 @@ export class DemoMeetingApp {
   enableUnifiedPlanForChromiumBasedBrowsers = false;
   enableSimulcast = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   markdown = require('markdown-it')({ linkify: true });
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
@@ -78,6 +107,9 @@ export class DemoMeetingApp {
     this.initParameters();
     this.setMediaRegion();
     this.switchToFlow('flow-authenticate');
+
+    const logLevel = LogLevel.INFO;
+    this.logger = new SwappableLogger(new ConsoleLogger('SDK', logLevel));
   }
 
   switchToFlow(flow: string): void {
@@ -93,8 +125,9 @@ export class DemoMeetingApp {
     // Initialize logger and device controller to populate device list
     new AsyncScheduler().start(
       async (): Promise<void> => {
-        await this.initializeLoggerAndDeviceController();
-        const button = document.getElementById("authenticate") as HTMLButtonElement;
+        await this.initializeDeviceController();
+        await this.initializeLogger();
+        const button = document.getElementById('authenticate') as HTMLButtonElement;
         button.disabled = false;
       }
     );
@@ -111,8 +144,11 @@ export class DemoMeetingApp {
       this.log(`chimeMeetingId: ${chimeMeetingId}`);
       return chimeMeetingId;
     } catch (error) {
-      const httpErrorMessage = 'UserMedia is not allowed in HTTP sites. Either use HTTPS or enable media capture on insecure sites.';
-      (document.getElementById('failed-meeting') as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
+      const httpErrorMessage =
+        'UserMedia is not allowed in HTTP sites. Either use HTTPS or enable media capture on insecure sites.';
+      (document.getElementById(
+        'failed-meeting'
+      ) as HTMLDivElement).innerText = `Meeting ID: ${this.meeting}`;
       (document.getElementById('failed-meeting-error') as HTMLDivElement).innerText =
         window.location.protocol === 'http:' ? httpErrorMessage : error.message;
       this.switchToFlow('flow-failed-meeting');
@@ -121,7 +157,7 @@ export class DemoMeetingApp {
   }
 
   async authenticate(): Promise<string> {
-    let joinInfo = (await this.joinMeeting()).JoinInfo;
+    const joinInfo = (await this.joinMeeting()).JoinInfo;
     const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
     return configuration.meetingId;
@@ -135,7 +171,7 @@ export class DemoMeetingApp {
     try {
       const response = await fetch(`${DemoMeetingApp.BASE_URL}create_log_stream`, {
         method: 'POST',
-        body
+        body,
       });
       if (response.status === 200) {
         console.log('Log stream created');
@@ -145,39 +181,33 @@ export class DemoMeetingApp {
     }
   }
 
-  getAudioInputDevice = async () => {
-    const audioInputDevices = await this.deviceController.listAudioInputDevices();
+  getAudioInputDeviceID = (): string => {
     const dropdownList = document.getElementById('audio-input') as HTMLSelectElement;
-    return this.getDevice(audioInputDevices, dropdownList);
+    return dropdownList.value;
   };
 
-  getAudioOutputDevice = async () => {
-    const audioOutputDevices = await this.deviceController.listAudioOutputDevices();
+  getAudioOutputDeviceID = (): string => {
     const dropdownList = document.getElementById('audio-output') as HTMLSelectElement;
-    return this.getDevice(audioOutputDevices, dropdownList);
+    return dropdownList.value;
   };
 
-  getVideoInputDevice = async () => {
-    const videoInputDevices = await this.deviceController.listVideoInputDevices();
+  getVideoInputDeviceID = (): string => {
     const dropdownList = document.getElementById('video-input') as HTMLSelectElement;
-    return this.getDevice(videoInputDevices, dropdownList);
+    return dropdownList.value;
   };
 
-  getDevice = async (deviceList: MediaDeviceInfo[], dropdownList: HTMLSelectElement) => {
-    let device = deviceList[0];
-    for (let i = 0; i < deviceList.length; i++) {
-      if (deviceList[i].deviceId === dropdownList.value) {
-        device = deviceList[i];
-      }
-    }
-    return device;
+  speakerTest = async (): Promise<void> => {
+    const button = document.getElementById('speakertest-button') as HTMLButtonElement;
+    button.disabled = false;
   };
 
-  audioTest = async () => {
+  audioTest = async (): Promise<CheckAudioOutputFeedback> => {
+    const speakerTestResult = document.getElementById('speaker-test');
+    speakerTestResult.style.display = 'inline-block';
     this.createReadinessHtml('speaker-test', 'spinner-border');
-    const audioOutput = await this.getAudioOutputDevice();
-    let speakerUserFeedbackHtml = document.getElementById('speaker-user-feedback');
-    let audioElement = document.getElementById('speaker-test-audio-element') as HTMLAudioElement;
+    const audioOutput = this.getAudioOutputDeviceID();
+    const speakerUserFeedbackHtml = document.getElementById('speaker-user-feedback');
+    const audioElement = document.getElementById('speaker-test-audio-element') as HTMLAudioElement;
     speakerUserFeedbackHtml.style.display = 'inline-block';
 
     const audioOutputResp = await this.meetingReadinessChecker.checkAudioOutput(
@@ -193,34 +223,35 @@ export class DemoMeetingApp {
           });
         });
       },
-      audioElement);
+      audioElement
+    );
 
-    let textToDisplay = CheckAudioOutputFeedback[audioOutputResp];
+    const textToDisplay = CheckAudioOutputFeedback[audioOutputResp];
     this.createReadinessHtml('speaker-test', textToDisplay);
     speakerUserFeedbackHtml.style.display = 'none';
     return audioOutputResp;
   };
 
-  micTest = async () => {
+  micTest = async (): Promise<CheckAudioInputFeedback> => {
     this.createReadinessHtml('mic-test', 'spinner-border');
-    const audioInput = await this.getAudioInputDevice();
+    const audioInput = this.getAudioInputDeviceID();
     const audioInputResp = await this.meetingReadinessChecker.checkAudioInput(audioInput);
     this.createReadinessHtml('mic-test', CheckAudioInputFeedback[audioInputResp]);
     return audioInputResp;
   };
 
-  videoTest = async () => {
+  videoTest = async (): Promise<CheckVideoInputFeedback> => {
     this.createReadinessHtml('video-test', 'spinner-border');
-    const videoInput = await this.getVideoInputDevice();
+    const videoInput = this.getVideoInputDeviceID();
     const videoInputResp = await this.meetingReadinessChecker.checkVideoInput(videoInput);
-    let textToDisplay = CheckVideoInputFeedback[videoInputResp];
+    const textToDisplay = CheckVideoInputFeedback[videoInputResp];
     this.createReadinessHtml('video-test', textToDisplay);
     return videoInputResp;
   };
 
-  cameraTest = async () => {
+  cameraTest = async (): Promise<void> => {
     this.createReadinessHtml('camera-test2', 'spinner-border');
-    const videoInput = await this.getVideoInputDevice();
+    const videoInput = this.getVideoInputDeviceID();
     const cameraResolutionResp1 = await this.meetingReadinessChecker.checkCameraResolution(
       videoInput,
       640,
@@ -245,14 +276,14 @@ export class DemoMeetingApp {
     return;
   };
 
-  contentShareTest = async () => {
+  contentShareTest = async (): Promise<void> => {
     const button = document.getElementById('contentshare-button') as HTMLButtonElement;
     button.disabled = false;
   };
 
-  audioConnectivityTest = async () => {
+  audioConnectivityTest = async (): Promise<CheckAudioConnectivityFeedback> => {
     this.createReadinessHtml('audioconnectivity-test', 'spinner-border');
-    const audioInput = await this.getAudioInputDevice();
+    const audioInput = this.getAudioInputDeviceID();
     const audioConnectivityResp = await this.meetingReadinessChecker.checkAudioConnectivity(
       audioInput
     );
@@ -263,10 +294,10 @@ export class DemoMeetingApp {
     return audioConnectivityResp;
   };
 
-  videoConnectivityTest = async () => {
+  videoConnectivityTest = async (): Promise<CheckVideoConnectivityFeedback> => {
     this.createReadinessHtml('videoconnectivity-test', 'spinner-border');
-    let videoInput = await this.getVideoInputDevice();
-    let videoConnectivityResp = await this.meetingReadinessChecker.checkVideoConnectivity(
+    const videoInput = this.getVideoInputDeviceID();
+    const videoConnectivityResp = await this.meetingReadinessChecker.checkVideoConnectivity(
       videoInput
     );
     this.createReadinessHtml(
@@ -276,9 +307,9 @@ export class DemoMeetingApp {
     return videoConnectivityResp;
   };
 
-  networkTcpTest = async () => {
+  networkTcpTest = async (): Promise<CheckNetworkTCPConnectivityFeedback> => {
     this.createReadinessHtml('networktcp-test', 'spinner-border');
-    let networkTcpResp = await this.meetingReadinessChecker.checkNetworkTCPConnectivity();
+    const networkTcpResp = await this.meetingReadinessChecker.checkNetworkTCPConnectivity();
     this.createReadinessHtml(
       'networktcp-test',
       CheckNetworkTCPConnectivityFeedback[networkTcpResp]
@@ -286,14 +317,25 @@ export class DemoMeetingApp {
     return networkTcpResp;
   };
 
-  networkUdpTest = async () => {
+  networkUdpTest = async (): Promise<CheckNetworkUDPConnectivityFeedback> => {
     this.createReadinessHtml('networkudp-test', 'spinner-border');
-    let networkUdpResp = await this.meetingReadinessChecker.checkNetworkUDPConnectivity();
+    const networkUdpResp = await this.meetingReadinessChecker.checkNetworkUDPConnectivity();
     this.createReadinessHtml(
       'networkudp-test',
       CheckNetworkUDPConnectivityFeedback[networkUdpResp]
     );
     return networkUdpResp;
+  };
+
+  continueTestExecution = async (): Promise<void> => {
+    await this.micTest();
+    await this.videoTest();
+    await this.cameraTest();
+    await this.networkUdpTest();
+    await this.networkTcpTest();
+    await this.audioConnectivityTest();
+    await this.videoConnectivityTest();
+    await this.contentShareTest();
   };
 
   createReadinessHtml(id: string, textToDisplay: string): void {
@@ -325,6 +367,14 @@ export class DemoMeetingApp {
       this.canHear = false;
     });
 
+    const speakerTestButton = document.getElementById('speakertest-button') as HTMLButtonElement;
+    speakerTestButton.addEventListener('click', async () => {
+      speakerTestButton.style.display = 'none';
+      await this.audioTest();
+      speakerTestButton.disabled = true;
+      await this.continueTestExecution();
+    });
+
     const contentShareButton = document.getElementById('contentshare-button') as HTMLButtonElement;
     contentShareButton.addEventListener('click', async () => {
       contentShareButton.style.display = 'none';
@@ -337,39 +387,41 @@ export class DemoMeetingApp {
         CheckContentShareConnectivityFeedback[contentShareResp]
       );
       contentShareButton.disabled = true;
+      this.createReadinessHtml('readiness-header', 'Readiness tests complete!');
     });
 
     document.getElementById('form-authenticate').addEventListener('submit', async e => {
       e.preventDefault();
-      if(!!await this.startMeetingAndInitializeMeetingReadinessChecker()) {
+      if (!!(await this.startMeetingAndInitializeMeetingReadinessChecker())) {
         this.switchToFlow('flow-readinesstest');
         //create new HTML header
         (document.getElementById('sdk-version') as HTMLSpanElement).innerText =
           'amazon-chime-sdk-js@' + Versioning.sdkVersion;
         this.createReadinessHtml('readiness-header', 'Readiness tests underway...');
-        await this.audioTest();
-        await this.micTest();
-        await this.videoTest();
-        await this.cameraTest();
-        await this.networkUdpTest();
-        await this.networkTcpTest();
-        await this.audioConnectivityTest();
-        await this.videoConnectivityTest();
-        await this.contentShareTest();
-        this.createReadinessHtml('readiness-header', 'Readiness tests complete!');
+        await this.speakerTest();
       }
     });
   }
 
-  async initializeLoggerAndDeviceController(configuration?: MeetingSessionConfiguration): Promise<void> {
-    let logger: Logger;
+  async initializeDeviceController(): Promise<void> {
+    this.deviceController = new DefaultDeviceController(this.logger, {
+      enableWebAudio: this.enableWebAudio,
+    });
+    await this.populateAllDeviceLists();
+  }
+
+  async initializeLogger(configuration?: MeetingSessionConfiguration): Promise<void> {
     const logLevel = LogLevel.INFO;
-    const consoleLogger = (logger = new ConsoleLogger('SDK', logLevel));
-    if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') || configuration == null) {
-      this.logger = consoleLogger;
+    const consoleLogger = new ConsoleLogger('SDK', logLevel);
+    if (
+      location.hostname === 'localhost' ||
+      location.hostname === '127.0.0.1' ||
+      !configuration
+    ) {
+      this.logger.inner = consoleLogger;
     } else {
       await this.createLogStream(configuration);
-      this.logger = new MultiLogger(
+      this.logger.inner = new MultiLogger(
         consoleLogger,
         new MeetingSessionPOSTLogger(
           'SDK',
@@ -381,18 +433,23 @@ export class DemoMeetingApp {
         )
       );
     }
-    this.deviceController = new DefaultDeviceController(logger, { enableWebAudio: this.enableWebAudio });
-    await this.populateAllDeviceLists();
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
-    await this.initializeLoggerAndDeviceController(configuration);
+    await this.initializeLogger(configuration);
     configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.attendeePresenceTimeoutMs = 15000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
-    this.meetingSession = new DefaultMeetingSession(configuration, this.logger, this.deviceController);
+    this.meetingSession = new DefaultMeetingSession(
+      configuration,
+      this.logger,
+      this.deviceController
+    );
     this.audioVideo = this.meetingSession.audioVideo;
-    this.meetingReadinessChecker = new DefaultMeetingReadinessChecker(this.logger, this.meetingSession);
+    this.meetingReadinessChecker = new DefaultMeetingReadinessChecker(
+      this.logger,
+      this.meetingSession
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).meetingReadinessChecker = this.meetingReadinessChecker;
 
@@ -509,7 +566,9 @@ export class DemoMeetingApp {
   // eslint-disable-next-line
   async joinMeeting(): Promise<any> {
     const response = await fetch(
-      `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(this.meeting)}&name=${encodeURIComponent(this.name)}&region=${encodeURIComponent(this.region)}`,
+      `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(
+        this.meeting
+      )}&name=${encodeURIComponent(this.name)}&region=${encodeURIComponent(this.region)}`,
       {
         method: 'POST',
       }

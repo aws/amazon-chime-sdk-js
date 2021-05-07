@@ -34,11 +34,16 @@ import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCr
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
-import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DisplayMediaState from '../dommock/DisplayMediaState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import UserMediaState from '../dommock/UserMediaState';
+import { delay } from '../utils';
+
+interface AudioElementWithSinkId extends HTMLAudioElement {
+  sinkId: string;
+  setSinkId: (id: string) => void;
+}
 
 describe('DefaultMeetingReadinessChecker', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -85,10 +90,6 @@ describe('DefaultMeetingReadinessChecker', () => {
       label,
       groupId,
     };
-  }
-
-  async function delay(timeoutMs: number): Promise<void> {
-    await new Promise(resolve => new TimeoutScheduler(timeoutMs).start(resolve));
   }
 
   class TestAudioVideoController extends NoOpAudioVideoController {
@@ -267,11 +268,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
   describe('checks audio output', () => {
     it('successful after playing tone', async () => {
-      const successCallback = (): Promise<boolean> => {
-        return new Promise(resolve => {
-          resolve(true);
-        });
-      };
+      const successCallback = (): Promise<boolean> => Promise.resolve(true);
 
       const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
         getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
@@ -280,7 +277,17 @@ describe('DefaultMeetingReadinessChecker', () => {
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
     });
 
-    it('can be called multiple time', async () => {
+    it('successful after playing tone with string deviceId', async () => {
+      const successCallback = (): Promise<boolean> => Promise.resolve(true);
+
+      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
+        'deviceId',
+        successCallback
+      );
+      expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
+    });
+
+    it('can be called multiple times', async () => {
       const successCallback = (): Promise<boolean> => {
         return new Promise(resolve => {
           delay(100);
@@ -303,11 +310,7 @@ describe('DefaultMeetingReadinessChecker', () => {
     });
 
     it('use null device id if unavailable', async () => {
-      const successCallback = (): Promise<boolean> => {
-        return new Promise(resolve => {
-          resolve(true);
-        });
-      };
+      const successCallback = (): Promise<boolean> => Promise.resolve(true);
 
       const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
         undefined,
@@ -317,15 +320,34 @@ describe('DefaultMeetingReadinessChecker', () => {
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
     });
 
-    it('unsuccessful after playing tone', async () => {
-      const failureCallback = (): Promise<boolean> => {
-        return new Promise(resolve => {
-          resolve(false);
-        });
+    it('will just log failure if the audio mix controller bombs', async () => {
+      domMockBehavior.setSinkIdSupported = true;
+      domMockBehavior.setSinkIdSucceeds = false;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      const successCallback = (): Promise<boolean> => Promise.resolve(true);
+
+      const audio: AudioElementWithSinkId = new Audio() as AudioElementWithSinkId;
+
+      // We need to do this so that code inside the AudioMixController knows
+      // that we support sinkId.
+      audio.sinkId = '';
+      audio.setSinkId = (_id: string): void => {
+        throw new Error('oh no');
       };
 
       const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
         getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
+        successCallback,
+        audio
+      );
+      expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Succeeded);
+    });
+
+    it('unsuccessful after playing tone', async () => {
+      const failureCallback = (): Promise<boolean> => Promise.resolve(false);
+
+      const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
+        getMediaDeviceInfo('foobar', 'audiooutput', 'label', 'group-id'),
         failureCallback
       );
       expect(audioOutputFeedback).to.equal(CheckAudioOutputFeedback.Failed);
@@ -344,9 +366,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         meetingSession,
         meetingReadinessCheckerConfiguration
       );
-      const failureCallback = (): Promise<boolean> => {
-        throw new Error();
-      };
+      const failureCallback = (): Promise<boolean> => Promise.reject(new Error());
 
       const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
         getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
@@ -358,11 +378,7 @@ describe('DefaultMeetingReadinessChecker', () => {
     it('return early from stopTone if there is no audio context', async () => {
       DefaultDeviceController.closeAudioContext();
       domMockBehavior.createMediaStreamDestinationSuccess = false;
-      const successCallback = (): Promise<boolean> => {
-        return new Promise(resolve => {
-          resolve(true);
-        });
-      };
+      const successCallback = (): Promise<boolean> => Promise.resolve(true);
 
       const audioOutputFeedback: CheckAudioOutputFeedback = await meetingReadinessCheckerController.checkAudioOutput(
         getMediaDeviceInfo('1', 'audiooutput', 'label', 'group-id'),
@@ -426,7 +442,17 @@ describe('DefaultMeetingReadinessChecker', () => {
     it('checks for 240 x 320 resolution - success', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
+        240,
+        320
+      );
+      expect(cameraResolutionFeedback).to.equal(CheckCameraResolutionFeedback.Succeeded);
+    });
+
+    it('checks for 240 x 320 resolution with string input - success', async () => {
+      domMockBehavior.getUserMediaSucceeds = true;
+      const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
+        'deviceId',
         240,
         320
       );
@@ -437,7 +463,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.Failure;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
         240,
         320
       );
@@ -448,7 +474,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.OverconstrainedError;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
         7680,
         4320
       );
@@ -461,7 +487,7 @@ describe('DefaultMeetingReadinessChecker', () => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaResult = UserMediaState.NotAllowedError;
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
         240,
         320
       );
@@ -477,7 +503,7 @@ describe('DefaultMeetingReadinessChecker', () => {
         meetingSession
       );
       const cameraResolutionFeedback: CheckCameraResolutionFeedback = await meetingReadinessCheckerController.checkCameraResolution(
-        new MediaDeviceInfo(),
+        getMediaDeviceInfo('1', 'videoinput', 'label', 'group-id'),
         240,
         320
       );
@@ -506,7 +532,6 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('start content share success with source id', async () => {
       domMockBehavior.getDisplayMediaResult = DisplayMediaState.Success;
-      domMockBehavior.triggeredEndedEventForStopStreamTrack = false;
       const result: CheckContentShareConnectivityFeedback = await meetingReadinessCheckerController.checkContentShareConnectivity(
         'sourceId'
       );

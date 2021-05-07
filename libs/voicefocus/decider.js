@@ -12,9 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.decideModel = exports.measureAndDecideExecutionApproach = void 0;
 const loader_js_1 = require("./loader.js");
 const support_js_1 = require("./support.js");
+const DEFAULT_EXECUTION_QUANTA = 3;
 const SIMD_SCORE_FIXED_POINT = 2.50;
 const WASM_SCORE_FIXED_POINT = 2.63;
-const INLINE_SCORE_MULTIPLIER = 0.6;
+const SINGLE_INLINE_SCORE_MULTIPLIER = 0.6;
+const QUALITY_MULTIPLE_QUANTA_SCORE_MULTIPLIER = 0.65;
+const INTERACTIVITY_MULTIPLE_QUANTA_SCORE_MULTIPLIER = 0.5;
 const WORKER_SCORE_MULTIPLIER = 0.7;
 const PERFORMANCE_THRESHOLDS = {
     wasm: {
@@ -117,13 +120,22 @@ class Estimator {
         });
     }
 }
-const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executionPreference = 'auto', simdPreference, variantPreference = 'auto', }, allThresholds = PERFORMANCE_THRESHOLDS, logger) => {
+const inlineScoreMultiplier = (executionQuanta, usagePreference) => {
+    if (executionQuanta === 1) {
+        return SINGLE_INLINE_SCORE_MULTIPLIER;
+    }
+    if (usagePreference === 'quality') {
+        return QUALITY_MULTIPLE_QUANTA_SCORE_MULTIPLIER * executionQuanta;
+    }
+    return INTERACTIVITY_MULTIPLE_QUANTA_SCORE_MULTIPLIER * executionQuanta;
+};
+const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executionPreference = 'auto', simdPreference, variantPreference = 'auto', usagePreference, executionQuantaPreference = DEFAULT_EXECUTION_QUANTA, }, allThresholds = PERFORMANCE_THRESHOLDS, logger) => {
     const forceSIMD = (simdPreference === 'force');
     const useSIMD = forceSIMD || (simdPreference !== 'disable' && supportsSIMD);
     const checkScores = duration !== -1;
     const baseScore = checkScores ? (useSIMD ? SIMD_SCORE_FIXED_POINT : WASM_SCORE_FIXED_POINT) / duration : 0;
     const thresholds = useSIMD ? allThresholds.simd : allThresholds.wasm;
-    const inlineScore = checkScores ? INLINE_SCORE_MULTIPLIER * baseScore : 0;
+    const inlineScore = checkScores ? inlineScoreMultiplier(executionQuantaPreference, usagePreference) * baseScore : 0;
     const workerScore = checkScores ? WORKER_SCORE_MULTIPLIER * baseScore : 0;
     const unsupported = (reason) => {
         return {
@@ -144,7 +156,14 @@ const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executio
     }
     logger === null || logger === void 0 ? void 0 : logger.debug(`Bench duration ${duration} yields inline score ${inlineScore} and worker score ${workerScore}.`);
     const succeed = (processor, executionApproach, variant) => {
-        return { supported: true, useSIMD, processor, executionApproach, variant };
+        return {
+            supported: true,
+            useSIMD,
+            processor,
+            executionApproach,
+            variant,
+            executionQuanta: (executionApproach === 'inline' ? executionQuantaPreference : undefined),
+        };
     };
     const resolveVariant = (score, variant, lookup) => {
         if (variant !== 'auto') {
@@ -276,7 +295,7 @@ const estimateAndFeatureCheck = (forceSIMD, fetchConfig, estimatorBudget, logger
 });
 const measureAndDecideExecutionApproach = (spec, fetchConfig, logger, thresholds = PERFORMANCE_THRESHOLDS) => __awaiter(void 0, void 0, void 0, function* () {
     let executionPreference = spec.executionPreference;
-    const { usagePreference, variantPreference, simdPreference, estimatorBudget, } = spec;
+    const { usagePreference, variantPreference, simdPreference, estimatorBudget, executionQuantaPreference, } = spec;
     if (usagePreference === 'interactivity' && executionPreference !== 'inline') {
         logger === null || logger === void 0 ? void 0 : logger.debug(`Overriding execution preference ${executionPreference} to reflect interactivity preference.`);
         executionPreference = 'inline';
@@ -297,10 +316,14 @@ const measureAndDecideExecutionApproach = (spec, fetchConfig, logger, thresholds
         logger === null || logger === void 0 ? void 0 : logger.error('Could not load estimator.', e);
         throw new Error('Could not load Voice Focus estimator.');
     }
-    return decideExecutionApproach(Object.assign(Object.assign({}, supports), { simdPreference, executionPreference, variantPreference }), thresholds, logger);
+    return decideExecutionApproach(Object.assign(Object.assign({}, supports), { simdPreference,
+        executionPreference,
+        variantPreference,
+        usagePreference,
+        executionQuantaPreference }), thresholds, logger);
 });
 exports.measureAndDecideExecutionApproach = measureAndDecideExecutionApproach;
-const decideModel = ({ category, name, variant, simd }) => {
+const decideModel = ({ category, name, variant, simd, url }) => {
     return `${category}-${name}-${variant}-v1${simd ? '_simd' : ''}`;
 };
 exports.decideModel = decideModel;

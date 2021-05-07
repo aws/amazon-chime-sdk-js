@@ -1,0 +1,90 @@
+#!/usr/bin/env ruby
+require 'json'
+require 'date'
+
+def verbose command
+  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
+end
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+
+package = JSON.parse(File.read('package.json'))
+original_version = package['version']
+version = original_version.split('.').map{ |x| x.to_i }
+
+puts "Choose one of the following bumping version options:"
+puts "1. Patch"
+puts "2. Minor"
+puts "3. Major"
+puts "4. Manual"
+puts "5. Hotfix"
+x = STDIN.gets.strip
+exit(1) unless ["1", "2", "3", "4", "5"].include?(x)
+puts
+
+case x
+when "1", "5"
+  version[2] += 1
+  version_string = version.join('.')
+when "2"
+  version[1] += 1
+  version[2] = 0
+  version_string = version.join('.')
+when "3"
+  version[0] += 1
+  version[1] = 0
+  version[2] = 0
+  version_string = version.join('.')
+when "4"
+  puts "Specify the version in Semantic Versioning format:"
+  version_string = STDIN.gets.strip
+else
+  exit(1)
+end
+release_option = x
+
+package['version'] = version_string
+changelog_file = 'CHANGELOG.md'
+tag = "amazon-chime-sdk-js@#{version_string}"
+formatted_version = version_string.gsub(".","-")
+
+puts
+puts "Warning: you are bumping the version"
+puts
+puts "From: #{original_version}"
+puts "To:   #{version_string}"
+puts
+
+puts "Type 'yes' to continue"
+x = STDIN.gets
+exit(1) unless x.strip == 'yes'
+puts
+
+verbose('git fetch origin')
+verbose('git reset --hard origin/master') if release_option != "5"
+verbose('git clean -ffxd .')
+
+File.write(changelog_file, File.read(changelog_file).gsub(/\[Unreleased\]/, "[#{version_string}] - #{Date.today}"))
+verbose("npm version #{version_string} --no-git-tag-version")
+
+verbose('git add -A')
+verbose("git commit -m 'Publish #{tag}'")
+
+verbose('npm run build:release')
+verbose('npm pack --dry-run')
+puts
+puts "Do you want to upload these files?"
+puts
+puts "Type 'yes' to continue"
+x = STDIN.gets
+exit(1) unless x.strip == 'yes'
+puts
+
+if release_option != "5"
+  verbose("git push origin HEAD:release -f")
+else
+  verbose("git push origin HEAD:hotfix -f")
+end
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '../demos/serverless')))
+verbose("npm run deploy -- -b chime-sdk-demo-#{formatted_version} -s chime-sdk-demo-#{formatted_version}")

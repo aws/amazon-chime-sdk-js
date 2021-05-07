@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isValidRevisionID = exports.isValidAssetGroup = exports.addQueryParams = exports.withQueryString = exports.withRequestHeaders = exports.fetchWithBehavior = void 0;
+exports.isValidRevisionID = exports.isValidAssetGroup = exports.resolveURL = exports.addQueryParams = exports.withQueryString = exports.withRequestHeaders = exports.fetchWithBehavior = void 0;
 function fetchWithBehavior(url, init, fetchBehavior) {
     if (!fetchBehavior) {
         return fetch(url, init);
@@ -42,6 +42,18 @@ function addQueryParams(fetchBehavior, queryParams) {
     return Object.assign(Object.assign({}, fetchBehavior), { escapedQueryString: params.toString() });
 }
 exports.addQueryParams = addQueryParams;
+const HEAD_OPTIONS = {
+    method: 'HEAD',
+    mode: 'cors',
+    credentials: 'omit',
+    redirect: 'follow',
+    referrerPolicy: 'origin',
+};
+function resolveURL(url, fetchBehavior) {
+    return fetchWithBehavior(url, HEAD_OPTIONS, fetchBehavior)
+        .then(response => response.redirected ? response.url : url);
+}
+exports.resolveURL = resolveURL;
 function isValidAssetGroup(assetGroup) {
     return !!assetGroup && /^[-.a-zA-Z0-9]+$/.test(assetGroup);
 }

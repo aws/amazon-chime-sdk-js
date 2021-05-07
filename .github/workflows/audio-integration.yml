@@ -1,0 +1,55 @@
+  name: Audio Integration Workflow
+
+  on:
+    pull_request:
+      branches:
+        - master
+        - release-1.x
+
+  env:
+    SELENIUM_GRID_PROVIDER: saucelabs
+    CLOUD_WATCH_METRIC: false
+    TEST_TYPE: Github-Action
+    SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+    SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+
+  jobs:
+    integ-audio:
+      name: Audio Integration Test
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Create a Job ID
+          id: create-job-id
+          uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+        - name: Set JOB_ID Env Variable
+          run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+        - name: Echo Job ID
+          run: echo "${{ steps.create-job-id.outputs.uuid }}"
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: us-east-1
+        - name: Setup Sauce Connect
+          uses: saucelabs/sauce-connect-action@v1
+          with:
+            username: ${{ secrets.SAUCE_USERNAME }}
+            accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+            noSSLBumpDomains: all
+            tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Setup Node.js - 14.x
+          uses: actions/setup-node@v1
+          with:
+            node-version: 14.x
+        - name: Install Kite
+          run: integration/js/script/install-kite
+        - name: Clean Install
+          run: npm ci
+        - name: Run Audio Integration Test
+          run: npm run test:integration-audio

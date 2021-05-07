@@ -17,6 +17,6 @@
     "rollup-plugin-terser": "^7.0.0"
   },
   "dependencies": {
-    "amazon-chime-sdk-js": "^1.0.0"
+    "amazon-chime-sdk-js": "^2.0.0"
   }
 }

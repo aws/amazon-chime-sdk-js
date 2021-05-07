@@ -142,13 +142,13 @@ You may optionally listen to the following callbacks to monitor aspects of conne
 
 ## 4. Start and stop the session
 
-Call this API after doing pre-requisite configuration (See previous sections). Otherwise, there will not be working audio and video.
+After completing configuration of audio and video (see previous sections) call `meetingSession.audioVideo.[start()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start)`. This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.
 
-To start the meeting session, call meetingSession.audioVideo.[start()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start). This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.
-
-To stop the meeting session, call meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop).
+To stop the meeting session, call `meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop)`.
 
 The `stop()` method does not clean up observers. You can start and stop a session multiple times using the same observers. In other words observers are not tied to the lifecycle of the session.
+
+You can specify a `signalingOnly` option when calling `start` to cause only the initial signaling connection to be established, then complete meeting join with a second call to `start` after choosing audio and video sources. This can improve meeting join latency. You can use this approach if you know that the user wants to join a meeting prior to wanting to share media or having selected input devices — for example, you can initialize the signaling connection early if you have a 'lobby' experience after choosing to join but before entering the interactive portion of the meeting.
 
 ## 5. Build a roster of participants using the real-time API
 

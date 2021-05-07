@@ -15,11 +15,16 @@ export default class ReceiveAudioInputTask extends BaseTask {
   }
 
   async run(): Promise<void> {
-    if (this.context.activeAudioInput) {
-      this.context.logger.info(`an active audio input exists`);
+    if (!this.context.meetingSessionConfiguration?.urls?.audioHostURL) {
+      this.context.logger.info('No audio connection: not acquiring audio input');
       return;
     }
-    let audioInput: MediaStream | null = null;
+
+    if (this.context.activeAudioInput) {
+      this.context.logger.info('an active audio input exists');
+      return;
+    }
+    let audioInput: MediaStream | undefined;
     try {
       audioInput = await this.context.mediaStreamBroker.acquireAudioInputStream();
     } catch (error) {
@@ -29,18 +34,6 @@ export default class ReceiveAudioInputTask extends BaseTask {
     if (audioInput) {
       this.context.activeAudioInput = audioInput;
       this.context.realtimeController.realtimeSetLocalAudioInput(audioInput);
-
-      const audioTracks = audioInput.getAudioTracks();
-      for (let i = 0; i < audioTracks.length; i++) {
-        const track = audioTracks[i];
-        this.logger.info(`using audio device label=${track.label} id=${track.id}`);
-        this.context.audioDeviceInformation['current_mic_name'] = track.label;
-        this.context.audioDeviceInformation['current_mic_id'] = track.id;
-        this.context.audioDeviceInformation['is_default_input_device'] =
-          track.label.indexOf('Default') !== -1 || track.label.indexOf('default') !== -1
-            ? 'true'
-            : 'false';
-      }
     } else {
       this.context.logger.warn('an audio input is not available');
     }

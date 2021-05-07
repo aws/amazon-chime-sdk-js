@@ -1,32 +1,25 @@
 #!/usr/bin/env node
 
 const { readFileSync, writeFileSync } = require('fs');
-const { gitDescribeSync } = require('git-describe');
+const git = require('git-rev-sync');
 const path = require('path');
 
-let description;
+const package = readFileSync(path.join(__dirname, '../package.json'));
+const version = JSON.parse(package).version;
+
+let hash;
 try {
-  description = JSON.stringify(gitDescribeSync(), null, 2);
-} catch (e) {
-  console.log(`Got error ${e} getting description of current version.`);
-  console.log('For an accurate version number, or for distribution, please use a full Git checkout of this repository.');
-
-  // Probably not a checkout. This is what you'll get if you use
-  // "Download ZIP" in the GitHub UI.
-  // Synthesize a version file
-  // from the current package.json.
-  const package = readFileSync(path.join(__dirname, '../package.json'));
-  const version = JSON.parse(package).version;
-  console.log(`Using synthetic build description with version ${version}.`)
-
-  description = JSON.stringify({
-    hash: 'gdeadbeef',
-    raw: 'v' + version,
-    semverString: version,
-    tag: 'v' + version,
-  });
+  hash = git.short();
+} catch {
+  console.error(`Unable to fetch the current commit hash`);
+  hash = `gdeadbeef`
 }
 
+let description = JSON.stringify({
+  hash: hash,
+  raw: 'v' + version,
+  semverString: version,
+}, null, 2);
 console.log('Build description:', description);
 
 // We write this as a TypeScript file so that:

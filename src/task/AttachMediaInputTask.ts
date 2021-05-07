@@ -46,7 +46,7 @@ export default class AttachMediaInputTask extends BaseTask {
       }
     } else {
       await transceiverController.setAudioInput(null);
-      this.context.logger.warn('no audio track');
+      this.context.logger.info('no audio track');
     }
 
     const videoInput = this.context.activeVideoInput;

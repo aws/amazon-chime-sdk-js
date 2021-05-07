@@ -20,6 +20,7 @@ import {
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { delay } from '../utils';
 
 describe('DefaultPingPong', () => {
   let expect: Chai.ExpectStatic;
@@ -169,17 +170,17 @@ describe('DefaultPingPong', () => {
       pingPong.handleSignalingClientEvent(
         new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketOpen, null)
       );
-      await new Promise(resolve => new TimeoutScheduler(intervalMs * 2.5).start(resolve));
+      await delay(intervalMs * 2.5);
       expect(pingPong.pingId).to.equal(3);
       pingPong.handleSignalingClientEvent(
         new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketClosed, null)
       );
-      await new Promise(resolve => new TimeoutScheduler(intervalMs * 2.5).start(resolve));
+      await delay(intervalMs * 2.5);
       expect(pingPong.pingId).to.equal(0);
       pingPong.handleSignalingClientEvent(
         new SignalingClientEvent(signalingClient, SignalingClientEventType.WebSocketOpen, null)
       );
-      await new Promise(resolve => new TimeoutScheduler(intervalMs * 2.5).start(resolve));
+      await delay(intervalMs * 2.5);
       expect(pingPong.pingId).to.equal(3);
       pingPong.stop();
     });

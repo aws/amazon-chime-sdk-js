@@ -9,7 +9,7 @@ import AudioMixControllerFacade from './AudioMixControllerFacade';
  */
 export default interface AudioMixController extends AudioMixControllerFacade {
   /**
-   * Called when the audio mix element can be bound to a device and stream. Returns true on success.
+   * Called when the audio mix element can be bound to a device and stream.
    */
   bindAudioElement(element: HTMLAudioElement): Promise<void>;
 
@@ -19,12 +19,18 @@ export default interface AudioMixController extends AudioMixControllerFacade {
   unbindAudioElement(): void;
 
   /**
-   * Called when the audio mix stream can be bound to a device and element. Returns true on success.
+   * Called when the audio mix stream can be bound to a device and element.
+   *
+   * This method rejects if you specify a device and the browser does not support `setSinkId`;
+   * use {@link BrowserBehavior.supportsSetSinkId} to check before calling this method.
    */
   bindAudioStream(stream: MediaStream): Promise<void>;
 
   /**
-   * Called when the audio mix device can be bound to an element and stream. Returns true on success.
+   * Called when the audio mix device can be bound to an element and stream.
+   *
+   * This method rejects if you specify a device and the browser does not support `setSinkId`;
+   * use {@link BrowserBehavior.supportsSetSinkId} to check before calling this method.
    */
   bindAudioDevice(device: MediaDeviceInfo | null): Promise<void>;
 }

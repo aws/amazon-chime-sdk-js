@@ -392,6 +392,23 @@ svg {
   visibility: hidden;
 }
 
+#flow-fatal {
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+  background-color: darkred;
+}
+
+#flow-fatal h1 {
+  color: ghostwhite;
+  -webkit-text-stroke: white 1px;
+  text-shadow: 0 0 1px $gray-900;
+}
+
+#flow-fatal p {
+  color: ghostwhite;
+}
+
 #flow-meeting {
   min-width: 320px;
 }
@@ -793,6 +810,21 @@ a.markdown:active {
   display: inline-block;
   bottom: 10px;
   right: 10px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  color: #fff;
+  text-shadow: 0px 0px 5px black;
+  letter-spacing: 0.1em;
+  outline: none;
+  background: none;
+}
+
+.video-tile-pin {
+  position: absolute;
+  display: inline-block;
+  bottom: 10px;
+  right: 100px;
   margin: 0;
   padding: 0;
   border: none;

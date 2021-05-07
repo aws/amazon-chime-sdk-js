@@ -6,7 +6,7 @@ def verbose command
 end
 
 def requires_changelog commits
-  for commit in commits 
+  for commit in commits
     commit_files=`git diff-tree --no-commit-id --name-only -r #{commit}`.split("\n")
     matches = false
     for committed_file in commit_files
@@ -50,10 +50,8 @@ if requires_changelog(commits)
   else
     puts "OK: Changelog changes found"
   end
-else 
+else
   puts "OK: No Changelog required"
 end
 
-# Pull in package fixes automatically.
-verbose('npm audit fix')
-
+load 'script/audit-deps'

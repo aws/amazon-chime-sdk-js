@@ -97,7 +97,7 @@ export default class SimulcastVideoStreamIndex extends DefaultVideoStreamIndex {
       stillSending.add(bitrateMsg.sourceStreamId);
       this.streamIdToBitrateKbpsMap.set(
         bitrateMsg.sourceStreamId,
-        Math.trunc(bitrateMsg.avgBitrateBps / 1000)
+        this.convertBpsToKbps(bitrateMsg.avgBitrateBps)
       );
     }
 

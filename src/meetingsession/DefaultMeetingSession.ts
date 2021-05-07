@@ -10,6 +10,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ContentShareController from '../contentsharecontroller/ContentShareController';
 import ContentShareMediaStreamBroker from '../contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../contentsharecontroller/DefaultContentShareController';
+import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import DeviceController from '../devicecontroller/DeviceController';
 import Logger from '../logger/Logger';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
@@ -18,18 +19,13 @@ import DefaultWebSocketAdapter from '../websocketadapter/DefaultWebSocketAdapter
 import MeetingSession from './MeetingSession';
 import MeetingSessionConfiguration from './MeetingSessionConfiguration';
 
-export default class DefaultMeetingSession implements MeetingSession {
+export default class DefaultMeetingSession implements MeetingSession, Destroyable {
   private _configuration: MeetingSessionConfiguration;
   private _logger: Logger;
   private audioVideoController: AudioVideoController;
   private contentShareController: ContentShareController;
   private _deviceController: DeviceController;
   private audioVideoFacade: AudioVideoFacade;
-
-  private static RECONNECT_TIMEOUT_MS = 120 * 1000;
-  private static RECONNECT_FIXED_WAIT_MS = 0;
-  private static RECONNECT_SHORT_BACKOFF_MS = 1 * 1000;
-  private static RECONNECT_LONG_BACKOFF_MS = 5 * 1000;
 
   constructor(
     configuration: MeetingSessionConfiguration,
@@ -48,11 +44,11 @@ export default class DefaultMeetingSession implements MeetingSession {
       new DefaultWebSocketAdapter(this._logger),
       deviceController,
       new DefaultReconnectController(
-        DefaultMeetingSession.RECONNECT_TIMEOUT_MS,
+        this._configuration.reconnectTimeoutMs,
         new FullJitterBackoff(
-          DefaultMeetingSession.RECONNECT_FIXED_WAIT_MS,
-          DefaultMeetingSession.RECONNECT_SHORT_BACKOFF_MS,
-          DefaultMeetingSession.RECONNECT_LONG_BACKOFF_MS
+          this._configuration.reconnectFixedWaitMs,
+          this._configuration.reconnectShortBackOffMs,
+          this._configuration.reconnectLongBackOffMs
         )
       )
     );
@@ -68,11 +64,11 @@ export default class DefaultMeetingSession implements MeetingSession {
         new DefaultWebSocketAdapter(this._logger),
         contentShareMediaStreamBroker,
         new DefaultReconnectController(
-          DefaultMeetingSession.RECONNECT_TIMEOUT_MS,
+          this._configuration.reconnectTimeoutMs,
           new FullJitterBackoff(
-            DefaultMeetingSession.RECONNECT_FIXED_WAIT_MS,
-            DefaultMeetingSession.RECONNECT_SHORT_BACKOFF_MS,
-            DefaultMeetingSession.RECONNECT_LONG_BACKOFF_MS
+            this._configuration.reconnectFixedWaitMs,
+            this._configuration.reconnectShortBackOffMs,
+            this._configuration.reconnectLongBackOffMs
           )
         )
       ),
@@ -106,6 +102,27 @@ export default class DefaultMeetingSession implements MeetingSession {
 
   get deviceController(): DeviceController {
     return this._deviceController;
+  }
+
+  /**
+   * Clean up this instance and resources that it created.
+   *
+   * After calling `destroy`, internal fields like `audioVideoController` will be unavailable.
+   */
+  async destroy(): Promise<void> {
+    if (isDestroyable(this.contentShareController)) {
+      await this.contentShareController.destroy();
+    }
+    if (isDestroyable(this.audioVideoController)) {
+      await this.audioVideoController.destroy();
+    }
+
+    this._logger = undefined;
+    this._configuration = undefined;
+    this._deviceController = undefined;
+    this.audioVideoFacade = undefined;
+    this.audioVideoController = undefined;
+    this.contentShareController = undefined;
   }
 
   private checkBrowserSupportAndFeatureConfiguration(): void {

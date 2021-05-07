@@ -23,6 +23,7 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
 
   async acquireAudioInputStream(): Promise<MediaStream> {
     if (this._mediaStream.getAudioTracks().length === 0) {
+      this.logger.info('No audio stream available. Synthesizing an audio stream.');
       return DefaultDeviceController.synthesizeAudioDevice(0) as MediaStream;
     }
     return this._mediaStream;
@@ -109,7 +110,8 @@ export default class ContentShareMediaStreamBroker implements MediaStreamBroker 
   cleanup(): void {
     if (this.mediaStream) {
       for (let i = 0; i < this.mediaStream.getTracks().length; i++) {
-        this.mediaStream.getTracks()[i].stop();
+        const track = this.mediaStream.getTracks()[i];
+        track.stop();
       }
     }
     this.mediaStream = null;

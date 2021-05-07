@@ -338,6 +338,80 @@ describe('DefaultSignalingClient', () => {
       testObjects.signalingClient.openConnection(testObjects.request);
     });
 
+    it('will send a subscribe without audio properties if audio host is empty', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.SUBSCRIBE);
+              expect(frame.sub.sendStreams.length).to.equal(0);
+              expect(frame.sub.duplex).to.equal(SdkStreamServiceType.RX);
+              expect(frame.sub.sdpOffer).to.equal(_sdpOffer);
+              expect(frame.sub.audioHost).to.equal('');
+              done();
+            });
+            event.client.subscribe(
+              new SignalingClientSubscribe(
+                _attendeeId,
+                _sdpOffer,
+                '',
+                false,
+                false,
+                [],
+                false,
+                [new VideoStreamDescription()],
+                false
+              )
+            );
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a subscribe with video only properties if audio host is empty', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.SUBSCRIBE);
+              expect(frame.sub.sendStreams.length).to.equal(1);
+              expect(frame.sub.sendStreams[0].attendeeId).to.equal(_attendeeId);
+              expect(frame.sub.sendStreams[0].mediaType).to.equal(SdkStreamMediaType.VIDEO);
+              expect(frame.sub.duplex).to.equal(SdkStreamServiceType.DUPLEX);
+              expect(frame.sub.sdpOffer).to.equal(_sdpOffer);
+              expect(frame.sub.audioHost).to.equal('');
+              done();
+            });
+            event.client.subscribe(
+              new SignalingClientSubscribe(
+                _attendeeId,
+                _sdpOffer,
+                '',
+                false,
+                true,
+                [0],
+                true,
+                [new VideoStreamDescription()],
+                true
+              )
+            );
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
     it('will send a subscribe with video properties', done => {
       const testObjects = createTestObjects();
       class TestObserver implements SignalingClientObserver {

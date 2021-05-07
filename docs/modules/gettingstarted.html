@@ -90,7 +90,8 @@
 					<a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">chime:CreateAttendee</a>:</p>
 					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> { <span class="hljs-attr">v4</span>: uuidv4 } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;uuid&#x27;</span>);
 <span class="hljs-keyword">const</span> AWS = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;aws-sdk&#x27;</span>);
-<span class="hljs-keyword">const</span> chime = <span class="hljs-keyword">new</span> AWS.Chime({<span class="hljs-attr">region</span>: <span class="hljs-string">&#x27;us-east-1&#x27;</span>});</code></pre>
+<span class="hljs-keyword">const</span> chime = <span class="hljs-keyword">new</span> AWS.Chime({<span class="hljs-attr">region</span>: <span class="hljs-string">&#x27;us-east-1&#x27;</span>});
+</code></pre>
 					<p>Create a meeting using the <code>chime</code> object:</p>
 					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> requestId = uuidv4();
 <span class="hljs-keyword">const</span> region = <span class="hljs-string">&#x27;us-west-2&#x27;</span>; <span class="hljs-comment">// specify media placement region</span>
@@ -102,7 +103,8 @@
 } <span class="hljs-keyword">catch</span> (err) {
   <span class="hljs-comment">// handle error - you can retry with the same requestId</span>
 }
-<span class="hljs-keyword">const</span> meetingId = meeting.Meeting.MeetingId; <span class="hljs-comment">// meeting ID of the new meeting</span></code></pre>
+<span class="hljs-keyword">const</span> meetingId = meeting.Meeting.MeetingId; <span class="hljs-comment">// meeting ID of the new meeting</span>
+</code></pre>
 					<p>Now create an attendee on the meeting:</p>
 					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> externalUserId = uuidv4(); <span class="hljs-comment">// or string ID you want to associate with the user</span>
 <span class="hljs-keyword">try</span> {
@@ -113,7 +115,8 @@
 } <span class="hljs-keyword">catch</span> (err) {
   <span class="hljs-comment">// handle error - you can retry with the same externalUserId</span>
 }
-<span class="hljs-keyword">const</span> attendeeId = attendee.Attendee.AttendeeId <span class="hljs-comment">// attendee ID of new attendee</span></code></pre>
+<span class="hljs-keyword">const</span> attendeeId = attendee.Attendee.AttendeeId <span class="hljs-comment">// attendee ID of new attendee</span>
+</code></pre>
 					<p>Now securely transfer the <code>meeting</code> and <code>attendee</code> objects (e.g. in JSON) to your meeting application. These objects contain all the information needed for a
 					meeting application using the Amazon Chime SDK for JavaScript to join the meeting.</p>
 					<a href="#meeting-application" id="meeting-application" style="color: inherit; text-decoration: none;">
@@ -130,20 +133,24 @@
 <span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;ChimeMeetingLogs&#x27;</span>, LogLevel.INFO);
 <span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
 <span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meeting, attendee);
-<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);</code></pre>
+<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController);
+</code></pre>
 					<p>The meeting session as an audio-video API interface <code>meetingSession.audioVideo</code> with most of the control surface you will use for managing the meeting session. See <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html">here</a> for a list of methods you can use. Now select an audio device. In this example, you will select the first device, which usually represents the system default.</p>
 					<pre><code class="language-javascript"><span class="hljs-keyword">try</span> {
   <span class="hljs-keyword">const</span> audioInputs = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listAudioInputDevices();
   <span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputs[<span class="hljs-number">0</span>].deviceId);
 } <span class="hljs-keyword">catch</span> (err) {
   <span class="hljs-comment">// handle error - unable to acquire audio device perhaps due to permissions blocking</span>
-}</code></pre>
+}
+</code></pre>
 					<p>To hear audio from remote participants you will need to <em>bind</em> to an <code>&lt;audio&gt;</code> element on
 					your webpage (it can be hidden with <code>display:none</code>).</p>
 					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> audioOutputElement = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;&lt;your-audio-element-id&gt;&#x27;</span>);
-meetingSession.audioVideo.bindAudioElement(audioOutputElement);</code></pre>
+meetingSession.audioVideo.bindAudioElement(audioOutputElement);
+</code></pre>
 					<p>Now start the session:</p>
-					<pre><code class="language-javascript">meetingSession.audioVideo.start();</code></pre>
+					<pre><code class="language-javascript">meetingSession.audioVideo.start();
+</code></pre>
 					<p>At this point if you have two meeting applications with different attendees, they should
 					now be able to hear each other.</p>
 					<a href="#next-steps" id="next-steps" style="color: inherit; text-decoration: none;">
@@ -183,20 +190,17 @@ meetingSession.audioVideo.bindAudioElement(audioOutputElement);</code></pre>
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

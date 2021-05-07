@@ -12,12 +12,6 @@ let enableTerminationProtection = false;
 let disablePrintingLogs = false;
 let chimeEndpoint = 'https://service.chime.aws.amazon.com'
 
-const packages = [
-  // Use latest AWS SDK instead of default version provided by Lambda runtime
-  'aws-sdk',
-  'uuid',
-];
-
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
   console.log(`  -r, --region                         Target region, default '${region}'`);
@@ -146,6 +140,7 @@ function ensureApp(appName) {
 function ensureTools() {
   spawnOrFail('aws', ['--version']);
   spawnOrFail('sam', ['--version']);
+
   spawnOrFail('npm', ['install']);
 }
 
@@ -160,16 +155,8 @@ if (!fs.existsSync('build')) {
 console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}, disable-printing-logs ${disablePrintingLogs}`);
 ensureBucket();
 
-for (const package of packages) {
-  spawnOrFail('npm', ['install', '--production'], {cwd: path.join(__dirname, 'node_modules', package)});
-  fs.removeSync(path.join(__dirname, 'src', package));
-  fs.copySync(path.join(__dirname, 'node_modules', package), path.join(__dirname, 'src', package));
-}
-
 fs.copySync(appHtml(app), 'src/index.html');
-if (app === 'meeting') {
-  fs.copySync(appHtml('meetingV2'), 'src/indexV2.html');
-}
+spawnOrFail('npm', ['install'], {cwd: path.join(__dirname, 'src')});
 
 spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,
@@ -186,6 +173,3 @@ if (!disablePrintingLogs) {
 }
 const output=spawnOrFail('aws', ['cloudformation', 'describe-stacks', '--stack-name', `${stack}`,
                     '--query', 'Stacks[0].Outputs[0].OutputValue', '--output', 'text', '--region', `${region}`], null, !disablePrintingLogs);
-if (app === 'meeting' && !disablePrintingLogs) {
-  console.log(output.replace(/Prod/, 'Prod/v2'));
-}

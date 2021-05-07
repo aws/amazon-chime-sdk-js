@@ -103,17 +103,17 @@ export default class MediaDeviceProxyHandler implements ProxyHandler<MediaDevice
     return newDevices.sort((device1: MediaDeviceInfo, device2: MediaDeviceInfo) => {
       if (device1.deviceId < device2.deviceId) {
         return 1;
-      } else if (device1.deviceId > device2.deviceId) {
-        return -1;
-      } else {
-        return 0;
       }
+      if (device1.deviceId > device2.deviceId) {
+        return -1;
+      }
+      return 0;
     });
   }
 
   private handleDeviceChangeEvent(): void {
     for (const listener of this.deviceChangeListeners) {
-      new AsyncScheduler().start(() => {
+      AsyncScheduler.nextTick(() => {
         /* istanbul ignore else */
         if (this.deviceChangeListeners.has(listener)) {
           const event = new Event('devicechange');

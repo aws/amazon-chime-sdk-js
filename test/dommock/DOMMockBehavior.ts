@@ -7,7 +7,6 @@ import UserMediaState from './UserMediaState';
 export default class DOMMockBehavior {
   asyncWaitMs: number = 10;
   getDisplayMediaResult: DisplayMediaState = DisplayMediaState.Success;
-  triggeredEndedEventForStopStreamTrack: boolean = true;
   getUserMediaResult: UserMediaState = null;
   getUserMediaSucceeds: boolean = true;
   getUserMediaError: Error = undefined;
@@ -42,15 +41,17 @@ export default class DOMMockBehavior {
     height: 0,
   };
   mediaStreamTrackSettings: {
-    width: number;
-    height: number;
+    width?: number;
+    height?: number;
     deviceId: string;
     facingMode?: string;
+    groupId?: string;
   } = {
     width: 0,
     height: 0,
     deviceId: 'test',
     facingMode: 'user',
+    groupId: '',
   };
   deviceCounter: number = 0;
   enumerateDevicesSucceeds: boolean = true;
@@ -78,4 +79,7 @@ export default class DOMMockBehavior {
   audioContextCreateBufferSucceeds = true;
   createMediaStreamDestinationSuccess: boolean = true;
   isUnifiedPlanSupported: boolean = true;
+
+  videoElementStartPlayDelay = 25;
+  videoElementSetWidthHeightAttributeDelay = 100;
 }

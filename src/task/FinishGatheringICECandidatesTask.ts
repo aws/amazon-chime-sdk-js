@@ -16,7 +16,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
   private static CHROME_VPN_TIMEOUT_MS = 5000;
 
   private startTimestampMs: number;
-  private cancelPromise: (error: Error) => void;
+  private cancelPromise: undefined | ((error: Error) => void);
 
   constructor(
     private context: AudioVideoControllerState,
@@ -38,7 +38,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
   }
 
   cancel(): void {
-    let error = new Error(`canceling ${this.name()}`);
+    let error: Error;
     // TODO: Remove when the Chrome VPN reconnect bug is fixed.
     // In Chrome, SDK may fail to establish TURN session after VPN reconnect.
     // https://bugs.chromium.org/p/webrtc/issues/detail?id=9097
@@ -55,14 +55,19 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       }
     }
 
-    this.cancelPromise && this.cancelPromise(error);
+    // Just in case. The baseCancel behavior should prevent this.
+    /* istanbul ignore else */
+    if (this.cancelPromise) {
+      error = error || new Error(`canceling ${this.name()}`);
+      this.cancelPromise(error);
+      delete this.cancelPromise;
+    }
   }
 
   async run(): Promise<void> {
     if (!this.context.peer) {
       this.logAndThrow(`session does not have peer connection; bypass ice gathering`);
     }
-
     if (this.context.browserBehavior.requiresCheckForSdpConnectionAttributes()) {
       if (new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidatesForAllMLines()) {
         this.context.logger.info(
@@ -91,69 +96,81 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       );
       return;
     }
-    await new Promise<void>((resolve, reject) => {
-      this.cancelPromise = (error: Error) => {
-        this.removeEventListener();
-        reject(error);
-      };
+    try {
+      await new Promise<void>((resolve, reject) => {
+        this.cancelPromise = (error: Error) => {
+          this.removeEventListener();
+          reject(error);
+        };
 
-      if (!this.context.turnCredentials) {
-        // if one day, we found a case where a FinishGatheringICECandidate did not resolve but ice gathering state is complete and SDP answer has ice candidates
-        // we may need to enable this
-        this.context.iceGatheringStateEventHandler = () => {
+        if (!this.context.turnCredentials) {
+          // if one day, we found a case where a FinishGatheringICECandidate did not resolve but ice gathering state is complete and SDP answer has ice candidates
+          // we may need to enable this
+          this.context.iceGatheringStateEventHandler = () => {
+            if (this.context.peer.iceGatheringState === 'complete') {
+              this.removeEventListener();
+              resolve();
+              delete this.cancelPromise;
+              return;
+            }
+          };
+          this.context.peer.addEventListener(
+            'icegatheringstatechange',
+            this.context.iceGatheringStateEventHandler
+          );
+        }
+
+        this.context.iceCandidateHandler = (event: RTCPeerConnectionIceEvent) => {
+          this.context.logger.info(
+            `ice candidate: ${event.candidate ? event.candidate.candidate : '(null)'} state: ${
+              this.context.peer.iceGatheringState
+            }`
+          );
+          // Ice candidate arrives, do not need to wait anymore.
+          // https://webrtcglossary.com/trickle-ice/
+          if (event.candidate) {
+            if (DefaultSDP.isRTPCandidate(event.candidate.candidate)) {
+              this.context.iceCandidates.push(event.candidate);
+            }
+
+            // Could there be a case the candidate is not written to SDP ?
+            if (this.context.turnCredentials && this.context.iceCandidates.length >= 1) {
+              this.context.logger.info('gathered at least one relay candidate');
+              this.removeEventListener();
+              resolve();
+              delete this.cancelPromise;
+              return;
+            }
+          }
+
+          // Ice candidate gathering is complete, additional barrier to make sure sdp contain an ice candidate.
+          // TODO: Could there be a race where iceGatheringState is flipped after this task is run ? This could only be handled if ice state is monitored persistently.
           if (this.context.peer.iceGatheringState === 'complete') {
+            this.context.logger.info('done gathering ice candidates');
             this.removeEventListener();
-            resolve();
-            return;
+            if (
+              !new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidates() ||
+              this.context.iceCandidates.length === 0
+            ) {
+              reject(new Error('no ice candidates were gathered'));
+              delete this.cancelPromise;
+            } else {
+              resolve();
+              delete this.cancelPromise;
+            }
           }
         };
-        this.context.peer.addEventListener(
-          'icegatheringstatechange',
-          this.context.iceGatheringStateEventHandler
-        );
+        // SDK does not catch candidate itself and send to sever. Rather, WebRTC handles candidate events and writes candidate to SDP.
+        this.context.peer.addEventListener('icecandidate', this.context.iceCandidateHandler);
+        this.startTimestampMs = Date.now();
+      });
+    } catch (error) {
+      throw error;
+    } finally {
+      /* istanbul ignore else */
+      if (this.startTimestampMs) {
+        this.context.iceGatheringDurationMs = Math.round(Date.now() - this.startTimestampMs);
       }
-
-      this.context.iceCandidateHandler = (event: RTCPeerConnectionIceEvent) => {
-        this.context.logger.info(
-          `ice candidate: ${event.candidate ? event.candidate.candidate : '(null)'} state: ${
-            this.context.peer.iceGatheringState
-          }`
-        );
-        // Ice candidate arrives, do not need to wait anymore.
-        // https://webrtcglossary.com/trickle-ice/
-        if (event.candidate) {
-          if (DefaultSDP.isRTPCandidate(event.candidate.candidate)) {
-            this.context.iceCandidates.push(event.candidate);
-          }
-
-          // Could there be a case the candidate is not written to SDP ?
-          if (this.context.turnCredentials && this.context.iceCandidates.length >= 1) {
-            this.context.logger.info('gathered at least one relay candidate');
-            this.removeEventListener();
-            resolve();
-            return;
-          }
-        }
-
-        // Ice candidate gathering is complete, additional barrier to make sure sdp contain an ice candidate.
-        // TODO: Could there be a race where iceGatheringState is flipped after this task is run ? This could only be handled if ice state is monitored persistently.
-        if (this.context.peer.iceGatheringState === 'complete') {
-          this.context.logger.info('done gathering ice candidates');
-          this.removeEventListener();
-          if (
-            !new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidates() ||
-            this.context.iceCandidates.length === 0
-          ) {
-            reject(new Error('no ice candidates were gathered'));
-          } else {
-            resolve();
-          }
-        }
-      };
-
-      // SDK does not catch candidate itself and send to sever. Rather, WebRTC handles candidate events and writes candidate to SDP.
-      this.context.peer.addEventListener('icecandidate', this.context.iceCandidateHandler);
-      this.startTimestampMs = Date.now();
-    });
+    }
   }
 }

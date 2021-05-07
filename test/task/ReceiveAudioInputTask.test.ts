@@ -6,10 +6,12 @@ import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideo
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
+import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import ReceiveAudioInputTask from '../../src/task/ReceiveAudioInputTask';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import CreateMeetingResponseMock from '../meetingsession/CreateMeetingResponseMock';
 
 interface MockMediaStreamBrokerConfigs {
   acquireAudioInputDeviceSucceeds: boolean;
@@ -41,6 +43,10 @@ describe('ReceiveAudioInputTask', () => {
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
+    context.meetingSessionConfiguration = new MeetingSessionConfiguration(
+      CreateMeetingResponseMock.MeetingResponseMock,
+      CreateMeetingResponseMock.AttendeeResponseMock
+    );
     context.logger = context.audioVideoController.logger;
     context.mediaStreamBroker = new MockMediaStreamBroker({
       acquireAudioInputDeviceSucceeds: true,
@@ -60,6 +66,15 @@ describe('ReceiveAudioInputTask', () => {
     it('will acquire the audio input', async () => {
       const task = new ReceiveAudioInputTask(context);
       await task.run();
+    });
+
+    it('will skip if there is no audio host url or meeting session configuration', async () => {
+      context.meetingSessionConfiguration.urls.audioHostURL = null;
+      await new ReceiveAudioInputTask(context).run();
+      context.meetingSessionConfiguration.urls = null;
+      await new ReceiveAudioInputTask(context).run();
+      context.meetingSessionConfiguration = null;
+      await new ReceiveAudioInputTask(context).run();
     });
 
     it('will skip if there is already an active audio input', async () => {

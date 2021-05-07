@@ -96,7 +96,7 @@ describe('DefaultVideoStreamIndex', () => {
               streamId: 4,
               groupId: 399,
               maxBitrateKbps: 800,
-              attendeeId: 'xy1',
+              attendeeId: 'xy3',
               mediaType: SdkStreamMediaType.VIDEO,
             }),
             new SdkStreamDescriptor({
@@ -110,7 +110,7 @@ describe('DefaultVideoStreamIndex', () => {
               streamId: 3,
               groupId: 399,
               maxBitrateKbps: 200,
-              attendeeId: 'xy1',
+              attendeeId: 'xy3',
               mediaType: SdkStreamMediaType.VIDEO,
             }),
             new SdkStreamDescriptor({
@@ -188,12 +188,66 @@ describe('DefaultVideoStreamIndex', () => {
               streamId: 4,
               groupId: 399,
               maxBitrateKbps: 800,
-              attendeeId: 'xy1',
+              attendeeId: 'xy3',
               mediaType: SdkStreamMediaType.VIDEO,
             }),
             new SdkStreamDescriptor({
               streamId: 3,
               groupId: 399,
+              maxBitrateKbps: 200,
+              attendeeId: 'xy3',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              maxBitrateKbps: 200,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 1,
+              groupId: 1,
+              maxBitrateKbps: 100,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      expect(
+        index.highestQualityStreamFromEachGroupExcludingSelf('attendee-e618d153').array()
+      ).to.deep.equal([2, 4, 6]);
+    });
+
+    it('filters out old group ids for a single attendee id', () => {
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 6,
+              groupId: 2,
+              maxBitrateKbps: 400,
+              attendeeId: 'xy2',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 5,
+              groupId: 2,
+              maxBitrateKbps: 50,
+              attendeeId: 'xy2',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 4,
+              groupId: 3,
+              maxBitrateKbps: 800,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 3,
+              groupId: 3,
               maxBitrateKbps: 200,
               attendeeId: 'xy1',
               mediaType: SdkStreamMediaType.VIDEO,
@@ -217,7 +271,7 @@ describe('DefaultVideoStreamIndex', () => {
       );
       expect(
         index.highestQualityStreamFromEachGroupExcludingSelf('attendee-e618d153').array()
-      ).to.deep.equal([2, 4, 6]);
+      ).to.deep.equal([4, 6]);
     });
   });
 
@@ -1144,6 +1198,7 @@ describe('DefaultVideoStreamIndex', () => {
             streamId: 1,
             groupId: 1,
             maxBitrateKbps: 1400,
+            avgBitrateBps: 800,
             attendeeId: '688c',
             mediaType: SdkStreamMediaType.VIDEO,
           }),
@@ -1166,6 +1221,7 @@ describe('DefaultVideoStreamIndex', () => {
       index.integrateIndexFrame(indexFrame);
       const remoteDescriptions2 = index.remoteStreamDescriptions();
       expect(remoteDescriptions2.length).to.equal(3);
+      expect(remoteDescriptions2[0].avgBitrateKbps).to.equal(1);
     });
   });
 

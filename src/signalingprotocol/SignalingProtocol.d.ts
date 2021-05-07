@@ -66,7 +66,7 @@ export class SdkSignalFrame implements ISdkSignalFrame {
 
     /**
      * Constructs a new SdkSignalFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkSignalFrame);
 
@@ -129,7 +129,7 @@ export class SdkSignalFrame implements ISdkSignalFrame {
 
     /**
      * Creates a new SdkSignalFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkSignalFrame instance
      */
     public static create(properties?: ISdkSignalFrame): SdkSignalFrame;
@@ -137,7 +137,7 @@ export class SdkSignalFrame implements ISdkSignalFrame {
     /**
      * Encodes the specified SdkSignalFrame message. Does not implicitly {@link SdkSignalFrame.verify|verify} messages.
      * @param message SdkSignalFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkSignalFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -145,7 +145,7 @@ export class SdkSignalFrame implements ISdkSignalFrame {
     /**
      * Encodes the specified SdkSignalFrame message, length delimited. Does not implicitly {@link SdkSignalFrame.verify|verify} messages.
      * @param message SdkSignalFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkSignalFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -153,10 +153,10 @@ export class SdkSignalFrame implements ISdkSignalFrame {
     /**
      * Decodes a SdkSignalFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkSignalFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkSignalFrame;
 
@@ -164,8 +164,8 @@ export class SdkSignalFrame implements ISdkSignalFrame {
      * Decodes a SdkSignalFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkSignalFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkSignalFrame;
 
@@ -186,7 +186,7 @@ export class SdkSignalFrame implements ISdkSignalFrame {
     /**
      * Creates a plain object from a SdkSignalFrame message. Also converts values to other types if specified.
      * @param message SdkSignalFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkSignalFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -237,7 +237,7 @@ export class SdkErrorFrame implements ISdkErrorFrame {
 
     /**
      * Constructs a new SdkErrorFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkErrorFrame);
 
@@ -249,7 +249,7 @@ export class SdkErrorFrame implements ISdkErrorFrame {
 
     /**
      * Creates a new SdkErrorFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkErrorFrame instance
      */
     public static create(properties?: ISdkErrorFrame): SdkErrorFrame;
@@ -257,7 +257,7 @@ export class SdkErrorFrame implements ISdkErrorFrame {
     /**
      * Encodes the specified SdkErrorFrame message. Does not implicitly {@link SdkErrorFrame.verify|verify} messages.
      * @param message SdkErrorFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkErrorFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -265,7 +265,7 @@ export class SdkErrorFrame implements ISdkErrorFrame {
     /**
      * Encodes the specified SdkErrorFrame message, length delimited. Does not implicitly {@link SdkErrorFrame.verify|verify} messages.
      * @param message SdkErrorFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkErrorFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -273,10 +273,10 @@ export class SdkErrorFrame implements ISdkErrorFrame {
     /**
      * Decodes a SdkErrorFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkErrorFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkErrorFrame;
 
@@ -284,8 +284,8 @@ export class SdkErrorFrame implements ISdkErrorFrame {
      * Decodes a SdkErrorFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkErrorFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkErrorFrame;
 
@@ -306,7 +306,7 @@ export class SdkErrorFrame implements ISdkErrorFrame {
     /**
      * Creates a plain object from a SdkErrorFrame message. Also converts values to other types if specified.
      * @param message SdkErrorFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkErrorFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -322,7 +322,9 @@ export class SdkErrorFrame implements ISdkErrorFrame {
 export enum SdkJoinFlags {
     SEND_BITRATES = 1,
     HAS_STREAM_UPDATE = 2,
-    USE_SEND_SIDE_BWE = 8
+    USE_SEND_SIDE_BWE = 8,
+    COMPLETE_VIDEO_SOURCES_LIST = 16,
+    EXCLUDE_SELF_CONTENT_IN_INDEX = 32
 }
 
 /** Properties of a SdkClientDetails. */
@@ -358,7 +360,7 @@ export class SdkClientDetails implements ISdkClientDetails {
 
     /**
      * Constructs a new SdkClientDetails.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkClientDetails);
 
@@ -388,7 +390,7 @@ export class SdkClientDetails implements ISdkClientDetails {
 
     /**
      * Creates a new SdkClientDetails instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkClientDetails instance
      */
     public static create(properties?: ISdkClientDetails): SdkClientDetails;
@@ -396,7 +398,7 @@ export class SdkClientDetails implements ISdkClientDetails {
     /**
      * Encodes the specified SdkClientDetails message. Does not implicitly {@link SdkClientDetails.verify|verify} messages.
      * @param message SdkClientDetails message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkClientDetails, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -404,7 +406,7 @@ export class SdkClientDetails implements ISdkClientDetails {
     /**
      * Encodes the specified SdkClientDetails message, length delimited. Does not implicitly {@link SdkClientDetails.verify|verify} messages.
      * @param message SdkClientDetails message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkClientDetails, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -412,10 +414,10 @@ export class SdkClientDetails implements ISdkClientDetails {
     /**
      * Decodes a SdkClientDetails message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkClientDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkClientDetails;
 
@@ -423,8 +425,8 @@ export class SdkClientDetails implements ISdkClientDetails {
      * Decodes a SdkClientDetails message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkClientDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkClientDetails;
 
@@ -445,7 +447,7 @@ export class SdkClientDetails implements ISdkClientDetails {
     /**
      * Creates a plain object from a SdkClientDetails message. Also converts values to other types if specified.
      * @param message SdkClientDetails
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkClientDetails, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -481,7 +483,7 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
     /**
      * Constructs a new SdkJoinFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkJoinFrame);
 
@@ -502,7 +504,7 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
     /**
      * Creates a new SdkJoinFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkJoinFrame instance
      */
     public static create(properties?: ISdkJoinFrame): SdkJoinFrame;
@@ -510,7 +512,7 @@ export class SdkJoinFrame implements ISdkJoinFrame {
     /**
      * Encodes the specified SdkJoinFrame message. Does not implicitly {@link SdkJoinFrame.verify|verify} messages.
      * @param message SdkJoinFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkJoinFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -518,7 +520,7 @@ export class SdkJoinFrame implements ISdkJoinFrame {
     /**
      * Encodes the specified SdkJoinFrame message, length delimited. Does not implicitly {@link SdkJoinFrame.verify|verify} messages.
      * @param message SdkJoinFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkJoinFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -526,10 +528,10 @@ export class SdkJoinFrame implements ISdkJoinFrame {
     /**
      * Decodes a SdkJoinFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkJoinFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkJoinFrame;
 
@@ -537,8 +539,8 @@ export class SdkJoinFrame implements ISdkJoinFrame {
      * Decodes a SdkJoinFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkJoinFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkJoinFrame;
 
@@ -559,7 +561,7 @@ export class SdkJoinFrame implements ISdkJoinFrame {
     /**
      * Creates a plain object from a SdkJoinFrame message. Also converts values to other types if specified.
      * @param message SdkJoinFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkJoinFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -583,7 +585,7 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
 
     /**
      * Constructs a new SdkJoinAckFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkJoinAckFrame);
 
@@ -592,7 +594,7 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkJoinAckFrame instance
      */
     public static create(properties?: ISdkJoinAckFrame): SdkJoinAckFrame;
@@ -600,7 +602,7 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
     /**
      * Encodes the specified SdkJoinAckFrame message. Does not implicitly {@link SdkJoinAckFrame.verify|verify} messages.
      * @param message SdkJoinAckFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkJoinAckFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -608,7 +610,7 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
     /**
      * Encodes the specified SdkJoinAckFrame message, length delimited. Does not implicitly {@link SdkJoinAckFrame.verify|verify} messages.
      * @param message SdkJoinAckFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkJoinAckFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -616,10 +618,10 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
     /**
      * Decodes a SdkJoinAckFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkJoinAckFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkJoinAckFrame;
 
@@ -627,8 +629,8 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
      * Decodes a SdkJoinAckFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkJoinAckFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkJoinAckFrame;
 
@@ -649,7 +651,7 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
     /**
      * Creates a plain object from a SdkJoinAckFrame message. Also converts values to other types if specified.
      * @param message SdkJoinAckFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkJoinAckFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -670,13 +672,13 @@ export class SdkLeaveFrame implements ISdkLeaveFrame {
 
     /**
      * Constructs a new SdkLeaveFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkLeaveFrame);
 
     /**
      * Creates a new SdkLeaveFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkLeaveFrame instance
      */
     public static create(properties?: ISdkLeaveFrame): SdkLeaveFrame;
@@ -684,7 +686,7 @@ export class SdkLeaveFrame implements ISdkLeaveFrame {
     /**
      * Encodes the specified SdkLeaveFrame message. Does not implicitly {@link SdkLeaveFrame.verify|verify} messages.
      * @param message SdkLeaveFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkLeaveFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -692,7 +694,7 @@ export class SdkLeaveFrame implements ISdkLeaveFrame {
     /**
      * Encodes the specified SdkLeaveFrame message, length delimited. Does not implicitly {@link SdkLeaveFrame.verify|verify} messages.
      * @param message SdkLeaveFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkLeaveFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -700,10 +702,10 @@ export class SdkLeaveFrame implements ISdkLeaveFrame {
     /**
      * Decodes a SdkLeaveFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkLeaveFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkLeaveFrame;
 
@@ -711,8 +713,8 @@ export class SdkLeaveFrame implements ISdkLeaveFrame {
      * Decodes a SdkLeaveFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkLeaveFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkLeaveFrame;
 
@@ -733,7 +735,7 @@ export class SdkLeaveFrame implements ISdkLeaveFrame {
     /**
      * Creates a plain object from a SdkLeaveFrame message. Also converts values to other types if specified.
      * @param message SdkLeaveFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkLeaveFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -754,13 +756,13 @@ export class SdkLeaveAckFrame implements ISdkLeaveAckFrame {
 
     /**
      * Constructs a new SdkLeaveAckFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkLeaveAckFrame);
 
     /**
      * Creates a new SdkLeaveAckFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkLeaveAckFrame instance
      */
     public static create(properties?: ISdkLeaveAckFrame): SdkLeaveAckFrame;
@@ -768,7 +770,7 @@ export class SdkLeaveAckFrame implements ISdkLeaveAckFrame {
     /**
      * Encodes the specified SdkLeaveAckFrame message. Does not implicitly {@link SdkLeaveAckFrame.verify|verify} messages.
      * @param message SdkLeaveAckFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkLeaveAckFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -776,7 +778,7 @@ export class SdkLeaveAckFrame implements ISdkLeaveAckFrame {
     /**
      * Encodes the specified SdkLeaveAckFrame message, length delimited. Does not implicitly {@link SdkLeaveAckFrame.verify|verify} messages.
      * @param message SdkLeaveAckFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkLeaveAckFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -784,10 +786,10 @@ export class SdkLeaveAckFrame implements ISdkLeaveAckFrame {
     /**
      * Decodes a SdkLeaveAckFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkLeaveAckFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkLeaveAckFrame;
 
@@ -795,8 +797,8 @@ export class SdkLeaveAckFrame implements ISdkLeaveAckFrame {
      * Decodes a SdkLeaveAckFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkLeaveAckFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkLeaveAckFrame;
 
@@ -817,7 +819,7 @@ export class SdkLeaveAckFrame implements ISdkLeaveAckFrame {
     /**
      * Creates a plain object from a SdkLeaveAckFrame message. Also converts values to other types if specified.
      * @param message SdkLeaveAckFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkLeaveAckFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -872,7 +874,7 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
 
     /**
      * Constructs a new SdkSubscribeFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkSubscribeFrame);
 
@@ -899,7 +901,7 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
 
     /**
      * Creates a new SdkSubscribeFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkSubscribeFrame instance
      */
     public static create(properties?: ISdkSubscribeFrame): SdkSubscribeFrame;
@@ -907,7 +909,7 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
     /**
      * Encodes the specified SdkSubscribeFrame message. Does not implicitly {@link SdkSubscribeFrame.verify|verify} messages.
      * @param message SdkSubscribeFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkSubscribeFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -915,7 +917,7 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
     /**
      * Encodes the specified SdkSubscribeFrame message, length delimited. Does not implicitly {@link SdkSubscribeFrame.verify|verify} messages.
      * @param message SdkSubscribeFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkSubscribeFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -923,10 +925,10 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
     /**
      * Decodes a SdkSubscribeFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkSubscribeFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkSubscribeFrame;
 
@@ -934,8 +936,8 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
      * Decodes a SdkSubscribeFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkSubscribeFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkSubscribeFrame;
 
@@ -956,7 +958,7 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
     /**
      * Creates a plain object from a SdkSubscribeFrame message. Also converts values to other types if specified.
      * @param message SdkSubscribeFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkSubscribeFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -989,7 +991,7 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
 
     /**
      * Constructs a new SdkSubscribeAckFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkSubscribeAckFrame);
 
@@ -1007,7 +1009,7 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
 
     /**
      * Creates a new SdkSubscribeAckFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkSubscribeAckFrame instance
      */
     public static create(properties?: ISdkSubscribeAckFrame): SdkSubscribeAckFrame;
@@ -1015,7 +1017,7 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
     /**
      * Encodes the specified SdkSubscribeAckFrame message. Does not implicitly {@link SdkSubscribeAckFrame.verify|verify} messages.
      * @param message SdkSubscribeAckFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkSubscribeAckFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1023,7 +1025,7 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
     /**
      * Encodes the specified SdkSubscribeAckFrame message, length delimited. Does not implicitly {@link SdkSubscribeAckFrame.verify|verify} messages.
      * @param message SdkSubscribeAckFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkSubscribeAckFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1031,10 +1033,10 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
     /**
      * Decodes a SdkSubscribeAckFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkSubscribeAckFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkSubscribeAckFrame;
 
@@ -1042,8 +1044,8 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
      * Decodes a SdkSubscribeAckFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkSubscribeAckFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkSubscribeAckFrame;
 
@@ -1064,7 +1066,7 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
     /**
      * Creates a plain object from a SdkSubscribeAckFrame message. Also converts values to other types if specified.
      * @param message SdkSubscribeAckFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkSubscribeAckFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1097,7 +1099,7 @@ export class SdkIndexFrame implements ISdkIndexFrame {
 
     /**
      * Constructs a new SdkIndexFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkIndexFrame);
 
@@ -1115,7 +1117,7 @@ export class SdkIndexFrame implements ISdkIndexFrame {
 
     /**
      * Creates a new SdkIndexFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkIndexFrame instance
      */
     public static create(properties?: ISdkIndexFrame): SdkIndexFrame;
@@ -1123,7 +1125,7 @@ export class SdkIndexFrame implements ISdkIndexFrame {
     /**
      * Encodes the specified SdkIndexFrame message. Does not implicitly {@link SdkIndexFrame.verify|verify} messages.
      * @param message SdkIndexFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkIndexFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1131,7 +1133,7 @@ export class SdkIndexFrame implements ISdkIndexFrame {
     /**
      * Encodes the specified SdkIndexFrame message, length delimited. Does not implicitly {@link SdkIndexFrame.verify|verify} messages.
      * @param message SdkIndexFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkIndexFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1139,10 +1141,10 @@ export class SdkIndexFrame implements ISdkIndexFrame {
     /**
      * Decodes a SdkIndexFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkIndexFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkIndexFrame;
 
@@ -1150,8 +1152,8 @@ export class SdkIndexFrame implements ISdkIndexFrame {
      * Decodes a SdkIndexFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkIndexFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkIndexFrame;
 
@@ -1172,7 +1174,7 @@ export class SdkIndexFrame implements ISdkIndexFrame {
     /**
      * Creates a plain object from a SdkIndexFrame message. Also converts values to other types if specified.
      * @param message SdkIndexFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkIndexFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1196,7 +1198,7 @@ export class SdkPauseResumeFrame implements ISdkPauseResumeFrame {
 
     /**
      * Constructs a new SdkPauseResumeFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkPauseResumeFrame);
 
@@ -1205,7 +1207,7 @@ export class SdkPauseResumeFrame implements ISdkPauseResumeFrame {
 
     /**
      * Creates a new SdkPauseResumeFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkPauseResumeFrame instance
      */
     public static create(properties?: ISdkPauseResumeFrame): SdkPauseResumeFrame;
@@ -1213,7 +1215,7 @@ export class SdkPauseResumeFrame implements ISdkPauseResumeFrame {
     /**
      * Encodes the specified SdkPauseResumeFrame message. Does not implicitly {@link SdkPauseResumeFrame.verify|verify} messages.
      * @param message SdkPauseResumeFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkPauseResumeFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1221,7 +1223,7 @@ export class SdkPauseResumeFrame implements ISdkPauseResumeFrame {
     /**
      * Encodes the specified SdkPauseResumeFrame message, length delimited. Does not implicitly {@link SdkPauseResumeFrame.verify|verify} messages.
      * @param message SdkPauseResumeFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkPauseResumeFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1229,10 +1231,10 @@ export class SdkPauseResumeFrame implements ISdkPauseResumeFrame {
     /**
      * Decodes a SdkPauseResumeFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkPauseResumeFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkPauseResumeFrame;
 
@@ -1240,8 +1242,8 @@ export class SdkPauseResumeFrame implements ISdkPauseResumeFrame {
      * Decodes a SdkPauseResumeFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkPauseResumeFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkPauseResumeFrame;
 
@@ -1262,7 +1264,7 @@ export class SdkPauseResumeFrame implements ISdkPauseResumeFrame {
     /**
      * Creates a plain object from a SdkPauseResumeFrame message. Also converts values to other types if specified.
      * @param message SdkPauseResumeFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkPauseResumeFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1286,7 +1288,7 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
 
     /**
      * Constructs a new SdkBitrateFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkBitrateFrame);
 
@@ -1295,7 +1297,7 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
 
     /**
      * Creates a new SdkBitrateFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkBitrateFrame instance
      */
     public static create(properties?: ISdkBitrateFrame): SdkBitrateFrame;
@@ -1303,7 +1305,7 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
     /**
      * Encodes the specified SdkBitrateFrame message. Does not implicitly {@link SdkBitrateFrame.verify|verify} messages.
      * @param message SdkBitrateFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkBitrateFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1311,7 +1313,7 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
     /**
      * Encodes the specified SdkBitrateFrame message, length delimited. Does not implicitly {@link SdkBitrateFrame.verify|verify} messages.
      * @param message SdkBitrateFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkBitrateFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1319,10 +1321,10 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
     /**
      * Decodes a SdkBitrateFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkBitrateFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkBitrateFrame;
 
@@ -1330,8 +1332,8 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
      * Decodes a SdkBitrateFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkBitrateFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkBitrateFrame;
 
@@ -1352,7 +1354,7 @@ export class SdkBitrateFrame implements ISdkBitrateFrame {
     /**
      * Creates a plain object from a SdkBitrateFrame message. Also converts values to other types if specified.
      * @param message SdkBitrateFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkBitrateFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1400,7 +1402,7 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
 
     /**
      * Constructs a new SdkStreamDescriptor.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkStreamDescriptor);
 
@@ -1433,7 +1435,7 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
 
     /**
      * Creates a new SdkStreamDescriptor instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkStreamDescriptor instance
      */
     public static create(properties?: ISdkStreamDescriptor): SdkStreamDescriptor;
@@ -1441,7 +1443,7 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
     /**
      * Encodes the specified SdkStreamDescriptor message. Does not implicitly {@link SdkStreamDescriptor.verify|verify} messages.
      * @param message SdkStreamDescriptor message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkStreamDescriptor, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1449,7 +1451,7 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
     /**
      * Encodes the specified SdkStreamDescriptor message, length delimited. Does not implicitly {@link SdkStreamDescriptor.verify|verify} messages.
      * @param message SdkStreamDescriptor message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkStreamDescriptor, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1457,10 +1459,10 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
     /**
      * Decodes a SdkStreamDescriptor message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkStreamDescriptor
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkStreamDescriptor;
 
@@ -1468,8 +1470,8 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
      * Decodes a SdkStreamDescriptor message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkStreamDescriptor
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkStreamDescriptor;
 
@@ -1490,7 +1492,7 @@ export class SdkStreamDescriptor implements ISdkStreamDescriptor {
     /**
      * Creates a plain object from a SdkStreamDescriptor message. Also converts values to other types if specified.
      * @param message SdkStreamDescriptor
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkStreamDescriptor, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1520,7 +1522,7 @@ export class SdkStreamAllocation implements ISdkStreamAllocation {
 
     /**
      * Constructs a new SdkStreamAllocation.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkStreamAllocation);
 
@@ -1535,7 +1537,7 @@ export class SdkStreamAllocation implements ISdkStreamAllocation {
 
     /**
      * Creates a new SdkStreamAllocation instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkStreamAllocation instance
      */
     public static create(properties?: ISdkStreamAllocation): SdkStreamAllocation;
@@ -1543,7 +1545,7 @@ export class SdkStreamAllocation implements ISdkStreamAllocation {
     /**
      * Encodes the specified SdkStreamAllocation message. Does not implicitly {@link SdkStreamAllocation.verify|verify} messages.
      * @param message SdkStreamAllocation message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkStreamAllocation, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1551,7 +1553,7 @@ export class SdkStreamAllocation implements ISdkStreamAllocation {
     /**
      * Encodes the specified SdkStreamAllocation message, length delimited. Does not implicitly {@link SdkStreamAllocation.verify|verify} messages.
      * @param message SdkStreamAllocation message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkStreamAllocation, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1559,10 +1561,10 @@ export class SdkStreamAllocation implements ISdkStreamAllocation {
     /**
      * Decodes a SdkStreamAllocation message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkStreamAllocation
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkStreamAllocation;
 
@@ -1570,8 +1572,8 @@ export class SdkStreamAllocation implements ISdkStreamAllocation {
      * Decodes a SdkStreamAllocation message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkStreamAllocation
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkStreamAllocation;
 
@@ -1592,7 +1594,7 @@ export class SdkStreamAllocation implements ISdkStreamAllocation {
     /**
      * Creates a plain object from a SdkStreamAllocation message. Also converts values to other types if specified.
      * @param message SdkStreamAllocation
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkStreamAllocation, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1622,7 +1624,7 @@ export class SdkTrackMapping implements ISdkTrackMapping {
 
     /**
      * Constructs a new SdkTrackMapping.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkTrackMapping);
 
@@ -1637,7 +1639,7 @@ export class SdkTrackMapping implements ISdkTrackMapping {
 
     /**
      * Creates a new SdkTrackMapping instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkTrackMapping instance
      */
     public static create(properties?: ISdkTrackMapping): SdkTrackMapping;
@@ -1645,7 +1647,7 @@ export class SdkTrackMapping implements ISdkTrackMapping {
     /**
      * Encodes the specified SdkTrackMapping message. Does not implicitly {@link SdkTrackMapping.verify|verify} messages.
      * @param message SdkTrackMapping message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkTrackMapping, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1653,7 +1655,7 @@ export class SdkTrackMapping implements ISdkTrackMapping {
     /**
      * Encodes the specified SdkTrackMapping message, length delimited. Does not implicitly {@link SdkTrackMapping.verify|verify} messages.
      * @param message SdkTrackMapping message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkTrackMapping, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1661,10 +1663,10 @@ export class SdkTrackMapping implements ISdkTrackMapping {
     /**
      * Decodes a SdkTrackMapping message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkTrackMapping
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTrackMapping;
 
@@ -1672,8 +1674,8 @@ export class SdkTrackMapping implements ISdkTrackMapping {
      * Decodes a SdkTrackMapping message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkTrackMapping
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTrackMapping;
 
@@ -1694,7 +1696,7 @@ export class SdkTrackMapping implements ISdkTrackMapping {
     /**
      * Creates a plain object from a SdkTrackMapping message. Also converts values to other types if specified.
      * @param message SdkTrackMapping
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkTrackMapping, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1721,7 +1723,7 @@ export class SdkBitrate implements ISdkBitrate {
 
     /**
      * Constructs a new SdkBitrate.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkBitrate);
 
@@ -1733,7 +1735,7 @@ export class SdkBitrate implements ISdkBitrate {
 
     /**
      * Creates a new SdkBitrate instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkBitrate instance
      */
     public static create(properties?: ISdkBitrate): SdkBitrate;
@@ -1741,7 +1743,7 @@ export class SdkBitrate implements ISdkBitrate {
     /**
      * Encodes the specified SdkBitrate message. Does not implicitly {@link SdkBitrate.verify|verify} messages.
      * @param message SdkBitrate message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkBitrate, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1749,7 +1751,7 @@ export class SdkBitrate implements ISdkBitrate {
     /**
      * Encodes the specified SdkBitrate message, length delimited. Does not implicitly {@link SdkBitrate.verify|verify} messages.
      * @param message SdkBitrate message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkBitrate, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1757,10 +1759,10 @@ export class SdkBitrate implements ISdkBitrate {
     /**
      * Decodes a SdkBitrate message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkBitrate
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkBitrate;
 
@@ -1768,8 +1770,8 @@ export class SdkBitrate implements ISdkBitrate {
      * Decodes a SdkBitrate message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkBitrate
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkBitrate;
 
@@ -1790,7 +1792,7 @@ export class SdkBitrate implements ISdkBitrate {
     /**
      * Creates a plain object from a SdkBitrate message. Also converts values to other types if specified.
      * @param message SdkBitrate
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkBitrate, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1814,7 +1816,7 @@ export class SdkAudioControlFrame implements ISdkAudioControlFrame {
 
     /**
      * Constructs a new SdkAudioControlFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkAudioControlFrame);
 
@@ -1823,7 +1825,7 @@ export class SdkAudioControlFrame implements ISdkAudioControlFrame {
 
     /**
      * Creates a new SdkAudioControlFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkAudioControlFrame instance
      */
     public static create(properties?: ISdkAudioControlFrame): SdkAudioControlFrame;
@@ -1831,7 +1833,7 @@ export class SdkAudioControlFrame implements ISdkAudioControlFrame {
     /**
      * Encodes the specified SdkAudioControlFrame message. Does not implicitly {@link SdkAudioControlFrame.verify|verify} messages.
      * @param message SdkAudioControlFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkAudioControlFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1839,7 +1841,7 @@ export class SdkAudioControlFrame implements ISdkAudioControlFrame {
     /**
      * Encodes the specified SdkAudioControlFrame message, length delimited. Does not implicitly {@link SdkAudioControlFrame.verify|verify} messages.
      * @param message SdkAudioControlFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkAudioControlFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1847,10 +1849,10 @@ export class SdkAudioControlFrame implements ISdkAudioControlFrame {
     /**
      * Decodes a SdkAudioControlFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkAudioControlFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioControlFrame;
 
@@ -1858,8 +1860,8 @@ export class SdkAudioControlFrame implements ISdkAudioControlFrame {
      * Decodes a SdkAudioControlFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkAudioControlFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioControlFrame;
 
@@ -1880,7 +1882,7 @@ export class SdkAudioControlFrame implements ISdkAudioControlFrame {
     /**
      * Creates a plain object from a SdkAudioControlFrame message. Also converts values to other types if specified.
      * @param message SdkAudioControlFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkAudioControlFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -1904,7 +1906,7 @@ export class SdkAudioMetadataFrame implements ISdkAudioMetadataFrame {
 
     /**
      * Constructs a new SdkAudioMetadataFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkAudioMetadataFrame);
 
@@ -1913,7 +1915,7 @@ export class SdkAudioMetadataFrame implements ISdkAudioMetadataFrame {
 
     /**
      * Creates a new SdkAudioMetadataFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkAudioMetadataFrame instance
      */
     public static create(properties?: ISdkAudioMetadataFrame): SdkAudioMetadataFrame;
@@ -1921,7 +1923,7 @@ export class SdkAudioMetadataFrame implements ISdkAudioMetadataFrame {
     /**
      * Encodes the specified SdkAudioMetadataFrame message. Does not implicitly {@link SdkAudioMetadataFrame.verify|verify} messages.
      * @param message SdkAudioMetadataFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkAudioMetadataFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1929,7 +1931,7 @@ export class SdkAudioMetadataFrame implements ISdkAudioMetadataFrame {
     /**
      * Encodes the specified SdkAudioMetadataFrame message, length delimited. Does not implicitly {@link SdkAudioMetadataFrame.verify|verify} messages.
      * @param message SdkAudioMetadataFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkAudioMetadataFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -1937,10 +1939,10 @@ export class SdkAudioMetadataFrame implements ISdkAudioMetadataFrame {
     /**
      * Decodes a SdkAudioMetadataFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkAudioMetadataFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioMetadataFrame;
 
@@ -1948,8 +1950,8 @@ export class SdkAudioMetadataFrame implements ISdkAudioMetadataFrame {
      * Decodes a SdkAudioMetadataFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkAudioMetadataFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioMetadataFrame;
 
@@ -1970,7 +1972,7 @@ export class SdkAudioMetadataFrame implements ISdkAudioMetadataFrame {
     /**
      * Creates a plain object from a SdkAudioMetadataFrame message. Also converts values to other types if specified.
      * @param message SdkAudioMetadataFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkAudioMetadataFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2003,7 +2005,7 @@ export class SdkAudioAttendeeState implements ISdkAudioAttendeeState {
 
     /**
      * Constructs a new SdkAudioAttendeeState.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkAudioAttendeeState);
 
@@ -2021,7 +2023,7 @@ export class SdkAudioAttendeeState implements ISdkAudioAttendeeState {
 
     /**
      * Creates a new SdkAudioAttendeeState instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkAudioAttendeeState instance
      */
     public static create(properties?: ISdkAudioAttendeeState): SdkAudioAttendeeState;
@@ -2029,7 +2031,7 @@ export class SdkAudioAttendeeState implements ISdkAudioAttendeeState {
     /**
      * Encodes the specified SdkAudioAttendeeState message. Does not implicitly {@link SdkAudioAttendeeState.verify|verify} messages.
      * @param message SdkAudioAttendeeState message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkAudioAttendeeState, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2037,7 +2039,7 @@ export class SdkAudioAttendeeState implements ISdkAudioAttendeeState {
     /**
      * Encodes the specified SdkAudioAttendeeState message, length delimited. Does not implicitly {@link SdkAudioAttendeeState.verify|verify} messages.
      * @param message SdkAudioAttendeeState message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkAudioAttendeeState, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2045,10 +2047,10 @@ export class SdkAudioAttendeeState implements ISdkAudioAttendeeState {
     /**
      * Decodes a SdkAudioAttendeeState message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkAudioAttendeeState
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioAttendeeState;
 
@@ -2056,8 +2058,8 @@ export class SdkAudioAttendeeState implements ISdkAudioAttendeeState {
      * Decodes a SdkAudioAttendeeState message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkAudioAttendeeState
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioAttendeeState;
 
@@ -2078,7 +2080,7 @@ export class SdkAudioAttendeeState implements ISdkAudioAttendeeState {
     /**
      * Creates a plain object from a SdkAudioAttendeeState message. Also converts values to other types if specified.
      * @param message SdkAudioAttendeeState
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkAudioAttendeeState, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2102,7 +2104,7 @@ export class SdkAudioStreamIdInfoFrame implements ISdkAudioStreamIdInfoFrame {
 
     /**
      * Constructs a new SdkAudioStreamIdInfoFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkAudioStreamIdInfoFrame);
 
@@ -2111,7 +2113,7 @@ export class SdkAudioStreamIdInfoFrame implements ISdkAudioStreamIdInfoFrame {
 
     /**
      * Creates a new SdkAudioStreamIdInfoFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkAudioStreamIdInfoFrame instance
      */
     public static create(properties?: ISdkAudioStreamIdInfoFrame): SdkAudioStreamIdInfoFrame;
@@ -2119,7 +2121,7 @@ export class SdkAudioStreamIdInfoFrame implements ISdkAudioStreamIdInfoFrame {
     /**
      * Encodes the specified SdkAudioStreamIdInfoFrame message. Does not implicitly {@link SdkAudioStreamIdInfoFrame.verify|verify} messages.
      * @param message SdkAudioStreamIdInfoFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkAudioStreamIdInfoFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2127,7 +2129,7 @@ export class SdkAudioStreamIdInfoFrame implements ISdkAudioStreamIdInfoFrame {
     /**
      * Encodes the specified SdkAudioStreamIdInfoFrame message, length delimited. Does not implicitly {@link SdkAudioStreamIdInfoFrame.verify|verify} messages.
      * @param message SdkAudioStreamIdInfoFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkAudioStreamIdInfoFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2135,10 +2137,10 @@ export class SdkAudioStreamIdInfoFrame implements ISdkAudioStreamIdInfoFrame {
     /**
      * Decodes a SdkAudioStreamIdInfoFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkAudioStreamIdInfoFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioStreamIdInfoFrame;
 
@@ -2146,8 +2148,8 @@ export class SdkAudioStreamIdInfoFrame implements ISdkAudioStreamIdInfoFrame {
      * Decodes a SdkAudioStreamIdInfoFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkAudioStreamIdInfoFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioStreamIdInfoFrame;
 
@@ -2168,7 +2170,7 @@ export class SdkAudioStreamIdInfoFrame implements ISdkAudioStreamIdInfoFrame {
     /**
      * Creates a plain object from a SdkAudioStreamIdInfoFrame message. Also converts values to other types if specified.
      * @param message SdkAudioStreamIdInfoFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkAudioStreamIdInfoFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2204,7 +2206,7 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
 
     /**
      * Constructs a new SdkAudioStreamIdInfo.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkAudioStreamIdInfo);
 
@@ -2225,7 +2227,7 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
 
     /**
      * Creates a new SdkAudioStreamIdInfo instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkAudioStreamIdInfo instance
      */
     public static create(properties?: ISdkAudioStreamIdInfo): SdkAudioStreamIdInfo;
@@ -2233,7 +2235,7 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
     /**
      * Encodes the specified SdkAudioStreamIdInfo message. Does not implicitly {@link SdkAudioStreamIdInfo.verify|verify} messages.
      * @param message SdkAudioStreamIdInfo message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkAudioStreamIdInfo, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2241,7 +2243,7 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
     /**
      * Encodes the specified SdkAudioStreamIdInfo message, length delimited. Does not implicitly {@link SdkAudioStreamIdInfo.verify|verify} messages.
      * @param message SdkAudioStreamIdInfo message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkAudioStreamIdInfo, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2249,10 +2251,10 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
     /**
      * Decodes a SdkAudioStreamIdInfo message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkAudioStreamIdInfo
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioStreamIdInfo;
 
@@ -2260,8 +2262,8 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
      * Decodes a SdkAudioStreamIdInfo message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkAudioStreamIdInfo
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioStreamIdInfo;
 
@@ -2282,7 +2284,7 @@ export class SdkAudioStreamIdInfo implements ISdkAudioStreamIdInfo {
     /**
      * Creates a plain object from a SdkAudioStreamIdInfo message. Also converts values to other types if specified.
      * @param message SdkAudioStreamIdInfo
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkAudioStreamIdInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2315,7 +2317,7 @@ export class SdkPingPongFrame implements ISdkPingPongFrame {
 
     /**
      * Constructs a new SdkPingPongFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkPingPongFrame);
 
@@ -2327,7 +2329,7 @@ export class SdkPingPongFrame implements ISdkPingPongFrame {
 
     /**
      * Creates a new SdkPingPongFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkPingPongFrame instance
      */
     public static create(properties?: ISdkPingPongFrame): SdkPingPongFrame;
@@ -2335,7 +2337,7 @@ export class SdkPingPongFrame implements ISdkPingPongFrame {
     /**
      * Encodes the specified SdkPingPongFrame message. Does not implicitly {@link SdkPingPongFrame.verify|verify} messages.
      * @param message SdkPingPongFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkPingPongFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2343,7 +2345,7 @@ export class SdkPingPongFrame implements ISdkPingPongFrame {
     /**
      * Encodes the specified SdkPingPongFrame message, length delimited. Does not implicitly {@link SdkPingPongFrame.verify|verify} messages.
      * @param message SdkPingPongFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkPingPongFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2351,10 +2353,10 @@ export class SdkPingPongFrame implements ISdkPingPongFrame {
     /**
      * Decodes a SdkPingPongFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkPingPongFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkPingPongFrame;
 
@@ -2362,8 +2364,8 @@ export class SdkPingPongFrame implements ISdkPingPongFrame {
      * Decodes a SdkPingPongFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkPingPongFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkPingPongFrame;
 
@@ -2384,7 +2386,7 @@ export class SdkPingPongFrame implements ISdkPingPongFrame {
     /**
      * Creates a plain object from a SdkPingPongFrame message. Also converts values to other types if specified.
      * @param message SdkPingPongFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkPingPongFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2408,7 +2410,7 @@ export class SdkAudioStatusFrame implements ISdkAudioStatusFrame {
 
     /**
      * Constructs a new SdkAudioStatusFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkAudioStatusFrame);
 
@@ -2417,7 +2419,7 @@ export class SdkAudioStatusFrame implements ISdkAudioStatusFrame {
 
     /**
      * Creates a new SdkAudioStatusFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkAudioStatusFrame instance
      */
     public static create(properties?: ISdkAudioStatusFrame): SdkAudioStatusFrame;
@@ -2425,7 +2427,7 @@ export class SdkAudioStatusFrame implements ISdkAudioStatusFrame {
     /**
      * Encodes the specified SdkAudioStatusFrame message. Does not implicitly {@link SdkAudioStatusFrame.verify|verify} messages.
      * @param message SdkAudioStatusFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkAudioStatusFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2433,7 +2435,7 @@ export class SdkAudioStatusFrame implements ISdkAudioStatusFrame {
     /**
      * Encodes the specified SdkAudioStatusFrame message, length delimited. Does not implicitly {@link SdkAudioStatusFrame.verify|verify} messages.
      * @param message SdkAudioStatusFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkAudioStatusFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2441,10 +2443,10 @@ export class SdkAudioStatusFrame implements ISdkAudioStatusFrame {
     /**
      * Decodes a SdkAudioStatusFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkAudioStatusFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkAudioStatusFrame;
 
@@ -2452,8 +2454,8 @@ export class SdkAudioStatusFrame implements ISdkAudioStatusFrame {
      * Decodes a SdkAudioStatusFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkAudioStatusFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkAudioStatusFrame;
 
@@ -2474,7 +2476,7 @@ export class SdkAudioStatusFrame implements ISdkAudioStatusFrame {
     /**
      * Creates a plain object from a SdkAudioStatusFrame message. Also converts values to other types if specified.
      * @param message SdkAudioStatusFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkAudioStatusFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2501,7 +2503,7 @@ export class SdkMetric implements ISdkMetric {
 
     /**
      * Constructs a new SdkMetric.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkMetric);
 
@@ -2513,7 +2515,7 @@ export class SdkMetric implements ISdkMetric {
 
     /**
      * Creates a new SdkMetric instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkMetric instance
      */
     public static create(properties?: ISdkMetric): SdkMetric;
@@ -2521,7 +2523,7 @@ export class SdkMetric implements ISdkMetric {
     /**
      * Encodes the specified SdkMetric message. Does not implicitly {@link SdkMetric.verify|verify} messages.
      * @param message SdkMetric message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkMetric, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2529,7 +2531,7 @@ export class SdkMetric implements ISdkMetric {
     /**
      * Encodes the specified SdkMetric message, length delimited. Does not implicitly {@link SdkMetric.verify|verify} messages.
      * @param message SdkMetric message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkMetric, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2537,10 +2539,10 @@ export class SdkMetric implements ISdkMetric {
     /**
      * Decodes a SdkMetric message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkMetric
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkMetric;
 
@@ -2548,8 +2550,8 @@ export class SdkMetric implements ISdkMetric {
      * Decodes a SdkMetric message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkMetric
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkMetric;
 
@@ -2570,7 +2572,7 @@ export class SdkMetric implements ISdkMetric {
     /**
      * Creates a plain object from a SdkMetric message. Also converts values to other types if specified.
      * @param message SdkMetric
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkMetric, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2634,7 +2636,9 @@ export namespace SdkMetric {
         VIDEO_JITTER_BUFFER_MS = 46,
         VIDEO_DISCARDED_PPS = 47,
         VIDEO_PLIS_SENT = 48,
-        VIDEO_RECEIVED_JITTER_MS = 49
+        VIDEO_RECEIVED_JITTER_MS = 49,
+        VIDEO_SENT_QP_SUM = 66,
+        VIDEO_RECEIVED_QP_SUM = 72
     }
 }
 
@@ -2656,7 +2660,7 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
 
     /**
      * Constructs a new SdkStreamMetricFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkStreamMetricFrame);
 
@@ -2671,7 +2675,7 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
 
     /**
      * Creates a new SdkStreamMetricFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkStreamMetricFrame instance
      */
     public static create(properties?: ISdkStreamMetricFrame): SdkStreamMetricFrame;
@@ -2679,7 +2683,7 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
     /**
      * Encodes the specified SdkStreamMetricFrame message. Does not implicitly {@link SdkStreamMetricFrame.verify|verify} messages.
      * @param message SdkStreamMetricFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkStreamMetricFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2687,7 +2691,7 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
     /**
      * Encodes the specified SdkStreamMetricFrame message, length delimited. Does not implicitly {@link SdkStreamMetricFrame.verify|verify} messages.
      * @param message SdkStreamMetricFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkStreamMetricFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2695,10 +2699,10 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
     /**
      * Decodes a SdkStreamMetricFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkStreamMetricFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkStreamMetricFrame;
 
@@ -2706,8 +2710,8 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
      * Decodes a SdkStreamMetricFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkStreamMetricFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkStreamMetricFrame;
 
@@ -2728,7 +2732,7 @@ export class SdkStreamMetricFrame implements ISdkStreamMetricFrame {
     /**
      * Creates a plain object from a SdkStreamMetricFrame message. Also converts values to other types if specified.
      * @param message SdkStreamMetricFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkStreamMetricFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2755,7 +2759,7 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
 
     /**
      * Constructs a new SdkClientMetricFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkClientMetricFrame);
 
@@ -2767,7 +2771,7 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
 
     /**
      * Creates a new SdkClientMetricFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkClientMetricFrame instance
      */
     public static create(properties?: ISdkClientMetricFrame): SdkClientMetricFrame;
@@ -2775,7 +2779,7 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
     /**
      * Encodes the specified SdkClientMetricFrame message. Does not implicitly {@link SdkClientMetricFrame.verify|verify} messages.
      * @param message SdkClientMetricFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkClientMetricFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2783,7 +2787,7 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
     /**
      * Encodes the specified SdkClientMetricFrame message, length delimited. Does not implicitly {@link SdkClientMetricFrame.verify|verify} messages.
      * @param message SdkClientMetricFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkClientMetricFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2791,10 +2795,10 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
     /**
      * Decodes a SdkClientMetricFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkClientMetricFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkClientMetricFrame;
 
@@ -2802,8 +2806,8 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
      * Decodes a SdkClientMetricFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkClientMetricFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkClientMetricFrame;
 
@@ -2824,7 +2828,7 @@ export class SdkClientMetricFrame implements ISdkClientMetricFrame {
     /**
      * Creates a plain object from a SdkClientMetricFrame message. Also converts values to other types if specified.
      * @param message SdkClientMetricFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkClientMetricFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2848,7 +2852,7 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
 
     /**
      * Constructs a new SdkDataMessageFrame.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkDataMessageFrame);
 
@@ -2857,7 +2861,7 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
 
     /**
      * Creates a new SdkDataMessageFrame instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkDataMessageFrame instance
      */
     public static create(properties?: ISdkDataMessageFrame): SdkDataMessageFrame;
@@ -2865,7 +2869,7 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
     /**
      * Encodes the specified SdkDataMessageFrame message. Does not implicitly {@link SdkDataMessageFrame.verify|verify} messages.
      * @param message SdkDataMessageFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkDataMessageFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2873,7 +2877,7 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
     /**
      * Encodes the specified SdkDataMessageFrame message, length delimited. Does not implicitly {@link SdkDataMessageFrame.verify|verify} messages.
      * @param message SdkDataMessageFrame message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkDataMessageFrame, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2881,10 +2885,10 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
     /**
      * Decodes a SdkDataMessageFrame message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkDataMessageFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkDataMessageFrame;
 
@@ -2892,8 +2896,8 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
      * Decodes a SdkDataMessageFrame message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkDataMessageFrame
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkDataMessageFrame;
 
@@ -2914,7 +2918,7 @@ export class SdkDataMessageFrame implements ISdkDataMessageFrame {
     /**
      * Creates a plain object from a SdkDataMessageFrame message. Also converts values to other types if specified.
      * @param message SdkDataMessageFrame
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkDataMessageFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -2953,7 +2957,7 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
 
     /**
      * Constructs a new SdkDataMessagePayload.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkDataMessagePayload);
 
@@ -2977,7 +2981,7 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
 
     /**
      * Creates a new SdkDataMessagePayload instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkDataMessagePayload instance
      */
     public static create(properties?: ISdkDataMessagePayload): SdkDataMessagePayload;
@@ -2985,7 +2989,7 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
     /**
      * Encodes the specified SdkDataMessagePayload message. Does not implicitly {@link SdkDataMessagePayload.verify|verify} messages.
      * @param message SdkDataMessagePayload message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkDataMessagePayload, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -2993,7 +2997,7 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
     /**
      * Encodes the specified SdkDataMessagePayload message, length delimited. Does not implicitly {@link SdkDataMessagePayload.verify|verify} messages.
      * @param message SdkDataMessagePayload message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkDataMessagePayload, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -3001,10 +3005,10 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
     /**
      * Decodes a SdkDataMessagePayload message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkDataMessagePayload
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkDataMessagePayload;
 
@@ -3012,8 +3016,8 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
      * Decodes a SdkDataMessagePayload message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkDataMessagePayload
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkDataMessagePayload;
 
@@ -3034,7 +3038,7 @@ export class SdkDataMessagePayload implements ISdkDataMessagePayload {
     /**
      * Creates a plain object from a SdkDataMessagePayload message. Also converts values to other types if specified.
      * @param message SdkDataMessagePayload
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkDataMessagePayload, options?: $protobuf.IConversionOptions): { [k: string]: any };
@@ -3067,7 +3071,7 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
 
     /**
      * Constructs a new SdkTurnCredentials.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      */
     constructor(properties?: ISdkTurnCredentials);
 
@@ -3085,7 +3089,7 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
 
     /**
      * Creates a new SdkTurnCredentials instance using the specified properties.
-     * @param [properties] Properties to set
+     * @param properties Properties to set
      * @returns SdkTurnCredentials instance
      */
     public static create(properties?: ISdkTurnCredentials): SdkTurnCredentials;
@@ -3093,7 +3097,7 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
     /**
      * Encodes the specified SdkTurnCredentials message. Does not implicitly {@link SdkTurnCredentials.verify|verify} messages.
      * @param message SdkTurnCredentials message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encode(message: ISdkTurnCredentials, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -3101,7 +3105,7 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
     /**
      * Encodes the specified SdkTurnCredentials message, length delimited. Does not implicitly {@link SdkTurnCredentials.verify|verify} messages.
      * @param message SdkTurnCredentials message or plain object to encode
-     * @param [writer] Writer to encode to
+     * @param writer Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(message: ISdkTurnCredentials, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -3109,10 +3113,10 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
     /**
      * Decodes a SdkTurnCredentials message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
+     * @param length Message length if known beforehand
      * @returns SdkTurnCredentials
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTurnCredentials;
 
@@ -3120,8 +3124,8 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
      * Decodes a SdkTurnCredentials message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
      * @returns SdkTurnCredentials
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     * @throws {@link Error} If the payload is not a reader or valid buffer
+     * @throws {@link $protobuf.util.ProtocolError} If required fields are missing
      */
     public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTurnCredentials;
 
@@ -3142,7 +3146,7 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
     /**
      * Creates a plain object from a SdkTurnCredentials message. Also converts values to other types if specified.
      * @param message SdkTurnCredentials
-     * @param [options] Conversion options
+     * @param options Conversion options
      * @returns Plain object
      */
     public static toObject(message: SdkTurnCredentials, options?: $protobuf.IConversionOptions): { [k: string]: any };

@@ -71,6 +71,9 @@ export default class OpenSignalingConnectionTask extends BaseTask {
       throw error;
     } finally {
       this.context.signalingOpenDurationMs = Math.round(Date.now() - startTimeMs);
+      this.logger.info(
+        `Opening signaling connection took ${this.context.signalingOpenDurationMs} ms`
+      );
     }
   }
 }

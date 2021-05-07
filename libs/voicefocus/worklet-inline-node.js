@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const support_js_1 = require("./support.js");
 const types_js_1 = require("./types.js");
 class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
     constructor(context, options) {
@@ -20,12 +21,16 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
             logger.debug('VoiceFocusInlineNode:', modelURL);
         this.worker = worker;
         this.worker.onmessage = this.onWorkerMessage.bind(this);
+        const message = support_js_1.supportsWASMPostMessage(globalThis) ? 'get-module' : 'get-module-buffer';
         this.worker.postMessage({
-            message: 'get-module',
+            message,
             key: 'model',
             fetchBehavior,
             path: modelURL,
         });
+    }
+    onModuleBufferLoaded(buffer, key) {
+        this.port.postMessage({ message: 'module-buffer', buffer, key });
     }
     onModuleLoaded(module, key) {
         this.port.postMessage({ message: 'module', module, key });
@@ -59,6 +64,12 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
     onWorkerMessage(event) {
         const data = event.data;
         switch (data.message) {
+            case 'module-buffer':
+                if (!data.buffer || !data.key) {
+                    return;
+                }
+                this.onModuleBufferLoaded(data.buffer, data.key);
+                break;
             case 'module':
                 if (!data.module || !data.key) {
                     return;

@@ -81,9 +81,8 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.protocolVersion = 2;
     joinFrame.maxNumOfVideos = settings.maxVideos;
     joinFrame.flags = SdkJoinFlags.HAS_STREAM_UPDATE;
-    // Only Chrome currently supports the new send side bandwidth estimation
     const browserBehavior = new DefaultBrowserBehavior();
-    if (browserBehavior.hasChromiumWebRTC()) {
+    if (browserBehavior.supportsSenderSideBandwidthEstimation()) {
       joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
     }
     joinFrame.flags |= settings.sendBitrates ? SdkJoinFlags.SEND_BITRATES : 0;
@@ -105,25 +104,29 @@ export default class DefaultSignalingClient implements SignalingClient {
     const subscribeFrame = SdkSubscribeFrame.create();
     subscribeFrame.sendStreams = [];
     subscribeFrame.sdpOffer = settings.sdpOffer;
-    subscribeFrame.audioCheckin = settings.audioCheckin;
-    subscribeFrame.audioHost = settings.audioHost;
-    subscribeFrame.audioMuted = settings.audioMuted;
     if (settings.connectionTypeHasVideo) {
       subscribeFrame.receiveStreamIds = settings.receiveStreamIds;
     }
-    subscribeFrame.duplex = SdkStreamServiceType.RX;
-    if (!settings.audioCheckin) {
-      const audioStream = SdkStreamDescriptor.create();
-      audioStream.mediaType = SdkStreamMediaType.AUDIO;
-      audioStream.trackLabel = 'AmazonChimeExpressAudio';
-      audioStream.attendeeId = settings.attendeeId;
-      audioStream.streamId = 1;
-      audioStream.groupId = 1;
-      audioStream.framerate = 15;
-      audioStream.maxBitrateKbps = 600;
-      audioStream.avgBitrateBps = 400000;
-      subscribeFrame.sendStreams.push(audioStream);
+
+    if (settings.audioHost) {
+      subscribeFrame.audioCheckin = settings.audioCheckin;
+      subscribeFrame.audioHost = settings.audioHost;
+      subscribeFrame.audioMuted = settings.audioMuted;
+      if (!settings.audioCheckin) {
+        const audioStream = SdkStreamDescriptor.create();
+        audioStream.mediaType = SdkStreamMediaType.AUDIO;
+        audioStream.trackLabel = 'AmazonChimeExpressAudio';
+        audioStream.attendeeId = settings.attendeeId;
+        audioStream.streamId = 1;
+        audioStream.groupId = 1;
+        audioStream.framerate = 15;
+        audioStream.maxBitrateKbps = 600;
+        audioStream.avgBitrateBps = 400000;
+        subscribeFrame.sendStreams.push(audioStream);
+      }
     }
+
+    subscribeFrame.duplex = SdkStreamServiceType.RX;
     if (settings.localVideoEnabled) {
       subscribeFrame.duplex = SdkStreamServiceType.DUPLEX;
       for (let i = 0; i < settings.videoStreamDescriptions.length; i++) {

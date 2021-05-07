@@ -34,15 +34,20 @@ If you think your application might be used in these scenarios, take care to tes
 
 ### Browser compatibility
 
-Amazon Voice Focus in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop and Android operating systems. A full compatibility table is below. Amazon Voice Focus does not currently support Safari on desktop or iOS devices, because Safari does not implement the required web standards.
+Amazon Voice Focus in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop and Android operating systems. A full compatibility table is below.
+
+Amazon Voice Focus does not support the release version of Safari on desktop or iOS devices, because Safari does not implement the required web standards. Amazon Voice Focus supports Safari Technology Preview (v14.1, 117) as of version 2.4 of the Amazon Chime SDK.
 
 |Browser                                                                |Minimum supported version  |Preferred version  |Notes               |
 |---                                                                    |---                        |---                |---                 |
 |Firefox                                                                |76                         |83+                |                    |
 |Chromium-based browsers and environments, including Edge and Electron  |78                         |87+                |                    |
-|Safari                                                                 |Not supported              |-                  |                    |
+|Safari                                                                 |14.1*                      |-                  |Technology Preview  |
 |Android browser                                                        |78*                        |87*                |Typically too slow. |
 |iOS Safari                                                             |Not supported              |-                  |                    |
+|iOS Chrome                                                             |Not supported              |-                  |                    |
+|iOS Firefox                                                            |Not supported              |-                  |                    |
+
 
 Amazon Voice Focus is more CPU-intensive than conventional noise suppression systems, and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful. The default configuration will adapt to available processor power and adjust quality accordingly, but some browsers and devices will simply be unable to enable the feature. Android browsers are theoretically compatible, but typically cannot meet the performance requirements.
 
@@ -75,6 +80,7 @@ Modern web applications use [Content Security Policy](https://developer.mozilla.
 * `script-src` and `script-src-elem`: add `https://*.sdkassets.chime.aws` to load audio processing code to run in the browser’s audio renderer thread.
 * `connect-src`: add `https://*.sdkassets.chime.aws` to load model files via `fetch`.
 * `worker-src`: add `blob:` to load worker JavaScript across origins.
+* `child-src`: add `blob:` to load worker JavaScript across origins (only in Safari).
 
 If you omit any of these entries, or if you use both HTTP headers and `http-equiv` `meta` tags to specify policy and inadvertently exclude any of these by intersection, then Amazon Voice Focus will not be able to initialize, and will either appear to be unsupported or will fail to create a suppressed audio device. You will see errors in your browser console like:
 
@@ -179,9 +185,11 @@ As noted above, the device controller must support Web Audio.
 
 ## Configuration
 
-Both `isSupported` and `create` accept `VoiceFocusSpec` structures as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.
+Both `isSupported` and `create` accept _specifications_ — `VoiceFocusSpec` structures — as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.
 
 Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. Some options are described in the section “[Adapting to performance constraints](#adapting-to-performance-constraints)”.
+
+A specification is used to derive a runtime _configuration_ when a transformer is created. A configuration is an opaque blob derived within a particular runtime context. The configuration drives exactly how noise suppression will be applied to an input stream. Applications can access these configurations in order to support unusual interaction patterns; see “[Accessing and using configurations](#accessing-and-using-configurations)”.
 
 ## Disabling Amazon Voice Focus and switching devices
 
@@ -281,7 +289,7 @@ We recommend that you allow estimation to adapt to the runtime environment: it i
 You can optionally implement the `VoiceFocusTransformDeviceObserver` interface and use `addObserver` to receive callbacks when one of two things occur:
 
 * `voiceFocusFellBackToInnerStream`: if applying noise suppression to an audio device failed, causing the SDK to fall back to using the inner device with the browser’s own noise suppression, this will be called. This should be uncommon, but this allows you to adapt your UI to failure.
-* `onCPUWarning`: if the noise suppressor is unable to keep up with input audio, and the execution mode is able to determine this, then `onCPUWarning` will be invoked approximately every 15 milliseconds. The user will not themselves hear any audio glitching: bad audio will be heard by *other participants in the meeting*. Disabling noise suppression or other application features might be necessary to avoid continued disruption of the user experience.
+* `voiceFocusInsufficientResources`: if the noise suppressor is unable to keep up with input audio, and the execution mode is able to determine this, then `voiceFocusInsufficientResources` will be invoked approximately every 15 milliseconds. The user will not themselves hear any audio glitching: bad audio will be heard by *other participants in the meeting*. Disabling noise suppression or other application features might be necessary to avoid continued disruption of the user experience.
 
 ## Automatic gain control
 
@@ -292,3 +300,42 @@ AGC in mainstream browsers is fairly simplistic: it periodically adjusts your de
 Amazon Voice enables the built-in AGC by default. If you need additional control of the user’s volume, you can apply a [`GainNode`](https://developer.mozilla.org/en-US/docs/Web/API/GainNode) in a custom `AudioTransformDevice` in series *after* the Amazon Voice Focus node.
 
 If the interaction of the built-in AGC with Amazon Voice Focus produces undesirable effects, you can disable it by passing `{ agc: { useBuiltInAGC: false } }` when constructing the transform device.
+
+## Accessing and using configurations
+
+Configurations — instances of `VoiceFocusConfig` — are opaque blobs derived by resolving a specification against a runtime environment. They are exact descriptions of exactly how Amazon Voice Focus will operate. As such, they are extremely specific to a point in time, hardware capabilities, browser version, and SDK version. They should not be persisted, transferred between browsers, or mutated.
+
+You can retrieve the configuration of a `VoiceFocusDeviceTransformer` with the `getConfiguration` method, and you can retrieve a configuration without instantiating a transformer by calling the `VoiceFocusDeviceTransformer.configure` static method instead of `VoiceFocusDeviceTransformer.create`. The latter accepts a configuration as a third argument to instantiate a transformer with an existing configuration.
+
+These functions allow the work of creating a transformer to be split or reused across execution contexts. For example, you might compute a configuration from a spec each time your app launches, making subsequent initialization faster, or you might reuse a configuration in a second window by sending an existing transformer's configuration via `postMessage`.
+
+Creating a configuration via `VoiceFocusDeviceTransformer.configure` also supports pre-resolving model URLs, which can be useful when a new browser execution context needs to be rapidly built in order to join a meeting, and saving even a single HTTP request is worthwhile.
+
+The send side might look like this:
+
+```javascript
+const spec = {};
+const options = { logger };
+
+const config = await VoiceFocusDeviceTransformer.configure(spec, options);
+const newWindow = window.open('/other');
+newWindow.postMessage({
+  message: 'vf',
+  config,
+});
+```
+
+and the receiver like this:
+
+```javascript
+const spec = {};
+const options = { logger };
+let transformerPromise;
+
+window.onmessage = (m) => {
+  const { message, config } = m;
+  if (message === 'vf') {
+    transformerPromise = VoiceFocusDeviceTransformer.create(spec, options, config);
+  }
+};
+```

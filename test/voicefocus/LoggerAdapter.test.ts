@@ -14,6 +14,14 @@ describe('LoggerAdapter', () => {
     expect(adapter).to.exist;
   });
 
+  it('calls through with stringified undefined', () => {
+    const logger = new MockLogger();
+    const adapter = new LoggerAdapter(logger);
+
+    adapter.debug(undefined);
+    expect(logger.debug.calledOnceWith('undefined')).to.be.true;
+  });
+
   it('calls through', () => {
     const logger = new MockLogger();
     const adapter = new LoggerAdapter(logger);

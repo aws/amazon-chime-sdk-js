@@ -50,8 +50,8 @@ describe('MeetingSessionPOSTLogger', () => {
   );
 
   describe('construction', () => {
-    it('can be constructed', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+    it('can be constructed', () => {
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -62,10 +62,10 @@ describe('MeetingSessionPOSTLogger', () => {
       expect(logger).to.not.equal(null);
       expect(logger.getLogLevel()).to.equal(LogLevel.WARN);
       logger.stop();
-      done();
     });
-    it('can be with different level', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+
+    it('can be with different level', () => {
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -76,13 +76,33 @@ describe('MeetingSessionPOSTLogger', () => {
       expect(logger).to.not.equal(null);
       expect(logger.getLogLevel()).to.equal(LogLevel.WARN);
       logger.stop();
-      done();
+    });
+  });
+
+  describe('disposal', () => {
+    it('can be disposed', async () => {
+      const logger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL,
+        LogLevel.WARN
+      );
+      // @ts-ignore
+      expect(logger.intervalScheduler.running()).to.be.true;
+      await logger.destroy();
+      // @ts-ignore
+      expect(!!logger.intervalScheduler?.running()).to.be.false;
+
+      // This is safe to call twice.
+      await logger.destroy();
     });
   });
 
   describe('logging level', () => {
     it('should log info with LogLevel.INFO and ignore the debug', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -97,8 +117,25 @@ describe('MeetingSessionPOSTLogger', () => {
       done();
     });
 
+    it('should log when header is set', done => {
+      const logger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL,
+        LogLevel.INFO,
+        { 'Content-Type': 'application/json' }
+      );
+      logger.info('info');
+      logger.error('error');
+      expect(logger.getLogCaptureSize()).is.equal(2);
+      logger.stop();
+      done();
+    });
+
     it('should log nothing with LogLevel.OFF', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -114,7 +151,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('should skip info and debug logs by default', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -133,7 +170,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('should have debug and info logs after setting DEBUG log level', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -157,7 +194,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('should start publishing logs', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -172,7 +209,7 @@ describe('MeetingSessionPOSTLogger', () => {
 
   describe('startLogPublishSchedulerSpy', () => {
     it('can call startLogPublishSchedulerSpy', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -187,7 +224,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('handles when the fetch call fails', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -205,7 +242,7 @@ describe('MeetingSessionPOSTLogger', () => {
     });
 
     it('handles when the fetch call fails and logCapture array is empty', done => {
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -223,7 +260,7 @@ describe('MeetingSessionPOSTLogger', () => {
 
     it('handles when the fetch call succeeds and response returns 200', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -241,9 +278,31 @@ describe('MeetingSessionPOSTLogger', () => {
       });
     });
 
+    it('handles when the fetch call succeeds with header and response returns 200', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const logger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL,
+        LogLevel.INFO,
+        { 'Content-Type': 'application/json' }
+      );
+      domMockBehavior.fetchSucceeds = true;
+      domMockBehavior.responseSuccess = true;
+      logger.error('error');
+      expect(logger.getLogCaptureSize()).is.equal(1);
+      logger.startLogPublishScheduler(batchSize);
+      new TimeoutScheduler(100).start(() => {
+        logger.stop();
+        done();
+      });
+    });
+
     it('handles when the fetch call succeeds and response returns 500', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+      const logger = new MeetingSessionPOSTLogger(
         'testLogger',
         configuration,
         batchSize,
@@ -262,6 +321,36 @@ describe('MeetingSessionPOSTLogger', () => {
       });
     });
 
+    it('does not die if you pass undefined', () => {
+      const logger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL
+      );
+      logger.setLogLevel(LogLevel.DEBUG);
+
+      logger.debug(undefined);
+      expect(logger.getLogCaptureSize()).to.equal(1);
+      logger.stop();
+    });
+
+    it('does not die if you pass a string', () => {
+      const logger = new MeetingSessionPOSTLogger(
+        'testLogger',
+        configuration,
+        batchSize,
+        intervalMs,
+        BASE_URL
+      );
+      logger.setLogLevel(LogLevel.DEBUG);
+
+      logger.debug('foo');
+      expect(logger.getLogCaptureSize()).to.equal(1);
+      logger.stop();
+    });
+
     it('will call stop when unloading the page', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const GlobalAny = global as any;
@@ -276,7 +365,7 @@ describe('MeetingSessionPOSTLogger', () => {
         expect(type).to.equal('unload');
       };
       new TimeoutScheduler(200).start(() => {
-        const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+        const logger = new MeetingSessionPOSTLogger(
           'testLogger',
           configuration,
           batchSize,
@@ -310,7 +399,7 @@ describe('MeetingSessionPOSTLogger', () => {
         callbackToCall();
       });
       new TimeoutScheduler(80).start(() => {
-        const logger: MeetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
+        const logger = new MeetingSessionPOSTLogger(
           'testLogger',
           configuration,
           batchSize,

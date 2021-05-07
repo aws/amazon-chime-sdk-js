@@ -1,0 +1,27 @@
+{
+    "`": 1,
+    "name": "test_app_video_pin_test.config.json %ts",
+    "grids": [
+    ],
+    "tests": [
+      {
+        "name": "Test App Video Pin Test %ts",
+        "description": "Test App Video Pin Test",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "VideoPinTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "port": 30002,
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "version": "latest",
+        "platform": "MAC"
+      }
+    ]
+  }

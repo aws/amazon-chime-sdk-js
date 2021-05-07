@@ -13,16 +13,22 @@ import {
  */
 export default interface VolumeIndicatorsAdapter {
   /**
+   * Invoked during session reconnect
+   * @internal
+   */
+  onReconnect(): void;
+
+  /**
    * Sends realtime updates for an incoming SdkAudioStreamIdInfoFrame. This type
    * of frame affects presence and mute state.
-   * @hidden
+   * @internal
    */
   sendRealtimeUpdatesForAudioStreamIdInfo(info: SdkAudioStreamIdInfoFrame): void;
 
   /**
    * Sends realtime updates for an incoming SdkAudioMetadataFrame. This type of
    * frame affects volume and signal strength state.
-   * @hidden
+   * @internal
    */
   sendRealtimeUpdatesForAudioMetadata(metadata: SdkAudioMetadataFrame): void;
 }

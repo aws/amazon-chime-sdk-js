@@ -10,7 +10,7 @@ import { SinonStub, spy, stub } from 'sinon';
 // For mocking.
 import { VoiceFocusAudioWorkletNode } from '../../libs/voicefocus/types';
 import { NodeArguments, VoiceFocus, VoiceFocusConfig } from '../../libs/voicefocus/voicefocus';
-import { VoiceFocusTransformDeviceObserver } from '../../src';
+import { ConsoleLogger, LogLevel, VoiceFocusTransformDeviceObserver } from '../../src';
 import Device from '../../src/devicecontroller/Device';
 import Logger from '../../src/logger/Logger';
 import Versioning from '../../src/versioning/Versioning';
@@ -24,6 +24,17 @@ chai.use(chaiAsPromised);
 chai.should();
 const expect = chai.expect;
 
+// This is the mock User-Agent we'll plug in to `window.navigator` and `globalThis.navigator`.
+const MOCK_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:86.0) Gecko/20100101 Firefox/86.0';
+
+// This must agree with `MOCK_UA`.
+const MOCK_UA_PARAM = 'firefox-86';
+
+// Change the `LogLevel` here to make it easier to figure out what's going wrong.
+// You will also need to pass this via `{ logger: DEFAULT_LOGGER }` when creating a transformer.
+const DEFAULT_LOGGER: Logger | undefined = new ConsoleLogger('tests', LogLevel.OFF);
+
 // These will be the same for all requests, and reflect some versions.
 function getQueryParams(): string {
   // E.g., '2.0'.
@@ -34,43 +45,38 @@ function getQueryParams(): string {
     /^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)/
   )[0];
 
-  // E.g., '14'.
-  const nodeVersion = process.version.match(/^v([1-9][0-9]*)/)[1];
-
   // E.g., 'sdk-2.0'.
   const assetGroup = `sdk-${major}`;
 
-  return `sdk=${majorMinor}&ua=node-${nodeVersion}&assetGroup=${assetGroup}`;
+  return `sdk=${majorMinor}&ua=${MOCK_UA_PARAM}&assetGroup=${assetGroup}`;
 }
 
-function basicFetchMock(): void {
-  fetchMock.restore();
-  fetchMock.get('*', (_url: string, _request: MockRequest) => {
-    return {
-      status: 503,
-      body: {},
-    };
-  });
-}
+function mockWindowAndNavigator(): void {
+  const navigator: Navigator = ({
+    userAgent: MOCK_UA,
+  } as unknown) as Navigator;
 
-function mockWindow(): void {
+  globalThis.navigator = navigator;
+
   // Oh, Node.
-  globalThis['window'] = ({
+  globalThis.window = ({
     URL: ({ createObjectURL: (url: string) => url } as unknown) as typeof URL,
+    navigator,
   } as unknown) as Window & typeof globalThis;
 }
 
+function resetWindowAndNavigator(): void {
+  delete globalThis['window'];
+  delete globalThis['navigator'];
+}
+
 describe('VoiceFocusDeviceTransformer', () => {
-  before(() => {
-    basicFetchMock();
+  beforeEach(() => {
+    mockWindowAndNavigator();
   });
 
   afterEach(() => {
-    fetchMock.resetHistory();
-  });
-
-  after(() => {
-    fetchMock.restore();
+    resetWindowAndNavigator();
   });
 
   it('is not supported in Node', async () => {
@@ -123,26 +129,236 @@ describe('VoiceFocusDeviceTransformer', () => {
     });
 
     describe('with working worker', () => {
-      before(() => {
-        fetchMock.restore();
-        fetchMock.get(/\/worker-v1\.js/, (_url: string, _request: MockRequest) => {
-          return {
-            status: 200,
-            'content-type': 'application/javascript',
-            body: 'function(){}',
-          };
-        });
-
-        mockWindow();
+      beforeEach(() => {
+        fetchMock
+          .get(/\/worker-v1\.js/, (_url: string, _request: MockRequest) => {
+            return {
+              status: 200,
+              'content-type': 'application/javascript',
+              body: 'function(){}',
+            };
+          })
+          .get(/\/estimator-v1.js/, (_url: string, _request: MockRequest) => {
+            return {
+              status: 200,
+              'content-type': 'application/javascript',
+              body: 'function(){}',
+            };
+          });
       });
 
-      after(() => {
-        basicFetchMock();
-        delete globalThis['window'];
+      afterEach(() => {
+        fetchMock.restore();
       });
 
       it('is supported if the appropriate mocks exist', async () => {
         expect(await VoiceFocusDeviceTransformer.isSupported({}, {})).to.be.true;
+      });
+
+      describe('with configuration', () => {
+        afterEach(() => {
+          fetchMock.restore();
+        });
+
+        const goodConfig: VoiceFocusConfig = {
+          fetchConfig: {
+            paths: {
+              processors: 'https://somewhere.chime.aws/processors/',
+              workers: 'https://somewhere.chime.aws/workers/',
+              wasm: 'https://somewhere.chime.aws/wasm/',
+              models: 'https://somewhere.chime.aws/wasm/',
+            },
+            escapedQueryString: 'sdk=2.5.0&ua=firefox-86&assetGroup=stable-v1',
+          },
+          model: {
+            category: 'voicefocus',
+            name: 'default',
+            variant: 'c20',
+            simd: false,
+          },
+          processor: 'voicefocus-inline-processor',
+          executionQuanta: 3,
+          supported: true,
+        };
+
+        const configWithURL: VoiceFocusConfig = {
+          fetchConfig: {
+            paths: {
+              processors: 'https://static.sdkassets.chime.aws/processors/',
+              workers: 'https://static.sdkassets.chime.aws/workers/',
+              wasm: 'https://static.sdkassets.chime.aws/wasm/',
+              models: 'https://static.sdkassets.chime.aws/wasm/',
+            },
+            escapedQueryString: 'sdk=2.5.0&ua=firefox-87&assetGroup=sdk-2.5',
+          },
+          model: {
+            category: 'voicefocus',
+            name: 'default',
+            variant: 'c100',
+            simd: true,
+            url:
+              'https://static.sdkassets.chime.aws/static/voicefocus-default-c100-v1_simd-e7bad7b961a128cf.wasm',
+          },
+          processor: 'voicefocus-inline-processor',
+          executionQuanta: 3,
+          supported: true,
+        };
+
+        it('can be constructed with a config with URL, and no fetch to the non-explicit URL occurs', async () => {
+          const assetFilter = 'https://static.sdkassets.chime.aws/wasm/.*';
+          fetchMock
+            .get(assetFilter, () => {
+              return {
+                status: 400,
+              };
+            })
+            .get(/\/worker-v1\.js/, (_url: string, _request: MockRequest) => {
+              return {
+                status: 200,
+                'content-type': 'application/javascript',
+                body: 'function(){}',
+              };
+            });
+
+          const logger = new MockLogger();
+          const spec: VoiceFocusSpec = {
+            variant: 'c10',
+            simd: 'force',
+          };
+          const transformer = await VoiceFocusDeviceTransformer.create(
+            spec,
+            {
+              preload: false,
+              logger,
+            },
+            configWithURL
+          );
+          expect(transformer).to.not.be.undefined;
+          expect(transformer.isSupported()).to.be.true;
+          expect(transformer.getConfiguration()).to.eventually.deep.equal(configWithURL);
+
+          await transformer.createTransformDevice('default');
+          expect(fetchMock.called(assetFilter)).to.be.false;
+        });
+
+        it('can be constructed with an unsupported config', async () => {
+          const logger = new MockLogger();
+          const spec: VoiceFocusSpec = {
+            variant: 'c10',
+            simd: 'force',
+          };
+          const config: VoiceFocusConfig = {
+            supported: false,
+            reason: 'testing',
+          };
+          const transformer = await VoiceFocusDeviceTransformer.create(
+            spec,
+            {
+              preload: false,
+              logger,
+            },
+            config
+          );
+          expect(transformer).to.not.be.undefined;
+          expect(transformer.isSupported()).to.be.false;
+        });
+
+        it('can be constructed with a config with a fixed spec with logger and no asset group, and the config wins', async () => {
+          const logger = new MockLogger();
+          const spec: VoiceFocusSpec = {
+            variant: 'c10',
+            simd: 'force',
+          };
+          const transformer = await VoiceFocusDeviceTransformer.create(
+            spec,
+            {
+              preload: false,
+              logger,
+            },
+            goodConfig
+          );
+          expect(transformer).to.not.be.undefined;
+          expect(transformer.isSupported()).to.be.true;
+          expect(transformer.getConfiguration()).to.eventually.deep.equal(goodConfig);
+          const theConfig = await transformer.getConfiguration();
+          if (!theConfig.supported) {
+            return;
+          }
+          expect(theConfig.model.simd).to.be.false;
+          expect(theConfig.model.variant).to.equal('c20');
+        });
+      });
+
+      describe('configure', () => {
+        before(() => {
+          fetchMock
+            .head(/https:\/\/static\.somewhere\.chime\.aws\/wasm\/12345.wasm\??.*/, () => {
+              return {
+                status: 200,
+                'content-type': 'application/wasm',
+              };
+            })
+            .head(
+              /https:\/\/somewhere\.chime\.aws\/wasm\/voicefocus-default-c10-v1_simd.wasm\?.*/,
+              () => {
+                return {
+                  status: 302,
+                  redirectUrl: 'https://static.somewhere.chime.aws/wasm/12345.wasm',
+                };
+              }
+            );
+        });
+
+        afterEach(() => {
+          fetchMock.resetHistory();
+        });
+
+        after(() => {
+          fetchMock.restore();
+        });
+
+        it('provides a static method to create a config', async () => {
+          expect(fetchMock.called()).to.be.false;
+          const config = await VoiceFocusDeviceTransformer.configure(
+            {
+              variant: 'c10',
+              simd: 'force',
+              paths: {
+                models: 'https://somewhere.chime.aws/wasm/',
+                processors: 'https://somewhere.chime.aws/processors/',
+                workers: 'https://somewhere.chime.aws/processors/',
+                wasm: 'https://somewhere.chime.aws/wasm/',
+              },
+            },
+            {}
+          );
+
+          expect(config.supported).to.be.true;
+          if (!config.supported) {
+            return;
+          }
+
+          expect(config.model.variant).to.equal('c10');
+          expect(config.model.simd).to.be.true;
+          expect(config.model.category).to.equal('voicefocus');
+          expect(config.model.name).to.equal('default');
+          expect(config.processor).to.equal('voicefocus-inline-processor');
+          expect(config.executionQuanta).to.eql(3);
+          expect(config.model.url).to.equal('https://static.somewhere.chime.aws/wasm/12345.wasm');
+
+          expect(fetchMock.called()).to.be.true;
+        });
+      });
+
+      it('allows calling without options or spec', async () => {
+        const configPromise1 = VoiceFocusDeviceTransformer.configure();
+        expect(configPromise1).to.eventually.be.rejectedWith(
+          'Could not load Voice Focus estimator.'
+        );
+        const configPromise2 = VoiceFocusDeviceTransformer.configure({});
+        expect(configPromise2).to.eventually.be.rejectedWith(
+          'Could not load Voice Focus estimator.'
+        );
       });
 
       it('can be constructed with a fixed spec with logger and no asset group', async () => {
@@ -210,6 +426,23 @@ describe('VoiceFocusDeviceTransformer', () => {
     });
 
     describe('with failing network', () => {
+      before(() => {
+        fetchMock.get('*', (_url: string, _request: MockRequest) => {
+          return {
+            status: 503,
+            body: {},
+          };
+        });
+      });
+
+      afterEach(() => {
+        fetchMock.resetHistory();
+      });
+
+      after(() => {
+        fetchMock.restore();
+      });
+
       it('makes a network request if the appropriate mocks exist', async () => {
         const logger = new MockLogger();
         expect(await VoiceFocusDeviceTransformer.isSupported({}, { logger })).to.be.false;
@@ -231,6 +464,21 @@ describe('VoiceFocusDeviceTransformer', () => {
         // Because the fetch returned a 503.
         expect(logger.info.calledWith('Failed to fetch and instantiate test worker {}')).to.be.true;
       });
+
+      it('fetches the estimator first, with the right URL', async () => {
+        const validSpec = {};
+        try {
+          await VoiceFocusDeviceTransformer.create(validSpec, { logger: DEFAULT_LOGGER });
+        } catch (e) {
+          // Doesn't matter.
+        }
+
+        const estimatorBase = 'https://static.sdkassets.chime.aws/workers/estimator-v1.js';
+        const estimatorQuery = getQueryParams();
+        const estimatorURL = `${estimatorBase}?${estimatorQuery}`;
+
+        expect(fetchMock.lastCall(undefined, 'GET')[0]).to.equal(estimatorURL);
+      });
     });
   });
 
@@ -238,21 +486,6 @@ describe('VoiceFocusDeviceTransformer', () => {
     const invalidSpec = ({ category: 'ayyyno' } as unknown) as VoiceFocusSpec;
     const promise = VoiceFocusDeviceTransformer.create(invalidSpec, {});
     return expect(promise).to.eventually.be.rejectedWith('Unrecognized category ayyyno');
-  });
-
-  it('fetches the estimator first, with the right URL', async () => {
-    const validSpec = {};
-    try {
-      await VoiceFocusDeviceTransformer.create(validSpec, {});
-    } catch (e) {
-      // Doesn't matter.
-    }
-
-    const estimatorBase = 'https://static.sdkassets.chime.aws/workers/estimator-v1.js';
-    const estimatorQuery = getQueryParams();
-    const estimatorURL = `${estimatorBase}?${estimatorQuery}`;
-
-    expect(fetchMock.lastCall(undefined, 'GET')[0]).to.equal(estimatorURL);
   });
 
   it('accepts a valid spec, fetches the estimator, and rejects if we get a 503', async () => {
@@ -459,10 +692,39 @@ describe('VoiceFocusDeviceTransformer', () => {
       expect(fifthDefault).to.not.eq(sixthDefault);
     });
 
+    it('reuses nodes if the context is reused', async () => {
+      const device = await getDevice('foo');
+
+      expect(device).to.not.be.undefined;
+
+      const contextA = ({ foo: 1 } as unknown) as AudioContext;
+      const contextC = ({ foo: 2 } as unknown) as AudioContext;
+
+      const { start: startA, end: endA } = await device.createAudioNode(contextA);
+
+      // If you call again with the same context, you get the same node.
+
+      const { start: startB, end: endB } = await device.createAudioNode(contextA);
+
+      expect(startA).to.eq(endA);
+      expect(startA).to.eq(startB);
+      expect(endA).to.eq(endB);
+
+      // Different context, different nodes.
+      const { start: startC, end: endC } = await device.createAudioNode(contextC);
+
+      expect(startA).to.not.eq(startC);
+      expect(endA).to.not.eq(endC);
+
+      await device.stop();
+    });
+
     it('gives a node via its inner VoiceFocus instance', async () => {
       const device = await getDevice('foo');
 
-      const { start, end } = await device.createAudioNode(({} as unknown) as AudioContext);
+      const context = ({} as unknown) as AudioContext;
+
+      const { start, end } = await device.createAudioNode(context);
 
       // Because we created it with a MockVoiceFocus.
       expect(start).to.be.instanceof(MockVoiceFocusNode);
@@ -701,13 +963,13 @@ class MockVoiceFocus {
   throwInCreateNode: boolean = false;
 
   async createNode(
-    _context: AudioContext,
+    context: AudioContext,
     _options?: NodeArguments
   ): Promise<VoiceFocusAudioWorkletNode> {
     if (this.throwInCreateNode) {
       throw new Error('Oh no');
     }
-    return (new MockVoiceFocusNode() as unknown) as VoiceFocusAudioWorkletNode;
+    return (new MockVoiceFocusNode(context) as unknown) as VoiceFocusAudioWorkletNode;
   }
 
   async applyToStream(
@@ -733,6 +995,8 @@ class MockVoiceFocus {
 }
 
 class MockVoiceFocusNode {
+  constructor(public context: AudioContext) {}
+
   // VF.
   enable = spy();
   disable = spy();

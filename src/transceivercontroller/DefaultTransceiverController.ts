@@ -53,6 +53,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   localAudioTransceiver(): RTCRtpTransceiver {
     return this._localAudioTransceiver;
   }
+
   localVideoTransceiver(): RTCRtpTransceiver {
     return this._localCameraTransceiver;
   }

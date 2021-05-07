@@ -32,15 +32,27 @@ describe('DefaultDevicePixelRatioMonitor', () => {
   });
 
   describe('construction', () => {
-    it('can be constructed', () => {
+    it('can be constructed', async () => {
       const monitor = new DefaultDevicePixelRatioMonitor(
         new DevicePixelRatioWindowSource(),
         logger
       );
       assert.exists(monitor);
+      await monitor.destroy();
     });
 
-    it('can be constructed when both addEventListener and addListener do not exist on MediaQueryList', () => {
+    it('can be constructed when addEventListener does not exist on MediaQueryList', async () => {
+      delete MediaQueryList.prototype.addEventListener;
+
+      const monitor = new DefaultDevicePixelRatioMonitor(
+        new DevicePixelRatioWindowSource(),
+        logger
+      );
+      assert.exists(monitor);
+      await monitor.destroy();
+    });
+
+    it('can be constructed when both addEventListener and addListener do not exist on MediaQueryList', async () => {
       delete MediaQueryList.prototype.addEventListener;
       delete MediaQueryList.prototype.addListener;
 
@@ -49,15 +61,17 @@ describe('DefaultDevicePixelRatioMonitor', () => {
         logger
       );
       assert.exists(monitor);
+      await monitor.destroy();
     });
 
-    it('can be constructed when windows is not defined', () => {
+    it('can be constructed when windows is not defined', async () => {
       domMockBuilder.cleanup();
       const monitor = new DefaultDevicePixelRatioMonitor(
         new DevicePixelRatioWindowSource(),
         logger
       );
       assert.exists(monitor);
+      await monitor.destroy();
     });
   });
 

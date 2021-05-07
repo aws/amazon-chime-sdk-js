@@ -93,9 +93,19 @@
 						implementation calls getUserMedia for audio and video and returns the promise
 						to the stream so that the stream can be cleaned up once the labels are
 					detected.</p>
-					<pre><code><span class="hljs-string">():</span> <span class="hljs-string">Promise&lt;MediaStream&gt;</span> <span class="hljs-string">=&gt;</span> {
-  <span class="hljs-string">return</span> <span class="hljs-string">navigator.mediaDevices.getUserMedia(</span>{ <span class="hljs-attr">audio:</span> <span class="hljs-literal">true</span>, <span class="hljs-attr">video:</span> <span class="hljs-literal">true</span> }<span class="hljs-string">);</span>
-}</code></pre>
+					<pre><code class="language-typescript">(): <span class="hljs-built_in">Promise</span>&lt;MediaStream&gt; =&gt; {
+  <span class="hljs-keyword">return</span> navigator.mediaDevices.getUserMedia({ <span class="hljs-attr">audio</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">video</span>: <span class="hljs-literal">true</span> });
+}
+</code></pre>
+					<p>When you are done using a <code>DeviceController</code>, you should perform some
+					cleanup steps in order to avoid memory leaks:</p>
+					<ol>
+						<li>Deselect any audio input or output devices by calling
+						<a href="devicecontroller.html#chooseaudioinputdevice">DeviceController.chooseAudioInputDevice</a> and <a href="devicecontroller.html#chooseaudiooutputdevice">DeviceController.chooseAudioOutputDevice</a> with <code>null</code>.</li>
+						<li>Remove any device change observers that you registered by using
+						<a href="devicecontroller.html#removedevicechangeobserver">DeviceController.removeDeviceChangeObserver</a>.</li>
+						<li>Drop your reference to the controller to allow it to be garbage collected.</li>
+					</ol>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -153,7 +163,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L88">src/devicecontroller/DeviceController.ts:88</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L98">src/devicecontroller/DeviceController.ts:98</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -181,7 +191,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L68">src/devicecontroller/DeviceController.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L78">src/devicecontroller/DeviceController.ts:78</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -214,7 +224,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L83">src/devicecontroller/DeviceController.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L93">src/devicecontroller/DeviceController.ts:93</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -244,7 +254,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L76">src/devicecontroller/DeviceController.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L86">src/devicecontroller/DeviceController.ts:86</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -275,7 +285,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L142">src/devicecontroller/DeviceController.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L152">src/devicecontroller/DeviceController.ts:152</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -314,7 +324,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L108">src/devicecontroller/DeviceController.ts:108</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L118">src/devicecontroller/DeviceController.ts:118</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -326,7 +336,7 @@
 								<p>The <code>AnalyserNode</code> is not updated automatically when you choose a new
 								audio input. Dispose of this one and fetch another by calling this method again.</p>
 								<p>Note that this node should be cleaned up after use, and as such a
-									<code>&lt;a href=&quot;removableanalysernode.html&quot;&gt;RemovableAnalyserNode&lt;/a&gt;</code> is returned. Call
+									<a href="removableanalysernode.html">RemovableAnalyserNode</a> is returned. Call
 									<a href="removableanalysernode.html#removeoriginalinputs">RemovableAnalyserNode.removeOriginalInputs</a> to disconnect the node from the Web Audio
 								graph.</p>
 							</div>
@@ -344,7 +354,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L152">src/devicecontroller/DeviceController.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L162">src/devicecontroller/DeviceController.ts:162</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -366,7 +376,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L47">src/devicecontroller/DeviceController.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L57">src/devicecontroller/DeviceController.ts:57</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -388,7 +398,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L57">src/devicecontroller/DeviceController.ts:57</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L67">src/devicecontroller/DeviceController.ts:67</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -410,7 +420,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L52">src/devicecontroller/DeviceController.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L62">src/devicecontroller/DeviceController.ts:62</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -432,7 +442,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L135">src/devicecontroller/DeviceController.ts:135</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L145">src/devicecontroller/DeviceController.ts:145</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -460,7 +470,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L93">src/devicecontroller/DeviceController.ts:93</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L103">src/devicecontroller/DeviceController.ts:103</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -488,7 +498,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L130">src/devicecontroller/DeviceController.ts:130</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L140">src/devicecontroller/DeviceController.ts:140</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -530,7 +540,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L117">src/devicecontroller/DeviceController.ts:117</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L127">src/devicecontroller/DeviceController.ts:127</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -562,7 +572,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L123">src/devicecontroller/DeviceController.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DeviceController.ts#L133">src/devicecontroller/DeviceController.ts:133</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -663,20 +673,17 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

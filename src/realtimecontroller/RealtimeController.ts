@@ -3,6 +3,7 @@
 
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
+import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
 /**
  * [[RealtimeController]] controls aspects meetings concerning realtime UX
@@ -25,6 +26,13 @@ import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
  * are muted when they are not. Creating a direct path from the mute button
  * to the place where the underlying media stream is disabled ensures that
  * muting is instantaneous and cannot fail.
+ *
+ * When you are done using a `RealtimeController`, you should perform some
+ * cleanup steps in order to avoid memory leaks:
+ *
+ * 1. Unsubscribe from listeners; e.g., presence callbacks via
+ *    {@link RealtimeController.realtimeUnsubscribeToAttendeeIdPresence}.
+ * 2. Drop your reference to the controller to allow it to be garbage collected.
  */
 export default interface RealtimeController {
   // Attendee Id
@@ -32,13 +40,13 @@ export default interface RealtimeController {
   /**
    * Sets the attendee id of the current user. This is used to override remote
    * mute state with local state when there is an active audio input.
-   * @hidden
+   * @internal
    */
   realtimeSetLocalAttendeeId(attendeeId: string, externalUserId: string | null): void;
 
   /**
    * Updates the presence of an attendee id.
-   * @hidden
+   * @internal
    */
   realtimeSetAttendeeIdPresence(
     attendeeId: string,
@@ -147,21 +155,17 @@ export default interface RealtimeController {
    * Signal strength can be 0 (no signal), 0.5 (weak signal), or 1 (good signal).
    * A null value for any field means that it has not changed.
    */
-  realtimeSubscribeToVolumeIndicator(
-    attendeeId: string,
-    callback: (
-      attendeeId: string,
-      volume: number | null,
-      muted: boolean | null,
-      signalStrength: number | null,
-      externalUserId?: string
-    ) => void
-  ): void;
+  realtimeSubscribeToVolumeIndicator(attendeeId: string, callback: VolumeIndicatorCallback): void;
 
   /**
    * Unsubscribes to volume indicator changes for a specific attendee id.
+   * Optionally, you can pass a callback parameter to unsubscribe from a specific callback.
+   * Otherwise, all callbacks will be unsubscribed (e.g. activeSpeaker).
    */
-  realtimeUnsubscribeFromVolumeIndicator(attendeeId: string): void;
+  realtimeUnsubscribeFromVolumeIndicator(
+    attendeeId: string,
+    callback?: VolumeIndicatorCallback
+  ): void;
 
   /**
    * Computes the difference to the last state and sends a volume indicator
@@ -170,7 +174,7 @@ export default interface RealtimeController {
    * 0.5 (weak signal), or 1 (good signal). A null value for any field means
    * that it has not changed. If muted is non-null, then the volume will be
    * overridden to 0.0.
-   * @hidden
+   * @internal
    */
   realtimeUpdateVolumeIndicator(
     attendeeId: string,
@@ -198,7 +202,7 @@ export default interface RealtimeController {
   ): void;
 
   /**
-   * Unscribe to local send message event
+   * Unsubscribe from local send message event
    */
   realtimeUnsubscribeFromSendDataMessage( // eslint-disable-next-line @typescript-eslint/no-explicit-any
     callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void

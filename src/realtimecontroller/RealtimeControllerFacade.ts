@@ -3,6 +3,7 @@
 
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
+import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
 export default interface RealtimeControllerFacade {
   realtimeSubscribeToAttendeeIdPresence(
@@ -32,17 +33,11 @@ export default interface RealtimeControllerFacade {
   realtimeSubscribeToMuteAndUnmuteLocalAudio(callback: (muted: boolean) => void): void;
   realtimeUnsubscribeToMuteAndUnmuteLocalAudio(callback: (muted: boolean) => void): void;
   realtimeIsLocalAudioMuted(): boolean;
-  realtimeSubscribeToVolumeIndicator(
+  realtimeSubscribeToVolumeIndicator(attendeeId: string, callback: VolumeIndicatorCallback): void;
+  realtimeUnsubscribeFromVolumeIndicator(
     attendeeId: string,
-    callback: (
-      attendeeId: string,
-      volume: number | null,
-      muted: boolean | null,
-      signalStrength: number | null,
-      externalUserId?: string
-    ) => void
+    callback?: VolumeIndicatorCallback
   ): void;
-  realtimeUnsubscribeFromVolumeIndicator(attendeeId: string): void;
   realtimeSubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void;
   realtimeUnsubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void;
   realtimeSendDataMessage(

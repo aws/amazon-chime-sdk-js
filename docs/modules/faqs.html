@@ -121,8 +121,13 @@
 					<a href="#i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" id="i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I am unable to select an audio output device in some browsers, is this a known issue?</h3>
 					</a>
-					<p><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1152401">Firefox</a> and <a href="https://bugs.webkit.org/show_bug.cgi?id=179415">Safari</a> have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings.</p>
-					<p><a href="https://bugs.chromium.org/p/chromium/issues/detail?id=635686&amp;sort=-stars&amp;q=android%20chrome%20bluetooth%20headphone&amp;can=2">Android Chrome</a> has a known issue switching between bluetooth audio output devices. While clients can continue the meeting using the default device, there is a <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=635686&amp;sort=-stars&amp;q=android%20chrome%20bluetooth%20headphone&amp;can=2">bug</a> related to switching to an bluetooth audio output.</p>
+					<p><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1152401">Firefox</a> and <a href="https://bugs.webkit.org/show_bug.cgi?id=179415">Safari</a> have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings. <a href="https://bugs.webkit.org/show_bug.cgi?id=179415">Chrome and Firefox on iOS</a> also have the same issue.</p>
+					<p><a href="https://bugs.chromium.org/p/chromium/issues/detail?id=635686&amp;sort=-stars&amp;q=android%20chrome%20bluetooth%20headphone&amp;can=2">Android Chrome</a> has a known issue switching between Bluetooth audio output devices. While clients can continue the meeting using the default device, there is a <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=635686&amp;sort=-stars&amp;q=android%20chrome%20bluetooth%20headphone&amp;can=2">bug</a> related to switching to a Bluetooth audio output.</p>
+					<a href="#i-am-getting-cannot-select-audio-output-device-this-browser-does-not-support-setsinkid-error-on-the-browser-console-is-this-a-known-issue" id="i-am-getting-cannot-select-audio-output-device-this-browser-does-not-support-setsinkid-error-on-the-browser-console-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>I am getting <code>Cannot select audio output device. This browser does not support setSinkId</code> error on the browser console. Is this a known issue?</h3>
+					</a>
+					<p>In the background, <code>bindAudioElement()</code>, <code>bindAudioStream()</code>, and <code>bindAudioDevice()</code> call the browser API <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/setSinkId"><code>setSinkId()</code></a>. The full list of browsers that support <code>setSinkId</code> API can be found <a href="https://caniuse.com/?search=setsinkid">here</a>. In Firefox, this feature is behind the <code>media.setsinkid.enabled</code> preference (needs to be set to <code>true</code>). To change preferences in Firefox, visit <code>about:config</code>.</p>
+					<p>Use <code>BrowserBehavior.supportsSetSinkId()</code> to determine whether the browser supports <code>setSinkId()</code> before calling these methods.</p>
 					<a href="#my-video-disappears-in-safari-browsers-is-this-a-known-issue" id="my-video-disappears-in-safari-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>My video disappears in Safari browsers, is this a known issue?</h3>
 					</a>
@@ -138,7 +143,7 @@
 					<a href="#is-the-amazon-chime-sdk-supported-on-mobile-browsers" id="is-the-amazon-chime-sdk-supported-on-mobile-browsers" style="color: inherit; text-decoration: none;">
 						<h3>Is the Amazon Chime SDK supported on mobile browsers?</h3>
 					</a>
-					<p>Amazon Chime SDK for JavaScript is supported on certain mobile browsers, specifically Chrome/Android and Safari/iOS. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).</p>
+					<p>Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers</a>. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).</p>
 					<p>Amazon Chime SDK for iOS <a href="https://github.com/aws/amazon-chime-sdk-ios">https://github.com/aws/amazon-chime-sdk-ios</a></p>
 					<p>Amazon Chime SDK for Android <a href="https://github.com/aws/amazon-chime-sdk-android">https://github.com/aws/amazon-chime-sdk-android</a></p>
 					<a href="#meetings" id="meetings" style="color: inherit; text-decoration: none;">
@@ -193,6 +198,11 @@
 						<h3>How can I stream music or video into a meeting?</h3>
 					</a>
 					<p>You can use the <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare">AudioVideoFacade.startContentShare(MediaStream)</a> API to stream audio and/or video content to the meetings. See the <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/demos/browser/app/meetingV2/meetingV2.ts#L1266">meeting demo application</a> for an example of how to achieve this.</p>
+					<a href="#when-i-stream-video-in-chrome-other-attendees-see-a-black-screen-is-this-a-known-issue" id="when-i-stream-video-in-chrome-other-attendees-see-a-black-screen-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>When I stream video in Chrome, other attendees see a black screen. Is this a known issue?</h3>
+					</a>
+					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare">AudioVideoFacade.startContentShare(MediaStream)</a> API uses the HTMLMediaElement.captureStream API to stream video content content to the meeting. Chrome 88 and above have a <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1156408">known issue</a> that the captureStream API does not send any data.</p>
+					<p>As a workaround, you can turn hardware acceleration off in Chrome (88.0.4324.146 and above) and then stream video. Go to Settings (<code>chrome://settings</code>), scroll down to the System, and turn &quot;Use hardware acceleration when available&quot; off.</p>
 					<a href="#how-do-i-broadcast-an-amazon-chime-sdk-meeting" id="how-do-i-broadcast-an-amazon-chime-sdk-meeting" style="color: inherit; text-decoration: none;">
 						<h3>How do I broadcast an Amazon Chime SDK meeting?</h3>
 					</a>
@@ -266,11 +276,7 @@
 					<a href="#will-amazon-chime-sdk-for-javascript-meetings-work-in-chrome-and-firefox-in-ios" id="will-amazon-chime-sdk-for-javascript-meetings-work-in-chrome-and-firefox-in-ios" style="color: inherit; text-decoration: none;">
 						<h3>Will Amazon Chime SDK for JavaScript meetings work in Chrome and Firefox in iOS?</h3>
 					</a>
-					<p>At present, Amazon Chime SDK for JavaScript is supported on Safari/iOS only. Other browsers are missing a key dependency, <a href="https://bugs.webkit.org/show_bug.cgi?id=208667">GetUserMedia</a>.</p>
-					<a href="#when-loading-a-webpage-in-ios-webview-my-application-gets-a-typeerror-undefined-is-not-an-object-evaluating-39navigatormediadevicesaddeventlistener39-what-could-be-the-issue-" id="when-loading-a-webpage-in-ios-webview-my-application-gets-a-typeerror-undefined-is-not-an-object-evaluating-39navigatormediadevicesaddeventlistener39-what-could-be-the-issue-" style="color: inherit; text-decoration: none;">
-						<h3>When loading a webpage in iOS WebView, my application gets a TypeError: undefined is not an object (evaluating &#39;navigator.mediaDevices.addEventListener&#39;), what could be the issue ?</h3>
-					</a>
-					<p>This is because Safari embedded <a href="https://forums.developer.apple.com/thread/88052">web view does not support WebRTC</a>. The mitigation is to use the Amazon Chime SDK for iOS to build a native application: <a href="https://github.com/aws/amazon-chime-sdk-ios">https://github.com/aws/amazon-chime-sdk-ios</a></p>
+					<p>Yes, the Chime JS SDK supports Chrome and Firefox on iOS. Refer to the official Amazon Chime SDK Documentation for more information: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers</a>.</p>
 					<a href="#i-notice-that-my-clients-lose-audio-and-drop-from-the-meeting-if-the-chrome-browser-on-android-stays-in-background-for-several-minutes-is-that-a-known-issue" id="i-notice-that-my-clients-lose-audio-and-drop-from-the-meeting-if-the-chrome-browser-on-android-stays-in-background-for-several-minutes-is-that-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I notice that my clients lose audio and drop from the meeting if the Chrome browser on Android stays in background for several minutes, is that a known issue?</h3>
 					</a>
@@ -278,7 +284,7 @@
 					<a href="#i-only-see-iphone-or-ipad-microphone-as-audio-input-in-ios-device-is-that-a-known-issue" id="i-only-see-iphone-or-ipad-microphone-as-audio-input-in-ios-device-is-that-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I only see iPhone or iPad microphone as audio input in iOS device, is that a known issue?</h3>
 					</a>
-					<p>iOS Safari has a known issue where it only lists one audio input device even when there are multiple. For example
+					<p>iOS Safari/Chrome/Firefox have a known issue where the device selection list only lists one audio input device even when there are multiple. For example
 						, if you plug in a wired headset to your iPhone, it will show up as iPhone microphone replacing the internal mic. For
 					more information, please refer to <a href="https://bugs.webkit.org/show_bug.cgi?id=174833">the Webkit issue</a>.</p>
 					<a href="#i-can-hear-clicking-noise-from-an-attendee-using-iphone-x-devices-x-xs-and-xr" id="i-can-hear-clicking-noise-from-an-attendee-using-iphone-x-devices-x-xs-and-xr" style="color: inherit; text-decoration: none;">
@@ -288,10 +294,10 @@
 					<a href="#i-cannot-hear-audio-from-other-attendees-using-ios-devices-after-i-unplug-my-wired-headset" id="i-cannot-hear-audio-from-other-attendees-using-ios-devices-after-i-unplug-my-wired-headset" style="color: inherit; text-decoration: none;">
 						<h3>I cannot hear audio from other attendees using iOS devices after I unplug my wired headset.</h3>
 					</a>
-					<p>iOS Safari has a known issue where it does not automatically switch to the iOS internal speaker after users unplug
+					<p>iOS Safari/Chrome/Firefox browsers have a known issue where they do not automatically switch to the iOS internal speaker after users unplug
 					their wired headset. For more information, please refer to <a href="https://bugs.webkit.org/show_bug.cgi?id=216389">the Webkit issue</a>.</p>
-					<a href="#i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safari-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" id="i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safari-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
-						<h3><strong>I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari in iOS and frozen tile in Chrome in Android, is this a known issue?</strong></h3>
+					<a href="#i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safarichromefirefox-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" id="i-notice-that-if-i-turn-on-camera-and-put-the-browsers-in-background-others-in-the-meeting-will-see-black-tile-in-safarichromefirefox-in-ios-and-frozen-tile-in-chrome-in-android-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3><strong>I notice that if I turn on camera and put the browsers in background, others in the meeting will see black tile in Safari/Chrome/Firefox in iOS and frozen tile in Chrome in Android, is this a known issue?</strong></h3>
 					</a>
 					<p>This is the default behavior that is specific to each browser. In Android, the video stream is muted when in background and thus, the video will show the last frame.
 						Note that for Android, if an attendee joins later after the video stream is in background, it will show as a blank tile since the last frame is blank.
@@ -306,6 +312,14 @@
 					</a>
 					<p>This error indicates that the device you are using does not support hardware acceleration decoding. However this does not impact the ability of this user to participate in Amazon Chime SDK meetings as the device can render and transmit VP8 streams to other parties in the call. Specifically for Chrome, you will need to enable Unified Plan support by setting this <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers">flag</a> to true or enable <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers">Simulcast</a>.
 					In some cases, H.264 may be missing from the initial SDP offer <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1047994">tracking Chromium bug</a>) causing this slate to appear. Rejoining the meeting can fix the videos to be rendered once again.</p>
+					<a href="#i-am-not-able-to-join-an-amazon-chime-sdk-meeting-from-an-android-11-device-running-chromium-83-based-browsers-such-as-samsung-internet-version-13-or-chrome-version-83-is-this-a-known-issue" id="i-am-not-able-to-join-an-amazon-chime-sdk-meeting-from-an-android-11-device-running-chromium-83-based-browsers-such-as-samsung-internet-version-13-or-chrome-version-83-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>I am not able to join an Amazon Chime SDK meeting from an Android 11 device running Chromium 83 based browsers, such as Samsung Internet (Version 13) or Chrome (Version 83). Is this a known issue?</h3>
+					</a>
+					<p>This is a bug on Android 11 running Chromium 83 based browsers. You will observe this issue on the Samsung Internet browser (Version 13) since it is based on Chromium 83. Please check <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1115498">ICE gathering stalls in Chrome on Android 11</a> bug for more information. This issue is not observed on the Samsung Internet browser (Version 12) or the latest Chrome for Android browser when tested on an Android 11 device.</p>
+					<a href="#does-amazon-voice-focus-support-the-samsung-internet-browser" id="does-amazon-voice-focus-support-the-samsung-internet-browser" style="color: inherit; text-decoration: none;">
+						<h3>Does Amazon Voice Focus support the Samsung Internet browser?</h3>
+					</a>
+					<p>Yes, Amazon Voice Focus supports the Samsung Internet browser (Chromium 83 or lower). However, it leads to a poor user experience because the preferred Chromium version is 87 or higher. Please check Amazon Voice Focus <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/09_Amazon_Voice_Focus.md#browser-compatibility">browser compatibility matrix</a> in Amazon Voice Focus guide.</p>
 					<a href="#audio-and-video" id="audio-and-video" style="color: inherit; text-decoration: none;">
 						<h2>Audio and video</h2>
 					</a>
@@ -328,22 +342,24 @@
 						<h3>After leaving a meeting, the camera LED is still on indicating that the camera has not been released. What could be wrong?</h3>
 					</a>
 					<p>When the camera LED remains on, it does not necessarily mean the device is broadcasting to the remote attendees. The LED will remain on until all media streams that use the device are released (its tracks are stopped). The following API methods release media streams.</p>
-					<pre><code>// <span class="hljs-keyword">Select</span> <span class="hljs-keyword">no</span> video device (releases <span class="hljs-keyword">any</span> previously selected device)
-meetingSession.audioVideo.chooseVideoInputDevice(<span class="hljs-literal">null</span>);
+					<pre><code><span class="hljs-comment">// Select no video device (releases any previously selected device)</span>
+meetingSession.audioVideo.choose<span class="hljs-constructor">VideoInputDevice(<span class="hljs-params">null</span>)</span>;
 
-// <span class="hljs-keyword">Stop</span> <span class="hljs-keyword">local</span> video tile (stops sharing the video tile <span class="hljs-keyword">in</span> the meeting)
-meetingSession.audioVideo.stopLocalVideoTile();
+<span class="hljs-comment">// Stop local video tile (stops sharing the video tile in the meeting)</span>
+meetingSession.audioVideo.stop<span class="hljs-constructor">LocalVideoTile()</span>;
 
-// <span class="hljs-keyword">Stop</span> a video preview that was previously started (<span class="hljs-keyword">before</span> <span class="hljs-keyword">session</span> starts)
-meetingSession.audioVideo.stopVideoPreviewForVideoInput(previewVideoElement);
+<span class="hljs-comment">// Stop a video preview that was previously started (before session starts)</span>
+meetingSession.audioVideo.stop<span class="hljs-constructor">VideoPreviewForVideoInput(<span class="hljs-params">previewVideoElement</span>)</span>;
 
-// <span class="hljs-keyword">Stop</span> the meeting <span class="hljs-keyword">session</span> (audio <span class="hljs-keyword">and</span> video)
-meetingSession.audioVideo.stop();</code></pre>
+<span class="hljs-comment">// Stop the meeting session (audio and video)</span>
+meetingSession.audioVideo.stop<span class="hljs-literal">()</span>;
+</code></pre>
 					<a href="#my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" id="my-clients-are-unable-to-successfully-join-audio-calls-from-safari-they-get-a-failed-to-get-audio-device-for-constraints-null-type-error-what-could-be-the-issue" style="color: inherit; text-decoration: none;">
 						<h3>My clients are unable to successfully join audio calls from Safari, they get a <code>failed to get audio device for constraints null: Type error</code>, what could be the issue?</h3>
 					</a>
 					<p>This error message is an indication that the browser application did not successfully acquire the media stream for audio or video from the device before the meeting starts. Application has not passed in the right device Id to the <code>chooseVideoInputDevice</code> API. In this case you will see the following entry in the log where an empty string after <code>chooseVideoInputDevice</code>:</p>
-					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">&quot;&quot;</span> -&gt; <span class="hljs-string">&quot;PermissionDeniedByBrowser&quot;</span></code></pre>
+					<pre><code>[<span class="hljs-builtin-name">Info</span>] 2020-06-18T17:43:55.380Z [<span class="hljs-builtin-name">INFO</span>] VLR - API/DefaultDeviceController/chooseVideoInputDevice <span class="hljs-string">&quot;&quot;</span> -&gt; <span class="hljs-string">&quot;PermissionDeniedByBrowser&quot;</span>
+</code></pre>
 					<p>This applies for video input as well.</p>
 					<a href="#how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" id="how-can-i-show-a-custom-ux-when-the-browser-prompts-the-user-for-permission-to-use-microphone-and-camera" style="color: inherit; text-decoration: none;">
 						<h3>How can I show a custom UX when the browser prompts the user for permission to use microphone and camera?</h3>
@@ -358,8 +374,22 @@ meetingSession.audioVideo.stop();</code></pre>
     hideCustomUX();
     <span class="hljs-keyword">return</span> stream;
   }
-);</code></pre>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
+);
+</code></pre>
+					<a href="#how-can-i-speed-up-my-meeting-join-times" id="how-can-i-speed-up-my-meeting-join-times" style="color: inherit; text-decoration: none;">
+						<h3>How can I speed up my meeting join times?</h3>
+					</a>
+					<p>The most significant improvement comes from choosing the right region to host your meeting, as discussed earlier in this FAQ.</p>
+					<p>Meeting join comprises several steps, one of which is establishing a signaling connection. You can front-load this work by specifying <code>{ signalingOnly: true }</code> in a call to <code>start</code> as early as possible in your application — <em>e.g.</em>, in a device picker or lobby view — and then calling <code>start</code> again to finish joining the meeting. The attendee will not be shown as having joined the meeting until the second <code>start</code> call completes.</p>
+					<a href="#messaging" id="messaging" style="color: inherit; text-decoration: none;">
+						<h2>Messaging</h2>
+					</a>
+					<a href="#how-do-i-receive-amazon-chime-sdk-channel-messages-without-using-the-amazon-chime-sdk-for-javascript" id="how-do-i-receive-amazon-chime-sdk-channel-messages-without-using-the-amazon-chime-sdk-for-javascript" style="color: inherit; text-decoration: none;">
+						<h3>How do I receive Amazon Chime SDK channel messages without using the Amazon Chime SDK for JavaScript?</h3>
+					</a>
+					<p>Follow the instructions in the <a href="https://docs.aws.amazon.com/chime/latest/dg/websockets.html#connect-api">&quot;Using websockets to receive messages&quot; developer guide</a>.
+						To sign the URL in Python, use the example code in the <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1241#issuecomment-830705541">GitHub issue #1241</a>.
+					<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=FAQs%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>
@@ -389,20 +419,17 @@ meetingSession.audioVideo.stop();</code></pre>
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

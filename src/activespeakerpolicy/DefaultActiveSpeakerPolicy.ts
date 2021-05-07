@@ -12,7 +12,7 @@ export default class DefaultActiveSpeakerPolicy implements ActiveSpeakerPolicy {
   /** Creates active speaker policy with speakerWeight, cutoffThreshold, silenceThreshold, and takeoverRate.
    *
    * @param speakerWeight
-   * The number used to calculate new active speaker score for current attendee
+   * The number used to calculate new active speaker score for current attendee.
    * ```js
    * Formula:
    * updatedCurrentAttendeeScore = currentAttendeeExistingScore * speakerWeight + currentReceivedVolume * (1 - speakerWeight)

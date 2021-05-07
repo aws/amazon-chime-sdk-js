@@ -3,6 +3,7 @@ const {TestUtils} = require('kite-common');
 
 const elements = {
   authenticateButton: By.id('authenticate'),
+  speakerTestButton: By.id('speakertest-button'),
   speakerTest: By.id('speaker-test'),
   speakerFeedbackYes: By.id('speaker-yes'),
   speakerFeedbackNo: By.id('speaker-no'),
@@ -45,6 +46,14 @@ class MeetingReadinessCheckerPage {
   async startContentShareConnectivityCheck() {
     let contentShareConnectivityCheckButton = await this.driver.findElement(elements.contentShareConnectivityTestButton);
     await contentShareConnectivityCheckButton.click();
+  }
+
+  async startSpeakerTest() {
+    let spekerTestButtonExists = await this.driver.findElements(elements.speakerTestButton);
+    if (spekerTestButtonExists.length > 0) {
+      let speakerTestButton = await this.driver.findElement(elements.speakerTestButton);
+      await speakerTestButton.click();
+    }
   }
 
   async speakerCheckFeedbackYes() {

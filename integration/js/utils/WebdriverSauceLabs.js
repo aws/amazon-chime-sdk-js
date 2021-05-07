@@ -2,7 +2,7 @@ const {Builder, Capabilities, logging} = require('selenium-webdriver');
 const safari = require('../node_modules/selenium-webdriver/safari');
 const axios = require('axios');
 const Base64 = require('js-base64').Base64;
-const { AppPage, MeetingReadinessCheckerPage, MessagingSessionPage } = require('../pages');
+const { AppPage, MeetingReadinessCheckerPage, MessagingSessionPage, TestAppPage } = require('../pages');
 
 const getPlatformName = capabilities => {
   switch (capabilities.platform) {
@@ -233,6 +233,9 @@ class SaucelabsSession {
           break;
         case 'messagingSession':
           this.page = new MessagingSessionPage(this.driver, this.logger);
+          break;
+        case 'testApp':
+          this.page = new TestAppPage(this.driver, this.logger);
           break;
         default:
           this.page = new AppPage(this.driver, this.logger);

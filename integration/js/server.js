@@ -33,13 +33,19 @@ createMeeting = async (baseUrl) => {
   }
   meetingCreationStatus = "creating";
   meetingTitle = uuidv4();
-  const createMeetingUrl = `${baseUrl}join?title=${meetingTitle}&name=MeetingOwner&region=us-east-1`;
+  let url = `${baseUrl}`;
+  let index = url.indexOf('?');
+  if (index === -1) {
+    createMeetingUrl = `${url}join?title=${meetingTitle}&name=MeetingOwner&region=us-east-1`;
+  } else {
+    createMeetingUrl = `${url.substring(0, index)}join${url.substring(index)}&title=${meetingTitle}&name=MeetingOwner&region=us-east-1`;
+  }
   let i = 0;
   let retryAttempts = 3;
   while (i < retryAttempts) {
     i++;
     try {
-      console.log(`Creating meeting with title: ${createMeetingUrl}`);
+      console.log(`Creating meeting with URL: ${createMeetingUrl}`);
       createMeetingPromise = axios.post(createMeetingUrl);
       const response = await createMeetingPromise;
       const data = await response.data;
