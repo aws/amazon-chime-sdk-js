@@ -606,6 +606,8 @@ export default class DefaultAudioVideoController
 
   /* @internal */
   stopReturningPromise(): Promise<void> {
+    const releaseStreams = new ReleaseMediaStreamsTask(this.meetingSessionContext).run();
+
     // In order to avoid breaking backward compatibility, when only the
     // signaling connection is established we appear to not be connected.
     // We handle this by simply disconnecting the websocket directly.
@@ -614,7 +616,7 @@ export default class DefaultAudioVideoController
       this.meetingSessionContext.signalingClient?.closeConnection();
 
       // Clean up any open streams.
-      return new ReleaseMediaStreamsTask(this.meetingSessionContext).run();
+      return releaseStreams;
     }
 
     /*
@@ -625,15 +627,30 @@ export default class DefaultAudioVideoController
       Upon completion, AudioVideoObserver's `audioVideoDidStop`
       callback function is called with `MeetingSessionStatusCode.Left`.
     */
-    return new Promise((resolve, reject) => {
-      this.sessionStateController.perform(SessionStateControllerAction.Disconnect, () => {
-        this._reconnectController.disableReconnect();
-        this.logger.info('attendee left meeting, session will not be reconnected');
-        this.actionDisconnect(new MeetingSessionStatus(MeetingSessionStatusCode.Left), false, null)
-          .then(resolve)
-          .catch(reject);
-      });
+    const disconnect = new Promise<void>((resolve, reject) => {
+      const transition = this.sessionStateController.perform(
+        SessionStateControllerAction.Disconnect,
+        () => {
+          this._reconnectController.disableReconnect();
+          this.logger.info('attendee left meeting, session will not be reconnected');
+          this.actionDisconnect(
+            new MeetingSessionStatus(MeetingSessionStatusCode.Left),
+            false,
+            null
+          )
+            .then(resolve)
+            .catch(reject);
+        }
+      );
+
+      // In some cases the disconnection will _never_ run -- e.g., if they never connected --
+      // and so there's no work to do.
+      if (transition === SessionStateControllerTransitionResult.NoTransitionAvailable) {
+        resolve();
+      }
     });
+
+    return Promise.all([releaseStreams, disconnect]).then(() => {});
   }
 
   stop(): void {
@@ -665,10 +682,6 @@ export default class DefaultAudioVideoController
           this.configuration.connectionTimeoutMs
         ),
       ];
-
-      if (!reconnecting) {
-        subtasks.push(new ReleaseMediaStreamsTask(this.meetingSessionContext));
-      }
 
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), subtasks).run();
     } catch (cleanError) {
