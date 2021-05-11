@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for `WKWebView` on iOS.
 
 ### Changed
+- Bump version for lodash, y18n, and ssri dependencies 
 
 ### Removed
 
