@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added 
+
+- Add support for `WKWebView` on iOS.
+
+### Changed
+- Bump version for lodash, y18n, and ssri dependencies 
+
+### Removed
+
+### Fixed
+- Do not start local video tile if there is no stream for content share
+
+- Media streams are no longer discarded during reconnects. This fixes an issue
+  where initial signaling connection failures could cause a client to be unable
+  to join a meeting with audio if Web Audio were enabled.
+
+## [2.9.0] - 2021-05-10
+
 ### Added
 
 - Add the Messaging section in FAQs to describe how to receive messages
