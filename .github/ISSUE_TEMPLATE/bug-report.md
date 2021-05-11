@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**Important:** Please attach INFO-level logs with timestamps to the report from *before* the session started up until the point at which the unexpected behavior occured. For multi-participant calls, attach a log file for each participant if possible.
+**Important:** Please attach INFO-level logs with timestamps to the report from *before* the session started up until the point at which the unexpected behavior occurred. For multi-participant calls, attach a log file for each participant if possible.
 
 **Meeting and attendee IDs:**
 List the meeting and attendee IDs that the attached logs apply to.

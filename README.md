@@ -849,7 +849,7 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
         if (roster.hasOwnProperty(attendeeId)) {
           // A null value for any field means that it has not changed.
           roster[attendeeId].volume = volume; // a fraction between 0 and 1
-          roster[attendeeId].muted = muted; // A booolean
+          roster[attendeeId].muted = muted; // A boolean
           roster[attendeeId].signalStrength = signalStrength; // 0 (no signal), 0.5 (weak), 1 (strong)
         } else {
           // Add an attendee.
