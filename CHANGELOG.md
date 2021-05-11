@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 
+### Changed
+
+- Applying matrix3d(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1) in stead of rotateY(180deg) to local videoTile in order to fix blank video tile in Safari.
+
+### Removed
+
+### Fixed
+
+## [Unreleased]
+
+### Added 
+
 - Add support for iOS WKWebView
 
 ### Changed
