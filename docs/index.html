@@ -305,14 +305,16 @@ audioInputDevices.forEach(<span class="hljs-function"><span class="hljs-params">
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Device ID: <span class="hljs-subst">${mediaDeviceInfo.deviceId}</span> Microphone: <span class="hljs-subst">${mediaDeviceInfo.label}</span>`</span>);
 });
 </code></pre>
-				<p><strong>Use case 2.</strong> Choose audio input and audio output devices by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.</p>
+				<p><strong>Use case 2.</strong> Choose audio input and audio output devices by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.
+				Note that you need to call <code>listAudioInputDevices</code> and <code>listAudioOutputDevices</code> first.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> audioInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioInputDevices */</span>;
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
 
 <span class="hljs-keyword">const</span> audioOutputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioOutputDevices */</span>;
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
 </code></pre>
-				<p><strong>Use case 3.</strong> Choose a video input device by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.</p>
+				<p><strong>Use case 3.</strong> Choose a video input device by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.
+				Note that you need to call <code>listVideoInputDevices</code> first.</p>
 				<p>If there is an LED light next to the attendee&#39;s camera, it will be turned on indicating that it is now capturing from the camera.
 				You probably want to choose a video input device when you start sharing your video.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> videoInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listVideoInputDevices */</span>;
