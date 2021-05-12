@@ -853,7 +853,7 @@ meetingSession.audioVideo.realtimeSubscribeToAttendeeIdPresence(
         <span class="hljs-keyword">if</span> (roster.hasOwnProperty(attendeeId)) {
           <span class="hljs-comment">// A null value for any field means that it has not changed.</span>
           roster[attendeeId].volume = volume; <span class="hljs-comment">// a fraction between 0 and 1</span>
-          roster[attendeeId].muted = muted; <span class="hljs-comment">// A booolean</span>
+          roster[attendeeId].muted = muted; <span class="hljs-comment">// A boolean</span>
           roster[attendeeId].signalStrength = signalStrength; <span class="hljs-comment">// 0 (no signal), 0.5 (weak), 1 (strong)</span>
         } <span class="hljs-keyword">else</span> {
           <span class="hljs-comment">// Add an attendee.</span>
@@ -1517,6 +1517,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/reconnectionhealthpolicy.html" class="tsd-kind-icon">Reconnection<wbr>Health<wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/releasemediastreamstask.html" class="tsd-kind-icon">Release<wbr>Media<wbr>Streams<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/runnabletask.html" class="tsd-kind-icon">Runnable<wbr>Task</a>

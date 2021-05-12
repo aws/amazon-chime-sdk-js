@@ -17,6 +17,7 @@ import {
   DataMessage,
   DefaultActiveSpeakerPolicy,
   DefaultAudioMixController,
+  DefaultAudioVideoController,
   DefaultBrowserBehavior,
   DefaultDeviceController,
   DefaultMeetingSession,
@@ -26,8 +27,8 @@ import {
   DeviceChangeObserver,
   EventAttributes,
   EventName,
-  Logger,
   LogLevel,
+  Logger,
   MeetingSession,
   MeetingSessionConfiguration,
   MeetingSessionPOSTLogger,
@@ -43,14 +44,14 @@ import {
   Versioning,
   VideoFrameProcessor,
   VideoInputDevice,
+  VideoPreference,
+  VideoPreferences,
+  VideoPriorityBasedPolicy,
   VideoSource,
   VideoTileState,
   VoiceFocusDeviceTransformer,
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
-  VideoPreference,
-  VideoPreferences,
-  VideoPriorityBasedPolicy,
   isAudioTransformDevice,
 } from 'amazon-chime-sdk-js';
 
@@ -277,6 +278,7 @@ export class DemoMeetingApp
     'button-pause-content-share': false,
     'button-video-stats': false,
     'button-video-filter': false,
+    'button-record-self': false,
   };
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
@@ -709,6 +711,61 @@ export class DemoMeetingApp
       } else {
         this.audioVideo.realtimeMuteLocalAudio();
       }
+    });
+
+    const buttonRecordSelf = document.getElementById('button-record-self');
+    let recorder: MediaRecorder;
+    buttonRecordSelf.addEventListener('click', _e => {
+      const chunks: Blob[] = [];
+      AsyncScheduler.nextTick(async () => {
+        if (!this.toggleButton('button-record-self')) {
+          console.info('Stopping recorder ', recorder);
+          recorder.stop();
+          recorder = undefined;
+          return;
+        }
+
+        // Combine the audio and video streams.
+        const mixed = new MediaStream();
+
+        const localTile = this.audioVideo.getLocalVideoTile();
+        if (localTile) {
+          mixed.addTrack(localTile.state().boundVideoStream.getVideoTracks()[0]);
+        }
+
+        // We need to get access to the media stream broker, which requires knowing
+        // the exact implementation. Sorry!
+        /* @ts-ignore */
+        const av: DefaultAudioVideoController = this.audioVideo.audioVideoController;
+        const input = await av.mediaStreamBroker.acquireAudioInputStream();
+        mixed.addTrack(input.getAudioTracks()[0]);
+
+        recorder = new MediaRecorder(mixed, { mimeType: 'video/webm; codecs=vp9' });
+        console.info('Setting recorder to', recorder);
+        recorder.ondataavailable = (event) => {
+          if (event.data.size) {
+            chunks.push(event.data);
+          }
+        };
+
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, {
+            type: 'video/webm',
+          });
+          chunks.length = 0;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          document.body.appendChild(a);
+          /* @ts-ignore */
+          a.style = 'display: none';
+          a.href = url;
+          a.download = 'recording.webm';
+          a.click();
+          window.URL.revokeObjectURL(url);
+        };
+
+        recorder.start();
+      });
     });
 
     const buttonVideo = document.getElementById('button-camera');
@@ -1408,7 +1465,8 @@ export class DemoMeetingApp
       }
       if (!this.roster[attendeeId] || !this.roster[attendeeId].name) {
         this.roster[attendeeId] = {
-          name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : ''),
+          ...this.roster[attendeeId],
+          ... {name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '')}
         };
       }
       this.audioVideo.realtimeSubscribeToVolumeIndicator(

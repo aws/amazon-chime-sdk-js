@@ -52,6 +52,7 @@ import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
 import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from '../task/ReceiveVideoStreamIndexTask';
+import ReleaseMediaStreamsTask from '../task/ReleaseMediaStreamsTask';
 import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from '../task/SerialGroupTask';
 import SetLocalDescriptionTask from '../task/SetLocalDescriptionTask';
@@ -530,6 +531,7 @@ export default class DefaultAudioVideoController
     try {
       await connect.run();
 
+      this.connectionHealthData.setConnectionStartTime();
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
         if (this.eventController) {
@@ -549,17 +551,29 @@ export default class DefaultAudioVideoController
       });
     } catch (error) {
       this.signalingTask = undefined;
+      const status = new MeetingSessionStatus(
+        this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
+      );
+      this.logger.info(`Start failed: ${status} due to error ${error}.`);
+
+      // I am not able to successfully reach this state in the test suite with mock
+      // websockets -- it always ends up in 'Disconnecting' instead. As such, this
+      // has to be marked for Istanbul.
+      /* istanbul ignore if */
+      if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
+        // There's no point trying to 'disconnect', because we're not connected.
+        // The session state controller will bail.
+        this.logger.info('Start failed and not connected. Not cleaning up.');
+        return;
+      }
+
       this.sessionStateController.perform(SessionStateControllerAction.Fail, async () => {
-        const status = new MeetingSessionStatus(
-          this.getMeetingStatusCode(error) || MeetingSessionStatusCode.TaskFailed
-        );
         await this.actionDisconnect(status, true, error);
         if (!this.handleMeetingSessionStatus(status, error)) {
           this.notifyStop(status, error);
         }
       });
     }
-    this.connectionHealthData.setConnectionStartTime();
   }
 
   private createOrReuseSignalingTask(): Task {
@@ -598,7 +612,9 @@ export default class DefaultAudioVideoController
     if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
       // Unfortunately, this does not return a promise.
       this.meetingSessionContext.signalingClient?.closeConnection();
-      return Promise.resolve();
+
+      // Clean up any open streams.
+      return new ReleaseMediaStreamsTask(this.meetingSessionContext).run();
     }
 
     /*
@@ -642,13 +658,19 @@ export default class DefaultAudioVideoController
     }
 
     try {
-      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), [
+      const subtasks: Task[] = [
         new TimeoutTask(
           this.logger,
           new CleanStoppedSessionTask(this.meetingSessionContext),
           this.configuration.connectionTimeoutMs
         ),
-      ]).run();
+      ];
+
+      if (!reconnecting) {
+        subtasks.push(new ReleaseMediaStreamsTask(this.meetingSessionContext));
+      }
+
+      await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), subtasks).run();
     } catch (cleanError) {
       this.logger.info('fail to clean');
     }

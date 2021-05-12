@@ -9,26 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 
-### Changed
+- Add support for `WKWebView` on iOS.
 
+### Changed
 - Applying matrix3d(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1) in stead of rotateY(180deg) to local videoTile in order to fix blank video tile in Safari.
+- Bump version for lodash, y18n, and ssri dependencies 
 
 ### Removed
 
 ### Fixed
+- Do not start local video tile if there is no stream for content share
 
-## [Unreleased]
-
-### Added 
-
-- Add support for iOS WKWebView
-
-### Changed
-
-### Removed
-
-### Fixed
-
+- Media streams are no longer discarded during reconnects. This fixes an issue
+  where initial signaling connection failures could cause a client to be unable
+  to join a meeting with audio if Web Audio were enabled.
 
 ## [2.9.0] - 2021-05-10
 
@@ -53,7 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `npm run start:hot` in the browser demo.
-- Do not start local video tile if there is no stream for content share
 
 ## [2.8.0] - 2021-04-23
 
