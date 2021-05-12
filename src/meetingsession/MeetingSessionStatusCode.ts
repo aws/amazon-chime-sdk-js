@@ -142,6 +142,11 @@ export enum MeetingSessionStatusCode {
    * The attendee is not present.
    */
   NoAttendeePresent = 23,
+
+  /**
+   * The meeting was ended because the attendee has been removed.
+   */
+  AudioAttendeeRemoved = 24,
 }
 
 export default MeetingSessionStatusCode;

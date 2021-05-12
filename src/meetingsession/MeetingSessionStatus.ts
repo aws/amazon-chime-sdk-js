@@ -50,6 +50,7 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.SignalingRequestFailed:
       case MeetingSessionStatusCode.VideoCallAtSourceCapacity:
       case MeetingSessionStatusCode.RealtimeApiFailed:
+      case MeetingSessionStatusCode.AudioAttendeeRemoved:
         return true;
       default:
         return false;
@@ -122,6 +123,8 @@ export default class MeetingSessionStatus {
         return 'The meeting ended, or the attendee was removed.';
       case MeetingSessionStatusCode.NoAttendeePresent:
         return 'The attendee was not present.';
+      case MeetingSessionStatusCode.AudioAttendeeRemoved:
+        return 'The meeting ended because attendee removed.';
       /* istanbul ignore next */
       default: {
         // You get a compile-time error if you do not handle any status code.
@@ -158,6 +161,8 @@ export default class MeetingSessionStatus {
         return new MeetingSessionStatus(MeetingSessionStatusCode.AudioCallAtCapacity);
       case 410:
         return new MeetingSessionStatus(MeetingSessionStatusCode.MeetingEnded);
+      case 411:
+        return new MeetingSessionStatus(MeetingSessionStatusCode.AudioAttendeeRemoved);
       case 500:
         return new MeetingSessionStatus(MeetingSessionStatusCode.AudioInternalServerError);
       case 503:
