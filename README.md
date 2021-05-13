@@ -157,6 +157,15 @@ The value of the MediaRegion parameter in the createMeeting() should ideally be 
 
 ### Messaging session
 Create a messaging session in your client application to receive messages from Amazon Chime SDK for Messaging.
+
+#### Getting responses from your server application
+
+You can use an AWS SDK, the AWS Command Line Interface (AWS CLI), or the REST API
+to make API calls. In this section, you will use the AWS SDK for JavaScript in your server application, e.g. Node.js.
+See [Amazon Chime SDK API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html) for more information.
+> ⚠️ The server application does not require the Amazon Chime SDK for JavaScript.
+
+
 ```js
 import * as AWS from 'aws-sdk/global';
 import * as Chime from 'aws-sdk/clients/chime';
@@ -169,6 +178,8 @@ import {
 } from 'amazon-chime-sdk-js';
 
 const logger = new ConsoleLogger('SDK', LogLevel.INFO);
+
+// You will need AWS credentials configured before calling AWS or Amazon Chime APIs.
 const chime = new Chime({ region: 'us-east-1' });
 const endpoint = await chime.getMessagingSessionEndpoint().promise();
 

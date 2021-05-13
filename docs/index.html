@@ -228,6 +228,15 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 					<h3>Messaging session</h3>
 				</a>
 				<p>Create a messaging session in your client application to receive messages from Amazon Chime SDK for Messaging.</p>
+				<a href="#getting-responses-from-your-server-application-1" id="getting-responses-from-your-server-application-1" style="color: inherit; text-decoration: none;">
+					<h4>Getting responses from your server application</h4>
+				</a>
+				<p>You can use an AWS SDK, the AWS Command Line Interface (AWS CLI), or the REST API
+					to make API calls. In this section, you will use the AWS SDK for JavaScript in your server application, e.g. Node.js.
+				See <a href="https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Amazon Chime SDK API Reference</a> for more information.</p>
+				<blockquote>
+					<p>⚠️ The server application does not require the Amazon Chime SDK for JavaScript.</p>
+				</blockquote>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> AWS <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;aws-sdk/global&#x27;</span>;
 <span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Chime <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;aws-sdk/clients/chime&#x27;</span>;
 
@@ -239,6 +248,8 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
 <span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;SDK&#x27;</span>, LogLevel.INFO);
+
+<span class="hljs-comment">// You will need AWS credentials configured before calling AWS or Amazon Chime APIs.</span>
 <span class="hljs-keyword">const</span> chime = <span class="hljs-keyword">new</span> Chime({ <span class="hljs-attr">region</span>: <span class="hljs-string">&#x27;us-east-1&#x27;</span> });
 <span class="hljs-keyword">const</span> endpoint = <span class="hljs-keyword">await</span> chime.getMessagingSessionEndpoint().promise();
 
