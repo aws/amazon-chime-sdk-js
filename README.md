@@ -253,6 +253,7 @@ audioInputDevices.forEach(mediaDeviceInfo => {
 ```
 
 **Use case 2.** Choose audio input and audio output devices by passing the `deviceId` of a `MediaDeviceInfo` object.
+Note that you need to call `listAudioInputDevices` and `listAudioOutputDevices` first.
 
 ```js
 const audioInputDeviceInfo = /* An array item from meetingSession.audioVideo.listAudioInputDevices */;
@@ -263,6 +264,7 @@ await meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.de
 ```
 
 **Use case 3.** Choose a video input device by passing the `deviceId` of a `MediaDeviceInfo` object.
+Note that you need to call `listVideoInputDevices` first.
 
 If there is an LED light next to the attendee's camera, it will be turned on indicating that it is now capturing from the camera.
 You probably want to choose a video input device when you start sharing your video.
