@@ -1,0 +1,41 @@
+#!/bin/bash
+
+
+function check_if_integ_tests_required {
+  base_branch=$(head -n 1 ${GITHUB_WORKSPACE}/.base-branch)
+  commits=`git rev-list $base_branch..`
+  echo 'Commits:'  $commits
+
+  requires_integration_test=false
+  for commit in $commits
+  do
+     commit_files=`git diff-tree --no-commit-id --name-only -r ${commit}`
+     echo 'Commited files are: ' $commit_files
+     matches=false
+     for committed_file in $commit_files
+     do
+        while read -r stem
+        do
+           if [[ $stem =~ ^#.* ]]; then
+                 continue
+           elif [[ $stem = "" ]]; then
+                 continue
+           elif [[ $stem =~ ^!.* ]]; then
+                 stem_string="${stem:1}"
+                 if [[ $committed_file = $stem_string* ]]
+                 then
+                    matches=false
+                 fi
+           elif [[ $committed_file = $stem* ]]; then
+                 matches=true
+           fi
+        done < "${GITHUB_WORKSPACE}/.integration-watchlist"
+        if [[ $matches = true ]]; then
+           requires_integration_test=true
+           break
+        fi
+     done
+  done
+
+  echo 'Need integration test: ' $requires_integration_test
+}
