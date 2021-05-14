@@ -19,37 +19,52 @@
       runs-on: ubuntu-latest
 
       steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Check if needed to run
+          id: test_needed
+          run: |
+            source ${GITHUB_WORKSPACE}/integration/js/script/need-integ-test
+            check_if_integ_tests_required
+            echo ::set-output name=integ_test_required::$requires_integration_test
         - name: Create a Job ID
           id: create-job-id
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
         - name: Set JOB_ID Env Variable
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
         - name: Echo Job ID
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: echo "${{ steps.create-job-id.outputs.uuid }}"
         - name: Configure AWS Credentials
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: aws-actions/configure-aws-credentials@v1
           with:
             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws-region: us-east-1
         - name: Setup Sauce Connect
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: saucelabs/sauce-connect-action@v1
           with:
             username: ${{ secrets.SAUCE_USERNAME }}
             accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
             noSSLBumpDomains: all
             tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-        - name: Checkout Package
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
         - name: Setup Node.js - 14.x
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: actions/setup-node@v1
           with:
             node-version: 14.x
         - name: Install Kite
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: integration/js/script/install-kite
         - name: Clean Install
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm ci
         - name: Run Data Message Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-data-message
