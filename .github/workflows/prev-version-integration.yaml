@@ -2,14 +2,16 @@ name: Previous Version Integration Tests Workflow
 
 on:
   schedule:
-    - cron: '30 */2 * * *'
+    # More information on cron https://crontab.guru/
+    - cron: '0 1 * * *'
 
 env:
- SELENIUM_GRID_PROVIDER: saucelabs
- CLOUD_WATCH_METRIC: false
- TEST_TYPE: Github-Action
- SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
- SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  SELENIUM_GRID_PROVIDER: saucelabs
+  CLOUD_WATCH_METRIC: false
+  TEST_TYPE: Github-Action
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
 
 jobs:
   prev-version-integ:
@@ -21,10 +23,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.6
       - name: Checkout Package
         uses: actions/checkout@v2
         with:
@@ -76,5 +74,7 @@ jobs:
         run: npm run test:integration-data-message
       - name: Run Meeting Readiness Checker Integration Test
         run: npm run test:integration-meeting-readiness-checker
+      - name: Setup userArn
+        run: integration/js/script/test-setup
       - name: Run Messaging Integration Test
         run: npm run test:integration-messaging
