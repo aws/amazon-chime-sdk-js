@@ -228,6 +228,15 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 					<h3>Messaging session</h3>
 				</a>
 				<p>Create a messaging session in your client application to receive messages from Amazon Chime SDK for Messaging.</p>
+				<a href="#getting-responses-from-your-server-application-1" id="getting-responses-from-your-server-application-1" style="color: inherit; text-decoration: none;">
+					<h4>Getting responses from your server application</h4>
+				</a>
+				<p>You can use an AWS SDK, the AWS Command Line Interface (AWS CLI), or the REST API
+					to make API calls. In this section, you will use the AWS SDK for JavaScript in your server application, e.g. Node.js.
+				See <a href="https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html">Amazon Chime SDK API Reference</a> for more information.</p>
+				<blockquote>
+					<p>⚠️ The server application does not require the Amazon Chime SDK for JavaScript.</p>
+				</blockquote>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> AWS <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;aws-sdk/global&#x27;</span>;
 <span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Chime <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;aws-sdk/clients/chime&#x27;</span>;
 
@@ -239,6 +248,8 @@ chime.endpoint = <span class="hljs-keyword">new</span> AWS.Endpoint(<span class=
 } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
 <span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;SDK&#x27;</span>, LogLevel.INFO);
+
+<span class="hljs-comment">// You will need AWS credentials configured before calling AWS or Amazon Chime APIs.</span>
 <span class="hljs-keyword">const</span> chime = <span class="hljs-keyword">new</span> Chime({ <span class="hljs-attr">region</span>: <span class="hljs-string">&#x27;us-east-1&#x27;</span> });
 <span class="hljs-keyword">const</span> endpoint = <span class="hljs-keyword">await</span> chime.getMessagingSessionEndpoint().promise();
 
@@ -305,14 +316,16 @@ audioInputDevices.forEach(<span class="hljs-function"><span class="hljs-params">
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Device ID: <span class="hljs-subst">${mediaDeviceInfo.deviceId}</span> Microphone: <span class="hljs-subst">${mediaDeviceInfo.label}</span>`</span>);
 });
 </code></pre>
-				<p><strong>Use case 2.</strong> Choose audio input and audio output devices by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.</p>
+				<p><strong>Use case 2.</strong> Choose audio input and audio output devices by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.
+				Note that you need to call <code>listAudioInputDevices</code> and <code>listAudioOutputDevices</code> first.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> audioInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioInputDevices */</span>;
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
 
 <span class="hljs-keyword">const</span> audioOutputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listAudioOutputDevices */</span>;
 <span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
 </code></pre>
-				<p><strong>Use case 3.</strong> Choose a video input device by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.</p>
+				<p><strong>Use case 3.</strong> Choose a video input device by passing the <code>deviceId</code> of a <code>MediaDeviceInfo</code> object.
+				Note that you need to call <code>listVideoInputDevices</code> first.</p>
 				<p>If there is an LED light next to the attendee&#39;s camera, it will be turned on indicating that it is now capturing from the camera.
 				You probably want to choose a video input device when you start sharing your video.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> videoInputDeviceInfo = <span class="hljs-comment">/* An array item from meetingSession.audioVideo.listVideoInputDevices */</span>;

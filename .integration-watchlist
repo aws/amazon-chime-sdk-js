@@ -11,3 +11,6 @@ integration/
 !demos/singlejs/README.md
 !demos/videohelpdesk/README.md
 !guides/
+!docs/
+!.github/
+!.integration-watchlist
