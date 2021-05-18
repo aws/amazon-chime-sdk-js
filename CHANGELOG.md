@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Update guide for priority based downlink policy
+
 ### Added 
 
 - Add new message `MeetingSessionStatusCode` `AudioAttendeeRemoved` to handle
