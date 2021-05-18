@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
@@ -526,6 +527,53 @@ describe('DefaultVolumeIndicatorAdapter', () => {
       );
       expect(presentAttendeeIds[0]).to.be.equal(`${fooAttendee}-${11}`);
       expect(presentExternalUserIds[0]).to.be.equal(`${fooExternal}-${11}`);
+    });
+
+    it('outputs a warning message if the presence leave event is fired for the self attendee after reconnection', () => {
+      const selfAttendeeId = 'self-attendee-id';
+      const selfExternalUserId = 'self-external-user-id';
+
+      const streamInfoJoins = SdkAudioStreamIdInfoFrame.create();
+      streamInfoJoins.streams = [];
+      for (let i = 0; i <= 5; i++) {
+        const streamInfo = SdkAudioStreamIdInfo.create();
+        streamInfo.audioStreamId = i;
+        if (i === 0) {
+          streamInfo.attendeeId = selfAttendeeId;
+          streamInfo.externalUserId = selfExternalUserId;
+        } else {
+          streamInfo.attendeeId = `${fooAttendee}-${i}`;
+          streamInfo.externalUserId = `${fooExternal}-${i}`;
+        }
+        streamInfoJoins.streams.push(streamInfo);
+      }
+
+      const logger = new NoOpLogger();
+      const spy = sinon.spy(logger, 'warn');
+      const realtimeController = new DefaultRealtimeController();
+      const volumeIndicatorAdapter = new DefaultVolumeIndicatorAdapter(
+        logger,
+        realtimeController,
+        minVolumeDecibels,
+        maxVolumeDecibels,
+        selfAttendeeId
+      );
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoJoins);
+
+      const streamInfoReconnect = SdkAudioStreamIdInfoFrame.create();
+      streamInfoReconnect.streams = [];
+      for (let i = 1; i <= 4; i++) {
+        const streamInfo = SdkAudioStreamIdInfo.create();
+        streamInfo.audioStreamId = i;
+        streamInfo.attendeeId = `${fooAttendee}-${i}`;
+        streamInfo.externalUserId = `${fooExternal}-${i}`;
+        streamInfoReconnect.streams.push(streamInfo);
+      }
+
+      volumeIndicatorAdapter.onReconnect();
+      volumeIndicatorAdapter.sendRealtimeUpdatesForAudioStreamIdInfo(streamInfoReconnect);
+
+      expect(spy.calledWith(sinon.match('cleans up the current attendee'))).to.be.true;
     });
   });
 

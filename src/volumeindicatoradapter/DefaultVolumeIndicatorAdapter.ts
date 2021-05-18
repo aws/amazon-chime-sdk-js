@@ -24,7 +24,8 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
     private logger: Logger,
     private realtimeController: RealtimeController,
     private minVolumeDecibels: number,
-    private maxVolumeDecibels: number
+    private maxVolumeDecibels: number,
+    private selfAttendeeId?: string
   ) {}
 
   onReconnect(): void {
@@ -131,6 +132,12 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
         false,
         { attendeeIndex: index, attendeesInFrame: deletedAttendeeId.length }
       );
+
+      if (deletedAttendeeId === this.selfAttendeeId) {
+        this.logger.warn(
+          `the volume indicator adapter cleans up the current attendee (presence = false) after reconnection`
+        );
+      }
     }
   }
 
