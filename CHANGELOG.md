@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 
+- Add new message `MeetingSessionStatusCode` `AudioAttendeeRemoved` to handle
+  the new audio server status code 411.
 - Add support for `WKWebView` on iOS.
 - Output a warning message when the volume adapter cleans up the self-attendee after reconnection.
 
