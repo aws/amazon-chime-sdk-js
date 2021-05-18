@@ -10,4 +10,9 @@ export default interface ClientMetricReport {
    * Gets raw client media metrics
    */
   getObservableMetrics(): { [id: string]: number };
+
+  /**
+   * Gets video client media metrics
+   */
+  getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } };
 }

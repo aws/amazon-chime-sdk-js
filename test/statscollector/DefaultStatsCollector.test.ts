@@ -73,7 +73,11 @@ describe('DefaultStatsCollector', () => {
     setUserAgent(CHROME_USERAGENT);
     statsCollector = new DefaultStatsCollector(audioVideoController, logger, browser, interval);
     configuration = new TestAudioVideoController().configuration;
-    clientMetricReport = new DefaultClientMetricReport(logger);
+    clientMetricReport = new DefaultClientMetricReport(
+      logger,
+      new DefaultVideoStreamIndex(logger),
+      audioVideoController
+    );
   });
 
   afterEach(() => {

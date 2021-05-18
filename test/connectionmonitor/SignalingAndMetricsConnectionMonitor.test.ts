@@ -103,6 +103,19 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
     videoUpstreamBitrate: RawMetrics = 100;
     availableSendBandwidth: RawMetrics = 100;
     availableReceiveBandwidth: RawMetrics = 100;
+    videoUpstreamPacketsSent: RawMetrics = 100;
+    videoUpstreamFramesEncodedPerSecond: RawMetrics = 100;
+    videoUpstreamGoogFrameHeight: RawMetrics = 100;
+    videoUpstreamGoogFrameWidth: RawMetrics = 100;
+    videoUpstreamFrameHeight: RawMetrics = 100;
+    videoUpstreamFrameWidth: RawMetrics = 100;
+    videoDownstreamBitrate: RawMetrics = 100;
+    videoDownstreamPacketLossPercent: RawMetrics = 100;
+    videoDownstreamFramesDecodedPerSecond: RawMetrics = 100;
+    videoDownstreamFrameHeight: RawMetrics = 100;
+    videoDownstreamFrameWidth: RawMetrics = 100;
+    videoDownstreamGoogFrameHeight: RawMetrics = 100;
+    videoDownstreamGoogFrameWidth: RawMetrics = 100;
 
     getObservableMetrics(): { [id: string]: number } {
       return {
@@ -112,6 +125,18 @@ describe('SignalingAndMetricsConnectionMonitor', () => {
         videoUpstreamBitrate: this.videoUpstreamBitrate,
         availableSendBandwidth: this.availableSendBandwidth,
         availableReceiveBandwidth: this.availableReceiveBandwidth,
+      };
+    }
+
+    getObservableVideoMetrics(): { [id: string]: {} } {
+      return {
+        videoUpstreamBitrate: this.videoUpstreamPacketsSent,
+        videoUpstreamPacketsSent: this.videoUpstreamPacketsSent,
+        videoUpstreamFramesEncodedPerSecond: this.videoUpstreamFramesEncodedPerSecond,
+        videoUpstreamFrameHeight: this.videoUpstreamFrameHeight,
+        videoUpstreamFrameWidth: this.videoUpstreamFrameWidth,
+        videoUpstreamGoogFrameHeight: this.videoUpstreamGoogFrameHeight,
+        videoUpstreamGoogFrameWidth: this.videoUpstreamGoogFrameWidth,
       };
     }
   }
