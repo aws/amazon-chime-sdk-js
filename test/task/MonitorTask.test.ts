@@ -1003,6 +1003,23 @@ describe('MonitorTask', () => {
       expect(spy.called).to.be.true;
     });
 
+    it('stops audio and video if the error status code is 411 (AudioAttendeeRemoved)', () => {
+      const spy = sinon.spy(context.audioVideoController, 'handleMeetingSessionStatus');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const message = SdkSignalFrame.create();
+      message.type = SdkSignalFrame.Type.AUDIO_STATUS;
+      message.audioStatus = SdkAudioStatusFrame.create();
+      message.audioStatus.audioStatus = 411;
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(spy.called).to.be.true;
+    });
+
     it('is neither failure or terminal if the error status code is 302 (AudioDisconnectAudio)', () => {
       const spy = sinon.spy(context.audioVideoController, 'handleMeetingSessionStatus');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
