@@ -543,8 +543,9 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       return source
         ? transform(source, ssrcNum)
         : transform(observableVideoMetricSpec.source, ssrcNum);
+    } else {
+      return source ? transform(source) : transform(observableVideoMetricSpec.source);
     }
-    return 0;
   }
 
   getObservableMetrics(): { [id: string]: number } {
@@ -560,18 +561,18 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     for (const ssrc in this.streamMetricReports) {
       if (this.streamMetricReports[ssrc].mediaType === MediaType.VIDEO) {
         const metric: { [id: string]: number } = {};
+        metric['direction'] = this.streamMetricReports[ssrc].direction;
         for (const metricName in this.observableVideoMetricSpec) {
           if (
             this.observableVideoMetricSpec[metricName].dir ===
             this.streamMetricReports[ssrc].direction
           ) {
-            metric[metricName] = this.getObservableVideoMetricValue(metricName, Number(ssrc));
+            const metricValue = this.getObservableVideoMetricValue(metricName, Number(ssrc));
+            if (!isNaN(metricValue)) {
+              metric[metricName] = metricValue;
+            }
           }
         }
-        if (metric['videoUpstreamFramesEncodedPerSecond'] === 0) {
-          continue;
-        }
-        metric['direction'] = this.streamMetricReports[ssrc].direction;
         const streamId = this.streamMetricReports[ssrc].streamId;
         const attendeeId = streamId
           ? this.videoStreamIndex.attendeeIdForStreamId(streamId)

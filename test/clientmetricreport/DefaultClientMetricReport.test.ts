@@ -400,8 +400,8 @@ describe('DefaultClientMetricReport', () => {
       audioUpstreamReport.currentMetrics['packetsSent'] = 100;
       clientMetricReport.streamMetricReports[audioUpstreamSsrc] = audioUpstreamReport;
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(8);
-      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc]).length).to.equal(8);
+      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(1);
+      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc]).length).to.equal(2);
     });
 
     it('returns the observable video metrics for streams with streamId', () => {
@@ -428,9 +428,9 @@ describe('DefaultClientMetricReport', () => {
       clientMetricReport.currentTimestampMs = 100;
       clientMetricReport.previousTimestampMs = 0;
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(8);
-      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc_1]).length).to.equal(8);
-      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc_2]).length).to.equal(8);
+      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(1);
+      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc_1]).length).to.equal(2);
+      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc_2]).length).to.equal(2);
     });
 
     it('returns 0 observable video metrics if no desired report in stream metric reports', () => {
@@ -438,32 +438,10 @@ describe('DefaultClientMetricReport', () => {
       const report = new StreamMetricReport();
       report.mediaType = MediaType.VIDEO;
       report.direction = Direction.UPSTREAM;
-      report.currentMetrics['bytesSent'] = 10;
-      report.currentMetrics['packetsSent'] = 10;
+      report.currentMetrics['bytesReceived'] = 10;
       clientMetricReport.streamMetricReports[ssrc] = report;
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics).length).to.equal(0);
-    });
-
-    it('returns only the active observable video metrics', () => {
-      const ssrc = 1;
-      const inactiveStreamreport = new StreamMetricReport();
-      inactiveStreamreport.mediaType = MediaType.VIDEO;
-      inactiveStreamreport.direction = Direction.UPSTREAM;
-      inactiveStreamreport.currentMetrics['framesEncoded'] = 0;
-      inactiveStreamreport.streamId = 1;
-      clientMetricReport.streamMetricReports[ssrc] = inactiveStreamreport;
-      const ssrc_active = 2;
-      const activeStreamreport = new StreamMetricReport();
-      activeStreamreport.mediaType = MediaType.VIDEO;
-      activeStreamreport.direction = Direction.UPSTREAM;
-      activeStreamreport.currentMetrics['framesEncoded'] = 100;
-      activeStreamreport.streamId = 2;
-      clientMetricReport.streamMetricReports[ssrc_active] = activeStreamreport;
-      clientMetricReport.currentTimestampMs = 100;
-      clientMetricReport.previousTimestampMs = 0;
-      const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics['']).length).to.equal(1);
+      expect(Object.keys(videoStreamMetrics).length).to.equal(1);
     });
   });
 

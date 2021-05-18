@@ -320,28 +320,12 @@ export class DemoMeetingApp
   // this to `halt`, which allows us to stop and measure memory leaks.
   behaviorAfterLeave: 'spa' | 'reload' | 'halt' = 'reload';
 
-  chromiumUpstreamFrameMetricsKeyStats: { [key: string]: string } = {
-    videoUpstreamGoogFrameHeight: 'Frame Height',
-    videoUpstreamGoogFrameWidth: 'Frame Width',
-  };
-
-  upstreamFrameMetricsKeyStats: { [key: string]: string } = {
-    videoUpstreamFrameHeight: 'Frame Height',
-    videoUpstreamFrameWidth: 'Frame Width',
-  };
-
-  chromiumDownstreamFrameMetricsKeyStats: { [key: string]: string } = {
-    videoDownstreamGoogFrameHeight: 'Frame Height',
-    videoDownstreamGoogFrameWidth: 'Frame Width',
-  };
-
-  downstreamframeMetricsKeyStats: { [key: string]: string } = {
-    videoDownstreamFrameHeight: 'Frame Height',
-    videoDownstreamFrameWidth: 'Frame Width',
-  };
-
   videoUpstreamMetricsKeyStats: { [key: string]: string } = {
     direction: 'Metric',
+    videoUpstreamGoogFrameHeight: 'Frame Height',
+    videoUpstreamGoogFrameWidth: 'Frame Width',
+    videoUpstreamFrameHeight: 'Frame Height',
+    videoUpstreamFrameWidth: 'Frame Width',
     videoUpstreamBitrate: 'Bitrate (bps)',
     videoUpstreamPacketsSent: 'Packets Sent',
     videoUpstreamFramesEncodedPerSecond: 'Frame Rate',
@@ -349,6 +333,10 @@ export class DemoMeetingApp
 
   videoDownstreamMetricsKeyStats: { [key: string]: string } = {
     direction: 'Metric',
+    videoDownstreamGoogFrameHeight: 'Frame Height',
+    videoDownstreamGoogFrameWidth: 'Frame Width',
+    videoDownstreamFrameHeight: 'Frame Height',
+    videoDownstreamFrameWidth: 'Frame Width',
     videoDownstreamBitrate: 'Bitrate (bps)',
     videoDownstreamPacketLossPercent: 'Packet Loss (%)',
     videoDownstreamFramesDecodedPerSecond: 'Frame Rate',
@@ -1204,13 +1192,6 @@ export class DemoMeetingApp
       }
       const tileId = videoTile.id();
       const tileIndex = this.tileIdToTileIndex[tileId];
-      if (this.hasChromiumWebRTC) {
-        this.videoUpstreamMetricsKeyStats = { ...this.videoUpstreamMetricsKeyStats, ...this.chromiumUpstreamFrameMetricsKeyStats};
-        this.videoDownstreamMetricsKeyStats = { ...this.videoDownstreamMetricsKeyStats, ...this.chromiumDownstreamFrameMetricsKeyStats};
-      } else {
-        this.videoUpstreamMetricsKeyStats = { ...this.videoUpstreamMetricsKeyStats, ...this.upstreamFrameMetricsKeyStats};
-        this.videoDownstreamMetricsKeyStats = { ...this.videoDownstreamMetricsKeyStats, ...this.downstreamframeMetricsKeyStats};
-      }
       if (tileState.localTile) {
         this.showVideoStats(tileIndex, this.videoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId]);
       } else {
@@ -1257,22 +1238,21 @@ export class DemoMeetingApp
       cell = header.insertCell(-1);
     }
 
-    for (const [key, value] of Object.entries(keyStatstoShow)) {
-      const row = statsInfoTable.insertRow(-1);
-      row.setAttribute('id', `${key}-${tileIndex}`);
-      cell = row.insertCell(-1);
-      cell.innerHTML = value;
-    }
-
+    let cnt = 0;
     for (const ssrc of streams) {
+      cnt++;
       for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
         if (keyStatstoShow[metricName]) {
-          const row = document.getElementById(
+          const rowElement = document.getElementById(
             `${metricName}-${tileIndex}`
           ) as HTMLTableRowElement;
+          const row = rowElement ? rowElement : statsInfoTable.insertRow(-1);
+          row.setAttribute('id', `${metricName}-${tileIndex}`);
+          cell = row.insertCell(-1);
+          cell.innerHTML = keyStatstoShow[metricName];
           cell = row.insertCell(-1);
           if (metricName == 'direction') {
-            cell.innerHTML = `${value ? 'Downstream' : 'Upstream'}`
+            cell.innerHTML = value ? `Downstream ${cnt}` : `Upstream ${cnt}`;
           } else{
             cell.innerHTML = `${value}`;
           }
