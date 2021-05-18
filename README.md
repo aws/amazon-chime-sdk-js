@@ -79,6 +79,14 @@ Review the resources given in the ReadMe and use our [client documentation](http
 
 If you have more questions, or require support for your business, you can reach out to [AWS Customer support](https://pages.awscloud.com/GLOBAL-aware-GC-Amazon-Chime-SDK-2020-reg.html). You can review our support plans [here](https://aws.amazon.com/premiumsupport/plans/?nc=sn&loc=1).
 
+
+## WebRTC Resources
+> Amazon Chime JS SDK uses WebRTC and hence here are some general resources on WebRTC.
+- [WebRTC Basics](https://www.html5rocks.com/en/tutorials/webrtc/basics/)
+- [WebRTC Org - Getting started, presentation, samples, tutorials, books and more resources](https://webrtc.github.io/webrtc-org/start/)
+- [High Performance Browser Networking - WebRTC (Browser APIs and Protocols)](https://hpbn.co/webrtc/)
+- [MDN - WebRTC APIs](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API)
+
 ## Installation
 
 Make sure you have Node.js version 12 or higher. Node 14 is recommended and supported.
