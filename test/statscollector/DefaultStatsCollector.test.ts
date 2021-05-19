@@ -76,7 +76,7 @@ describe('DefaultStatsCollector', () => {
     clientMetricReport = new DefaultClientMetricReport(
       logger,
       new DefaultVideoStreamIndex(logger),
-      audioVideoController
+      audioVideoController.configuration.credentials.attendeeId
     );
   });
 
