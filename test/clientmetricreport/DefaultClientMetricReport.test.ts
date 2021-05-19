@@ -400,8 +400,8 @@ describe('DefaultClientMetricReport', () => {
       audioUpstreamReport.currentMetrics['packetsSent'] = 100;
       clientMetricReport.streamMetricReports[audioUpstreamSsrc] = audioUpstreamReport;
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(1);
-      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc]).length).to.equal(2);
+      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(0);
+      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc]).length).to.equal(1);
     });
 
     it('returns the observable video metrics for streams with streamId', () => {
@@ -428,20 +428,20 @@ describe('DefaultClientMetricReport', () => {
       clientMetricReport.currentTimestampMs = 100;
       clientMetricReport.previousTimestampMs = 0;
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(1);
-      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc_1]).length).to.equal(2);
-      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc_2]).length).to.equal(2);
+      expect(Object.keys(videoStreamMetrics[''][downstreamSsrc]).length).to.equal(0);
+      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc_1]).length).to.equal(1);
+      expect(Object.keys(videoStreamMetrics[''][upstreamSsrc_2]).length).to.equal(1);
     });
 
     it('returns 0 observable video metrics if no desired report in stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
-      report.mediaType = MediaType.VIDEO;
+      report.mediaType = MediaType.AUDIO;
       report.direction = Direction.UPSTREAM;
-      report.currentMetrics['bytesReceived'] = 10;
+      report.currentMetrics['nackCount'] = 10;
       clientMetricReport.streamMetricReports[ssrc] = report;
       const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
-      expect(Object.keys(videoStreamMetrics).length).to.equal(1);
+      expect(Object.keys(videoStreamMetrics).length).to.equal(0);
     });
   });
 

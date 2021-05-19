@@ -561,7 +561,6 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     for (const ssrc in this.streamMetricReports) {
       if (this.streamMetricReports[ssrc].mediaType === MediaType.VIDEO) {
         const metric: { [id: string]: number } = {};
-        metric['direction'] = this.streamMetricReports[ssrc].direction;
         for (const metricName in this.observableVideoMetricSpec) {
           if (
             this.observableVideoMetricSpec[metricName].dir ===

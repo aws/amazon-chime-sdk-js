@@ -321,7 +321,6 @@ export class DemoMeetingApp
   behaviorAfterLeave: 'spa' | 'reload' | 'halt' = 'reload';
 
   videoUpstreamMetricsKeyStats: { [key: string]: string } = {
-    direction: 'Metric',
     videoUpstreamGoogFrameHeight: 'Frame Height',
     videoUpstreamGoogFrameWidth: 'Frame Width',
     videoUpstreamFrameHeight: 'Frame Height',
@@ -332,7 +331,6 @@ export class DemoMeetingApp
   };
 
   videoDownstreamMetricsKeyStats: { [key: string]: string } = {
-    direction: 'Metric',
     videoDownstreamGoogFrameHeight: 'Frame Height',
     videoDownstreamGoogFrameWidth: 'Frame Width',
     videoDownstreamFrameHeight: 'Frame Height',
@@ -1193,9 +1191,9 @@ export class DemoMeetingApp
       const tileId = videoTile.id();
       const tileIndex = this.tileIdToTileIndex[tileId];
       if (tileState.localTile) {
-        this.showVideoStats(tileIndex, this.videoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId]);
+        this.showVideoStats(tileIndex, this.videoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream');
       } else {
-        this.showVideoStats(tileIndex, this.videoDownstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId]);
+        this.showVideoStats(tileIndex, this.videoDownstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Downstream');
       }
     }
   }
@@ -1203,7 +1201,8 @@ export class DemoMeetingApp
   showVideoStats = (
     tileIndex: number,
     keyStatstoShow: { [key: string]: string },
-    metricsData: { [id: string]: {[key: string]: number} }
+    metricsData: { [id: string]: {[key: string]: number} },
+    streamDirection: string,
   ): void => {
     const streams = metricsData ? Object.keys(metricsData) : [];
     if (streams.length === 0) {
@@ -1236,26 +1235,23 @@ export class DemoMeetingApp
     cell.innerHTML = 'Video statistics';
     for (let cnt = 0; cnt < streams.length; cnt++) {
       cell = header.insertCell(-1);
+      cell.innerHTML = `${streamDirection} ${cnt + 1}`;
     }
 
-    let cnt = 0;
     for (const ssrc of streams) {
-      cnt++;
       for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
         if (keyStatstoShow[metricName]) {
           const rowElement = document.getElementById(
             `${metricName}-${tileIndex}`
           ) as HTMLTableRowElement;
           const row = rowElement ? rowElement : statsInfoTable.insertRow(-1);
-          row.setAttribute('id', `${metricName}-${tileIndex}`);
-          cell = row.insertCell(-1);
-          cell.innerHTML = keyStatstoShow[metricName];
-          cell = row.insertCell(-1);
-          if (metricName == 'direction') {
-            cell.innerHTML = value ? `Downstream ${cnt}` : `Upstream ${cnt}`;
-          } else{
-            cell.innerHTML = `${value}`;
+          if (!rowElement) {
+            row.setAttribute('id', `${metricName}-${tileIndex}`);
+            cell = row.insertCell(-1);
+            cell.innerHTML = keyStatstoShow[metricName];
           }
+            cell = row.insertCell(-1);
+            cell.innerHTML = `${value}`;
         }
       }
     }
