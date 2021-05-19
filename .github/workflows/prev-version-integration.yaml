@@ -1,0 +1,80 @@
+name: Previous Version Integration Tests Workflow
+
+on:
+  schedule:
+    # More information on cron https://crontab.guru/
+    - cron: '0 1 * * *'
+
+env:
+  SELENIUM_GRID_PROVIDER: saucelabs
+  CLOUD_WATCH_METRIC: false
+  TEST_TYPE: Github-Action
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
+
+jobs:
+  prev-version-integ:
+    name: Previous Version Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Get previous version
+        id: prev
+        run: |
+          prev_version=$(.github/script/get-prev-version)
+          echo "Previous version:" $prev_version
+          echo ::set-output name=prev_version::$prev_version
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Setup
+        # Temporarily we need to copy the run-test script over from 2.9.0. Can be removed after 2.10.0 is released
+        run: |
+          cp integration/js/script/run-test integration/js/script/run-test.bku
+          git checkout tags/v${{ steps.prev.outputs.prev_version }}
+          cp integration/js/script/run-test.bku integration/js/script/run-test
+          chmod +x integration/js/script/run-test
+      - name: Clean Install
+        run: npm ci
+      - name: Run Audio Integration Test
+        run: npm run test:integration-audio
+      - name: Run Video Integ Test
+        run: npm run test:integration-video
+      - name: Run Content Share Integration Test
+        run: npm run test:integration-content-share
+      - name: Run Data Message Integration Test
+        run: npm run test:integration-data-message
+      - name: Run Meeting Readiness Checker Integration Test
+        run: npm run test:integration-meeting-readiness-checker
+      - name: Setup userArn
+        run: integration/js/script/test-setup
+      - name: Run Messaging Integration Test
+        run: npm run test:integration-messaging

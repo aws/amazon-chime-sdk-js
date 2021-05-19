@@ -429,7 +429,8 @@ export default class DefaultAudioVideoController
       this.logger,
       this._realtimeController,
       DefaultAudioVideoController.MIN_VOLUME_DECIBELS,
-      DefaultAudioVideoController.MAX_VOLUME_DECIBELS
+      DefaultAudioVideoController.MAX_VOLUME_DECIBELS,
+      this.configuration.credentials.attendeeId
     );
     this.meetingSessionContext.videoTileController = this._videoTileController;
     this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;

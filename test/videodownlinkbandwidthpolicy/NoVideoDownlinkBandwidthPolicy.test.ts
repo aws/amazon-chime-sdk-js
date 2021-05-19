@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
@@ -31,7 +32,11 @@ describe('NoVideoDownlinkBandwidthPolicy', () => {
       expect(policy.wantsResubscribe()).to.be.false;
       policy.updateIndex(emptyVideoStreamIndex);
       expect(policy.wantsResubscribe()).to.be.false;
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        emptyVideoStreamIndex,
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 500;
       policy.updateMetrics(metricReport);
       expect(policy.wantsResubscribe()).to.be.false;

@@ -5,10 +5,11 @@ const Base64 = require('js-base64').Base64;
 const { AppPage, MeetingReadinessCheckerPage, MessagingSessionPage, TestAppPage } = require('../pages');
 
 const getPlatformName = capabilities => {
-  switch (capabilities.platform) {
+  const { browserName, version, platform } = capabilities;
+  switch (platform) {
     case 'MAC':
-      if (capabilities.browserName === "safari") {
-        return "macOS 10.13";
+      if (browserName === 'safari') {
+        return version === 'latest' ? 'macOS 11.00' : 'macOS 10.13';
       }
       return 'macOS 10.14';
     case 'WINDOWS':

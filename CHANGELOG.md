@@ -7,9 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Update guide for priority based downlink policy
+
 ### Added 
 
+- Add new message `MeetingSessionStatusCode` `AudioAttendeeRemoved` to handle
+  the new audio server status code 411.
 - Add support for `WKWebView` on iOS.
+- Output a warning message when the volume adapter cleans up the self-attendee after reconnection.
+- Add FAQ for more information on `AudioJoinFromAnotherDevice` meeting session status code.
+- Add downstream audio webrtc metrics in `observableMetricSpec`
+- Add `getObservableVideoMetrics` and in ClientMetricReport to expose video stream metrics in webrtc
+- Update `SignalingProtocol` with optional video metric fields
 
 ### Changed
 - Applying matrix3d(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1) in stead of rotateY(180deg) to local videoTile in order to fix blank video tile in Safari.

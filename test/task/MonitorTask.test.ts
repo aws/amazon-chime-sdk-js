@@ -374,12 +374,20 @@ describe('MonitorTask', () => {
         getObservableMetrics(): { [id: string]: number } {
           return;
         }
+
+        getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } } {
+          return;
+        }
       }
       task.metricsDidReceive(undefined);
       const clientMetricReport = new TestClientMetricReport();
       task.metricsDidReceive(clientMetricReport);
 
-      const defaultClientMetricReport = new DefaultClientMetricReport(logger);
+      const defaultClientMetricReport = new DefaultClientMetricReport(
+        logger,
+        context.videoStreamIndex,
+        context.audioVideoController
+      );
       const ssrc = 6789;
       defaultClientMetricReport.streamMetricReports[ssrc] = new StreamMetricReport();
       task.metricsDidReceive(defaultClientMetricReport);
@@ -394,7 +402,11 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new DefaultClientMetricReport(
+        logger,
+        context.videoStreamIndex,
+        context.audioVideoController
+      );
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -422,7 +434,11 @@ describe('MonitorTask', () => {
       streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new DefaultClientMetricReport(
+        logger,
+        context.videoStreamIndex,
+        context.audioVideoController
+      );
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);
@@ -461,7 +477,11 @@ describe('MonitorTask', () => {
       streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new DefaultClientMetricReport(
+        logger,
+        context.videoStreamIndex,
+        context.audioVideoController
+      );
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);
@@ -483,7 +503,11 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new DefaultClientMetricReport(
+        logger,
+        context.videoStreamIndex,
+        context.audioVideoController
+      );
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -503,7 +527,11 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(logger);
+      const clientMetricReport = new DefaultClientMetricReport(
+        logger,
+        context.videoStreamIndex,
+        context.audioVideoController
+      );
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -579,7 +607,11 @@ describe('MonitorTask', () => {
       streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
 
-      const clientMetricReport = new TestClientMetricReport(logger);
+      const clientMetricReport = new TestClientMetricReport(
+        logger,
+        context.videoStreamIndex,
+        context.audioVideoController
+      );
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);
@@ -993,6 +1025,23 @@ describe('MonitorTask', () => {
       message.type = SdkSignalFrame.Type.AUDIO_STATUS;
       message.audioStatus = SdkAudioStatusFrame.create();
       message.audioStatus.audioStatus = 410;
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(spy.called).to.be.true;
+    });
+
+    it('stops audio and video if the error status code is 411 (AudioAttendeeRemoved)', () => {
+      const spy = sinon.spy(context.audioVideoController, 'handleMeetingSessionStatus');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const message = SdkSignalFrame.create();
+      message.type = SdkSignalFrame.Type.AUDIO_STATUS;
+      message.audioStatus = SdkAudioStatusFrame.create();
+      message.audioStatus.audioStatus = 411;
       task.handleSignalingClientEvent(
         new SignalingClientEvent(
           new DefaultSignalingClient(webSocketAdapter, logger),

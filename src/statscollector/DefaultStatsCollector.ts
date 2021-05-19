@@ -186,7 +186,11 @@ export default class DefaultStatsCollector implements StatsCollector {
     if (clientMetricReport) {
       this.clientMetricReport = clientMetricReport;
     } else {
-      this.clientMetricReport = new DefaultClientMetricReport(this.logger);
+      this.clientMetricReport = new DefaultClientMetricReport(
+        this.logger,
+        this.videoStreamIndex,
+        this.audioVideoController
+      );
     }
 
     this.intervalScheduler = new IntervalScheduler(this.interval);
