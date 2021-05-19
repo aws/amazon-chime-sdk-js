@@ -478,4 +478,18 @@ describe('DefaultClientMetricReport', () => {
       expect(clientMetricReport.streamMetricReports[ssrc1]).to.equal(undefined);
     });
   });
+
+  describe('error logging', () => {
+    it('returns undefined observable video metrics if no VideoStreamIndex and selfAttendeeId defined stream metric reports', () => {
+      clientMetricReport = new DefaultClientMetricReport(new NoOpDebugLogger());
+      const ssrc = 1;
+      const report = new StreamMetricReport();
+      report.mediaType = MediaType.VIDEO;
+      report.direction = Direction.UPSTREAM;
+      report.currentMetrics['framesEncoded'] = 10;
+      clientMetricReport.streamMetricReports[ssrc] = report;
+      const videoStreamMetrics = clientMetricReport.getObservableVideoMetrics();
+      expect(Object.keys(videoStreamMetrics).length).to.equal(0);
+    });
+  });
 });

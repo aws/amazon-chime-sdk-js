@@ -557,6 +557,12 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
 
   getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } } {
     const videoStreamMetrics: { [id: string]: { [id: string]: {} } } = {};
+    if (!this.videoStreamIndex || !this.selfAttendeeId) {
+      this.logger.error(
+        'Need to define VideoStreamIndex and selfAttendeeId if using getObservableVideoMetrics API'
+      );
+      return videoStreamMetrics;
+    }
     for (const ssrc in this.streamMetricReports) {
       if (this.streamMetricReports[ssrc].mediaType === MediaType.VIDEO) {
         const metric: { [id: string]: number } = {};

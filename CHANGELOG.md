@@ -17,13 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for `WKWebView` on iOS.
 - Output a warning message when the volume adapter cleans up the self-attendee after reconnection.
 - Add FAQ for more information on `AudioJoinFromAnotherDevice` meeting session status code.
-- Add downstream audio webrtc metrics in `observableMetricSpec`
-- Add `getObservableVideoMetrics` and in ClientMetricReport to expose video stream metrics in webrtc
-- Update `SignalingProtocol` with optional video metric fields
+- Add downstream audio webrtc metrics in `observableMetricSpec`.
+- Add `getObservableVideoMetrics` and in `ClientMetricReport` to expose video stream metrics in webrtc.
+- Update `SignalingProtocol` with optional video metric fields.
 
 ### Changed
-- Bump version for lodash, y18n, and ssri dependencies 
-- Mark `getObservableVideoMetrics` optional in ClientMetricReprt and `videoStreamIndex` and `selfAttendeeId` optional in DefaultClientMetricReport
+- Bump version for lodash, y18n, and ssri dependencies.
+- Mark `getObservableVideoMetrics` optional in ClientMetricReprt and `videoStreamIndex` and `selfAttendeeId` optional in `DefaultClientMetricReport`.
 
 ### Removed
 
