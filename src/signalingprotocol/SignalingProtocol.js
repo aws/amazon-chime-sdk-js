@@ -6450,8 +6450,12 @@ $root.SdkMetric = (function() {
             case 47:
             case 48:
             case 49:
+            case 64:
             case 66:
+            case 69:
             case 72:
+            case 86:
+            case 87:
                 break;
             }
         if (message.value != null && message.hasOwnProperty("value"))
@@ -6669,13 +6673,29 @@ $root.SdkMetric = (function() {
         case 49:
             message.type = 49;
             break;
+        case "VIDEO_ENCODE_HEIGHT":
+        case 64:
+            message.type = 64;
+            break;
         case "VIDEO_SENT_QP_SUM":
         case 66:
             message.type = 66;
             break;
+        case "VIDEO_DECODE_HEIGHT":
+        case 69:
+            message.type = 69;
+            break;
         case "VIDEO_RECEIVED_QP_SUM":
         case 72:
             message.type = 72;
+            break;
+        case "VIDEO_ENCODE_WIDTH":
+        case 86:
+            message.type = 86;
+            break;
+        case "VIDEO_DECODE_WIDTH":
+        case 87:
+            message.type = 87;
             break;
         }
         if (object.value != null)
@@ -6771,8 +6791,12 @@ $root.SdkMetric = (function() {
      * @property {number} VIDEO_DISCARDED_PPS=47 VIDEO_DISCARDED_PPS value
      * @property {number} VIDEO_PLIS_SENT=48 VIDEO_PLIS_SENT value
      * @property {number} VIDEO_RECEIVED_JITTER_MS=49 VIDEO_RECEIVED_JITTER_MS value
+     * @property {number} VIDEO_ENCODE_HEIGHT=64 VIDEO_ENCODE_HEIGHT value
      * @property {number} VIDEO_SENT_QP_SUM=66 VIDEO_SENT_QP_SUM value
+     * @property {number} VIDEO_DECODE_HEIGHT=69 VIDEO_DECODE_HEIGHT value
      * @property {number} VIDEO_RECEIVED_QP_SUM=72 VIDEO_RECEIVED_QP_SUM value
+     * @property {number} VIDEO_ENCODE_WIDTH=86 VIDEO_ENCODE_WIDTH value
+     * @property {number} VIDEO_DECODE_WIDTH=87 VIDEO_DECODE_WIDTH value
      */
     SdkMetric.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -6825,8 +6849,12 @@ $root.SdkMetric = (function() {
         values[valuesById[47] = "VIDEO_DISCARDED_PPS"] = 47;
         values[valuesById[48] = "VIDEO_PLIS_SENT"] = 48;
         values[valuesById[49] = "VIDEO_RECEIVED_JITTER_MS"] = 49;
+        values[valuesById[64] = "VIDEO_ENCODE_HEIGHT"] = 64;
         values[valuesById[66] = "VIDEO_SENT_QP_SUM"] = 66;
+        values[valuesById[69] = "VIDEO_DECODE_HEIGHT"] = 69;
         values[valuesById[72] = "VIDEO_RECEIVED_QP_SUM"] = 72;
+        values[valuesById[86] = "VIDEO_ENCODE_WIDTH"] = 86;
+        values[valuesById[87] = "VIDEO_DECODE_WIDTH"] = 87;
         return values;
     })();
 

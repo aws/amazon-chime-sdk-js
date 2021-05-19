@@ -5,6 +5,7 @@ import * as chai from 'chai';
 
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
+import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
@@ -17,6 +18,7 @@ import {
   SdkStreamMediaType,
 } from '../../src/signalingprotocol/SignalingProtocol';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
+import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 
@@ -200,13 +202,23 @@ describe('VideoAdaptiveProbePolicy', () => {
     it('can be no-op if there are no streams available to subscribe', () => {
       videoStreamIndex.integrateIndexFrame(new SdkIndexFrame());
       policy.updateIndex(videoStreamIndex);
-      policy.updateMetrics(new DefaultClientMetricReport(logger));
+      policy.updateMetrics(
+        new DefaultClientMetricReport(
+          logger,
+          new DefaultVideoStreamIndex(logger),
+          new NoOpAudioVideoController()
+        )
+      );
     });
 
     it('can update metrics', () => {
       prepareVideoStreamIndex(videoStreamIndex);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       const streamReport1 = new StreamMetricReport();
       streamReport1.streamId = 1;
       streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
@@ -277,7 +289,11 @@ describe('VideoAdaptiveProbePolicy', () => {
       const received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([1, 3, 11, 22]);
 
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableSendBandwidth'] = 4000 * 1000;
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 4000 * 1000;
@@ -315,7 +331,11 @@ describe('VideoAdaptiveProbePolicy', () => {
       policy.MIN_TIME_BETWEEN_PROBE = 20;
       // @ts-ignore
       policy.STARTUP_PERIOD_MS = 5;
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableSendBandwidth'] = 4000 * 1000;
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 4000 * 1000;
@@ -430,7 +450,11 @@ describe('VideoAdaptiveProbePolicy', () => {
     it('prefers content', () => {
       prepareVideoStreamIndex(videoStreamIndex);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2800 * 1000;
       policy.updateMetrics(metricReport);
@@ -477,7 +501,11 @@ describe('VideoAdaptiveProbePolicy', () => {
     it('Includes paused stream in subscribe', () => {
       updateIndexFrame(videoStreamIndex, 4, 300, 600);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2800 * 1000;
       let resub = policy.wantsResubscribe();
@@ -539,7 +567,11 @@ describe('VideoAdaptiveProbePolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
       policy.updateMetrics(metricReport);
@@ -600,7 +632,11 @@ describe('VideoAdaptiveProbePolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
       policy.updateMetrics(metricReport);
@@ -663,7 +699,11 @@ describe('VideoAdaptiveProbePolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
       policy.updateMetrics(metricReport);
@@ -719,7 +759,11 @@ describe('VideoAdaptiveProbePolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(logger);
+      const metricReport = new DefaultClientMetricReport(
+        logger,
+        new DefaultVideoStreamIndex(logger),
+        new NoOpAudioVideoController()
+      );
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
       policy.updateMetrics(metricReport);
