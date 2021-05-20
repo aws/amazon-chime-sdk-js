@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import Logger from '../logger/Logger';
 import { SdkMetric } from '../signalingprotocol/SignalingProtocol.js';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
@@ -20,8 +19,8 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
 
   constructor(
     private logger: Logger,
-    private videoStreamIndex: VideoStreamIndex,
-    private audioVideoController: AudioVideoController
+    private videoStreamIndex?: VideoStreamIndex,
+    private selfAttendeeId?: string
   ) {}
 
   /**
@@ -558,6 +557,12 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
 
   getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } } {
     const videoStreamMetrics: { [id: string]: { [id: string]: {} } } = {};
+    if (!this.videoStreamIndex || !this.selfAttendeeId) {
+      this.logger.error(
+        'Need to define VideoStreamIndex and selfAttendeeId if using getObservableVideoMetrics API'
+      );
+      return videoStreamMetrics;
+    }
     for (const ssrc in this.streamMetricReports) {
       if (this.streamMetricReports[ssrc].mediaType === MediaType.VIDEO) {
         const metric: { [id: string]: number } = {};
@@ -575,7 +580,7 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
         const streamId = this.streamMetricReports[ssrc].streamId;
         const attendeeId = streamId
           ? this.videoStreamIndex.attendeeIdForStreamId(streamId)
-          : this.audioVideoController.configuration.credentials.attendeeId;
+          : this.selfAttendeeId;
         videoStreamMetrics[attendeeId] = videoStreamMetrics[attendeeId]
           ? videoStreamMetrics[attendeeId]
           : {};
@@ -593,7 +598,7 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     const cloned = new DefaultClientMetricReport(
       this.logger,
       this.videoStreamIndex,
-      this.audioVideoController
+      this.selfAttendeeId
     );
     cloned.globalMetricReport = this.globalMetricReport;
     cloned.streamMetricReports = this.streamMetricReports;

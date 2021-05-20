@@ -189,7 +189,7 @@ export default class DefaultStatsCollector implements StatsCollector {
       this.clientMetricReport = new DefaultClientMetricReport(
         this.logger,
         this.videoStreamIndex,
-        this.audioVideoController
+        this.audioVideoController.configuration.credentials.attendeeId
       );
     }
 

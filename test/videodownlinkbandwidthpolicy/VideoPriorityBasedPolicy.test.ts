@@ -6,7 +6,6 @@ import * as sinon from 'sinon';
 
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
-import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
 import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
@@ -24,7 +23,6 @@ import VideoDownlinkObserver from '../../src/videodownlinkbandwidthpolicy/VideoD
 import VideoPreference from '../../src/videodownlinkbandwidthpolicy/VideoPreference';
 import { VideoPreferences } from '../../src/videodownlinkbandwidthpolicy/VideoPreferences';
 import VideoPriorityBasedPolicy from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
-import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -249,11 +247,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('no priority to priority', () => {
       updateIndexFrame(videoStreamIndex, 5, 0, 600);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2400 * 1000;
       policy.updateMetrics(metricReport);
@@ -280,11 +274,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('priority to no priority', () => {
       updateIndexFrame(videoStreamIndex, 4, 0, 600);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2400 * 1000;
       policy.updateMetrics(metricReport);
@@ -310,11 +300,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('priority value comparison checker', () => {
       updateIndexFrame(videoStreamIndex, 4, 0, 600);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2400 * 1000;
       policy.updateMetrics(metricReport);
@@ -356,11 +342,7 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.addObserver(observer);
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] =
         10000 * 1000;
@@ -498,11 +480,7 @@ describe('VideoPriorityBasedPolicy', () => {
       tile4.stateRef().boundAttendeeId = 'attendee-4';
 
       incrementTime(6100);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2100 * 1000;
       policy.updateMetrics(metricReport);
@@ -581,11 +559,7 @@ describe('VideoPriorityBasedPolicy', () => {
       const domMockBuilder = new DOMMockBuilder();
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] =
         10000 * 1000;
@@ -663,11 +637,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('Stream not added until enough bandwidth', () => {
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] =
         10000 * 1000;
@@ -783,11 +753,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('Video Tile cleaned up if never subscribed', () => {
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] =
         10000 * 1000;
@@ -884,11 +850,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('Video Tile cleaned up removed from preference list', () => {
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] =
         10000 * 1000;
@@ -966,11 +928,7 @@ describe('VideoPriorityBasedPolicy', () => {
     it('dont change subscription with small change', () => {
       updateIndexFrame(videoStreamIndex, 4, 300, 1200);
       policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(
-        logger,
-        new DefaultVideoStreamIndex(logger),
-        new NoOpAudioVideoController()
-      );
+      const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] =
         10000 * 1000;

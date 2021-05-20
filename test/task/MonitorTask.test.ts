@@ -383,11 +383,7 @@ describe('MonitorTask', () => {
       const clientMetricReport = new TestClientMetricReport();
       task.metricsDidReceive(clientMetricReport);
 
-      const defaultClientMetricReport = new DefaultClientMetricReport(
-        logger,
-        context.videoStreamIndex,
-        context.audioVideoController
-      );
+      const defaultClientMetricReport = new DefaultClientMetricReport(logger);
       const ssrc = 6789;
       defaultClientMetricReport.streamMetricReports[ssrc] = new StreamMetricReport();
       task.metricsDidReceive(defaultClientMetricReport);
@@ -402,11 +398,7 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(
-        logger,
-        context.videoStreamIndex,
-        context.audioVideoController
-      );
+      const clientMetricReport = new DefaultClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -434,11 +426,7 @@ describe('MonitorTask', () => {
       streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(
-        logger,
-        context.videoStreamIndex,
-        context.audioVideoController
-      );
+      const clientMetricReport = new DefaultClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);
@@ -477,11 +465,7 @@ describe('MonitorTask', () => {
       streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(
-        logger,
-        context.videoStreamIndex,
-        context.audioVideoController
-      );
+      const clientMetricReport = new DefaultClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);
@@ -503,11 +487,7 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(
-        logger,
-        context.videoStreamIndex,
-        context.audioVideoController
-      );
+      const clientMetricReport = new DefaultClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -527,11 +507,7 @@ describe('MonitorTask', () => {
       streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
 
-      const clientMetricReport = new DefaultClientMetricReport(
-        logger,
-        context.videoStreamIndex,
-        context.audioVideoController
-      );
+      const clientMetricReport = new DefaultClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       task.metricsDidReceive(clientMetricReport);
     });
@@ -607,11 +583,7 @@ describe('MonitorTask', () => {
       streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
       streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
 
-      const clientMetricReport = new TestClientMetricReport(
-        logger,
-        context.videoStreamIndex,
-        context.audioVideoController
-      );
+      const clientMetricReport = new TestClientMetricReport(logger);
       clientMetricReport.streamMetricReports[1] = streamMetricReport;
       clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
       task.metricsDidReceive(clientMetricReport);

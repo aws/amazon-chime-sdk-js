@@ -14,5 +14,5 @@ export default interface ClientMetricReport {
   /**
    * Gets video client media metrics
    */
-  getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } };
+  getObservableVideoMetrics?(): { [id: string]: { [id: string]: {} } };
 }
