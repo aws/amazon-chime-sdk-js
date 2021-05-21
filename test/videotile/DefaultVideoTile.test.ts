@@ -405,7 +405,9 @@ describe('DefaultVideoTile', () => {
       expect(videoElement.disablePictureInPicture).to.be.true;
       // @ts-ignore
       expect(videoElement.disableRemotePlayback).to.be.true;
-      expect(videoElement.style.transform).to.eq('rotateY(180deg)');
+      expect(videoElement.style.transform).to.eq(
+        'matrix3d(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)'
+      );
     });
 
     it('do not mirror local video for rear-facing camera', () => {
