@@ -353,7 +353,8 @@ export default class DefaultStatsCollector implements StatsCollector {
 
   private getDirectionType(rawMetricReport: RawMetricReport): Direction {
     return rawMetricReport.id.toLowerCase().indexOf('send') !== -1 ||
-      rawMetricReport.id.toLowerCase().indexOf('outbound') !== -1
+      rawMetricReport.id.toLowerCase().indexOf('outbound') !== -1 ||
+      rawMetricReport.type === 'outbound-rtp'
       ? Direction.UPSTREAM
       : Direction.DOWNSTREAM;
   }
