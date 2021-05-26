@@ -2359,6 +2359,10 @@ export class DemoMeetingApp
     return new URL(window.location.href).searchParams.get('broadcast') === 'true';
   }
 
+  isAbortingOnReconnect(): boolean {
+    return new URL(window.location.href).searchParams.get('abort-on-reconnect') === 'true';
+  }
+
   async authenticate(): Promise<string> {
     const joinInfo = (await this.joinMeeting()).JoinInfo;
     const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
@@ -2376,6 +2380,9 @@ export class DemoMeetingApp
 
   audioVideoDidStartConnecting(reconnecting: boolean): void {
     this.log(`session connecting. reconnecting: ${reconnecting}`);
+    if (reconnecting && this.isAbortingOnReconnect()) {
+        fatal(Error("reconnect occured with abort-on-reconnect set to true"));
+    }
   }
 
   audioVideoDidStart(): void {

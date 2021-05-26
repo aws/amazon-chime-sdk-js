@@ -22,6 +22,9 @@ class SdkBaseTest extends KiteBaseTest {
 
     if (['Video', 'Audio'].includes(testName)) {
       this.url = this.getTransformedURL(this.url, 'attendee-presence-timeout-ms', 5000);
+      // Allows us to easily treat unexpected reconnects as failures
+      this.url = this.getTransformedURL(this.url, 'abort-on-reconnect', 'true');
+      this.url = this.getTransformedURL(this.url, 'fatal', '1');
     }
 
     this.originalURL = this.url;

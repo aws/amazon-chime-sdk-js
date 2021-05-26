@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   this to trigger a signaling socket connection prior to device selection: call
   `audioVideo.start({ signalingOnly: true })`, and then later call
   `audioVideo.start()` as usual.
+- Added a 'abort-on-reconnect' query parameter to demo URL to trigger fatal
+  on reconnection for use in integration tests (default false).
 
 ### Changed
 
