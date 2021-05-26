@@ -443,7 +443,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.audioMixController = this._audioMixController;
     this.meetingSessionContext.audioVideoController = this;
 
-    const useAudioConnection: boolean = !!this.configuration.urls.audioHostURL;
+    const useAudioConnection: boolean = !this.configuration.enableAudioCheckinMode && !!this.configuration.urls.audioHostURL;
 
     if (!useAudioConnection) {
       this.logger.info(`Using video only transceiver controller`);

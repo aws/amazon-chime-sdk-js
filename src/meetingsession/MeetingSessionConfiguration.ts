@@ -89,6 +89,11 @@ export default class MeetingSessionConfiguration {
   enableUnifiedPlanForChromiumBasedBrowsers: boolean = true;
 
   /**
+   * Feature flag to enable audio check-in mode
+   */
+  enableAudioCheckinMode = false;
+  
+  /**
    * Feature flag to enable Simulcast
    */
   enableSimulcastForUnifiedPlanChromiumBasedBrowsers: boolean = false;

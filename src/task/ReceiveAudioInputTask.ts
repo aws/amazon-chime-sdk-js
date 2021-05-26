@@ -15,6 +15,11 @@ export default class ReceiveAudioInputTask extends BaseTask {
   }
 
   async run(): Promise<void> {
+    if (this.context.meetingSessionConfiguration?.enableAudioCheckinMode) {
+      this.context.logger.info('Audio check-in mode: not acquiring audio input');
+      return;
+    }
+
     if (!this.context.meetingSessionConfiguration?.urls?.audioHostURL) {
       this.context.logger.info('No audio connection: not acquiring audio input');
       return;

@@ -78,7 +78,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       localSdp,
       this.context.meetingSessionConfiguration.urls.audioHostURL,
       this.context.realtimeController.realtimeIsLocalAudioMuted(),
-      false,
+      this.context.meetingSessionConfiguration.enableAudioCheckinMode,
       this.context.videoSubscriptions,
       isSendingStreams,
       this.context.videoStreamIndex.localStreamDescriptions(),
