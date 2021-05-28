@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 ### Changed
+- Log error instead of throwing error if the signaling client is not ready to send data message
 
 ### Removed
 
