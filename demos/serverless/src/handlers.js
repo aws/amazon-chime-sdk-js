@@ -30,11 +30,12 @@ const {
 
 exports.index = async (event, context, callback) => {
   // Return the contents of the index page
-  console.log("*****Serverless index page loaded......****")
+  console.log("*****Serverless index page loaded......****");
   return response(200, 'text/html', fs.readFileSync('./index.html', {encoding: 'utf8'}));
 };
 
 exports.join = async(event, context) => {
+  console.log("*****Serverless join......****");
   const query = event.queryStringParameters;
   if (!query.title || !query.name || !query.region) {
     return response(400, 'application/json', JSON.stringify({error: 'Need parameters: title, name, region'}));
@@ -43,6 +44,7 @@ exports.join = async(event, context) => {
   // Look up the meeting by its title. If it does not exist, create the meeting.
   let meeting = await getMeeting(query.title);
   if (!meeting) {
+    console.log("*****Serverless if not meeting......****");
     const request = {
       // Use a UUID for the client request token to ensure that any request retries
       // do not create multiple meetings.
@@ -64,7 +66,7 @@ exports.join = async(event, context) => {
         { Key: 'Department', Value: 'RND'}
       ]
     };
-    console.info('Creating new meeting: ' + JSON.stringify(request));
+    console.info('****Serverless Creating new meeting: ' + JSON.stringify(request));
     meeting = await chime.createMeeting(request).promise();
 
     // Store the meeting in the table using the meeting title as the key.
@@ -72,7 +74,7 @@ exports.join = async(event, context) => {
   }
 
   // Create new attendee for the meeting
-  console.info('Adding new attendee');
+  console.info('**** Serverless Adding new attendee***');
   const attendee = (await chime.createAttendee({
     // The meeting ID of the created meeting to add the attendee to
     MeetingId: meeting.Meeting.MeetingId,
@@ -86,6 +88,7 @@ exports.join = async(event, context) => {
 
   // Return the meeting and attendee responses. The client will use these
   // to join the meeting.
+  console.log("*****Serverless created new attendee*******");
   return response(200, 'application/json', JSON.stringify({
     JoinInfo: {
       Meeting: meeting,
@@ -100,6 +103,7 @@ exports.end = async (event, context) => {
 
   // End the meeting. All attendee connections will hang up.
   await chime.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId }).promise();
+  console.log("*****Serverless delete meeting****");
   return response(200, 'application/json', JSON.stringify({}));
 };
 
@@ -109,7 +113,7 @@ exports.fetch_credentials = async (event, context) => {
     secretAccessKey: AWS.config.credentials.secretAccessKey,
     sessionToken: AWS.config.credentials.sessionToken,
   };
-
+  console.log("******Serverless Fetch credentials*****");
   return response(200, 'application/json', JSON.stringify(awsCredentials));
 };
 
@@ -150,6 +154,7 @@ exports.log_meeting_event = async (event, context) => {
 // Called when SQS receives records of meeting events and logs out those records
 exports.sqs_handler = async (event, context, callback) => {
   console.log(event.Records);
+  console.log("******Serverless SQS Handler******");
   return {};
 }
 

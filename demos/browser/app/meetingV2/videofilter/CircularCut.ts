@@ -31,8 +31,10 @@ export default class CircularCut implements VideoFrameProcessor {
 
   process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
     // assuming one video stream
-    alert("*****buffers is:**** ${buffers}");
+    console.log("******Circularcuts***", buffers);
+    console.log("******Circularcuts***", buffers[0].asCanvasElement());
     const canvas = buffers[0].asCanvasElement();
+    console.log("*****Circular cut****", canvas);
     const frameWidth = canvas.width;
     const frameHeight = canvas.height;
 

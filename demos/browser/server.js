@@ -15,7 +15,7 @@ const meetingTable = {};
 const app = process.env.npm_config_app || 'meetingV2';
 const indexPagePath = `dist/${app}.html`;
 
-console.info('Using index path', indexPagePath);
+console.info('*****Server Using index path***** is: ', indexPagePath);
 
 const indexPage = fs.readFileSync(indexPagePath);
 
@@ -26,14 +26,14 @@ const chime = new AWS.Chime({ region: 'us-east-1' });
 
 // Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
 const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
-console.info('Using endpoint', endpoint);
+console.info('***Server Using endpoint *****: ', endpoint);
 
 chime.endpoint = new AWS.Endpoint(endpoint);
 
 function serve(host = '127.0.0.1:8080') {
   // Start an HTTP server to serve the index page and handle meeting actions
   http.createServer({}, async (request, response) => {
-    log(`${request.method} ${request.url} BEGIN`);
+    log(`**** Server ${request.method} ${request.url} BEGIN *****`);
     try {
       // Enable HTTP compression
       compression({})(request, response, () => {});

@@ -425,7 +425,7 @@ export class DemoMeetingApp
   initParameters(): void {
     const meeting = new URL(window.location.href).searchParams.get('m');
     const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
-    alert("meetingv2.ts file");
+    console.log("***** meetingv2.ts Arunnnnnnnn file ****");
     logger.info('[DEMO] Arunnnnnnnn initparameter*****.');  
     if (meeting) {
       (document.getElementById('inputMeeting') as HTMLInputElement).value = meeting;    
@@ -1611,10 +1611,13 @@ export class DemoMeetingApp
       if (report.type === 'outbound-rtp') {
         // remained to be calculated
         this.log(`${id} is bound to ssrc ${report.ssrc}`);
+        console.log("********for each report frame details is ***", report);
         basicReports['bitrate'] = report.bytesSent;
         basicReports['width'] = report.frameWidth;
         basicReports['height'] = report.frameHeight;
         basicReports['fps'] = report.framesEncoded;
+        console.log("**** FPS frames encoded result is ", report.frames);
+        console.log("**** FPS frames encoded result is ", report.framesEncoded);
         duration = report.timestamp;
         const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
         logger.info('[DEMO] Arunnnnnnnn forrach meetingv2.ts *****.:  ${report}');  
