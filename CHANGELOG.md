@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+### Added 
+
+### Changed
+
+### Removed
+
+### Fixed
+- Fixed missing upstream video metrics for Firefox browsers.
+- Fix build script to run on Windows by specifying ruby when running ruby scripts and rimraf to remove folder
+
+## [2.10.0] - 2021-05-19
+
+### Changed
+- Update guide for priority based downlink policy
+
+### Added 
+
+- Add new message `MeetingSessionStatusCode` `AudioAttendeeRemoved` to handle
+  the new audio server status code 411.
+- Add support for `WKWebView` on iOS.
+- Output a warning message when the volume adapter cleans up the self-attendee after reconnection.
+- Add FAQ for more information on `AudioJoinFromAnotherDevice` meeting session status code.
+- Add downstream audio webrtc metrics in `observableMetricSpec`.
+- Add `getObservableVideoMetrics` and in `ClientMetricReport` to expose video stream metrics in webrtc.
+- Update `SignalingProtocol` with optional video metric fields.
+
+### Changed
+- Bump version for lodash, y18n, and ssri dependencies.
+- Mark `getObservableVideoMetrics` optional in ClientMetricReprt and `videoStreamIndex` and `selfAttendeeId` optional in `DefaultClientMetricReport`.
+
+### Removed
+
+### Fixed
+- Do not start local video tile if there is no stream for content share
+
+- Media streams are no longer discarded during reconnects. This fixes an issue
+  where initial signaling connection failures could cause a client to be unable
+  to join a meeting with audio if Web Audio were enabled.
+
+## [2.9.0] - 2021-05-10
+
 ### Added
 
 - Add the Messaging section in FAQs to describe how to receive messages

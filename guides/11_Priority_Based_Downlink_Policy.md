@@ -8,7 +8,7 @@ Amazon Chime SDK for JavaScript defines `VideoPriorityBasedPolicy` as the centra
 
 The existing `AllHighestVideoBandwidthPolicy` and `AdaptiveProbePolicy` both subscribe to a fixed number of available remote video sources. Builders listen to `videoTileDidUpdate` when a new remote video source becomes available and call `pauseVideoTile` if they don’t want it to be seen, otherwise video sources will be consumed automatically. `VideoPriorityBasedPolicy` relies on builders subscribing to `AudioVideoObserver.remoteVideoSourcesDidChange` to receive updates on available remote sources, and then calling `chooseRemoteVideoSources` to set which video sources to receive and their related preferences. Note that when using `VideoPriorityBasePolicy`, if builders do not call `chooseRemoteVideoSources`, no videos will be subscribed to. `videoTileDidUpdate` will then be called if we are able to successfully subscribe to the stream.
 
-Under constrained networks where simulcast is in use, `VideoPriorityBasedPolicy` may lower the resolution of remote video sources, starting with the lowest priority sources. If all video sources are at the lowest resolution possible, or simulcast is not being used, the policy may further pause video tiles until the network has recovered, again starting from the lowest priority sources.
+Under constrained networks where simulcast is in use, `VideoPriorityBasedPolicy` may lower the resolution of remote video sources, starting with the lowest priority sources. All video sources are separeted into multiple groups by different priorities. If all video sources within same priority group are at the lowest resolution possible, or simulcast is not being used, the policy may further pause video tiles until the network has recovered. Same operations will be repeated group by group, from priority lowest to highest.
 
 A typical workflow to use this policy would be:
 
@@ -33,7 +33,7 @@ Once you are connected to the meeting, builders will be notified of available re
 
 * _*attendeeId:*_  The attendee ID this video tile belongs to. Note that screen share video will have a suffix of #content
 * _*priority:*_ Provides relative priority of this attendee from 1 to x, where 1 is the highest priority. Remote videos are allowed to have the same priority signifying equal priority between them.
-* *_desiredMaxSize:_* Optional parameter to control maximum simulcast layer to receive. Default value is Large. 
+* *_targetSize:_* Optional parameter to control maximum simulcast layer to receive. Default value is High.
 
 **Configuring the receipt and priority of remote video sources** 
 The main API being used is:

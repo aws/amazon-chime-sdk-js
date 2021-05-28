@@ -45,6 +45,8 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.9.0 Chrome/85.0.4183.93 Electron/10.1.1 Safari/537.36 Sonic Slack_SSB/4.9.0';
   const ELECTRON_WINDOWS_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0.18362; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.9.0 Chrome/85.0.4183.93 Electron/10.1.1 Safari/537.36 Sonic Slack_SSB/4.9.0';
+  const WKWEBVIEW_IOS_USER_AGENT =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -247,6 +249,20 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(29);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.true;
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
+    });
+
+    it('can detect iOS WKWebView', () => {
+      setUserAgent(WKWEBVIEW_IOS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('ios-webview');
+      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(605);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;

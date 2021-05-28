@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const exec = require('child_process').execSync;
+
+const versions = exec('npm view amazon-chime-sdk-js versions --json').toString().trim().split("\n");
+// The output would be something like
+// [
+//   "1.0.0",
+//       ...
+//   "2.8.0", <- previous version
+//   "2.9.0"  <- latest version
+// ]
+
+const prev_version = versions[versions.length-3];
+console.log(prev_version.substring(3,prev_version.length-2))

@@ -181,6 +181,7 @@ import ReceiveVideoInputTask from './task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from './task/ReceiveVideoStreamIndexTask';
 import ReconnectController from './reconnectcontroller/ReconnectController';
 import ReconnectionHealthPolicy from './connectionhealthpolicy/ReconnectionHealthPolicy';
+import ReleaseMediaStreamsTask from './task/ReleaseMediaStreamsTask';
 import RemovableAnalyserNode from './devicecontroller/RemovableAnalyserNode';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
@@ -454,6 +455,7 @@ export {
   ReceiveVideoStreamIndexTask,
   ReconnectController,
   ReconnectionHealthPolicy,
+  ReleaseMediaStreamsTask,
   RemovableAnalyserNode,
   RemovableObserver,
   RunnableTask,

@@ -181,6 +181,10 @@
 					<p>The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html">CreateMeeting</a> or
 						<a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html">CreateMeetingWithAttendees</a> is invoked and the meeting is created, the auto end
 					policies will kick in and if no one joins the meeting, it will close within 5 minutes. The application can create the meeting when drawing closer to the meeting start time or when the the first attendee is ready to join.</p>
+					<a href="#what-happens-when-i-try-to-re-use-same-attendee-response-to-join-a-meeting-twice" id="what-happens-when-i-try-to-re-use-same-attendee-response-to-join-a-meeting-twice" style="color: inherit; text-decoration: none;">
+						<h3>What happens when I try to re-use same attendee response to join a meeting twice?</h3>
+					</a>
+					<p> Suppose an attendee has joined a meeting, now if that same attendee tries to join the same meeting again using the same <code>AttendeeId</code> or <code>ExternalUserId</code> response received from <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">CreateAttendee</a> API, then, the first attendee will automatically leave the meeting with <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice"><code>AudioJoinFromAnotherDevice</code></a> meeting session status code. Reference issue: <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1290">#1290</a>. The <code>AudioJoinFromAnotherDevice</code> meeting session status code is triggered by Amazon Chime backend and it is not triggered internally from the JS SDK.</p>
 					<a href="#media" id="media" style="color: inherit; text-decoration: none;">
 						<h2>Media</h2>
 					</a>

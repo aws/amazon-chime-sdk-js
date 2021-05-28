@@ -17,6 +17,7 @@ import {
   DataMessage,
   DefaultActiveSpeakerPolicy,
   DefaultAudioMixController,
+  DefaultAudioVideoController,
   DefaultBrowserBehavior,
   DefaultDeviceController,
   DefaultMeetingSession,
@@ -26,8 +27,8 @@ import {
   DeviceChangeObserver,
   EventAttributes,
   EventName,
-  Logger,
   LogLevel,
+  Logger,
   MeetingSession,
   MeetingSessionConfiguration,
   MeetingSessionPOSTLogger,
@@ -43,14 +44,14 @@ import {
   Versioning,
   VideoFrameProcessor,
   VideoInputDevice,
+  VideoPreference,
+  VideoPreferences,
+  VideoPriorityBasedPolicy,
   VideoSource,
   VideoTileState,
   VoiceFocusDeviceTransformer,
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
-  VideoPreference,
-  VideoPreferences,
-  VideoPriorityBasedPolicy,
   isAudioTransformDevice,
 } from 'amazon-chime-sdk-js';
 
@@ -61,7 +62,6 @@ import {
   loadBodyPixDependency,
   platformCanSupportBodyPixWithoutDegradation,
 } from './videofilter/SegmentationUtil';
-import WebRTCStatsCollector from './webrtcstatscollector/WebRTCStatsCollector';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -277,6 +277,7 @@ export class DemoMeetingApp
     'button-pause-content-share': false,
     'button-video-stats': false,
     'button-video-filter': false,
+    'button-record-self': false,
   };
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
@@ -299,7 +300,6 @@ export class DemoMeetingApp
 
   hasChromiumWebRTC: boolean = this.defaultBrowserBehaviour.hasChromiumWebRTC();
 
-  statsCollector: WebRTCStatsCollector = new WebRTCStatsCollector();
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
 
@@ -319,6 +319,28 @@ export class DemoMeetingApp
   // Holding Shift while hitting the Leave button is handled by setting
   // this to `halt`, which allows us to stop and measure memory leaks.
   behaviorAfterLeave: 'spa' | 'reload' | 'halt' = 'reload';
+
+  videoUpstreamMetricsKeyStats: { [key: string]: string } = {
+    videoUpstreamGoogFrameHeight: 'Frame Height',
+    videoUpstreamGoogFrameWidth: 'Frame Width',
+    videoUpstreamFrameHeight: 'Frame Height',
+    videoUpstreamFrameWidth: 'Frame Width',
+    videoUpstreamBitrate: 'Bitrate (bps)',
+    videoUpstreamPacketsSent: 'Packets Sent',
+    videoUpstreamFramesEncodedPerSecond: 'Frame Rate',
+  };
+
+  videoDownstreamMetricsKeyStats: { [key: string]: string } = {
+    videoDownstreamGoogFrameHeight: 'Frame Height',
+    videoDownstreamGoogFrameWidth: 'Frame Width',
+    videoDownstreamFrameHeight: 'Frame Height',
+    videoDownstreamFrameWidth: 'Frame Width',
+    videoDownstreamBitrate: 'Bitrate (bps)',
+    videoDownstreamPacketLossPercent: 'Packet Loss (%)',
+    videoDownstreamFramesDecodedPerSecond: 'Frame Rate',
+  };
+
+  videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
 
   removeFatalHandlers: () => void;
 
@@ -711,6 +733,61 @@ export class DemoMeetingApp
       }
     });
 
+    const buttonRecordSelf = document.getElementById('button-record-self');
+    let recorder: MediaRecorder;
+    buttonRecordSelf.addEventListener('click', _e => {
+      const chunks: Blob[] = [];
+      AsyncScheduler.nextTick(async () => {
+        if (!this.toggleButton('button-record-self')) {
+          console.info('Stopping recorder ', recorder);
+          recorder.stop();
+          recorder = undefined;
+          return;
+        }
+
+        // Combine the audio and video streams.
+        const mixed = new MediaStream();
+
+        const localTile = this.audioVideo.getLocalVideoTile();
+        if (localTile) {
+          mixed.addTrack(localTile.state().boundVideoStream.getVideoTracks()[0]);
+        }
+
+        // We need to get access to the media stream broker, which requires knowing
+        // the exact implementation. Sorry!
+        /* @ts-ignore */
+        const av: DefaultAudioVideoController = this.audioVideo.audioVideoController;
+        const input = await av.mediaStreamBroker.acquireAudioInputStream();
+        mixed.addTrack(input.getAudioTracks()[0]);
+
+        recorder = new MediaRecorder(mixed, { mimeType: 'video/webm; codecs=vp9' });
+        console.info('Setting recorder to', recorder);
+        recorder.ondataavailable = (event) => {
+          if (event.data.size) {
+            chunks.push(event.data);
+          }
+        };
+
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, {
+            type: 'video/webm',
+          });
+          chunks.length = 0;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          document.body.appendChild(a);
+          /* @ts-ignore */
+          a.style = 'display: none';
+          a.href = url;
+          a.download = 'recording.webm';
+          a.click();
+          window.URL.revokeObjectURL(url);
+        };
+
+        recorder.start();
+      });
+    });
+
     const buttonVideo = document.getElementById('button-camera');
     buttonVideo.addEventListener('click', _e => {
       AsyncScheduler.nextTick(async () => {
@@ -1055,6 +1132,7 @@ export class DemoMeetingApp
 
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const metricReport = clientMetricReport.getObservableMetrics();
+    this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
     if (
       typeof metricReport.availableSendBandwidth === 'number' &&
       !isNaN(metricReport.availableSendBandwidth)
@@ -1097,10 +1175,10 @@ export class DemoMeetingApp
         'Available Downlink Bandwidth: Unknown';
     }
 
-    this.hasChromiumWebRTC && this.isButtonOn('button-video-stats') && this.getAndShowWebRTCStats();
+    this.isButtonOn('button-video-stats') && this.showVideoWebRTCStats(this.videoMetricReport);
   }
 
-  getAndShowWebRTCStats(): void {
+  showVideoWebRTCStats(videoMetricReport: { [id: string]: { [id: string]: {} } }): void {
     const videoTiles = this.audioVideo.getAllVideoTiles();
     if (videoTiles.length === 0) {
       return;
@@ -1112,14 +1190,76 @@ export class DemoMeetingApp
       }
       const tileId = videoTile.id();
       const tileIndex = this.tileIdToTileIndex[tileId];
-      this.getStats(tileIndex);
       if (tileState.localTile) {
-        this.statsCollector.showUpstreamStats(tileIndex);
+        this.showVideoStats(tileIndex, this.videoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream');
       } else {
-        this.statsCollector.showDownstreamStats(tileIndex);
+        this.showVideoStats(tileIndex, this.videoDownstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Downstream');
       }
     }
   }
+
+  showVideoStats = (
+    tileIndex: number,
+    keyStatstoShow: { [key: string]: string },
+    metricsData: { [id: string]: {[key: string]: number} },
+    streamDirection: string,
+  ): void => {
+    const streams = metricsData ? Object.keys(metricsData) : [];
+    if (streams.length === 0) {
+      return;
+    }
+
+    let statsInfo: HTMLDivElement = document.getElementById(
+      `stats-info-${tileIndex}`
+    ) as HTMLDivElement;
+    if (!statsInfo) {
+      statsInfo = document.createElement('div');
+      statsInfo.setAttribute('id', `stats-info-${tileIndex}`);
+      statsInfo.setAttribute('class', `stats-info`);
+    }
+
+    const statsInfoTableId = `stats-table-${tileIndex}`;
+    let statsInfoTable = document.getElementById(statsInfoTableId) as HTMLTableElement;
+    if (statsInfoTable) {
+      statsInfo.removeChild(statsInfoTable);
+    }
+    statsInfoTable = document.createElement('table') as HTMLTableElement;
+    statsInfoTable.setAttribute('id', statsInfoTableId);
+    statsInfoTable.setAttribute('class', 'stats-table');
+    statsInfo.appendChild(statsInfoTable);
+
+    const videoEl = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
+    videoEl.insertAdjacentElement('afterend', statsInfo);
+    const header = statsInfoTable.insertRow(-1);
+    let cell = header.insertCell(-1);
+    cell.innerHTML = 'Video statistics';
+    for (let cnt = 0; cnt < streams.length; cnt++) {
+      cell = header.insertCell(-1);
+      cell.innerHTML = `${streamDirection} ${cnt + 1}`;
+    }
+
+    for (const ssrc of streams) {
+      for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
+        if (keyStatstoShow[metricName]) {
+          const rowElement = document.getElementById(
+            `${metricName}-${tileIndex}`
+          ) as HTMLTableRowElement;
+          const row = rowElement ? rowElement : statsInfoTable.insertRow(-1);
+          if (!rowElement) {
+            row.setAttribute('id', `${metricName}-${tileIndex}`);
+            cell = row.insertCell(-1);
+            cell.innerHTML = keyStatstoShow[metricName];
+          }
+            cell = row.insertCell(-1);
+            cell.innerHTML = `${value}`;
+        }
+      }
+    }
+  };
+
+  resetStats = (): void => {
+    this.videoMetricReport = {};
+  };
 
   async getRelayProtocol(): Promise<void> {
     const rawStats = await this.audioVideo.getRTCPeerConnectionStats();
@@ -1138,22 +1278,6 @@ export class DemoMeetingApp
         }
       });
     }
-  }
-
-  async getStats(tileIndex: number): Promise<void> {
-    const id = `video-${tileIndex}`;
-    const videoElement = document.getElementById(id) as HTMLVideoElement;
-    if (!videoElement || !videoElement.srcObject) {
-      return;
-    }
-
-    const stream = videoElement.srcObject as MediaStream;
-    const tracks = stream.getVideoTracks();
-    if (tracks.length === 0) {
-      return;
-    }
-    const report = await this.audioVideo.getRTCPeerConnectionStats(tracks[0]);
-    this.statsCollector.processWebRTCStatReportForTileIndex(report, tileIndex);
   }
 
   async createLogStream(
@@ -1305,7 +1429,7 @@ export class DemoMeetingApp
   }
 
   async leave(): Promise<void> {
-    this.statsCollector.resetStats();
+    this.resetStats();
     this.audioVideo.stop();
     await this.voiceFocusDevice?.stop();
     this.voiceFocusDevice = undefined;
@@ -1408,7 +1532,8 @@ export class DemoMeetingApp
       }
       if (!this.roster[attendeeId] || !this.roster[attendeeId].name) {
         this.roster[attendeeId] = {
-          name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : ''),
+          ...this.roster[attendeeId],
+          ... {name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '')}
         };
       }
       this.audioVideo.realtimeSubscribeToVolumeIndicator(
@@ -2391,8 +2516,8 @@ export class DemoMeetingApp
 
   audioVideoDidStop(sessionStatus: MeetingSessionStatus): void {
     this.log(`session stopped from ${JSON.stringify(sessionStatus)}`);
-    this.log(`resetting stats in WebRTCStatsCollector`);
-    this.statsCollector.resetStats();
+    this.log(`resetting stats`);
+    this.resetStats();
 
     const returnToStart = () => {
       switch (this.behaviorAfterLeave) {

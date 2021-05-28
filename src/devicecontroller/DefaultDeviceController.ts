@@ -737,10 +737,17 @@ export default class DefaultDeviceController
 
     // Remove the input and output nodes. They will be recreated later if
     // needed.
-    this.audioInputSourceNode.disconnect();
-    this.audioInputSourceNode = undefined;
-    this.audioInputDestinationNode.disconnect();
-    this.audioInputDestinationNode = undefined;
+    /* istanbul ignore else */
+    if (this.audioInputSourceNode) {
+      this.audioInputSourceNode.disconnect();
+      this.audioInputSourceNode = undefined;
+    }
+
+    /* istanbul ignore else */
+    if (this.audioInputDestinationNode) {
+      this.audioInputDestinationNode.disconnect();
+      this.audioInputDestinationNode = undefined;
+    }
   }
 
   private releaseVideoTransformStream(): void {

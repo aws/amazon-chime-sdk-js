@@ -248,8 +248,13 @@ message SdkMetric {
         VIDEO_DISCARDED_PPS = 47;
         VIDEO_PLIS_SENT = 48;
         VIDEO_RECEIVED_JITTER_MS = 49;
+        VIDEO_ENCODE_HEIGHT = 64;
         VIDEO_SENT_QP_SUM = 66;
+        VIDEO_DECODE_HEIGHT=69;
         VIDEO_RECEIVED_QP_SUM = 72;
+        VIDEO_ENCODE_WIDTH = 86;
+        VIDEO_DECODE_WIDTH = 87;
+        
     }
     optional Type type = 1;
     optional double value = 2;
