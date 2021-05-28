@@ -424,8 +424,11 @@ export class DemoMeetingApp
 
   initParameters(): void {
     const meeting = new URL(window.location.href).searchParams.get('m');
+    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    alert("meetingv2.ts file");
+    logger.info('[DEMO] Arunnnnnnnn initparameter*****.');  
     if (meeting) {
-      (document.getElementById('inputMeeting') as HTMLInputElement).value = meeting;
+      (document.getElementById('inputMeeting') as HTMLInputElement).value = meeting;    
       (document.getElementById('inputName') as HTMLInputElement).focus();
     } else {
       (document.getElementById('inputMeeting') as HTMLInputElement).focus();
@@ -1294,7 +1297,7 @@ export class DemoMeetingApp
         body,
       });
       if (response.status === 200) {
-        console.log('[DEMO] log stream created');
+        console.log('[DEMO] ******log stream created*******');
       }
     } catch (error) {
       fatal(error);
@@ -1613,6 +1616,8 @@ export class DemoMeetingApp
         basicReports['height'] = report.frameHeight;
         basicReports['fps'] = report.framesEncoded;
         duration = report.timestamp;
+        const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+        logger.info('[DEMO] Arunnnnnnnn forrach meetingv2.ts *****.:  ${report}');  
       }
     });
 
