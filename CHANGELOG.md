@@ -10,15 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Added 
+- Add more debug logging for choose input device. 
 
 ### Changed
-- Log error instead of throwing error if the signaling client is not ready to send data message
+- Log error instead of throwing error if the signaling client is not ready to send data message.
 
 ### Removed
 
 ### Fixed
 - Fixed missing upstream video metrics for Firefox browsers.
-- Fix build script to run on Windows by specifying ruby when running ruby scripts and rimraf to remove folder
+- Fix build script to run on Windows by specifying ruby when running ruby scripts and rimraf to remove folder.
 
 ## [2.10.0] - 2021-05-19
 
