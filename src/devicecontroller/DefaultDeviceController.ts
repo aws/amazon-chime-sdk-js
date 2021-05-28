@@ -1155,6 +1155,9 @@ export default class DefaultDeviceController
       return true;
     }
     const deviceIds = DefaultDeviceController.getIntrinsicDeviceId(device);
+    this.logger.debug(
+      `Checking deviceIds ${deviceIds} of type ${typeof deviceIds} with groupId ${groupId}`
+    );
     if (typeof deviceIds === 'string' && groupId === this.getGroupIdFromDeviceId(kind, deviceIds)) {
       return true;
     }
@@ -1162,14 +1165,23 @@ export default class DefaultDeviceController
   }
 
   private getGroupIdFromDeviceId(kind: string, deviceId: string): string {
+    /* istanbul ignore else */
     if (this.deviceInfoCache !== null) {
       const cachedDeviceInfo = this.listCachedDevicesOfKind(`${kind}input`).find(
         (cachedDevice: MediaDeviceInfo) => cachedDevice.deviceId === deviceId
       );
       if (cachedDeviceInfo && cachedDeviceInfo.groupId) {
+        this.logger.debug(
+          `GroupId of deviceId ${deviceId} found in cache is ${cachedDeviceInfo.groupId}`
+        );
         return cachedDeviceInfo.groupId;
       }
+    } else {
+      this.logger.error(
+        'Device cache is not populated. Please make sure to call list devices first'
+      );
     }
+    this.logger.debug(`GroupId of deviceId ${deviceId} found in cache is empty`);
     return '';
   }
 
@@ -1305,6 +1317,11 @@ export default class DefaultDeviceController
       this.hasSameGroupId(selection.groupId, kind, device)
     ) {
       // TODO: this should be computed within this function.
+      this.logger.debug(
+        `Compare current device constraint ${JSON.stringify(
+          selection.constraints
+        )} to proposed constraints ${JSON.stringify(proposedConstraints)}`
+      );
       return selection.matchesConstraints(proposedConstraints);
     }
 
