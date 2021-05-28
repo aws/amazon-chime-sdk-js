@@ -171,11 +171,11 @@ describe('SendAndReceiveDataMessagesTask', () => {
     expect(spy.calledOnceWithExactly(sinon.match(dataMessageFrame))).to.be.true;
   });
 
-  it('throw error if signaling client is not ready', () => {
+  it('log an error if signaling client is not ready', () => {
+    const spy = sinon.spy(context.logger, 'error');
     context.signalingClient.closeConnection();
-    expect(() => {
-      task.sendDataMessageHandler('topic', 'Test message');
-    }).to.throw('Signaling client is not ready');
+    task.sendDataMessageHandler('topic', 'Test message');
+    expect(spy.calledOnce).to.be.true;
   });
 
   it('thow error if invalid topic', async () => {
