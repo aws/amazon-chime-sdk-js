@@ -30,6 +30,7 @@ const {
 
 exports.index = async (event, context, callback) => {
   // Return the contents of the index page
+  console.log("*****Serverless index page loaded......****")
   return response(200, 'text/html', fs.readFileSync('./index.html', {encoding: 'utf8'}));
 };
 
