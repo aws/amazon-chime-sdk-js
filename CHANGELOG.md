@@ -8,8 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
-- Add more debug logging for choose input device.
+- Add more debug logging for choose input device. 
 - Add the meeting and device error sections in the meeting-event guide.
 - Add a `forceUpdate` parameter to use when listing devices. In some cases, builders
   need to delay the triggering of permission dialogs, _e.g._, when joining a

@@ -383,7 +383,7 @@ export default class DefaultDeviceController
 
       await this.chooseAudioTransformInputDevice(device);
     } else {
-      this.logger.info(`Choosing intrinsic input device ${device}`);
+      this.logger.info(`Choosing intrinsic audio input device ${device}`);
       this.removeTransform();
       await this.chooseInputIntrinsicDevice('audio', device, false);
       this.trace('chooseAudioInputDevice', device, `success`);
@@ -1304,6 +1304,7 @@ export default class DefaultDeviceController
       }
     }
     delete device.endedCallback;
+    this.logger.debug(`Releasing active device ${JSON.stringify(device)}`);
     this.releaseMediaStream(device.stream);
     delete device.stream;
   }
@@ -1370,7 +1371,7 @@ export default class DefaultDeviceController
     // `applyConstraints` can be used to reuse the active device while changing the
     // requested constraints.
     if (this.matchesDeviceSelection(kind, device, this.activeDevices[kind], proposedConstraints)) {
-      this.logger.info(`reusing existing ${kind} device`);
+      this.logger.info(`reusing existing ${kind} input device`);
       return;
     }
 
@@ -1491,6 +1492,7 @@ export default class DefaultDeviceController
     const oldDevice = this.activeDevices[kind];
 
     this.activeDevices[kind] = newDevice;
+    this.logger.debug(`Set activeDevice to ${JSON.stringify(newDevice)}`);
     this.watchForDeviceChangesIfNecessary();
 
     if (kind === 'video') {
@@ -1642,7 +1644,7 @@ export default class DefaultDeviceController
         throw new Error(`no ${kind} device chosen, stopping local video tile`);
       }
     } else {
-      this.logger.info(`checking whether existing ${kind} device can be reused`);
+      this.logger.info(`checking whether existing ${kind} input device can be reused`);
       const active = this.activeDevices[kind];
       // @ts-ignore
       existingConstraints = active.constraints ? active.constraints[kind] : null;
