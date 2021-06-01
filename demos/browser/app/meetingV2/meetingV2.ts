@@ -2506,7 +2506,7 @@ export class DemoMeetingApp
   audioVideoDidStartConnecting(reconnecting: boolean): void {
     this.log(`session connecting. reconnecting: ${reconnecting}`);
     if (reconnecting && this.isAbortingOnReconnect()) {
-        fatal(Error("reconnect occured with abort-on-reconnect set to true"));
+        fatal(Error('reconnect occured with abort-on-reconnect set to true'));
     }
   }
 

@@ -6,7 +6,7 @@ const SdkBaseTest = require('./utils/SdkBaseTest');
 const { v4: uuidv4 } = require('uuid');
 
 // We will toggle the video on and off multiple times
-const videoToggleCount = 2
+const videoToggleCount = 2;
 
 class VideoTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
