@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 - Add more debug logging for choose input device. 
+- Add the meeting and device error sections in the meeting-event guide.
 
 ### Changed
 - Log error instead of throwing error if the signaling client is not ready to send data message.

@@ -85,7 +85,7 @@
 meetingSession.audioVideo.addObserver(observer);
 </code></pre>
 					<p>In the <code>eventDidReceive</code> observer method, we recommend that you handle each meeting event so that
-					you don&#39;t have to worry about how your event processing would scale when the later versions of Chime SDK introduce new meeting events.</p>
+					you don&#39;t have to worry about how your event processing would scale when the later versions of the Chime SDK for JavaScript introduce new meeting events.</p>
 					<p>For example, the code outputs error information for four failure events at the &quot;error&quot; log level.</p>
 					<pre><code class="language-js"><span class="hljs-function"><span class="hljs-title">eventDidReceive</span>(<span class="hljs-params">name, attributes</span>)</span> {
   <span class="hljs-keyword">switch</span> (name) {
@@ -140,7 +140,7 @@ meetingSession.audioVideo.addObserver(observer);
 					<a href="#meeting-events-and-attributes" id="meeting-events-and-attributes" style="color: inherit; text-decoration: none;">
 						<h2>Meeting events and attributes</h2>
 					</a>
-					<p>Chime SDK sends these meeting events.</p>
+					<p>The Chime SDK for JavaScript sends these meeting events.</p>
 					<table>
 						<thead>
 							<tr>
@@ -200,7 +200,7 @@ meetingSession.audioVideo.addObserver(observer);
 					<a href="#standard-attributes" id="standard-attributes" style="color: inherit; text-decoration: none;">
 						<h3>Standard attributes</h3>
 					</a>
-					<p>Chime SDK sends a meeting event with attributes. These standard attributes are available as part of every event type.</p>
+					<p>The Chime SDK for JavaScript sends a meeting event with attributes. These standard attributes are available as part of every event type.</p>
 					<table>
 						<thead>
 							<tr>
@@ -299,7 +299,7 @@ meetingSession.audioVideo.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>meetingErrorMessage</code></td>
-								<td>The error message that explains why the meeting has failed.</td>
+								<td>The error message that explains why the meeting has failed. For more information, see the &quot;Meeting error messages&quot; section.</td>
 								<td><code>meetingStartFailed</code>, <code>meetingFailed</code></td>
 							</tr>
 							<tr>
@@ -342,12 +342,12 @@ meetingSession.audioVideo.addObserver(observer);
 						</thead>
 						<tbody><tr>
 								<td><code>audioInputErrorMessage</code></td>
-								<td>The error message that explains why the microphone selection failed.</td>
+								<td>The error message that explains why the microphone selection failed. For more information, see the &quot;Device error messages&quot; section.</td>
 								<td><code>audioInputFailed</code></td>
 							</tr>
 							<tr>
 								<td><code>videoInputErrorMessage</code></td>
-								<td>The error message that explains why the camera selection failed.</td>
+								<td>The error message that explains why the camera selection failed. For more information, see the &quot;Device error messages&quot; section.</td>
 								<td><code>videoInputFailed</code></td>
 							</tr>
 					</tbody></table>
@@ -438,6 +438,87 @@ meetingSession.audioVideo.addObserver(observer);
 							<tr>
 								<td><code>videoInputUnselected</code></td>
 								<td>The camera was removed. You called <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with <code>null</code>.</td>
+							</tr>
+					</tbody></table>
+					<a href="#meeting-error-messages" id="meeting-error-messages" style="color: inherit; text-decoration: none;">
+						<h3>Meeting error messages</h3>
+					</a>
+					<p>When the meeting failed to start, the Chime SDK for JavaScript catches an error and
+						publishes the <code>meetingStartFailed</code> event with the <code>meetingErrorMessage</code> attribute.
+					The following table shows common error messages you may receive when failing to join a meeting.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Messages</th>
+								<th>Status code</th>
+								<th>Suggested resolution</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>The meeting already ended.</td>
+								<td>MeetingEnded</td>
+								<td>Ensure that you or someone else have not deleted a meeting using the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html">DeleteMeeting</a> API action in your server application. A meeting also automatically ends after a period of inactivity. See the <a href="https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-mtgs.html">Chime SDK developer guide</a> for details.</td>
+							</tr>
+							<tr>
+								<td>1. WebSocket connection failed<br>2. OpenSignalingConnectionTask got canceled while waiting to open signaling connection</td>
+								<td>TaskFailed</td>
+								<td>Ensure that you have a stable internet connection.</td>
+							</tr>
+							<tr>
+								<td>no ice candidates were gathered</td>
+								<td>TaskFailed</td>
+								<td>Ensure that either you do not use your application in split-tunneling scenarios or your application always requests microphone permissions before beginning ICE. See the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html#i-cannot-join-meeting-in-firefox-with-no-audio-and-video-permission-due-to-no-ice-candidates-were-gathered-error-is-this-a-known-issue">Chime SDK for JavaScript FAQs</a>.</td>
+							</tr>
+					</tbody></table>
+					<p>The Chime SDK for JavaScript also raises the <code>meetingFailed</code> event containing the <code>meetingErrorMessage</code> attribute if the meeting stops due to an error.
+					The following table lists common error messages from a stopped meeting.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Messages</th>
+								<th>Status code</th>
+								<th>Suggested resolution</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>The meeting ended because attendee removed.</td>
+								<td>AudioAttendeeRemoved</td>
+								<td>Ensure that you or someone else have not called the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html">DeleteMeeting</a> API action in your server application to delete the attendee present in the meeting.</td>
+							</tr>
+							<tr>
+								<td>The attendee joined from another device.</td>
+								<td>AudioJoinedFromAnotherDevice</td>
+								<td>Ensure that you do not use the same attendee response from the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">CreateAttendee</a>, <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_BatchCreateAttendee.html">BatchCreateAttendee</a>, or <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html">CreateMeetingWithAttendees</a> API action in two or more meetings simultaneously.</td>
+							</tr>
+							<tr>
+								<td>(An error message from your real-time callback)</td>
+								<td>RealtimeApiFailed</td>
+								<td>Ensure that the callback you passed to the real-time API, such as <code>meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator</code>, does not throw an exception.</td>
+							</tr>
+							<tr>
+								<td>1. WebSocket connection failed<br>2. OpenSignalingConnectionTask got canceled while waiting to open signaling connection</td>
+								<td>TaskFailed</td>
+								<td>Ensure that you have a stable internet connection. The Chime SDK for JavaScript might fail to reconnect after disconnected from the meeting.</td>
+							</tr>
+					</tbody></table>
+					<a href="#device-error-messages" id="device-error-messages" style="color: inherit; text-decoration: none;">
+						<h3>Device error messages</h3>
+					</a>
+					<p>The <code>audioInputErrorMessage</code> and <code>videoInputErrorMessage</code> may indicate the browser&#39;s <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions">getUserMedia API exceptions</a>. When you call <code>meetingSession.audioVideo.chooseAudioInputDevice</code> or <code>meetingSession.audioVideo.chooseVideoInputDevice</code>, the Chime SDK for JavaScript uses the browser&#39;s <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia"><code>getUserMedia</code> API</a> to acquire access to your device. When the getUserMedia API throws an error, the Chime SDK for JavaScript catches an error and publishes the <code>audioInputFailed</code> or <code>videoInputFailed</code> event containing a browser&#39;s error message.</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Messages</th>
+								<th>Suggested resolution</th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td>1. TypeError: Failed to execute &#39;getUserMedia&#39; on &#39;MediaDevices&#39;: At least one of audio and video must be requested<br>2. NotAllowedError: The request is not allowed by the user agent or the platform in the current context.<br>3. TypeError: Type error</td>
+								<td>Ensure that you allow permission to the media devices. Also, the browser should have access to the media devices.</td>
+							</tr>
+							<tr>
+								<td>NotReadableError: Could not start video source</td>
+								<td>Ensure that you do not use the media devices in other browser tabs or applications. A hardware error may also occur at the operating system or browser. If the problem persists, restart the browser and try again.</td>
 							</tr>
 					</tbody></table>
 					<a href="#example" id="example" style="color: inherit; text-decoration: none;">
