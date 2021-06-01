@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Log error instead of throwing error if the signaling client is not ready to send data message.
 
 ### Removed
+- Remove deprecated unwired webrtc constraints from device controller and peer connection construction.
 
 ### Fixed
 - Fixed missing upstream video metrics for Firefox browsers.

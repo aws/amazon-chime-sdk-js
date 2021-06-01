@@ -87,14 +87,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     // @ts-ignore
     this.logger.info(`SDP semantics are ${configuration.sdpSemantics}`);
     const connectionConstraints = {
-      optional: [
-        { googHighStartBitrate: 0 },
-        { googCpuOveruseDetection: false },
-        { googCpuOveruseEncodeUsage: false },
-        { googCpuUnderuseThreshold: 55 },
-        { googCpuOveruseThreshold: 150 },
-        { googCombinedAudioVideoBwe: true },
-      ],
+      optional: [{ googCpuOveruseDetection: false }, { googCombinedAudioVideoBwe: true }],
     };
     if (this.context.peer) {
       this.context.logger.info('reusing peer connection');
