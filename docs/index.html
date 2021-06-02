@@ -310,6 +310,7 @@ npm <span class="hljs-builtin-name">run</span> doc
 					<p>Note: Before starting a session, you need to choose your microphone, speaker, and camera.</p>
 				</blockquote>
 				<p><strong>Use case 1.</strong> List audio input, audio output, and video input devices. The browser will ask for microphone and camera permissions.</p>
+				<p>With the <code>forceUpdate</code> parameter set to true, cached device information is discarded and updated after the device label trigger is called. In some cases, builders need to delay the triggering of permission dialogs, e.g., when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels; specifying <code>forceUpdate</code>  allows this to occur.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> audioInputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listAudioInputDevices();
 <span class="hljs-keyword">const</span> audioOutputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listAudioOutputDevices();
 <span class="hljs-keyword">const</span> videoInputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listVideoInputDevices();
