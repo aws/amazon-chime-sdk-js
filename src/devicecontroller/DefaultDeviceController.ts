@@ -256,21 +256,21 @@ export default class DefaultDeviceController
     this.audioInputDestinationNode = undefined;
   }
 
-  async listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.listDevicesOfKind('audioinput');
-    this.trace('listAudioInputDevices', null, result);
+  async listAudioInputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.listDevicesOfKind('audioinput', forceUpdate);
+    this.trace('listAudioInputDevices', forceUpdate, result);
     return result;
   }
 
-  async listVideoInputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.listDevicesOfKind('videoinput');
-    this.trace('listVideoInputDevices', null, result);
+  async listVideoInputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.listDevicesOfKind('videoinput', forceUpdate);
+    this.trace('listVideoInputDevices', forceUpdate, result);
     return result;
   }
 
-  async listAudioOutputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.listDevicesOfKind('audiooutput');
-    this.trace('listAudioOutputDevices', null, result);
+  async listAudioOutputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.listDevicesOfKind('audiooutput', forceUpdate);
+    this.trace('listAudioOutputDevices', forceUpdate, result);
     return result;
   }
 
@@ -649,6 +649,16 @@ export default class DefaultDeviceController
   }
 
   setDeviceLabelTrigger(trigger: () => Promise<MediaStream>): void {
+    // Discard the cache if it was populated with unlabeled devices.
+    if (this.deviceInfoCache) {
+      for (const device of this.deviceInfoCache) {
+        if (!device.label) {
+          this.deviceInfoCache = null;
+          break;
+        }
+      }
+    }
+
     this.deviceLabelTrigger = trigger;
     this.trace('setDeviceLabelTrigger');
   }
@@ -1027,8 +1037,11 @@ export default class DefaultDeviceController
     }
   }
 
-  private async listDevicesOfKind(deviceKind: string): Promise<MediaDeviceInfo[]> {
-    if (this.deviceInfoCache === null || !this.isWatchingForDeviceChanges()) {
+  private async listDevicesOfKind(
+    deviceKind: string,
+    forceUpdate: boolean
+  ): Promise<MediaDeviceInfo[]> {
+    if (forceUpdate || this.deviceInfoCache === null || !this.isWatchingForDeviceChanges()) {
       await this.updateDeviceInfoCacheFromBrowser();
     }
     return this.listCachedDevicesOfKind(deviceKind);

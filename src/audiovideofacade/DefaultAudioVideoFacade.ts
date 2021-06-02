@@ -311,21 +311,21 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('unsubscribeFromActiveSpeakerDetector');
   }
 
-  async listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.deviceController.listAudioInputDevices();
-    this.trace('listAudioInputDevices', null, result);
+  async listAudioInputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.deviceController.listAudioInputDevices(forceUpdate);
+    this.trace('listAudioInputDevices', forceUpdate, result);
     return result;
   }
 
-  async listVideoInputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.deviceController.listVideoInputDevices();
-    this.trace('listVideoInputDevices', null, result);
+  async listVideoInputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.deviceController.listVideoInputDevices(forceUpdate);
+    this.trace('listVideoInputDevices', forceUpdate, result);
     return result;
   }
 
-  async listAudioOutputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.deviceController.listAudioOutputDevices();
-    this.trace('listAudioOutputDevices', null, result);
+  async listAudioOutputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.deviceController.listAudioOutputDevices(forceUpdate);
+    this.trace('listAudioOutputDevices', forceUpdate, result);
     return result;
   }
 

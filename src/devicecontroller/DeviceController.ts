@@ -52,19 +52,19 @@ import VideoQualitySettings from './VideoQualitySettings';
  */
 export default interface DeviceController {
   /**
-   * Lists currently available audio input devices.
+   * Lists currently available audio input devices. If `forceUpdate` is set to true, the `deviceInfoCache` will be updated from browser.
    */
-  listAudioInputDevices(): Promise<MediaDeviceInfo[]>;
+  listAudioInputDevices(forceUpdate?: boolean): Promise<MediaDeviceInfo[]>;
 
   /**
-   * Lists currently available video input devices.
+   * Lists currently available video input devices. If `forceUpdate` is set to true, the `deviceInfoCache` will be updated from browser.
    */
-  listVideoInputDevices(): Promise<MediaDeviceInfo[]>;
+  listVideoInputDevices(forceUpdate?: boolean): Promise<MediaDeviceInfo[]>;
 
   /**
-   * Lists currently available audio output devices.
+   * Lists currently available audio output devices. If `forceUpdate` is set to true, the `deviceInfoCache` will be updated from browser.
    */
-  listAudioOutputDevices(): Promise<MediaDeviceInfo[]>;
+  listAudioOutputDevices(forceUpdate?: boolean): Promise<MediaDeviceInfo[]>;
 
   /**
    * Selects an audio input device to use. The constraint may be a device id,

@@ -249,6 +249,8 @@ Please do **not** create a public GitHub issue.
 
 **Use case 1.** List audio input, audio output, and video input devices. The browser will ask for microphone and camera permissions.
 
+With the `forceUpdate` parameter set to true, cached device information is discarded and updated after the device label trigger is called. In some cases, builders need to delay the triggering of permission dialogs, e.g., when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels; specifying `forceUpdate`  allows this to occur.
+
 ```js
 const audioInputDevices = await meetingSession.audioVideo.listAudioInputDevices();
 const audioOutputDevices = await meetingSession.audioVideo.listAudioOutputDevices();
