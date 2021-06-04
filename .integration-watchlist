@@ -4,12 +4,12 @@ src/
 integration/
 
 # exceptions
+!.eslintignore
 !src/versioning/Versioning.ts
 !README.md
 !demos/browser/README.md
 !demos/device/README.md
 !demos/singlejs/README.md
-!demos/videohelpdesk/README.md
 !guides/
 !docs/
 !.github/
