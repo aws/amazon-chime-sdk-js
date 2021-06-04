@@ -42,6 +42,7 @@ import {
   TargetDisplaySize,
   TimeoutScheduler,
   Versioning,
+  VideoDownlinkObserver,
   VideoFrameProcessor,
   VideoInputDevice,
   VideoPreference,
@@ -220,7 +221,7 @@ interface Toggle {
 }
 
 export class DemoMeetingApp
-  implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver {
+  implements AudioVideoObserver, DeviceChangeObserver, ContentShareObserver, VideoDownlinkObserver {
   static readonly DID: string = '+17035550122';
   static readonly BASE_URL: string = [
     location.protocol,
@@ -1386,15 +1387,17 @@ export class DemoMeetingApp
       configuration.attendeePresenceTimeoutMs = Number(timeoutMs);
     }
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
+    if (this.usePriorityBasedDownlinkPolicy) {
+      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
+      configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
+      this.priorityBasedDownlinkPolicy.addObserver(this);
+    }
+
     this.meetingSession = new DefaultMeetingSession(
       configuration,
       this.meetingLogger,
       deviceController
     );
-    if (this.usePriorityBasedDownlinkPolicy) {
-      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
-      configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
-    }
 
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
