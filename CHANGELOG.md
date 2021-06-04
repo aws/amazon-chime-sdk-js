@@ -9,9 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Bind tileController during the initialization of DefaultAudioVideoController for VideoPriorityBasedPolicy.
-
-
-### Added
 - Add more debug logging for choose input device. 
 - Add the meeting and device error sections in the meeting-event guide.
 - Add a `forceUpdate` parameter to use when listing devices. In some cases, builders

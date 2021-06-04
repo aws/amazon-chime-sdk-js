@@ -124,7 +124,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   bindToTileController(tileController: VideoTileController): void {
     this.tileController = tileController;
-    this.logger.info('tileController binded');
+    this.logger.info('tileController bound');
   }
 
   // This function allows setting preferences without the need to inherit from this class
