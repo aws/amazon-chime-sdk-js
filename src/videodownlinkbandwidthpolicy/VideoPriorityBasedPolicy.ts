@@ -618,7 +618,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     remoteInfos: VideoStreamDescription[]
   ): void {
     if (!this.tileController) {
-      this.logger.error('tileController not found!');
+      this.logger.warn('tileController not found!');
       return;
     }
     this.pausedStreamIds = new DefaultVideoStreamIdSet();
@@ -652,7 +652,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     chosenStreams: VideoStreamDescription[]
   ): void {
     if (!this.tileController) {
-      this.logger.error('tileController not found!');
+      this.logger.warn('tileController not found!');
       return;
     }
     this.pausedBwAttendeeIds = new Set<string>();
@@ -708,7 +708,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   private cleanBwPausedTiles(remoteInfos: VideoStreamDescription[]): void {
     if (!this.tileController) {
-      this.logger.error('tileController not found!');
+      this.logger.warn('tileController not found!');
       return;
     }
     const tiles = this.tileController.getAllRemoteVideoTiles();
