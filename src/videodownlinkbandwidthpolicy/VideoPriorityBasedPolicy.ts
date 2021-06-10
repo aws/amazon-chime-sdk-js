@@ -280,7 +280,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       chosenTotalBitrate: 0,
       deltaToNextUpgrade: 0,
     };
-    rates.targetDownlinkBitrate = this.determineTargetRate(remoteInfos);
+    rates.targetDownlinkBitrate = this.determineTargetRate();
     const upgradeStream: VideoStreamDescription = this.priorityPolicy(
       rates,
       remoteInfos,
@@ -354,16 +354,8 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.optimalReceiveSet = streamSelectionSet;
   }
 
-  private determineTargetRate(remoteInfos: VideoStreamDescription[]): number {
+  private determineTargetRate(): number {
     let targetBitrate = 0;
-    // Estimated downlink bandwidth from WebRTC is dependent on actually receiving data, so if it ever got driven below the bitrate of the lowest
-    // stream (a simulcast stream), and it stops receiving, it will get stuck never being able to resubscribe (as is implemented).
-    let minTargetDownlinkBitrate = Number.MAX_VALUE;
-    for (const info of remoteInfos) {
-      if (info.avgBitrateKbps !== 0 && info.avgBitrateKbps < minTargetDownlinkBitrate) {
-        minTargetDownlinkBitrate = info.avgBitrateKbps;
-      }
-    }
 
     const now = Date.now();
     // Startup phase handling.  During this period the estimate can be 0 or
@@ -408,7 +400,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       }
     }
 
-    targetBitrate = Math.max(minTargetDownlinkBitrate, targetBitrate);
     // Estimated downlink rate can follow actual bandwidth or fall for a short period of time
     // due to the absolute send time estimator incorrectly thinking that a delay in packets is
     // a precursor to packet loss.  We have seen too many false positives on this, so we
@@ -627,6 +618,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     remoteInfos: VideoStreamDescription[]
   ): void {
     if (!this.tileController) {
+      this.logger.warn('tileController not found!');
       return;
     }
     this.pausedStreamIds = new DefaultVideoStreamIdSet();
@@ -660,6 +652,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     chosenStreams: VideoStreamDescription[]
   ): void {
     if (!this.tileController) {
+      this.logger.warn('tileController not found!');
       return;
     }
     this.pausedBwAttendeeIds = new Set<string>();
@@ -715,6 +708,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   private cleanBwPausedTiles(remoteInfos: VideoStreamDescription[]): void {
     if (!this.tileController) {
+      this.logger.warn('tileController not found!');
       return;
     }
     const tiles = this.tileController.getAllRemoteVideoTiles();

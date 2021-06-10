@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Remove deprecated unwired webrtc constraints from device controller and peer connection construction.
-
+- Removed unnecessary restriction on VideoPriorityBasedPolicy to always subscribe to at least one stream.
 ### Fixed
 
 - Fixed missing upstream video metrics for Firefox browsers.
