@@ -15,7 +15,7 @@ Conditions:
   ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
 Globals:
   Function:
-    Runtime: nodejs10.x
+    Runtime: nodejs14.x
     Timeout: 30
     MemorySize: 128
     Environment:
@@ -104,15 +104,41 @@ Resources:
       TimeToLiveSpecification:
         AttributeName: "TTL"
         Enabled: true
+  ChimeKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: Custom KMS Key with Chime access
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: Allow access for Chime Service
+          Effect: Allow
+          Principal:
+            Service: chime.amazonaws.com
+          Action:
+            - kms:GenerateDataKey
+            - kms:Decrypt
+          Resource: '*'
+        - Sid: Enable IAM User Permissions
+          Effect: Allow
+          Principal:
+            AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+          Action: kms:*
+          Resource: '*'
+  ChimeKMSAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/ChimeKMS-${AWS::StackName}
+      TargetKeyId:
+        Ref: ChimeKMSKey
   MeetingNotificationsQueue:
     Type: AWS::SQS::Queue
     Properties:
-      KmsMasterKeyId: 'alias/aws/sqs'
+      KmsMasterKeyId: !Sub alias/ChimeKMS-${AWS::StackName}
   ChimeSdkIndexLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: handlers.index
-      Runtime: nodejs10.x
       CodeUri: src/
       Events:
         Api1:
@@ -162,6 +188,13 @@ Resources:
           Properties:
             Queue: !GetAtt MeetingNotificationsQueue.Arn
             BatchSize: 10
+      Policies:
+        - Statement:
+          - Sid: ChimeSQSQueueLambdaPolicy
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource: '*'
   ChimeEventBridgeLambda:
     Type: AWS::Serverless::Function
     Condition: ShouldUseEventBridge
