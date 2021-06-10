@@ -30,6 +30,8 @@ console.info('Using endpoint', endpoint);
 
 chime.endpoint = new AWS.Endpoint(endpoint);
 
+const INGESTION_URL = process.env.INGESTION_URL;
+
 function serve(host = '127.0.0.1:8080') {
   // Start an HTTP server to serve the index page and handle meeting actions
   http.createServer({}, async (request, response) => {

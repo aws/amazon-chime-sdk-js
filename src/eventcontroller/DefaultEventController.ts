@@ -5,12 +5,14 @@ import { UAParser } from 'ua-parser-js';
 
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
+import EventReporter from '../eventreporter/EventReporter';
 import Versioning from '../versioning/Versioning';
 import AudioVideoEventAttributes from './AudioVideoEventAttributes';
 import DeviceEventAttributes from './DeviceEventAttributes';
 import EventAttributes from './EventAttributes';
 import EventController from './EventController';
 import EventName from './EventName';
+import flattenEventAttributes from './flattenEventAttributes';
 import MeetingHistoryState from './MeetingHistoryState';
 
 export default class DefaultEventController implements EventController {
@@ -35,7 +37,10 @@ export default class DefaultEventController implements EventController {
   /** @internal */
   private deviceName: string;
 
-  constructor(private audioVideoController: AudioVideoController) {
+  constructor(
+    private audioVideoController: AudioVideoController,
+    private eventReporter?: EventReporter
+  ) {
     try {
       this.parserResult =
         navigator && navigator.userAgent ? new UAParser(navigator.userAgent).getResult() : null;
@@ -58,7 +63,10 @@ export default class DefaultEventController implements EventController {
     attributes?: AudioVideoEventAttributes | DeviceEventAttributes
   ): Promise<void> {
     const timestampMs = Date.now();
-    await this.pushMeetingState(name, timestampMs);
+    this.meetingHistoryStates.push({
+      name,
+      timestampMs,
+    });
 
     // Make a single frozen copy of the event, reusing the object returned by
     // `getAttributes` to avoid copying too much.
@@ -70,6 +78,24 @@ export default class DefaultEventController implements EventController {
         observer.eventDidReceive(name, eventAttributes);
       }
     });
+    this.reportEvent(name, timestampMs, attributes);
+  }
+
+  private async reportEvent(
+    name: MeetingHistoryState,
+    timestampMs: number,
+    attributes?: AudioVideoEventAttributes | DeviceEventAttributes
+  ): Promise<void> {
+    let flattenedAttributes;
+    try {
+      if (attributes) {
+        flattenedAttributes = flattenEventAttributes(attributes);
+      }
+      await this.eventReporter?.reportEvent(timestampMs, name, flattenedAttributes);
+    } catch (error) {
+      /* istanbul ignore next */
+      this.audioVideoController.logger.error(`Error reporting event ${error}`);
+    }
   }
 
   async pushMeetingState(
@@ -80,6 +106,7 @@ export default class DefaultEventController implements EventController {
       name: state,
       timestampMs,
     });
+    this.reportEvent(state, timestampMs);
   }
 
   private getAttributes(timestampMs: number): EventAttributes {

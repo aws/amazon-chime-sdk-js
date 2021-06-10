@@ -580,7 +580,7 @@ export default class DOMMockBuilder {
           | string
           | null
       ): boolean {
-        return true;
+        return mockBehavior.beaconQueuedSuccess;
       },
     };
 
@@ -944,6 +944,10 @@ export default class DOMMockBuilder {
       get status(): number {
         return mockBehavior.responseStatusCode;
       }
+      get ok(): boolean {
+        const { responseStatusCode } = mockBehavior;
+        return responseStatusCode >= 200 && responseStatusCode <= 299;
+      }
     };
 
     GlobalAny.fetch = function fetch(_input: RequestInfo, _init?: RequestInit): Promise<Response> {
@@ -1013,6 +1017,7 @@ export default class DOMMockBuilder {
           }
         }
       },
+      visibilityState: mockBehavior.documentVisibilityState,
     };
 
     GlobalAny.ImageData = class MockImageData {

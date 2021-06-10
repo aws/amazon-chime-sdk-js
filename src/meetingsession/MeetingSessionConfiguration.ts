@@ -165,6 +165,9 @@ export default class MeetingSessionConfiguration {
       this.urls.screenViewingURL = createMeetingResponse.mediaplacement.screenviewingurl;
       this.urls.signalingURL = createMeetingResponse.mediaplacement.signalingurl;
       this.urls.turnControlURL = createMeetingResponse.mediaplacement.turncontrolurl;
+      if (createMeetingResponse.mediaplacement.eventingestionurl) {
+        this.urls.eventIngestionURL = createMeetingResponse.mediaplacement.eventingestionurl;
+      }
     }
     if (createAttendeeResponse) {
       createAttendeeResponse = this.toLowerCasePropertyNames(createAttendeeResponse);

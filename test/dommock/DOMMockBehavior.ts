@@ -82,4 +82,6 @@ export default class DOMMockBehavior {
 
   videoElementStartPlayDelay = 25;
   videoElementSetWidthHeightAttributeDelay = 100;
+  beaconQueuedSuccess: boolean = true;
+  documentVisibilityState = 'visible';
 }
