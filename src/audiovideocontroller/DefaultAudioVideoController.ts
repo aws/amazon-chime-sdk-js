@@ -33,6 +33,9 @@ import SessionStateControllerAction from '../sessionstatecontroller/SessionState
 import SessionStateControllerState from '../sessionstatecontroller/SessionStateControllerState';
 import SessionStateControllerTransitionResult from '../sessionstatecontroller/SessionStateControllerTransitionResult';
 import DefaultSignalingClient from '../signalingclient/DefaultSignalingClient';
+import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
+import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
+import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import { SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
 import DefaultStatsCollector from '../statscollector/DefaultStatsCollector';
@@ -108,6 +111,7 @@ export default class DefaultAudioVideoController
   private totalRetryCount = 0;
   private startAudioVideoTimestamp: number = 0;
   private signalingTask: Task;
+  private preStartObserver: SignalingClientObserver | undefined;
   destroyed = false;
 
   /** @internal */
@@ -251,10 +255,32 @@ export default class DefaultAudioVideoController
     );
   }
 
+  private uninstallPreStartObserver(): void {
+    this.meetingSessionContext.signalingClient.removeObserver(this.preStartObserver);
+    this.preStartObserver = undefined;
+  }
+
   private prestart(): Promise<void> {
     this.logger.info('Pre-connecting signaling connection.');
     return this.createOrReuseSignalingTask()
       .run()
+      .then(() => {
+        const handleClosed = async (): Promise<void> => {
+          this.logger.info('Early connection closed; discarding signaling task.');
+          this.signalingTask = undefined;
+          this.uninstallPreStartObserver();
+        };
+
+        this.preStartObserver = {
+          handleSignalingClientEvent(event: SignalingClientEvent): void {
+            if (event.type === SignalingClientEventType.WebSocketClosed) {
+              handleClosed();
+            }
+          },
+        };
+
+        this.meetingSessionContext.signalingClient.registerObserver(this.preStartObserver);
+      })
       .catch(e => {
         this.logger.error(`Signaling task pre-start failed: ${e}`);
 
@@ -407,6 +433,10 @@ export default class DefaultAudioVideoController
 
   private async actionConnect(reconnecting: boolean): Promise<void> {
     this.initSignalingClient();
+
+    // We no longer need to watch for the early connection dropping; we're back where
+    // we otherwise would have been had we not pre-started.
+    this.uninstallPreStartObserver();
 
     this.meetingSessionContext.mediaStreamBroker = this._mediaStreamBroker;
     this.meetingSessionContext.realtimeController = this._realtimeController;
