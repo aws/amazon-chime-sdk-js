@@ -174,6 +174,11 @@ To show speaker volume, mute state, and signal strength for each attendee, subsc
 
 Volume is on a scale of 0 to 1 (no volume to max volume). Signal strength is on a scale of 0 to 1 (full packet loss to no packet loss). You can use the signal strength of remote attendees to show an indication of whether an attendee is experiencing packet loss and thus may be unable to communicate at the moment.
 
+Signal strength
+* 0 - 100% loss of audio data
+* < 0.5 - Between 50% to 100% loss of audio data
+* >= 0.5 - Less than 50% loss of audio data
+
 To subscribe to an attendee’s volume indicator, call meetingSession.audioVideo.[realtimeSubscribeToVolumeIndicator(attendeeId, callback)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetovolumeindicator).
 
 To unsubscribe from an attendee’s volume indicator, call meetingSession.audioVideo.[realtimeUnsubscribeFromVolumeIndicator(attendeeId)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribefromvolumeindicator).
