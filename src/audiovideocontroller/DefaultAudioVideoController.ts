@@ -33,6 +33,9 @@ import SessionStateControllerAction from '../sessionstatecontroller/SessionState
 import SessionStateControllerState from '../sessionstatecontroller/SessionStateControllerState';
 import SessionStateControllerTransitionResult from '../sessionstatecontroller/SessionStateControllerTransitionResult';
 import DefaultSignalingClient from '../signalingclient/DefaultSignalingClient';
+import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
+import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
+import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import { SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
 import DefaultStatsCollector from '../statscollector/DefaultStatsCollector';
@@ -66,6 +69,7 @@ import SimulcastTransceiverController from '../transceivercontroller/SimulcastTr
 import VideoOnlyTransceiverController from '../transceivercontroller/VideoOnlyTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
+import VideoPriorityBasedPolicy from '../videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
@@ -107,6 +111,7 @@ export default class DefaultAudioVideoController
   private totalRetryCount = 0;
   private startAudioVideoTimestamp: number = 0;
   private signalingTask: Task;
+  private preStartObserver: SignalingClientObserver | undefined;
   destroyed = false;
 
   /** @internal */
@@ -144,6 +149,9 @@ export default class DefaultAudioVideoController
     this._audioMixController = new DefaultAudioMixController(this._logger);
     this.meetingSessionContext.logger = this._logger;
     this._eventController = new DefaultEventController(this);
+    if (configuration.videoDownlinkBandwidthPolicy instanceof VideoPriorityBasedPolicy) {
+      configuration.videoDownlinkBandwidthPolicy.bindToTileController(this._videoTileController);
+    }
   }
 
   async destroy(): Promise<void> {
@@ -247,10 +255,32 @@ export default class DefaultAudioVideoController
     );
   }
 
+  private uninstallPreStartObserver(): void {
+    this.meetingSessionContext.signalingClient.removeObserver(this.preStartObserver);
+    this.preStartObserver = undefined;
+  }
+
   private prestart(): Promise<void> {
     this.logger.info('Pre-connecting signaling connection.');
     return this.createOrReuseSignalingTask()
       .run()
+      .then(() => {
+        const handleClosed = async (): Promise<void> => {
+          this.logger.info('Early connection closed; discarding signaling task.');
+          this.signalingTask = undefined;
+          this.uninstallPreStartObserver();
+        };
+
+        this.preStartObserver = {
+          handleSignalingClientEvent(event: SignalingClientEvent): void {
+            if (event.type === SignalingClientEventType.WebSocketClosed) {
+              handleClosed();
+            }
+          },
+        };
+
+        this.meetingSessionContext.signalingClient.registerObserver(this.preStartObserver);
+      })
       .catch(e => {
         this.logger.error(`Signaling task pre-start failed: ${e}`);
 
@@ -404,6 +434,10 @@ export default class DefaultAudioVideoController
   private async actionConnect(reconnecting: boolean): Promise<void> {
     this.initSignalingClient();
 
+    // We no longer need to watch for the early connection dropping; we're back where
+    // we otherwise would have been had we not pre-started.
+    this.uninstallPreStartObserver();
+
     this.meetingSessionContext.mediaStreamBroker = this._mediaStreamBroker;
     this.meetingSessionContext.realtimeController = this._realtimeController;
     this.meetingSessionContext.audioMixController = this._audioMixController;
@@ -429,7 +463,8 @@ export default class DefaultAudioVideoController
       this.logger,
       this._realtimeController,
       DefaultAudioVideoController.MIN_VOLUME_DECIBELS,
-      DefaultAudioVideoController.MAX_VOLUME_DECIBELS
+      DefaultAudioVideoController.MAX_VOLUME_DECIBELS,
+      this.configuration.credentials.attendeeId
     );
     this.meetingSessionContext.videoTileController = this._videoTileController;
     this.meetingSessionContext.videoDownlinkBandwidthPolicy = this.configuration.videoDownlinkBandwidthPolicy;

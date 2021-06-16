@@ -1,9 +1,12 @@
 const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, ClickVideoButton, ClickVideoFilterButton, WaitForRemoteVideoCheckToComplete, WaitForRemoteParticipantsToTurnVideoOff, WaitForRemoteParticipantsToTurnVideoOn, WaitForRemoteParticipantsToJoinMeeting, WaitForMeetingToBeCreated} = require('./steps');
-const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteVideoCheck, UserAuthenticationCheck, RosterCheck} = require('./checks');
+const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteVideoCheck, UserAuthenticationCheck, RosterCheck, RosterCheckConfig} = require('./checks');
 const {AppPage} = require('./pages/AppPage');
 const {TestUtils} = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const { v4: uuidv4 } = require('uuid');
+
+// We will toggle the video on and off multiple times
+const videoToggleCount = 2;
 
 class VideoTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
@@ -26,15 +29,27 @@ class VideoTest extends SdkBaseTest {
       // todo: add step to check filter content
       await ClickVideoFilterButton.executeStep(this, session);
     }
-    await ClickVideoButton.executeStep(this, session);
-    await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON');
-    await WaitForRemoteParticipantsToTurnVideoOn.executeStep(this, session);
-    await RemoteVideoCheck.executeStep(this, session, 'VIDEO_ON');
-    await WaitForRemoteVideoCheckToComplete.executeStep(this, session);
-    await ClickVideoButton.executeStep(this, session);
-    await LocalVideoCheck.executeStep(this, session, 'VIDEO_OFF');
-    await WaitForRemoteParticipantsToTurnVideoOff.executeStep(this, session);
-    await RemoteVideoCheck.executeStep(this, session, 'VIDEO_OFF');
+    for (let i = 0; i < videoToggleCount; i++) {
+        // Note since these wait functions will be called twice, we reset the respective variable after each one
+        await ClickVideoButton.executeStep(this, session);
+        await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON');
+        await WaitForRemoteParticipantsToTurnVideoOn.executeStep(this, session);
+        this.numVideoRemoteOn = 1;
+        await RemoteVideoCheck.executeStep(this, session, 'VIDEO_ON');
+        await WaitForRemoteVideoCheckToComplete.executeStep(this, session);
+        this.numOfParticipantsCompletedVideoCheck = 1;
+        await ClickVideoButton.executeStep(this, session);
+        await LocalVideoCheck.executeStep(this, session, 'VIDEO_OFF');
+        await WaitForRemoteParticipantsToTurnVideoOff.executeStep(this, session);
+        this.numVideoRemoteOff = 1;
+        await RemoteVideoCheck.executeStep(this, session, 'VIDEO_OFF');
+        await WaitForRemoteVideoCheckToComplete.executeStep(this, session);
+        this.numOfParticipantsCompletedVideoCheck = 1;
+    }
+
+    // Check for unusual disconnections (don't need to wait here because we already did that earlier)
+    await RosterCheck.executeStep(this, session, 2, new RosterCheckConfig(2, 500));
+
     await this.waitAllSteps();
   }
 }

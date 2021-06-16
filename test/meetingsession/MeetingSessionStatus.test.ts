@@ -41,6 +41,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.IncompatibleSDP,
     MeetingSessionStatusCode.TURNCredentialsForbidden,
     MeetingSessionStatusCode.NoAttendeePresent,
+    MeetingSessionStatusCode.AudioAttendeeRemoved,
   ];
 
   describe('isFailure', () => {
@@ -84,6 +85,7 @@ describe('MeetingSessionStatus', () => {
         MeetingSessionStatusCode.TURNCredentialsForbidden,
         MeetingSessionStatusCode.VideoCallAtSourceCapacity,
         MeetingSessionStatusCode.RealtimeApiFailed,
+        MeetingSessionStatusCode.AudioAttendeeRemoved,
       ]);
       for (const statusCode of statusCodes) {
         const status = new MeetingSessionStatus(statusCode);
@@ -148,6 +150,7 @@ describe('MeetingSessionStatus', () => {
         503: MeetingSessionStatusCode.AudioServiceUnavailable,
         201: MeetingSessionStatusCode.OK,
         400: MeetingSessionStatusCode.AudioDisconnected,
+        411: MeetingSessionStatusCode.AudioAttendeeRemoved,
       };
 
       for (const audioStatusCode in audioStatusCodes) {

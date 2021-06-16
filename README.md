@@ -79,6 +79,14 @@ Review the resources given in the ReadMe and use our [client documentation](http
 
 If you have more questions, or require support for your business, you can reach out to [AWS Customer support](https://pages.awscloud.com/GLOBAL-aware-GC-Amazon-Chime-SDK-2020-reg.html). You can review our support plans [here](https://aws.amazon.com/premiumsupport/plans/?nc=sn&loc=1).
 
+
+## WebRTC Resources
+> Amazon Chime JS SDK uses WebRTC and hence here are some general resources on WebRTC.
+- [WebRTC Basics](https://www.html5rocks.com/en/tutorials/webrtc/basics/)
+- [WebRTC Org - Getting started, presentation, samples, tutorials, books and more resources](https://webrtc.github.io/webrtc-org/start/)
+- [High Performance Browser Networking - WebRTC (Browser APIs and Protocols)](https://hpbn.co/webrtc/)
+- [MDN - WebRTC APIs](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API)
+
 ## Installation
 
 Make sure you have Node.js version 12 or higher. Node 14 is recommended and supported.
@@ -158,14 +166,6 @@ The value of the MediaRegion parameter in the createMeeting() should ideally be 
 ### Messaging session
 Create a messaging session in your client application to receive messages from Amazon Chime SDK for Messaging.
 
-#### Getting responses from your server application
-
-You can use an AWS SDK, the AWS Command Line Interface (AWS CLI), or the REST API
-to make API calls. In this section, you will use the AWS SDK for JavaScript in your server application, e.g. Node.js.
-See [Amazon Chime SDK API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html) for more information.
-> ⚠️ The server application does not require the Amazon Chime SDK for JavaScript.
-
-
 ```js
 import * as AWS from 'aws-sdk/global';
 import * as Chime from 'aws-sdk/clients/chime';
@@ -187,6 +187,7 @@ const userArn = /* The userArn */;
 const sessionId = /* The sessionId */;
 const configuration = new MessagingSessionConfiguration(userArn, sessionId, endpoint.Endpoint.Url, chime, AWS);
 const messagingSession = new DefaultMessagingSession(configuration, logger);
+
 ```
 ## Building and testing
 
@@ -240,6 +241,8 @@ Please do **not** create a public GitHub issue.
 > Note: Before starting a session, you need to choose your microphone, speaker, and camera.
 
 **Use case 1.** List audio input, audio output, and video input devices. The browser will ask for microphone and camera permissions.
+
+With the `forceUpdate` parameter set to true, cached device information is discarded and updated after the device label trigger is called. In some cases, builders need to delay the triggering of permission dialogs, e.g., when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels; specifying `forceUpdate`  allows this to occur.
 
 ```js
 const audioInputDevices = await meetingSession.audioVideo.listAudioInputDevices();

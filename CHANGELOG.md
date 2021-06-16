@@ -7,17 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added 
-
-- Add support for `WKWebView` on iOS.
+### Added
 
 ### Changed
-- Bump version for lodash, y18n, and ssri dependencies 
+
+- Bump maxVideos limit to 25
 
 ### Removed
 
 ### Fixed
-- Do not start local video tile if there is no stream for content share
+
+- Pre-started signaling connections no longer cause a delay in joining if the
+  user takes more than a minute to join the meeting.
+- Fix choosing input device API when passing in a media stream.
+
+## [2.11.0] - 2021-06-04
+
+### Added
+- Bind tileController during the initialization of DefaultAudioVideoController for VideoPriorityBasedPolicy.
+- Add more debug logging for choose input device. 
+- Add the meeting and device error sections in the meeting-event guide.
+- Add a `forceUpdate` parameter to use when listing devices. In some cases, builders
+  need to delay the triggering of permission dialogs, _e.g._, when joining a
+  meeting in view-only mode, and then later be able to trigger a permission
+  prompt in order to show device labels. This parameter allows cached device
+  labels to be forcibly discarded and recomputed after the device label trigger
+  is run.
+
+### Changed
+
+- Log error instead of throwing error if the signaling client is not ready to send data message.
+- Now when `setDeviceLabelTrigger` is called, if the `deviceInfoCache` contains a device with no label, `deviceInfoCache` will be cleared.
+
+### Removed
+
+- Remove deprecated unwired webrtc constraints from device controller and peer connection construction.
+- Removed unnecessary restriction on VideoPriorityBasedPolicy to always subscribe to at least one stream.
+### Fixed
+
+- Fixed missing upstream video metrics for Firefox browsers.
+- Fix build script to run on Windows by specifying ruby when running ruby scripts and rimraf to remove folder.
+
+## [2.10.0] - 2021-05-19
+
+### Added
+
+- Add new message `MeetingSessionStatusCode` `AudioAttendeeRemoved` to handle the new audio server status code 411.
+- Add support for `WKWebView` on iOS.
+- Output a warning message when the volume adapter cleans up the self-attendee after reconnection.
+- Add FAQ for more information on `AudioJoinFromAnotherDevice` meeting session status code.
+- Add downstream audio webrtc metrics in `observableMetricSpec`.
+- Add `getObservableVideoMetrics` and in `ClientMetricReport` to expose video stream metrics in webrtc.
+- Update `SignalingProtocol` with optional video metric fields.
+
+### Changed
+
+- Update guide for priority based downlink policy.
+- Bump version for lodash, y18n, and ssri dependencies.
+- Mark `getObservableVideoMetrics` optional in ClientMetricReprt and `videoStreamIndex` and `selfAttendeeId` optional in `DefaultClientMetricReport`.
+
+### Removed
+
+### Fixed
+
+- Do not start local video tile if there is no stream for content share.
 
 - Media streams are no longer discarded during reconnects. This fixes an issue
   where initial signaling connection failures could cause a client to be unable
@@ -33,6 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   this to trigger a signaling socket connection prior to device selection: call
   `audioVideo.start({ signalingOnly: true })`, and then later call
   `audioVideo.start()` as usual.
+- Added a 'abort-on-reconnect' query parameter to demo URL to trigger fatal
+  on reconnection for use in integration tests (default false).
 
 ### Changed
 

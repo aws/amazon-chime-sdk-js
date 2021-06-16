@@ -76,12 +76,11 @@ module.exports = env => {
           }, {
             loader: 'postcss-loader',
             options: {
-              plugins: function () {
-                return [
-                  require('precss'),
-                  require('autoprefixer')
-                ];
-              },
+              postcssOptions: {
+                plugins: [
+                  "autoprefixer"
+                ]
+              }
             },
           }, {
             loader: 'sass-loader',

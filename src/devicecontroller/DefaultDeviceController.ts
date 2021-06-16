@@ -256,21 +256,21 @@ export default class DefaultDeviceController
     this.audioInputDestinationNode = undefined;
   }
 
-  async listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.listDevicesOfKind('audioinput');
-    this.trace('listAudioInputDevices', null, result);
+  async listAudioInputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.listDevicesOfKind('audioinput', forceUpdate);
+    this.trace('listAudioInputDevices', forceUpdate, result);
     return result;
   }
 
-  async listVideoInputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.listDevicesOfKind('videoinput');
-    this.trace('listVideoInputDevices', null, result);
+  async listVideoInputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.listDevicesOfKind('videoinput', forceUpdate);
+    this.trace('listVideoInputDevices', forceUpdate, result);
     return result;
   }
 
-  async listAudioOutputDevices(): Promise<MediaDeviceInfo[]> {
-    const result = await this.listDevicesOfKind('audiooutput');
-    this.trace('listAudioOutputDevices', null, result);
+  async listAudioOutputDevices(forceUpdate: boolean = false): Promise<MediaDeviceInfo[]> {
+    const result = await this.listDevicesOfKind('audiooutput', forceUpdate);
+    this.trace('listAudioOutputDevices', forceUpdate, result);
     return result;
   }
 
@@ -383,7 +383,7 @@ export default class DefaultDeviceController
 
       await this.chooseAudioTransformInputDevice(device);
     } else {
-      this.logger.info(`Choosing intrinsic input device ${device}`);
+      this.logger.info(`Choosing intrinsic audio input device ${device}`);
       this.removeTransform();
       await this.chooseInputIntrinsicDevice('audio', device, false);
       this.trace('chooseAudioInputDevice', device, `success`);
@@ -649,6 +649,16 @@ export default class DefaultDeviceController
   }
 
   setDeviceLabelTrigger(trigger: () => Promise<MediaStream>): void {
+    // Discard the cache if it was populated with unlabeled devices.
+    if (this.deviceInfoCache) {
+      for (const device of this.deviceInfoCache) {
+        if (!device.label) {
+          this.deviceInfoCache = null;
+          break;
+        }
+      }
+    }
+
     this.deviceLabelTrigger = trigger;
     this.trace('setDeviceLabelTrigger');
   }
@@ -1027,8 +1037,11 @@ export default class DefaultDeviceController
     }
   }
 
-  private async listDevicesOfKind(deviceKind: string): Promise<MediaDeviceInfo[]> {
-    if (this.deviceInfoCache === null || !this.isWatchingForDeviceChanges()) {
+  private async listDevicesOfKind(
+    deviceKind: string,
+    forceUpdate: boolean
+  ): Promise<MediaDeviceInfo[]> {
+    if (forceUpdate || this.deviceInfoCache === null || !this.isWatchingForDeviceChanges()) {
       await this.updateDeviceInfoCacheFromBrowser();
     }
     return this.listCachedDevicesOfKind(deviceKind);
@@ -1150,11 +1163,36 @@ export default class DefaultDeviceController
     return device && device.id ? device : null;
   }
 
+  private hasSameMediaStreamId(
+    kind: string,
+    selection: DeviceSelection,
+    proposedConstraints: MediaStreamConstraints
+  ): boolean {
+    // Checking for stream using the fake constraint created in calculateMediaStreamConstraints
+    let streamId;
+    if (kind === 'audio') {
+      // @ts-ignore
+      streamId = proposedConstraints?.audio.streamId;
+      /* istanbul ignore next */
+      // @ts-ignore
+      return !!streamId && streamId === selection.constraints?.audio?.streamId;
+    }
+    /* istanbul ignore next */
+    // @ts-ignore
+    streamId = proposedConstraints?.video.streamId;
+    /* istanbul ignore next */
+    // @ts-ignore
+    return !!streamId && streamId === selection.constraints?.video?.streamId;
+  }
+
   private hasSameGroupId(groupId: string, kind: string, device: Device): boolean {
     if (groupId === '') {
       return true;
     }
     const deviceIds = DefaultDeviceController.getIntrinsicDeviceId(device);
+    this.logger.debug(
+      `Checking deviceIds ${deviceIds} of type ${typeof deviceIds} with groupId ${groupId}`
+    );
     if (typeof deviceIds === 'string' && groupId === this.getGroupIdFromDeviceId(kind, deviceIds)) {
       return true;
     }
@@ -1162,14 +1200,23 @@ export default class DefaultDeviceController
   }
 
   private getGroupIdFromDeviceId(kind: string, deviceId: string): string {
+    /* istanbul ignore else */
     if (this.deviceInfoCache !== null) {
       const cachedDeviceInfo = this.listCachedDevicesOfKind(`${kind}input`).find(
         (cachedDevice: MediaDeviceInfo) => cachedDevice.deviceId === deviceId
       );
       if (cachedDeviceInfo && cachedDeviceInfo.groupId) {
+        this.logger.debug(
+          `GroupId of deviceId ${deviceId} found in cache is ${cachedDeviceInfo.groupId}`
+        );
         return cachedDeviceInfo.groupId;
       }
+    } else {
+      this.logger.error(
+        'Device cache is not populated. Please make sure to call list devices first'
+      );
     }
+    this.logger.debug(`GroupId of deviceId ${deviceId} found in cache is empty`);
     return '';
   }
 
@@ -1279,6 +1326,7 @@ export default class DefaultDeviceController
       }
     }
     delete device.endedCallback;
+    this.logger.debug(`Releasing active device ${JSON.stringify(device)}`);
     this.releaseMediaStream(device.stream);
     delete device.stream;
   }
@@ -1301,10 +1349,15 @@ export default class DefaultDeviceController
     if (
       selection &&
       selection.stream.active &&
-      selection.groupId !== null &&
-      this.hasSameGroupId(selection.groupId, kind, device)
+      (this.hasSameMediaStreamId(kind, selection, proposedConstraints) ||
+        (selection.groupId !== null && this.hasSameGroupId(selection.groupId, kind, device)))
     ) {
       // TODO: this should be computed within this function.
+      this.logger.debug(
+        `Compare current device constraint ${JSON.stringify(
+          selection.constraints
+        )} to proposed constraints ${JSON.stringify(proposedConstraints)}`
+      );
       return selection.matchesConstraints(proposedConstraints);
     }
 
@@ -1340,7 +1393,7 @@ export default class DefaultDeviceController
     // `applyConstraints` can be used to reuse the active device while changing the
     // requested constraints.
     if (this.matchesDeviceSelection(kind, device, this.activeDevices[kind], proposedConstraints)) {
-      this.logger.info(`reusing existing ${kind} device`);
+      this.logger.info(`reusing existing ${kind} input device`);
       return;
     }
 
@@ -1461,6 +1514,7 @@ export default class DefaultDeviceController
     const oldDevice = this.activeDevices[kind];
 
     this.activeDevices[kind] = newDevice;
+    this.logger.debug(`Set activeDevice to ${JSON.stringify(newDevice)}`);
     this.watchForDeviceChangesIfNecessary();
 
     if (kind === 'video') {
@@ -1544,16 +1598,6 @@ export default class DefaultDeviceController
       trackConstraints.frameRate = trackConstraints.frameRate || {
         ideal: this.videoInputQualitySettings.videoFrameRate,
       };
-      // TODO: try to replace hard-code value related to videos into quality-level presets
-      // The following configs relaxes CPU overuse detection threshold to offer better encoding quality
-      // @ts-ignore
-      trackConstraints.googCpuOveruseDetection = true;
-      // @ts-ignore
-      trackConstraints.googCpuOveruseEncodeUsage = true;
-      // @ts-ignore
-      trackConstraints.googCpuOveruseThreshold = 85;
-      // @ts-ignore
-      trackConstraints.googCpuUnderuseThreshold = 55;
     }
     if (kind === 'audio' && this.supportSampleRateConstraint()) {
       trackConstraints.sampleRate = { ideal: DefaultDeviceController.defaultSampleRate };
@@ -1622,7 +1666,7 @@ export default class DefaultDeviceController
         throw new Error(`no ${kind} device chosen, stopping local video tile`);
       }
     } else {
-      this.logger.info(`checking whether existing ${kind} device can be reused`);
+      this.logger.info(`checking whether existing ${kind} input device can be reused`);
       const active = this.activeDevices[kind];
       // @ts-ignore
       existingConstraints = active.constraints ? active.constraints[kind] : null;

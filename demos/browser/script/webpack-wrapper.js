@@ -4,7 +4,7 @@
  * calls like `tsc && webpack foo`, which is totally busted.
  */
 
-const { spawn } = require('child_process');
+const spawn = require('cross-spawn');
 
 const argv = process.argv;
 

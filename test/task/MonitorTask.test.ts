@@ -374,6 +374,10 @@ describe('MonitorTask', () => {
         getObservableMetrics(): { [id: string]: number } {
           return;
         }
+
+        getObservableVideoMetrics(): { [id: string]: { [id: string]: {} } } {
+          return;
+        }
       }
       task.metricsDidReceive(undefined);
       const clientMetricReport = new TestClientMetricReport();
@@ -993,6 +997,23 @@ describe('MonitorTask', () => {
       message.type = SdkSignalFrame.Type.AUDIO_STATUS;
       message.audioStatus = SdkAudioStatusFrame.create();
       message.audioStatus.audioStatus = 410;
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.ReceivedSignalFrame,
+          message
+        )
+      );
+      expect(spy.called).to.be.true;
+    });
+
+    it('stops audio and video if the error status code is 411 (AudioAttendeeRemoved)', () => {
+      const spy = sinon.spy(context.audioVideoController, 'handleMeetingSessionStatus');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const message = SdkSignalFrame.create();
+      message.type = SdkSignalFrame.Type.AUDIO_STATUS;
+      message.audioStatus = SdkAudioStatusFrame.create();
+      message.audioStatus.audioStatus = 411;
       task.handleSignalingClientEvent(
         new SignalingClientEvent(
           new DefaultSignalingClient(webSocketAdapter, logger),

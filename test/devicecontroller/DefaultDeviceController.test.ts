@@ -88,6 +88,14 @@ describe('DefaultDeviceController', () => {
     };
   }
 
+  function anyDevicesAreUnlabeled(devices: MediaDeviceInfo[]): boolean {
+    return devices.some(device => !device.label);
+  }
+
+  function anyDeviceHasId(devices: MediaDeviceInfo[], deviceId: string): boolean {
+    return devices.some(device => device.deviceId === deviceId);
+  }
+
   beforeEach(() => {
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -209,6 +217,49 @@ describe('DefaultDeviceController', () => {
       for (const device of devices) {
         expect(device.kind).to.equal('audioinput');
       }
+    });
+
+    it('updates cache after cache established only with forceUpdate set to true', async () => {
+      deviceController.setDeviceLabelTrigger(async () => {
+        called = true;
+        return new MediaStream();
+      });
+
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('deviceId1', 'audioinput', '', 'group-id-1'),
+      ];
+
+      // This will establish the cache with empty label.
+      let devices: MediaDeviceInfo[] = await deviceController.listAudioInputDevices();
+
+      // @ts-ignore
+      expect(deviceController.deviceInfoCache).to.not.be.null;
+      expect(anyDevicesAreUnlabeled(devices)).to.be.true;
+
+      // @ts-ignore
+      expect(deviceController.isWatchingForDeviceChanges()).to.be.false;
+
+      // This will set `isWatchingForDeviceChanges` to be true to avoid undesired `deviceLabelTrigger` call.
+      const device: AudioInputDevice = { deviceId: 'deviceId1' };
+      await deviceController.chooseAudioInputDevice(device);
+
+      let called = false;
+
+      // @ts-ignore
+      expect(deviceController.isWatchingForDeviceChanges()).to.be.true;
+
+      // Update the mocked list to check the `enumerateDevices` call later.
+      domMockBehavior.enumerateDeviceList = [
+        getMediaDeviceInfo('deviceId2', 'audioinput', '', 'group-id-2'),
+      ];
+
+      devices = await deviceController.listAudioInputDevices(false);
+      expect(anyDeviceHasId(devices, 'deviceId2')).to.be.false;
+      expect(called).to.be.equal(false);
+
+      devices = await deviceController.listAudioInputDevices(true);
+      expect(anyDeviceHasId(devices, 'deviceId2')).to.be.true;
+      expect(called).to.be.equal(true);
     });
 
     it('lists video input devices', async () => {
@@ -989,6 +1040,25 @@ describe('DefaultDeviceController', () => {
       expect(spy.calledTwice).to.be.true;
     });
 
+    it('Can chooseAudioInputDevice if pass in media stream', async () => {
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async restartLocalAudio(_callback: () => void): Promise<void> {
+          await deviceController.acquireAudioInputStream();
+        }
+      }
+      const mockAudioStream = getMediaStreamDevice('sample');
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      // @ts-ignore
+      const spy = sinon.spy(deviceController, 'chooseInputIntrinsicDevice');
+      try {
+        deviceController.bindToAudioVideoController(new TestAudioVideoController());
+        await deviceController.chooseAudioInputDevice(mockAudioStream);
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+      expect(spy.calledTwice).to.be.true;
+    });
+
     it('sets to null device when an external device disconnects', async () => {
       enableWebAudio(true);
       try {
@@ -997,7 +1067,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached.');
       }
 
-      // The previous audio source node will be disconneted.
+      // The previous audio source node will be disconnected.
       try {
         await deviceController.chooseAudioInputDevice(null);
       } catch (e) {
@@ -1086,7 +1156,7 @@ describe('DefaultDeviceController', () => {
     it('reuse existing device if passing in the same device id', async () => {
       domMockBehavior.enumerateDeviceList = [
         getMediaDeviceInfo('deviceId1', 'audioinput', 'label', 'group-id-1'),
-        getMediaDeviceInfo('deviceId12', 'audioinput', 'label', 'group-id-2'),
+        getMediaDeviceInfo('deviceId2', 'audioinput', 'label', 'group-id-2'),
       ];
       domMockBehavior.mediaStreamTrackSettings = {
         deviceId: 'deviceId1',
@@ -1331,10 +1401,12 @@ describe('DefaultDeviceController', () => {
     });
 
     it('chooses the device as a media stream', async () => {
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
       const device: VideoInputDevice = getMediaStreamDevice('device-id');
       await deviceController.chooseVideoInputDevice(device);
       const stream = await deviceController.acquireVideoInputStream();
       expect(stream).to.equal(device);
+      expect(spy.notCalled).to.be.true;
     });
 
     it('releases an old stream', async () => {
@@ -2328,6 +2400,36 @@ describe('DefaultDeviceController', () => {
       await deviceController.listAudioInputDevices();
       await delay(100);
       expect(called).to.be.true;
+    });
+
+    it('clears the cache if it has empty label when setting new device trigger', async () => {
+      deviceController.setDeviceLabelTrigger(async () => new MediaStream());
+
+      // This will establish the cache
+      const devices: MediaDeviceInfo[] = await deviceController.listAudioInputDevices();
+
+      // @ts-ignore
+      expect(deviceController.deviceInfoCache).to.not.be.null;
+      expect(anyDevicesAreUnlabeled(devices)).to.be.true;
+
+      deviceController.setDeviceLabelTrigger(async () => new MediaStream());
+
+      // @ts-ignore
+      expect(deviceController.deviceInfoCache).to.be.null;
+    });
+
+    it('keeps current cache if it has no empty label when setting new device trigger', async () => {
+      // This will establish the cache.
+      const devices: MediaDeviceInfo[] = await deviceController.listAudioInputDevices();
+
+      // @ts-ignore
+      expect(deviceController.deviceInfoCache).to.not.be.null;
+      expect(anyDevicesAreUnlabeled(devices)).to.be.false;
+
+      deviceController.setDeviceLabelTrigger(async () => new MediaStream());
+
+      // @ts-ignore
+      expect(deviceController.deviceInfoCache).to.not.be.null;
     });
   });
 
