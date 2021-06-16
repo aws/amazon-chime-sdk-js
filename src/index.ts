@@ -241,6 +241,7 @@ import VideoOnlyTransceiverController from './transceivercontroller/VideoOnlyTra
 import VideoPreference from './videodownlinkbandwidthpolicy/VideoPreference';
 import VideoPreferences from './videodownlinkbandwidthpolicy/VideoPreferences';
 import VideoPriorityBasedPolicy from './videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
+import VideoPriorityBasedPolicyConfig from './videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig';
 import VideoQualitySettings from './devicecontroller/VideoQualitySettings';
 import VideoSource from './videosource/VideoSource';
 import VideoStreamDescription from './videostreamindex/VideoStreamDescription';
@@ -515,6 +516,7 @@ export {
   VideoPreference,
   VideoPreferences,
   VideoPriorityBasedPolicy,
+  VideoPriorityBasedPolicyConfig,
   VideoQualitySettings,
   VideoSource,
   VideoStreamDescription,

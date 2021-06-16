@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
+import { VideoPriorityBasedPolicyConfig } from '../../src';
 
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -972,6 +973,74 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.updateIndex(videoStreamIndex);
       resub = policy.wantsResubscribe();
       expect(resub).to.equal(false);
+    });
+  });
+
+  describe('VideoPriorityBasedPolicyConfig', () => {
+    it('unstable network with unstable preset', () => {
+      const config = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
+      policy = new VideoPriorityBasedPolicy(logger, config);
+      updateIndexFrame(videoStreamIndex, 3, 300, 1200);
+      policy.updateIndex(videoStreamIndex);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] =
+        10000 * 1000;
+      const preferences = VideoPreferences.prepare();
+      preferences.add(new VideoPreference('attendee-1', 2));
+      preferences.add(new VideoPreference('attendee-2', 2));
+      preferences.add(new VideoPreference('attendee-3', 2));
+      policy.chooseRemoteVideoSources(preferences.build());
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 5]);
+      const tile1 = tileController.addVideoTile();
+      tile1.stateRef().boundAttendeeId = 'attendee-1';
+      const tile2 = tileController.addVideoTile();
+      tile2.stateRef().boundAttendeeId = 'attendee-2';
+      const tile3 = tileController.addVideoTile();
+      tile3.stateRef().boundAttendeeId = 'attendee-3';
+
+      incrementTime(6100);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3000 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3000 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 6]);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 900 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      incrementTime(5100);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3000 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 5]);
     });
   });
 });
