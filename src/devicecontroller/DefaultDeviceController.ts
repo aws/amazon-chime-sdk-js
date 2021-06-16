@@ -1163,6 +1163,28 @@ export default class DefaultDeviceController
     return device && device.id ? device : null;
   }
 
+  private hasSameMediaStreamId(
+    kind: string,
+    selection: DeviceSelection,
+    proposedConstraints: MediaStreamConstraints
+  ): boolean {
+    // Checking for stream using the fake constraint created in calculateMediaStreamConstraints
+    let streamId;
+    if (kind === 'audio') {
+      // @ts-ignore
+      streamId = proposedConstraints?.audio.streamId;
+      /* istanbul ignore next */
+      // @ts-ignore
+      return !!streamId && streamId === selection.constraints?.audio?.streamId;
+    }
+    /* istanbul ignore next */
+    // @ts-ignore
+    streamId = proposedConstraints?.video.streamId;
+    /* istanbul ignore next */
+    // @ts-ignore
+    return !!streamId && streamId === selection.constraints?.video?.streamId;
+  }
+
   private hasSameGroupId(groupId: string, kind: string, device: Device): boolean {
     if (groupId === '') {
       return true;
@@ -1327,8 +1349,8 @@ export default class DefaultDeviceController
     if (
       selection &&
       selection.stream.active &&
-      selection.groupId !== null &&
-      this.hasSameGroupId(selection.groupId, kind, device)
+      (this.hasSameMediaStreamId(kind, selection, proposedConstraints) ||
+        (selection.groupId !== null && this.hasSameGroupId(selection.groupId, kind, device)))
     ) {
       // TODO: this should be computed within this function.
       this.logger.debug(

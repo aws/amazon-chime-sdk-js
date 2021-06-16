@@ -1040,6 +1040,25 @@ describe('DefaultDeviceController', () => {
       expect(spy.calledTwice).to.be.true;
     });
 
+    it('Can chooseAudioInputDevice if pass in media stream', async () => {
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async restartLocalAudio(_callback: () => void): Promise<void> {
+          await deviceController.acquireAudioInputStream();
+        }
+      }
+      const mockAudioStream = getMediaStreamDevice('sample');
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      // @ts-ignore
+      const spy = sinon.spy(deviceController, 'chooseInputIntrinsicDevice');
+      try {
+        deviceController.bindToAudioVideoController(new TestAudioVideoController());
+        await deviceController.chooseAudioInputDevice(mockAudioStream);
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+      expect(spy.calledTwice).to.be.true;
+    });
+
     it('sets to null device when an external device disconnects', async () => {
       enableWebAudio(true);
       try {
@@ -1382,10 +1401,12 @@ describe('DefaultDeviceController', () => {
     });
 
     it('chooses the device as a media stream', async () => {
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
       const device: VideoInputDevice = getMediaStreamDevice('device-id');
       await deviceController.chooseVideoInputDevice(device);
       const stream = await deviceController.acquireVideoInputStream();
       expect(stream).to.equal(device);
+      expect(spy.notCalled).to.be.true;
     });
 
     it('releases an old stream', async () => {

@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Pre-started signaling connections no longer cause a delay in joining if the
   user takes more than a minute to join the meeting.
+- Fix choosing input device API when passing in a media stream.
 
 ## [2.11.0] - 2021-06-04
 
