@@ -608,8 +608,16 @@ export class DemoMeetingApp {
   setMediaRegion(): void {
     new AsyncScheduler().start(
       async (): Promise<void> => {
+        let nearestMediaRegion = null;
         try {
-          const nearestMediaRegion = await this.getNearestMediaRegion();
+          const query = new URLSearchParams(document.location.search);
+          const stage = query.get('stage');
+          if (stage === 'beta') {
+            const regions = ['us-east-1', 'ap-south-1', 'us-west-2'];
+            nearestMediaRegion = regions[Math.floor(Math.random()*regions.length)];
+          } else {
+          nearestMediaRegion = await this.getNearestMediaRegion();
+          }
           if (nearestMediaRegion === '' || nearestMediaRegion === null) {
             throw new Error('Nearest Media Region cannot be null or empty');
           }
