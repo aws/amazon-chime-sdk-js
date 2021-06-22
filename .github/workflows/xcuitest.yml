@@ -1,0 +1,26 @@
+name: WkWebView Sample Demo E2E Test
+
+on:
+  workflow_run:
+    workflows: ["Deploy Demo App Workflow"]
+    branches: [master]
+    types: 
+      - completed
+
+jobs:
+  xcuitest:
+    runs-on: macos-11
+    env:
+      DEPLOYED_MEETING_DEMO: ${{secrets.DEPLOYED_MEETING_DEMO}}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout amazon-chime-sdk repo
+        uses: actions/checkout@v2
+        with:
+          repository: 'aws-samples/amazon-chime-sdk'
+      - name: Insert meeting demo URL
+        run: |
+          sed -i '' -e 's@YOUR_SERVER_URL@${{secrets.DEPLOYED_MEETING_DEMO}}@' apps/iOS-WKWebView-sample/WkWebView\ Demo/AppConfiguration.swift
+      - name: Run XCUITest Locally
+        run: |
+          xcodebuild test -project apps/iOS-WKWebView-sample/WkWebView\ Demo.xcodeproj -scheme WkWebView\ Demo  -sdk iphonesimulator -destination "platform=iOS Simulator,OS=14.5,name=iPhone 11 Pro"

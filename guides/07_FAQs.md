@@ -126,6 +126,26 @@ The Amazon Chime SDK does not support scheduling meetings ahead of time. The mom
  
  Suppose an attendee has joined a meeting, now if that same attendee tries to join the same meeting again using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API, then, the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. Reference issue: [#1290](https://github.com/aws/amazon-chime-sdk-js/issues/1290). The `AudioJoinFromAnotherDevice` meeting session status code is triggered by Amazon Chime backend and it is not triggered internally from the JS SDK.
 
+### What does it mean when Amazon Chime SDK JS throws error with status code `SignalingBadRequest`, `MeetingEnded` or `SignalingInternalServerError` while establishing a signaling connection to the Chime Servers.
+
+From JoinAndReceiveIndexTask.ts, the Chime SDK for JavaScript throws the `SignalingBadRequest` Error. This indicates that the client's request to establish a signaling connection to the Chime Server has failed.
+
+There are 3 cases that can happen here.
+
+1. If the Chime SDK for JavaScript receives a `event.closeCode === 4410` from Amazon Chime backend, that means that an attendee is trying to join a meeting that has already ended. In that case, the Chime SDK for JavaScript throws an error with status code `MeetingEnded`
+2. If the Chime SDK for JavaScript receives `event.closeCode >= 4500 && event.closeCode < 4600`, that indicates an Internal Server Error in the Amazon Chime backend and the Chime SDK for JavaScript throws an error with status code `SignalingInternalServerError`. This indicates there is an issue with the Chime Server that requires further investigation. (e.g a 5xx)
+3. In other cases like when an attendee is deleted (by calling the [DeleteAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html) API), and the client tries to join a meeting with the credentials of the deleted attendee, the Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`.
+
+Here is an example of `SignalingBadRequest` error from an INFO level browser log.
+
+```
+sending join
+notifying event: WebSocketClosed
+stopped pinging (WebSocketClosed)
+signaling connection closed by server with code 4403 and reason: attendee unavailable
+handling status: SignalingBadRequest
+session will not be reconnected: SignalingBadRequest
+```
 ## Media
 
 ### Which media regions is the Amazon Chime SDK available in? How do I choose the best media region to place my meetings?

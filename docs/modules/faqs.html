@@ -185,6 +185,24 @@
 						<h3>What happens when I try to re-use same attendee response to join a meeting twice?</h3>
 					</a>
 					<p> Suppose an attendee has joined a meeting, now if that same attendee tries to join the same meeting again using the same <code>AttendeeId</code> or <code>ExternalUserId</code> response received from <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">CreateAttendee</a> API, then, the first attendee will automatically leave the meeting with <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice"><code>AudioJoinFromAnotherDevice</code></a> meeting session status code. Reference issue: <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1290">#1290</a>. The <code>AudioJoinFromAnotherDevice</code> meeting session status code is triggered by Amazon Chime backend and it is not triggered internally from the JS SDK.</p>
+					<a href="#what-does-it-mean-when-amazon-chime-sdk-js-throws-error-with-status-code-signalingbadrequest-meetingended-or-signalinginternalservererror-while-establishing-a-signaling-connection-to-the-chime-servers" id="what-does-it-mean-when-amazon-chime-sdk-js-throws-error-with-status-code-signalingbadrequest-meetingended-or-signalinginternalservererror-while-establishing-a-signaling-connection-to-the-chime-servers" style="color: inherit; text-decoration: none;">
+						<h3>What does it mean when Amazon Chime SDK JS throws error with status code <code>SignalingBadRequest</code>, <code>MeetingEnded</code> or <code>SignalingInternalServerError</code> while establishing a signaling connection to the Chime Servers.</h3>
+					</a>
+					<p>From JoinAndReceiveIndexTask.ts, the Chime SDK for JavaScript throws the <code>SignalingBadRequest</code> Error. This indicates that the client&#39;s request to establish a signaling connection to the Chime Server has failed.</p>
+					<p>There are 3 cases that can happen here.</p>
+					<ol>
+						<li>If the Chime SDK for JavaScript receives a <code>event.closeCode === 4410</code> from Amazon Chime backend, that means that an attendee is trying to join a meeting that has already ended. In that case, the Chime SDK for JavaScript throws an error with status code <code>MeetingEnded</code></li>
+						<li>If the Chime SDK for JavaScript receives <code>event.closeCode &gt;= 4500 &amp;&amp; event.closeCode &lt; 4600</code>, that indicates an Internal Server Error in the Amazon Chime backend and the Chime SDK for JavaScript throws an error with status code <code>SignalingInternalServerError</code>. This indicates there is an issue with the Chime Server that requires further investigation. (e.g a 5xx)</li>
+						<li>In other cases like when an attendee is deleted (by calling the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html">DeleteAttendee</a> API), and the client tries to join a meeting with the credentials of the deleted attendee, the Chime SDK for JavaScript throws an error with status code <code>SignalingBadRequest</code>.</li>
+					</ol>
+					<p>Here is an example of <code>SignalingBadRequest</code> error from an INFO level browser log.</p>
+					<pre><code>sending <span class="hljs-keyword">join</span>
+notifying event: WebSocketClosed
+stopped pinging (WebSocketClosed)
+signaling <span class="hljs-keyword">connection</span> closed <span class="hljs-keyword">by</span> <span class="hljs-keyword">server</span> <span class="hljs-keyword">with</span> code <span class="hljs-number">4403</span> <span class="hljs-keyword">and</span> reason: attendee unavailable
+handling status: SignalingBadRequest
+<span class="hljs-keyword">session</span> will <span class="hljs-keyword">not</span> be reconnected: SignalingBadRequest
+</code></pre>
 					<a href="#media" id="media" style="color: inherit; text-decoration: none;">
 						<h2>Media</h2>
 					</a>
