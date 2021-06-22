@@ -241,6 +241,29 @@ handling status: SignalingBadRequest
 						<h3>Does the SDK support remote mute where one attendee can mute another?</h3>
 					</a>
 					<p>Remote mute is the ability of one attendee in a meeting to mute another attendee. This feature is currently not supported server-side by the SDK. However, you can use <a href="https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#9-send-and-receive-data-messages-optional">Amazon Chime SDK Data Messages</a> to send a message containing the attendee or attendees that should mute, and clients can mute themselves when they receive those messages.</p>
+					<a href="#how-do-i-get-connection-indicator-for-media-quality" id="how-do-i-get-connection-indicator-for-media-quality" style="color: inherit; text-decoration: none;">
+						<h3>How do I get connection indicator for media quality?</h3>
+					</a>
+					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics">getObservableVideoMetrics</a> API exposes video quality statistics. The <code>getObservableVideoMetrics</code> API returns following metrics:</p>
+					<pre><code>// Upstream metrics of local attendee
+<span class="hljs-built_in">videoUpstreamBitrate,</span>
+<span class="hljs-built_in">videoUpstreamPacketsSent,</span>
+<span class="hljs-built_in">videoUpstreamFramesEncodedPerSecond,</span>
+<span class="hljs-built_in">videoUpstreamGoogFrameHeight,</span> (for chromium based browsers)
+<span class="hljs-built_in">videoUpstreamGoogFrameWidth,</span>(for chromium based browsers)
+<span class="hljs-built_in">videoUpstreamFrameHeight,</span>
+<span class="hljs-built_in">videoUpstreamFrameWidth,</span>
+
+// Downstream metrics of remote attendees
+videoDownstreamBitrate
+<span class="hljs-built_in">videoDownstreamPacketLossPercent,</span>
+<span class="hljs-built_in">videoDownstreamFramesDecodedPerSecond,</span>
+<span class="hljs-built_in">videoDownstreamGoogFrameHeight,</span>
+<span class="hljs-built_in">videoDownstreamGoogFrameWidth,</span>
+<span class="hljs-built_in">videoDownstreamFrameHeight,</span>
+<span class="hljs-built_in">videoDownstreamFrameWidth,</span>
+</code></pre>
+					<p>See this <a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html">guide</a> for more information.</p>
 					<a href="#demos" id="demos" style="color: inherit; text-decoration: none;">
 						<h2>Demos</h2>
 					</a>

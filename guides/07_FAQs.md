@@ -184,6 +184,30 @@ Amazon Chime SDK supports simulcast for Chromium-based browsers. See this [techn
 
 Remote mute is the ability of one attendee in a meeting to mute another attendee. This feature is currently not supported server-side by the SDK. However, you can use [Amazon Chime SDK Data Messages](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#9-send-and-receive-data-messages-optional) to send a message containing the attendee or attendees that should mute, and clients can mute themselves when they receive those messages.
 
+### How do I get connection indicator for media quality?
+
+The [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics) API exposes video quality statistics. The `getObservableVideoMetrics` API returns following metrics:
+```
+// Upstream metrics of local attendee
+videoUpstreamBitrate,
+videoUpstreamPacketsSent,
+videoUpstreamFramesEncodedPerSecond,
+videoUpstreamGoogFrameHeight, (for chromium based browsers)
+videoUpstreamGoogFrameWidth,(for chromium based browsers)
+videoUpstreamFrameHeight,
+videoUpstreamFrameWidth,
+
+// Downstream metrics of remote attendees
+videoDownstreamBitrate
+videoDownstreamPacketLossPercent,
+videoDownstreamFramesDecodedPerSecond,
+videoDownstreamGoogFrameHeight,
+videoDownstreamGoogFrameWidth,
+videoDownstreamFrameHeight,
+videoDownstreamFrameWidth,
+```
+See this [guide](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html) for more information. 
+
 ## Demos
 
 ### I want to build a React application that uses the Amazon Chime SDK. Do you have a sample application that I can reference?

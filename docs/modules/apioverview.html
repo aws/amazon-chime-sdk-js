@@ -212,6 +212,15 @@
 					</a>
 					<p>To show speaker volume, mute state, and signal strength for each attendee, subscribe to volume indicators for each attendee ID. You should subscribe and unsubscribe to attendee volume indicators as part of the attendee ID presence callback.</p>
 					<p>Volume is on a scale of 0 to 1 (no volume to max volume). Signal strength is on a scale of 0 to 1 (full packet loss to no packet loss). You can use the signal strength of remote attendees to show an indication of whether an attendee is experiencing packet loss and thus may be unable to communicate at the moment.</p>
+					<p>Signal strength</p>
+					<ul>
+						<li>0 - 100% loss of audio data</li>
+						<li>&lt; 0.5 - Between 50% to 100% loss of audio data</li>
+						<li><blockquote>
+								<p>= 0.5 - Less than 50% loss of audio data</p>
+							</blockquote>
+						</li>
+					</ul>
 					<p>To subscribe to an attendee’s volume indicator, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimesubscribetovolumeindicator">realtimeSubscribeToVolumeIndicator(attendeeId, callback)</a>.</p>
 					<p>To unsubscribe from an attendee’s volume indicator, call meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#realtimeunsubscribefromvolumeindicator">realtimeUnsubscribeFromVolumeIndicator(attendeeId)</a>.</p>
 					<a href="#5c-signal-strength-change-optional" id="5c-signal-strength-change-optional" style="color: inherit; text-decoration: none;">
