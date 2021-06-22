@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
+- [Documentation] Update FAQ and public documentation to add more information on SignalingBadRequest related error codes
 ### Changed
 
 - Bump maxVideos limit to 25

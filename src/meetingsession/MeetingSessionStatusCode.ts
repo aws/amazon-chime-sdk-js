@@ -46,7 +46,8 @@ export enum MeetingSessionStatusCode {
   TURNMeetingEnded = 6,
 
   /**
-   * The meeting has ended.
+   * This error code is thrown by the Amazon Chime SDK JS  when a client tries setup a
+   * signaling connection to join a meeting that has already ended.
    */
   MeetingEnded = 6,
 
@@ -72,19 +73,26 @@ export enum MeetingSessionStatusCode {
    */
   VideoCallSwitchToViewOnly = 10,
 
-  /** This can happen when you attempt to join a video meeting in "send only" mode
-  (transmitting your camera, but not receiving anything -- this isn't something
-  we ever do in practice, but it is supported on the server). It should be
-  treated as "fatal" and probably should not be retried (despite the 5xx nature). */
+  /**
+   * This can happen when you attempt to join a video meeting in "send only" mode
+   * (transmitting your camera, but not receiving anything -- this isn't something
+   * we ever do in practice, but it is supported on the server). It should be
+   * treated as "fatal" and probably should not be retried (despite the 5xx nature).
+   */
   VideoCallAtSourceCapacity = 11,
 
   /**
-   * Bad request on JOIN or SUBSCRIBE
+   * This indicates that the client's request to establish a signaling connection to the
+   * Chime Server has failed. Example: In a cases when an attendee is deleted, and the
+   * client tries to join a meeting with the credentials of the deleted attendee,
+   * the Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`.
    */
   SignalingBadRequest = 12,
 
   /**
-   * Internal server error on JOIN or SUBSCRIBE
+   * This indicates that the client's request to establish a signaling connection
+   * to the Chime Server has failed. An Internal Server Error in the Amazon Chime backend
+   * corresponds to and `SignalingInternalServerError` error thrown by the Amazon Chime SDK JS.
    */
   SignalingInternalServerError = 13,
 
