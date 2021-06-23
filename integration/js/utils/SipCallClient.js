@@ -8,9 +8,9 @@ class SipCallClient {
     this.resultPath = resultPath;
   }
 
-  call(voiceConnectorId, joinToken, meetingTitle) {
+  call(voiceConnectorId, joinToken, meetingTitle, sourcePhoneNumber) {
     console.log(`Join Token : ${joinToken.split("X-joinToken=")[1]}`);
-    return exec(`env TERMINATE_ON_BYE=1 DISABLE_DTMF=1 PLAY_TONE=1 TONE_PATH=${this.sipTestAssetPath}/test_tone.wav SIP_DOMAIN="${voiceConnectorId}.voiceconnector.chime.aws;transport=tls;X-chime-join-token=${joinToken.split("X-joinToken=")[1]}" SIP_USER=29709308 SIP_PASSWD=Tz6cghdEgKA4 SIP_CALLER_ID=${this.getSourcePhoneNumber()} SIP_PUBLIC_IP_ADDR=3.227.216.243 ${this.sipTestAssetPath}/sipagent_tls +17035550122 12345 ${this.resultPath}/test.wav`, (error, stdout, stderr) => {
+    return exec(`env TERMINATE_ON_BYE=1 DISABLE_DTMF=1 PLAY_TONE=1 TONE_PATH=${this.sipTestAssetPath}/test_tone.wav SIP_DOMAIN="${voiceConnectorId}.voiceconnector.chime.aws;transport=tls;X-chime-join-token=${joinToken.split("X-joinToken=")[1]}" SIP_USER=29709308 SIP_PASSWD=Tz6cghdEgKA4 SIP_CALLER_ID=${sourcePhoneNumber} SIP_PUBLIC_IP_ADDR=3.227.216.243 ${this.sipTestAssetPath}/sipagent_tls +17035550122 12345 ${this.resultPath}/test.wav`, (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
         return;
@@ -31,20 +31,6 @@ class SipCallClient {
   end(sipCallProcess) {
     sipCallProcess.kill('SIGTERM')
   }
-
-  getSourcePhoneNumber() {
-    switch(process.env.STAGE) {
-      case 'beta':
-        return "+12150000001";
-      case 'gamma':
-        return "+12150000002";
-      case 'prod':
-        return "+12150000003";
-      default:
-        return "+12150000009";
-    }
-  }
-
 }
 
 module.exports.SipCallClient = SipCallClient;
