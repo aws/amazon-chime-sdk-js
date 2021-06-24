@@ -46,8 +46,7 @@ export enum MeetingSessionStatusCode {
   TURNMeetingEnded = 6,
 
   /**
-   * This error code is thrown by the Amazon Chime SDK JS  when a client tries setup a
-   * signaling connection to join a meeting that has already ended.
+   * The attendee attempted to join a meeting that has already ended.
    */
   MeetingEnded = 6,
 
@@ -82,17 +81,16 @@ export enum MeetingSessionStatusCode {
   VideoCallAtSourceCapacity = 11,
 
   /**
-   * This indicates that the client's request to establish a signaling connection to the
-   * Chime Server has failed. Example: In a cases when an attendee is deleted, and the
-   * client tries to join a meeting with the credentials of the deleted attendee,
-   * the Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`.
+   * The Chime SDK for JavaScript failed to establish a signaling connection because
+   * you or someone else deleted the attendee using the DeleteAttendee API action
+   * in your server application.
+   * https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html
    */
   SignalingBadRequest = 12,
 
   /**
-   * This indicates that the client's request to establish a signaling connection
-   * to the Chime Server has failed. An Internal Server Error in the Amazon Chime backend
-   * corresponds to and `SignalingInternalServerError` error thrown by the Amazon Chime SDK JS.
+   * The Chime SDK for JavaScript failed to establish a signaling connection to the Chime
+   * backend due to an internal server error.
    */
   SignalingInternalServerError = 13,
 

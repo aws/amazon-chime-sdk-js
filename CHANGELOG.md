@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Documentation] Add documentation for `getObservableVideoMetrics`.
 - [Documentation] Update FAQ and public documentation to add more information on SignalingBadRequest related error codes
+- [Documentation] Rephrase the terms in the stauts code documentations 
 
 ### Changed
 
