@@ -23,7 +23,8 @@ const {
   BROWSER_LOG_GROUP_NAME,
   BROWSER_MEETING_EVENT_LOG_GROUP_NAME,
   SQS_QUEUE_ARN,
-  USE_EVENT_BRIDGE
+  USE_EVENT_BRIDGE,
+  BROWSER_EVENT_INGESTION_LOG_GROUP_NAME
 } = process.env;
 
 // === Handlers ===
@@ -146,6 +147,23 @@ exports.log_meeting_event = async (event, context) => {
   });
 };
 
+exports.log_event_ingestion = async (event, context) => {
+  return putLogEvents(event, BROWSER_EVENT_INGESTION_LOG_GROUP_NAME, (logs, meetingId, attendeeId) => {
+    const logEvents = [];
+    for (let i = 0; i < logs.length; i++) {
+      const log = logs[i];
+      const message = `[${log.logLevel}] [meeting: ${meetingId}] [attendee: ${attendeeId}]: ${log.message}`;
+      if (message.includes('Event Reporting')) {
+        logEvents.push({
+          message,
+          timestamp: log.timestampMs
+        });
+      }
+    }
+    return logEvents;
+  });
+};
+
 // Called when SQS receives records of meeting events and logs out those records
 exports.sqs_handler = async (event, context, callback) => {
   console.log(event.Records);
@@ -164,6 +182,10 @@ exports.create_log_stream = async event => {
 
 exports.create_browser_event_log_stream = async event => {
   return createLogStream(event, BROWSER_MEETING_EVENT_LOG_GROUP_NAME);
+}
+
+exports.create_browser_event_ingestion_log_stream = async event => {
+  return createLogStream(event, BROWSER_EVENT_INGESTION_LOG_GROUP_NAME);
 }
 
 // === Helpers ===

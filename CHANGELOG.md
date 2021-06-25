@@ -9,9 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add events ingestion to report meeting events to Amazon Chime backend.
+  Check [Client Event Ingestion guide](https://aws.github.io/amazon-chime-sdk-js/modules/clienteventingestion.html) for more information.
+
+### Changed
+
+### Removed
+
+### Fixed
+
+
+## [2.12.0] - 2021-06-23
+
+### Added
+
 - [Documentation] Add documentation for `getObservableVideoMetrics`.
-- [Documentation] Update FAQ and public documentation to add more information on SignalingBadRequest related error codes
-- [Documentation] Rephrase the terms in the stauts code documentations 
+- [Documentation] Update FAQ and public documentation to add more information on SignalingBadRequest related error codes.
+- [Documentation] Rephrase the terms in the status code documentations.
+- Add events ingestion to report meeting events to Amazon Chime backend.
+  Check [Client Event Ingestion guide](https://aws.github.io/amazon-chime-sdk-js/modules/clienteventingestion.html) for more information.
 
 ### Changed
 

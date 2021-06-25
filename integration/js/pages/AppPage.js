@@ -50,6 +50,8 @@ function findAllElements() {
     webAudioFeature: By.id('webaudio'),
     simulcastFeatureLabel: By.css('label[for="simulcast"]'),
     webAudioFeatureLabel: By.css('label[for="webaudio"]'),
+    eventReportingCheckBox: By.id('event-reporting'),
+    eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
   };
 }
 
@@ -117,6 +119,18 @@ class AppPage {
       this.logger('simulcast is selected');
     } else {
       await simulcastFeatureLabel.click();
+    }
+  }
+
+  async chooseEnableEventReporting() {
+    const eventReportingCheck = await this.driver.findElement(elements.eventReportingCheckBox);
+    const eventReportingCheckLabel = await this.driver.findElement(elements.eventReportingCheckBoxLabel);
+    
+    // Click the label because it's on top.
+    if (await eventReportingCheck.isSelected()) {
+      this.logger('event reporting is enabled');
+    } else {
+      await eventReportingCheckLabel.click();
     }
   }
 

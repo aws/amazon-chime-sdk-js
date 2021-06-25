@@ -7,6 +7,7 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import NoOpDeviceController, {
   DestroyableNoOpDeviceController,
 } from '../../src/devicecontroller/NoOpDeviceController';
+import NoOpEventReporter from '../../src/eventreporter/NoOpEventReporter';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultMeetingSession from '../../src/meetingsession/DefaultMeetingSession';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -112,6 +113,56 @@ describe('DefaultMeetingSession', () => {
         false
       );
       expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
+      mockBuilder.cleanup();
+    });
+
+    it('will not construct event reporter if event ingestion URL is not present', async () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceController()
+      );
+      expect(session).to.exist;
+      expect(session.eventReporter).to.be.undefined;
+      mockBuilder.cleanup();
+      await session.destroy();
+
+      // This is safe to call twice.
+      await session.destroy();
+    });
+
+    it('constructs event reporter if event ingestion URL is valid', async () => {
+      const mockBuilder = new DOMMockBuilder();
+      const configuration = new NoOpAudioVideoController().configuration;
+      configuration.urls.eventIngestionURL = 'https://localhost:8080/client-events';
+      const session = new DefaultMeetingSession(
+        configuration,
+        new NoOpLogger(),
+        new NoOpDeviceController()
+      );
+      expect(session).to.exist;
+      expect(session.eventReporter).to.exist;
+      const eventReporter = session.eventReporter;
+      await session.destroy();
+      expect(session.eventReporter).to.be.undefined;
+      // @ts-ignore
+      expect(eventReporter.destroyed).to.be.true;
+      // This is safe to call twice.
+      mockBuilder.cleanup();
+      await session.destroy();
+    });
+
+    it('can be constructed with a custom event reporter', () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceController(),
+        new NoOpEventReporter()
+      );
+      expect(session).to.exist;
+      expect(session.eventReporter).to.exist;
       mockBuilder.cleanup();
     });
   });

@@ -2,16 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventName from '../../src/eventcontroller/EventName';
+import NoOpEventReporter from '../../src/eventreporter/NoOpEventReporter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('DefaultEventController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
+  const assert: Chai.AssertStatic = chai.assert;
 
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
@@ -55,6 +58,13 @@ describe('DefaultEventController', () => {
       eventController = new DefaultEventController(audioVideoController);
       expect(eventController).to.exist;
     });
+
+    it('can create with an event reporter', () => {
+      const eventReporter = new NoOpEventReporter();
+      eventController = new DefaultEventController(audioVideoController, eventReporter);
+      expect(eventReporter).to.exist;
+      expect(eventController).to.exist;
+    });
   });
 
   describe('publishEvent', () => {
@@ -93,6 +103,17 @@ describe('DefaultEventController', () => {
       eventController.publishEvent(eventName, {
         videoInputErrorMessage,
       });
+    });
+
+    it('can report event', () => {
+      const eventReporter = new NoOpEventReporter();
+      eventController = new DefaultEventController(audioVideoController, eventReporter);
+      const eventName = 'audioInputFailed';
+      const audioInputErrorMessage = 'Something went wrong';
+      const attributes = { audioInputErrorMessage };
+      const spy = sinon.spy(eventReporter, 'reportEvent');
+      eventController.publishEvent(eventName, attributes);
+      assert(spy.calledOnce);
     });
   });
 

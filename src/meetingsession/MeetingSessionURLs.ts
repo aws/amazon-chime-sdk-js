@@ -37,6 +37,11 @@ export default class MeetingSessionURLs {
   private _turnControlURL: string | null = null;
 
   /**
+   * The event ingestion URL to send the meeting events.
+   */
+  private _eventIngestionURL: string | null = null;
+
+  /**
    * Gets or sets the audio host URL with gets reflecting the result of the {@link MeetingSessionURLs.urlRewriter} function.
    */
   get audioHostURL(): string | null {
@@ -100,6 +105,17 @@ export default class MeetingSessionURLs {
 
   set turnControlURL(value: string | null) {
     this._turnControlURL = value;
+  }
+
+  /**
+   * Gets or sets the events ingestion URL with gets reflecting the result of the {@link MeetingSessionURLs.urlRewriter} function.
+   */
+  get eventIngestionURL(): string | null {
+    return this.urlRewriter(this._eventIngestionURL);
+  }
+
+  set eventIngestionURL(value: string | null) {
+    this._eventIngestionURL = value;
   }
 
   /**

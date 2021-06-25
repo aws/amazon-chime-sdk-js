@@ -54,6 +54,9 @@ import {
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
+  NoOpEventReporter,
+  EventReporter,
+  isDestroyable
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -368,6 +371,9 @@ export class DemoMeetingApp
     }
   }
 
+  eventReporter: EventReporter | undefined = undefined;
+  enableEventReporting = false;
+
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).app = this;
@@ -480,6 +486,7 @@ export class DemoMeetingApp
       this.name = (document.getElementById('inputName') as HTMLInputElement).value;
       this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
       this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
+      this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
       if (this.enableSimulcast) {
         const videoInputQuality = document.getElementById(
           'video-input-quality'
@@ -1358,8 +1365,8 @@ export class DemoMeetingApp
       await Promise.all([
         this.createLogStream(configuration, 'create_log_stream'),
         this.createLogStream(configuration, 'create_browser_event_log_stream'),
+        this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream'),
       ]);
-
       this.meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
         'SDK',
         configuration,
@@ -1368,9 +1375,18 @@ export class DemoMeetingApp
         `${DemoMeetingApp.BASE_URL}logs`,
         logLevel
       );
+      const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
+        'SDKEventIngestion',
+        configuration,
+        DemoMeetingApp.LOGGER_BATCH_SIZE,
+        DemoMeetingApp.LOGGER_INTERVAL_MS,
+        `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
+        LogLevel.DEBUG
+      );
       this.meetingLogger = new MultiLogger(
         consoleLogger,
         this.meetingSessionPOSTLogger,
+        eventReportingPOSTLogger
       );
       this.meetingEventPOSTLogger = new MeetingSessionPOSTLogger(
         'SDKEvent',
@@ -1397,11 +1413,21 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
 
-    this.meetingSession = new DefaultMeetingSession(
-      configuration,
-      this.meetingLogger,
-      deviceController
-    );
+    if (!this.enableEventReporting) {
+      this.meetingSession = new DefaultMeetingSession(
+        configuration,
+        this.meetingLogger,
+        deviceController,
+        new NoOpEventReporter()
+      );
+    } else {
+      this.meetingSession = new DefaultMeetingSession(
+        configuration,
+        this.meetingLogger,
+        deviceController
+      );  
+    }
+    this.eventReporter = this.meetingSession.eventReporter;
 
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
@@ -2592,11 +2618,16 @@ export class DemoMeetingApp
         await this.meetingSessionPOSTLogger?.destroy();
       }, 500);
 
+      if (isDestroyable(this.eventReporter)) {
+        this.eventReporter?.destroy();
+      }
+
       this.audioVideo = undefined;
       this.voiceFocusDevice = undefined;
       this.meetingSession = undefined;
       this.activeSpeakerHandler = undefined;
       this.currentAudioInputDevice = undefined;
+      this.eventReporter = undefined;
     };
 
     const onLeftMeeting = async () => {

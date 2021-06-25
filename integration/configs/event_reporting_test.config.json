@@ -1,0 +1,30 @@
+{
+  "`": 1,
+  "name": "event_reporting_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Event Reporting Test %ts",
+      "description": "Event Reporting Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "EventReportingTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 1
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "86",
+      "platform": "MAC"
+    }
+  ]
+}
