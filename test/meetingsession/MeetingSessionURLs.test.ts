@@ -17,6 +17,7 @@ describe('MeetingSessionURLs', () => {
       expect(urls.screenViewingURL).to.be.null;
       expect(urls.signalingURL).to.be.null;
       expect(urls.turnControlURL).to.be.null;
+      expect(urls.eventIngestionURL).to.be.null;
       expect(urls.urlRewriter(null)).to.be.null;
       expect(urls.urlRewriter('foobar')).to.eq('foobar');
     });
@@ -29,6 +30,7 @@ describe('MeetingSessionURLs', () => {
       urls.screenViewingURL = 'screen-viewing-url';
       urls.signalingURL = 'signaling-url';
       urls.turnControlURL = 'turn-control-url';
+      urls.eventIngestionURL = 'event-ingestion-url';
       urls.urlRewriter = (url: string | null) => {
         return url !== null ? url.replace('url', 'rewritten-url') : null;
       };
@@ -40,6 +42,7 @@ describe('MeetingSessionURLs', () => {
       expect(urls.screenViewingURL).to.eq('screen-viewing-rewritten-url');
       expect(urls.signalingURL).to.eq('signaling-rewritten-url');
       expect(urls.turnControlURL).to.eq('turn-control-rewritten-url');
+      expect(urls.eventIngestionURL).to.eq('event-ingestion-rewritten-url');
     });
   });
 });

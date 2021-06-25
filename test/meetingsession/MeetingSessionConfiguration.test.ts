@@ -299,5 +299,48 @@ describe('MeetingSessionConfiguration', () => {
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
       expect(configuration.credentials.joinToken).to.eq('join-token');
     });
+
+    it('contains event ingestion URL if existing in CreateMeeting response', () => {
+      const configuration = new MeetingSessionConfiguration(
+        {
+          MeetingId: 'meeting-id',
+          MediaPlacement: {
+            AudioHostUrl: 'audio-host-url',
+            ScreenDataUrl: 'screen-data-url',
+            ScreenSharingUrl: 'screen-sharing-url',
+            ScreenViewingUrl: 'screen-viewing-url',
+            SignalingUrl: 'signaling-url',
+            TurnControlUrl: 'turn-control-url',
+            EventIngestionUrl: 'event-ingestion-url',
+          },
+        },
+        {
+          AttendeeId: 'attendee-id',
+          JoinToken: 'join-token',
+        }
+      );
+      expect(configuration.urls.eventIngestionURL).to.eq('event-ingestion-url');
+    });
+
+    it('event ingestion URL is null if not existing in CreateMeeting response', () => {
+      const configuration = new MeetingSessionConfiguration(
+        {
+          MeetingId: 'meeting-id',
+          MediaPlacement: {
+            AudioHostUrl: 'audio-host-url',
+            ScreenDataUrl: 'screen-data-url',
+            ScreenSharingUrl: 'screen-sharing-url',
+            ScreenViewingUrl: 'screen-viewing-url',
+            SignalingUrl: 'signaling-url',
+            TurnControlUrl: 'turn-control-url',
+          },
+        },
+        {
+          AttendeeId: 'attendee-id',
+          JoinToken: 'join-token',
+        }
+      );
+      expect(configuration.urls.eventIngestionURL).to.eq(null);
+    });
   });
 });

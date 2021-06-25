@@ -4,6 +4,7 @@
 import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
 import ContentShareController from '../contentsharecontroller/ContentShareController';
 import DeviceController from '../devicecontroller/DeviceController';
+import EventReporter from '../eventreporter/EventReporter';
 import Logger from '../logger/Logger';
 import MeetingSessionConfiguration from './MeetingSessionConfiguration';
 
@@ -13,4 +14,5 @@ export default interface MeetingSession {
   readonly audioVideo: AudioVideoFacade;
   readonly contentShare: ContentShareController;
   readonly deviceController: DeviceController;
+  readonly eventReporter?: EventReporter;
 }

@@ -10,7 +10,7 @@ let app = `meetingV2`;
 let useEventBridge = false;
 let enableTerminationProtection = false;
 let disablePrintingLogs = false;
-let chimeEndpoint = 'https://service.chime.aws.amazon.com'
+let chimeEndpoint = 'https://service.chime.aws.amazon.com';
 
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
