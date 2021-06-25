@@ -23,8 +23,6 @@ jobs:
         DEVO_AWS_SECRET_ACCESS_KEY: ${{secrets.DEVO_AWS_SECRET_ACCESS_KEY}}
         AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY}}
         AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        BETA_EVENT_INGESTION_URL: ${{secrets.BETA_EVENT_INGESTION_URL}}
-        GAMMA_EVENT_INGESTION_URL: ${{secrets.GAMMA_EVENT_INGESTION_URL}}
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
