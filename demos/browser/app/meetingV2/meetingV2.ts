@@ -1367,16 +1367,6 @@ export class DemoMeetingApp
         this.createLogStream(configuration, 'create_browser_event_log_stream'),
         this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream'),
       ]);
-
-      const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
-        'SDKEventIngestion',
-        configuration,
-        DemoMeetingApp.LOGGER_BATCH_SIZE,
-        DemoMeetingApp.LOGGER_INTERVAL_MS,
-        `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
-        LogLevel.DEBUG
-      );
-
       this.meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
         'SDK',
         configuration,
@@ -1384,6 +1374,14 @@ export class DemoMeetingApp
         DemoMeetingApp.LOGGER_INTERVAL_MS,
         `${DemoMeetingApp.BASE_URL}logs`,
         logLevel
+      );
+      const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
+        'SDKEventIngestion',
+        configuration,
+        DemoMeetingApp.LOGGER_BATCH_SIZE,
+        DemoMeetingApp.LOGGER_INTERVAL_MS,
+        `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
+        LogLevel.DEBUG
       );
       this.meetingLogger = new MultiLogger(
         consoleLogger,
