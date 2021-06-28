@@ -1444,37 +1444,36 @@ export class DemoMeetingApp
     if (!ingestionURL) {
       return eventReporter;
     }
-    if (this.enableEventReporting) {
-      const eventReportingLogger = new ConsoleLogger('SDKEventIngestion', LogLevel.INFO);
-      const meetingEventClientConfig = new MeetingEventsClientConfiguration(
-        configuration.meetingId,
-        configuration.credentials.attendeeId,
-        configuration.credentials.joinToken
-      );
-      const eventIngestionConfiguration = new EventIngestionConfiguration(
-        meetingEventClientConfig,
-        ingestionURL
-      );
-      if (this.isLocalHost()) {
-        eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, eventReportingLogger);
-      } else {
-        await this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream');
-        const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
-          'SDKEventIngestion',
-          configuration,
-          DemoMeetingApp.LOGGER_BATCH_SIZE,
-          DemoMeetingApp.LOGGER_INTERVAL_MS,
-          `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
-          LogLevel.DEBUG
-        );
-        const multiEventReportingLogger = new MultiLogger(
-          eventReportingLogger,
-          eventReportingPOSTLogger,
-        );
-        eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, multiEventReportingLogger);
-      }
+    if (!this.enableEventReporting) {
+      return new NoOpEventReporter();
+    }
+    const eventReportingLogger = new ConsoleLogger('SDKEventIngestion', LogLevel.INFO);
+    const meetingEventClientConfig = new MeetingEventsClientConfiguration(
+      configuration.meetingId,
+      configuration.credentials.attendeeId,
+      configuration.credentials.joinToken
+    );
+    const eventIngestionConfiguration = new EventIngestionConfiguration(
+      meetingEventClientConfig,
+      ingestionURL
+    );
+    if (this.isLocalHost()) {
+      eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, eventReportingLogger);
     } else {
-      eventReporter = new NoOpEventReporter();
+      await this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream');
+      const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
+        'SDKEventIngestion',
+        configuration,
+        DemoMeetingApp.LOGGER_BATCH_SIZE,
+        DemoMeetingApp.LOGGER_INTERVAL_MS,
+        `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
+        LogLevel.DEBUG
+      );
+      const multiEventReportingLogger = new MultiLogger(
+        eventReportingLogger,
+        eventReportingPOSTLogger,
+      );
+      eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, multiEventReportingLogger);
     }
     return eventReporter;
   }
