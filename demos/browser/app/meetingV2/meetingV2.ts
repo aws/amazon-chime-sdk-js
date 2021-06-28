@@ -1362,7 +1362,7 @@ export class DemoMeetingApp
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     const logLevel = LogLevel.INFO;
     const consoleLogger = (this.meetingLogger = new ConsoleLogger('SDK', logLevel));
-    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    if (this.isLocalHost()) {
       this.meetingLogger = consoleLogger;
     } else {
       await Promise.all([
@@ -1390,7 +1390,7 @@ export class DemoMeetingApp
         logLevel
       );
     }
-    this.eventReporter = await this.setAndGetEventReporter(configuration);
+    this.eventReporter = await this.setupEventReporter(configuration);
     const deviceController = new DefaultDeviceController(this.meetingLogger, {
       enableWebAudio: this.enableWebAudio,
     });
@@ -1413,7 +1413,6 @@ export class DemoMeetingApp
       deviceController,
       this.eventReporter
     );
-    this.eventReporter = this.meetingSession.eventReporter;
 
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
@@ -1439,44 +1438,49 @@ export class DemoMeetingApp
     this.initContentShareDropDownItems();
   }
 
-  async setAndGetEventReporter(configuration: MeetingSessionConfiguration): Promise<EventReporter> {
+  async setupEventReporter(configuration: MeetingSessionConfiguration): Promise<EventReporter> {
     let eventReporter: EventReporter;
     const ingestionURL = configuration.urls.eventIngestionURL;
-    if (ingestionURL) {
-      if (this.enableEventReporting) {
-        const eventReportingLogger = new ConsoleLogger('SDKEventIngestion', LogLevel.INFO);
-        const meetingEventClientConfig = new MeetingEventsClientConfiguration(
-          configuration.meetingId,
-          configuration.credentials.attendeeId,
-          configuration.credentials.joinToken
-        );
-        const eventIngestionConfiguration = new EventIngestionConfiguration(
-          meetingEventClientConfig,
-          ingestionURL
-        );
-        if (!['localhost', '127.0.0.1'].includes(location.hostname)) {
-          await this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream');
-          const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
-            'SDKEventIngestion',
-            configuration,
-            DemoMeetingApp.LOGGER_BATCH_SIZE,
-            DemoMeetingApp.LOGGER_INTERVAL_MS,
-            `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
-            LogLevel.DEBUG
-          );
-          const multiEventReportingLogger = new MultiLogger(
-            eventReportingLogger,
-            eventReportingPOSTLogger,
-          );
-          eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, multiEventReportingLogger);
-        } else {
-          eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, eventReportingLogger);
-        }
+    if (!ingestionURL) {
+      return eventReporter;
+    }
+    if (this.enableEventReporting) {
+      const eventReportingLogger = new ConsoleLogger('SDKEventIngestion', LogLevel.INFO);
+      const meetingEventClientConfig = new MeetingEventsClientConfiguration(
+        configuration.meetingId,
+        configuration.credentials.attendeeId,
+        configuration.credentials.joinToken
+      );
+      const eventIngestionConfiguration = new EventIngestionConfiguration(
+        meetingEventClientConfig,
+        ingestionURL
+      );
+      if (this.isLocalHost()) {
+        eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, eventReportingLogger);
       } else {
-        eventReporter = new NoOpEventReporter();
+        await this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream');
+        const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
+          'SDKEventIngestion',
+          configuration,
+          DemoMeetingApp.LOGGER_BATCH_SIZE,
+          DemoMeetingApp.LOGGER_INTERVAL_MS,
+          `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
+          LogLevel.DEBUG
+        );
+        const multiEventReportingLogger = new MultiLogger(
+          eventReportingLogger,
+          eventReportingPOSTLogger,
+        );
+        eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, multiEventReportingLogger);
       }
+    } else {
+      eventReporter = new NoOpEventReporter();
     }
     return eventReporter;
+  }
+
+  private isLocalHost(): boolean {
+    return document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
   }
 
   async join(): Promise<void> {
