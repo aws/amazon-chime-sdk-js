@@ -153,12 +153,10 @@ exports.log_event_ingestion = async (event, context) => {
     for (let i = 0; i < logs.length; i++) {
       const log = logs[i];
       const message = `[${log.logLevel}] [meeting: ${meetingId}] [attendee: ${attendeeId}]: ${log.message}`;
-      if (message.includes('Event Reporting')) {
-        logEvents.push({
-          message,
-          timestamp: log.timestampMs
-        });
-      }
+      logEvents.push({
+        message,
+        timestamp: log.timestampMs
+      });
     }
     return logEvents;
   });
