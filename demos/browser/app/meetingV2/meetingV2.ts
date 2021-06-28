@@ -56,7 +56,10 @@ import {
   isAudioTransformDevice,
   NoOpEventReporter,
   EventReporter,
-  isDestroyable
+  isDestroyable,
+  MeetingEventsClientConfiguration,
+  EventIngestionConfiguration,
+  DefaultMeetingEventReporter
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -1365,7 +1368,6 @@ export class DemoMeetingApp
       await Promise.all([
         this.createLogStream(configuration, 'create_log_stream'),
         this.createLogStream(configuration, 'create_browser_event_log_stream'),
-        this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream'),
       ]);
       this.meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
         'SDK',
@@ -1375,18 +1377,9 @@ export class DemoMeetingApp
         `${DemoMeetingApp.BASE_URL}logs`,
         logLevel
       );
-      const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
-        'SDKEventIngestion',
-        configuration,
-        DemoMeetingApp.LOGGER_BATCH_SIZE,
-        DemoMeetingApp.LOGGER_INTERVAL_MS,
-        `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
-        LogLevel.DEBUG
-      );
       this.meetingLogger = new MultiLogger(
         consoleLogger,
         this.meetingSessionPOSTLogger,
-        eventReportingPOSTLogger
       );
       this.meetingEventPOSTLogger = new MeetingSessionPOSTLogger(
         'SDKEvent',
@@ -1397,6 +1390,7 @@ export class DemoMeetingApp
         logLevel
       );
     }
+    this.eventReporter = await this.setAndGetEventReporter(configuration);
     const deviceController = new DefaultDeviceController(this.meetingLogger, {
       enableWebAudio: this.enableWebAudio,
     });
@@ -1413,20 +1407,12 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
 
-    if (!this.enableEventReporting) {
-      this.meetingSession = new DefaultMeetingSession(
-        configuration,
-        this.meetingLogger,
-        deviceController,
-        new NoOpEventReporter()
-      );
-    } else {
-      this.meetingSession = new DefaultMeetingSession(
-        configuration,
-        this.meetingLogger,
-        deviceController
-      );  
-    }
+    this.meetingSession = new DefaultMeetingSession(
+      configuration,
+      this.meetingLogger,
+      deviceController,
+      this.eventReporter
+    );
     this.eventReporter = this.meetingSession.eventReporter;
 
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
@@ -1451,6 +1437,46 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
     this.initContentShareDropDownItems();
+  }
+
+  async setAndGetEventReporter(configuration: MeetingSessionConfiguration): Promise<EventReporter> {
+    let eventReporter: EventReporter;
+    const ingestionURL = configuration.urls.eventIngestionURL;
+    if (ingestionURL) {
+      if (this.enableEventReporting) {
+        const eventReportingLogger = new ConsoleLogger('SDKEventIngestion', LogLevel.INFO);
+        const meetingEventClientConfig = new MeetingEventsClientConfiguration(
+          configuration.meetingId,
+          configuration.credentials.attendeeId,
+          configuration.credentials.joinToken
+        );
+        const eventIngestionConfiguration = new EventIngestionConfiguration(
+          meetingEventClientConfig,
+          ingestionURL
+        );
+        if (!['localhost', '127.0.0.1'].includes(location.hostname)) {
+          await this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream');
+          const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
+            'SDKEventIngestion',
+            configuration,
+            DemoMeetingApp.LOGGER_BATCH_SIZE,
+            DemoMeetingApp.LOGGER_INTERVAL_MS,
+            `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
+            LogLevel.DEBUG
+          );
+          const multiEventReportingLogger = new MultiLogger(
+            eventReportingLogger,
+            eventReportingPOSTLogger,
+          );
+          eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, multiEventReportingLogger);
+        } else {
+          eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, eventReportingLogger);
+        }
+      } else {
+        eventReporter = new NoOpEventReporter();
+      }
+    }
+    return eventReporter;
   }
 
   async join(): Promise<void> {
