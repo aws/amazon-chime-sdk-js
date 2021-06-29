@@ -12,13 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add events ingestion to report meeting events to Amazon Chime backend.
   Check [Client Event Ingestion guide](https://aws.github.io/amazon-chime-sdk-js/modules/clienteventingestion.html) for more information.
 - Add `videoUpstreamPacketLossPercent` and `videoDownstreamPacketsReceived` metrics for video streams
+- [Documentation] Add documentation for view-only mode.
 
 ### Changed
 
 ### Removed
 
 ### Fixed
-
 
 ## [2.12.0] - 2021-06-23
 
@@ -27,8 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Documentation] Add documentation for `getObservableVideoMetrics`.
 - [Documentation] Update FAQ and public documentation to add more information on SignalingBadRequest related error codes.
 - [Documentation] Rephrase the terms in the status code documentations.
-- Add events ingestion to report meeting events to Amazon Chime backend.
-  Check [Client Event Ingestion guide](https://aws.github.io/amazon-chime-sdk-js/modules/clienteventingestion.html) for more information.
 
 ### Changed
 
@@ -45,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.11.0] - 2021-06-04
 
 ### Added
+
 - Bind tileController during the initialization of DefaultAudioVideoController for VideoPriorityBasedPolicy.
 - Add more debug logging for choose input device. 
 - Add the meeting and device error sections in the meeting-event guide.
@@ -64,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Remove deprecated unwired webrtc constraints from device controller and peer connection construction.
 - Removed unnecessary restriction on VideoPriorityBasedPolicy to always subscribe to at least one stream.
+
 ### Fixed
 
 - Fixed missing upstream video metrics for Firefox browsers.
