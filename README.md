@@ -54,6 +54,7 @@ The following developer guides cover specific topics for a technical audience.
 - [Integrating Amazon Voice Focus into your application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
 - [Adding frame-by-frame processing to an outgoing video stream](https://aws.github.io/amazon-chime-sdk-js/modules/videoprocessor.html)
 - [Adapting video to limited bandwidth using a priority-based video downlink policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html)
+- [Client event ingestion](https://aws.github.io/amazon-chime-sdk-js/modules/clientevent_ingestion.html)
 
 ## Migration Guides
 - [Migrating from v1.0 to v2.0](https://aws.github.io/amazon-chime-sdk-js/modules/migrationto_2_0.html)
