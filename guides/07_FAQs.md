@@ -190,6 +190,7 @@ The [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interf
 // Upstream metrics of local attendee
 videoUpstreamBitrate,
 videoUpstreamPacketsSent,
+videoUpstreamPacketLossPercent,
 videoUpstreamFramesEncodedPerSecond,
 videoUpstreamGoogFrameHeight, (for chromium based browsers)
 videoUpstreamGoogFrameWidth,(for chromium based browsers)
@@ -197,8 +198,9 @@ videoUpstreamFrameHeight,
 videoUpstreamFrameWidth,
 
 // Downstream metrics of remote attendees
-videoDownstreamBitrate
+videoDownstreamBitrate,
 videoDownstreamPacketLossPercent,
+videoDownstreamPacketsReceived,
 videoDownstreamFramesDecodedPerSecond,
 videoDownstreamGoogFrameHeight,
 videoDownstreamGoogFrameWidth,

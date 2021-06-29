@@ -372,6 +372,11 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
+    videoUpstreamPacketLossPercent: {
+      source: 'packetsLost',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM,
+    },
     videoUpstreamFramesEncodedPerSecond: {
       source: 'framesEncoded',
       media: MediaType.VIDEO,
@@ -404,6 +409,11 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     },
     videoDownstreamPacketLossPercent: {
       source: 'packetsLost',
+      media: MediaType.VIDEO,
+      dir: Direction.DOWNSTREAM,
+    },
+    videoDownstreamPacketsReceived: {
+      source: 'packetsReceived',
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },
