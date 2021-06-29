@@ -111,6 +111,43 @@
 					</a>
 					<p>When obtaining devices to configure, the browser may initially decline to provide device labels due to privacy restrictions. However, without device labels the application user will not be able to select devices by name. When no labels are present, the device-label trigger is run. The default implementation of the device-label trigger requests permission to the mic and camera. If the user grants permission, the device labels will become available.</p>
 					<p>You can override the behavior of the device-label trigger by calling meetingSession.audioVideo.<a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#setdevicelabeltrigger">setDeviceLabelTrigger(trigger)</a>.</p>
+					<a href="#implement-a-view-onlyobserverspectator-experience" id="implement-a-view-onlyobserverspectator-experience" style="color: inherit; text-decoration: none;">
+						<h4>Implement a view-only/observer/spectator experience</h4>
+					</a>
+					<p>To enable a view-only experience, you need to control the device permission prompts for audio and video. We suggest that you implement it based on <code>deviceLabelsTrigger</code>. By following this, you can achieve it with just little changes.</p>
+					<p>Note: The view-only mode doesn&#39;t impact the ability to view content or listen to audio in your meeting experience.</p>
+					<p>To suppress device permission prompts, let <code>deviceLabelTrigger</code> return an empty <code>MediaStream</code> before joining the meeting. Since it&#39;s an empty stream, the device permission prompts can&#39;t be triggered.</p>
+					<p>Note: Chrome and Safari don&#39;t expose the <code>deviceId</code> without granting device permission, but Firefox do. In Firefox, if you try to select the device with <code>deviceId</code>, the device permission prompts will be triggered.</p>
+					<p>To invoke device permission prompts, let <code>deviceLabelTrigger</code> return a <code>MediaStream</code> that contains your desired device kind. You can trigger it to grant device permission to the browser. After that, list and select the devices to regain the access to devices.</p>
+					<pre><code class="language-js"><span class="hljs-comment">// Suppress devices</span>
+audioVideo.setDeviceLabelTrigger(<span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">Promise</span>.resolve(<span class="hljs-keyword">new</span> MediaStream()));
+
+audioVideo.start();
+
+<span class="hljs-comment">// Invoke devices</span>
+audioVideo.setDeviceLabelTrigger(<span class="hljs-keyword">async</span> () =&gt;
+  <span class="hljs-keyword">await</span> navigator.mediaDevices.getUserMedia({ <span class="hljs-attr">audio</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">video</span>: <span class="hljs-literal">true</span> })
+);
+<span class="hljs-keyword">const</span> audioInputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listAudioInputDevices();
+<span class="hljs-keyword">const</span> audioOutputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listAudioOutputDevices();
+<span class="hljs-keyword">const</span> videoInputDevices = <span class="hljs-keyword">await</span> meetingSession.audioVideo.listVideoInputDevices();
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioInputDevice(audioInputDevice.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDevice.deviceId);
+<span class="hljs-keyword">await</span> meetingSession.audioVideo.chooseVideoInputDevice(videoInputDevices.deviceId);
+</code></pre>
+					<a href="#safari-user-are-not-able-to-join-the-meeting-in-view-only-mode" id="safari-user-are-not-able-to-join-the-meeting-in-view-only-mode" style="color: inherit; text-decoration: none;">
+						<h4>Safari user are not able to join the meeting in view-only mode</h4>
+					</a>
+					<p>Safari users may not be able to successfully join the meeting in view-only mode, due to this known issue <a href="https://github.com/aws/amazon-chime-sdk-js/issues/474">#474</a>. Since we are still working on this, you can fix it locally by allowing Safari&#39;s Autoplay. The specific steps are:</p>
+					<ol>
+						<li>Open your application in the Safari app on your Mac.</li>
+						<li>Choose Safari &gt; Settings for This Website.
+						You can also Control-click in the Smart Search field, then choose Settings for This Website.</li>
+						<li>Hold the pointer to the right of Auto-Play, then click the pop-up menu and choose the option:<ul>
+								<li>Allow All Auto-Play: Lets videos on this website play automatically.</li>
+							</ul>
+						</li>
+					</ol>
 					<a href="#2b-register-a-device-change-observer-optional" id="2b-register-a-device-change-observer-optional" style="color: inherit; text-decoration: none;">
 						<h3>2b. Register a device-change observer (optional)</h3>
 					</a>
