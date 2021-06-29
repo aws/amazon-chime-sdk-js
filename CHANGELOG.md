@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add events ingestion to report meeting events to Amazon Chime backend.
   Check [Client Event Ingestion guide](https://aws.github.io/amazon-chime-sdk-js/modules/clienteventingestion.html) for more information.
+- Use SESSION_ESTABLISH event to indicate success of Chime SDK for Messaging successful websocket connection
 
 ### Changed
 

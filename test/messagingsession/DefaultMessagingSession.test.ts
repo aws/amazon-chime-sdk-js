@@ -25,8 +25,7 @@ describe('DefaultMessagingSession', () => {
   const ENDPOINT_URL = 'localhost:9999/';
   const SESSION_SUBSCRIBED_MSG = JSON.stringify({
     Headers: {
-      'x-amz-chime-channel': 'session_channel!123',
-      'x-amz-chime-message-type': 'SOCKET_SUBSCRIBE',
+      'x-amz-chime-event-type': 'SESSION_ESTABLISHED',
     },
   });
 
