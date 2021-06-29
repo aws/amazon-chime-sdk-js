@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Check [Client Event Ingestion guide](https://aws.github.io/amazon-chime-sdk-js/modules/clienteventingestion.html) for more information.
 - Add `videoUpstreamPacketLossPercent` and `videoDownstreamPacketsReceived` metrics for video streams
 - [Documentation] Add documentation for view-only mode.
+- Use SESSION_ESTABLISH event to indicate success of Chime SDK for Messaging successful websocket connection
 
 ### Changed
 

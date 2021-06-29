@@ -25,8 +25,7 @@ describe('DefaultMessagingSession', () => {
   const ENDPOINT_URL = 'localhost:9999/';
   const SESSION_SUBSCRIBED_MSG = JSON.stringify({
     Headers: {
-      'x-amz-chime-channel': 'session_channel!123',
-      'x-amz-chime-message-type': 'SOCKET_SUBSCRIBE',
+      'x-amz-chime-event-type': 'SESSION_ESTABLISHED',
     },
   });
 
@@ -132,6 +131,24 @@ describe('DefaultMessagingSession', () => {
       });
       messagingSession.start();
       new TimeoutScheduler(10).start(() => {
+        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      });
+    });
+
+    it('Ignores messages before SESSION_ESTABLISH', done => {
+      let messageCount = 0;
+      messagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(messageCount).to.be.eq(0);
+          done();
+        },
+        messagingSessionDidReceiveMessage(_message: Message): void {
+          messageCount++;
+        },
+      });
+      messagingSession.start();
+      new TimeoutScheduler(10).start(() => {
+        webSocket.send(createChannelMessage('message1'));
         webSocket.send(SESSION_SUBSCRIBED_MSG);
       });
     });
