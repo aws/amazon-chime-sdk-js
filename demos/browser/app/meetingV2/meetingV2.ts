@@ -334,6 +334,7 @@ export class DemoMeetingApp
     videoUpstreamFrameWidth: 'Frame Width',
     videoUpstreamBitrate: 'Bitrate (bps)',
     videoUpstreamPacketsSent: 'Packets Sent',
+    videoUpstreamPacketLossPercent: 'Packet Loss (%)',
     videoUpstreamFramesEncodedPerSecond: 'Frame Rate',
   };
 
@@ -344,6 +345,7 @@ export class DemoMeetingApp
     videoDownstreamFrameWidth: 'Frame Width',
     videoDownstreamBitrate: 'Bitrate (bps)',
     videoDownstreamPacketLossPercent: 'Packet Loss (%)',
+    videoDownstreamPacketsReceived: 'Packet Received',
     videoDownstreamFramesDecodedPerSecond: 'Frame Rate',
   };
 
