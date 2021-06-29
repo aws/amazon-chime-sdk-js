@@ -135,6 +135,24 @@ describe('DefaultMessagingSession', () => {
       });
     });
 
+    it('Ignores messages before SESSION_ESTABLISH', done => {
+      let messageCount = 0;
+      messagingSession.addObserver({
+        messagingSessionDidStart(): void {
+          expect(messageCount).to.be.eq(0);
+          done();
+        },
+        messagingSessionDidReceiveMessage(_message: Message): void {
+          messageCount++;
+        },
+      });
+      messagingSession.start();
+      new TimeoutScheduler(10).start(() => {
+        webSocket.send(createChannelMessage('message1'));
+        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      });
+    });
+
     it('Trigger DidStart only once', done => {
       let count = 0;
       let messageCount = 0;
