@@ -13,33 +13,29 @@ describe('VideoPriorityBasedPolicyConfig', () => {
     it('can be constructed', () => {
       const d = new VideoPriorityBasedPolicyConfig();
       assert.exists(d);
-      expect(d.getNetworkIssueRecoveryDelay() === 2000).to.be.true;
-      expect(d.getNetworkIssueResponseDelay() === 2000).to.be.true;
+      expect(d.networkIssueRecoveryDelayFactor === 0).to.be.true;
+      expect(d.networkIssueResponseDelayFactor === 0).to.be.true;
     });
 
     it('can be constructed with parameters', () => {
       const d = new VideoPriorityBasedPolicyConfig(0.5, 0.5);
       assert.exists(d);
-      expect(d.getNetworkIssueRecoveryDelay() === 5000).to.be.true;
-      expect(d.getNetworkIssueResponseDelay() === 5000).to.be.true;
+      expect(d.networkIssueRecoveryDelayFactor === 0.5).to.be.true;
+      expect(d.networkIssueResponseDelayFactor === 0.5).to.be.true;
     });
   });
 
   describe('input out of boundary', () => {
     it('smaller than 0', () => {
-      const d = new VideoPriorityBasedPolicyConfig();
-      d.setNetworkIssueRecoveryDelayFactor(-1);
-      expect(d.getNetworkIssueRecoveryDelay() === 2000).to.be.true;
-      d.setNetworkIssueResponseDelayFactor(-1);
-      expect(d.getNetworkIssueResponseDelay() === 2000).to.be.true;
+      const d = new VideoPriorityBasedPolicyConfig(-1, -1);
+      expect(d.networkIssueRecoveryDelayFactor === 0).to.be.true;
+      expect(d.networkIssueResponseDelayFactor === 0).to.be.true;
     });
 
     it('bigger than 1', () => {
-      const d = new VideoPriorityBasedPolicyConfig();
-      d.setNetworkIssueRecoveryDelayFactor(2);
-      expect(d.getNetworkIssueRecoveryDelay() === 8000).to.be.true;
-      d.setNetworkIssueResponseDelayFactor(2);
-      expect(d.getNetworkIssueResponseDelay() === 8000).to.be.true;
+      const d = new VideoPriorityBasedPolicyConfig(2, 2);
+      expect(d.networkIssueRecoveryDelayFactor === 1).to.be.true;
+      expect(d.networkIssueResponseDelayFactor === 1).to.be.true;
     });
   });
 

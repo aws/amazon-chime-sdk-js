@@ -163,7 +163,7 @@ class TestSound {
     private durationSec: number = 1,
     private rampSec: number = 0.1,
     private maxGainValue: number = 0.1
-  ) { }
+  ) {}
 
   async init(): Promise<void> {
     const audioContext: AudioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -295,7 +295,7 @@ export class DemoMeetingApp
   enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
-  videoAdaptionSpeed = VideoPriorityBasedPolicyConfig.Default;
+  videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
@@ -501,20 +501,21 @@ export class DemoMeetingApp
       }
     });
 
-    const adaptionSpeedDropDown = document.getElementById('priority-downlink-policy-preset') as HTMLSelectElement;
-    adaptionSpeedDropDown.addEventListener('change', async e => {
-      switch (adaptionSpeedDropDown.value) {
+    const presetDropDown = document.getElementById('priority-downlink-policy-preset') as HTMLSelectElement;
+    presetDropDown.addEventListener('change', async e => {
+      const a = new VideoPriorityBasedPolicyConfig(0.5, 0.5);
+      switch (presetDropDown.value) {
         case 'stable':
-          this.videoAdaptionSpeed = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
+          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
           break;
-        case 'shaky':
-          this.videoAdaptionSpeed = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
+        case 'unstable':
+          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
           break;
         case 'default':
-          this.videoAdaptionSpeed = VideoPriorityBasedPolicyConfig.Default;
+          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
           break;
       }
-      this.log('Video adaption speed is changed: ' + this.videoAdaptionSpeed);
+      this.log('priority-downlink-policy-preset is changed: ' + presetDropDown.value);
     });
 
     document.getElementById('form-authenticate').addEventListener('submit', e => {
@@ -1446,7 +1447,7 @@ export class DemoMeetingApp
       this.eventReporter
     );
     if (this.usePriorityBasedDownlinkPolicy) {
-      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoAdaptionSpeed);
+      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
     }
 
@@ -1631,7 +1632,7 @@ export class DemoMeetingApp
       if (!this.roster[attendeeId] || !this.roster[attendeeId].name) {
         this.roster[attendeeId] = {
           ...this.roster[attendeeId],
-          ... { name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '') }
+          ... {name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '')}
         };
       }
       this.audioVideo.realtimeSubscribeToVolumeIndicator(
@@ -1900,7 +1901,7 @@ export class DemoMeetingApp
       });
     }
     if (additionalOptions.length) {
-      this.createDropdownMenuItem(menu, '──────────', () => { }).classList.add('text-center');
+      this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
       for (const additionalOption of additionalOptions) {
         this.createDropdownMenuItem(
           menu,
@@ -1913,7 +1914,7 @@ export class DemoMeetingApp
       }
     }
     if (additionalToggles?.length) {
-      this.createDropdownMenuItem(menu, '──────────', () => { }).classList.add('text-center');
+      this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
       for (const { name, oncreate, action } of additionalToggles) {
         const id = `toggle-${elementId}-${name.replace(/\s/g, '-')}`;
         const elem = this.createDropdownMenuItem(menu, name, action, id);
@@ -1921,7 +1922,7 @@ export class DemoMeetingApp
       }
     }
     if (!menu.firstElementChild) {
-      this.createDropdownMenuItem(menu, 'Device selection unavailable', () => { });
+      this.createDropdownMenuItem(menu, 'Device selection unavailable', () => {});
     }
   }
 
@@ -2714,29 +2715,29 @@ export class DemoMeetingApp
   }
 
   createPauseResumeListener(tileState: VideoTileState): (event: Event) => void {
-    return (event: Event): void => {
-      if (!tileState.paused) {
-        this.audioVideo.pauseVideoTile(tileState.tileId);
-        (event.target as HTMLButtonElement).innerText = 'Resume';
-      } else {
-        this.audioVideo.unpauseVideoTile(tileState.tileId);
-        (event.target as HTMLButtonElement).innerText = 'Pause';
-      }
-    }
+      return (event: Event): void => {
+        if (!tileState.paused) {
+            this.audioVideo.pauseVideoTile(tileState.tileId);
+            (event.target as HTMLButtonElement).innerText = 'Resume';
+          } else {
+            this.audioVideo.unpauseVideoTile(tileState.tileId);
+            (event.target as HTMLButtonElement).innerText = 'Pause';
+          }
+        }
   }
 
   createPinUnpinListener(tileState: VideoTileState): (event: Event) => void {
     return (event: Event): void => {
       const attendeeId = tileState.boundAttendeeId;
-      if (this.roster[attendeeId].pinned) {
-        (event.target as HTMLButtonElement).innerText = 'Pin';
-        this.roster[attendeeId].pinned = false;
-      } else {
-        (event.target as HTMLButtonElement).innerText = 'Unpin';
-        this.roster[attendeeId].pinned = true;
+        if (this.roster[attendeeId].pinned ) {
+          (event.target as HTMLButtonElement).innerText = 'Pin';
+          this.roster[attendeeId].pinned = false;
+        } else {
+          (event.target as HTMLButtonElement).innerText = 'Unpin';
+          this.roster[attendeeId].pinned = true;
+        }
+        this.updateDownlinkPreference();
       }
-      this.updateDownlinkPreference();
-    }
   }
 
   updateDownlinkPreference(): void {

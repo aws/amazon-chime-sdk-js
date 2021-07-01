@@ -69,7 +69,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p><a href="videoprioritybasedpolicyconfig.html">VideoPriorityBasedPolicyConfig</a> represents the minimum time interval to subscribe.</p>
+						<p><a href="videoprioritybasedpolicyconfig.html">VideoPriorityBasedPolicyConfig</a> contains the network issue response delay and network issue recovery delay.</p>
 					</div>
 				</div>
 			</section>
@@ -101,15 +101,6 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="videoprioritybasedpolicyconfig.html#unstablenetworkpreset" class="tsd-kind-icon">Unstable<wbr>Network<wbr>Preset</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section ">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicyconfig.html#getnetworkissuerecoverydelay" class="tsd-kind-icon">get<wbr>Network<wbr>Issue<wbr>Recovery<wbr>Delay</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicyconfig.html#getnetworkissueresponsedelay" class="tsd-kind-icon">get<wbr>Network<wbr>Issue<wbr>Response<wbr>Delay</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicyconfig.html#setnetworkissuerecoverydelayfactor" class="tsd-kind-icon">set<wbr>Network<wbr>Issue<wbr>Recovery<wbr>Delay<wbr>Factor</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="videoprioritybasedpolicyconfig.html#setnetworkissueresponsedelayfactor" class="tsd-kind-icon">set<wbr>Network<wbr>Issue<wbr>Response<wbr>Delay<wbr>Factor</a></li>
-							</ul>
-						</section>
 					</div>
 				</section>
 			</section>
@@ -125,12 +116,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:11</li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts#L11">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Initializes a [[PriorityBasedPolicyConfig]] with the adaption speed.</p>
+									<p>Initializes a [[PriorityBasedPolicyConfig]] with the network event delays.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -139,7 +130,7 @@
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> networkIssueResponseDelayFactor: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<div class="lead">
-											<p>Delays before reducing subscribed video bitrate</p>
+											<p>Delays before reducing subscribed video bitrate. Input should be a value between 0 and 1.</p>
 										</div>
 									</div>
 								</li>
@@ -148,7 +139,7 @@
 									<div class="tsd-comment tsd-typography">
 										<div class="lead">
 											<p>Delays before starting to increase bitrates after a network event and
-											delays between increasing video bitrates on each individual stream</p>
+											delays between increasing video bitrates on each individual stream. Input should be a value between 0 and 1.</p>
 										</div>
 									</div>
 								</li>
@@ -166,13 +157,13 @@
 					<div class="tsd-signature tsd-kind-icon">network<wbr>Issue<wbr>Recovery<wbr>Delay<wbr>Factor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:20</li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts#L21">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Delays before starting to increase bitrates after a network event and
-							delays between increasing video bitrates on each individual stream</p>
+							delays between increasing video bitrates on each individual stream. Input should be a value between 0 and 1.</p>
 						</div>
 					</div>
 				</section>
@@ -182,12 +173,12 @@
 					<div class="tsd-signature tsd-kind-icon">network<wbr>Issue<wbr>Response<wbr>Delay<wbr>Factor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:19</li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts#L20">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:20</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Delays before reducing subscribed video bitrate</p>
+							<p>Delays before reducing subscribed video bitrate. Input should be a value between 0 and 1.</p>
 						</div>
 					</div>
 				</section>
@@ -197,7 +188,7 @@
 					<div class="tsd-signature tsd-kind-icon">Default<span class="tsd-signature-symbol">:</span> <a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol"> = new VideoPriorityBasedPolicyConfig(0, 0)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:9</li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts#L9">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -207,7 +198,7 @@
 					<div class="tsd-signature tsd-kind-icon">Stable<wbr>Network<wbr>Preset<span class="tsd-signature-symbol">:</span> <a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol"> = new VideoPriorityBasedPolicyConfig(1, 0)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:11</li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts#L11">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -217,92 +208,9 @@
 					<div class="tsd-signature tsd-kind-icon">Unstable<wbr>Network<wbr>Preset<span class="tsd-signature-symbol">:</span> <a href="videoprioritybasedpolicyconfig.html" class="tsd-signature-type">VideoPriorityBasedPolicyConfig</a><span class="tsd-signature-symbol"> = new VideoPriorityBasedPolicyConfig(0, 1)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:10</li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts#L10">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:10</a></li>
 						</ul>
 					</aside>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getnetworkissuerecoverydelay" class="tsd-anchor"></a>
-					<h3>get<wbr>Network<wbr>Issue<wbr>Recovery<wbr>Delay</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Network<wbr>Issue<wbr>Recovery<wbr>Delay<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:52</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getnetworkissueresponsedelay" class="tsd-anchor"></a>
-					<h3>get<wbr>Network<wbr>Issue<wbr>Response<wbr>Delay</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Network<wbr>Issue<wbr>Response<wbr>Delay<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:48</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="setnetworkissuerecoverydelayfactor" class="tsd-anchor"></a>
-					<h3>set<wbr>Network<wbr>Issue<wbr>Recovery<wbr>Delay<wbr>Factor</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Network<wbr>Issue<wbr>Recovery<wbr>Delay<wbr>Factor<span class="tsd-signature-symbol">(</span>networkIssueRecoveryDelayFactor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:38</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>networkIssueRecoveryDelayFactor: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="setnetworkissueresponsedelayfactor" class="tsd-anchor"></a>
-					<h3>set<wbr>Network<wbr>Issue<wbr>Response<wbr>Delay<wbr>Factor</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Network<wbr>Issue<wbr>Response<wbr>Delay<wbr>Factor<span class="tsd-signature-symbol">(</span>networkIssueResponseDelayFactor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig.ts:28</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>networkIssueResponseDelayFactor: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
 				</section>
 			</section>
 		</div>
@@ -338,18 +246,6 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
 								<a href="videoprioritybasedpolicyconfig.html#unstablenetworkpreset" class="tsd-kind-icon">Unstable<wbr>Network<wbr>Preset</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="videoprioritybasedpolicyconfig.html#getnetworkissuerecoverydelay" class="tsd-kind-icon">get<wbr>Network<wbr>Issue<wbr>Recovery<wbr>Delay</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="videoprioritybasedpolicyconfig.html#getnetworkissueresponsedelay" class="tsd-kind-icon">get<wbr>Network<wbr>Issue<wbr>Response<wbr>Delay</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="videoprioritybasedpolicyconfig.html#setnetworkissuerecoverydelayfactor" class="tsd-kind-icon">set<wbr>Network<wbr>Issue<wbr>Recovery<wbr>Delay<wbr>Factor</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="videoprioritybasedpolicyconfig.html#setnetworkissueresponsedelayfactor" class="tsd-kind-icon">set<wbr>Network<wbr>Issue<wbr>Response<wbr>Delay<wbr>Factor</a>
 							</li>
 						</ul>
 					</li>

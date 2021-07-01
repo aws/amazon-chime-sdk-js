@@ -548,7 +548,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2, 4, 6, 8, 10, 12]);
 
-      incrementTime(3000);
+      incrementTime(6000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
       setPacketLoss(metricReport, 42, 160);
       policy.updateMetrics(metricReport);
@@ -557,7 +557,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2]);
 
-      incrementTime(2000);
+      incrementTime(5000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
       setPacketLoss(metricReport, 0, 0);
       policy.updateMetrics(metricReport);
@@ -609,7 +609,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2, 4, 6, 8, 10, 12]);
 
-      incrementTime(3000);
+      incrementTime(6000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
       setPacketLoss(metricReport, 42, 160);
       policy.updateMetrics(metricReport);
@@ -618,7 +618,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2]);
 
-      incrementTime(2000);
+      incrementTime(5000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
       setPacketLoss(metricReport, 0, 0);
       policy.updateMetrics(metricReport);
@@ -672,7 +672,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2, 4, 6, 8, 10, 12]);
 
-      incrementTime(3000);
+      incrementTime(6000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
       setPacketLoss(metricReport, 42, 160);
       policy.updateMetrics(metricReport);
@@ -681,7 +681,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2]);
 
-      incrementTime(2000);
+      incrementTime(5000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
       setPacketLoss(metricReport, 0, 0);
       policy.updateMetrics(metricReport);
@@ -728,7 +728,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2, 4, 6, 8, 10, 12]);
 
-      incrementTime(3000);
+      incrementTime(6000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
       setPacketLoss(metricReport, 42, 160);
       policy.updateMetrics(metricReport);
@@ -737,7 +737,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2]);
 
-      incrementTime(2000);
+      incrementTime(5000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 600 * 1000;
       setPacketLoss(metricReport, 0, 0);
       policy.updateMetrics(metricReport);
