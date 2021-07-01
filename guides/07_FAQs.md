@@ -126,6 +126,25 @@ The Amazon Chime SDK does not support scheduling meetings ahead of time. The mom
  
  Suppose an attendee has joined a meeting, now if that same attendee tries to join the same meeting again using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API, then, the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. Reference issue: [#1290](https://github.com/aws/amazon-chime-sdk-js/issues/1290). The `AudioJoinFromAnotherDevice` meeting session status code is triggered by Amazon Chime backend and it is not triggered internally from the JS SDK.
 
+### What does it mean when the Amazon Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`, `MeetingEnded`, or `SignalingInternalServerError` while establishing a signaling connection to the Chime servers?
+
+The `SignalingBadRequest` status code indicates that the Chime SDK for JavaScript has failed to establish a signaling connection to the Chime servers. The INFO-level browser logs may include the following messages:
+
+```
+sending join
+notifying event: WebSocketClosed
+stopped pinging (WebSocketClosed)
+signaling connection closed by server with code 4403 and reason: attendee unavailable
+handling status: SignalingBadRequest
+session will not be reconnected: SignalingBadRequest
+```
+
+The possible reasons are as follows:
+
+1. If you attempt to join a Chime SDK meeting using the deleted attendee's response, the Chime SDK for JavaScript throws an error with the status code `SignalingBadRequest`. Note that you or someone can delete an attendee in the [DeleteAttendee API](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html) action.
+2. The close code `4410` from the Chime backend indicates that an attendee has attempted to join an already-ended meeting. The Chime SDK for JavaScript throws an error with the status code `MeetingEnded`.
+3. The close code between `4500` and `4599` (inclusive) indicates an internal server error in the Amazon Chime backend. In this case, the Chime SDK for JavaScript throws an error with the status code `SignalingInternalServerError`. Please create a GitHub issue including the Chime SDK browser logs.
+
 ## Media
 
 ### Which media regions is the Amazon Chime SDK available in? How do I choose the best media region to place my meetings?
@@ -163,6 +182,32 @@ Amazon Chime SDK supports simulcast for Chromium-based browsers. See this [techn
 ### Does the SDK support remote mute where one attendee can mute another?
 
 Remote mute is the ability of one attendee in a meeting to mute another attendee. This feature is currently not supported server-side by the SDK. However, you can use [Amazon Chime SDK Data Messages](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html#9-send-and-receive-data-messages-optional) to send a message containing the attendee or attendees that should mute, and clients can mute themselves when they receive those messages.
+
+### How do I get connection indicator for media quality?
+
+The [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics) API exposes video quality statistics. The `getObservableVideoMetrics` API returns following metrics:
+```
+// Upstream metrics of local attendee
+videoUpstreamBitrate,
+videoUpstreamPacketsSent,
+videoUpstreamPacketLossPercent,
+videoUpstreamFramesEncodedPerSecond,
+videoUpstreamGoogFrameHeight, (for chromium based browsers)
+videoUpstreamGoogFrameWidth,(for chromium based browsers)
+videoUpstreamFrameHeight,
+videoUpstreamFrameWidth,
+
+// Downstream metrics of remote attendees
+videoDownstreamBitrate,
+videoDownstreamPacketLossPercent,
+videoDownstreamPacketsReceived,
+videoDownstreamFramesDecodedPerSecond,
+videoDownstreamGoogFrameHeight,
+videoDownstreamGoogFrameWidth,
+videoDownstreamFrameHeight,
+videoDownstreamFrameWidth,
+```
+See this [guide](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html) for more information. 
 
 ## Demos
 

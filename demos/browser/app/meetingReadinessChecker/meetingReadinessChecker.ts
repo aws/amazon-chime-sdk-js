@@ -609,7 +609,9 @@ export class DemoMeetingApp {
     new AsyncScheduler().start(
       async (): Promise<void> => {
         try {
-          const nearestMediaRegion = await this.getNearestMediaRegion();
+          const query = new URLSearchParams(document.location.search);
+          const region = query.get('region');
+          const nearestMediaRegion = region ? region : await this.getNearestMediaRegion();
           if (nearestMediaRegion === '' || nearestMediaRegion === null) {
             throw new Error('Nearest Media Region cannot be null or empty');
           }

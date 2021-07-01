@@ -46,7 +46,7 @@ export enum MeetingSessionStatusCode {
   TURNMeetingEnded = 6,
 
   /**
-   * The meeting has ended.
+   * The attendee attempted to join a meeting that has already ended.
    */
   MeetingEnded = 6,
 
@@ -72,19 +72,25 @@ export enum MeetingSessionStatusCode {
    */
   VideoCallSwitchToViewOnly = 10,
 
-  /** This can happen when you attempt to join a video meeting in "send only" mode
-  (transmitting your camera, but not receiving anything -- this isn't something
-  we ever do in practice, but it is supported on the server). It should be
-  treated as "fatal" and probably should not be retried (despite the 5xx nature). */
+  /**
+   * This can happen when you attempt to join a video meeting in "send only" mode
+   * (transmitting your camera, but not receiving anything -- this isn't something
+   * we ever do in practice, but it is supported on the server). It should be
+   * treated as "fatal" and probably should not be retried (despite the 5xx nature).
+   */
   VideoCallAtSourceCapacity = 11,
 
   /**
-   * Bad request on JOIN or SUBSCRIBE
+   * The Chime SDK for JavaScript failed to establish a signaling connection because
+   * you or someone else deleted the attendee using the DeleteAttendee API action
+   * in your server application.
+   * https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html
    */
   SignalingBadRequest = 12,
 
   /**
-   * Internal server error on JOIN or SUBSCRIBE
+   * The Chime SDK for JavaScript failed to establish a signaling connection to the Chime
+   * backend due to an internal server error.
    */
   SignalingInternalServerError = 13,
 

@@ -1,14 +1,14 @@
 const {KiteTestError, Status} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
-class SocketSubscribeMessageCheck extends AppTestStep {
+class SessionEstablishedMessageCheck extends AppTestStep {
   constructor(kiteBaseTest, sessionInfo, messageType) {
     super(kiteBaseTest, sessionInfo);
     this.messageType = messageType;
   }
 
   static async executeStep(KiteBaseTest, sessionInfo, messageType) {
-    const step = new SocketSubscribeMessageCheck(KiteBaseTest, sessionInfo, messageType);
+    const step = new SessionEstablishedMessageCheck(KiteBaseTest, sessionInfo, messageType);
     await step.execute(KiteBaseTest);
   }
 
@@ -34,4 +34,4 @@ class SocketSubscribeMessageCheck extends AppTestStep {
   }
 }
 
-module.exports = SocketSubscribeMessageCheck;
+module.exports = SessionEstablishedMessageCheck;

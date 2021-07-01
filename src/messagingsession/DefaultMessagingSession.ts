@@ -19,7 +19,7 @@ import MessagingSessionConfiguration from './MessagingSessionConfiguration';
 export default class DefaultMessagingSession implements MessagingSession {
   private observerQueue: Set<MessagingSessionObserver> = new Set<MessagingSessionObserver>();
   private isClosing: boolean;
-  private isFirstMessageReceived: boolean;
+  private isSessionEstablished: boolean;
 
   constructor(
     private configuration: MessagingSessionConfiguration,
@@ -142,7 +142,7 @@ export default class DefaultMessagingSession implements MessagingSession {
 
   private openEventHandler(): void {
     this.reconnectController.reset();
-    this.isFirstMessageReceived = false;
+    this.isSessionEstablished = false;
   }
 
   private receiveMessageHandler(data: string): void {
@@ -150,16 +150,24 @@ export default class DefaultMessagingSession implements MessagingSession {
       const jsonData = JSON.parse(data);
       const messageType = jsonData.Headers['x-amz-chime-event-type'];
       const message = new Message(messageType, jsonData.Headers, jsonData.Payload || null);
-      if (!this.isFirstMessageReceived) {
-        // Since backend does authorization after the websocket open we cannot rely on open event for didStart
-        // as the socket will close if authorization fail after it open. So we trigger didStart on first message event
-        // instead
+      if (!this.isSessionEstablished && messageType === 'SESSION_ESTABLISHED') {
+        // Backend connects WebSocket and then either
+        // (1) Closes with WebSocket error code to reflect failure to authorize or other connection error OR
+        // (2) Sends SESSION_ESTABLISHED. SESSION_ESTABLISHED indicates that all messages and events on a channel
+        // the app instance user is a member of is guaranteed to be delivered on this WebSocket as long as the WebSocket
+        // connection stays opened.
         this.forEachObserver(observer => {
           if (observer.messagingSessionDidStart) {
             observer.messagingSessionDidStart();
           }
         });
-        this.isFirstMessageReceived = true;
+        this.isSessionEstablished = true;
+      } else if (!this.isSessionEstablished) {
+        // SESSION_ESTABLISHED is not guaranteed to be the first message, and in rare conditions a message or event from
+        // a channel the member is a member of might arrive prior to SESSION_ESTABLISHED.  Because SESSION_ESTABLISHED indicates
+        // it is safe to bootstrap the user application with out any race conditions in losing events we opt to drop messages prior
+        // to SESSION_ESTABLISHED being received
+        return;
       }
       this.forEachObserver(observer => {
         if (observer.messagingSessionDidReceiveMessage) {
@@ -184,7 +192,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       return;
     }
     this.isClosing = false;
-    if (this.isFirstMessageReceived) {
+    if (this.isSessionEstablished) {
       this.forEachObserver(observer => {
         if (observer.messagingSessionDidStop) {
           observer.messagingSessionDidStop(event);

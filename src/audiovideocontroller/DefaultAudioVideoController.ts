@@ -15,6 +15,7 @@ import Destroyable from '../destroyable/Destroyable';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
 import DefaultEventController from '../eventcontroller/DefaultEventController';
 import EventController from '../eventcontroller/EventController';
+import EventReporter from '../eventreporter/EventReporter';
 import Logger from '../logger/Logger';
 import Maybe from '../maybe/Maybe';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
@@ -122,7 +123,8 @@ export default class DefaultAudioVideoController
     logger: Logger,
     webSocketAdapter: WebSocketAdapter,
     mediaStreamBroker: MediaStreamBroker,
-    reconnectController: ReconnectController
+    reconnectController: ReconnectController,
+    eventReporter?: EventReporter
   ) {
     this._logger = logger;
     this.sessionStateController = new DefaultSessionStateController(this._logger);
@@ -148,7 +150,7 @@ export default class DefaultAudioVideoController
     );
     this._audioMixController = new DefaultAudioMixController(this._logger);
     this.meetingSessionContext.logger = this._logger;
-    this._eventController = new DefaultEventController(this);
+    this._eventController = new DefaultEventController(this, eventReporter);
     if (configuration.videoDownlinkBandwidthPolicy instanceof VideoPriorityBasedPolicy) {
       configuration.videoDownlinkBandwidthPolicy.bindToTileController(this._videoTileController);
     }

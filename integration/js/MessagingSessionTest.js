@@ -1,7 +1,7 @@
 const { TestUtils } = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
 const { OpenMessagingSessionAppStep, ConnectMessagingSessionStep, DisconnectMessagingSessionStep } = require('./steps');
-const { SocketSubscribeMessageCheck } = require('./checks');
+const { SessionEstablishedMessageCheck } = require('./checks');
 
 class MessagingSessionTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
@@ -12,7 +12,7 @@ class MessagingSessionTest extends SdkBaseTest {
     const session = this.seleniumSessions[0];
     await OpenMessagingSessionAppStep.executeStep(this, session);
     await ConnectMessagingSessionStep.executeStep(this, session, this.userArn);
-    await SocketSubscribeMessageCheck.executeStep(this, session, 'SOCKET_SUBSCRIBE')
+    await SessionEstablishedMessageCheck.executeStep(this, session, 'SESSION_ESTABLISHED')
     await DisconnectMessagingSessionStep.executeStep(this, session);
   }
 }

@@ -68,6 +68,7 @@ import DefaultDeviceController from './devicecontroller/DefaultDeviceController'
 import DefaultDevicePixelRatioMonitor from './devicepixelratiomonitor/DefaultDevicePixelRatioMonitor';
 import DefaultEventController from './eventcontroller/DefaultEventController';
 import DefaultMediaDeviceFactory from './mediadevicefactory/DefaultMediaDeviceFactory';
+import DefaultMeetingEventReporter from './eventreporter/DefaultMeetingEventReporter';
 import DefaultMeetingReadinessChecker from './meetingreadinesschecker/DefaultMeetingReadinessChecker';
 import DefaultMeetingSession from './meetingsession/DefaultMeetingSession';
 import DefaultMessagingSession from './messagingsession/DefaultMessagingSession';
@@ -82,6 +83,7 @@ import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import DefaultStatsCollector from './statscollector/DefaultStatsCollector';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
+import DefaultUserAgentParser from './useragentparser/DefaultUserAgentParser';
 import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoFrameProcessorPipeline from './videoframeprocessor/DefaultVideoFrameProcessorPipeline';
 import DefaultVideoStreamIdSet from './videostreamidset/DefaultVideoStreamIdSet';
@@ -106,8 +108,15 @@ import DevicePixelRatioWindowSource from './devicepixelratiosource/DevicePixelRa
 import DeviceSelection from './devicecontroller/DeviceSelection';
 import Eq from './videodownlinkbandwidthpolicy/Eq';
 import EventAttributes from './eventcontroller/EventAttributes';
+import EventBuffer from './eventbuffer/EventBuffer';
+import EventBufferConfiguration from './eventbufferconfiguration/EventBufferConfiguration';
 import EventController from './eventcontroller/EventController';
+import EventData from './eventreporter/EventData';
+import EventIngestionConfiguration from './eventingestionconfiguration/EventIngestionConfiguration';
 import EventName from './eventcontroller/EventName';
+import EventReporter from './eventreporter/EventReporter';
+import EventsClientConfiguration from './eventsclientconfiguration/EventsClientConfiguration';
+import EventsIngestionMetadata from './eventreporter/EventsIngestionMetadata';
 import ExtendedBrowserBehavior from './browserbehavior/ExtendedBrowserBehavior';
 import FinishGatheringICECandidatesTask from './task/FinishGatheringICECandidatesTask';
 import FullJitterBackoff from './backoff/FullJitterBackoff';
@@ -115,6 +124,7 @@ import FullJitterBackoffFactory from './backoff/FullJitterBackoffFactory';
 import FullJitterLimitedBackoff from './backoff/FullJitterLimitedBackoff';
 import GetUserMediaError from './devicecontroller/GetUserMediaError';
 import GlobalMetricReport from './clientmetricreport/GlobalMetricReport';
+import InMemoryJSONEventBuffer from './eventbuffer/InMemoryJSONEventBuffer';
 import IntervalScheduler from './scheduler/IntervalScheduler';
 import JoinAndReceiveIndexTask from './task/JoinAndReceiveIndexTask';
 import LeaveAndReceiveLeaveAckTask from './task/LeaveAndReceiveLeaveAckTask';
@@ -127,6 +137,8 @@ import MaybeProvider from './maybe/MaybeProvider';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
+import MeetingEventsClientConfiguration from './eventsclientconfiguration/MeetingEventsClientConfiguration';
+import MeetingEventsClientConfigurationAttributes from './eventsclientconfiguration/MeetingEventsClientConfigurationAttributes';
 import MeetingHistoryState from './eventcontroller/MeetingHistoryState';
 import MeetingReadinessChecker from './meetingreadinesschecker/MeetingReadinessChecker';
 import MeetingReadinessCheckerConfiguration from './meetingreadinesschecker/MeetingReadinessCheckerConfiguration';
@@ -152,6 +164,7 @@ import NScaleVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/NScal
 import NoOpAudioVideoController from './audiovideocontroller/NoOpAudioVideoController';
 import NoOpDebugLogger from './logger/NoOpDebugLogger';
 import NoOpDeviceController from './devicecontroller/NoOpDeviceController';
+import NoOpEventReporter from './eventreporter/NoOpEventReporter';
 import NoOpLogger from './logger/NoOpLogger';
 import NoOpMediaStreamBroker from './mediastreambroker/NoOpMediaStreamBroker';
 import NoOpTask from './task/NoOpTask';
@@ -225,6 +238,7 @@ import TimeoutTask from './task/TimeoutTask';
 import TransceiverController from './transceivercontroller/TransceiverController';
 import TypeError from './devicecontroller/TypeError';
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
+import UserAgentParser from './useragentparser/UserAgentParser';
 import Versioning from './versioning/Versioning';
 import VideoAdaptiveProbePolicy from './videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
@@ -342,6 +356,7 @@ export {
   DefaultDevicePixelRatioMonitor,
   DefaultEventController,
   DefaultMediaDeviceFactory,
+  DefaultMeetingEventReporter,
   DefaultMeetingReadinessChecker,
   DefaultMeetingSession,
   DefaultMessagingSession,
@@ -356,6 +371,7 @@ export {
   DefaultSimulcastUplinkPolicy,
   DefaultStatsCollector,
   DefaultTransceiverController,
+  DefaultUserAgentParser,
   DefaultVideoCaptureAndEncodeParameter,
   DefaultVideoFrameProcessorPipeline,
   DefaultVideoStreamIdSet,
@@ -380,8 +396,15 @@ export {
   DeviceSelection,
   Eq,
   EventAttributes,
+  EventBuffer,
+  EventBufferConfiguration,
   EventController,
+  EventData,
+  EventIngestionConfiguration,
   EventName,
+  EventReporter,
+  EventsClientConfiguration,
+  EventsIngestionMetadata,
   ExtendedBrowserBehavior,
   FinishGatheringICECandidatesTask,
   FullJitterBackoff,
@@ -389,6 +412,7 @@ export {
   FullJitterLimitedBackoff,
   GetUserMediaError,
   GlobalMetricReport,
+  InMemoryJSONEventBuffer,
   IntervalScheduler,
   JoinAndReceiveIndexTask,
   LeaveAndReceiveLeaveAckTask,
@@ -401,6 +425,8 @@ export {
   MediaDeviceFactory,
   MediaDeviceProxyHandler,
   MediaStreamBroker,
+  MeetingEventsClientConfiguration,
+  MeetingEventsClientConfigurationAttributes,
   MeetingHistoryState,
   MeetingReadinessChecker,
   MeetingReadinessCheckerConfiguration,
@@ -427,6 +453,7 @@ export {
   NoOpAudioVideoController,
   NoOpDebugLogger,
   NoOpDeviceController,
+  NoOpEventReporter,
   NoOpLogger,
   NoOpMediaStreamBroker,
   NoOpTask,
@@ -500,6 +527,7 @@ export {
   TransceiverController,
   TypeError,
   UnusableAudioWarningConnectionHealthPolicy,
+  UserAgentParser,
   Versioning,
   VideoAdaptiveProbePolicy,
   VideoCaptureAndEncodeParameter,

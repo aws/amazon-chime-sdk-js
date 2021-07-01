@@ -55,6 +55,12 @@ import {
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
   VideoPriorityBasedPolicyConfig,
+  NoOpEventReporter,
+  EventReporter,
+  isDestroyable,
+  MeetingEventsClientConfiguration,
+  EventIngestionConfiguration,
+  DefaultMeetingEventReporter
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -330,6 +336,7 @@ export class DemoMeetingApp
     videoUpstreamFrameWidth: 'Frame Width',
     videoUpstreamBitrate: 'Bitrate (bps)',
     videoUpstreamPacketsSent: 'Packets Sent',
+    videoUpstreamPacketLossPercent: 'Packet Loss (%)',
     videoUpstreamFramesEncodedPerSecond: 'Frame Rate',
   };
 
@@ -340,6 +347,7 @@ export class DemoMeetingApp
     videoDownstreamFrameWidth: 'Frame Width',
     videoDownstreamBitrate: 'Bitrate (bps)',
     videoDownstreamPacketLossPercent: 'Packet Loss (%)',
+    videoDownstreamPacketsReceived: 'Packet Received',
     videoDownstreamFramesDecodedPerSecond: 'Frame Rate',
   };
 
@@ -369,6 +377,9 @@ export class DemoMeetingApp
       this.removeFatalHandlers = undefined;
     }
   }
+
+  eventReporter: EventReporter | undefined = undefined;
+  enableEventReporting = false;
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -512,6 +523,7 @@ export class DemoMeetingApp
       this.name = (document.getElementById('inputName') as HTMLInputElement).value;
       this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
       this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
+      this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
       if (this.enableSimulcast) {
         const videoInputQuality = document.getElementById(
           'video-input-quality'
@@ -1026,7 +1038,9 @@ export class DemoMeetingApp
     AsyncScheduler.nextTick(
       async (): Promise<void> => {
         try {
-          const nearestMediaRegion = await this.getNearestMediaRegion();
+          const query = new URLSearchParams(document.location.search);
+          const region = query.get('region');
+          const nearestMediaRegion = region ? region : await this.getNearestMediaRegion();
           if (nearestMediaRegion === '' || nearestMediaRegion === null) {
             throw new Error('Nearest Media Region cannot be null or empty');
           }
@@ -1047,6 +1061,8 @@ export class DemoMeetingApp
       }
     );
   }
+
+  
 
   toggleButton(button: string, state?: 'on' | 'off'): boolean {
     if (state === 'on') {
@@ -1378,14 +1394,13 @@ export class DemoMeetingApp
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     const logLevel = LogLevel.INFO;
     const consoleLogger = (this.meetingLogger = new ConsoleLogger('SDK', logLevel));
-    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    if (this.isLocalHost()) {
       this.meetingLogger = consoleLogger;
     } else {
       await Promise.all([
         this.createLogStream(configuration, 'create_log_stream'),
         this.createLogStream(configuration, 'create_browser_event_log_stream'),
       ]);
-
       this.meetingSessionPOSTLogger = new MeetingSessionPOSTLogger(
         'SDK',
         configuration,
@@ -1407,6 +1422,7 @@ export class DemoMeetingApp
         logLevel
       );
     }
+    this.eventReporter = await this.setupEventReporter(configuration);
     const deviceController = new DefaultDeviceController(this.meetingLogger, {
       enableWebAudio: this.enableWebAudio,
     });
@@ -1426,7 +1442,8 @@ export class DemoMeetingApp
     this.meetingSession = new DefaultMeetingSession(
       configuration,
       this.meetingLogger,
-      deviceController
+      deviceController,
+      this.eventReporter
     );
     if (this.usePriorityBasedDownlinkPolicy) {
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoAdaptionSpeed);
@@ -1455,6 +1472,50 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
     this.initContentShareDropDownItems();
+  }
+
+  async setupEventReporter(configuration: MeetingSessionConfiguration): Promise<EventReporter> {
+    let eventReporter: EventReporter;
+    const ingestionURL = configuration.urls.eventIngestionURL;
+    if (!ingestionURL) {
+      return eventReporter;
+    }
+    if (!this.enableEventReporting) {
+      return new NoOpEventReporter();
+    }
+    const eventReportingLogger = new ConsoleLogger('SDKEventIngestion', LogLevel.INFO);
+    const meetingEventClientConfig = new MeetingEventsClientConfiguration(
+      configuration.meetingId,
+      configuration.credentials.attendeeId,
+      configuration.credentials.joinToken
+    );
+    const eventIngestionConfiguration = new EventIngestionConfiguration(
+      meetingEventClientConfig,
+      ingestionURL
+    );
+    if (this.isLocalHost()) {
+      eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, eventReportingLogger);
+    } else {
+      await this.createLogStream(configuration, 'create_browser_event_ingestion_log_stream');
+      const eventReportingPOSTLogger = new MeetingSessionPOSTLogger(
+        'SDKEventIngestion',
+        configuration,
+        DemoMeetingApp.LOGGER_BATCH_SIZE,
+        DemoMeetingApp.LOGGER_INTERVAL_MS,
+        `${DemoMeetingApp.BASE_URL}log_event_ingestion`,
+        LogLevel.DEBUG
+      );
+      const multiEventReportingLogger = new MultiLogger(
+        eventReportingLogger,
+        eventReportingPOSTLogger,
+      );
+      eventReporter = new DefaultMeetingEventReporter(eventIngestionConfiguration, multiEventReportingLogger);
+    }
+    return eventReporter;
+  }
+
+  private isLocalHost(): boolean {
+    return document.location.host === '127.0.0.1:8080' || document.location.host === 'localhost:8080';
   }
 
   async join(): Promise<void> {
@@ -2622,11 +2683,16 @@ export class DemoMeetingApp
         await this.meetingSessionPOSTLogger?.destroy();
       }, 500);
 
+      if (isDestroyable(this.eventReporter)) {
+        this.eventReporter?.destroy();
+      }
+
       this.audioVideo = undefined;
       this.voiceFocusDevice = undefined;
       this.meetingSession = undefined;
       this.activeSpeakerHandler = undefined;
       this.currentAudioInputDevice = undefined;
+      this.eventReporter = undefined;
     };
 
     const onLeftMeeting = async () => {
