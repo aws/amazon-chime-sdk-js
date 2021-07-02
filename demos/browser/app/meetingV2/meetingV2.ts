@@ -503,7 +503,6 @@ export class DemoMeetingApp
 
     const presetDropDown = document.getElementById('priority-downlink-policy-preset') as HTMLSelectElement;
     presetDropDown.addEventListener('change', async e => {
-      const a = new VideoPriorityBasedPolicyConfig(0.5, 0.5);
       switch (presetDropDown.value) {
         case 'stable':
           this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;

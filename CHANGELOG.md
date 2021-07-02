@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added `VideoPriorityBasedPolicyConfig` to control video downlink policy with network event response and recovery delays. Check [User Guide for Priority-based Downlink Policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#user-guide-for-priority-based-downlink-policy) for more information.
+
+### Changed
+
+### Removed
+
+### Fixed
+- Improve the meeting event guide
+
 ## [2.13.0] - 2021-06-29
 
 ### Added
@@ -25,7 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `videoUpstreamPacketLossPercent` and `videoDownstreamPacketsReceived` metrics for video streams
 - [Documentation] Add documentation for view-only mode.
 - Use SESSION_ESTABLISH event to indicate success of Chime SDK for Messaging successful websocket connection
-- Added `VideoPriorityBasedPolicyConfig` to control video downlink policy with network event response and recovery delays. Check [User Guide for Priority-based Downlink Policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#user-guide-for-priority-based-downlink-policy) for more information.
 
 ### Changed
 
