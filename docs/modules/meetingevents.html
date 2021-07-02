@@ -137,6 +137,7 @@ meetingSession.audioVideo.addObserver(observer);
   }
 }
 </code></pre>
+					<br>
 					<a href="#meeting-events-and-attributes" id="meeting-events-and-attributes" style="color: inherit; text-decoration: none;">
 						<h2>Meeting events and attributes</h2>
 					</a>
@@ -158,7 +159,7 @@ meetingSession.audioVideo.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>meetingStartFailed</code></td>
-								<td>The meeting failed to start.</td>
+								<td>The meeting failed to start due to the following failure <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a>: <br><ul><li><code>AudioCallAtCapacity</code></li><li><code>MeetingEnded</code></li><li><code>SignalingBadRequest</code></li><li><code>TaskFailed</code></li></ul>For more information, see the <a href="#meeting-error-messages">&quot;Meeting error messages&quot; section</a>.</td>
 							</tr>
 							<tr>
 								<td><code>meetingEnded</code></td>
@@ -166,7 +167,7 @@ meetingSession.audioVideo.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>meetingFailed</code></td>
-								<td>The meeting ended with one of the following failure <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a>: <br><ul><li><code>AudioAuthenticationRejected</code></li><li><code>AudioCallAtCapacity</code></li><li><code>AudioDisconnected</code></li><li><code>AudioInternalServerError</code></li><li><code>AudioServiceUnavailable</code></li><li><code>ConnectionHealthReconnect</code></li><li><code>ICEGatheringTimeoutWorkaround</code></li><li><code>NoAttendeePresent</code></li><li><code>RealtimeApiFailed</code></li><li><code>SignalingBadRequest</code></li><li><code>SignalingInternalServerError</code></li><li><code>SignalingRequestFailed</code></li><li><code>StateMachineTransitionFailed</code></li><li><code>TaskFailed</code></li><li><code>VideoCallAtSourceCapacity</code></li></ul></td>
+								<td>The meeting ended with one of the following failure <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a>: <br><ul><li><code>AudioAttendeeRemoved</code></li><li><code>AudioJoinedFromAnotherDevice</code></li><li><code>RealtimeApiFailed</code></li><li><code>TaskFailed</code></li></ul>For more information, see the <a href="#meeting-error-messages">&quot;Meeting error messages&quot; section</a>.</td>
 							</tr>
 							<tr>
 								<td><code>attendeePresenceReceived</code></td>
@@ -197,6 +198,7 @@ meetingSession.audioVideo.addObserver(observer);
 								<td>The camera selection failed.</td>
 							</tr>
 					</tbody></table>
+					<br>
 					<a href="#standard-attributes" id="standard-attributes" style="color: inherit; text-decoration: none;">
 						<h3>Standard attributes</h3>
 					</a>
@@ -238,7 +240,7 @@ meetingSession.audioVideo.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>meetingHistory</code></td>
-								<td>The list of the meeting-history states. For more information, see the &quot;The meeting history attribute&quot; section.</td>
+								<td>The list of the meeting-history states. For more information, see the <a href="#the-meeting-history-attribute">&quot;The meeting history attribute&quot; section</a>.</td>
 							</tr>
 							<tr>
 								<td><code>meetingId</code></td>
@@ -265,6 +267,7 @@ meetingSession.audioVideo.addObserver(observer);
 								<td>The local time, in milliseconds since 00:00:00 UTC on 1 January 1970, at which an event occurred.<br><br>Unit: Milliseconds</td>
 							</tr>
 					</tbody></table>
+					<br>
 					<a href="#meeting-attributes" id="meeting-attributes" style="color: inherit; text-decoration: none;">
 						<h3>Meeting attributes</h3>
 					</a>
@@ -299,7 +302,7 @@ meetingSession.audioVideo.addObserver(observer);
 							</tr>
 							<tr>
 								<td><code>meetingErrorMessage</code></td>
-								<td>The error message that explains why the meeting has failed. For more information, see the &quot;Meeting error messages&quot; section.</td>
+								<td>The error message that explains why the meeting has failed. For more information, see the <a href="#meeting-error-messages">&quot;Meeting error messages&quot; section</a>.</td>
 								<td><code>meetingStartFailed</code>, <code>meetingFailed</code></td>
 							</tr>
 							<tr>
@@ -328,6 +331,7 @@ meetingSession.audioVideo.addObserver(observer);
 								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
 							</tr>
 					</tbody></table>
+					<br>
 					<a href="#device-attributes" id="device-attributes" style="color: inherit; text-decoration: none;">
 						<h3>Device attributes</h3>
 					</a>
@@ -342,15 +346,16 @@ meetingSession.audioVideo.addObserver(observer);
 						</thead>
 						<tbody><tr>
 								<td><code>audioInputErrorMessage</code></td>
-								<td>The error message that explains why the microphone selection failed. For more information, see the &quot;Device error messages&quot; section.</td>
+								<td>The error message that explains why the microphone selection failed. For more information, see the <a href="#device-error-messages">&quot;Device error messages&quot; section</a>.</td>
 								<td><code>audioInputFailed</code></td>
 							</tr>
 							<tr>
 								<td><code>videoInputErrorMessage</code></td>
-								<td>The error message that explains why the camera selection failed. For more information, see the &quot;Device error messages&quot; section.</td>
+								<td>The error message that explains why the camera selection failed. For more information, see the <a href="#device-error-messages">&quot;Device error messages&quot; section</a>.</td>
 								<td><code>videoInputFailed</code></td>
 							</tr>
 					</tbody></table>
+					<br>
 					<a href="#the-meeting-history-attribute" id="the-meeting-history-attribute" style="color: inherit; text-decoration: none;">
 						<h3>The meeting history attribute</h3>
 					</a>
@@ -440,6 +445,7 @@ meetingSession.audioVideo.addObserver(observer);
 								<td>The camera was removed. You called <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with <code>null</code>.</td>
 							</tr>
 					</tbody></table>
+					<br>
 					<a href="#meeting-error-messages" id="meeting-error-messages" style="color: inherit; text-decoration: none;">
 						<h3>Meeting error messages</h3>
 					</a>
@@ -455,9 +461,19 @@ meetingSession.audioVideo.addObserver(observer);
 							</tr>
 						</thead>
 						<tbody><tr>
+								<td>The attendee couldn&#39;t join because the meeting was at capacity.</td>
+								<td>AudioCallAtCapacity</td>
+								<td>Ensure that the number of attendees does not exceed the maximum limit (250). See the <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits">Amazon Chime SDK quotas</a>. You can also track the number of attendees in your server application using the <a href="https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-notifications.html">Amazon Chime SDK event notifications</a>.</td>
+							</tr>
+							<tr>
 								<td>The meeting already ended.</td>
 								<td>MeetingEnded</td>
 								<td>Ensure that you or someone else have not deleted a meeting using the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html">DeleteMeeting</a> API action in your server application. A meeting also automatically ends after a period of inactivity. See the <a href="https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-mtgs.html">Chime SDK developer guide</a> for details.</td>
+							</tr>
+							<tr>
+								<td>The signaling connection was closed with code (close code) and reason: (reason)</td>
+								<td>SignalingBadRequest</td>
+								<td>Ensure that you do not use the deleted attendee&#39;s response in the <code>DefaultMeetingSession</code> object to start the meeting. You also should not use the attendee response from the ended meeting that you created with the same <code>ClientRequestToken</code> parameter before.</td>
 							</tr>
 							<tr>
 								<td>1. WebSocket connection failed<br>2. OpenSignalingConnectionTask got canceled while waiting to open signaling connection</td>
@@ -470,6 +486,7 @@ meetingSession.audioVideo.addObserver(observer);
 								<td>Ensure that either you do not use your application in split-tunneling scenarios or your application always requests microphone permissions before beginning ICE. See the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html#i-cannot-join-meeting-in-firefox-with-no-audio-and-video-permission-due-to-no-ice-candidates-were-gathered-error-is-this-a-known-issue">Chime SDK for JavaScript FAQs</a>.</td>
 							</tr>
 					</tbody></table>
+					<br>
 					<p>The Chime SDK for JavaScript also raises the <code>meetingFailed</code> event containing the <code>meetingErrorMessage</code> attribute if the meeting stops due to an error.
 					The following table lists common error messages from a stopped meeting.</p>
 					<table>
@@ -498,9 +515,10 @@ meetingSession.audioVideo.addObserver(observer);
 							<tr>
 								<td>1. WebSocket connection failed<br>2. OpenSignalingConnectionTask got canceled while waiting to open signaling connection</td>
 								<td>TaskFailed</td>
-								<td>Ensure that you have a stable internet connection. The Chime SDK for JavaScript might fail to reconnect after disconnected from the meeting.</td>
+								<td>Ensure that you have a stable internet connection. You can also follow the <a href="https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html">Quality, Bandwidth, and Connectivity guide</a> to monitor network connectivity and suggest mitigations.</td>
 							</tr>
 					</tbody></table>
+					<br>
 					<a href="#device-error-messages" id="device-error-messages" style="color: inherit; text-decoration: none;">
 						<h3>Device error messages</h3>
 					</a>
@@ -521,11 +539,12 @@ meetingSession.audioVideo.addObserver(observer);
 								<td>Ensure that you do not use the media devices in other browser tabs or applications. A hardware error may also occur at the operating system or browser. If the problem persists, restart the browser and try again.</td>
 							</tr>
 					</tbody></table>
+					<br>
 					<a href="#example" id="example" style="color: inherit; text-decoration: none;">
 						<h2>Example</h2>
 					</a>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless">The Chime SDK serverless demo</a> uses Amazon CloudWatch Logs to collect, process, and analyze meeting events. For more information, see <a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless#meeting-dashboard">the Meeting Dashboard section</a> on the serverless demo page.</p>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Meeting%20Events%20feedback">Give feedback on this guide</a></p>
+					<p>Follow the instructions in the <a href="https://aws.amazon.com/blogs/business-productivity/monitoring-and-troubleshooting-with-amazon-chime-sdk-meeting-events">Monitoring and troubleshooting with Amazon Chime SDK meeting events</a> blog post to create your Amazon CloudWatch dashboard.
+					<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Meeting%20Events%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>
