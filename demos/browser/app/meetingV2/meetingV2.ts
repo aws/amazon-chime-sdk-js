@@ -555,7 +555,6 @@ export class DemoMeetingApp
             );
           } catch (err) {
             fatal(err);
-            this.log('no video input device selected');
           }
           await this.openAudioOutputFromSelection();
           this.hideProgress('progress-authenticate');
@@ -664,7 +663,6 @@ export class DemoMeetingApp
         await this.openVideoInputFromSelection(videoInput.value, true);
       } catch (err) {
         fatal(err);
-        this.log('no video input device selected');
       }
     });
 
@@ -686,7 +684,6 @@ export class DemoMeetingApp
         await this.openVideoInputFromSelection(videoInput.value, true);
       } catch (err) {
         fatal(err);
-        this.log('no video input device selected');
       }
     });
 
@@ -814,7 +811,6 @@ export class DemoMeetingApp
             this.audioVideo.startLocalVideoTile();
           } catch (err) {
             fatal(err);
-            this.log('no video input device selected');
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
@@ -1032,7 +1028,7 @@ export class DemoMeetingApp
     );
   }
 
-  
+
 
   toggleButton(button: string, state?: 'on' | 'off'): boolean {
     if (state === 'on') {
@@ -2077,7 +2073,6 @@ export class DemoMeetingApp
           await this.openVideoInputFromSelection(name, false);
         } catch (err) {
           fatal(err);
-          this.log('no video input device selected');
         }
       }
     );
@@ -2275,7 +2270,7 @@ export class DemoMeetingApp
         fatal(e);
         this.log(`failed to chooseVideoInputDevice ${device}`, e);
       }
-      throw new Error('no video device selected');
+      this.log('no video device selected');
     }
     try {
       await this.audioVideo.chooseVideoInputDevice(device);
