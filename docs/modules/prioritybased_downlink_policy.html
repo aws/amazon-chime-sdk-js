@@ -80,6 +80,7 @@
 					<p>Amazon Chime SDK for JavaScript defines <code>VideoPriorityBasedPolicy</code> as the central class providing the ability to request remote video sources to receive and set their respective priorities. The policy ensures bandwidth is reserved for video sources with higher priorities. This policy can be used in conjunction with clients sending simulcast renditions of sources, as well as single stream or mixed environments.</p>
 					<p>The existing <code>AllHighestVideoBandwidthPolicy</code> and <code>AdaptiveProbePolicy</code> both subscribe to a fixed number of available remote video sources. Builders listen to <code>videoTileDidUpdate</code> when a new remote video source becomes available and call <code>pauseVideoTile</code> if they don’t want it to be seen, otherwise video sources will be consumed automatically. <code>VideoPriorityBasedPolicy</code> relies on builders subscribing to <code>AudioVideoObserver.remoteVideoSourcesDidChange</code> to receive updates on available remote sources, and then calling <code>chooseRemoteVideoSources</code> to set which video sources to receive and their related preferences. Note that when using <code>VideoPriorityBasePolicy</code>, if builders do not call <code>chooseRemoteVideoSources</code>, no videos will be subscribed to. <code>videoTileDidUpdate</code> will then be called if we are able to successfully subscribe to the stream.</p>
 					<p>Under constrained networks where simulcast is in use, <code>VideoPriorityBasedPolicy</code> may lower the resolution of remote video sources, starting with the lowest priority sources. All video sources are separeted into multiple groups by different priorities. If all video sources within same priority group are at the lowest resolution possible, or simulcast is not being used, the policy may further pause video tiles until the network has recovered. Same operations will be repeated group by group, from priority lowest to highest.</p>
+					<p>Video might be paused or unpaused if a network event occurs or recovers. To configure the network event delays, refer <a href="#configure-network-event-delays">Configure network event delays</a>.</p>
 					<p>A typical workflow to use this policy would be:</p>
 					<ol>
 						<li>When creating <code>meetingSession.configuration</code>, construct and set a <code>VideoPriorityBasedPolicy</code> object as the<code> videoDownlinkBandwidthPolicy</code></li>
@@ -120,6 +121,41 @@
 					<p><em>(Note that the exact internal behavior of this policy may slightly change in future releases)</em></p>
 					<p><strong>Receiving notifications that a remote video was paused due to bandwidth constraint</strong>
 					If a remote video source is paused due to insufficient bandwidth, then the application will be notified through the existing notification mechanism by setting the VideoTileState to pausedDueToBandwidth. Note that there is already a member named <code>paused</code> in VideoTileState and that is used to track if the application paused the remote video.</p>
+					<p><strong>Configure network event delays</strong><span id="configure-network-event-delays"><span></p>
+					<p>The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser&#39;s internal estimation of bandwidth.  If you would like to modify these delays to better fit your application&#39;s use case, we have exposed control with a simple to use API. Builders can pass in <code>VideoPriorityBasedPolicyConfig</code> either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:</p>
+					<pre><code class="language-ts"><span class="hljs-comment">// Method 1: Initialize with a preset</span>
+<span class="hljs-keyword">const</span> config =
+  VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
+<span class="hljs-comment">// Method 2: Initialize with networkIssueResponseDelayFactor and networkIssueRecoveryDelayFactor</span>
+config = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicyConfig(
+  <span class="hljs-number">0.5</span>, <span class="hljs-comment">// networkIssueResponseDelayFactor</span>
+  <span class="hljs-number">0.5</span> <span class="hljs-comment">// networkIssueRecoveryDelayFactor</span>
+);
+<span class="hljs-comment">// Use the config and policy in the meeting</span>
+<span class="hljs-built_in">this</span>.meetingSessionConfiguration.videoDownlinkBandwidthPolicy
+    = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicy(logger, config);
+</code></pre>
+					<p>When constructing explicitly, the parameters should be a floating numbers  between <strong><em>0 to 1</em></strong>. The closer to 0 the value is, the smaller the delay is, and vice versa. Modifying these values effects the tradeoff between the amount of pauses and the ability to quickly respond to network downturns or recoveries.</p>
+					<p>The first parameter <code>networkIssueResponseDelayFactor</code> will be used to control:</p>
+					<ul>
+						<li>the delays before reducing the bitrate from remote video streams through pauses or simulcast stream downgrades.</li>
+					</ul>
+					<p>The latter parameter <code>networkIssueRecoveryDelayFactor</code> is to control:</p>
+					<ul>
+						<li><p>the delays before starting to increase bitrates of remote video streams after a network event had downgrading them (e.g. the first unpause of simulcast stream upgrade)</p>
+						</li>
+						<li><p>the delays between futher unpauses or simulcast stream upgrades.</p>
+						</li>
+					</ul>
+					<p>Builders can also use the following setter to change the config dynamically. A possible usage is to listen and count <code>videoTileDidUpdate</code>, and then change to a slower speed if video tile pauses are frequent (implying poor network conditions):</p>
+					<pre><code class="language-ts">setVideoPriorityBasedPolicyConfigs(config: VideoPriorityBasedPolicyConfig): <span class="hljs-built_in">void</span>
+</code></pre>
+					<p>The following presets are provided:</p>
+					<ul>
+						<li><em>Default Preset</em>: <code>VideoPriorityBasedPolicyConfig.DefaultPreset</code> balances the tradeoffs mentioned above to attempt to fit most use cases. It is used when a <code>VideoPriorityBasedPolicyConfig</code> is not given during the initialization of <code>VideoPriorityBasedPolicy</code>.</li>
+						<li><em>Unstable Network Preset</em>: <code>VideoPriorityBasedPolicyConfig.UnstableNetworkPreset</code> configures quick network issue response delay and slow recovery delay. If expecting a lot of mobile usage, builders can choose unstable network preset. It has less confidence in the network so it takes longer wait when network is recovered in case the network is inconsistent.</li>
+						<li><em>Stable Network Preset</em>: <code>VideoPriorityBasedPolicyConfig.StableNetworkPreset</code> configures slow network issue response delay and quick recovery delay. Select stable network preset when the network is expected to stay stable, for example in unified communications client or Ethernet connections. It will try to &#39;wait-out&#39; network downturns in case they are a temporary spike.</li>
+					</ul>
 					<a href="#builder-code-sample" id="builder-code-sample" style="color: inherit; text-decoration: none;">
 						<h2>Builder Code Sample</h2>
 					</a>

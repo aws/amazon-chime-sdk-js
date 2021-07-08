@@ -54,6 +54,7 @@ import {
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
+  VideoPriorityBasedPolicyConfig,
   NoOpEventReporter,
   EventReporter,
   isDestroyable,
@@ -294,6 +295,7 @@ export class DemoMeetingApp
   enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
+  videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
@@ -485,6 +487,36 @@ export class DemoMeetingApp
       (document.getElementById('planB') as HTMLInputElement).disabled = true;
     }
 
+    document.getElementById('priority-downlink-policy').addEventListener('change', e => {
+      this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
+
+      const priorityBasedDownlinkPolicyConfig = document.getElementById(
+        'priority-downlink-policy-preset'
+      ) as HTMLSelectElement;
+
+      if (this.usePriorityBasedDownlinkPolicy) {
+        priorityBasedDownlinkPolicyConfig.style.display = 'block';
+      } else {
+        priorityBasedDownlinkPolicyConfig.style.display = 'none';
+      }
+    });
+
+    const presetDropDown = document.getElementById('priority-downlink-policy-preset') as HTMLSelectElement;
+    presetDropDown.addEventListener('change', async e => {
+      switch (presetDropDown.value) {
+        case 'stable':
+          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
+          break;
+        case 'unstable':
+          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
+          break;
+        case 'default':
+          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
+          break;
+      }
+      this.log('priority-downlink-policy-preset is changed: ' + presetDropDown.value);
+    });
+
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
       this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
@@ -503,8 +535,6 @@ export class DemoMeetingApp
       this.enableUnifiedPlanForChromiumBasedBrowsers = !(document.getElementById(
         'planB'
       ) as HTMLInputElement).checked;
-
-      this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
 
       AsyncScheduler.nextTick(
         async (): Promise<void> => {
@@ -1411,6 +1441,10 @@ export class DemoMeetingApp
       deviceController,
       this.eventReporter
     );
+    if (this.usePriorityBasedDownlinkPolicy) {
+      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
+      configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
+    }
 
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());

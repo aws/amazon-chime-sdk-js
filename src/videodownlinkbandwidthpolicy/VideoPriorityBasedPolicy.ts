@@ -18,6 +18,7 @@ import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './VideoDownlinkObserver';
 import VideoPreference from './VideoPreference';
 import { VideoPreferences } from './VideoPreferences';
+import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
 
 /** @internal */
 class LinkMediaStats {
@@ -48,6 +49,12 @@ const enum UseReceiveSet {
   NewOptimal,
   PreviousOptimal,
   PreProbe,
+}
+
+/** @internal */
+const enum NetworkEvent {
+  Decrease,
+  Increase,
 }
 
 export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthPolicy {
@@ -92,8 +99,12 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   private probePendingStartTimestamp: number;
   private timeBeforeAllowProbeMs: number;
   private lastProbeTimestamp: number;
+  private probeFailed: boolean;
 
-  constructor(protected logger: Logger) {
+  constructor(
+    protected logger: Logger,
+    private videoPriorityBasedPolicyConfig: VideoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default
+  ) {
     this.reset();
   }
 
@@ -120,6 +131,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.timeBeforeAllowProbeMs = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_PROBE_MS;
     this.downlinkStats = new LinkMediaStats();
     this.prevDownlinkStats = new LinkMediaStats();
+    this.probeFailed = false;
   }
 
   bindToTileController(tileController: VideoTileController): void {
@@ -229,6 +241,36 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     }
   }
 
+  setVideoPriorityBasedPolicyConfigs(config: VideoPriorityBasedPolicyConfig): void {
+    this.videoPriorityBasedPolicyConfig = config;
+  }
+
+  private static readonly MINIMUM_DELAY = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS;
+  private static readonly MAXIMUM_DELAY = 8000;
+
+  // convert network event delay factor to actual delay in ms
+  private getSubscribeDelay(event: NetworkEvent, numberOfParticipants: number): number {
+    // left and right boundary of the delay
+    let subscribeDelay = VideoPriorityBasedPolicy.MINIMUM_DELAY;
+    const range = VideoPriorityBasedPolicy.MAXIMUM_DELAY - VideoPriorityBasedPolicy.MINIMUM_DELAY;
+
+    const responseFactor = this.videoPriorityBasedPolicyConfig.networkIssueResponseDelayFactor;
+    const recoveryFactor = this.videoPriorityBasedPolicyConfig.networkIssueRecoveryDelayFactor;
+
+    switch (event) {
+      case NetworkEvent.Decrease:
+        // we include number of participants here since bigger size of the meeting will generate higher bitrate
+        subscribeDelay += range * responseFactor * (1 + numberOfParticipants / 10);
+        subscribeDelay = Math.min(VideoPriorityBasedPolicy.MAXIMUM_DELAY, subscribeDelay);
+        break;
+      case NetworkEvent.Increase:
+        subscribeDelay += range * recoveryFactor;
+        break;
+    }
+
+    return subscribeDelay;
+  }
+
   protected calculateOptimalReceiveStreams(): void {
     const chosenStreams: VideoStreamDescription[] = [];
     const remoteInfos: VideoStreamDescription[] = this.videoIndex.remoteStreamDescriptions();
@@ -244,16 +286,18 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     const sameStreamChoices = this.availStreamsSameAsLast(remoteInfos);
 
     // If no major changes then don't allow subscribes for the allowed amount of time
+    const noMajorChange = !this.startupPeriod && sameStreamChoices;
+
+    // subscribe interval will be changed if probe failed, will take this temporary interval into account
     if (
-      !this.startupPeriod &&
-      sameStreamChoices &&
+      noMajorChange &&
+      this.probeFailed &&
       Date.now() - this.lastSubscribeTimestamp < this.timeBeforeAllowSubscribeMs
     ) {
       return;
     }
 
-    // reset time before allow subscribe to default
-    this.timeBeforeAllowSubscribeMs = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS;
+    this.probeFailed = false;
 
     // Sort streams by bitrate ascending.
     remoteInfos.sort((a, b) => {
@@ -281,6 +325,34 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       deltaToNextUpgrade: 0,
     };
     rates.targetDownlinkBitrate = this.determineTargetRate();
+
+    // calculate subscribe delay based on bandwidth increasing/decreasing
+    const numberOfParticipants = this.subscribedReceiveSet.size();
+    const prevEstimated = this.prevDownlinkStats.bandwidthEstimateKbps;
+    const currEstimated = this.downlinkStats.bandwidthEstimateKbps;
+
+    if (currEstimated > prevEstimated) {
+      // if bw increases, we use recovery delay
+      this.timeBeforeAllowSubscribeMs = this.getSubscribeDelay(
+        NetworkEvent.Increase,
+        numberOfParticipants
+      );
+    } else if (currEstimated < prevEstimated) {
+      // if bw decreases, we use response delay
+      this.timeBeforeAllowSubscribeMs = this.getSubscribeDelay(
+        NetworkEvent.Decrease,
+        numberOfParticipants
+      );
+    }
+
+    // If no major changes then don't allow subscribes for the allowed amount of time
+    if (
+      noMajorChange &&
+      Date.now() - this.lastSubscribeTimestamp < this.timeBeforeAllowSubscribeMs
+    ) {
+      return;
+    }
+
     const upgradeStream: VideoStreamDescription = this.priorityPolicy(
       rates,
       remoteInfos,
@@ -517,7 +589,13 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     if (this.downlinkStats.packetsLost > 0) {
       this.setProbeState(RateProbeState.NotProbing);
       this.logger.info(`bwe: Canceling probe due to network loss`);
-      this.timeBeforeAllowSubscribeMs = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS * 3;
+      this.probeFailed = true;
+      this.timeBeforeAllowSubscribeMs =
+        Math.max(
+          VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS,
+          this.timeBeforeAllowSubscribeMs
+        ) * 3;
+      // packet lost indicates bad network and thus slowing down subscribing by extend delay by 3 times
       return UseReceiveSet.PreProbe;
     }
     const subscribedRate = this.calculateSubscribeRate(this.optimalReceiveStreams);
@@ -584,7 +662,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
         case RateProbeState.ProbePending:
           if (this.setProbeState(RateProbeState.Probing)) {
-            this.timeBeforeAllowSubscribeMs = 800;
             this.upgradeToStream(chosenStreams, upgradeStream);
             useLastSubscriptions = UseReceiveSet.NewOptimal;
           }
