@@ -120,7 +120,7 @@
 					</ul>
 					<p><em>(Note that the exact internal behavior of this policy may slightly change in future releases)</em></p>
 					<p><strong>Receiving notifications that a remote video was paused due to bandwidth constraint</strong>
-					If a remote video source is paused due to insufficient bandwidth, then the application will be notified through the existing notification mechanism by setting the VideoTileState to pausedDueToBandwidth. Note that there is already a member named <code>paused</code> in VideoTileState and that is used to track if the application paused the remote video.</p>
+					If a remote video source is paused due to insufficient bandwidth, then the application will be notified through <code>tileWillBePausedByDownlinkPolicy</code> by  <code>VideoDownlinkObserver</code> and the <code>VideoTileState</code> will be set to <code>paused</code>.</p>
 					<p><strong>Configure network event delays</strong><span id="configure-network-event-delays"><span></p>
 					<p>The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser&#39;s internal estimation of bandwidth.  If you would like to modify these delays to better fit your application&#39;s use case, we have exposed control with a simple to use API. Builders can pass in <code>VideoPriorityBasedPolicyConfig</code> either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:</p>
 					<pre><code class="language-ts"><span class="hljs-comment">// Method 1: Initialize with a preset</span>

@@ -95,7 +95,7 @@ declare global {
 
 class DemoTileOrganizer {
   // this is index instead of length
-  static MAX_TILES = 17;
+  static MAX_TILES = 27;
   tiles: { [id: number]: number } = {};
   tileStates: { [id: number]: boolean } = {};
   remoteTileCount = 0;
@@ -2802,7 +2802,7 @@ export class DemoMeetingApp
       return;
     }
     const tileIndex = tileState.localTile
-      ? 16
+      ? 27
       : this.tileOrganizer.acquireTileIndex(tileState.tileId);
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;

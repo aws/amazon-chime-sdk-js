@@ -59,7 +59,7 @@ Be aware of the following when calling this function:
 
 
 **Receiving notifications that a remote video was paused due to bandwidth constraint**
-If a remote video source is paused due to insufficient bandwidth, then the application will be notified through the existing notification mechanism by setting the VideoTileState to pausedDueToBandwidth. Note that there is already a member named `paused` in VideoTileState and that is used to track if the application paused the remote video.
+If a remote video source is paused due to insufficient bandwidth, then the application will be notified through `tileWillBePausedByDownlinkPolicy` by  `VideoDownlinkObserver` and the `VideoTileState` will be set to `paused`.
 
 **Configure network event delays**<span id="configure-network-event-delays"><span>
 
