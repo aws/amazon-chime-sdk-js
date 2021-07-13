@@ -24,7 +24,9 @@ const {
   BROWSER_MEETING_EVENT_LOG_GROUP_NAME,
   SQS_QUEUE_ARN,
   USE_EVENT_BRIDGE,
-  BROWSER_EVENT_INGESTION_LOG_GROUP_NAME
+  BROWSER_EVENT_INGESTION_LOG_GROUP_NAME,
+  CAPTURE_S3_DESTINATION_PREFIX,
+  AWS_ACCOUNT_ID,
 } = process.env;
 
 // === Handlers ===
@@ -101,6 +103,36 @@ exports.end = async (event, context) => {
   // End the meeting. All attendee connections will hang up.
   await chime.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId }).promise();
   return response(200, 'application/json', JSON.stringify({}));
+};
+
+exports.start_capture = async (event, context) => {
+  // Fetch the meeting by title
+  const meeting = await getMeeting(event.queryStringParameters.title);
+  meetingRegion = meeting.Meeting.MediaRegion;
+
+  let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION_PREFIX}-${meetingRegion}/${meeting.Meeting.MeetingId}/`
+  pipelineInfo = await chime.createMediaCapturePipeline({
+    SourceType: "ChimeSdkMeeting",
+    SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
+    SinkType: "S3Bucket",
+    SinkArn: captureS3Destination,
+  }).promise();
+  await putCapturePipeline(event.queryStringParameters.title, pipelineInfo)
+
+  response(response, 201, 'application/json', JSON.stringify(pipelineInfo));
+};
+
+exports.end_capture = async (event, context) => {
+  // Fetch the capture info by title
+  const pipelineInfo = await getCapturePipeline(event.queryStringParameters.title);
+  if (pipelineInfo) {
+    await chime.deleteMediaCapturePipeline({
+      MediaPipelineId: pipelineInfo.MediaCapturePipeline.MediaPipelineId
+    }).promise();
+    response(response, 200, 'application/json', JSON.stringify({}));
+  } else {
+    response(response, 500, 'application/json', JSON.stringify({msg: "No pipeline to stop for this meeting"}))
+  }
 };
 
 exports.fetch_credentials = async (event, context) => {
@@ -213,6 +245,33 @@ async function putMeeting(title, meeting) {
       }
     }
   }).promise();
+}
+
+// Retrieves capture data for a meeting by title
+async function getCapturePipeline(title) {
+  const result = await ddb.getItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {
+        S: title
+      }
+    }
+  }).promise();
+  return result.Item && result.Item.CaptureData ? JSON.parse(result.Item.CaptureData.S) : null;
+}
+
+// Adds meeting capture data to the meeting table
+async function putCapturePipeline(title, capture) {
+  await ddb.updateItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': { S: title }
+    },
+    UpdateExpression: "SET CaptureData = :capture",
+    ExpressionAttributeValues: {
+      ":capture": { S: JSON.stringify(capture) }
+    }
+  }).promise()
 }
 
 async function putLogEvents(event, logGroupName, createLogEvents) {

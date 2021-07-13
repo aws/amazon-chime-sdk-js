@@ -33,6 +33,7 @@ If you are building a React application, consider using the [Amazon Chime SDK Re
 - [High Level Architecture — Building a Meeting Application with the Amazon Chime SDK](https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-using-the-amazon-chime-sdk/)
 - [Understanding security in Amazon Chime](https://aws.amazon.com/blogs/business-productivity/understanding-security-in-the-amazon-chime-application-and-sdk/)
 - [Transforming audio and shared content](https://aws.amazon.com/blogs/business-productivity/transforming-audio-and-shared-content-in-the-amazon-chime-sdk-for-javascript/)
+- [Capture Amazon Chime SDK Meetings Using Media Capture Pipelines](https://aws-blogs-prod.amazon.com/business-productivity/capture-amazon-chime-sdk-meetings-using-media-capture-pipelines/)
 
 Here is a [list of all blog posts about the Amazon Chime SDK](https://aws.amazon.com/blogs/business-productivity/tag/amazon-chime-sdk/).
 

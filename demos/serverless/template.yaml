@@ -11,6 +11,13 @@ Parameters:
     Description: The AWS SDK Chime endpoint
     Default: "https://service.chime.aws.amazon.com"
     Type: String
+  ChimeServicePrincipal:
+    Description: "The principal that will capture to the S3 bucket"
+    Default: "chime.amazonaws.com"
+    Type: String
+  ChimeMediaCaptureS3BucketPrefix:
+    Description: Prefix of S3 bucket to write capture artifacts.  The bucket name will be suffixed with the region.
+    Type: String
 Conditions:
   ShouldUseEventBridge: !Equals [true, !Ref UseEventBridge]
 Globals:
@@ -26,7 +33,10 @@ Globals:
         BROWSER_MEETING_EVENT_LOG_GROUP_NAME: !Ref ChimeBrowserMeetingEventLogs
         CHIME_ENDPOINT: !Ref ChimeEndpoint
         BROWSER_EVENT_INGESTION_LOG_GROUP_NAME: !Ref ChimeBrowserEventIngestionLogs
+        CAPTURE_S3_DESTINATION_PREFIX: !Ref ChimeMediaCaptureS3BucketPrefix
+        AWS_ACCOUNT_ID: !Sub "${AWS::AccountId}"
 Resources:
+
   ChimeMeetingsAccessPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -47,10 +57,16 @@ Resources:
               - 'chime:DeleteAttendee'
               - 'chime:GetAttendee'
               - 'chime:ListAttendees'
+              - 'chime:CreateMediaCapturePipeline'
+              - 'chime:DeleteMediaCapturePipeline'
+              - 's3:GetBucketPolicy'
+              - 's3:GetBucketLocation'
             Resource: '*'
       Roles:
         - Ref: ChimeSdkJoinLambdaRole
         - Ref: ChimeSdkEndLambdaRole
+        - Ref: ChimeSdkStartCaptureLambdaRole
+        - Ref: ChimeSdkEndCaptureLambdaRole
   ChimeMessagingAccessPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -117,7 +133,7 @@ Resources:
         - Sid: Allow access for Chime Service
           Effect: Allow
           Principal:
-            Service: chime.amazonaws.com
+            Service: !Ref ChimeServicePrincipal
           Action:
             - kms:GenerateDataKey
             - kms:Decrypt
@@ -179,6 +195,37 @@ Resources:
           Type: Api
           Properties:
             Path: /end
+            Method: POST
+  ChimeSdkStartCaptureLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.start_capture
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Environment:
+        Variables:
+          USE_EVENT_BRIDGE: !Ref UseEventBridge
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /startCapture
+            Method: POST
+  ChimeSdkEndCaptureLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.end_capture
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /endCapture
             Method: POST
   ChimeSQSQueueLambda:
     Type: AWS::Serverless::Function
@@ -302,10 +349,38 @@ Resources:
               - sqs:GetQueueUrl
             Principal:
               Service:
-                - chime.amazonaws.com
+                - !Ref ChimeServicePrincipal
             Resource: !GetAtt MeetingNotificationsQueue.Arn
       Queues:
         - Ref: MeetingNotificationsQueue
+  ChimeMediaCaptureS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-captureartifacts"
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 1
+            Status: Enabled
+  ChimeMediaCaptureS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DeletionPolicy: Retain
+    Properties:
+      Bucket: !Ref ChimeMediaCaptureS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AWSChimeMediaCaptureBucketPolicy
+            Action:
+              - 's3:PutObject'
+              - 's3:PutObjectAcl'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ChimeMediaCaptureS3Bucket
+                - /*
+            Principal:
+              Service: !Ref ChimeServicePrincipal
   ChimeBrowserLogs:
     Type: AWS::Logs::LogGroup
   ChimeBrowserMeetingEventLogs:
