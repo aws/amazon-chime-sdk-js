@@ -95,7 +95,7 @@ declare global {
 
 class DemoTileOrganizer {
   // this is index instead of length
-  static MAX_TILES = 26;
+  static MAX_TILES = 27;
   tiles: { [id: number]: number } = {};
   tileStates: { [id: number]: boolean } = {};
   remoteTileCount = 0;
