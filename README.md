@@ -1,5 +1,6 @@
 # Amazon Chime SDK for JavaScript
 [Amazon Chime SDK React Components](https://github.com/aws/amazon-chime-sdk-component-library-react)
+[Project Board](https://aws.github.io/amazon-chime-sdk-js/modules/projectboard.html)
 
 <a href="https://www.npmjs.com/package/amazon-chime-sdk-js"><img src="https://img.shields.io/npm/v/amazon-chime-sdk-js?style=flat-square"></a>
 <a href="https://github.com/aws/amazon-chime-sdk-js/actions?query=workflow%3A%22Deploy+Demo+App+Workflow%22"><img src="https://github.com/aws/amazon-chime-sdk-js/workflows/Deploy%20Demo%20App%20Workflow/badge.svg"></a>
@@ -19,6 +20,8 @@ viewing, receive callbacks when media events occur such as volume changes, and
 control meeting features such as audio mute and video tile bindings.
 
 If you are building a React application, consider using the [Amazon Chime SDK React Component Library](https://github.com/aws/amazon-chime-sdk-component-library-react) that supplies client-side state management and reusable UI components for common web interfaces used in audio and video conferencing applications. Amazon Chime also offers [Amazon Chime SDK for iOS](https://github.com/aws/amazon-chime-sdk-ios) and [Amazon Chime SDK for Android](https://github.com/aws/amazon-chime-sdk-android) for native mobile application development.
+
+We also have an [Amazon Chime SDK Project Board](https://aws.github.io/amazon-chime-sdk-js/modules/projectboard.html) where you can find community requests and their statuses.
 
 ## Resources
 
