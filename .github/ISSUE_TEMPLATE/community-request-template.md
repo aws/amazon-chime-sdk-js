@@ -17,7 +17,7 @@ assignees: ''
 # Tell us about your request
 ## What do you want us to build?
 Which Amazon Chime SDK or feature area is this request for?
-Such as: [amazon-chime-sdk-js](https://github.com/aws/amazon-chime-sdk-js), [amazon-chime-sdk-ios](https://github.com/aws/amazon-chime-sdk-ios), [amazon-chime-sdk-android](https://github.com/aws/amazon-chime-sdk-android), a new feature idea
+Such as: [amazon-chime-sdk-js](https://github.com/aws/amazon-chime-sdk-js), [amazon-chime-sdk-ios](https://github.com/aws/amazon-chime-sdk-ios), [amazon-chime-sdk-android](https://github.com/aws/amazon-chime-sdk-android), [amazon-chime-sdk-component-library-react](https://github.com/aws/amazon-chime-sdk-component-library-react), a new feature idea.
 
 ## Tell us about the problem you are trying to solve and why is it hard?
 The more details you provide us, the better we will be able to help you.
