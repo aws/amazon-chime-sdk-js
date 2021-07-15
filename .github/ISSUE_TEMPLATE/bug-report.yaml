@@ -1,0 +1,71 @@
+name: Bug Report Form
+description: Report unexpected behavior during a meeting session here
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened and what did you expect to happen?
+      description: |
+        Observed problem and expected result.
+    validations:
+      required: true
+  - type: checkboxes
+    id: existing-resources-check
+    attributes:
+      label: Have you reviewed our existing documentation?
+      description: Please check all resources as your issue may have been addressed before.
+      options:
+      - label: GitHub [issues](https://github.com/aws/amazon-chime-sdk-js/issues)
+        required: true
+      - label: FAQs [page](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
+        required: true
+      - label: README [page](https://github.com/aws/amazon-chime-sdk-js#amazon-chime-sdk-for-javascript)
+        required: true
+      - label: Feature-specific [guides](https://github.com/aws/amazon-chime-sdk-js#guides)
+        required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction steps
+      description: Steps to reproduce this issue.
+    validations:
+      required: true
+  - type: input
+    id: amazon-chime-sdk-js-version
+    attributes:
+      label: Amazon Chime SDK for JavaScript version
+      description: What version of our Amazon Chime SDK for JavaScript are you running?
+    validations:
+      required: true
+  - type: input
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+    validations:
+      required: true
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser version
+      description: What is the browser version?
+    validations:
+      required: true
+  - type: textarea
+    id: meeting-attendee-ids
+    attributes:
+      label: Meeting and Attendee ID Information.
+      description: Provide specific meeting and attendee ID if you have.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Browser console logs
+      description: |
+        Check our [debugging](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html#debugging) FAQ section to provide this required information.
+        Please attach INFO-level logs with timestamps to the report from *before* the session started up until the point at which the unexpected behavior occurred.
+        For multi-participant calls, attach a log file for each participant if possible.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
