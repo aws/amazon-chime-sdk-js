@@ -2,12 +2,14 @@
 name: Bug report
 about: Report unexpected behavior during a meeting session here
 title: ''
-labels: bug
+labels: ''
 assignees: ''
 
 ---
 
-**Important:** Please attach INFO-level logs with timestamps to the report from *before* the session started up until the point at which the unexpected behavior occurred. For multi-participant calls, attach a log file for each participant if possible.
+**Important:** 
+* Please attach INFO-level logs with timestamps to the report from *before* the session started up until the point at which the unexpected behavior occurred. For multi-participant calls, attach a log file for each participant if possible.
+* Please go through the existing [issues](https://github.com/aws/amazon-chime-sdk-js/issues) or [FAQs](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html) to see if your issue has already been addressed before.
 
 **Meeting and attendee IDs:**
 List the meeting and attendee IDs that the attached logs apply to.
@@ -28,4 +30,4 @@ If applicable, add screenshots to help explain the problem.
  - OS: 
  - Browser: 
  - Browser Version: 
- - Amazon Chime SDK GitHub Commit: 
+ - Amazon Chime SDK GitHub Commit:
