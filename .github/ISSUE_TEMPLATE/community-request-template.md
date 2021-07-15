@@ -10,6 +10,7 @@ assignees: ''
 # Community Note
 * Please vote for this issue by adding a 👍 reaction to the issue. This will help the community and maintainers from the Amazon Chime SDK team to prioritize this request
 * Please do not leave "+1" or "me too" comments, they generate extra noise for issue followers and do not help prioritize the request
+* Please go through the existing [issues](https://github.com/aws/amazon-chime-sdk-js/issues) to see if your request has already been recommended
 * Please do not use this template for bugs or support. Each individual repository have a PR template, documentation and resources for troubleshooting (https://github.com/aws/amazon-chime-sdk-js#troubleshooting-and-support).
 * If you are interested in working on this issue or have submitted a pull request, please leave a comment.
 
@@ -24,5 +25,5 @@ The more details you provide us, the better we will be able to help you.
 ## How are you currently solving a problem?
 Are there any workarounds or mitigations you have used? Why is it not working for you?
 
-##Additional context
+## Additional context
 Anything else we should know?
