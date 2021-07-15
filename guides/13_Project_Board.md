@@ -2,7 +2,7 @@
 
 The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) provides builders with an overview of community feature requests and their status across all the repositories for the Amazon Chime SDK ([Amazon Chime SDK for JavaScript](https://github.com/aws/amazon-chime-sdk-js), [Amazon Chime SDK React Component Library](https://github.com/aws/amazon-chime-sdk-component-library-react), [Amazon Chime SDK for iOS](https://github.com/aws/amazon-chime-sdk-ios) and [Amazon Chime SDK for Android](https://github.com/aws/amazon-chime-sdk-android)). Each repository has a [Community Issue template](https://github.com/amazon-chime-sdk-js/.github/ISSUE_TEMPLATE/community-request-template.md) that allows builders to contribute community feature ideas for the Amazon Chime SDK.
 
-The Amazon Chime team would like to prioritize issues that are most useful for our developer community.  We recommend you give us a thumbs-up to the features on our Project Board that look interesting to you. 
+The Amazon Chime team would like to prioritize issues that are most useful for our developer community. We recommend you give us a thumbs-up to the features on our Project Board that look interesting to you. 
 
 Note: This Project Board is provided for informational purposes only. AWS does not commit to release any solution or feature described in the Project Board. 
 

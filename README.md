@@ -1,6 +1,7 @@
 # Amazon Chime SDK for JavaScript
+[Amazon Chime SDK Project Board](https://aws.github.io/amazon-chime-sdk-js/modules/projectboard.html)
+
 [Amazon Chime SDK React Components](https://github.com/aws/amazon-chime-sdk-component-library-react)
-[Project Board](https://aws.github.io/amazon-chime-sdk-js/modules/projectboard.html)
 
 <a href="https://www.npmjs.com/package/amazon-chime-sdk-js"><img src="https://img.shields.io/npm/v/amazon-chime-sdk-js?style=flat-square"></a>
 <a href="https://github.com/aws/amazon-chime-sdk-js/actions?query=workflow%3A%22Deploy+Demo+App+Workflow%22"><img src="https://github.com/aws/amazon-chime-sdk-js/workflows/Deploy%20Demo%20App%20Workflow/badge.svg"></a>
