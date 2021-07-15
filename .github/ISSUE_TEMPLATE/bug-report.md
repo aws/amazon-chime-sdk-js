@@ -2,7 +2,7 @@
 name: Bug report
 about: Report unexpected behavior during a meeting session here
 title: ''
-labels: bug
+labels: ''
 assignees: ''
 
 ---
@@ -28,4 +28,4 @@ If applicable, add screenshots to help explain the problem.
  - OS: 
  - Browser: 
  - Browser Version: 
- - Amazon Chime SDK GitHub Commit: 
+ - Amazon Chime SDK GitHub Commit:
