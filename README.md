@@ -172,7 +172,7 @@ Create a messaging session in your client application to receive messages from A
 
 ```js
 import * as AWS from 'aws-sdk/global';
-import * as Chime from 'aws-sdk/clients/chime';
+import Chime from 'aws-sdk/clients/chime';
 
 import {
   ConsoleLogger,
