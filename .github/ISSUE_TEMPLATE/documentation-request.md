@@ -1,7 +1,6 @@
 ---
 name: Documentation request
-about: Need help using the SDK? Spot an error? Let us know how our documentation can
-  be improved.
+about: Need help using the SDK? Spot an error? Let us know how our documentation can be improved.
 title: ''
 labels: ''
 assignees: ''
