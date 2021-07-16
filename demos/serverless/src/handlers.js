@@ -189,6 +189,7 @@ exports.log_event_ingestion = async (event, context) => {
         message,
         timestamp: log.timestampMs
       });
+      addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId);
     }
     return logEvents;
   });
@@ -371,4 +372,27 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
       putMetric(metricName, metricValue, meetingId, attendeeId);
     }
   }
+}
+
+function addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId) {
+  const putMetric =
+    metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
+      metrics.setProperty('MeetingId', meetingId);
+      metrics.setProperty('AttendeeId', attendeeId);
+      metrics.putMetric(metricName, metricValue);
+    });
+  const { logLevel, message } = log;
+  let errorMetricValue = 0;
+  let retryMetricValue = 0;
+  let ingestionTriggerSuccessMetricValue = 0;
+  if (logLevel === 'ERROR') {
+    errorMetricValue = 1;
+  } else if (logLevel === 'WARN' && message.match(/Retry (count)? limit reached/g)) {
+    retryMetricValue = 1;
+  } else if (message.includes('send successful')) {
+    ingestionTriggerSuccessMetricValue = 1;
+  }
+  putMetric('EventIngestionTriggerSuccess', ingestionTriggerSuccessMetricValue, meetingId, attendeeId);
+  putMetric('EventIngestionError', errorMetricValue, meetingId, attendeeId);
+  putMetric('EventIngestionRetryCountLimitReached', retryMetricValue, meetingId, attendeeId);
 }
