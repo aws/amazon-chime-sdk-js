@@ -21,5 +21,5 @@ npm run deploy -- -b chime-sdk-meeting-readiness-checker-gamma-canary -s chime-s
 echo "Deploying to beta stage for canary that talks to gamma Chime endpoint"
 export AWS_ACCESS_KEY_ID=$BETA_AWS_ACCESS_KEY_ID
 export AWS_SECRET_ACCESS_KEY=$BETA_AWS_SECRET_ACCESS_KEY
-npm run deploy -- -b chime-sdk-demo-beta-canary -s chime-sdk-demo-beta-canary -o chime-sdk-demo-beta-canary -p $GAMMA_CHIME_SERIVCE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -t -l
+npm run deploy -- -b chime-sdk-demo-beta-canary -s chime-sdk-demo-beta-canary -o chime-sdk-demo-beta-canary -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -t -l
 npm run deploy -- -b chime-sdk-meeting-readiness-checker-beta-canary -s chime-sdk-meeting-readiness-checker-beta-canary -a meetingReadinessChecker -c $GAMMA_CHIME_ENDPOINT -t -l
