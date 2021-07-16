@@ -28,6 +28,28 @@ npm install
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
+#### Media Capture
+If you want to use media capture, an S3 bucket needs to be created for each region.
+The S3 bucket will be created with a prefix specified with the -o option.
+
+```
+cd demos/serverless
+npm install
+npm run deploy -- -r us-east-1 -b <deploy-bucket> -o <capture-bucket-prefix> -s <my-stack-name> -a meeting
+```
+
+When the bucket prefix is provided, an S3 bucket will be created in each AWS region that
+a meeting can be hosted in except for those that require opt-in. If you wish to use
+media capture in one of these regions, you can list them with the -i option, for example
+
+```
+cd demos/serverless
+npm install
+npm run deploy -- -r us-east-1 -b <deploy-bucekt> -o <capture-bucket-prefix> -i af-south-1,eu-south-1 -s <my-stack-name> -a meeting
+```
+
+Note that you need to enable these regions if you plan to use media capture. For more information, see [Managing AWS Regions](https://docs.aws.amazon.com/general/latest/gr/rande-manage.html).
+
 #### Meeting Readiness Checker app
 The following will create a CloudFormation stack containing a Lambda and
 API Gateway deployment that runs the `meetingReadinessChecker` demo.
@@ -42,9 +64,8 @@ These script will create an S3 bucket and CloudFormation stack
 with Lambda and API Gateway resources required to run the demo. After the script
 finishes, it will output a URL that can be opened in a browser.
 
-
 ### Cleaning up
-To avoid incurring any unintended charges as a result of deploying the serverless demo, it is important to delete the AWS CloudFormation stack after you are finished using it. You can delete the provisioned CloudFormation stack using the [AWS CloudFormation console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-delete-stack.html) or the [AWS CLI](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-cli-deleting-stack.html).
+To avoid incurring any unintended charges as a result of deploying the serverless demo, it is important to delete the AWS CloudFormation stack after you are finished using it. You can delete the provisioned CloudFormation stack using the [AWS CloudFormation console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-delete-stack.html) or the [AWS CLI](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-cli-deleting-stack.html) as well as [delete the S3 buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/delete-bucket.html) that were created.
 
 ### Meeting dashboard
 The serverless demo uses Amazon CloudWatch Logs to visualize meeting events on the dashboard.
@@ -60,3 +81,7 @@ The Lambda function uploads these events to CloudWatch Logs for searching and an
 4. Choose the meeting event dashboard.
 5. You can view the meeting success rate, the platform information, and other operational data from meeting attendees.
   At the bottom of the dashboard, the widget explains how to search for a specific attendee's events.
+
+
+## Notice
+Disclaimer: You and your end users understand that recording Amazon Chime SDK meetings with this demo may be subject to laws or regulations regarding the recording of electronic communications. It is your and your end users’ responsibility to comply with all applicable laws regarding the recordings, including properly notifying all participants in a recorded session, or communication that the session or communication is being recorded, and obtain their consent.

@@ -13,6 +13,30 @@ Ensure you have AWS credentials configured in your `~/.aws` folder for a
 role with a policy allowing `chime:CreateMeeting`, `chime:DeleteMeeting`, and
 `chime:CreateAttendee`.
 
+If you want to use media capture in `meetingV2`, the role policy will also
+require `chime:CreateMediaCapturePipeline`, `chime:DeleteMediaCapturePipeline`,
+and `s3:GetBucketPolicy`.  In addition, ensure that an S3 ARN for a bucket
+owned by the same AWS account that your credentials are for should be set in
+the `CAPTURE_S3_DESTINATION` environment variable.  The S3 bucket should be in
+the same AWS region as the meeting and have the following bucket policy:
+```
+{
+    "Version": "2012-10-17",
+    "Id":"AWSChimeMediaCaptureBucketPolicy",
+    "Statement": [
+        {
+            "Sid": "AWSChimeMediaCaptureBucketPolicy",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "chime.amazonaws.com"
+            },
+            "Action": ["s3:PutObject", "s3:PutObjectAcl"],
+            "Resource":"arn:aws:s3:::[bucket name]/*"
+        }
+    ]
+}
+```
+
 For messaging session, make sure your role policy contains `chime:Connect` and `chime:GetMessagingSessionEndpoint`.
 
 ### Running the browser demos with a local server
@@ -77,3 +101,5 @@ npm run start:fast (--app=<app>)
 The browser demo applications in the [demos directory](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos) use [TensorFlow.js](https://github.com/tensorflow/tfjs) and pre-trained [TensorFlow.js models](https://github.com/tensorflow/tfjs-models) for image segmentation. Use of these third party models involves downloading and execution of code at runtime from [jsDelivr](https://www.jsdelivr.com/) by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this [link](https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net).
 
 The use of TensorFlow runtime code referenced above may be subject to additional license requirements. See the licenses page for TensorFlow.js [here](https://github.com/tensorflow/tfjs/blob/master/LICENSE) and TensorFlow.js models [here](https://github.com/tensorflow/tfjs-models/blob/master/LICENSE) for details.
+
+Disclaimer: You and your end users understand that recording Amazon Chime SDK meetings with this demo may be subject to laws or regulations regarding the recording of electronic communications. It is your and your end users’ responsibility to comply with all applicable laws regarding the recordings, including properly notifying all participants in a recorded session, or communication that the session or communication is being recorded, and obtain their consent.

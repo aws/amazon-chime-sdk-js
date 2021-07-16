@@ -286,6 +286,7 @@ export class DemoMeetingApp
     'button-video-stats': false,
     'button-video-filter': false,
     'button-record-self': false,
+    'button-record-cloud': false,
   };
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
@@ -770,6 +771,23 @@ export class DemoMeetingApp
         this.audioVideo.realtimeUnmuteLocalAudio();
       } else {
         this.audioVideo.realtimeMuteLocalAudio();
+      }
+    });
+
+    const buttonCloudCapture = document.getElementById('button-record-cloud') as HTMLButtonElement;
+    buttonCloudCapture.addEventListener('click', _e => {
+      if (this.toggleButton('button-record-cloud')) {
+        AsyncScheduler.nextTick(async () => {
+          buttonCloudCapture.disabled = true;
+          await this.startMediaCapture();
+          buttonCloudCapture.disabled = false;
+        });
+      } else {
+        AsyncScheduler.nextTick(async () => {
+          buttonCloudCapture.disabled = true;
+          await this.stopMediaCapture();
+          buttonCloudCapture.disabled = false;
+        });
       }
     });
 
@@ -1793,6 +1811,21 @@ export class DemoMeetingApp
     }
     return json;
   }
+
+  async startMediaCapture(): Promise<any> {
+    await fetch(
+      `${DemoMeetingApp.BASE_URL}startCapture?title=${encodeURIComponent(this.meeting)}`, {
+        method: 'POST',
+      });
+  }
+
+  async stopMediaCapture(): Promise<any> {
+    await fetch(
+      `${DemoMeetingApp.BASE_URL}endCapture?title=${encodeURIComponent(this.meeting)}`, {
+        method: 'POST',
+      });
+  }
+
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async endMeeting(): Promise<any> {
