@@ -34,22 +34,22 @@ If you think your application might be used in these scenarios, take care to tes
 
 ### Browser compatibility
 
-Amazon Voice Focus in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop and Android operating systems. A full compatibility table is below.
-
-Amazon Voice Focus does not support the release version of Safari on desktop or iOS devices, because Safari does not implement the required web standards. Amazon Voice Focus supports Safari Technology Preview (v14.1, 117) as of version 2.4 of the Amazon Chime SDK.
+Amazon Voice Focus in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and iOS operating systems, and Safari 14.1 and later on macOS and some iOS devices. A full compatibility table is below.
 
 |Browser                                                                |Minimum supported version  |Preferred version  |Notes               |
 |---                                                                    |---                        |---                |---                 |
 |Firefox                                                                |76                         |83+                |                    |
 |Chromium-based browsers and environments, including Edge and Electron  |78                         |87+                |                    |
-|Safari                                                                 |14.1*                      |-                  |Technology Preview  |
+|Safari                                                                 |14.1                       |-                  |                    |
 |Android browser                                                        |78*                        |87*                |Typically too slow. |
-|iOS Safari                                                             |Not supported              |-                  |                    |
-|iOS Chrome                                                             |Not supported              |-                  |                    |
-|iOS Firefox                                                            |Not supported              |-                  |                    |
+|iOS Safari                                                             |iOS 14                     |-                  |                    |
+|iOS Chrome                                                             |iOS 14                     |-                  |                    |
+|iOS Firefox                                                            |iOS 14                     |-                  |                    |
 
 
-Amazon Voice Focus is more CPU-intensive than conventional noise suppression systems, and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful. The default configuration will adapt to available processor power and adjust quality accordingly, but some browsers and devices will simply be unable to enable the feature. Android browsers are theoretically compatible, but typically cannot meet the performance requirements.
+Amazon Voice Focus is more CPU-intensive than conventional noise suppression systems, and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use Amazon Voice Focus while also supporting multiple video streams and rich application functionality.
+
+The default configuration will adapt to available processor power and adjust quality accordingly, but some browsers and devices will simply be unable to enable the feature. Android browsers are theoretically compatible, but typically cannot meet the performance requirements. iOS 14 ships Safari 14, and relatively modern iPhones (*e.g.*, iPhone X) have been found to be fast enough.
 
 See the sections “[Checking for support before offering noise suppression](#checking-for-support-before-offering-noise-suppression)” and “[Adapting to performance constraints](#adapting-to-performance-constraints)” for more details about checking for support and adapting to capabilities.
 
