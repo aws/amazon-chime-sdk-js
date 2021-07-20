@@ -598,6 +598,18 @@ a.markdown:active {
   grid-template: repeat(4, 1fr) / repeat(4, 1fr);
 }
 
+.v-grid.size-17,
+.v-grid.size-18,
+.v-grid.size-19,
+.v-grid.size-20,
+.v-grid.size-21,
+.v-grid.size-22,
+.v-grid.size-23,
+.v-grid.size-24,
+.v-grid.size-25 {
+  grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+}
+
 .v-grid.featured {
   grid-template: 1fr / 1fr;
   grid-template-areas: 'ft';
@@ -664,6 +676,25 @@ a.markdown:active {
     'ft ft ft ft ft ft ft ft';
 }
 
+.v-grid.featured.size-18,
+.v-grid.featured.size-19,
+.v-grid.featured.size-20,
+.v-grid.featured.size-21,
+.v-grid.featured.size-22,
+.v-grid.featured.size-23,
+.v-grid.featured.size-24,
+.v-grid.featured.size-25,
+.v-grid.featured.size-26,
+.v-grid.featured.size-27 {
+  grid-template: repeat(7, 1fr) / repeat(8, 1fr);
+  grid-template-areas:
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft';
+}
+
 @media screen and (max-width: 1200px) {
   .v-grid.size-2 {
     grid-template: repeat(2, 1fr) / 1fr;
@@ -696,6 +727,18 @@ a.markdown:active {
   .v-grid.size-15,
   .v-grid.size-16 {
     grid-template: repeat(8, 1fr) / repeat(2, 1fr);
+  }
+
+  .v-grid.size-17,
+  .v-grid.size-18,
+  .v-grid.size-19,
+  .v-grid.size-20,
+  .v-grid.size-21,
+  .v-grid.size-22,
+  .v-grid.size-23,
+  .v-grid.size-24,
+  .v-grid.size-25 {
+    grid-template: repeat(8, 1fr) / repeat(4, 1fr);
   }
 
   .v-grid.featured.size-1 {
@@ -744,12 +787,20 @@ a.markdown:active {
       'ft ft ft ft ft';
   }
 
-  .v-grid.featured.size-12,
-  .v-grid.featured.size-13,
   .v-grid.featured.size-14,
   .v-grid.featured.size-15,
   .v-grid.featured.size-16,
-  .v-grid.featured.size-17 {
+  .v-grid.featured.size-17,
+  .v-grid.featured.size-18,
+  .v-grid.featured.size-19,
+  .v-grid.featured.size-20,
+  .v-grid.featured.size-21,
+  .v-grid.featured.size-22,
+  .v-grid.featured.size-23,
+  .v-grid.featured.size-24,
+  .v-grid.featured.size-25,
+  .v-grid.featured.size-26,
+  .v-grid.featured.size-27 {
     grid-template: repeat(8, 1fr) / repeat(4, 1fr);
     grid-template-areas:
       'ft ft ft ft'

@@ -24,7 +24,9 @@ const {
   BROWSER_MEETING_EVENT_LOG_GROUP_NAME,
   SQS_QUEUE_ARN,
   USE_EVENT_BRIDGE,
-  BROWSER_EVENT_INGESTION_LOG_GROUP_NAME
+  BROWSER_EVENT_INGESTION_LOG_GROUP_NAME,
+  CAPTURE_S3_DESTINATION_PREFIX,
+  AWS_ACCOUNT_ID,
 } = process.env;
 
 // === Handlers ===
@@ -103,6 +105,36 @@ exports.end = async (event, context) => {
   return response(200, 'application/json', JSON.stringify({}));
 };
 
+exports.start_capture = async (event, context) => {
+  // Fetch the meeting by title
+  const meeting = await getMeeting(event.queryStringParameters.title);
+  meetingRegion = meeting.Meeting.MediaRegion;
+
+  let captureS3Destination = `arn:aws:s3:::${CAPTURE_S3_DESTINATION_PREFIX}-${meetingRegion}/${meeting.Meeting.MeetingId}/`
+  pipelineInfo = await chime.createMediaCapturePipeline({
+    SourceType: "ChimeSdkMeeting",
+    SourceArn: `arn:aws:chime::${AWS_ACCOUNT_ID}:meeting:${meeting.Meeting.MeetingId}`,
+    SinkType: "S3Bucket",
+    SinkArn: captureS3Destination,
+  }).promise();
+  await putCapturePipeline(event.queryStringParameters.title, pipelineInfo)
+
+  response(response, 201, 'application/json', JSON.stringify(pipelineInfo));
+};
+
+exports.end_capture = async (event, context) => {
+  // Fetch the capture info by title
+  const pipelineInfo = await getCapturePipeline(event.queryStringParameters.title);
+  if (pipelineInfo) {
+    await chime.deleteMediaCapturePipeline({
+      MediaPipelineId: pipelineInfo.MediaCapturePipeline.MediaPipelineId
+    }).promise();
+    response(response, 200, 'application/json', JSON.stringify({}));
+  } else {
+    response(response, 500, 'application/json', JSON.stringify({msg: "No pipeline to stop for this meeting"}))
+  }
+};
+
 exports.fetch_credentials = async (event, context) => {
   const awsCredentials = {
     accessKeyId: AWS.config.credentials.accessKeyId,
@@ -157,6 +189,7 @@ exports.log_event_ingestion = async (event, context) => {
         message,
         timestamp: log.timestampMs
       });
+      addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId);
     }
     return logEvents;
   });
@@ -213,6 +246,33 @@ async function putMeeting(title, meeting) {
       }
     }
   }).promise();
+}
+
+// Retrieves capture data for a meeting by title
+async function getCapturePipeline(title) {
+  const result = await ddb.getItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': {
+        S: title
+      }
+    }
+  }).promise();
+  return result.Item && result.Item.CaptureData ? JSON.parse(result.Item.CaptureData.S) : null;
+}
+
+// Adds meeting capture data to the meeting table
+async function putCapturePipeline(title, capture) {
+  await ddb.updateItem({
+    TableName: MEETINGS_TABLE_NAME,
+    Key: {
+      'Title': { S: title }
+    },
+    UpdateExpression: "SET CaptureData = :capture",
+    ExpressionAttributeValues: {
+      ":capture": { S: JSON.stringify(capture) }
+    }
+  }).promise()
 }
 
 async function putLogEvents(event, logGroupName, createLogEvents) {
@@ -312,4 +372,35 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
       putMetric(metricName, metricValue, meetingId, attendeeId);
     }
   }
+}
+
+function addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId) {
+  const putMetric =
+    metricScope(metrics => (metricName, metricValue, meetingId, attendeeId) => {
+      metrics.setProperty('MeetingId', meetingId);
+      metrics.setProperty('AttendeeId', attendeeId);
+      metrics.putMetric(metricName, metricValue);
+    });
+  const { logLevel, message } = log;
+  let errorMetricValue = 0;
+  let retryMetricValue = 0;
+  let ingestionTriggerSuccessMetricValue = 0;
+  // Filter out browser errors which happen due to page unload.
+  // We cannot handle these failures in realtime, hence filter out.
+  if (
+    logLevel === 'ERROR' &&
+    (
+      !message.includes('NetworkError when attempting to fetch resource') &&
+      !message.includes('error reading OK response AbortError')
+    )
+  ) {
+    errorMetricValue = 1;
+  } else if (logLevel === 'WARN' && message.match(/Retry (count)? limit reached/g)) {
+    retryMetricValue = 1;
+  } else if (message.includes('send successful')) {
+    ingestionTriggerSuccessMetricValue = 1;
+  }
+  putMetric('EventIngestionTriggerSuccess', ingestionTriggerSuccessMetricValue, meetingId, attendeeId);
+  putMetric('EventIngestionError', errorMetricValue, meetingId, attendeeId);
+  putMetric('EventIngestionRetryCountLimitReached', retryMetricValue, meetingId, attendeeId);
 }

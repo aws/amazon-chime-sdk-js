@@ -10,13 +10,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `VideoPriorityBasedPolicyConfiguration` to control video downlink policy with network event response and recovery delays. Check [User Guide for Priority-based Downlink Policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#user-guide-for-priority-based-downlink-policy) for more information.
+- Amazon Chime SDK Project Board Overview and Guide.
+
+- Added 25 video tile support for demo app.
 
 ### Changed
+
+- [Documentation] Update priority based downlink policy guide.
+- Lookup `groupId` from device cache instead of directly from media stream when selecting input device.
 
 ### Removed
 
 ### Fixed
-- Improve the meeting event guide
+
+- Improve the meeting event guide.
+- Fixed Project Board guide with correct community template link.
+- Updated Amazon Voice Focus integration guide to reflect recent Safari versions.
 
 ## [2.13.0] - 2021-06-29
 

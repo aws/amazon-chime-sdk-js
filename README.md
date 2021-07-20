@@ -1,4 +1,6 @@
 # Amazon Chime SDK for JavaScript
+[Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12)
+
 [Amazon Chime SDK React Components](https://github.com/aws/amazon-chime-sdk-component-library-react)
 
 <a href="https://www.npmjs.com/package/amazon-chime-sdk-js"><img src="https://img.shields.io/npm/v/amazon-chime-sdk-js?style=flat-square"></a>
@@ -20,6 +22,8 @@ control meeting features such as audio mute and video tile bindings.
 
 If you are building a React application, consider using the [Amazon Chime SDK React Component Library](https://github.com/aws/amazon-chime-sdk-component-library-react) that supplies client-side state management and reusable UI components for common web interfaces used in audio and video conferencing applications. Amazon Chime also offers [Amazon Chime SDK for iOS](https://github.com/aws/amazon-chime-sdk-ios) and [Amazon Chime SDK for Android](https://github.com/aws/amazon-chime-sdk-android) for native mobile application development.
 
+The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) captures the status of community feature requests across all our repositories. The descriptions of the columns on the board are captured in this [guide](https://aws.github.io/amazon-chime-sdk-js/modules/projectboard.html).
+
 ## Resources
 
 - [Amazon Chime SDK Overview](https://aws.amazon.com/chime/chime-sdk/)
@@ -33,8 +37,11 @@ If you are building a React application, consider using the [Amazon Chime SDK Re
 - [High Level Architecture — Building a Meeting Application with the Amazon Chime SDK](https://aws.amazon.com/blogs/business-productivity/building-a-meeting-application-using-the-amazon-chime-sdk/)
 - [Understanding security in Amazon Chime](https://aws.amazon.com/blogs/business-productivity/understanding-security-in-the-amazon-chime-application-and-sdk/)
 - [Transforming audio and shared content](https://aws.amazon.com/blogs/business-productivity/transforming-audio-and-shared-content-in-the-amazon-chime-sdk-for-javascript/)
+- [Capturing Amazon Chime SDK Meeting Content](https://aws.amazon.com/blogs/business-productivity/capture-amazon-chime-sdk-meetings-using-media-capture-pipelines/)
+- [Quickly launch an Amazon Chime SDK application with AWS Amplify](https://aws.amazon.com/blogs/business-productivity/quickly-launch-an-amazon-chime-sdk-application-with-aws-amplify/)
+- [Monitoring and troubleshooting with Amazon Chime SDK meeting events](https://aws.amazon.com/blogs/business-productivity/monitoring-and-troubleshooting-with-amazon-chime-sdk-meeting-events/)
 
-Here is a [list of all blog posts about the Amazon Chime SDK](https://aws.amazon.com/blogs/business-productivity/tag/amazon-chime-sdk/).
+Here is a list of all blog posts about the Amazon Chime SDK](https://aws.amazon.com/blogs/business-productivity/tag/amazon-chime-sdk/).
 
 ### Webinars and videos
 

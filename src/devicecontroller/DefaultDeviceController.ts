@@ -202,7 +202,10 @@ export default class DefaultDeviceController
       return;
     }
     this.logger.info('Starting devicechange listener.');
-    this.onDeviceChangeCallback = () => this.handleDeviceChange();
+    this.onDeviceChangeCallback = () => {
+      this.logger.info('Device change event callback is triggered');
+      this.handleDeviceChange();
+    };
     this.mediaDeviceWrapper.addEventListener('devicechange', this.onDeviceChangeCallback);
   }
 
@@ -1053,9 +1056,7 @@ export default class DefaultDeviceController
       this.deviceInfoCache = [];
       return;
     }
-
     let devices = await navigator.mediaDevices.enumerateDevices();
-
     let hasDeviceLabels = true;
     for (const device of devices) {
       if (!device.label) {
@@ -1075,6 +1076,7 @@ export default class DefaultDeviceController
         this.logger.info('unable to get media device labels');
       }
     }
+    this.logger.debug(`Update device info cache with devices: ${JSON.stringify(devices)}`);
     this.deviceInfoCache = devices;
   }
 
@@ -1442,7 +1444,10 @@ export default class DefaultDeviceController
         };
         track.addEventListener('ended', newDevice.endedCallback, { once: true });
       }
-      newDevice.groupId = this.getMediaTrackSettings(newDevice.stream)?.groupId || '';
+      newDevice.groupId = this.getGroupIdFromDeviceId(
+        kind,
+        this.getMediaTrackSettings(newDevice.stream)?.deviceId || ''
+      );
     } catch (error) {
       let errorMessage: string;
       if (error?.name && error.message) {
