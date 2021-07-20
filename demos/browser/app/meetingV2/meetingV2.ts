@@ -54,7 +54,7 @@ import {
   VoiceFocusPaths,
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
-  VideoPriorityBasedPolicyConfig,
+  VideoPriorityBasedPolicyConfiguration,
   NoOpEventReporter,
   EventReporter,
   isDestroyable,
@@ -296,7 +296,7 @@ export class DemoMeetingApp
   enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
-  videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
+  videoPriorityBasedPolicyConfiguration = VideoPriorityBasedPolicyConfiguration.Default;
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
@@ -506,13 +506,13 @@ export class DemoMeetingApp
     presetDropDown.addEventListener('change', async e => {
       switch (presetDropDown.value) {
         case 'stable':
-          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
+          this.videoPriorityBasedPolicyConfiguration = VideoPriorityBasedPolicyConfiguration.StableNetworkPreset;
           break;
         case 'unstable':
-          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
+          this.videoPriorityBasedPolicyConfiguration = VideoPriorityBasedPolicyConfiguration.UnstableNetworkPreset;
           break;
         case 'default':
-          this.videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
+          this.videoPriorityBasedPolicyConfiguration = VideoPriorityBasedPolicyConfiguration.Default;
           break;
       }
       this.log('priority-downlink-policy-preset is changed: ' + presetDropDown.value);
@@ -1460,7 +1460,7 @@ export class DemoMeetingApp
       this.eventReporter
     );
     if (this.usePriorityBasedDownlinkPolicy) {
-      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
+      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfiguration);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
     }
 

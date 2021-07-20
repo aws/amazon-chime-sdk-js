@@ -3,22 +3,22 @@
 
 import * as chai from 'chai';
 
-import VideoPriorityBasedPolicyConfig from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfig';
+import VideoPriorityBasedPolicyConfiguration from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfiguration';
 
-describe('VideoPriorityBasedPolicyConfig', () => {
+describe('VideoPriorityBasedPolicyConfiguration', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
 
   describe('construction', () => {
     it('can be constructed', () => {
-      const d = new VideoPriorityBasedPolicyConfig();
+      const d = new VideoPriorityBasedPolicyConfiguration();
       assert.exists(d);
       expect(d.networkIssueRecoveryDelayFactor === 0).to.be.true;
       expect(d.networkIssueResponseDelayFactor === 0).to.be.true;
     });
 
     it('can be constructed with parameters', () => {
-      const d = new VideoPriorityBasedPolicyConfig(0.5, 0.5);
+      const d = new VideoPriorityBasedPolicyConfiguration(0.5, 0.5);
       assert.exists(d);
       expect(d.networkIssueRecoveryDelayFactor === 0.5).to.be.true;
       expect(d.networkIssueResponseDelayFactor === 0.5).to.be.true;
@@ -27,13 +27,13 @@ describe('VideoPriorityBasedPolicyConfig', () => {
 
   describe('input out of boundary', () => {
     it('smaller than 0', () => {
-      const d = new VideoPriorityBasedPolicyConfig(-1, -1);
+      const d = new VideoPriorityBasedPolicyConfiguration(-1, -1);
       expect(d.networkIssueRecoveryDelayFactor === 0).to.be.true;
       expect(d.networkIssueResponseDelayFactor === 0).to.be.true;
     });
 
     it('bigger than 1', () => {
-      const d = new VideoPriorityBasedPolicyConfig(2, 2);
+      const d = new VideoPriorityBasedPolicyConfiguration(2, 2);
       expect(d.networkIssueRecoveryDelayFactor === 1).to.be.true;
       expect(d.networkIssueResponseDelayFactor === 1).to.be.true;
     });
@@ -41,9 +41,9 @@ describe('VideoPriorityBasedPolicyConfig', () => {
 
   describe('presets', () => {
     it('can be access', () => {
-      assert.exists(VideoPriorityBasedPolicyConfig.Default);
-      assert.exists(VideoPriorityBasedPolicyConfig.UnstableNetworkPreset);
-      assert.exists(VideoPriorityBasedPolicyConfig.StableNetworkPreset);
+      assert.exists(VideoPriorityBasedPolicyConfiguration.Default);
+      assert.exists(VideoPriorityBasedPolicyConfiguration.UnstableNetworkPreset);
+      assert.exists(VideoPriorityBasedPolicyConfiguration.StableNetworkPreset);
     });
   });
 });

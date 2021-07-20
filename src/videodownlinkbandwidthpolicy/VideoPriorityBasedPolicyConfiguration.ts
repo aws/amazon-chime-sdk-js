@@ -4,11 +4,11 @@
 /**
  * [[VideoPriorityBasedPolicyConfig]] contains the network issue response delay and network issue recovery delay.
  */
-export default class VideoPriorityBasedPolicyConfig {
+export default class VideoPriorityBasedPolicyConfiguration {
   // presets
-  static readonly Default = new VideoPriorityBasedPolicyConfig(0, 0);
-  static readonly UnstableNetworkPreset = new VideoPriorityBasedPolicyConfig(0, 1);
-  static readonly StableNetworkPreset = new VideoPriorityBasedPolicyConfig(1, 0);
+  static readonly Default = new VideoPriorityBasedPolicyConfiguration(0, 0);
+  static readonly UnstableNetworkPreset = new VideoPriorityBasedPolicyConfiguration(0, 1);
+  static readonly StableNetworkPreset = new VideoPriorityBasedPolicyConfiguration(1, 0);
 
   /** Initializes a [[PriorityBasedPolicyConfig]] with the network event delays.
    *

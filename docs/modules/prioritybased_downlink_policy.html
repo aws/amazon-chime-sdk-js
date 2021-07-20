@@ -122,12 +122,12 @@
 					<p><strong>Receiving notifications that a remote video was paused due to bandwidth constraint</strong>
 					If a remote video source is paused due to insufficient bandwidth, then the application will be notified through <code>tileWillBePausedByDownlinkPolicy</code> by  <code>VideoDownlinkObserver</code> and the <code>VideoTileState</code> will be set to <code>paused</code>.</p>
 					<p><strong>Configure network event delays</strong><span id="configure-network-event-delays"><span></p>
-					<p>The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser&#39;s internal estimation of bandwidth.  If you would like to modify these delays to better fit your application&#39;s use case, we have exposed control with a simple to use API. Builders can pass in <code>VideoPriorityBasedPolicyConfig</code> either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:</p>
+					<p>The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser&#39;s internal estimation of bandwidth.  If you would like to modify these delays to better fit your application&#39;s use case, we have exposed control with a simple to use API. Builders can pass in <code>VideoPriorityBasedPolicyConfiguration</code> either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:</p>
 					<pre><code class="language-ts"><span class="hljs-comment">// Method 1: Initialize with a preset</span>
 <span class="hljs-keyword">const</span> config =
-  VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
+  VideoPriorityBasedPolicyConfiguration.UnstableNetworkPreset;
 <span class="hljs-comment">// Method 2: Initialize with networkIssueResponseDelayFactor and networkIssueRecoveryDelayFactor</span>
-config = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicyConfig(
+config = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicyConfiguration(
   <span class="hljs-number">0.5</span>, <span class="hljs-comment">// networkIssueResponseDelayFactor</span>
   <span class="hljs-number">0.5</span> <span class="hljs-comment">// networkIssueRecoveryDelayFactor</span>
 );
@@ -148,13 +148,13 @@ config = <span class="hljs-keyword">new</span> VideoPriorityBasedPolicyConfig(
 						</li>
 					</ul>
 					<p>Builders can also use the following setter to change the config dynamically. A possible usage is to listen and count <code>videoTileDidUpdate</code>, and then change to a slower speed if video tile pauses are frequent (implying poor network conditions):</p>
-					<pre><code class="language-ts">setVideoPriorityBasedPolicyConfigs(config: VideoPriorityBasedPolicyConfig): <span class="hljs-built_in">void</span>
+					<pre><code class="language-ts">setVideoPriorityBasedPolicyConfigurations(config: VideoPriorityBasedPolicyConfiguration): <span class="hljs-built_in">void</span>
 </code></pre>
 					<p>The following presets are provided:</p>
 					<ul>
-						<li><em>Default Preset</em>: <code>VideoPriorityBasedPolicyConfig.DefaultPreset</code> balances the tradeoffs mentioned above to attempt to fit most use cases. It is used when a <code>VideoPriorityBasedPolicyConfig</code> is not given during the initialization of <code>VideoPriorityBasedPolicy</code>.</li>
-						<li><em>Unstable Network Preset</em>: <code>VideoPriorityBasedPolicyConfig.UnstableNetworkPreset</code> configures quick network issue response delay and slow recovery delay. If expecting a lot of mobile usage, builders can choose unstable network preset. It has less confidence in the network so it takes longer wait when network is recovered in case the network is inconsistent.</li>
-						<li><em>Stable Network Preset</em>: <code>VideoPriorityBasedPolicyConfig.StableNetworkPreset</code> configures slow network issue response delay and quick recovery delay. Select stable network preset when the network is expected to stay stable, for example in unified communications client or Ethernet connections. It will try to &#39;wait-out&#39; network downturns in case they are a temporary spike.</li>
+						<li><em>Default Preset</em>: <code>VideoPriorityBasedPolicyConfiguration.DefaultPreset</code> balances the tradeoffs mentioned above to attempt to fit most use cases. It is used when a <code>VideoPriorityBasedPolicyConfiguration</code> is not given during the initialization of <code>VideoPriorityBasedPolicy</code>.</li>
+						<li><em>Unstable Network Preset</em>: <code>VideoPriorityBasedPolicyConfiguration.UnstableNetworkPreset</code> configures quick network issue response delay and slow recovery delay. If expecting a lot of mobile usage, builders can choose unstable network preset. It has less confidence in the network so it takes longer wait when network is recovered in case the network is inconsistent.</li>
+						<li><em>Stable Network Preset</em>: <code>VideoPriorityBasedPolicyConfiguration.StableNetworkPreset</code> configures slow network issue response delay and quick recovery delay. Select stable network preset when the network is expected to stay stable, for example in unified communications client or Ethernet connections. It will try to &#39;wait-out&#39; network downturns in case they are a temporary spike.</li>
 					</ul>
 					<a href="#builder-code-sample" id="builder-code-sample" style="color: inherit; text-decoration: none;">
 						<h2>Builder Code Sample</h2>
