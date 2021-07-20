@@ -390,7 +390,7 @@ function addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId) {
   if (
     logLevel === 'ERROR' &&
     (
-      !message.includes('NetworkError when attempting to fetch resource') ||
+      !message.includes('NetworkError when attempting to fetch resource') &&
       !message.includes('error reading OK response AbortError')
     )
   ) {
