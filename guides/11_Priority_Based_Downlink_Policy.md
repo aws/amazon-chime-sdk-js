@@ -63,14 +63,14 @@ If a remote video source is paused due to insufficient bandwidth, then the appli
 
 **Configure network event delays**<span id="configure-network-event-delays"><span>
 
-The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser's internal estimation of bandwidth.  If you would like to modify these delays to better fit your application's use case, we have exposed control with a simple to use API. Builders can pass in `VideoPriorityBasedPolicyConfig` either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:
+The frequency of remote video pauses will depend on the frequency of bandwidth fluctuations. The Amazon Chime SDK for JavaScript will attempt to minimize pauses and unpauses, delaying the response to changes in bandwidth to mitigate rapid changes in the browser's internal estimation of bandwidth.  If you would like to modify these delays to better fit your application's use case, we have exposed control with a simple to use API. Builders can pass in `VideoPriorityBasedPolicyConfiguration` either in the constructor or via setter to configure these delays, and for ease of use we have provided presets for some possible use cases:
 
 ```ts
 // Method 1: Initialize with a preset
 const config = 
-  VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
+  VideoPriorityBasedPolicyConfiguration.UnstableNetworkPreset;
 // Method 2: Initialize with networkIssueResponseDelayFactor and networkIssueRecoveryDelayFactor
-config = new VideoPriorityBasedPolicyConfig(
+config = new VideoPriorityBasedPolicyConfiguration(
   0.5, // networkIssueResponseDelayFactor
   0.5 // networkIssueRecoveryDelayFactor
 );
@@ -94,14 +94,14 @@ The latter parameter `networkIssueRecoveryDelayFactor` is to control:
 Builders can also use the following setter to change the config dynamically. A possible usage is to listen and count `videoTileDidUpdate`, and then change to a slower speed if video tile pauses are frequent (implying poor network conditions):
 
 ```ts
-setVideoPriorityBasedPolicyConfigs(config: VideoPriorityBasedPolicyConfig): void
+setVideoPriorityBasedPolicyConfigurations(config: VideoPriorityBasedPolicyConfiguration): void
 ```
 
 The following presets are provided:
 
-* *Default Preset*: `VideoPriorityBasedPolicyConfig.DefaultPreset` balances the tradeoffs mentioned above to attempt to fit most use cases. It is used when a `VideoPriorityBasedPolicyConfig` is not given during the initialization of `VideoPriorityBasedPolicy`.
-* *Unstable Network Preset*: `VideoPriorityBasedPolicyConfig.UnstableNetworkPreset` configures quick network issue response delay and slow recovery delay. If expecting a lot of mobile usage, builders can choose unstable network preset. It has less confidence in the network so it takes longer wait when network is recovered in case the network is inconsistent.
-* *Stable Network Preset*: `VideoPriorityBasedPolicyConfig.StableNetworkPreset` configures slow network issue response delay and quick recovery delay. Select stable network preset when the network is expected to stay stable, for example in unified communications client or Ethernet connections. It will try to 'wait-out' network downturns in case they are a temporary spike.
+* *Default Preset*: `VideoPriorityBasedPolicyConfiguration.DefaultPreset` balances the tradeoffs mentioned above to attempt to fit most use cases. It is used when a `VideoPriorityBasedPolicyConfiguration` is not given during the initialization of `VideoPriorityBasedPolicy`.
+* *Unstable Network Preset*: `VideoPriorityBasedPolicyConfiguration.UnstableNetworkPreset` configures quick network issue response delay and slow recovery delay. If expecting a lot of mobile usage, builders can choose unstable network preset. It has less confidence in the network so it takes longer wait when network is recovered in case the network is inconsistent.
+* *Stable Network Preset*: `VideoPriorityBasedPolicyConfiguration.StableNetworkPreset` configures slow network issue response delay and quick recovery delay. Select stable network preset when the network is expected to stay stable, for example in unified communications client or Ethernet connections. It will try to 'wait-out' network downturns in case they are a temporary spike.
 
 ## Builder Code Sample
 

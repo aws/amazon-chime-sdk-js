@@ -4,7 +4,6 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
-import { VideoPriorityBasedPolicyConfig } from '../../src';
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
@@ -24,6 +23,7 @@ import VideoDownlinkObserver from '../../src/videodownlinkbandwidthpolicy/VideoD
 import VideoPreference from '../../src/videodownlinkbandwidthpolicy/VideoPreference';
 import { VideoPreferences } from '../../src/videodownlinkbandwidthpolicy/VideoPreferences';
 import VideoPriorityBasedPolicy from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
+import VideoPriorityBasedPolicyConfiguration from '../../src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicyConfiguration';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -978,8 +978,8 @@ describe('VideoPriorityBasedPolicy', () => {
 
   describe('VideoPriorityBasedPolicyConfig', () => {
     it('unstable network with unstable preset', () => {
-      const config = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
-      policy.setVideoPriorityBasedPolicyConfigs(config);
+      const config = VideoPriorityBasedPolicyConfiguration.UnstableNetworkPreset;
+      policy.setVideoPriorityBasedPolicyConfiguration(config);
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
       const metricReport = new DefaultClientMetricReport(logger);
@@ -1056,8 +1056,8 @@ describe('VideoPriorityBasedPolicy', () => {
     });
 
     it('stable network with unstable preset', () => {
-      const config = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
-      policy.setVideoPriorityBasedPolicyConfigs(config);
+      const config = VideoPriorityBasedPolicyConfiguration.StableNetworkPreset;
+      policy.setVideoPriorityBasedPolicyConfiguration(config);
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
       policy.updateIndex(videoStreamIndex);
       const metricReport = new DefaultClientMetricReport(logger);

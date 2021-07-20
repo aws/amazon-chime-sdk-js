@@ -18,7 +18,7 @@ import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
 import VideoDownlinkObserver from './VideoDownlinkObserver';
 import VideoPreference from './VideoPreference';
 import { VideoPreferences } from './VideoPreferences';
-import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
+import VideoPriorityBasedPolicyConfiguration from './VideoPriorityBasedPolicyConfiguration';
 
 /** @internal */
 class LinkMediaStats {
@@ -103,7 +103,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   constructor(
     protected logger: Logger,
-    private videoPriorityBasedPolicyConfig: VideoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default
+    private videoPriorityBasedPolicyConfiguration: VideoPriorityBasedPolicyConfiguration = VideoPriorityBasedPolicyConfiguration.Default
   ) {
     this.reset();
   }
@@ -241,8 +241,8 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     }
   }
 
-  setVideoPriorityBasedPolicyConfigs(config: VideoPriorityBasedPolicyConfig): void {
-    this.videoPriorityBasedPolicyConfig = config;
+  setVideoPriorityBasedPolicyConfiguration(config: VideoPriorityBasedPolicyConfiguration): void {
+    this.videoPriorityBasedPolicyConfiguration = config;
   }
 
   private static readonly MINIMUM_DELAY = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS;
@@ -254,8 +254,10 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     let subscribeDelay = VideoPriorityBasedPolicy.MINIMUM_DELAY;
     const range = VideoPriorityBasedPolicy.MAXIMUM_DELAY - VideoPriorityBasedPolicy.MINIMUM_DELAY;
 
-    const responseFactor = this.videoPriorityBasedPolicyConfig.networkIssueResponseDelayFactor;
-    const recoveryFactor = this.videoPriorityBasedPolicyConfig.networkIssueRecoveryDelayFactor;
+    const responseFactor = this.videoPriorityBasedPolicyConfiguration
+      .networkIssueResponseDelayFactor;
+    const recoveryFactor = this.videoPriorityBasedPolicyConfiguration
+      .networkIssueRecoveryDelayFactor;
 
     switch (event) {
       case NetworkEvent.Decrease:
