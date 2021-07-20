@@ -58,6 +58,16 @@
         <div class="col-12">
           <fieldset>
             <legend>Choose your optional features</legend>
+            <div class="custom-control" style="text-align: left;">
+              <label for="logLevel">Choose a Log Level:</label>
+              <select name="logLevel" id="logLevelSelect">
+                <option value="INFO">INFO</option>
+                <option value="DEBUG">DEBUG</option>
+                <option value="WARN">WARN</option>
+                <option value="ERROR">ERROR</option>
+                <option value="OFF">OFF</option>
+              </select>
+            </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" id="webaudio" class="custom-control-input">
               <label for="webaudio" class="custom-control-label">Use WebAudio</label>

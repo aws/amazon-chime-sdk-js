@@ -293,6 +293,7 @@ export class DemoMeetingApp
 
   // feature flags
   enableWebAudio = false;
+  logLevel = LogLevel.INFO;
   enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
@@ -537,6 +538,24 @@ export class DemoMeetingApp
         'planB'
       ) as HTMLInputElement).checked;
 
+      const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
+      switch (chosenLogLevel) {
+        case 'INFO':
+          this.logLevel = LogLevel.INFO;
+          break;
+        case 'DEBUG':
+          this.logLevel = LogLevel.DEBUG;
+          break;
+        case 'WARN':
+          this.logLevel = LogLevel.WARN;
+          break;
+        case 'ERROR':
+          this.logLevel = LogLevel.ERROR;
+          break;
+        default:
+          this.logLevel = LogLevel.OFF;
+          break;
+      }
       AsyncScheduler.nextTick(
         async (): Promise<void> => {
           let chimeMeetingId: string = '';
@@ -1406,8 +1425,7 @@ export class DemoMeetingApp
   }
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
-    const logLevel = LogLevel.INFO;
-    const consoleLogger = (this.meetingLogger = new ConsoleLogger('SDK', logLevel));
+    const consoleLogger = (this.meetingLogger = new ConsoleLogger('SDK', this.logLevel));
     if (this.isLocalHost()) {
       this.meetingLogger = consoleLogger;
     } else {
@@ -1421,7 +1439,7 @@ export class DemoMeetingApp
         DemoMeetingApp.LOGGER_BATCH_SIZE,
         DemoMeetingApp.LOGGER_INTERVAL_MS,
         `${DemoMeetingApp.BASE_URL}logs`,
-        logLevel
+        this.logLevel
       );
       this.meetingLogger = new MultiLogger(
         consoleLogger,
@@ -1433,7 +1451,7 @@ export class DemoMeetingApp
         DemoMeetingApp.LOGGER_BATCH_SIZE,
         DemoMeetingApp.LOGGER_INTERVAL_MS,
         `${DemoMeetingApp.BASE_URL}log_meeting_event`,
-        logLevel
+        this.logLevel
       );
     }
     this.eventReporter = await this.setupEventReporter(configuration);
