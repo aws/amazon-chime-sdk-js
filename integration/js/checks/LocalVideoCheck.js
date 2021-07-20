@@ -22,7 +22,7 @@ class LocalVideoCheck extends AppTestStep {
 
   async run() {
     try {
-      let result = await this.page.videoCheck(this, 17, this.expectedState);
+      let result = await this.page.videoCheck(this, 28, this.expectedState);
       if (result !== this.expectedState) {
         this.testReporter.textAttachment(this.report, 'Sent video', result, 'plain');
         throw new KiteTestError(Status.FAILED, 'The video sent is ' + result);
