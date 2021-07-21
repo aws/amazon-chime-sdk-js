@@ -56,12 +56,7 @@ jobs:
       - name: Install Kite
         run: integration/js/script/install-kite
       - name: Setup
-        # Temporarily we need to copy the run-test script over from 2.9.0. Can be removed after 2.10.0 is released
-        run: |
-          cp integration/js/script/run-test integration/js/script/run-test.bku
-          git checkout tags/v${{ steps.prev.outputs.prev_version }}
-          cp integration/js/script/run-test.bku integration/js/script/run-test
-          chmod +x integration/js/script/run-test
+        run: git checkout tags/v${{ steps.prev.outputs.prev_version }}
       - name: Clean Install
         run: npm ci
       - name: Run Audio Integration Test
