@@ -14,6 +14,8 @@ const types_js_1 = require("./types.js");
 class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
     constructor(context, options) {
         super(context, options.processor, options);
+        this.channelCountMode = 'explicit';
+        this.channelCount = 1;
         const { modelURL, worker, fetchBehavior, logger, } = options;
         this.logger = logger;
         this.port.onmessage = this.onProcessorMessage.bind(this);

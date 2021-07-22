@@ -23,6 +23,8 @@ const STATES = {
 class VoiceFocusWorkerBufferNode extends types_js_1.VoiceFocusAudioWorkletNode {
     constructor(context, options) {
         super(context, options.processor, options);
+        this.channelCountMode = 'explicit';
+        this.channelCount = 1;
         const { modelURL, resamplerURL, worker, fetchBehavior, delegate, } = options;
         this.delegate = delegate;
         this.worker = worker;
