@@ -794,20 +794,28 @@ a.markdown:active {
   .v-grid.featured.size-18,
   .v-grid.featured.size-19,
   .v-grid.featured.size-20,
-  .v-grid.featured.size-21,
+  .v-grid.featured.size-21 {
+    grid-template: repeat(10, 1fr) / repeat(4, 1fr);
+    grid-template-areas:
+      'ft ft ft ft'
+      'ft ft ft ft'
+      'ft ft ft ft'
+      'ft ft ft ft'
+      'ft ft ft ft';
+  }
+
   .v-grid.featured.size-22,
   .v-grid.featured.size-23,
   .v-grid.featured.size-24,
   .v-grid.featured.size-25,
   .v-grid.featured.size-26,
   .v-grid.featured.size-27 {
-    grid-template: repeat(9, 1fr) / repeat(7, 1fr);
+    grid-template: repeat(9, 1fr) / repeat(6, 1fr);
     grid-template-areas:
-      'ft ft ft ft ft ft ft'
-      'ft ft ft ft ft ft ft'
-      'ft ft ft ft ft ft ft'
-      'ft ft ft ft ft ft ft'
-      'ft ft ft ft ft ft ft';
+      'ft ft ft ft ft ft'
+      'ft ft ft ft ft ft'
+      'ft ft ft ft ft ft'
+      'ft ft ft ft ft ft';
   }
 }
 
