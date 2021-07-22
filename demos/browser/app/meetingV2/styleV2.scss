@@ -686,13 +686,13 @@ a.markdown:active {
 .v-grid.featured.size-25,
 .v-grid.featured.size-26,
 .v-grid.featured.size-27 {
-  grid-template: repeat(8, 1fr) / repeat(9, 1fr);
+  grid-template: repeat(9, 1fr) / repeat(8, 1fr);
   grid-template-areas:
-    'ft ft ft ft ft ft ft ft ft'
-    'ft ft ft ft ft ft ft ft ft'
-    'ft ft ft ft ft ft ft ft ft'
-    'ft ft ft ft ft ft ft ft ft'
-    'ft ft ft ft ft ft ft ft ft';
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft'
+    'ft ft ft ft ft ft ft ft';
 }
 
 @media screen and (max-width: 1200px) {
