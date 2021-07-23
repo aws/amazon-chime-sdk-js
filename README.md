@@ -76,7 +76,7 @@ The following developer guides cover specific topics for a technical audience.
 - [Recording Demo](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) — Recording the meeting's audio, video and screen share in high definition
 - [Virtual Classroom](https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/) — An online classroom built with Electron and React
 - [Live Events](https://aws.amazon.com/blogs/opensource/how-to-deploy-a-live-events-solution-built-with-the-amazon-chime-sdk/) — Interactive live events solution
-- [Amazon Chime SDK Smart Video Sending Demo](https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-smart-video-sending-demo/) — Demo showcasing how to dynamically display up to 16 video tiles from a pool of up to 250 meeting attendees
+- [Amazon Chime SDK Smart Video Sending Demo](https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-smart-video-sending-demo/) — Demo showcasing how to dynamically display up to 25 video tiles from a pool of up to 250 meeting attendees
 - [Amazon Chime SDK and Amazon Connect Integration](https://aws.amazon.com/blogs/business-productivity/build-a-video-contact-center-with-amazon-connect-and-amazon-chime-sdk/) — Build a video contact center with Amazon Connect and Amazon Chime SDK
 - [PSTN Dial In](https://github.com/aws-samples/chime-sipmediaapplication-samples) —  Add PSTN dialin capabilities to your Amazon Chime SDK Meeting using SIP Media Application
 - [Device Integration](https://aws.amazon.com/blogs/business-productivity/using-the-amazon-chime-sdk-for-3rd-party-devices/) — Using the Amazon Chime SDK for 3rd party devices
@@ -584,39 +584,41 @@ const observer = {
 meetingSession.audioVideo.addObserver(observer);
 ```
 
-**Use case 16.** View up to 16 attendee videos. Assume that you have 16 video elements in your application,
+**Use case 16.** View up to 25 attendee videos. Assume that you have 25 video elements in your application,
 and that an empty cell means it's taken.
 
 ```js
 /*
-  No one is sharing video               e.g. 9 attendee videos (9 empty cells)
+  No one is sharing video                    e.g. 9 attendee videos (9 empty cells)
 
-  Next available:                       Next available:
-  videoElements[0]                      videoElements[7]
-  ╔════╦════╦════╦════╗                 ╔════╦════╦════╦════╗
-  ║  0 ║  1 ║  2 ║  3 ║                 ║    ║    ║    ║    ║
-  ╠════╬════╬════╬════╣                 ╠════╬════╬════╬════╣
-  ║  4 ║  5 ║  6 ║  7 ║                 ║    ║    ║    ║  7 ║
-  ╠════╬════╬════╬════╣                 ╠════╬════╬════╬════╣
-  ║  8 ║  9 ║ 10 ║ 11 ║                 ║  8 ║    ║ 10 ║    ║
-  ╠════╬════╬════╬════╣                 ╠════╬════╬════╬════╣
-  ║ 12 ║ 13 ║ 14 ║ 15 ║                 ║ 12 ║ 13 ║ 14 ║ 15 ║
-  ╚════╩════╩════╩════╝                 ╚════╩════╩════╩════╝
+  Next available:                            Next available:
+  videoElements[0]                           videoElements[7]
+  ╔════╦════╦════╦════╦════╗                 ╔════╦════╦════╦════╦════╗
+  ║  0 ║  1 ║  2 ║  3 ║  4 ║                 ║    ║    ║    ║    ║    ║
+  ╠════╬════╬════╬════╬════╣                 ╠════╬════╬════╬════╬════╣
+  ║  5 ║  6 ║  7 ║  8 ║  9 ║                 ║    ║    ║  7 ║  8 ║    ║
+  ╠════╬════╬════╬════╬════╣                 ╠════╬════╬════╬════╬════╣
+  ║ 10 ║ 11 ║ 12 ║ 13 ║ 14 ║                 ║ 10 ║    ║ 12 ║ 13 ║ 14 ║
+  ╠════╬════╬════╬════╬════╣                 ╠════╬════╬════╬════╬════╣
+  ║ 15 ║ 16 ║ 17 ║ 18 ║ 19 ║                 ║ 15 ║ 16 ║ 17 ║ 18 ║ 19 ║
+  ╠════╬════╬════╬════╬════╣                 ╠════╬════╬════╬════╬════╣
+  ║ 20 ║ 21 ║ 22 ║ 23 ║ 24 ║                 ║ 20 ║ 21 ║ 22 ║ 23 ║ 24 ║
+  ╚════╩════╩════╩════╩════╝                 ╚════╩════╩════╩════╩════╝
  */
-const videoElements = [/* an array of 16 HTMLVideoElement objects in your application */];
+const videoElements = [/* an array of 25 HTMLVideoElement objects in your application */];
 
 // index-tileId pairs
 const indexMap = {};
 
 const acquireVideoElement = tileId => {
   // Return the same video element if already bound.
-  for (let i = 0; i < 16; i += 1) {
+  for (let i = 0; i < 25; i += 1) {
     if (indexMap[i] === tileId) {
       return videoElements[i];
     }
   }
   // Return the next available video element.
-  for (let i = 0; i < 16; i += 1) {
+  for (let i = 0; i < 25; i += 1) {
     if (!indexMap.hasOwnProperty(i)) {
       indexMap[i] = tileId;
       return videoElements[i];
@@ -626,7 +628,7 @@ const acquireVideoElement = tileId => {
 };
 
 const releaseVideoElement = tileId => {
-  for (let i = 0; i < 16; i += 1) {
+  for (let i = 0; i < 25; i += 1) {
     if (indexMap[i] === tileId) {
       delete indexMap[i];
       return;
@@ -924,7 +926,7 @@ const observer = {
     console.log('Recommend turning off your video');
   },
   videoSendDidBecomeUnavailable: () => {
-    // Chime SDK allows a total of 16 simultaneous videos per meeting.
+    // Chime SDK allows a total of 25 simultaneous videos per meeting.
     // If you try to share more video, this method will be called.
     // See videoAvailabilityDidChange below to find out when it becomes available.
     console.log('You cannot share your video');
