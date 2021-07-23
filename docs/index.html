@@ -150,7 +150,7 @@
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/">Recording Demo</a> — Recording the meeting&#39;s audio, video and screen share in high definition</li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/">Virtual Classroom</a> — An online classroom built with Electron and React</li>
 					<li><a href="https://aws.amazon.com/blogs/opensource/how-to-deploy-a-live-events-solution-built-with-the-amazon-chime-sdk/">Live Events</a> — Interactive live events solution</li>
-					<li><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-smart-video-sending-demo/">Amazon Chime SDK Smart Video Sending Demo</a> — Demo showcasing how to dynamically display up to 16 video tiles from a pool of up to 250 meeting attendees</li>
+					<li><a href="https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-smart-video-sending-demo/">Amazon Chime SDK Smart Video Sending Demo</a> — Demo showcasing how to dynamically display up to 25 video tiles from a pool of up to 250 meeting attendees</li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/build-a-video-contact-center-with-amazon-connect-and-amazon-chime-sdk/">Amazon Chime SDK and Amazon Connect Integration</a> — Build a video contact center with Amazon Connect and Amazon Chime SDK</li>
 					<li><a href="https://github.com/aws-samples/chime-sipmediaapplication-samples">PSTN Dial In</a> —  Add PSTN dialin capabilities to your Amazon Chime SDK Meeting using SIP Media Application</li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/using-the-amazon-chime-sdk-for-3rd-party-devices/">Device Integration</a> — Using the Amazon Chime SDK for 3rd party devices</li>
@@ -612,37 +612,39 @@ meetingSession.audioVideo.removeLocalVideoTile();
 
 meetingSession.audioVideo.addObserver(observer);
 </code></pre>
-				<p><strong>Use case 16.</strong> View up to 16 attendee videos. Assume that you have 16 video elements in your application,
+				<p><strong>Use case 16.</strong> View up to 25 attendee videos. Assume that you have 25 video elements in your application,
 				and that an empty cell means it&#39;s taken.</p>
 				<pre><code class="language-js"><span class="hljs-comment">/*
-  No one is sharing video               e.g. 9 attendee videos (9 empty cells)
+  No one is sharing video                    e.g. 9 attendee videos (9 empty cells)
 
-  Next available:                       Next available:
-  videoElements[0]                      videoElements[7]
-  ╔════╦════╦════╦════╗                 ╔════╦════╦════╦════╗
-  ║  0 ║  1 ║  2 ║  3 ║                 ║    ║    ║    ║    ║
-  ╠════╬════╬════╬════╣                 ╠════╬════╬════╬════╣
-  ║  4 ║  5 ║  6 ║  7 ║                 ║    ║    ║    ║  7 ║
-  ╠════╬════╬════╬════╣                 ╠════╬════╬════╬════╣
-  ║  8 ║  9 ║ 10 ║ 11 ║                 ║  8 ║    ║ 10 ║    ║
-  ╠════╬════╬════╬════╣                 ╠════╬════╬════╬════╣
-  ║ 12 ║ 13 ║ 14 ║ 15 ║                 ║ 12 ║ 13 ║ 14 ║ 15 ║
-  ╚════╩════╩════╩════╝                 ╚════╩════╩════╩════╝
+  Next available:                            Next available:
+  videoElements[0]                           videoElements[7]
+  ╔════╦════╦════╦════╦════╗                 ╔════╦════╦════╦════╦════╗
+  ║  0 ║  1 ║  2 ║  3 ║  4 ║                 ║    ║    ║    ║    ║    ║
+  ╠════╬════╬════╬════╬════╣                 ╠════╬════╬════╬════╬════╣
+  ║  5 ║  6 ║  7 ║  8 ║  9 ║                 ║    ║    ║  7 ║  8 ║    ║
+  ╠════╬════╬════╬════╬════╣                 ╠════╬════╬════╬════╬════╣
+  ║ 10 ║ 11 ║ 12 ║ 13 ║ 14 ║                 ║ 10 ║    ║ 12 ║ 13 ║ 14 ║
+  ╠════╬════╬════╬════╬════╣                 ╠════╬════╬════╬════╬════╣
+  ║ 15 ║ 16 ║ 17 ║ 18 ║ 19 ║                 ║ 15 ║ 16 ║ 17 ║ 18 ║ 19 ║
+  ╠════╬════╬════╬════╬════╣                 ╠════╬════╬════╬════╬════╣
+  ║ 20 ║ 21 ║ 22 ║ 23 ║ 24 ║                 ║ 20 ║ 21 ║ 22 ║ 23 ║ 24 ║
+  ╚════╩════╩════╩════╩════╝                 ╚════╩════╩════╩════╩════╝
  */</span>
-<span class="hljs-keyword">const</span> videoElements = [<span class="hljs-comment">/* an array of 16 HTMLVideoElement objects in your application */</span>];
+<span class="hljs-keyword">const</span> videoElements = [<span class="hljs-comment">/* an array of 25 HTMLVideoElement objects in your application */</span>];
 
 <span class="hljs-comment">// index-tileId pairs</span>
 <span class="hljs-keyword">const</span> indexMap = {};
 
 <span class="hljs-keyword">const</span> acquireVideoElement = <span class="hljs-function"><span class="hljs-params">tileId</span> =&gt;</span> {
   <span class="hljs-comment">// Return the same video element if already bound.</span>
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">16</span>; i += <span class="hljs-number">1</span>) {
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">25</span>; i += <span class="hljs-number">1</span>) {
     <span class="hljs-keyword">if</span> (indexMap[i] === tileId) {
       <span class="hljs-keyword">return</span> videoElements[i];
     }
   }
   <span class="hljs-comment">// Return the next available video element.</span>
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">16</span>; i += <span class="hljs-number">1</span>) {
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">25</span>; i += <span class="hljs-number">1</span>) {
     <span class="hljs-keyword">if</span> (!indexMap.hasOwnProperty(i)) {
       indexMap[i] = tileId;
       <span class="hljs-keyword">return</span> videoElements[i];
@@ -652,7 +654,7 @@ meetingSession.audioVideo.addObserver(observer);
 };
 
 <span class="hljs-keyword">const</span> releaseVideoElement = <span class="hljs-function"><span class="hljs-params">tileId</span> =&gt;</span> {
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">16</span>; i += <span class="hljs-number">1</span>) {
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">25</span>; i += <span class="hljs-number">1</span>) {
     <span class="hljs-keyword">if</span> (indexMap[i] === tileId) {
       <span class="hljs-keyword">delete</span> indexMap[i];
       <span class="hljs-keyword">return</span>;
@@ -922,7 +924,7 @@ meetingSession.audioVideo.addObserver(observer);
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Recommend turning off your video&#x27;</span>);
   },
   <span class="hljs-attr">videoSendDidBecomeUnavailable</span>: <span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-comment">// Chime SDK allows a total of 16 simultaneous videos per meeting.</span>
+    <span class="hljs-comment">// Chime SDK allows a total of 25 simultaneous videos per meeting.</span>
     <span class="hljs-comment">// If you try to share more video, this method will be called.</span>
     <span class="hljs-comment">// See videoAvailabilityDidChange below to find out when it becomes available.</span>
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;You cannot share your video&#x27;</span>);

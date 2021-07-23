@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Documentation] Update priority based downlink policy guide.
 - Lookup `groupId` from device cache instead of directly from media stream when selecting input device.
+- [Documentation] Update documentation for 25 video tiles.
 
 ### Removed
 
