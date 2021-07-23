@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve the meeting event guide.
 - Fixed Project Board guide with correct community template link.
 - Updated Amazon Voice Focus integration guide to reflect recent Safari versions.
+- Import current Amazon Voice Focus code, which ensures that stereo inputs are downmixed to mono.
 
 ## [2.13.0] - 2021-06-29
 
