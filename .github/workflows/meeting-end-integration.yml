@@ -17,6 +17,8 @@
     integ-meeting-end:
       name: Meeting End Integration Test
       runs-on: ubuntu-latest
+      environment: 
+        name: CI Workflow
 
       steps:
         - name: Checkout Package

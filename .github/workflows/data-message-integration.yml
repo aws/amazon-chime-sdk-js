@@ -17,6 +17,8 @@
     integ-data-message:
       name: Data Message Integration Test
       runs-on: ubuntu-latest
+      environment: 
+        name: CI Workflow
 
       steps:
         - name: Checkout Package

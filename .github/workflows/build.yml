@@ -13,6 +13,9 @@ jobs:
   build:
     name: Build and Run Unit Tests
     runs-on: ubuntu-latest
+    environment: 
+      name: CI Workflow
+
 
     steps:
       - name: Checkout Package

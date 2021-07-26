@@ -17,6 +17,8 @@ jobs:
   prev-version-integ:
     name: Previous Version Integration Tests
     runs-on: ubuntu-latest
+    environment: 
+      name: CI Workflow
 
     steps:
       - name: Setup Node.js - 14.x
