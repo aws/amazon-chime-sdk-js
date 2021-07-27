@@ -37,7 +37,6 @@ const ignoredTypes = [
 
   // Events ingestion buffer's JSON interfaces.
   'JSONIngestionPayloadItem',
-  'JSONIngestionBufferItem',
   'JSONIngestionEvent',
   'JSONIngestionRecord',
 

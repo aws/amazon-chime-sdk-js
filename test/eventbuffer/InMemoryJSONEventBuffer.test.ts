@@ -481,7 +481,7 @@ describe('InMemoryJSONEventBuffer', () => {
 
       it('handles important event sending failure if response received is retryable', async () => {
         buffer = new InMemoryJSONEventBuffer(
-          new EventBufferConfiguration(),
+          new EventBufferConfiguration(0, 1, 64, 100, 1),
           meetingEventsClientConfiguration,
           ingestionURL,
           importantEvents,

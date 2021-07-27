@@ -11,7 +11,6 @@ import Logger from '../logger/Logger';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import DefaultUserAgentParser from '../useragentparser/DefaultUserAgentParser';
 import EventBuffer from './EventBuffer';
-import JSONIngestionBufferItem from './JSONIngestionBufferItem';
 import JSONIngestionEvent from './JSONIngestionEvent';
 import JSONIngestionPayloadItem from './JSONIngestionPayloadItem';
 import JSONIngestionRecord from './JSONIngestionRecord';
@@ -32,11 +31,13 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     503, // Service Unavailable.
     504, // Gateway Timeout.
   ]);
+  private static readonly RETRY_SHORT_BACKOFF_MS = 1000;
+  private static readonly RETRY_LONG_BACKOFF_MS = 5000;
   private static readonly MAX_PAYLOAD_ITEMS = 2;
   private static readonly MAX_ITEM_SIZE_BYTES_ALLOWED = 3000;
   private maxBufferCapacityBytes: number;
   private totalBufferItems: number;
-  private buffer: JSONIngestionBufferItem[] = [];
+  private buffer: JSONIngestionEvent[] = [];
   private bufferSize = 0;
   private maxBufferItemCapacityBytes = 0;
   private currentIngestionEvent: JSONIngestionEvent;
@@ -89,7 +90,6 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     this.flushIntervalMs = flushIntervalMs;
     this.flushSize = flushSize;
     this.retryCountLimit = retryCountLimit;
-
     this.currentIngestionEvent = this.initializeAndGetCurrentIngestionEvent();
     this.beaconEventListener = (e: Event) => this.beaconEventHandler(e);
     this.addEventListeners();
@@ -197,7 +197,7 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     this.ingestionEventSize += size;
     if (this.bufferItemThresholdReached(size)) {
       const currentEvent = this.deepCopyCurrentIngestionEvent(this.currentIngestionEvent);
-      this.buffer.push({ retryCount: 0, event: currentEvent });
+      this.buffer.push(currentEvent);
       this.bufferSize += this.ingestionEventSize;
       this.currentIngestionEvent = this.initializeAndGetCurrentIngestionEvent();
       this.logger.debug(
@@ -279,7 +279,7 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     return this.buffer.length === 0 || this.bufferSize === 0;
   }
 
-  private getItems(end: number, start: number = 0): JSONIngestionBufferItem[] {
+  private getItems(end: number, start: number = 0): JSONIngestionEvent[] {
     if (this.isEmpty()) {
       return [];
     }
@@ -288,24 +288,16 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     return items;
   }
 
-  private getEventsFromBuffer(batch: JSONIngestionBufferItem[]): JSONIngestionEvent[] {
-    if (!batch || (batch && batch.length === 0)) {
-      return [];
-    }
-    return batch.map(({ retryCount: _retryCount, event }) => event);
-  }
-
   private sendEvents = async (): Promise<void> => {
     if (this.lock) {
       return;
     }
-    const batch: JSONIngestionBufferItem[] = this.getItems(this.flushSize);
+    const batch: JSONIngestionEvent[] = this.getItems(this.flushSize);
     if (batch.length === 0) {
       return;
     }
     this.lock = true;
-    const batchEvents = this.getEventsFromBuffer(batch);
-    const body = this.makeRequestBody(batchEvents);
+    const body = this.makeRequestBody(batch);
     let failed = false;
 
     // If a page re-directs, in Safari and Chrome, the network
@@ -314,7 +306,7 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     // to cancellable events to try with `sendBeacon` lastly.
     const timestamp = Date.now();
     if (this.metadata.browserName.toLowerCase() === 'firefox') {
-      this.cancellableEvents.set(timestamp, batchEvents);
+      this.cancellableEvents.set(timestamp, batch);
     }
 
     try {
@@ -323,31 +315,30 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
       );
       const response = await this.send(body);
       this.cancellableEvents.delete(timestamp);
-      /* istanbul ignore else */
       if (!response.ok) {
-        if (InMemoryJSONEventBuffer.SENDING_FAILURE_CODES.has(response.status)) {
-          this.handleFailure(batch, response.status);
-        } else {
-          failed = true;
-        }
+        this.logger.error(
+          `Event Reporting - InMemoryJSONEventBuffer - sendEvents - Failed to send events ${body} with response status ${response.status}`
+        );
+        failed = true;
       } else {
         try {
           const data = await response.json();
           this.logger.debug(
-            `Event Reporting - InMemoryJSONEventBuffer - sendEvents - events send successful ${JSON.stringify(
+            `Event Reporting - InMemoryJSONEventBuffer - sendEvents - send successful events: ${body} message: ${JSON.stringify(
               data
             )}`
           );
         } catch (err) {
-          this.logger.error(
-            `Event Reporting - InMemoryJSONEventBuffer - sendEvents error reading OK response ${err}`
+          /* istanbul ignore next */
+          this.logger.warn(
+            `Event Reporting - InMemoryJSONEventBuffer - sendEvents error reading OK response ${err} for events ${body}`
           );
         }
       }
     } catch (error) {
       failed = true;
-      this.logger.error(
-        `Event Reporting - Error in sending events to the ingestion endpoint ${error}`
+      this.logger.warn(
+        `Event Reporting - InMemoryJSONEventBuffer - sendEvents - Error in sending events ${body} to the ingestion endpoint ${error}`
       );
     } finally {
       this.lock = false;
@@ -355,7 +346,7 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
 
     if (failed) {
       this.cancellableEvents.delete(timestamp);
-      this.failedIngestionEvents.push(...batchEvents);
+      this.failedIngestionEvents.push(...batch);
     }
   };
 
@@ -376,37 +367,6 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     return JSON.stringify(ingestionRecord);
   }
 
-  private handleFailure(batch: JSONIngestionBufferItem[], responseStatus: number): void {
-    this.logger.debug(
-      `Event Reporting - InMemoryJSONEventBuffer - handleFailure - retryable failure detected ${JSON.stringify(
-        batch
-      )}, response status ${responseStatus}`
-    );
-    const retryableEvents: JSONIngestionBufferItem[] = [];
-    for (let i = 0; i < batch.length; i++) {
-      const { retryCount, event } = batch[i];
-      if (retryCount < this.retryCountLimit) {
-        retryableEvents.push({
-          retryCount: retryCount + 1,
-          event,
-        });
-      } else {
-        this.failedIngestionEvents.push(event);
-        this.logger.warn(
-          `Event Reporting - Retry limit reached for an event ${JSON.stringify(
-            event
-          )}. Failure response status is ${responseStatus}`
-        );
-      }
-    }
-    this.buffer.unshift(...retryableEvents);
-    this.logger.debug(
-      `Event Reporting - InMemoryJSONEventBuffer - handleFailure - retryable failure added to the buffer ${JSON.stringify(
-        retryableEvents
-      )}`
-    );
-  }
-
   private async sendEventImmediately(item: EventData): Promise<void> {
     this.logger.debug(
       `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - important event received ${JSON.stringify(
@@ -425,53 +385,40 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
         },
       ],
     };
-
-    let retryCount = 0;
     let failed = false;
     let response: Response = null;
     const body = this.makeRequestBody([event]);
     try {
-      do {
-        this.logger.debug(
-          `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - body ${body} , retryCount ${retryCount}`
-        );
-        response = await this.send(body);
-        /* istanbul ignore else */
-        if (response.ok) {
-          try {
-            const data = await response.json();
-            this.logger.debug(
-              `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - event send successful ${JSON.stringify(
-                data
-              )}`
-            );
-            return;
-          } catch (err) {
-            /* istanbul ignore next */
-            this.logger.debug(
-              `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - Error reading OK response ${err}`
-            );
-          }
-        }
-      } while (
-        response &&
-        InMemoryJSONEventBuffer.SENDING_FAILURE_CODES.has(response.status) &&
-        ++retryCount < this.retryCountLimit
+      this.logger.debug(
+        `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - body ${body}`
       );
-      /* istanbul ignore else */
-      if (retryCount < this.retryCountLimit) {
+      response = await this.send(body);
+      if (response.ok) {
+        try {
+          const data = await response.json();
+          this.logger.debug(
+            `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - send successful event: ${body}, message: ${JSON.stringify(
+              data
+            )}`
+          );
+        } catch (err) {
+          /* istanbul ignore next */
+          this.logger.warn(
+            `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - Error reading OK response ${err} for event ${body}`
+          );
+        }
+        return;
+      } else {
         this.logger.error(
-          `Event Reporting - Failed to send an event ${name} with response status ${response.status}`
+          `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - Failed to send an important event ${body} with response status ${response.status}`
         );
-        failed = true;
-      } else if (retryCount === this.retryCountLimit) {
-        this.logger.warn(`Event Reporting - Retry count limit reached for an event ${name}`);
         failed = true;
       }
     } catch (error) {
       this.logger.warn(
-        `Event Reporting - There may be a failure in sending an important event ${name} to the ingestion endpoint ${error}.`
+        `Event Reporting - There may be a failure in sending an important event ${body} to the ingestion endpoint ${error}.`
       );
+      failed = true;
       try {
         /**
          * Important events like meetingEnded, meetingStartFailed may result into page-redirects.
@@ -488,13 +435,14 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
           this.logger.debug(
             `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - beaconing data out ${body}`
           );
-          /* istanbul ignore else */
           if (!navigator.sendBeacon(`${this.ingestionURL}?beacon=1`, body)) {
             failed = true;
+          } else {
+            failed = false;
           }
         }
       } catch (error) {
-        this.logger.warn(`Event Reporting - Error sending beacon for an important event ${name}`);
+        this.logger.warn(`Event Reporting - Error sending beacon for an important event ${body}`);
         failed = true;
       }
     }
@@ -502,15 +450,30 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     /* istanbul ignore else */
     if (failed) {
       this.logger.debug(
-        `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - pushing to failed events ${JSON.stringify(
-          event
-        )}`
+        `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - pushing to failed events ${body}`
       );
       this.failedIngestionEvents.push(event);
     }
   }
 
-  private async send(data: string): Promise<Response> {
+  private getBackoffWaitTime(retryCount: number): number {
+    return (
+      Math.random() *
+      Math.min(
+        InMemoryJSONEventBuffer.RETRY_LONG_BACKOFF_MS,
+        InMemoryJSONEventBuffer.RETRY_SHORT_BACKOFF_MS * Math.pow(2.0, retryCount)
+      )
+    );
+  }
+
+  private wait(delayInMs: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, delayInMs));
+  }
+
+  private async send(data: string, retryCount = 0): Promise<Response> {
+    if (retryCount === this.retryCountLimit) {
+      throw new Error(`Retry count limit reached for ${data}`);
+    }
     try {
       const response = await fetch(this.ingestionURL, {
         method: 'POST',
@@ -519,7 +482,13 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
         },
         body: data,
       });
-      return response;
+      if (response.ok || !InMemoryJSONEventBuffer.SENDING_FAILURE_CODES.has(response.status)) {
+        return response;
+      } else {
+        const newRetryCount = retryCount + 1;
+        await this.wait(this.getBackoffWaitTime(newRetryCount));
+        return this.send(data, newRetryCount);
+      }
     } catch (error) {
       throw error;
     }
@@ -527,7 +496,7 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
 
   private async sendBeacon(): Promise<void> {
     // Any pending events from buffer.
-    const events = this.getEventsFromBuffer(this.buffer);
+    const events = this.buffer;
     this.logger.debug(
       `Event Reporting - InMemoryJSONEventBuffer - sendBeacon - clearing out buffer events ${JSON.stringify(
         events
@@ -588,7 +557,9 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
         this.logger.warn(`Event Reporting - Browser failed to queue beacon data ${beaconData}`);
       }
     } catch (error) {
-      this.logger.error(`Event Reporting - Sending beacon failed with error ${error}`);
+      this.logger.warn(
+        `Event Reporting - Sending beacon data ${beaconData} failed with error ${error}`
+      );
     }
   }
 
