@@ -28,6 +28,7 @@ function findAllElements() {
     sipAuthenticateButton: By.id('button-sip-authenticate'),
     roster: By.id('roster'),
     participants: By.css('li'),
+    participantActionsDropButton: By.id('button-roster-participant-drop'),
     switchToSipFlow: By.id('to-sip-flow'),
 
     authenticationFlow: By.id('flow-authenticate'),
@@ -200,6 +201,11 @@ class AppPage {
     await microphoneDropDown.click();
   }
 
+  async clickParticipantActionsDropButton() {
+    const participantActionsDropButton = await this.driver.findElement(elements.participantActionsDropButton);
+    await participantActionsDropButton.click();
+  }
+  
   async getNumberOfParticipantsOnRoster() {
     const roster = await this.driver.findElement(elements.roster);
     const participantElements = await this.driver.findElements(elements.participants);

@@ -242,6 +242,7 @@ export class DemoMeetingApp
   static readonly LOGGER_INTERVAL_MS: number = 2_000;
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
+  static readonly ATTENDEE_ACTION_DATA_MESSAGE_TOPIC: string = 'attendee_actions';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
 
   // Ideally we don't need to change this. Keep this configurable in case users have a super slow network.
@@ -1501,6 +1502,7 @@ export class DemoMeetingApp
     this.setupCanUnmuteHandler();
     this.setupSubscribeToAttendeeIdPresenceHandler();
     this.setupDataMessage();
+    this.setupAttendeeActionsDataMessage();
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
     this.initContentShareDropDownItems();
@@ -1594,6 +1596,7 @@ export class DemoMeetingApp
       li.className = 'list-group-item d-flex justify-content-between align-items-center';
       li.appendChild(document.createElement('span'));
       li.appendChild(document.createElement('span'));
+      this.addParticipantDropdown(li);
       roster.appendChild(li);
     }
     while (roster.getElementsByTagName('li').length > newRosterCount) {
@@ -1604,6 +1607,9 @@ export class DemoMeetingApp
     for (const attendeeId in this.roster) {
       const spanName = entries[i].getElementsByTagName('span')[0];
       const spanStatus = entries[i].getElementsByTagName('span')[1];
+      const muteDropdown = entries[i].getElementsByClassName('dropdown-item-mute')[0];
+      const unmuteDropdown = entries[i].getElementsByClassName('dropdown-item-unmute')[0];
+      const kickDropdown = entries[i].getElementsByClassName('dropdown-item-kick')[0];
       let statusClass = 'badge badge-pill ';
       let statusText = '\xa0'; // &nbsp
       if (this.roster[attendeeId].signalStrength < 1) {
@@ -1620,8 +1626,48 @@ export class DemoMeetingApp
       this.updateProperty(spanName, 'innerText', this.roster[attendeeId].name);
       this.updateProperty(spanStatus, 'innerText', statusText);
       this.updateProperty(spanStatus, 'className', statusClass);
+      this.updateProperty(muteDropdown, 'id', attendeeId);
+      this.updateProperty(unmuteDropdown, 'id', attendeeId);
+      this.updateProperty(kickDropdown, 'id', attendeeId);
+
+      muteDropdown.addEventListener('click', () => {
+        this.sendAttendeeAction('MUTE',attendeeId);
+      });
+
+      unmuteDropdown.addEventListener('click', () => {
+        this.sendAttendeeAction('UNMUTE',attendeeId);
+      });
+
+      kickDropdown.addEventListener('click', () => {
+        this.sendAttendeeAction('KICKOUT',attendeeId);
+      });
       i++;
     }
+  }
+
+  
+  addParticipantDropdown(li: HTMLLIElement): void {
+    const rosterParticipantButtonDiv = document.createElement('div') as HTMLDivElement;
+    rosterParticipantButtonDiv.innerHTML= '<div class="btn-group" role="group">' + 
+      '<button id="button-roster-participant-drop" type="button" class="btn dropdown-toggle btn-outline-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions"></button>' + 
+      '<div id="dropdown-menu-participant" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-roster-participant-drop" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(149px, 48px, 0px);">' + 
+        '<button class="dropdown-item dropdown-item-mute">Mute</button>' +
+        '<button class="dropdown-item dropdown-item-unmute">Unmute</button>' +
+        '<button class="dropdown-item dropdown-item-kick">Kick Out</button>' +
+      '</div></div>';
+    li.appendChild(rosterParticipantButtonDiv);
+  }
+
+  sendAttendeeAction(action: string, attendeeId: string): void {
+    const payload = {
+      action: action,
+      attendeeId: attendeeId || ''
+    };
+    this.audioVideo.realtimeSendDataMessage(
+      DemoMeetingApp.ATTENDEE_ACTION_DATA_MESSAGE_TOPIC,
+      payload,
+      DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1813,6 +1859,43 @@ export class DemoMeetingApp
     );
   }
 
+  attendeeActionDataMessageHandler(dataMessage: DataMessage): void {
+    if (!dataMessage.throttled) {
+      const receivedData = (dataMessage.json()) || {};
+      const actionAttendeeId = receivedData.attendeeId;
+      const attendeeAction = receivedData.action;
+      const isSelf =
+        actionAttendeeId === this.meetingSession.configuration.credentials.attendeeId;
+      if(isSelf) {
+        if(attendeeAction == 'MUTE') {
+          if(!this.meetingSession.audioVideo.realtimeIsLocalAudioMuted()) {
+            this.meetingSession.audioVideo.realtimeMuteLocalAudio();
+            this.toggleButton('button-microphone');
+          }
+        }else if(attendeeAction == 'UNMUTE') {
+          //Sample code for unmuting the participant if the use case allows.
+          /*if(this.meetingSession.audioVideo.realtimeIsLocalAudioMuted()) {
+            this.meetingSession.audioVideo.realtimeUnmuteLocalAudio();
+            this.toggleButton('button-microphone');
+          }*/
+        }else if(attendeeAction == 'KICKOUT') {
+            this.leave();
+        }
+      }
+    }else {
+      this.log('Message is throttled. Please resend');
+    }
+  }
+
+  setupAttendeeActionsDataMessage(): void {
+    this.audioVideo.realtimeSubscribeToReceiveDataMessage(
+      DemoMeetingApp.ATTENDEE_ACTION_DATA_MESSAGE_TOPIC,
+      (dataMessage: DataMessage) => {
+        this.attendeeActionDataMessageHandler(dataMessage);
+      }
+    );
+  }
+  
   // eslint-disable-next-line
   async joinMeeting(): Promise<any> {
     const response = await fetch(
