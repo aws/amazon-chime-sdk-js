@@ -23,6 +23,15 @@
           uses: actions/checkout@v2
           with:
             fetch-depth: 0
+        - name: Pack the Chime SDK and install the tarball into the Demo
+          run: |
+            current_version=$(.github/script/get-current-version)
+            echo "Packing current version:" $current-version
+            npm run build
+            npm pack
+            cd demos/browser
+            npm uninstall amazon-chime-sdk-js
+            npm install ../../amazon-chime-sdk-js-$current_version.tgz
         - name: Check if needed to run
           id: test_needed
           run: |

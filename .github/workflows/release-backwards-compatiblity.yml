@@ -1,9 +1,15 @@
-name: Previous Version Integration Tests Workflow
+# For the backwards compatibility test, this should be run on the release branch only as part. 
+# The release branch should not be tagged with the new version yet (that happens when we create a Github Release)
+# so we can checkout the latest tag and install the new version tarball into the demo. 
+# For example, if we're about to release v2.14.0, first create a tarball (the relase commit should bump the pacakge.json version to v2.14.0) 
+# then check out the previous v2.13.0 demo using the v2.13.0 tag, then navigate to the v2.13.0 demo and install the v2.14.0 amazon-chime-sdk-js tarball.
+# Then run the entire integration test suite on the demo.
+name: Backwards Compatibility Test
 
 on:
-  schedule:
-    # More information on cron https://crontab.guru/
-    - cron: '0 1 * * *'
+  pull_request:
+    branches:
+      - master
 
 env:
   SELENIUM_GRID_PROVIDER: saucelabs
@@ -14,9 +20,10 @@ env:
   MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
 
 jobs:
-  prev-version-integ:
-    name: Previous Version Integration Tests
+  release-integ-test:
+    name: Run Backwards Compatible Integration Tests with Release Tarball
     runs-on: ubuntu-latest
+    if: ${{ github.head_ref == 'release' }}
 
     steps:
       - name: Setup Node.js - 14.x
@@ -27,12 +34,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Get previous version
-        id: prev
+      - name: Pack the Chime SDK and install the tarball into the previous version Demo
         run: |
-          prev_version=$(.github/script/get-prev-version)
-          echo "Previous version:" $prev_version
-          echo ::set-output name=prev_version::$prev_version
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current_version
+          npm run build
+          npm pack
+          previousVersion=$(git describe --abbrev=0 --tags $(git rev-list --tags --max-count=1))
+          git checkout $previousVersion
+          cd ./demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
       - name: Create a Job ID
         id: create-job-id
         uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
@@ -55,15 +67,6 @@ jobs:
           tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
       - name: Install Kite
         run: integration/js/script/install-kite
-      - name: Setup
-        run: git checkout tags/v${{ steps.prev.outputs.prev_version }}
-      - name: Pack the Chime SDK and install the tarball into the Demo
-        run: |
-          npm run build
-          npm pack
-          cd demos/browser
-          npm uninstall amazon-chime-sdk-js
-          npm install ../../amazon-chime-sdk-js-${{ steps.prev.outputs.prev_version }}.tgz
       - name: Clean Install
         run: npm ci
       - name: Run Audio Integration Test
