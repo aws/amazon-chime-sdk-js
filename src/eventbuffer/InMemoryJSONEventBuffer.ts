@@ -389,9 +389,6 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     let response: Response = null;
     const body = this.makeRequestBody([event]);
     try {
-      this.logger.debug(
-        `Event Reporting - InMemoryJSONEventBuffer - sendEventImmediately - body ${body}`
-      );
       response = await this.send(body);
       if (response.ok) {
         try {
@@ -470,24 +467,31 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     return new Promise(resolve => setTimeout(resolve, delayInMs));
   }
 
-  private async send(data: string, retryCount = 0): Promise<Response> {
-    if (retryCount === this.retryCountLimit) {
-      throw new Error(`Retry count limit reached for ${data}`);
-    }
+  private async send(data: string): Promise<Response> {
     try {
-      const response = await fetch(this.ingestionURL, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.authenticationToken}`,
-        },
-        body: data,
-      });
-      if (response.ok || !InMemoryJSONEventBuffer.SENDING_FAILURE_CODES.has(response.status)) {
-        return response;
-      } else {
-        const newRetryCount = retryCount + 1;
-        await this.wait(this.getBackoffWaitTime(newRetryCount));
-        return this.send(data, newRetryCount);
+      let retryCount = 0;
+      while (retryCount < this.retryCountLimit) {
+        const response = await fetch(this.ingestionURL, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.authenticationToken}`,
+          },
+          body: data,
+        });
+        if (response.ok || !InMemoryJSONEventBuffer.SENDING_FAILURE_CODES.has(response.status)) {
+          return response;
+        } else {
+          retryCount++;
+          /* istanbul ignore else */
+          if (retryCount < this.retryCountLimit) {
+            const backoffTime = this.getBackoffWaitTime(retryCount);
+            await this.wait(backoffTime);
+          }
+        }
+      }
+      /* istanbul ignore else */
+      if (retryCount === this.retryCountLimit) {
+        throw new Error(`Retry count limit reached for ${data}`);
       }
     } catch (error) {
       throw error;

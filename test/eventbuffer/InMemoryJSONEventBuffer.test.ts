@@ -481,7 +481,7 @@ describe('InMemoryJSONEventBuffer', () => {
 
       it('handles important event sending failure if response received is retryable', async () => {
         buffer = new InMemoryJSONEventBuffer(
-          new EventBufferConfiguration(0, 1, 64, 100, 1),
+          new EventBufferConfiguration(),
           meetingEventsClientConfiguration,
           ingestionURL,
           importantEvents,
@@ -506,6 +506,64 @@ describe('InMemoryJSONEventBuffer', () => {
         await buffer.addItem(argument);
         await delay(1000);
       });
+
+      it('retries with backoff when an important event POST fetch fails and response received is retryable but eventually succeeds', async () => {
+        buffer = new InMemoryJSONEventBuffer(
+          new EventBufferConfiguration(0, 1, 64, 100, 10),
+          meetingEventsClientConfiguration,
+          ingestionURL,
+          importantEvents,
+          logger
+        );
+        buffer.start();
+        domMockBehavior.fetchSucceeds = true;
+        domMockBehavior.responseStatusCode = 429;
+        const argument = getItemEvent('meetingFailed', {
+          maxVideoTileCount: 0,
+          meetingDurationMs: 150209,
+          meetingStatus: 'TaskFailed',
+          signalingOpenDurationMs: 108,
+          iceGatheringDurationMs: 113,
+          attendeePresenceDurationMs: 731,
+          poorConnectionCount: 1,
+          meetingStartDurationMs: 564,
+          retryCount: 25,
+          meetingErrorMessage:
+            'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
+        });
+        await buffer.addItem(argument);
+        await delay(5000);
+        domMockBehavior.responseStatusCode = 200;
+        await delay(2000);
+      }).timeout(10000);
+
+      it('handles retry count limit reaching when an important event POST fetch fails and response received is retryable', async () => {
+        buffer = new InMemoryJSONEventBuffer(
+          new EventBufferConfiguration(0, 1, 64, 100, 3),
+          meetingEventsClientConfiguration,
+          ingestionURL,
+          importantEvents,
+          logger
+        );
+        buffer.start();
+        domMockBehavior.fetchSucceeds = true;
+        domMockBehavior.responseStatusCode = 429;
+        const argument = getItemEvent('meetingFailed', {
+          maxVideoTileCount: 0,
+          meetingDurationMs: 150209,
+          meetingStatus: 'TaskFailed',
+          signalingOpenDurationMs: 108,
+          iceGatheringDurationMs: 113,
+          attendeePresenceDurationMs: 731,
+          poorConnectionCount: 1,
+          meetingStartDurationMs: 564,
+          retryCount: 25,
+          meetingErrorMessage:
+            'serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865 was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling error: serial group task AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling was canceled due to subtask AudioVideoReconnect/79f1e0a4-f0da-4f1c-9e11-550a359e2ec1/3985e611-fdf1-ac35-a9f2-f8358bf9b865/Timeout15000ms/Media/Signaling/OpenSignalingConnectionTask error: WebSocket connection failed',
+        });
+        await buffer.addItem(argument);
+        await delay(5000);
+      }).timeout(7000);
     });
   });
 
