@@ -202,6 +202,10 @@ describe('VideoPriorityBasedPolicy', () => {
   });
 
   describe('chooseRemoteVideoSources', () => {
+    it('Can be called if videoPreferences is undefined', () => {
+      policy.chooseRemoteVideoSources(VideoPreferences.prepare().build());
+    });
+
     it('observer should get called only when added', async () => {
       class MockObserver implements VideoDownlinkObserver {
         tileWillBePausedByDownlinkPolicy = sinon.stub();
