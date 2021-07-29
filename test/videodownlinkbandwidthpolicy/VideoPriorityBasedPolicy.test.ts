@@ -250,13 +250,15 @@ describe('VideoPriorityBasedPolicy', () => {
       policy.updateIndex(videoStreamIndex);
       const metricReport = new DefaultClientMetricReport(logger);
       metricReport.globalMetricReport = new GlobalMetricReport();
+      // This is lower than the default kbps so it should use it due to startup period
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2400 * 1000;
       policy.updateMetrics(metricReport);
       let resub = policy.wantsResubscribe();
-      expect(resub).to.equal(false);
+      expect(resub).to.equal(true);
       let received = policy.chooseSubscriptions();
-      expect(received.array()).to.deep.equal([]);
+      expect(received.array()).to.deep.equal([2, 4, 6, 8]);
 
+      // No startup period now so we should use 2400 kbps for bandwidth estimate but should not trigger resubscribe
       incrementTime(6100);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2400 * 1000;
       policy.updateMetrics(metricReport);

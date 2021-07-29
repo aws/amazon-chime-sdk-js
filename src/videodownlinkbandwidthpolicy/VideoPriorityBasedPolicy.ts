@@ -156,8 +156,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   updateIndex(videoIndex: VideoStreamIndex): void {
     this.videoIndex = videoIndex;
-    if (this.videoPreferences === undefined) {
+    if (!this.videoPreferences || this.videoPreferences.isEmpty()) {
       this.updateDefaultVideoPreferences();
+      this.videoPreferences = this.defaultVideoPreferences;
     }
   }
 
@@ -813,8 +814,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     chosenStreams: VideoStreamDescription[]
   ): VideoStreamDescription {
     let upgradeStream: VideoStreamDescription;
-    const videoPreferences: VideoPreferences =
-      this.videoPreferences || this.defaultVideoPreferences;
+    const videoPreferences: VideoPreferences = this.videoPreferences;
 
     const highestPriority = videoPreferences.highestPriority();
     let nextPriority;
