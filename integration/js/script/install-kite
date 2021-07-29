@@ -5,7 +5,7 @@ mkdir GitHub
 cd GitHub
 git clone https://github.com/webrtc/KITE.git
 cd KITE
-git checkout e9296165cd24bea92cddb59f2bf211c99f764d58
+git checkout 498934fc774e8ae1bf9908a302a8e497973bb726
 
 chmod -R +x scripts/linux
 printf "n\n3.6.3" | ./scripts/linux/installMaven.sh
