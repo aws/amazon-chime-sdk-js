@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Exposed Amazon Voice Focus model complexity as a type in order to support
   showcasing complexity limitation in the meeting demo.
+- Packet-per-second (PPS) logging is now enabled in the meeting demo by
+  default. If the browser sends an incorrect packet rate, this will be logged
+  as an error in the console.
 
 ### Changed
 

@@ -84,7 +84,7 @@ let SHOULD_DIE_ON_FATALS = (() => {
   return fatalYes || (isLocal && !fatalNo);
 })();
 
-let DEBUG_LOG_PPS = false;
+let DEBUG_LOG_PPS = true;
 
 let fatal: (e: Error) => void;
 
@@ -1044,7 +1044,15 @@ export class DemoMeetingApp
           const now = Date.now();
           const deltat = now - start;
           const deltap = entry.packetsSent - packets;
-          console.info('PPS:', (1000 * deltap) / deltat);
+          const pps = (1000 * deltap) / deltat;
+
+          let overage = 0;
+          if ((pps > 52) || (pps < 47)) {
+            console.error('PPS:', pps, `(${++overage})`);
+          } else {
+            overage = 0;
+            console.debug('PPS:', pps);
+          }
           start = now;
           packets = entry.packetsSent;
           return;
