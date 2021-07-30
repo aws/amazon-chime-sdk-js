@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Exposed Amazon Voice Focus model complexity as a type in order to support
+  showcasing complexity limitation in the meeting demo.
+
 ### Changed
 
 ### Removed

@@ -20,15 +20,19 @@ import {
   DefaultAudioVideoController,
   DefaultBrowserBehavior,
   DefaultDeviceController,
+  DefaultMeetingEventReporter,
   DefaultMeetingSession,
   DefaultModality,
   DefaultVideoTransformDevice,
   Device,
   DeviceChangeObserver,
   EventAttributes,
+  EventIngestionConfiguration,
   EventName,
+  EventReporter,
   LogLevel,
   Logger,
+  MeetingEventsClientConfiguration,
   MeetingSession,
   MeetingSessionConfiguration,
   MeetingSessionPOSTLogger,
@@ -36,6 +40,7 @@ import {
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
   MultiLogger,
+  NoOpEventReporter,
   NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
   SimulcastLayers,
@@ -48,19 +53,16 @@ import {
   VideoPreference,
   VideoPreferences,
   VideoPriorityBasedPolicy,
+  VideoPriorityBasedPolicyConfig,
   VideoSource,
   VideoTileState,
   VoiceFocusDeviceTransformer,
+  VoiceFocusModelComplexity,
   VoiceFocusPaths,
+  VoiceFocusSpec,
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
-  VideoPriorityBasedPolicyConfig,
-  NoOpEventReporter,
-  EventReporter,
   isDestroyable,
-  MeetingEventsClientConfiguration,
-  EventIngestionConfiguration,
-  DefaultMeetingEventReporter
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -148,6 +150,8 @@ const VOICE_FOCUS_SPEC = {
   revisionID: VOICE_FOCUS_REVISION_ID,
   paths: VOICE_FOCUS_PATHS,
 };
+
+const MAX_VOICE_FOCUS_COMPLEXITY: VoiceFocusModelComplexity | undefined = undefined;
 
 type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'None';
 
@@ -460,7 +464,7 @@ export class DemoMeetingApp
         logger,
       });
       if (this.supportsVoiceFocus) {
-        this.voiceFocusTransformer = await this.getVoiceFocusDeviceTransformer();
+        this.voiceFocusTransformer = await this.getVoiceFocusDeviceTransformer(MAX_VOICE_FOCUS_COMPLEXITY);
         this.supportsVoiceFocus =
           this.voiceFocusTransformer && this.voiceFocusTransformer.isSupported();
         if (this.supportsVoiceFocus) {
@@ -2383,14 +2387,33 @@ export class DemoMeetingApp
     return value;
   }
 
-  private async getVoiceFocusDeviceTransformer(): Promise<VoiceFocusDeviceTransformer> {
+  private async getVoiceFocusDeviceTransformer(maxComplexity?: VoiceFocusModelComplexity): Promise<VoiceFocusDeviceTransformer> {
     if (this.voiceFocusTransformer) {
       return this.voiceFocusTransformer;
     }
+
+    function exceeds(configured: VoiceFocusModelComplexity): boolean {
+      const max = Number.parseInt(maxComplexity.substring(1), 10);
+      const complexity = Number.parseInt(configured.substring(1), 10);
+      return complexity > max;
+    }
+
     const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
-    const transformer = await VoiceFocusDeviceTransformer.create(VOICE_FOCUS_SPEC, { logger });
-    this.voiceFocusTransformer = transformer;
-    return transformer;
+
+    // Find out what it will actually execute, and cap it if needed.
+    const spec: VoiceFocusSpec = { ...VOICE_FOCUS_SPEC };
+    const config = await VoiceFocusDeviceTransformer.configure(spec, { logger });
+
+    let transformer;
+    if (maxComplexity && config.supported && exceeds(config.model.variant)) {
+      logger.info(`Downgrading VF to ${maxComplexity}`);
+      spec.variant = maxComplexity;
+      transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+    } else {
+      transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, config);
+    }
+
+    return this.voiceFocusTransformer = await transformer;
   }
 
   private async createVoiceFocusDevice(inner: Device): Promise<VoiceFocusTransformDevice | Device> {
@@ -2404,7 +2427,7 @@ export class DemoMeetingApp
     }
 
     try {
-      const transformer = await this.getVoiceFocusDeviceTransformer();
+      const transformer = await this.getVoiceFocusDeviceTransformer(MAX_VOICE_FOCUS_COMPLEXITY);
       const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner);
       if (vf) {
         return (this.voiceFocusDevice = vf);
