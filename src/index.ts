@@ -271,6 +271,7 @@ import VideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/VideoUplink
 import VoiceFocusConfig from './voicefocus/VoiceFocusConfig';
 import VoiceFocusDeviceOptions from './voicefocus/VoiceFocusDeviceOptions';
 import VoiceFocusDeviceTransformer from './voicefocus/VoiceFocusDeviceTransformer';
+import VoiceFocusModelComplexity from './voicefocus/VoiceFocusModelComplexity';
 import VoiceFocusPaths from './voicefocus/VoiceFocusPaths';
 import VoiceFocusSpec from './voicefocus/VoiceFocusSpec';
 import VoiceFocusTransformDevice from './voicefocus/VoiceFocusTransformDevice';
@@ -560,6 +561,7 @@ export {
   VoiceFocusConfig,
   VoiceFocusDeviceOptions,
   VoiceFocusDeviceTransformer,
+  VoiceFocusModelComplexity,
   VoiceFocusPaths,
   VoiceFocusSpec,
   VoiceFocusTransformDevice,
