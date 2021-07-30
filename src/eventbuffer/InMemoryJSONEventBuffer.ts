@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import Backoff from '../backoff/Backoff';
+import FullJitterBackoff from '../backoff/FullJitterBackoff';
 import Destroyable from '../destroyable/Destroyable';
 import EventBufferConfiguration from '../eventbufferconfiguration/EventBufferConfiguration';
 import MeetingHistoryState from '../eventcontroller/MeetingHistoryState';
@@ -10,6 +12,7 @@ import EventsClientConfiguration from '../eventsclientconfiguration/EventsClient
 import Logger from '../logger/Logger';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import DefaultUserAgentParser from '../useragentparser/DefaultUserAgentParser';
+import wait from '../utils/wait';
 import EventBuffer from './EventBuffer';
 import JSONIngestionEvent from './JSONIngestionEvent';
 import JSONIngestionPayloadItem from './JSONIngestionPayloadItem';
@@ -31,8 +34,9 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     503, // Service Unavailable.
     504, // Gateway Timeout.
   ]);
+  private static readonly RETRY_FIXED_BACKOFF_WAIT_MS = 0;
   private static readonly RETRY_SHORT_BACKOFF_MS = 1000;
-  private static readonly RETRY_LONG_BACKOFF_MS = 5000;
+  private static readonly RETRY_LONG_BACKOFF_MS = 15000;
   private static readonly MAX_PAYLOAD_ITEMS = 2;
   private static readonly MAX_ITEM_SIZE_BYTES_ALLOWED = 3000;
   private maxBufferCapacityBytes: number;
@@ -453,21 +457,12 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
     }
   }
 
-  private getBackoffWaitTime(retryCount: number): number {
-    return (
-      Math.random() *
-      Math.min(
-        InMemoryJSONEventBuffer.RETRY_LONG_BACKOFF_MS,
-        InMemoryJSONEventBuffer.RETRY_SHORT_BACKOFF_MS * Math.pow(2.0, retryCount)
-      )
-    );
-  }
-
-  private wait(delayInMs: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, delayInMs));
-  }
-
   private async send(data: string): Promise<Response> {
+    const backoff: Backoff = new FullJitterBackoff(
+      InMemoryJSONEventBuffer.RETRY_FIXED_BACKOFF_WAIT_MS,
+      InMemoryJSONEventBuffer.RETRY_SHORT_BACKOFF_MS,
+      InMemoryJSONEventBuffer.RETRY_LONG_BACKOFF_MS
+    );
     try {
       let retryCount = 0;
       while (retryCount < this.retryCountLimit) {
@@ -484,8 +479,8 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
           retryCount++;
           /* istanbul ignore else */
           if (retryCount < this.retryCountLimit) {
-            const backoffTime = this.getBackoffWaitTime(retryCount);
-            await this.wait(backoffTime);
+            const backoffTime = backoff.nextBackoffAmountMs();
+            await wait(backoffTime);
           }
         }
       }

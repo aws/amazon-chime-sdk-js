@@ -144,6 +144,11 @@ components().forEach(component => {
     return;
   }
 
+  if (component === 'utils') {
+    // This rule does not apply for utils folder.
+    return;
+  }
+
   let hasMatchingInterface = false;
   const componentDir = path.join('src', component);
   walk(componentDir).forEach(file => {

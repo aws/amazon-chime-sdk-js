@@ -41,7 +41,10 @@ const ignoredTypes = [
   'JSONIngestionRecord',
 
   // Events ingestion internal functions.
-  'flattenEventAttributes'
+  'flattenEventAttributes',
+
+  // Ignore utils
+  'wait'
 ];
 
 walk('src')
