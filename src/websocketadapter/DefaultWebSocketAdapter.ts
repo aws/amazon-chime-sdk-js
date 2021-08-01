@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
+import RealtimeDataMessage from '../realtimecontroller/RealtimeDataMessage';
 import Versioning from '../versioning/Versioning';
 import WebSocketAdapter from './WebSocketAdapter';
 import WebSocketReadyState from './WebSocketReadyState';
@@ -16,7 +17,7 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
     this.connection.binaryType = 'arraybuffer';
   }
 
-  send(message: Uint8Array | string): boolean {
+  send(message: RealtimeDataMessage): boolean {
     if (!this.connection) {
       this.logger.error('WebSocket not yet created or already destroyed.');
       return false;
@@ -28,6 +29,7 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
       } else {
         this.connection.send(message);
       }
+
       return true;
     } catch (err) {
       this.logger.debug(

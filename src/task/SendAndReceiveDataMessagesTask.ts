@@ -3,6 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import DataMessage from '../datamessage/DataMessage';
+import RealtimeDataMessage from '../realtimecontroller/RealtimeDataMessage';
 import RemovableObserver from '../removableobserver/RemovableObserver';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
@@ -60,7 +61,7 @@ export default class SendAndReceiveDataMessagesTask
 
   sendDataMessageHandler = (
     topic: string,
-    data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    data: RealtimeDataMessage,
     lifetimeMs?: number
   ): void => {
     if (this.context.signalingClient.ready()) {

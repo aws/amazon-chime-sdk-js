@@ -9,6 +9,8 @@ import DataMessage from '../../src/datamessage/DataMessage';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import RealtimeAttendeePositionInFrame from '../../src/realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from '../../src/realtimecontroller/RealtimeController';
+import RealtimeDataMessage from '../../src/realtimecontroller/RealtimeDataMessage';
+import RealtimeDataMessageHandlerCallback from '../../src/realtimecontroller/RealtimeDataMessageHandlerCallback';
 
 // @ts-ignore
 class PseudoMediaStreamTrack implements MediaStreamTrack {
@@ -949,9 +951,9 @@ describe('DefaultRealtimeController', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       let callbackIndex = 0;
       let resultTopic, resultData, resultLifetimeMs;
-      const callback = (
+      const callback: RealtimeDataMessageHandlerCallback = (
         topic: string,
-        data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        data: RealtimeDataMessage,
         lifetimeMs?: number
       ): void => {
         callbackIndex++;
@@ -976,9 +978,10 @@ describe('DefaultRealtimeController', () => {
       const rt: RealtimeController = new DefaultRealtimeController();
       let callbackIndex = 0;
       let resultTopic, resultData, resultLifetimeMs;
-      const callback = (
+
+      const callback: RealtimeDataMessageHandlerCallback = (
         topic: string,
-        data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        data: RealtimeDataMessage,
         lifetimeMs?: number
       ): void => {
         callbackIndex++;
@@ -1162,9 +1165,9 @@ describe('DefaultRealtimeController', () => {
       const LocalSignalStrengthChangeCallback = (_signalStrength: number): void => {
         callbacksRemoved = false;
       };
-      const SendDataMessageCallback = (
+      const SendDataMessageCallback: RealtimeDataMessageHandlerCallback = (
         _topic: string,
-        _data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        _data: RealtimeDataMessage,
         _lifetimeMs?: number
       ): void => {
         callbacksRemoved = false;

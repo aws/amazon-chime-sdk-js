@@ -4,6 +4,8 @@
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
 import RealtimeController from './RealtimeController';
+import RealtimeDataMessage from './RealtimeDataMessage';
+import RealtimeDataMessageHandlerCallback from './RealtimeDataMessageHandlerCallback';
 import RealtimeState from './RealtimeState';
 import RealtimeVolumeIndicator from './RealtimeVolumeIndicator';
 import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
@@ -53,7 +55,7 @@ import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
  *    [[realtimeIsLocalAudioMuted]] still returns true.
  */
 export default class DefaultRealtimeController implements RealtimeController {
-  private readonly state: RealtimeState = new RealtimeState();
+  private readonly state = new RealtimeState();
 
   realtimeSetLocalAttendeeId(attendeeId: string, externalUserId: string): void {
     this.state.localAttendeeId = attendeeId;
@@ -352,10 +354,7 @@ export default class DefaultRealtimeController implements RealtimeController {
     }
   }
 
-  realtimeSubscribeToSendDataMessage(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
-  ): void {
+  realtimeSubscribeToSendDataMessage(callback: RealtimeDataMessageHandlerCallback): void {
     try {
       this.state.sendDataMessageCallbacks.push(callback);
     } catch (e) {
@@ -363,10 +362,7 @@ export default class DefaultRealtimeController implements RealtimeController {
     }
   }
 
-  realtimeUnsubscribeFromSendDataMessage(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
-  ): void {
+  realtimeUnsubscribeFromSendDataMessage(callback: RealtimeDataMessageHandlerCallback): void {
     try {
       const index = this.state.sendDataMessageCallbacks.indexOf(callback);
       if (index !== -1) {
@@ -377,11 +373,7 @@ export default class DefaultRealtimeController implements RealtimeController {
     }
   }
 
-  realtimeSendDataMessage(
-    topic: string,
-    data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
-    lifetimeMs?: number
-  ): void {
+  realtimeSendDataMessage(topic: string, data: RealtimeDataMessage, lifetimeMs?: number): void {
     try {
       for (const fn of this.state.sendDataMessageCallbacks) {
         fn(topic, data, lifetimeMs);

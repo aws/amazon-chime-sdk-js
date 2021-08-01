@@ -3,6 +3,7 @@
 
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
+import RealtimeDataMessageHandlerCallback from './RealtimeDataMessageHandlerCallback';
 import RealtimeVolumeIndicator from './RealtimeVolumeIndicator';
 import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
@@ -86,11 +87,7 @@ export default class RealtimeState {
   /**
    * Callbacks to trigger when sending message
    */
-  sendDataMessageCallbacks: ((
-    topic: string, // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: Uint8Array | string | any,
-    lifetimeMs?: number
-  ) => void)[] = [];
+  sendDataMessageCallbacks: RealtimeDataMessageHandlerCallback[] = [];
 
   /**
    * Callbacks to listen for receiving message from data channel based on given topic

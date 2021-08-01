@@ -3,6 +3,8 @@
 
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
+import RealtimeDataMessage from './RealtimeDataMessage';
+import RealtimeDataMessageHandlerCallback from './RealtimeDataMessageHandlerCallback';
 import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
 /**
@@ -197,25 +199,19 @@ export default interface RealtimeController {
   /**
    * Subscribe to local send message event
    */
-  realtimeSubscribeToSendDataMessage( // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
+  realtimeSubscribeToSendDataMessage(
+    callback: (topic: string, data: RealtimeDataMessage, lifetimeMs?: number) => void
   ): void;
 
   /**
    * Unsubscribe from local send message event
    */
-  realtimeUnsubscribeFromSendDataMessage( // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    callback: (topic: string, data: Uint8Array | string | any, lifetimeMs?: number) => void
-  ): void;
+  realtimeUnsubscribeFromSendDataMessage(callback: RealtimeDataMessageHandlerCallback): void;
 
   /**
    * Send message via data channel
    */
-  realtimeSendDataMessage(
-    topic: string,
-    data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
-    lifetimeMs?: number
-  ): void;
+  realtimeSendDataMessage(topic: string, data: RealtimeDataMessage, lifetimeMs?: number): void;
 
   /**
    * Subscribe to receiving message on a topic

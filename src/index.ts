@@ -186,6 +186,8 @@ import PingPongObserver from './pingpongobserver/PingPongObserver';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from './realtimecontroller/RealtimeController';
 import RealtimeControllerFacade from './realtimecontroller/RealtimeControllerFacade';
+import RealtimeDataMessage from './realtimecontroller/RealtimeDataMessage';
+import RealtimeDataMessageHandlerCallback from './realtimecontroller/RealtimeDataMessageHandlerCallback';
 import RealtimeState from './realtimecontroller/RealtimeState';
 import RealtimeVolumeIndicator from './realtimecontroller/RealtimeVolumeIndicator';
 import ReceiveAudioInputTask from './task/ReceiveAudioInputTask';
@@ -475,6 +477,8 @@ export {
   RealtimeAttendeePositionInFrame,
   RealtimeController,
   RealtimeControllerFacade,
+  RealtimeDataMessage,
+  RealtimeDataMessageHandlerCallback,
   RealtimeState,
   RealtimeVolumeIndicator,
   ReceiveAudioInputTask,

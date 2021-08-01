@@ -148,7 +148,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
 
     const topic = 'topic';
     const data = { subject: 'test', message: 'test message' };
-    context.realtimeController.realtimeSendDataMessage(topic, data, 100);
+    context.realtimeController.realtimeSendDataMessage(topic, JSON.stringify(data), 100);
 
     const dataMessageFrame = makeSendDataMessageFrame(
       topic,

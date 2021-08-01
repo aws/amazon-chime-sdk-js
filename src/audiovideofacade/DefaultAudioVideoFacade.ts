@@ -18,6 +18,7 @@ import VideoInputDevice from '../devicecontroller/VideoInputDevice';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import { isVideoTransformDevice } from '../devicecontroller/VideoTransformDevice';
 import RealtimeController from '../realtimecontroller/RealtimeController';
+import RealtimeDataMessage from '../realtimecontroller/RealtimeDataMessage';
 import type VolumeIndicatorCallback from '../realtimecontroller/VolumeIndicatorCallback';
 import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
@@ -261,11 +262,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     this.trace('realtimeUnsubscribeToLocalSignalStrengthChange');
   }
 
-  realtimeSendDataMessage(
-    topic: string, // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: Uint8Array | string | any,
-    lifetimeMs?: number
-  ): void {
+  realtimeSendDataMessage(topic: string, data: RealtimeDataMessage, lifetimeMs?: number): void {
     this.realtimeController.realtimeSendDataMessage(topic, data, lifetimeMs);
     this.trace('realtimeSendDataMessage');
   }

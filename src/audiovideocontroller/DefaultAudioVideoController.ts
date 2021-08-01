@@ -70,7 +70,6 @@ import SimulcastTransceiverController from '../transceivercontroller/SimulcastTr
 import VideoOnlyTransceiverController from '../transceivercontroller/VideoOnlyTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
-import VideoPriorityBasedPolicy from '../videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
@@ -151,9 +150,6 @@ export default class DefaultAudioVideoController
     this._audioMixController = new DefaultAudioMixController(this._logger);
     this.meetingSessionContext.logger = this._logger;
     this._eventController = new DefaultEventController(this, eventReporter);
-    if (configuration.videoDownlinkBandwidthPolicy instanceof VideoPriorityBasedPolicy) {
-      configuration.videoDownlinkBandwidthPolicy.bindToTileController(this._videoTileController);
-    }
   }
 
   async destroy(): Promise<void> {

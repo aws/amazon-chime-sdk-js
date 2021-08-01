@@ -3,6 +3,7 @@
 
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
+import RealtimeDataMessage from './RealtimeDataMessage';
 import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
 export default interface RealtimeControllerFacade {
@@ -40,11 +41,7 @@ export default interface RealtimeControllerFacade {
   ): void;
   realtimeSubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void;
   realtimeUnsubscribeToLocalSignalStrengthChange(callback: (signalStrength: number) => void): void;
-  realtimeSendDataMessage(
-    topic: string,
-    data: Uint8Array | string | any, // eslint-disable-line @typescript-eslint/no-explicit-any
-    lifetimeMs?: number
-  ): void;
+  realtimeSendDataMessage(topic: string, data: RealtimeDataMessage, lifetimeMs?: number): void;
   realtimeSubscribeToReceiveDataMessage(
     topic: string,
     callback: (dataMessage: DataMessage) => void

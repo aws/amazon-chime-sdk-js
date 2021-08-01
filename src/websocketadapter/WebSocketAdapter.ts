@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import RealtimeDataMessage from '../realtimecontroller/RealtimeDataMessage';
 import WebSocketReadyState from './WebSocketReadyState';
 
 /** Adapter for WebSocket implementations */
@@ -21,7 +22,7 @@ export default interface WebSocketAdapter {
    * @param send byte or string message to send
    * @returns Whether the data was queued for sending
    */
-  send(message: Uint8Array | string): boolean;
+  send(message: RealtimeDataMessage): boolean;
 
   /**
    * Close the WebSocket connection.
