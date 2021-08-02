@@ -12,7 +12,7 @@ import EventsClientConfiguration from '../eventsclientconfiguration/EventsClient
 import Logger from '../logger/Logger';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
 import DefaultUserAgentParser from '../useragentparser/DefaultUserAgentParser';
-import wait from '../utils/wait';
+import { wait } from '../utils/Utils';
 import EventBuffer from './EventBuffer';
 import JSONIngestionEvent from './JSONIngestionEvent';
 import JSONIngestionPayloadItem from './JSONIngestionPayloadItem';

@@ -23,6 +23,7 @@ import EventName from '../../src/eventcontroller/EventName';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MediaDeviceProxyHandler from '../../src/mediadevicefactory/MediaDeviceProxyHandler';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import { wait as delay } from '../../src/utils/Utils';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
@@ -37,7 +38,6 @@ import {
   MockThrowingTransformDevice,
   MutingTransformDevice,
 } from '../transformdevicemock/MockTransformDevice';
-import { delay } from '../utils';
 import WatchingLogger from './WatchingLogger';
 
 chai.use(chaiAsPromised);

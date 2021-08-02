@@ -7,7 +7,7 @@ import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import BaseTask from '../../src/task/BaseTask';
 import TaskStatus from '../../src/task/TaskStatus';
-import { delay } from '../utils';
+import { wait as delay } from '../../src/utils/Utils';
 
 describe('BaseTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;

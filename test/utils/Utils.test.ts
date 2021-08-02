@@ -3,9 +3,9 @@
 
 import * as chai from 'chai';
 
-import wait from '../../src/utils/wait';
+import { wait } from '../../src/utils/Utils';
 
-describe('wait', () => {
+describe('Utils', () => {
   const expect: Chai.ExpectStatic = chai.expect;
 
   it('atleast waits for the specified delay in milliseconds', async () => {

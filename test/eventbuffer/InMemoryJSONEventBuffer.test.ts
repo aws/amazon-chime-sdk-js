@@ -13,9 +13,9 @@ import EventsClientConfiguration from '../../src/eventsclientconfiguration/Event
 import MeetingEventsClientConfiguration from '../../src/eventsclientconfiguration/MeetingEventsClientConfiguration';
 import Logger from '../../src/logger/Logger';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import { wait as delay } from '../../src/utils/Utils';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('InMemoryJSONEventBuffer', () => {
   const expect: Chai.ExpectStatic = chai.expect;

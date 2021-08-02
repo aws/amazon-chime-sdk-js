@@ -18,9 +18,9 @@ import {
   SdkPingPongType,
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('DefaultPingPong', () => {
   let expect: Chai.ExpectStatic;

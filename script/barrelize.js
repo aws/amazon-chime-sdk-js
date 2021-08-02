@@ -44,7 +44,7 @@ const ignoredTypes = [
   'flattenEventAttributes',
 
   // Ignore utils
-  'wait'
+  'Utils'
 ];
 
 walk('src')

@@ -19,12 +19,12 @@ import {
   SdkSubscribeAckFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SubscribeAndReceiveSubscribeAckTask from '../../src/task/SubscribeAndReceiveSubscribeAckTask';
+import { wait as delay } from '../../src/utils/Utils';
 import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('SubscribeAndReceiveSubscribeAckTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;

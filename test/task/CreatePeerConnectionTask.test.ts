@@ -14,6 +14,7 @@ import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessi
 import CreatePeerConnectionTask from '../../src/task/CreatePeerConnectionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
+import { wait as delay } from '../../src/utils/Utils';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import VideoTile from '../../src/videotile/VideoTile';
@@ -22,7 +23,6 @@ import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTile
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
 import SDPMock from '../sdp/SDPMock';
-import { delay } from '../utils';
 
 describe('CreatePeerConnectionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;

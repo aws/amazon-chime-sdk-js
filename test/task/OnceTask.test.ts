@@ -8,7 +8,7 @@ import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import NoOpTask from '../../src/task/NoOpTask';
 import OnceTask from '../../src/task/OnceTask';
-import { delay } from '../utils';
+import { wait as delay } from '../../src/utils/Utils';
 
 describe('OnceTask', () => {
   describe('deps', () => {
