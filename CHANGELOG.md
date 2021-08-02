@@ -16,12 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   as an error in the console.
 
 ### Changed
+- Update `InMemoryJSONEventBuffer` to retry with backoff.
 
 ### Removed
 
 ### Fixed
 - Stop `activeDevice` video track before selecting a new device to prevent `NotReadableError` when calling `getUserMedia` for a new video input device.
 - Fix priority-based downlink policy default behavior.
+- Fix client event ingestion guide rendering in typedoc.
 
 ## [2.14.0] - 2021-07-23
 

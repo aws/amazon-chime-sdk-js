@@ -385,22 +385,18 @@ function addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId) {
   let errorMetricValue = 0;
   let retryMetricValue = 0;
   let ingestionTriggerSuccessMetricValue = 0;
-  // Filter out browser errors which happen due to page unload.
-  // We cannot handle these failures in realtime, hence filter out.
-  if (
-    logLevel === 'ERROR' &&
-    (
-      !message.includes('NetworkError when attempting to fetch resource') &&
-      !message.includes('error reading OK response AbortError')
-    )
-  ) {
-    errorMetricValue = 1;
-  } else if (logLevel === 'WARN' && message.match(/Retry (count)? limit reached/g)) {
+  let networkErrors = 0;
+  if (logLevel === 'WARN' && message.includes('Retry count limit reached')) {
     retryMetricValue = 1;
+  } else if (logLevel === 'ERROR') {
+    errorMetricValue = 1;
   } else if (message.includes('send successful')) {
     ingestionTriggerSuccessMetricValue = 1;
+  } else if (message.match(/(NetworkError|AbortError|Failed to fetch)/g) !== null) {
+    networkErrors = 1;
   }
   putMetric('EventIngestionTriggerSuccess', ingestionTriggerSuccessMetricValue, meetingId, attendeeId);
   putMetric('EventIngestionError', errorMetricValue, meetingId, attendeeId);
   putMetric('EventIngestionRetryCountLimitReached', retryMetricValue, meetingId, attendeeId);
+  putMetric('EventIngestionNetworkErrors', networkErrors, meetingId, attendeeId);
 }

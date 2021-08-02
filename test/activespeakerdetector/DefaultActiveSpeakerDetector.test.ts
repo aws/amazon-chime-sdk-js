@@ -7,7 +7,7 @@ import DefaultActiveSpeakerDetector from '../../src/activespeakerdetector/Defaul
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import IntervalScheduler from '../../src/scheduler/IntervalScheduler';
-import { delay } from '../utils';
+import { wait as delay } from '../../src/utils/Utils';
 
 describe('DefaultActiveSpeakerDetector', () => {
   const expect: Chai.ExpectStatic = chai.expect;

@@ -22,6 +22,7 @@ import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollecto
 import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
+import { wait as delay } from '../../src/utils/Utils';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoTile from '../../src/videotile/VideoTile';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
@@ -29,7 +30,6 @@ import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTile
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('CleanStoppedSessionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;

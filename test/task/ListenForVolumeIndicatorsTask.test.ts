@@ -18,11 +18,11 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import ListenForVolumeIndicatorsTask from '../../src/task/ListenForVolumeIndicatorsTask';
+import { wait as delay } from '../../src/utils/Utils';
 import DefaultVolumeIndicatorAdapter from '../../src/volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('ListenForVolumeIndicatorsTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;

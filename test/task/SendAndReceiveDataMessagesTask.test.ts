@@ -18,10 +18,10 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol';
 import SendAndReceiveDataMessagesTask from '../../src/task/SendAndReceiveDataMessagesTask';
+import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('SendAndReceiveDataMessagesTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;

@@ -38,6 +38,7 @@ import {
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
 import CleanStoppedSessionTask from '../../src/task/CleanStoppedSessionTask';
 import OpenSignalingConnectionTask from '../../src/task/OpenSignalingConnectionTask';
+import { wait as delay } from '../../src/utils/Utils';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoSource from '../../src/videosource/VideoSource';
@@ -46,7 +47,6 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import ChromeSDPMock from '../sdp/ChromeSDPMock';
-import { delay } from '../utils';
 
 const defaultDelay = new DOMMockBehavior().asyncWaitMs * 5;
 

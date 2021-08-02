@@ -34,11 +34,11 @@ import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCr
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
+import { wait as delay } from '../../src/utils/Utils';
 import DisplayMediaState from '../dommock/DisplayMediaState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import UserMediaState from '../dommock/UserMediaState';
-import { delay } from '../utils';
 
 interface AudioElementWithSinkId extends HTMLAudioElement {
   sinkId: string;

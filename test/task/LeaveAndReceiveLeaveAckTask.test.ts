@@ -16,10 +16,10 @@ import SignalingClientEventType from '../../src/signalingclient/SignalingClientE
 import { SdkLeaveAckFrame, SdkSignalFrame } from '../../src/signalingprotocol/SignalingProtocol.js';
 import LeaveAndReceiveLeaveAckTask from '../../src/task/LeaveAndReceiveLeaveAckTask';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
+import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('LeaveAndReceiveLeaveAckTask', () => {
   const assert: Chai.AssertStatic = chai.assert;

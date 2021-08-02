@@ -323,7 +323,6 @@
 								<li class="tsd-kind-interface"><a href="interfaces/eventsclientconfiguration.html" class="tsd-kind-icon">Events<wbr>Client<wbr>Configuration</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/eventsingestionmetadata.html" class="tsd-kind-icon">Events<wbr>Ingestion<wbr>Metadata</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/extendedbrowserbehavior.html" class="tsd-kind-icon">Extended<wbr>Browser<wbr>Behavior</a></li>
-								<li class="tsd-kind-interface"><a href="interfaces/jsoningestionbufferitem.html" class="tsd-kind-icon">JSONIngestion<wbr>Buffer<wbr>Item</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/jsoningestionevent.html" class="tsd-kind-icon">JSONIngestion<wbr>Event</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/jsoningestionpayloaditem.html" class="tsd-kind-icon">JSONIngestion<wbr>Payload<wbr>Item</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/jsoningestionrecord.html" class="tsd-kind-icon">JSONIngestion<wbr>Record</a></li>
@@ -414,6 +413,7 @@
 								<li class="tsd-kind-function"><a href="globals.html#ismediadeviceinfo" class="tsd-kind-icon">is<wbr>Media<wbr>Device<wbr>Info</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#wait" class="tsd-kind-icon">wait</a></li>
 							</ul>
 						</section>
 					</div>
@@ -927,6 +927,29 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>listener<span class="tsd-signature-symbol">: </span><a href="globals.html#thunk" class="tsd-signature-type">Thunk</a><span class="tsd-signature-symbol">; </span>scheduler<span class="tsd-signature-symbol">: </span><a href="classes/intervalscheduler.html" class="tsd-signature-type">IntervalScheduler</a><span class="tsd-signature-symbol">; </span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> }</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="wait" class="tsd-anchor"></a>
+					<h3>wait</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">wait<span class="tsd-signature-symbol">(</span>waitTimeMs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/utils/Utils.ts#L4">src/utils/Utils.ts:4</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>waitTimeMs: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1618,9 +1641,6 @@
 						<a href="interfaces/extendedbrowserbehavior.html" class="tsd-kind-icon">Extended<wbr>Browser<wbr>Behavior</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/jsoningestionbufferitem.html" class="tsd-kind-icon">JSONIngestion<wbr>Buffer<wbr>Item</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="interfaces/jsoningestionevent.html" class="tsd-kind-icon">JSONIngestion<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1844,6 +1864,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#wait" class="tsd-kind-icon">wait</a>
 					</li>
 				</ul>
 			</nav>
