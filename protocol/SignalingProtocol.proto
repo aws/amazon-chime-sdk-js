@@ -290,3 +290,62 @@ message SdkTurnCredentials {
     optional uint32 ttl = 3;
     repeated string uris = 4;
 }
+
+message SdkTranscriptItem {
+    optional string content = 1;
+    optional int64 end_time = 2;
+    optional string speaker_attendee_id = 3;
+    optional string speaker_external_user_id = 4;
+    optional int64 start_time = 5;
+    enum Type {
+        UNKNOWN = 0;
+        PRONUNCIATION = 1;
+        PUNCTUATION = 2;
+    }
+    optional Type type = 6;
+    optional bool vocabulary_filter_match = 7;
+}
+
+message SdkTranscriptAlternative {
+    repeated SdkTranscriptItem items = 1;
+    optional string transcript = 2;
+}
+
+message SdkTranscriptResult {
+    repeated SdkTranscriptAlternative alternatives = 1;
+    optional string channel_id = 2;
+    optional int64 end_time = 3;
+    optional bool is_partial = 4;
+    optional string result_id = 5;
+    optional int64 start_time = 6;
+}
+
+message SdkTranscript {
+    repeated SdkTranscriptResult results = 1;
+}
+
+message SdkTranscriptionStatus {
+    enum Type {
+        STARTED = 1;
+        INTERRUPTED = 2;
+        RESUMED = 3;
+        STOPPED = 4;
+        FAILED = 5;
+    }
+    optional Type type = 1;
+    optional int64 event_time = 2;
+    optional string transcription_region = 3;
+    optional string transcription_configuration = 4;
+    optional string message = 5;
+}
+
+message SdkTranscriptEvent {
+    oneof Event {
+        SdkTranscriptionStatus status = 1;
+        SdkTranscript transcript = 2;
+    }
+}
+
+message SdkTranscriptFrame {
+    repeated SdkTranscriptEvent events = 1;
+}

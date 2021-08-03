@@ -85,7 +85,7 @@ function serve(host = '127.0.0.1:8080') {
           // combined with the name the user provided, which can later
           // be used to help build the roster.
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
-        }).promise()
+        }).promise();
 
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
@@ -135,6 +135,58 @@ function serve(host = '127.0.0.1:8080') {
           sessionToken: AWS.config.credentials.sessionToken,
         };
         respond(response, 200, 'application/json', JSON.stringify(awsCredentials), true);
+      } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
+        // End the meeting. All attendee connections will hang up.
+        await chime.deleteMeeting({
+          MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
+        }).promise();
+        respond(response, 200, 'application/json', JSON.stringify({}));
+      } else if (request.method === 'POST' && requestUrl.pathname === '/start_transcription') {
+        const languageCode = requestUrl.query.language;
+        let transcriptionConfiguration = {};
+        if (requestUrl.query.engine === 'transcribe') {
+          transcriptionConfiguration = {
+            EngineTranscribeSettings: {
+              LanguageCode: languageCode,
+            }
+          };
+        } else if (requestUrl.query.engine === 'transcribe_medical') {
+          transcriptionConfiguration = {
+            EngineTranscribeMedicalSettings: {
+              LanguageCode: languageCode,
+              Specialty: 'PRIMARYCARE',
+              Type: 'CONVERSATION',
+            }
+          };
+        }
+
+        await chime.startMeetingTranscription({
+          MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
+          TranscriptionConfiguration: transcriptionConfiguration
+        }).promise();
+        respond(response, 200, 'application/json', JSON.stringify({}));
+      } else if (request.method === 'POST' && requestUrl.pathname === '/stop_transcription') {
+        await chime.stopMeetingTranscription({
+          MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId
+        }).promise();
+        respond(response, 200, 'application/json', JSON.stringify({}));
+      } else if (request.method === 'GET' && requestUrl.pathname === '/fetch_credentials') {
+        const awsCredentials = {
+          accessKeyId: AWS.config.credentials.accessKeyId,
+          secretAccessKey: AWS.config.credentials.secretAccessKey,
+          sessionToken: AWS.config.credentials.sessionToken,
+        };
+        respond(response, 200, 'application/json', JSON.stringify(awsCredentials), true);
+      } else if (request.method === 'GET' && requestUrl.pathname === '/audio_file') {
+        const filePath = 'dist/speech.mp3';
+        fs.readFile(filePath, {encoding: 'base64'}, function(err, data) {
+          if (err) {
+            log(`Error reading audio file ${filePath}: ${err}`)
+            respond(response, 404, 'application/json', JSON.stringify({}));
+            return;
+          }
+          respond(response, 200, 'audio/mpeg', data);
+        });
       } else {
         respond(response, 404, 'text/html', '404 Not Found');
       }
@@ -149,7 +201,7 @@ function serve(host = '127.0.0.1:8080') {
 
 function log(message) {
   console.log(`${new Date().toISOString()} ${message}`);
-};
+}
 
 function respond(response, statusCode, contentType, body, skipLogging = false) {
   response.statusCode = statusCode;

@@ -4,10 +4,11 @@
   "description": "Amazon Chime SDK JavaScript Demos",
   "scripts": {
     "deps": "cd ../.. && npm run build",
-    "build:fast": "node script/webpack-wrapper.js",
+    "copy-assets": "node script/copy-assets.js",
+    "build:fast": "npm run copy-assets && node script/webpack-wrapper.js",
     "build": "npm run deps && npm install && tsc && npm run build:fast",
-    "start:fast": "node script/webpack-wrapper.js --serve",
-    "start:hot": "webpack-cli serve --config ./webpack.config.js",
+    "start:fast": "npm run copy-assets && node script/webpack-wrapper.js --serve",
+    "start:hot": "npm run copy-assets && webpack-cli serve --config ./webpack.config.js",
     "start": "npm run deps && npm install && npm run start:fast"
   },
   "devDependencies": {
@@ -32,7 +33,7 @@
   },
   "dependencies": {
     "amazon-chime-sdk-js": "file:../..",
-    "aws-sdk": "^2.941.0",
+    "aws-sdk": "^2.957.0",
     "bootstrap": "^4.5.2",
     "compression": "^1.7.4",
     "jquery": "^3.5.1",

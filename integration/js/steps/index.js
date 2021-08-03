@@ -51,3 +51,8 @@ exports.SetTestBrokenStep = require('./SetTestBrokenStep');
 exports.OpenMessagingSessionAppStep = require('./OpenMessagingSessionAppStep');
 exports.ConnectMessagingSessionStep = require('./ConnectMessagingSessionStep');
 exports.DisconnectMessagingSessionStep = require('./DisconnectMessagingSessionStep');
+
+exports.StartMeetingTranscriptionStep = require('./StartMeetingTranscriptionStep');
+exports.StopMeetingTranscriptionStep = require('./StopMeetingTranscriptionStep');
+exports.PlayPrerecordedSpeechStep = require('./PlayPrerecordedSpeechStep');
+exports.SelectNoneAudioInputStep = require('./SelectNoneAudioInputStep');

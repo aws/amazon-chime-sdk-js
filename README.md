@@ -1134,6 +1134,10 @@ The browser demo applications in the [demos directory](https://github.com/aws/am
 
 The use of TensorFlow runtime code referenced above may be subject to additional license requirements. See the licenses page for TensorFlow.js [here](https://github.com/tensorflow/tfjs/blob/master/LICENSE) and TensorFlow.js models [here](https://github.com/tensorflow/tfjs-models/blob/master/LICENSE) for details.
 
+Live transcription using the Amazon Chime SDK for JavaScript is powered by Amazon Transcribe. Use of Amazon Transcribe is subject to the [AWS Service Terms](https://aws.amazon.com/service-terms/), including the terms specific to the AWS Machine Learning and Artificial Intelligence Services. Standard charges for Amazon Transcribe and Amazon Transcribe Medical will apply.
+
+You and your end users understand that recording Amazon Chime SDK meetings may be subject to laws or regulations regarding the recording of electronic communications. It is your and your end users’ responsibility to comply with all applicable laws regarding the recordings, including properly notifying all participants in a recorded session, or communication that the session or communication is being recorded, and obtain their consent.
+
 ---
 
 Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.

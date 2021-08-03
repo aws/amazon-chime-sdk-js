@@ -1103,6 +1103,8 @@ messagingSession.start();
 				<p>The use of Amazon Voice Focus runtime code is subject to additional notices. See <a href="https://static.sdkassets.chime.aws/workers/NOTICES.txt">this NOTICES file</a> for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus runtime code via this SDK.</p>
 				<p>The browser demo applications in the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos">demos directory</a> use <a href="https://github.com/tensorflow/tfjs">TensorFlow.js</a> and pre-trained <a href="https://github.com/tensorflow/tfjs-models">TensorFlow.js models</a> for image segmentation. Use of these third party models involves downloading and execution of code at runtime from <a href="https://www.jsdelivr.com/">jsDelivr</a> by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this <a href="https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net">link</a>.</p>
 				<p>The use of TensorFlow runtime code referenced above may be subject to additional license requirements. See the licenses page for TensorFlow.js <a href="https://github.com/tensorflow/tfjs/blob/master/LICENSE">here</a> and TensorFlow.js models <a href="https://github.com/tensorflow/tfjs-models/blob/master/LICENSE">here</a> for details.</p>
+				<p>Live transcription using the Amazon Chime SDK for JavaScript is powered by Amazon Transcribe. Use of Amazon Transcribe is subject to the <a href="https://aws.amazon.com/service-terms/">AWS Service Terms</a>, including the terms specific to the AWS Machine Learning and Artificial Intelligence Services. Standard charges for Amazon Transcribe and Amazon Transcribe Medical will apply.</p>
+				<p>You and your end users understand that recording Amazon Chime SDK meetings may be subject to laws or regulations regarding the recording of electronic communications. It is your and your end users’ responsibility to comply with all applicable laws regarding the recordings, including properly notifying all participants in a recorded session, or communication that the session or communication is being recorded, and obtain their consent.</p>
 				<hr>
 				<p>Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.</p>
 			</div>
@@ -1197,6 +1199,12 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/taskstatus.html" class="tsd-kind-icon">Task<wbr>Status</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/transcriptitemtype.html" class="tsd-kind-icon">Transcript<wbr>Item<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/transcriptionstatustype.html" class="tsd-kind-icon">Transcription<wbr>Status<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/videologevent.html" class="tsd-kind-icon">Video<wbr>Log<wbr>Event</a>
@@ -1344,6 +1352,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaulttransceivercontroller.html" class="tsd-kind-icon">Default<wbr>Transceiver<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/defaulttranscriptioncontroller.html" class="tsd-kind-icon">Default<wbr>Transcription<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/defaultuseragentparser.html" class="tsd-kind-icon">Default<wbr>User<wbr>Agent<wbr>Parser</a>
@@ -1625,6 +1636,24 @@ messagingSession.start();
 						<a href="classes/timeouttask.html" class="tsd-kind-icon">Timeout<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/transcript.html" class="tsd-kind-icon">Transcript</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/transcriptalternative.html" class="tsd-kind-icon">Transcript<wbr>Alternative</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/transcriptevent.html" class="tsd-kind-icon">Transcript<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/transcriptitem.html" class="tsd-kind-icon">Transcript<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/transcriptresult.html" class="tsd-kind-icon">Transcript<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/transcriptionstatus.html" class="tsd-kind-icon">Transcription<wbr>Status</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/typeerror.html" class="tsd-kind-icon">Type<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1892,6 +1921,9 @@ messagingSession.start();
 						<a href="interfaces/transceivercontroller.html" class="tsd-kind-icon">Transceiver<wbr>Controller</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/transcriptioncontroller.html" class="tsd-kind-icon">Transcription<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/useragentparser.html" class="tsd-kind-icon">User<wbr>Agent<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1993,6 +2025,9 @@ messagingSession.start();
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#default_framerate" class="tsd-kind-icon">DEFAULT_<wbr>FRAMERATE</a>
 					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#transcription_data_message_topic" class="tsd-kind-icon">TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC</a>
+					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#fillsmptecolorbars" class="tsd-kind-icon">fillSMPTEColor<wbr>Bars</a>
 					</li>
@@ -2019,6 +2054,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#wait" class="tsd-kind-icon">wait</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#transcriptionstatustypes" class="tsd-kind-icon">Transcription<wbr>Status<wbr>Types</a>
 					</li>
 				</ul>
 			</nav>

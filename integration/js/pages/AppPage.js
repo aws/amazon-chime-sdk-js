@@ -39,6 +39,8 @@ function findAllElements() {
     failedMeetingFlow: By.id('flow-failed-meeting'),
     microphoneDropDownVoiceFocusButton: By.id('toggle-dropdown-menu-microphone-Amazon-Voice-Focus'),
     microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
+    microphoneDropDownPrecordedSpeechButton: By.id('dropdown-menu-microphone-Prerecorded-Speech'),
+    microphoneDropDownNoneButton: By.id('dropdown-menu-microphone-None'),
     microphoneDropDownButton: By.id('button-microphone-drop'),
     microphoneButton: By.id('button-microphone'),
 
@@ -50,8 +52,15 @@ function findAllElements() {
     webAudioFeature: By.id('webaudio'),
     simulcastFeatureLabel: By.css('label[for="simulcast"]'),
     webAudioFeatureLabel: By.css('label[for="webaudio"]'),
+
+    microphoneDropDownLiveTranscriptionButton: By.id('toggle-dropdown-menu-microphone-Live-Transcription'),
+    transcriptionModalTranscribeEngine: By.id('engine-transcribe'),                // Select option.
+    transcriptionModalTranscribeMedicalEngine: By.id('engine-transcribe-medical'), // Select option.
+    startTranscriptionButton: By.id('button-start-transcription'),
+    transcriptContainer: By.id('transcript-container'),
+
     eventReportingCheckBox: By.id('event-reporting'),
-    eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
+    eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]')
   };
 }
 
@@ -195,6 +204,16 @@ class AppPage {
     await tone.click();
   }
 
+  async playPrerecordedSpeech() {
+    let precordedSpeech = await this.driver.findElement(elements.microphoneDropDownPrecordedSpeechButton);
+    await precordedSpeech.click();
+  }
+
+  async selectNoneAudioInput() {
+    let noneButton = await this.driver.findElement(elements.microphoneDropDownNoneButton);
+    await noneButton.click();
+  }
+
   async clickOnMicrophoneDropDownButton() {
     let microphoneDropDown = await this.driver.findElement(elements.microphoneDropDownButton);
     await microphoneDropDown.click();
@@ -238,7 +257,7 @@ class AppPage {
   async waitingToEndMeeting() {
     let timeout = 10;
     let i = 0;
-    var meetingEnding = true;
+    let meetingEnding = true;
     while (meetingEnding && i < timeout) {
       try {
         meetingEnding = await this.isMeetingEnding();
@@ -298,6 +317,150 @@ class AppPage {
       await TestUtils.waitAround(1000);
     }
     return 'failed'
+  }
+
+  async isLiveTranscriptionPresentInDeviceMenu() {
+    return await this.driver.findElement(elements.microphoneDropDownLiveTranscriptionButton).isDisplayed();
+  }
+
+  async isLiveTranscriptionEnabledInDeviceMenu() {
+    const transcriptionDropDownButton = await this.driver.findElement(elements.microphoneDropDownLiveTranscriptionButton);
+    const classes = await transcriptionDropDownButton.getAttribute('class');
+    return classes.split(' ').includes('live-transcription-active');
+  }
+
+  async clickLiveTranscriptionMenuButton() {
+    const liveTranscriptionMenuButton = await this.driver.findElement(elements.microphoneDropDownLiveTranscriptionButton);
+    await liveTranscriptionMenuButton.click();
+  }
+
+  async clickTranscribeEngineOption() {
+    const transcribeEngineOption = await this.driver.findElement(elements.transcriptionModalTranscribeEngine);
+    await transcribeEngineOption.click();
+  }
+
+  async clickTranscribeMedicalEngineOption() {
+    const transcribeMedicalEngineOption = await this.driver.findElement(elements.transcriptionModalTranscribeMedicalEngine);
+    await transcribeMedicalEngineOption.click();
+  }
+
+  async clickStartTranscriptionButton() {
+    const startTranscriptionButton = await this.driver.findElement(elements.startTranscriptionButton);
+    await startTranscriptionButton.click();
+  }
+
+  async checkIfTranscriptionVisible() {
+    return await this.driver.findElement(elements.transcriptContainer).isDisplayed();
+  }
+
+  async checkIfTranscriptionStarted(useMedical) {
+    const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
+    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
+    if (transcriptDivs.length < 1) {
+      return false;
+    }
+
+    // Only validate the most recent started message.
+    let lastStartedMessageText = '';
+    let lastStartedIdx = transcriptDivs.length - 1;
+    while (lastStartedIdx >= 0) {
+      const transcriptText = await transcriptDivs[lastStartedIdx].getText();
+      if (transcriptText.includes('Live Transcription started')) {
+        lastStartedMessageText = transcriptText;
+        break;
+      }
+      lastStartedIdx--;
+    }
+    if (lastStartedIdx < 0) {
+      return false;
+    }
+
+    if (!useMedical) {
+      return lastStartedMessageText.includes('EngineTranscribeSettings');
+    } else {
+      return lastStartedMessageText.includes('EngineTranscribeMedicalSettings');
+    }
+  }
+
+  async checkIfTranscriptionStopped(useMedical) {
+    const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
+    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
+    if (transcriptDivs.length < 1) {
+      return false;
+    }
+
+    const lastTranscriptText = await transcriptDivs[transcriptDivs.length - 1].getText();
+    if (!lastTranscriptText.includes('Live Transcription stopped')) {
+      return false;
+    }
+
+    if (!useMedical) {
+      return lastTranscriptText.includes('EngineTranscribeSettings');
+    } else {
+      return lastTranscriptText.includes('EngineTranscribeMedicalSettings');
+    }
+  }
+
+  async checkTranscriptsFromLastStart(expectedTranscriptContentBySpeaker, compareFn) {
+    const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
+    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
+    if (transcriptDivs.length < 1) {
+      return false;
+    }
+
+    let lastStartedIdx = transcriptDivs.length - 1;
+    while (lastStartedIdx >= 0) {
+      const transcriptText = await transcriptDivs[lastStartedIdx].getText();
+      if (transcriptText.includes('Live Transcription started')) {
+        break;
+      }
+      lastStartedIdx--;
+    }
+    if (lastStartedIdx < 0) {
+      return false;
+    }
+
+    // Filter out wrapper divs.
+    const transcriptsAfterLastStart = transcriptDivs.slice(lastStartedIdx + 1);
+    let transcriptsToValidate = [];
+    for (let i = 0; i < transcriptsAfterLastStart.length; i++) {
+      const transcriptElement = transcriptsAfterLastStart[i];
+      const classes = await transcriptElement.getAttribute('class');
+      if (classes.split(' ').includes('transcript')) {
+        transcriptsToValidate.push(transcriptElement);
+      }
+    }
+
+    // Verify that each speaker's content is as expected according to compareFn.
+    // Sequential transcripts for the same speaker are appended together for comparison.
+    const actualTranscriptContentBySpeaker = {};
+    for (let i = 0; i < transcriptsToValidate.length; i++) {
+      const transcriptText = await transcriptsToValidate[i].getText();
+      const speaker = transcriptText.slice(0, transcriptText.indexOf(':'));
+      const content = transcriptText.slice(transcriptText.indexOf(':') + 1).trim();
+      if (actualTranscriptContentBySpeaker[speaker]) {
+        actualTranscriptContentBySpeaker[speaker] += " " + content;
+      } else {
+        actualTranscriptContentBySpeaker[speaker] = content;
+      }
+    }
+
+    let actualSpeakers = Object.getOwnPropertyNames(actualTranscriptContentBySpeaker);
+    let expectedSpeaker = Object.getOwnPropertyNames(expectedTranscriptContentBySpeaker);
+
+    if (actualSpeakers.length != expectedSpeaker.length) {
+      return false;
+    }
+
+    for (let i = 0; i < actualSpeakers.length; i++) {
+      const speaker = actualSpeakers[i];
+      if (!compareFn(actualTranscriptContentBySpeaker[speaker], expectedTranscriptContentBySpeaker[speaker])) {
+        console.log(`Transcript comparison failed, speaker ${speaker} actual content: "${actualTranscriptContentBySpeaker[speaker]}" does not match with expected: "${expectedTranscriptContentBySpeaker[speaker]}"`);
+        return false;
+      }
+    }
+
+    return true;
   }
 
   async isVoiceFocusCheckboxVisible(visible) {
