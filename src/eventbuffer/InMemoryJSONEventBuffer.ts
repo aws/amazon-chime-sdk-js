@@ -476,6 +476,9 @@ export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, 
         if (response.ok || !InMemoryJSONEventBuffer.SENDING_FAILURE_CODES.has(response.status)) {
           return response;
         } else {
+          this.logger.warn(
+            `Will retry sending failure for ${data} due to status code ${response.status}.`
+          );
           retryCount++;
           /* istanbul ignore else */
           if (retryCount < this.retryCountLimit) {
