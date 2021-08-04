@@ -63,6 +63,17 @@ export default interface TransceiverController {
   ): number[];
 
   /**
+   * Get the associated MID for a given stream ID, either set via `updateVideoTranceivers`
+   * or overriden through `setMidForStreamId`.
+   */
+  getMidForStreamId?(streamId: number): string;
+
+  /**
+   * Override or set an internal mapping of stream ID to MID.
+   */
+  setMidForStreamId?(streamId: number, mid: string): void;
+
+  /**
    * Sets video sending bitrate in Kilo-bit-per-second
    */
   setVideoSendingBitrateKbps(bitrateKbps: number): void;

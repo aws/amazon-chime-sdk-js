@@ -13,6 +13,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   protected videoSubscriptions: number[] = [];
   protected defaultMediaStream: MediaStream | null = null;
   protected peer: RTCPeerConnection | null = null;
+  protected streamIdToTransceiver: Map<number, RTCRtpTransceiver> = new Map();
 
   constructor(protected logger: Logger, protected browserBehavior: BrowserBehavior) {}
 
@@ -236,6 +237,9 @@ export default class DefaultTransceiverController implements TransceiverControll
             if (videoStreamIndex.StreamIdsInSameGroup(streamId, recvStreamId)) {
               transceiver.direction = 'recvonly';
               this.videoSubscriptions[n] = recvStreamId;
+
+              this.streamIdToTransceiver.delete(streamId);
+              this.streamIdToTransceiver.set(recvStreamId, transceiver);
               videosRemaining.splice(index, 1);
               break;
             }
@@ -257,10 +261,16 @@ export default class DefaultTransceiverController implements TransceiverControll
         transceiver.direction = 'recvonly';
         const streamId = videosRemaining.shift();
         this.videoSubscriptions[n] = streamId;
+        this.streamIdToTransceiver.set(streamId, transceiver);
       } else {
         // Remove if no longer subscribed
         if (this.videoSubscriptions[n] === 0) {
           transceiver.direction = 'inactive';
+          for (const [streamId, previousTransceiver] of this.streamIdToTransceiver.entries()) {
+            if (transceiver === previousTransceiver) {
+              this.streamIdToTransceiver.delete(streamId);
+            }
+          }
         }
       }
       n += 1;
@@ -273,6 +283,7 @@ export default class DefaultTransceiverController implements TransceiverControll
         direction: 'recvonly',
         streams: [this.defaultMediaStream],
       });
+      this.streamIdToTransceiver.set(index, transceiver);
       this.videoSubscriptions.push(index);
       this.logger.info(
         `adding transceiver mid: ${transceiver.mid} subscription: ${index} direction: recvonly`
@@ -280,7 +291,21 @@ export default class DefaultTransceiverController implements TransceiverControll
     }
   }
 
-  private transceiverIsVideo(transceiver: RTCRtpTransceiver): boolean {
+  getMidForStreamId(streamId: number): string {
+    return this.streamIdToTransceiver.get(streamId)?.mid;
+  }
+
+  setMidForStreamId(newStreamId: number, mid: string): void {
+    for (const [streamId, transceiver] of this.streamIdToTransceiver.entries()) {
+      if (transceiver.mid === mid) {
+        this.streamIdToTransceiver.delete(streamId);
+        this.streamIdToTransceiver.set(newStreamId, transceiver);
+        return;
+      }
+    }
+  }
+
+  protected transceiverIsVideo(transceiver: RTCRtpTransceiver): boolean {
     return (
       (transceiver.receiver &&
         transceiver.receiver.track &&

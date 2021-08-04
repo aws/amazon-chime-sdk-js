@@ -96,6 +96,10 @@ export default class AudioVideoControllerState {
 
   videosToReceive: VideoStreamIdSet | null = null;
 
+  // The last processed set of IDs provided by the policy, so that we can
+  // compare what changes were additions, stream switches, or removals.
+  lastVideosToReceive: VideoStreamIdSet | null = null;
+
   videoSubscriptions: number[] | null = null;
 
   videosPaused: VideoStreamIdSet | null = null;

@@ -355,6 +355,24 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
     return this.subscribeSsrcToStreamMap.get(ssrcId);
   }
 
+  overrideStreamIdMappings(previous: number, current: number): void {
+    if (this.subscribeTrackToStreamMap) {
+      for (const [track, streamId] of this.subscribeTrackToStreamMap.entries()) {
+        if (previous === streamId) {
+          this.subscribeTrackToStreamMap.set(track, current);
+        }
+      }
+    }
+
+    if (this.subscribeSsrcToStreamMap) {
+      for (const [ssrc, streamId] of this.subscribeSsrcToStreamMap.entries()) {
+        if (previous === streamId) {
+          this.subscribeSsrcToStreamMap.set(ssrc, current);
+        }
+      }
+    }
+  }
+
   streamsPausedAtSource(): DefaultVideoStreamIdSet {
     const paused = new DefaultVideoStreamIdSet();
     if (this.currentIndex) {

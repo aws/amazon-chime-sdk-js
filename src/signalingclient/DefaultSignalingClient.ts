@@ -14,11 +14,13 @@ import {
   SdkLeaveFrame,
   SdkPauseResumeFrame,
   SdkPingPongFrame,
+  SdkRemoteVideoUpdateFrame,
   SdkSignalFrame,
   SdkStreamDescriptor,
   SdkStreamMediaType,
   SdkStreamServiceType,
   SdkSubscribeFrame,
+  SdkVideoSubscriptionConfiguration,
 } from '../signalingprotocol/SignalingProtocol.js';
 import Versioning from '../versioning/Versioning';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
@@ -29,6 +31,7 @@ import SignalingClientEvent from './SignalingClientEvent';
 import SignalingClientEventType from './SignalingClientEventType';
 import SignalingClientJoin from './SignalingClientJoin';
 import SignalingClientSubscribe from './SignalingClientSubscribe';
+import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVideoSubscriptionConfiguration';
 
 /**
  * [[DefaultSignalingClient]] implements the SignalingClient interface.
@@ -141,6 +144,32 @@ export default class DefaultSignalingClient implements SignalingClient {
     message.type = SdkSignalFrame.Type.SUBSCRIBE;
     message.sub = subscribeFrame;
     this.sendMessage(message);
+  }
+
+  remoteVideoUpdate(
+    addedOrUpdated: SignalingClientVideoSubscriptionConfiguration[],
+    removed: string[]
+  ): void {
+    const remoteVideoUpdate = SdkRemoteVideoUpdateFrame.create();
+    remoteVideoUpdate.addedOrUpdatedVideoSubscriptions = addedOrUpdated.map(
+      this.covertVideoSubscriptionConfiguration
+    );
+    remoteVideoUpdate.removedVideoSubscriptionMids = removed;
+
+    const message = SdkSignalFrame.create();
+    message.type = SdkSignalFrame.Type.REMOTE_VIDEO_UPDATE;
+    message.remoteVideoUpdate = remoteVideoUpdate;
+    this.sendMessage(message);
+  }
+
+  private covertVideoSubscriptionConfiguration(
+    config: SignalingClientVideoSubscriptionConfiguration
+  ): SdkVideoSubscriptionConfiguration {
+    const signalConfig: SdkVideoSubscriptionConfiguration = new SdkVideoSubscriptionConfiguration();
+    signalConfig.mid = config.mid;
+    signalConfig.attendeeId = config.attendeeId;
+    signalConfig.streamId = config.streamId;
+    return signalConfig;
   }
 
   leave(): void {

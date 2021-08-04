@@ -110,6 +110,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videostreamindex.html#localstreamdescriptions" class="tsd-kind-icon">local<wbr>Stream<wbr>Descriptions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videostreamindex.html#numberofparticipants" class="tsd-kind-icon">number<wbr>OfParticipants</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videostreamindex.html#numberofvideopublishingparticipantsexcludingself" class="tsd-kind-icon">number<wbr>OfVideo<wbr>Publishing<wbr>Participants<wbr>Excluding<wbr>Self</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videostreamindex.html#overridestreamidmappings" class="tsd-kind-icon">override<wbr>Stream<wbr>IdMappings</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videostreamindex.html#remotestreamdescriptions" class="tsd-kind-icon">remote<wbr>Stream<wbr>Descriptions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videostreamindex.html#streamidforssrc" class="tsd-kind-icon">stream<wbr>IdForSSRC</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="videostreamindex.html#streamidfortrack" class="tsd-kind-icon">stream<wbr>IdFor<wbr>Track</a></li>
@@ -438,7 +439,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L115">src/videostreamindex/VideoStreamIndex.ts:115</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L121">src/videostreamindex/VideoStreamIndex.ts:121</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -466,7 +467,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L120">src/videostreamindex/VideoStreamIndex.ts:120</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L126">src/videostreamindex/VideoStreamIndex.ts:126</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -529,6 +530,38 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="overridestreamidmappings" class="tsd-anchor"></a>
+					<h3>override<wbr>Stream<wbr>IdMappings</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">override<wbr>Stream<wbr>IdMappings<span class="tsd-signature-symbol">(</span>previous<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, current<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L111">src/videostreamindex/VideoStreamIndex.ts:111</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Override mappings using stream ID (i.e. for <code>streamIdForTrack</code>, and <code>streamIdForSSRC</code>)
+									locally (i.e. without the need for a subscribe ACK message)</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>previous: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>current: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="remotestreamdescriptions" class="tsd-anchor"></a>
 					<h3>remote<wbr>Stream<wbr>Descriptions</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -538,7 +571,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L125">src/videostreamindex/VideoStreamIndex.ts:125</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L131">src/videostreamindex/VideoStreamIndex.ts:131</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -653,7 +686,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L110">src/videostreamindex/VideoStreamIndex.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videostreamindex/VideoStreamIndex.ts#L116">src/videostreamindex/VideoStreamIndex.ts:116</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -748,6 +781,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videostreamindex.html#numberofvideopublishingparticipantsexcludingself" class="tsd-kind-icon">number<wbr>OfVideo<wbr>Publishing<wbr>Participants<wbr>Excluding<wbr>Self</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="videostreamindex.html#overridestreamidmappings" class="tsd-kind-icon">override<wbr>Stream<wbr>IdMappings</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="videostreamindex.html#remotestreamdescriptions" class="tsd-kind-icon">remote<wbr>Stream<wbr>Descriptions</a>

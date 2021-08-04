@@ -519,12 +519,11 @@ export default class DefaultDeviceController
 
     // Replace video to send
     if (this.boundAudioVideoController?.videoTileController.hasStartedLocalVideoTile()) {
-      // optimized method exists, a negotiation can be avoided
       if (this.boundAudioVideoController.replaceLocalVideo) {
         this.restartLocalVideoAfterSelection(false, true);
       } else {
-        // non-optimized path, a negotiation is coming
-        await this.boundAudioVideoController.update();
+        // Non-optimal path for backwards compatability with self implementated controller which will require renegotiation
+        await this.boundAudioVideoController.update({ needsRenegotiation: true });
       }
     }
   }

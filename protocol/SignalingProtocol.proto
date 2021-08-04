@@ -22,6 +22,7 @@ message SdkSignalFrame {
         AUDIO_STATUS = 20;
         CLIENT_METRIC = 21;
         DATA_MESSAGE = 22;
+        REMOTE_VIDEO_UPDATE = 24;
     }
     required uint64 timestamp_ms = 1;
     required Type type = 2;
@@ -42,6 +43,7 @@ message SdkSignalFrame {
     optional SdkAudioStatusFrame audio_status = 21;
     optional SdkClientMetricFrame client_metric = 22;
     optional SdkDataMessageFrame data_message = 23;
+    optional SdkRemoteVideoUpdateFrame remote_video_update = 25;
 }
 
 message SdkErrorFrame {
@@ -250,11 +252,10 @@ message SdkMetric {
         VIDEO_RECEIVED_JITTER_MS = 49;
         VIDEO_ENCODE_HEIGHT = 64;
         VIDEO_SENT_QP_SUM = 66;
-        VIDEO_DECODE_HEIGHT=69;
+        VIDEO_DECODE_HEIGHT = 69;
         VIDEO_RECEIVED_QP_SUM = 72;
         VIDEO_ENCODE_WIDTH = 86;
         VIDEO_DECODE_WIDTH = 87;
-        
     }
     optional Type type = 1;
     optional double value = 2;
@@ -298,7 +299,6 @@ message SdkTranscriptItem {
     optional string speaker_external_user_id = 4;
     optional int64 start_time = 5;
     enum Type {
-        UNKNOWN = 0;
         PRONUNCIATION = 1;
         PUNCTUATION = 2;
     }
@@ -348,4 +348,15 @@ message SdkTranscriptEvent {
 
 message SdkTranscriptFrame {
     repeated SdkTranscriptEvent events = 1;
+}
+
+message SdkRemoteVideoUpdateFrame {
+    repeated SdkVideoSubscriptionConfiguration added_or_updated_video_subscriptions = 1;
+    repeated string removed_video_subscription_mids = 2;
+}
+
+message SdkVideoSubscriptionConfiguration {
+   required string mid = 1;
+   optional string attendee_id = 2;
+   optional uint32 stream_id = 3;
 }
