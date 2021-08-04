@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 
-- Add support for server-side live transcription via Amazon Transcribe. Speaker utterances will be transcribed in real time and delivered as data messages to your application, allowing you to implement captioning, sentiment analysis, and other workloads. See [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) for more details.
-- [Demo] Add live transcription functionality. You will need to have a serverless deployment to create new AWS Lambda endpoints for live transcription. Follow [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) to create necessary service-linked role so that the demo app can call Amazon Transcribe on your behalf.
+- Add support for server-side live transcription via Amazon Transcribe and Amazon Transcribe Medical. Speaker utterances will be transcribed in real time and delivered as data messages to your application, allowing you to implement subtitles, sentiment analysis, and other workloads. See [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) for more details.
+- [Demo] Add live transcription functionality. You will need to have a serverless deployment to create new AWS Lambda endpoints for live transcription. Follow [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) to create necessary service-linked role so that the demo app can call Amazon Transcribe and Amazon Transcribe Medical on your behalf.
 - Exposed Amazon Voice Focus model complexity as a type in order to support
   showcasing complexity limitation in the meeting demo.
 - Packet-per-second (PPS) logging is now enabled in the meeting demo by
