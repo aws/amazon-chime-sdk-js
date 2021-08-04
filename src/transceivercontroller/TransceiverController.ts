@@ -65,7 +65,7 @@ export default interface TransceiverController {
   /**
    * Sets video sending bitrate in Kilo-bit-per-second
    */
-  setVideoSendingBitrateKbps(bitrateKbps: number): void;
+  setVideoSendingBitrateKbps(bitrateKbps: number, scaleResolutionDownBy?: number): void;
 
   /**
    * Returns the [[RTCRtpTransceiver]] for audio

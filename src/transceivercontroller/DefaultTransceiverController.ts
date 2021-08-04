@@ -23,7 +23,8 @@ export default class DefaultTransceiverController implements TransceiverControll
   static async setVideoSendingBitrateKbpsForSender(
     sender: RTCRtpSender,
     bitrateKbps: number,
-    _logger: Logger
+    _logger: Logger,
+    scaleResolutionDownBy: number = 1
   ): Promise<void> {
     if (!sender || bitrateKbps <= 0) {
       return;
@@ -34,6 +35,7 @@ export default class DefaultTransceiverController implements TransceiverControll
     }
     for (const encodeParam of param.encodings) {
       encodeParam.maxBitrate = bitrateKbps * 1000;
+      encodeParam.scaleResolutionDownBy = scaleResolutionDownBy;
     }
     await sender.setParameters(param);
   }
@@ -58,7 +60,10 @@ export default class DefaultTransceiverController implements TransceiverControll
     return this._localCameraTransceiver;
   }
 
-  async setVideoSendingBitrateKbps(bitrateKbps: number): Promise<void> {
+  async setVideoSendingBitrateKbps(
+    bitrateKbps: number,
+    scaleResolutionDownBy: number = 1
+  ): Promise<void> {
     // this won't set bandwidth limitation for video in Chrome
     if (!this._localCameraTransceiver || this._localCameraTransceiver.direction !== 'sendrecv') {
       return;
@@ -67,7 +72,8 @@ export default class DefaultTransceiverController implements TransceiverControll
     await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
       sender,
       bitrateKbps,
-      this.logger
+      this.logger,
+      scaleResolutionDownBy
     );
   }
 

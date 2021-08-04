@@ -921,7 +921,8 @@ export default class DefaultAudioVideoController
     // we do not update parameter for simulcast since they are updated in AttachMediaInputTask
     if (!this.meetingSessionContext.enableSimulcast) {
       const maxBitrateKbps = this.meetingSessionContext.videoCaptureAndEncodeParameter.encodeBitrates()[0];
-      this.enforceBandwidthLimitationForSender(maxBitrateKbps);
+      const scaleResolutionDownBy = this.getScaleDownFactorFromUplinkPolicy();
+      this.enforceBandwidthLimitationForSender(maxBitrateKbps, scaleResolutionDownBy);
     }
     this.logger.info('updated audio-video session');
   }
@@ -1026,16 +1027,21 @@ export default class DefaultAudioVideoController
     return null;
   }
 
-  private async enforceBandwidthLimitationForSender(maxBitrateKbps: number): Promise<void> {
+  private async enforceBandwidthLimitationForSender(
+    maxBitrateKbps: number,
+    scaleDownBy: number = 1
+  ): Promise<void> {
     if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
       await this.meetingSessionContext.transceiverController.setVideoSendingBitrateKbps(
-        maxBitrateKbps
+        maxBitrateKbps,
+        scaleDownBy
       );
     } else {
       await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
         this.meetingSessionContext.localVideoSender,
         maxBitrateKbps,
-        this.meetingSessionContext.logger
+        this.meetingSessionContext.logger,
+        scaleDownBy
       );
     }
   }
@@ -1104,17 +1110,19 @@ export default class DefaultAudioVideoController
       !this.meetingSessionContext.enableSimulcast
     ) {
       const oldMaxBandwidth = this.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps();
+      const oldScaleFactor = this.getScaleDownFactorFromUplinkPolicy();
 
       this.meetingSessionContext.videoUplinkBandwidthPolicy.setHasBandwidthPriority(
         hasBandwidthPriority
       );
       const newMaxBandwidth = this.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps();
+      const newScaleFactor = this.getScaleDownFactorFromUplinkPolicy();
 
-      if (oldMaxBandwidth !== newMaxBandwidth) {
+      if (oldMaxBandwidth !== newMaxBandwidth || oldScaleFactor !== newScaleFactor) {
         this.logger.info(
-          `video send bandwidth priority ${hasBandwidthPriority} max has changed from ${oldMaxBandwidth} kbps to ${newMaxBandwidth} kbps`
+          `video send bandwidth priority ${hasBandwidthPriority} max has changed from ${oldMaxBandwidth} kbps and scale down factor ${oldScaleFactor} to ${newMaxBandwidth} kbps and scale down factor ${newScaleFactor}`
         );
-        await this.enforceBandwidthLimitationForSender(newMaxBandwidth);
+        await this.enforceBandwidthLimitationForSender(newMaxBandwidth, newScaleFactor);
       }
     }
   }
@@ -1147,5 +1155,11 @@ export default class DefaultAudioVideoController
         f.bind(observer)(simulcastLayers)
       );
     });
+  }
+
+  private getScaleDownFactorFromUplinkPolicy(): number {
+    return this.meetingSessionContext.videoUplinkBandwidthPolicy.scaleResolutionDownBy
+      ? this.meetingSessionContext.videoUplinkBandwidthPolicy.scaleResolutionDownBy()
+      : 1;
   }
 }

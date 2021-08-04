@@ -514,33 +514,54 @@ describe('DefaultTransceiverController', () => {
       tc.setVideoSendingBitrateKbps(100);
     });
 
-    it('sets bitrate on RTCRtpSender correctly', done => {
+    it('default scale down factor if not passed in', async () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
       tc.setupLocalTransceivers();
 
       const newVideoTrack = new MediaStreamTrack();
-      tc.setVideoInput(newVideoTrack);
+      await tc.setVideoInput(newVideoTrack);
+      const videoTransceiver = peer.getTransceivers()[1];
+      const parameter = {
+        degradationPreference: null,
+        transactionId: '',
+      } as RTCRtpSendParameters;
+      await videoTransceiver.sender.setParameters(parameter);
+      await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
+        videoTransceiver.sender,
+        100,
+        logger
+      );
+      expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
+      expect(parameter.encodings[0].scaleResolutionDownBy).to.equal(1);
+    });
 
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-        const videoTransceiver = peer.getTransceivers()[1];
-        expect(videoTransceiver.direction).to.equal('sendrecv');
-        expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
+    it('sets bitrate on RTCRtpSender correctly', async () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
 
-        const parameter = {
-          degradationPreference: null,
-          transactionId: '',
-        } as RTCRtpSendParameters;
-        videoTransceiver.sender.setParameters(parameter);
-        tc.setVideoSendingBitrateKbps(100);
-      });
+      const newVideoTrack = new MediaStreamTrack();
+      await tc.setVideoInput(newVideoTrack);
 
-      new TimeoutScheduler(domMockBehavior.asyncWaitMs + 10).start(() => {
-        tc.setVideoSendingBitrateKbps(200);
-        const parameter = peer.getTransceivers()[1].sender.getParameters();
-        expect(parameter.encodings[0].maxBitrate).to.equal(200 * 1000);
-        done();
-      });
+      const videoTransceiver = peer.getTransceivers()[1];
+      expect(videoTransceiver.direction).to.equal('sendrecv');
+      expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
+
+      let parameter = {
+        degradationPreference: null,
+        transactionId: '',
+      } as RTCRtpSendParameters;
+      await videoTransceiver.sender.setParameters(parameter);
+      tc.setVideoSendingBitrateKbps(100);
+      parameter = peer.getTransceivers()[1].sender.getParameters();
+      expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
+      expect(parameter.encodings[0].scaleResolutionDownBy).to.equal(1);
+
+      tc.setVideoSendingBitrateKbps(200, 2);
+      parameter = peer.getTransceivers()[1].sender.getParameters();
+      expect(parameter.encodings[0].maxBitrate).to.equal(200 * 1000);
+      expect(parameter.encodings[0].scaleResolutionDownBy).to.equal(2);
     });
   });
 

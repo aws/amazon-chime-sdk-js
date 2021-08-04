@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { NoVideoUplinkBandwidthPolicy } from '../../build';
 import Attendee from '../../src/attendee/Attendee';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import DefaultAudioVideoController from '../../src/audiovideocontroller/DefaultAudioVideoController';
@@ -754,6 +755,21 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
       await stop();
+    });
+
+    it('can be started and take a bandwidth update with no scale down method', async () => {
+      configuration.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+      await delay(defaultDelay);
+      audioVideoController.setVideoMaxBandwidthKbps(100);
+      audioVideoController.handleHasBandwidthPriority(false);
     });
 
     it('can be started even when the stats collector has an issue starting due to an unsupported browser', async () => {

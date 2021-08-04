@@ -72,7 +72,7 @@
 						<p>NScaleVideoUplinkBandwidthPolicy implements capture and encode
 							parameters that are nearly equivalent to those chosen by the
 							traditional native clients, except for a modification to
-						maxBandwidthKbps described below.</p>
+						maxBandwidthKbps and scaleResolutionDownBy described below.</p>
 					</div>
 				</div>
 			</section>
@@ -107,6 +107,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="nscalevideouplinkbandwidthpolicy.html#chooseencodingparameters" class="tsd-kind-icon">choose<wbr>Encoding<wbr>Parameters</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="nscalevideouplinkbandwidthpolicy.html#choosemediatrackconstraints" class="tsd-kind-icon">choose<wbr>Media<wbr>Track<wbr>Constraints</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="nscalevideouplinkbandwidthpolicy.html#maxbandwidthkbps" class="tsd-kind-icon">max<wbr>Bandwidth<wbr>Kbps</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="nscalevideouplinkbandwidthpolicy.html#scaleresolutiondownby" class="tsd-kind-icon">scale<wbr>Resolution<wbr>Down<wbr>By</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="nscalevideouplinkbandwidthpolicy.html#sethasbandwidthpriority" class="tsd-kind-icon">set<wbr>Has<wbr>Bandwidth<wbr>Priority</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="nscalevideouplinkbandwidthpolicy.html#setidealmaxbandwidthkbps" class="tsd-kind-icon">set<wbr>Ideal<wbr>Max<wbr>Bandwidth<wbr>Kbps</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="nscalevideouplinkbandwidthpolicy.html#updateconnectionmetric" class="tsd-kind-icon">update<wbr>Connection<wbr>Metric</a></li>
@@ -156,7 +157,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videouplinkbandwidthpolicy.html">VideoUplinkBandwidthPolicy</a>.<a href="../interfaces/videouplinkbandwidthpolicy.html#choosecaptureandencodeparameters">chooseCaptureAndEncodeParameters</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L55">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L56">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:56</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">DefaultVideoAndEncodeParameter</span></h4>
@@ -210,7 +211,25 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videouplinkbandwidthpolicy.html">VideoUplinkBandwidthPolicy</a>.<a href="../interfaces/videouplinkbandwidthpolicy.html#maxbandwidthkbps">maxBandwidthKbps</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L80">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:80</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L81">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:81</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="scaleresolutiondownby" class="tsd-anchor"></a>
+					<h3>scale<wbr>Resolution<wbr>Down<wbr>By</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">scale<wbr>Resolution<wbr>Down<wbr>By<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/videouplinkbandwidthpolicy.html">VideoUplinkBandwidthPolicy</a>.<a href="../interfaces/videouplinkbandwidthpolicy.html#scaleresolutiondownby">scaleResolutionDownBy</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L96">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:96</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -228,7 +247,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videouplinkbandwidthpolicy.html">VideoUplinkBandwidthPolicy</a>.<a href="../interfaces/videouplinkbandwidthpolicy.html#sethasbandwidthpriority">setHasBandwidthPriority</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L99">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:99</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L117">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:117</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -252,7 +271,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videouplinkbandwidthpolicy.html">VideoUplinkBandwidthPolicy</a>.<a href="../interfaces/videouplinkbandwidthpolicy.html#setidealmaxbandwidthkbps">setIdealMaxBandwidthKbps</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L95">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:95</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L113">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -324,7 +343,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/videouplinkbandwidthpolicy.html">VideoUplinkBandwidthPolicy</a>.<a href="../interfaces/videouplinkbandwidthpolicy.html#wantsresubscribe">wantsResubscribe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L51">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts#L52">src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy.ts:52</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -362,6 +381,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="nscalevideouplinkbandwidthpolicy.html#maxbandwidthkbps" class="tsd-kind-icon">max<wbr>Bandwidth<wbr>Kbps</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="nscalevideouplinkbandwidthpolicy.html#scaleresolutiondownby" class="tsd-kind-icon">scale<wbr>Resolution<wbr>Down<wbr>By</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="nscalevideouplinkbandwidthpolicy.html#sethasbandwidthpriority" class="tsd-kind-icon">set<wbr>Has<wbr>Bandwidth<wbr>Priority</a>

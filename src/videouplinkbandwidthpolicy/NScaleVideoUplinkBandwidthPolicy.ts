@@ -9,7 +9,7 @@ import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
 /** NScaleVideoUplinkBandwidthPolicy implements capture and encode
  *  parameters that are nearly equivalent to those chosen by the
  *  traditional native clients, except for a modification to
- *  maxBandwidthKbps described below. */
+ *  maxBandwidthKbps and scaleResolutionDownBy described below. */
 export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
   private numParticipants: number = 0;
   private optimalParameters: DefaultVideoAndEncodeParameter;
@@ -44,7 +44,8 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       this.captureHeight(),
       this.captureFrameRate(),
       this.maxBandwidthKbps(),
-      false
+      false,
+      this.scaleResolutionDownBy()
     );
   }
 
@@ -90,6 +91,23 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       rate = ((544 / 11 + 14880 / (11 * this.numParticipants)) / 600) * this.idealMaxBandwidthKbps;
     }
     return Math.trunc(rate);
+  }
+
+  scaleResolutionDownBy(): number {
+    if (this.hasBandwidthPriority) {
+      return 1;
+    }
+    let scale;
+    if (this.numParticipants <= 4) {
+      scale = 1;
+    } else if (this.numParticipants <= 8) {
+      scale = 1.5;
+    } else if (this.numParticipants <= 16) {
+      scale = 2;
+    } else {
+      scale = 4;
+    }
+    return scale;
   }
 
   setIdealMaxBandwidthKbps(idealMaxBandwidthKbps: number): void {
