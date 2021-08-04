@@ -47,13 +47,12 @@ export class TranscriptEventConverter {
         if (!transcriptionStatusType) {
           continue;
         }
-
-        const transcriptionStatus: TranscriptionStatus = {
-          type: transcriptionStatusType,
-          eventTimeMs: sdkTranscriptEvent.status.eventTime as number,
-          transcriptionRegion: sdkTranscriptEvent.status.transcriptionRegion,
-          transcriptionConfiguration: sdkTranscriptEvent.status.transcriptionConfiguration,
-        };
+        const transcriptionStatus = new TranscriptionStatus();
+        transcriptionStatus.type = transcriptionStatusType;
+        transcriptionStatus.eventTimeMs = sdkTranscriptEvent.status.eventTime as number;
+        transcriptionStatus.transcriptionRegion = sdkTranscriptEvent.status.transcriptionRegion;
+        transcriptionStatus.transcriptionConfiguration =
+          sdkTranscriptEvent.status.transcriptionConfiguration;
 
         if (sdkTranscriptEvent.status.message) {
           transcriptionStatus.message = sdkTranscriptEvent.status.message;
@@ -61,9 +60,8 @@ export class TranscriptEventConverter {
 
         transcriptEvents.push(transcriptionStatus);
       } else if (sdkTranscriptEvent.transcript) {
-        const transcript: Transcript = {
-          results: [],
-        };
+        const transcript = new Transcript();
+        transcript.results = [];
 
         for (const result of sdkTranscriptEvent.transcript.results) {
           const transcriptResult: TranscriptResult = {

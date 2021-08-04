@@ -13,9 +13,9 @@ import {
 import DefaultTranscriptionController, {
   TRANSCRIPTION_DATA_MESSAGE_TOPIC,
 } from '../../src/transcript/DefaultTranscriptionController';
-import Transcript from '../../src/transcript/Transcript';
 import TranscriptEvent from '../../src/transcript/TranscriptEvent';
 import TranscriptionController from '../../src/transcript/TranscriptionController';
+import TranscriptionStatus from '../../src/transcript/TranscriptionStatus';
 import TranscriptionStatusType from '../../src/transcript/TranscriptionStatusType';
 
 function makeTranscriptDataMessage(): DataMessage {
@@ -72,14 +72,14 @@ describe('DefaultTranscriptionController', () => {
       transcriptionController.subscribeToTranscriptEvent(callback2);
       realtimeController.realtimeReceiveDataMessage(makeTranscriptDataMessage());
       expect(resultTranscriptEvent1).to.not.be.null;
-      if (resultTranscriptEvent1 instanceof Transcript) {
+      if (!(resultTranscriptEvent1 instanceof TranscriptionStatus)) {
         assert.fail();
         return;
       }
 
       expect(resultTranscriptEvent1.type).to.eq(TranscriptionStatusType.STARTED);
       expect(resultTranscriptEvent1.message).to.eq('message');
-      expect(resultTranscriptEvent1.transcriptionRegion).to.eq(`us-east-1`);
+      expect(resultTranscriptEvent1.transcriptionRegion).to.eq('us-east-1');
       expect(resultTranscriptEvent1.transcriptionConfiguration).to.eq(
         '{"EngineTranscribeSettings":{"LanguageCode":"en-US"}}'
       );

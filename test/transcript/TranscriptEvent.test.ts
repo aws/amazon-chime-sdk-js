@@ -47,7 +47,7 @@ describe('TranscriptEvent', () => {
     const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(1);
-    if (actualEvents[0] instanceof Transcript) {
+    if (!(actualEvents[0] instanceof TranscriptionStatus)) {
       assert.fail();
       return;
     }
@@ -71,7 +71,7 @@ describe('TranscriptEvent', () => {
     const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(1);
-    if (actualEvents[0] instanceof Transcript) {
+    if (!(actualEvents[0] instanceof TranscriptionStatus)) {
       assert.fail();
       return;
     }
@@ -112,11 +112,13 @@ describe('TranscriptEvent', () => {
 
     expect(actualEvents.length).to.equal(5);
     if (
-      actualEvents[0] instanceof Transcript ||
-      actualEvents[1] instanceof Transcript ||
-      actualEvents[2] instanceof Transcript ||
-      actualEvents[3] instanceof Transcript ||
-      actualEvents[4] instanceof Transcript
+      !(
+        actualEvents[0] instanceof TranscriptionStatus &&
+        actualEvents[1] instanceof TranscriptionStatus &&
+        actualEvents[2] instanceof TranscriptionStatus &&
+        actualEvents[3] instanceof TranscriptionStatus &&
+        actualEvents[4] instanceof TranscriptionStatus
+      )
     ) {
       assert.fail();
       return;
@@ -141,7 +143,7 @@ describe('TranscriptEvent', () => {
     const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(1);
-    if (actualEvents[0] instanceof TranscriptionStatus) {
+    if (!(actualEvents[0] instanceof Transcript)) {
       assert.fail();
       return;
     }
@@ -188,7 +190,9 @@ describe('TranscriptEvent', () => {
     const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(2);
-    if (actualEvents[0] instanceof Transcript || actualEvents[1] instanceof TranscriptionStatus) {
+    if (
+      !(actualEvents[0] instanceof TranscriptionStatus && actualEvents[1] instanceof Transcript)
+    ) {
       assert.fail();
       return;
     }
