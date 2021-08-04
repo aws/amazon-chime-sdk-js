@@ -3,7 +3,6 @@
 
 import * as chai from 'chai';
 
-import { TranscriptEvent } from '../../src';
 import DataMessage from '../../src/datamessage/DataMessage';
 import {
   SdkTranscriptEvent,
@@ -11,6 +10,9 @@ import {
   SdkTranscriptionStatus,
 } from '../../src/signalingprotocol/SignalingProtocol';
 import { TRANSCRIPTION_DATA_MESSAGE_TOPIC } from '../../src/transcript/DefaultTranscriptionController';
+import Transcript from '../../src/transcript/Transcript';
+import { TranscriptEventConverter } from '../../src/transcript/TranscriptEvent';
+import TranscriptionStatus from '../../src/transcript/TranscriptionStatus';
 import TranscriptionStatusType from '../../src/transcript/TranscriptionStatusType';
 import TranscriptItemType from '../../src/transcript/TranscriptItemType';
 import {
@@ -22,6 +24,7 @@ import {
 } from './TranscriptEventTestDataHelper';
 
 describe('TranscriptEvent', () => {
+  const assert: Chai.AssertStatic = chai.assert;
   const expect: Chai.ExpectStatic = chai.expect;
 
   function makeTranscriptDataMessageFrom(data: Uint8Array): DataMessage {
@@ -41,12 +44,17 @@ describe('TranscriptEvent', () => {
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPTION_STATUS_STARTED
     );
-    const actualEvents = TranscriptEvent.from(dataMessage);
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(1);
-    expect(actualEvents[0].status.type).to.eql(TranscriptionStatusType.STARTED);
-    expect(actualEvents[0].status.transcriptionRegion).to.eql('test-region');
-    expect(actualEvents[0].status.transcriptionConfiguration).to.eql('test-configuration');
+    if (actualEvents[0] instanceof Transcript) {
+      assert.fail();
+      return;
+    }
+
+    expect(actualEvents[0].type).to.eql(TranscriptionStatusType.STARTED);
+    expect(actualEvents[0].transcriptionRegion).to.eql('test-region');
+    expect(actualEvents[0].transcriptionConfiguration).to.eql('test-configuration');
   });
 
   it('handles status events with detail message', async () => {
@@ -60,10 +68,15 @@ describe('TranscriptEvent', () => {
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPTION_STATUS_STARTED_WITH_MESSAGE
     );
-    const actualEvents = TranscriptEvent.from(dataMessage);
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(1);
-    expect(actualEvents[0].status.message).to.eql('detail message');
+    if (actualEvents[0] instanceof Transcript) {
+      assert.fail();
+      return;
+    }
+
+    expect(actualEvents[0].message).to.eql('detail message');
   });
 
   it('handles one transcript event with invalid status type', async () => {
@@ -75,7 +88,7 @@ describe('TranscriptEvent', () => {
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPTION_STATUS_INVALID
     );
-    const actualEvents = TranscriptEvent.from(dataMessage);
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(0);
   });
@@ -95,14 +108,25 @@ describe('TranscriptEvent', () => {
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPTION_STATUS_ALL
     );
-    const actualEvents = TranscriptEvent.from(dataMessage);
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(5);
-    expect(actualEvents[0].status.type).to.eql(TranscriptionStatusType.STARTED);
-    expect(actualEvents[1].status.type).to.eql(TranscriptionStatusType.INTERRUPTED);
-    expect(actualEvents[2].status.type).to.eql(TranscriptionStatusType.RESUMED);
-    expect(actualEvents[3].status.type).to.eql(TranscriptionStatusType.STOPPED);
-    expect(actualEvents[4].status.type).to.eql(TranscriptionStatusType.FAILED);
+    if (
+      actualEvents[0] instanceof Transcript ||
+      actualEvents[1] instanceof Transcript ||
+      actualEvents[2] instanceof Transcript ||
+      actualEvents[3] instanceof Transcript ||
+      actualEvents[4] instanceof Transcript
+    ) {
+      assert.fail();
+      return;
+    }
+
+    expect(actualEvents[0].type).to.eql(TranscriptionStatusType.STARTED);
+    expect(actualEvents[1].type).to.eql(TranscriptionStatusType.INTERRUPTED);
+    expect(actualEvents[2].type).to.eql(TranscriptionStatusType.RESUMED);
+    expect(actualEvents[3].type).to.eql(TranscriptionStatusType.STOPPED);
+    expect(actualEvents[4].type).to.eql(TranscriptionStatusType.FAILED);
   });
 
   it('handles one transcript event of transcript type', async () => {
@@ -114,38 +138,41 @@ describe('TranscriptEvent', () => {
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPT_SINGLE
     );
-    const actualEvents = TranscriptEvent.from(dataMessage);
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(1);
-    expect(actualEvents[0].transcript.results.length).to.equal(1);
-    expect(actualEvents[0].transcript.results[0].alternatives.length).to.equal(1);
-    expect(actualEvents[0].transcript.results[0].alternatives[0].transcript).to.eql('Test.');
-    expect(actualEvents[0].transcript.results[0].alternatives[0].items.length).to.eql(2);
-    expect(actualEvents[0].transcript.results[0].alternatives[0].items[0].content).to.eql('Test');
-    expect(actualEvents[0].transcript.results[0].alternatives[0].items[0].type).to.eql(
+    if (actualEvents[0] instanceof TranscriptionStatus) {
+      assert.fail();
+      return;
+    }
+
+    expect(actualEvents[0].results.length).to.equal(1);
+    expect(actualEvents[0].results[0].alternatives.length).to.equal(1);
+    expect(actualEvents[0].results[0].alternatives[0].transcript).to.eql('Test.');
+    expect(actualEvents[0].results[0].alternatives[0].items.length).to.eql(2);
+    expect(actualEvents[0].results[0].alternatives[0].items[0].content).to.eql('Test');
+    expect(actualEvents[0].results[0].alternatives[0].items[0].type).to.eql(
       TranscriptItemType.PRONUNCIATION
     );
-    expect(
-      actualEvents[0].transcript.results[0].alternatives[0].items[0].attendee.attendeeId
-    ).to.eql('speaker-attendee-id');
-    expect(
-      actualEvents[0].transcript.results[0].alternatives[0].items[0].attendee.externalUserId
-    ).to.eql('speaker-external-user-id');
-    expect(
-      actualEvents[0].transcript.results[0].alternatives[0].items[0].vocabularyFilterMatch
-    ).to.eql(true);
-    expect(actualEvents[0].transcript.results[0].alternatives[0].items[1].content).to.eql('.');
-    expect(actualEvents[0].transcript.results[0].alternatives[0].items[1].type).to.eql(
+    expect(actualEvents[0].results[0].alternatives[0].items[0].attendee.attendeeId).to.eql(
+      'speaker-attendee-id'
+    );
+    expect(actualEvents[0].results[0].alternatives[0].items[0].attendee.externalUserId).to.eql(
+      'speaker-external-user-id'
+    );
+    expect(actualEvents[0].results[0].alternatives[0].items[0].vocabularyFilterMatch).to.eql(true);
+    expect(actualEvents[0].results[0].alternatives[0].items[1].content).to.eql('.');
+    expect(actualEvents[0].results[0].alternatives[0].items[1].type).to.eql(
       TranscriptItemType.PUNCTUATION
     );
-    expect(
-      actualEvents[0].transcript.results[0].alternatives[0].items[1].attendee.attendeeId
-    ).to.eql('speaker-attendee-id');
-    expect(
-      actualEvents[0].transcript.results[0].alternatives[0].items[1].attendee.externalUserId
-    ).to.eql('speaker-external-user-id');
-    expect(actualEvents[0].transcript.results[0].alternatives[0].items[1].vocabularyFilterMatch).to
-      .be.undefined;
+    expect(actualEvents[0].results[0].alternatives[0].items[1].attendee.attendeeId).to.eql(
+      'speaker-attendee-id'
+    );
+    expect(actualEvents[0].results[0].alternatives[0].items[1].attendee.externalUserId).to.eql(
+      'speaker-external-user-id'
+    );
+    expect(actualEvents[0].results[0].alternatives[0].items[1].vocabularyFilterMatch).to.be
+      .undefined;
   });
 
   it('handles multiple transcript event of mixed type', async () => {
@@ -158,11 +185,15 @@ describe('TranscriptEvent', () => {
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPT_MIXED
     );
-    const actualEvents = TranscriptEvent.from(dataMessage);
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(2);
-    expect(actualEvents[0].status.type).to.equal(TranscriptionStatusType.STARTED);
-    expect(actualEvents[1].transcript.results[0].alternatives[0].transcript).to.be.equal('Test.');
+    if (actualEvents[0] instanceof Transcript || actualEvents[1] instanceof TranscriptionStatus) {
+      assert.fail();
+      return;
+    }
+    expect(actualEvents[0].type).to.equal(TranscriptionStatusType.STARTED);
+    expect(actualEvents[1].results[0].alternatives[0].transcript).to.be.equal('Test.');
   });
 
   it('handles malformed data message', async () => {
@@ -174,7 +205,7 @@ describe('TranscriptEvent', () => {
       ''
     );
 
-    expect(() => TranscriptEvent.from(dataMessage)).to.throw(Error, 'decode');
+    expect(() => TranscriptEventConverter.from(dataMessage)).to.throw(Error, 'decode');
   });
 
   it('handles event with no status or transcript', async () => {
@@ -188,7 +219,7 @@ describe('TranscriptEvent', () => {
       ''
     );
 
-    const actualEvents = TranscriptEvent.from(dataMessage);
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(0);
   });

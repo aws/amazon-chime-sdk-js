@@ -23,12 +23,9 @@ const TranscriptionStatusTypes = {
   [SdkTranscriptionStatus.Type.FAILED]: TranscriptionStatusType.FAILED,
 };
 
-export default class TranscriptEvent {
-  // An TranscriptEvent can contain one of the following,
-  // either the transcription status, or transcript
-  status?: TranscriptionStatus;
-  transcript?: Transcript;
+type TranscriptEvent = Transcript | TranscriptionStatus;
 
+export class TranscriptEventConverter {
   /**
    * Decodes a list of TranscriptEvent from a data message.
    * @param dataMessage Data message to decode from
@@ -45,14 +42,13 @@ export default class TranscriptEvent {
 
     const transcriptEvents: TranscriptEvent[] = [];
     for (const sdkTranscriptEvent of frame.events) {
-      const transcriptEvent: TranscriptEvent = {};
       if (sdkTranscriptEvent.status) {
         const transcriptionStatusType = TranscriptionStatusTypes[sdkTranscriptEvent.status.type];
         if (!transcriptionStatusType) {
           continue;
         }
 
-        transcriptEvent.status = {
+        const transcriptionStatus: TranscriptionStatus = {
           type: transcriptionStatusType,
           eventTimeMs: sdkTranscriptEvent.status.eventTime as number,
           transcriptionRegion: sdkTranscriptEvent.status.transcriptionRegion,
@@ -60,12 +56,12 @@ export default class TranscriptEvent {
         };
 
         if (sdkTranscriptEvent.status.message) {
-          transcriptEvent.status.message = sdkTranscriptEvent.status.message;
+          transcriptionStatus.message = sdkTranscriptEvent.status.message;
         }
 
-        transcriptEvents.push(transcriptEvent);
+        transcriptEvents.push(transcriptionStatus);
       } else if (sdkTranscriptEvent.transcript) {
-        transcriptEvent.transcript = {
+        const transcript: Transcript = {
           results: [],
         };
 
@@ -116,13 +112,15 @@ export default class TranscriptEvent {
             transcriptResult.alternatives.push(transcriptAlternative);
           }
 
-          transcriptEvent.transcript.results.push(transcriptResult);
+          transcript.results.push(transcriptResult);
         }
 
-        transcriptEvents.push(transcriptEvent);
+        transcriptEvents.push(transcript);
       }
     }
 
     return transcriptEvents;
   }
 }
+
+export default TranscriptEvent;

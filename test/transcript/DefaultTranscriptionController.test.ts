@@ -13,6 +13,7 @@ import {
 import DefaultTranscriptionController, {
   TRANSCRIPTION_DATA_MESSAGE_TOPIC,
 } from '../../src/transcript/DefaultTranscriptionController';
+import Transcript from '../../src/transcript/Transcript';
 import TranscriptEvent from '../../src/transcript/TranscriptEvent';
 import TranscriptionController from '../../src/transcript/TranscriptionController';
 import TranscriptionStatusType from '../../src/transcript/TranscriptionStatusType';
@@ -41,11 +42,8 @@ function makeTranscriptDataMessage(): DataMessage {
 }
 
 describe('DefaultTranscriptionController', () => {
-  let expect: Chai.ExpectStatic;
-
-  before(() => {
-    expect = chai.expect;
-  });
+  const assert: Chai.AssertStatic = chai.assert;
+  const expect: Chai.ExpectStatic = chai.expect;
 
   describe('construction', () => {
     it('can be constructed', () => {
@@ -74,12 +72,15 @@ describe('DefaultTranscriptionController', () => {
       transcriptionController.subscribeToTranscriptEvent(callback2);
       realtimeController.realtimeReceiveDataMessage(makeTranscriptDataMessage());
       expect(resultTranscriptEvent1).to.not.be.null;
-      expect(resultTranscriptEvent1.transcript).to.be.undefined;
-      expect(resultTranscriptEvent1.status).to.not.be.null;
-      expect(resultTranscriptEvent1.status.type).to.eq(TranscriptionStatusType.STARTED);
-      expect(resultTranscriptEvent1.status.message).to.eq('message');
-      expect(resultTranscriptEvent1.status.transcriptionRegion).to.eq(`us-east-1`);
-      expect(resultTranscriptEvent1.status.transcriptionConfiguration).to.eq(
+      if (resultTranscriptEvent1 instanceof Transcript) {
+        assert.fail();
+        return;
+      }
+
+      expect(resultTranscriptEvent1.type).to.eq(TranscriptionStatusType.STARTED);
+      expect(resultTranscriptEvent1.message).to.eq('message');
+      expect(resultTranscriptEvent1.transcriptionRegion).to.eq(`us-east-1`);
+      expect(resultTranscriptEvent1.transcriptionConfiguration).to.eq(
         '{"EngineTranscribeSettings":{"LanguageCode":"en-US"}}'
       );
 

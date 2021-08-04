@@ -3,7 +3,7 @@
 
 import DataMessage from '../datamessage/DataMessage';
 import RealtimeController from '../realtimecontroller/RealtimeController';
-import TranscriptEvent from './TranscriptEvent';
+import TranscriptEvent, { TranscriptEventConverter } from './TranscriptEvent';
 import TranscriptionController from './TranscriptionController';
 
 export const TRANSCRIPTION_DATA_MESSAGE_TOPIC = 'aws:chime:transcription';
@@ -20,7 +20,7 @@ export default class DefaultTranscriptionController implements TranscriptionCont
       this.realtimeController.realtimeSubscribeToReceiveDataMessage(
         TRANSCRIPTION_DATA_MESSAGE_TOPIC,
         (dataMessage: DataMessage) => {
-          for (const transcriptEvent of TranscriptEvent.from(dataMessage)) {
+          for (const transcriptEvent of TranscriptEventConverter.from(dataMessage)) {
             for (const transcriptEventCallback of this.transcriptEventCallbacks) {
               transcriptEventCallback(transcriptEvent);
             }

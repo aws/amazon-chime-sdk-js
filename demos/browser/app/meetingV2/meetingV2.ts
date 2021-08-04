@@ -47,6 +47,7 @@ import {
   SimulcastLayers,
   TargetDisplaySize,
   TimeoutScheduler,
+  Transcript,
   TranscriptEvent,
   TranscriptionStatus,
   TranscriptionStatusType,
@@ -233,7 +234,7 @@ const SimulcastLayerMapping = {
 
 const LANGUAGES_NO_WORD_SEPARATOR = new Set([
   'ja-JP',
-  'zh-CN'
+  'zh-CN',
 ]);
 
 interface Toggle {
@@ -1915,12 +1916,12 @@ export class DemoMeetingApp
       this.transcriptContainerDiv.style.display = 'block';
     }
 
-    if (transcriptEvent.status) {
-      this.appendStatusDiv(transcriptEvent.status);
-      if (transcriptEvent.status.type === TranscriptionStatusType.STARTED) {
+    if (transcriptEvent instanceof TranscriptionStatus) {
+      this.appendStatusDiv(transcriptEvent);
+      if (transcriptEvent.type === TranscriptionStatusType.STARTED) {
         // Determine word separator based on language code
         let languageCode = null;
-        const transcriptionConfiguration = JSON.parse(transcriptEvent.status.transcriptionConfiguration);
+        const transcriptionConfiguration = JSON.parse(transcriptEvent.transcriptionConfiguration);
         if (transcriptionConfiguration) {
           if (transcriptionConfiguration.EngineTranscribeSettings) {
             languageCode = transcriptionConfiguration.EngineTranscribeSettings.LanguageCode;
@@ -1932,7 +1933,7 @@ export class DemoMeetingApp
         if (languageCode && LANGUAGES_NO_WORD_SEPARATOR.has(languageCode)) {
           this.noWordSeparatorForTranscription = true;
         }
-      } else if (transcriptEvent.status.type === TranscriptionStatusType.STOPPED && this.enableLiveTranscription) {
+      } else if (transcriptEvent.type === TranscriptionStatusType.STOPPED && this.enableLiveTranscription) {
         // When we receive a STOPPED status event:
         // 1. toggle enabled 'Live Transcription' button to disabled
         this.enableLiveTranscription = false;
@@ -1944,8 +1945,8 @@ export class DemoMeetingApp
         this.partialTranscriptDiv = null;
         this.partialTranscriptResultMap.clear();
       }
-    } else if (transcriptEvent.transcript) {
-      for (const result of transcriptEvent.transcript.results) {
+    } else if (transcriptEvent instanceof Transcript) {
+      for (const result of transcriptEvent.results) {
         const resultId = result.resultId;
         const isPartial = result.isPartial;
 
