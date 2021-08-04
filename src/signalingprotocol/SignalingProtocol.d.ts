@@ -3161,3 +3161,760 @@ export class SdkTurnCredentials implements ISdkTurnCredentials {
      */
     public toJSON(): { [k: string]: any };
 }
+
+/** Properties of a SdkTranscriptItem. */
+export interface ISdkTranscriptItem {
+
+    /** SdkTranscriptItem content */
+    content?: (string|null);
+
+    /** SdkTranscriptItem endTime */
+    endTime?: (number|Long|null);
+
+    /** SdkTranscriptItem speakerAttendeeId */
+    speakerAttendeeId?: (string|null);
+
+    /** SdkTranscriptItem speakerExternalUserId */
+    speakerExternalUserId?: (string|null);
+
+    /** SdkTranscriptItem startTime */
+    startTime?: (number|Long|null);
+
+    /** SdkTranscriptItem type */
+    type?: (SdkTranscriptItem.Type|null);
+
+    /** SdkTranscriptItem vocabularyFilterMatch */
+    vocabularyFilterMatch?: (boolean|null);
+}
+
+/** Represents a SdkTranscriptItem. */
+export class SdkTranscriptItem implements ISdkTranscriptItem {
+
+    /**
+     * Constructs a new SdkTranscriptItem.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscriptItem);
+
+    /** SdkTranscriptItem content. */
+    public content: string;
+
+    /** SdkTranscriptItem endTime. */
+    public endTime: (number|Long);
+
+    /** SdkTranscriptItem speakerAttendeeId. */
+    public speakerAttendeeId: string;
+
+    /** SdkTranscriptItem speakerExternalUserId. */
+    public speakerExternalUserId: string;
+
+    /** SdkTranscriptItem startTime. */
+    public startTime: (number|Long);
+
+    /** SdkTranscriptItem type. */
+    public type: SdkTranscriptItem.Type;
+
+    /** SdkTranscriptItem vocabularyFilterMatch. */
+    public vocabularyFilterMatch: boolean;
+
+    /**
+     * Creates a new SdkTranscriptItem instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscriptItem instance
+     */
+    public static create(properties?: ISdkTranscriptItem): SdkTranscriptItem;
+
+    /**
+     * Encodes the specified SdkTranscriptItem message. Does not implicitly {@link SdkTranscriptItem.verify|verify} messages.
+     * @param message SdkTranscriptItem message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscriptItem, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscriptItem message, length delimited. Does not implicitly {@link SdkTranscriptItem.verify|verify} messages.
+     * @param message SdkTranscriptItem message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscriptItem, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscriptItem message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscriptItem
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscriptItem;
+
+    /**
+     * Decodes a SdkTranscriptItem message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscriptItem
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscriptItem;
+
+    /**
+     * Verifies a SdkTranscriptItem message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscriptItem message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscriptItem
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscriptItem;
+
+    /**
+     * Creates a plain object from a SdkTranscriptItem message. Also converts values to other types if specified.
+     * @param message SdkTranscriptItem
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscriptItem, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscriptItem to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+export namespace SdkTranscriptItem {
+
+    /** Type enum. */
+    enum Type {
+        UNKNOWN = 0,
+        PRONUNCIATION = 1,
+        PUNCTUATION = 2
+    }
+}
+
+/** Properties of a SdkTranscriptAlternative. */
+export interface ISdkTranscriptAlternative {
+
+    /** SdkTranscriptAlternative items */
+    items?: (ISdkTranscriptItem[]|null);
+
+    /** SdkTranscriptAlternative transcript */
+    transcript?: (string|null);
+}
+
+/** Represents a SdkTranscriptAlternative. */
+export class SdkTranscriptAlternative implements ISdkTranscriptAlternative {
+
+    /**
+     * Constructs a new SdkTranscriptAlternative.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscriptAlternative);
+
+    /** SdkTranscriptAlternative items. */
+    public items: ISdkTranscriptItem[];
+
+    /** SdkTranscriptAlternative transcript. */
+    public transcript: string;
+
+    /**
+     * Creates a new SdkTranscriptAlternative instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscriptAlternative instance
+     */
+    public static create(properties?: ISdkTranscriptAlternative): SdkTranscriptAlternative;
+
+    /**
+     * Encodes the specified SdkTranscriptAlternative message. Does not implicitly {@link SdkTranscriptAlternative.verify|verify} messages.
+     * @param message SdkTranscriptAlternative message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscriptAlternative, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscriptAlternative message, length delimited. Does not implicitly {@link SdkTranscriptAlternative.verify|verify} messages.
+     * @param message SdkTranscriptAlternative message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscriptAlternative, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscriptAlternative message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscriptAlternative
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscriptAlternative;
+
+    /**
+     * Decodes a SdkTranscriptAlternative message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscriptAlternative
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscriptAlternative;
+
+    /**
+     * Verifies a SdkTranscriptAlternative message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscriptAlternative message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscriptAlternative
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscriptAlternative;
+
+    /**
+     * Creates a plain object from a SdkTranscriptAlternative message. Also converts values to other types if specified.
+     * @param message SdkTranscriptAlternative
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscriptAlternative, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscriptAlternative to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkTranscriptResult. */
+export interface ISdkTranscriptResult {
+
+    /** SdkTranscriptResult alternatives */
+    alternatives?: (ISdkTranscriptAlternative[]|null);
+
+    /** SdkTranscriptResult channelId */
+    channelId?: (string|null);
+
+    /** SdkTranscriptResult endTime */
+    endTime?: (number|Long|null);
+
+    /** SdkTranscriptResult isPartial */
+    isPartial?: (boolean|null);
+
+    /** SdkTranscriptResult resultId */
+    resultId?: (string|null);
+
+    /** SdkTranscriptResult startTime */
+    startTime?: (number|Long|null);
+}
+
+/** Represents a SdkTranscriptResult. */
+export class SdkTranscriptResult implements ISdkTranscriptResult {
+
+    /**
+     * Constructs a new SdkTranscriptResult.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscriptResult);
+
+    /** SdkTranscriptResult alternatives. */
+    public alternatives: ISdkTranscriptAlternative[];
+
+    /** SdkTranscriptResult channelId. */
+    public channelId: string;
+
+    /** SdkTranscriptResult endTime. */
+    public endTime: (number|Long);
+
+    /** SdkTranscriptResult isPartial. */
+    public isPartial: boolean;
+
+    /** SdkTranscriptResult resultId. */
+    public resultId: string;
+
+    /** SdkTranscriptResult startTime. */
+    public startTime: (number|Long);
+
+    /**
+     * Creates a new SdkTranscriptResult instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscriptResult instance
+     */
+    public static create(properties?: ISdkTranscriptResult): SdkTranscriptResult;
+
+    /**
+     * Encodes the specified SdkTranscriptResult message. Does not implicitly {@link SdkTranscriptResult.verify|verify} messages.
+     * @param message SdkTranscriptResult message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscriptResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscriptResult message, length delimited. Does not implicitly {@link SdkTranscriptResult.verify|verify} messages.
+     * @param message SdkTranscriptResult message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscriptResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscriptResult message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscriptResult
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscriptResult;
+
+    /**
+     * Decodes a SdkTranscriptResult message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscriptResult
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscriptResult;
+
+    /**
+     * Verifies a SdkTranscriptResult message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscriptResult message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscriptResult
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscriptResult;
+
+    /**
+     * Creates a plain object from a SdkTranscriptResult message. Also converts values to other types if specified.
+     * @param message SdkTranscriptResult
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscriptResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscriptResult to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkTranscript. */
+export interface ISdkTranscript {
+
+    /** SdkTranscript results */
+    results?: (ISdkTranscriptResult[]|null);
+}
+
+/** Represents a SdkTranscript. */
+export class SdkTranscript implements ISdkTranscript {
+
+    /**
+     * Constructs a new SdkTranscript.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscript);
+
+    /** SdkTranscript results. */
+    public results: ISdkTranscriptResult[];
+
+    /**
+     * Creates a new SdkTranscript instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscript instance
+     */
+    public static create(properties?: ISdkTranscript): SdkTranscript;
+
+    /**
+     * Encodes the specified SdkTranscript message. Does not implicitly {@link SdkTranscript.verify|verify} messages.
+     * @param message SdkTranscript message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscript, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscript message, length delimited. Does not implicitly {@link SdkTranscript.verify|verify} messages.
+     * @param message SdkTranscript message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscript, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscript message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscript
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscript;
+
+    /**
+     * Decodes a SdkTranscript message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscript
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscript;
+
+    /**
+     * Verifies a SdkTranscript message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscript message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscript
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscript;
+
+    /**
+     * Creates a plain object from a SdkTranscript message. Also converts values to other types if specified.
+     * @param message SdkTranscript
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscript, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscript to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkTranscriptionStatus. */
+export interface ISdkTranscriptionStatus {
+
+    /** SdkTranscriptionStatus type */
+    type?: (SdkTranscriptionStatus.Type|null);
+
+    /** SdkTranscriptionStatus eventTime */
+    eventTime?: (number|Long|null);
+
+    /** SdkTranscriptionStatus transcriptionRegion */
+    transcriptionRegion?: (string|null);
+
+    /** SdkTranscriptionStatus transcriptionConfiguration */
+    transcriptionConfiguration?: (string|null);
+
+    /** SdkTranscriptionStatus message */
+    message?: (string|null);
+}
+
+/** Represents a SdkTranscriptionStatus. */
+export class SdkTranscriptionStatus implements ISdkTranscriptionStatus {
+
+    /**
+     * Constructs a new SdkTranscriptionStatus.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscriptionStatus);
+
+    /** SdkTranscriptionStatus type. */
+    public type: SdkTranscriptionStatus.Type;
+
+    /** SdkTranscriptionStatus eventTime. */
+    public eventTime: (number|Long);
+
+    /** SdkTranscriptionStatus transcriptionRegion. */
+    public transcriptionRegion: string;
+
+    /** SdkTranscriptionStatus transcriptionConfiguration. */
+    public transcriptionConfiguration: string;
+
+    /** SdkTranscriptionStatus message. */
+    public message: string;
+
+    /**
+     * Creates a new SdkTranscriptionStatus instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscriptionStatus instance
+     */
+    public static create(properties?: ISdkTranscriptionStatus): SdkTranscriptionStatus;
+
+    /**
+     * Encodes the specified SdkTranscriptionStatus message. Does not implicitly {@link SdkTranscriptionStatus.verify|verify} messages.
+     * @param message SdkTranscriptionStatus message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscriptionStatus, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscriptionStatus message, length delimited. Does not implicitly {@link SdkTranscriptionStatus.verify|verify} messages.
+     * @param message SdkTranscriptionStatus message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscriptionStatus, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscriptionStatus message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscriptionStatus
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscriptionStatus;
+
+    /**
+     * Decodes a SdkTranscriptionStatus message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscriptionStatus
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscriptionStatus;
+
+    /**
+     * Verifies a SdkTranscriptionStatus message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscriptionStatus message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscriptionStatus
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscriptionStatus;
+
+    /**
+     * Creates a plain object from a SdkTranscriptionStatus message. Also converts values to other types if specified.
+     * @param message SdkTranscriptionStatus
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscriptionStatus, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscriptionStatus to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+export namespace SdkTranscriptionStatus {
+
+    /** Type enum. */
+    enum Type {
+        STARTED = 1,
+        INTERRUPTED = 2,
+        RESUMED = 3,
+        STOPPED = 4,
+        FAILED = 5
+    }
+}
+
+/** Properties of a SdkTranscriptEvent. */
+export interface ISdkTranscriptEvent {
+
+    /** SdkTranscriptEvent status */
+    status?: (ISdkTranscriptionStatus|null);
+
+    /** SdkTranscriptEvent transcript */
+    transcript?: (ISdkTranscript|null);
+}
+
+/** Represents a SdkTranscriptEvent. */
+export class SdkTranscriptEvent implements ISdkTranscriptEvent {
+
+    /**
+     * Constructs a new SdkTranscriptEvent.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscriptEvent);
+
+    /** SdkTranscriptEvent status. */
+    public status?: (ISdkTranscriptionStatus|null);
+
+    /** SdkTranscriptEvent transcript. */
+    public transcript?: (ISdkTranscript|null);
+
+    /** SdkTranscriptEvent Event. */
+    public Event?: ("status"|"transcript");
+
+    /**
+     * Creates a new SdkTranscriptEvent instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscriptEvent instance
+     */
+    public static create(properties?: ISdkTranscriptEvent): SdkTranscriptEvent;
+
+    /**
+     * Encodes the specified SdkTranscriptEvent message. Does not implicitly {@link SdkTranscriptEvent.verify|verify} messages.
+     * @param message SdkTranscriptEvent message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscriptEvent, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscriptEvent message, length delimited. Does not implicitly {@link SdkTranscriptEvent.verify|verify} messages.
+     * @param message SdkTranscriptEvent message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscriptEvent, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscriptEvent message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscriptEvent
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscriptEvent;
+
+    /**
+     * Decodes a SdkTranscriptEvent message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscriptEvent
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscriptEvent;
+
+    /**
+     * Verifies a SdkTranscriptEvent message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscriptEvent message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscriptEvent
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscriptEvent;
+
+    /**
+     * Creates a plain object from a SdkTranscriptEvent message. Also converts values to other types if specified.
+     * @param message SdkTranscriptEvent
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscriptEvent, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscriptEvent to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkTranscriptFrame. */
+export interface ISdkTranscriptFrame {
+
+    /** SdkTranscriptFrame events */
+    events?: (ISdkTranscriptEvent[]|null);
+}
+
+/** Represents a SdkTranscriptFrame. */
+export class SdkTranscriptFrame implements ISdkTranscriptFrame {
+
+    /**
+     * Constructs a new SdkTranscriptFrame.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscriptFrame);
+
+    /** SdkTranscriptFrame events. */
+    public events: ISdkTranscriptEvent[];
+
+    /**
+     * Creates a new SdkTranscriptFrame instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscriptFrame instance
+     */
+    public static create(properties?: ISdkTranscriptFrame): SdkTranscriptFrame;
+
+    /**
+     * Encodes the specified SdkTranscriptFrame message. Does not implicitly {@link SdkTranscriptFrame.verify|verify} messages.
+     * @param message SdkTranscriptFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscriptFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscriptFrame message, length delimited. Does not implicitly {@link SdkTranscriptFrame.verify|verify} messages.
+     * @param message SdkTranscriptFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscriptFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscriptFrame message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscriptFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscriptFrame;
+
+    /**
+     * Decodes a SdkTranscriptFrame message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscriptFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscriptFrame;
+
+    /**
+     * Verifies a SdkTranscriptFrame message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscriptFrame message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscriptFrame
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscriptFrame;
+
+    /**
+     * Creates a plain object from a SdkTranscriptFrame message. Also converts values to other types if specified.
+     * @param message SdkTranscriptFrame
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscriptFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscriptFrame to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}

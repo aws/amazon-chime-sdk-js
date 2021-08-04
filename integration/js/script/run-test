@@ -115,6 +115,9 @@ case $1 in
    messaging)
       r messaging_session_test.config.json
       ;;
+   transcription)
+      r transcription_test.config.json
+      ;;
    *)
       r audio_test.config.json
       r video_test.config.json

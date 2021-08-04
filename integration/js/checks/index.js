@@ -25,3 +25,6 @@ exports.GetAllVideoTilesCheck = require('./GetAllVideoTilesCheck');
 exports.HaveVideoTileForAttendeeIdCheck = require('./HaveVideoTileForAttendeeIdCheck');
 exports.HaveVideoTilesWithStreamsCheck = require('./HaveVideoTilesWithStreamsCheck');
 exports.GetLocalVideoTileCheck = require('./GetLocalVideoTileCheck');
+exports.TranscriptionStartedCheck = require('./TranscriptionStartedCheck');
+exports.TranscriptionStoppedCheck = require('./TranscriptionStoppedCheck');
+exports.TranscriptsReceivedCheck = require('./TranscriptsReceivedCheck');

@@ -465,7 +465,7 @@ svg {
     height: auto !important;
   }
 
-  #tile-container {
+  #tile-transcript-container {
     height: auto !important;
   }
 
@@ -932,4 +932,85 @@ a.markdown:active {
 
 .vf-active::before {
   content: "✓ "
+}
+
+.live-transcription-active::before {
+  content: "✓ "
+}
+
+.transcript-container {
+  max-height: 210px;
+  border-radius: 10px;
+  background-color: #bbb;
+  overflow-y: scroll;
+  margin-top: 10px;
+  padding: 0.2rem 1rem;
+}
+
+.transcript {
+  white-space: nowrap;
+  word-wrap: break-word;
+}
+
+.transcript-speaker {
+  color: #555;
+  font-weight: 500;
+}
+
+.transcript-content {
+  white-space: normal;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  max-width: 480px;
+}
+
+.modal-content-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.modal-content-header > span:first-child {
+  margin-right: auto;
+  visibility: hidden;
+}
+
+.modal-title {
+  font-size: 24px;
+}
+
+.close {
+  width: fit-content;
+  font-size: 32px;
+  font-weight: bold;
+  margin-left: auto
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  cursor: pointer;
+}
+
+#live-transcription-modal-content > * {
+  margin: 8px 0;
 }

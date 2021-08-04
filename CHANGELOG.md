@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 
+- Add support for server-side live transcription via Amazon Transcribe. Speaker utterances will be transcribed in real time and delivered as data messages to your application, allowing you to implement captioning, sentiment analysis, and other workloads. See [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) for more details.
+- [Demo] Add live transcription functionality. You will need to have a serverless deployment to create new AWS Lambda endpoints for live transcription. Follow [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) to create necessary service-linked role so that the demo app can call Amazon Transcribe on your behalf.
 - Exposed Amazon Voice Focus model complexity as a type in order to support
   showcasing complexity limitation in the meeting demo.
 - Packet-per-second (PPS) logging is now enabled in the meeting demo by
@@ -29,7 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.14.0] - 2021-07-23
 
 ### Added
-
 - Added `VideoPriorityBasedPolicyConfig` to control video downlink policy with network event response and recovery delays. Check [User Guide for Priority-based Downlink Policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#user-guide-for-priority-based-downlink-policy) for more information.
 - Amazon Chime SDK Project Board Overview and Guide.
 - Added 25 video tile support for demo app.
@@ -303,7 +304,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DefaultDeviceController` now attempts to resume a suspended `AudioContext`
   when choosing a transform device (#1062).
 - `DefaultVideoStreamIndex` now ignores old group IDs from a given attendee ID (#1029).
-
 
 ## [2.4.1] - 2021-01-28
 

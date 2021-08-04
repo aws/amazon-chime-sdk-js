@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
+import TranscriptionController from '../transcript/TranscriptionController';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
 import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
@@ -52,4 +53,6 @@ export default interface RealtimeControllerFacade {
   realtimeUnsubscribeFromReceiveDataMessage(topic: string): void;
   realtimeSubscribeToFatalError(callback: (error: Error) => void): void;
   realtimeUnsubscribeToFatalError(callback: (error: Error) => void): void;
+
+  readonly transcriptionController?: TranscriptionController;
 }

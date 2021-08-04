@@ -83,6 +83,7 @@ import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import DefaultStatsCollector from './statscollector/DefaultStatsCollector';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
+import DefaultTranscriptionController from './transcript/DefaultTranscriptionController';
 import DefaultUserAgentParser from './useragentparser/DefaultUserAgentParser';
 import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoFrameProcessorPipeline from './videoframeprocessor/DefaultVideoFrameProcessorPipeline';
@@ -236,6 +237,15 @@ import TaskStatus from './task/TaskStatus';
 import TimeoutScheduler from './scheduler/TimeoutScheduler';
 import TimeoutTask from './task/TimeoutTask';
 import TransceiverController from './transceivercontroller/TransceiverController';
+import Transcript from './transcript/Transcript';
+import TranscriptAlternative from './transcript/TranscriptAlternative';
+import TranscriptEvent from './transcript/TranscriptEvent';
+import TranscriptItem from './transcript/TranscriptItem';
+import TranscriptItemType from './transcript/TranscriptItemType';
+import TranscriptResult from './transcript/TranscriptResult';
+import TranscriptionController from './transcript/TranscriptionController';
+import TranscriptionStatus from './transcript/TranscriptionStatus';
+import TranscriptionStatusType from './transcript/TranscriptionStatusType';
 import TypeError from './devicecontroller/TypeError';
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import UserAgentParser from './useragentparser/UserAgentParser';
@@ -372,6 +382,7 @@ export {
   DefaultSimulcastUplinkPolicy,
   DefaultStatsCollector,
   DefaultTransceiverController,
+  DefaultTranscriptionController,
   DefaultUserAgentParser,
   DefaultVideoCaptureAndEncodeParameter,
   DefaultVideoFrameProcessorPipeline,
@@ -526,6 +537,15 @@ export {
   TimeoutScheduler,
   TimeoutTask,
   TransceiverController,
+  Transcript,
+  TranscriptAlternative,
+  TranscriptEvent,
+  TranscriptItem,
+  TranscriptItemType,
+  TranscriptResult,
+  TranscriptionController,
+  TranscriptionStatus,
+  TranscriptionStatusType,
   TypeError,
   UnusableAudioWarningConnectionHealthPolicy,
   UserAgentParser,

@@ -8167,4 +8167,1964 @@ $root.SdkTurnCredentials = (function() {
     return SdkTurnCredentials;
 })();
 
+$root.SdkTranscriptItem = (function() {
+
+    /**
+     * Properties of a SdkTranscriptItem.
+     * @exports ISdkTranscriptItem
+     * @interface ISdkTranscriptItem
+     * @property {string|null} [content] SdkTranscriptItem content
+     * @property {number|Long|null} [endTime] SdkTranscriptItem endTime
+     * @property {string|null} [speakerAttendeeId] SdkTranscriptItem speakerAttendeeId
+     * @property {string|null} [speakerExternalUserId] SdkTranscriptItem speakerExternalUserId
+     * @property {number|Long|null} [startTime] SdkTranscriptItem startTime
+     * @property {SdkTranscriptItem.Type|null} [type] SdkTranscriptItem type
+     * @property {boolean|null} [vocabularyFilterMatch] SdkTranscriptItem vocabularyFilterMatch
+     */
+
+    /**
+     * Constructs a new SdkTranscriptItem.
+     * @exports SdkTranscriptItem
+     * @classdesc Represents a SdkTranscriptItem.
+     * @implements ISdkTranscriptItem
+     * @constructor
+     * @param {ISdkTranscriptItem=} [properties] Properties to set
+     */
+    function SdkTranscriptItem(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTranscriptItem content.
+     * @member {string} content
+     * @memberof SdkTranscriptItem
+     * @instance
+     */
+    SdkTranscriptItem.prototype.content = "";
+
+    /**
+     * SdkTranscriptItem endTime.
+     * @member {number|Long} endTime
+     * @memberof SdkTranscriptItem
+     * @instance
+     */
+    SdkTranscriptItem.prototype.endTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkTranscriptItem speakerAttendeeId.
+     * @member {string} speakerAttendeeId
+     * @memberof SdkTranscriptItem
+     * @instance
+     */
+    SdkTranscriptItem.prototype.speakerAttendeeId = "";
+
+    /**
+     * SdkTranscriptItem speakerExternalUserId.
+     * @member {string} speakerExternalUserId
+     * @memberof SdkTranscriptItem
+     * @instance
+     */
+    SdkTranscriptItem.prototype.speakerExternalUserId = "";
+
+    /**
+     * SdkTranscriptItem startTime.
+     * @member {number|Long} startTime
+     * @memberof SdkTranscriptItem
+     * @instance
+     */
+    SdkTranscriptItem.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkTranscriptItem type.
+     * @member {SdkTranscriptItem.Type} type
+     * @memberof SdkTranscriptItem
+     * @instance
+     */
+    SdkTranscriptItem.prototype.type = 0;
+
+    /**
+     * SdkTranscriptItem vocabularyFilterMatch.
+     * @member {boolean} vocabularyFilterMatch
+     * @memberof SdkTranscriptItem
+     * @instance
+     */
+    SdkTranscriptItem.prototype.vocabularyFilterMatch = false;
+
+    /**
+     * Creates a new SdkTranscriptItem instance using the specified properties.
+     * @function create
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {ISdkTranscriptItem=} [properties] Properties to set
+     * @returns {SdkTranscriptItem} SdkTranscriptItem instance
+     */
+    SdkTranscriptItem.create = function create(properties) {
+        return new SdkTranscriptItem(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptItem message. Does not implicitly {@link SdkTranscriptItem.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {ISdkTranscriptItem} message SdkTranscriptItem message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptItem.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.content != null && message.hasOwnProperty("content"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.content);
+        if (message.endTime != null && message.hasOwnProperty("endTime"))
+            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.endTime);
+        if (message.speakerAttendeeId != null && message.hasOwnProperty("speakerAttendeeId"))
+            writer.uint32(/* id 3, wireType 2 =*/26).string(message.speakerAttendeeId);
+        if (message.speakerExternalUserId != null && message.hasOwnProperty("speakerExternalUserId"))
+            writer.uint32(/* id 4, wireType 2 =*/34).string(message.speakerExternalUserId);
+        if (message.startTime != null && message.hasOwnProperty("startTime"))
+            writer.uint32(/* id 5, wireType 0 =*/40).int64(message.startTime);
+        if (message.type != null && message.hasOwnProperty("type"))
+            writer.uint32(/* id 6, wireType 0 =*/48).int32(message.type);
+        if (message.vocabularyFilterMatch != null && message.hasOwnProperty("vocabularyFilterMatch"))
+            writer.uint32(/* id 7, wireType 0 =*/56).bool(message.vocabularyFilterMatch);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptItem message, length delimited. Does not implicitly {@link SdkTranscriptItem.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {ISdkTranscriptItem} message SdkTranscriptItem message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptItem.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTranscriptItem message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTranscriptItem} SdkTranscriptItem
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptItem.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptItem();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.content = reader.string();
+                break;
+            case 2:
+                message.endTime = reader.int64();
+                break;
+            case 3:
+                message.speakerAttendeeId = reader.string();
+                break;
+            case 4:
+                message.speakerExternalUserId = reader.string();
+                break;
+            case 5:
+                message.startTime = reader.int64();
+                break;
+            case 6:
+                message.type = reader.int32();
+                break;
+            case 7:
+                message.vocabularyFilterMatch = reader.bool();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTranscriptItem message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTranscriptItem} SdkTranscriptItem
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptItem.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTranscriptItem message.
+     * @function verify
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTranscriptItem.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.content != null && message.hasOwnProperty("content"))
+            if (!$util.isString(message.content))
+                return "content: string expected";
+        if (message.endTime != null && message.hasOwnProperty("endTime"))
+            if (!$util.isInteger(message.endTime) && !(message.endTime && $util.isInteger(message.endTime.low) && $util.isInteger(message.endTime.high)))
+                return "endTime: integer|Long expected";
+        if (message.speakerAttendeeId != null && message.hasOwnProperty("speakerAttendeeId"))
+            if (!$util.isString(message.speakerAttendeeId))
+                return "speakerAttendeeId: string expected";
+        if (message.speakerExternalUserId != null && message.hasOwnProperty("speakerExternalUserId"))
+            if (!$util.isString(message.speakerExternalUserId))
+                return "speakerExternalUserId: string expected";
+        if (message.startTime != null && message.hasOwnProperty("startTime"))
+            if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
+                return "startTime: integer|Long expected";
+        if (message.type != null && message.hasOwnProperty("type"))
+            switch (message.type) {
+            default:
+                return "type: enum value expected";
+            case 0:
+            case 1:
+            case 2:
+                break;
+            }
+        if (message.vocabularyFilterMatch != null && message.hasOwnProperty("vocabularyFilterMatch"))
+            if (typeof message.vocabularyFilterMatch !== "boolean")
+                return "vocabularyFilterMatch: boolean expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkTranscriptItem message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTranscriptItem} SdkTranscriptItem
+     */
+    SdkTranscriptItem.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTranscriptItem)
+            return object;
+        var message = new $root.SdkTranscriptItem();
+        if (object.content != null)
+            message.content = String(object.content);
+        if (object.endTime != null)
+            if ($util.Long)
+                (message.endTime = $util.Long.fromValue(object.endTime)).unsigned = false;
+            else if (typeof object.endTime === "string")
+                message.endTime = parseInt(object.endTime, 10);
+            else if (typeof object.endTime === "number")
+                message.endTime = object.endTime;
+            else if (typeof object.endTime === "object")
+                message.endTime = new $util.LongBits(object.endTime.low >>> 0, object.endTime.high >>> 0).toNumber();
+        if (object.speakerAttendeeId != null)
+            message.speakerAttendeeId = String(object.speakerAttendeeId);
+        if (object.speakerExternalUserId != null)
+            message.speakerExternalUserId = String(object.speakerExternalUserId);
+        if (object.startTime != null)
+            if ($util.Long)
+                (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
+            else if (typeof object.startTime === "string")
+                message.startTime = parseInt(object.startTime, 10);
+            else if (typeof object.startTime === "number")
+                message.startTime = object.startTime;
+            else if (typeof object.startTime === "object")
+                message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
+        switch (object.type) {
+        case "UNKNOWN":
+        case 0:
+            message.type = 0;
+            break;
+        case "PRONUNCIATION":
+        case 1:
+            message.type = 1;
+            break;
+        case "PUNCTUATION":
+        case 2:
+            message.type = 2;
+            break;
+        }
+        if (object.vocabularyFilterMatch != null)
+            message.vocabularyFilterMatch = Boolean(object.vocabularyFilterMatch);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTranscriptItem message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTranscriptItem
+     * @static
+     * @param {SdkTranscriptItem} message SdkTranscriptItem
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTranscriptItem.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.content = "";
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.endTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.endTime = options.longs === String ? "0" : 0;
+            object.speakerAttendeeId = "";
+            object.speakerExternalUserId = "";
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.startTime = options.longs === String ? "0" : 0;
+            object.type = options.enums === String ? "UNKNOWN" : 0;
+            object.vocabularyFilterMatch = false;
+        }
+        if (message.content != null && message.hasOwnProperty("content"))
+            object.content = message.content;
+        if (message.endTime != null && message.hasOwnProperty("endTime"))
+            if (typeof message.endTime === "number")
+                object.endTime = options.longs === String ? String(message.endTime) : message.endTime;
+            else
+                object.endTime = options.longs === String ? $util.Long.prototype.toString.call(message.endTime) : options.longs === Number ? new $util.LongBits(message.endTime.low >>> 0, message.endTime.high >>> 0).toNumber() : message.endTime;
+        if (message.speakerAttendeeId != null && message.hasOwnProperty("speakerAttendeeId"))
+            object.speakerAttendeeId = message.speakerAttendeeId;
+        if (message.speakerExternalUserId != null && message.hasOwnProperty("speakerExternalUserId"))
+            object.speakerExternalUserId = message.speakerExternalUserId;
+        if (message.startTime != null && message.hasOwnProperty("startTime"))
+            if (typeof message.startTime === "number")
+                object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
+            else
+                object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
+        if (message.type != null && message.hasOwnProperty("type"))
+            object.type = options.enums === String ? $root.SdkTranscriptItem.Type[message.type] : message.type;
+        if (message.vocabularyFilterMatch != null && message.hasOwnProperty("vocabularyFilterMatch"))
+            object.vocabularyFilterMatch = message.vocabularyFilterMatch;
+        return object;
+    };
+
+    /**
+     * Converts this SdkTranscriptItem to JSON.
+     * @function toJSON
+     * @memberof SdkTranscriptItem
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTranscriptItem.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Type enum.
+     * @name SdkTranscriptItem.Type
+     * @enum {string}
+     * @property {number} UNKNOWN=0 UNKNOWN value
+     * @property {number} PRONUNCIATION=1 PRONUNCIATION value
+     * @property {number} PUNCTUATION=2 PUNCTUATION value
+     */
+    SdkTranscriptItem.Type = (function() {
+        var valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[0] = "UNKNOWN"] = 0;
+        values[valuesById[1] = "PRONUNCIATION"] = 1;
+        values[valuesById[2] = "PUNCTUATION"] = 2;
+        return values;
+    })();
+
+    return SdkTranscriptItem;
+})();
+
+$root.SdkTranscriptAlternative = (function() {
+
+    /**
+     * Properties of a SdkTranscriptAlternative.
+     * @exports ISdkTranscriptAlternative
+     * @interface ISdkTranscriptAlternative
+     * @property {Array.<ISdkTranscriptItem>|null} [items] SdkTranscriptAlternative items
+     * @property {string|null} [transcript] SdkTranscriptAlternative transcript
+     */
+
+    /**
+     * Constructs a new SdkTranscriptAlternative.
+     * @exports SdkTranscriptAlternative
+     * @classdesc Represents a SdkTranscriptAlternative.
+     * @implements ISdkTranscriptAlternative
+     * @constructor
+     * @param {ISdkTranscriptAlternative=} [properties] Properties to set
+     */
+    function SdkTranscriptAlternative(properties) {
+        this.items = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTranscriptAlternative items.
+     * @member {Array.<ISdkTranscriptItem>} items
+     * @memberof SdkTranscriptAlternative
+     * @instance
+     */
+    SdkTranscriptAlternative.prototype.items = $util.emptyArray;
+
+    /**
+     * SdkTranscriptAlternative transcript.
+     * @member {string} transcript
+     * @memberof SdkTranscriptAlternative
+     * @instance
+     */
+    SdkTranscriptAlternative.prototype.transcript = "";
+
+    /**
+     * Creates a new SdkTranscriptAlternative instance using the specified properties.
+     * @function create
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {ISdkTranscriptAlternative=} [properties] Properties to set
+     * @returns {SdkTranscriptAlternative} SdkTranscriptAlternative instance
+     */
+    SdkTranscriptAlternative.create = function create(properties) {
+        return new SdkTranscriptAlternative(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptAlternative message. Does not implicitly {@link SdkTranscriptAlternative.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {ISdkTranscriptAlternative} message SdkTranscriptAlternative message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptAlternative.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.items != null && message.items.length)
+            for (var i = 0; i < message.items.length; ++i)
+                $root.SdkTranscriptItem.encode(message.items[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.transcript != null && message.hasOwnProperty("transcript"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.transcript);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptAlternative message, length delimited. Does not implicitly {@link SdkTranscriptAlternative.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {ISdkTranscriptAlternative} message SdkTranscriptAlternative message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptAlternative.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTranscriptAlternative message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTranscriptAlternative} SdkTranscriptAlternative
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptAlternative.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptAlternative();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                if (!(message.items && message.items.length))
+                    message.items = [];
+                message.items.push($root.SdkTranscriptItem.decode(reader, reader.uint32()));
+                break;
+            case 2:
+                message.transcript = reader.string();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTranscriptAlternative message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTranscriptAlternative} SdkTranscriptAlternative
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptAlternative.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTranscriptAlternative message.
+     * @function verify
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTranscriptAlternative.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.items != null && message.hasOwnProperty("items")) {
+            if (!Array.isArray(message.items))
+                return "items: array expected";
+            for (var i = 0; i < message.items.length; ++i) {
+                var error = $root.SdkTranscriptItem.verify(message.items[i]);
+                if (error)
+                    return "items." + error;
+            }
+        }
+        if (message.transcript != null && message.hasOwnProperty("transcript"))
+            if (!$util.isString(message.transcript))
+                return "transcript: string expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkTranscriptAlternative message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTranscriptAlternative} SdkTranscriptAlternative
+     */
+    SdkTranscriptAlternative.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTranscriptAlternative)
+            return object;
+        var message = new $root.SdkTranscriptAlternative();
+        if (object.items) {
+            if (!Array.isArray(object.items))
+                throw TypeError(".SdkTranscriptAlternative.items: array expected");
+            message.items = [];
+            for (var i = 0; i < object.items.length; ++i) {
+                if (typeof object.items[i] !== "object")
+                    throw TypeError(".SdkTranscriptAlternative.items: object expected");
+                message.items[i] = $root.SdkTranscriptItem.fromObject(object.items[i]);
+            }
+        }
+        if (object.transcript != null)
+            message.transcript = String(object.transcript);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTranscriptAlternative message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTranscriptAlternative
+     * @static
+     * @param {SdkTranscriptAlternative} message SdkTranscriptAlternative
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTranscriptAlternative.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.items = [];
+        if (options.defaults)
+            object.transcript = "";
+        if (message.items && message.items.length) {
+            object.items = [];
+            for (var j = 0; j < message.items.length; ++j)
+                object.items[j] = $root.SdkTranscriptItem.toObject(message.items[j], options);
+        }
+        if (message.transcript != null && message.hasOwnProperty("transcript"))
+            object.transcript = message.transcript;
+        return object;
+    };
+
+    /**
+     * Converts this SdkTranscriptAlternative to JSON.
+     * @function toJSON
+     * @memberof SdkTranscriptAlternative
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTranscriptAlternative.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkTranscriptAlternative;
+})();
+
+$root.SdkTranscriptResult = (function() {
+
+    /**
+     * Properties of a SdkTranscriptResult.
+     * @exports ISdkTranscriptResult
+     * @interface ISdkTranscriptResult
+     * @property {Array.<ISdkTranscriptAlternative>|null} [alternatives] SdkTranscriptResult alternatives
+     * @property {string|null} [channelId] SdkTranscriptResult channelId
+     * @property {number|Long|null} [endTime] SdkTranscriptResult endTime
+     * @property {boolean|null} [isPartial] SdkTranscriptResult isPartial
+     * @property {string|null} [resultId] SdkTranscriptResult resultId
+     * @property {number|Long|null} [startTime] SdkTranscriptResult startTime
+     */
+
+    /**
+     * Constructs a new SdkTranscriptResult.
+     * @exports SdkTranscriptResult
+     * @classdesc Represents a SdkTranscriptResult.
+     * @implements ISdkTranscriptResult
+     * @constructor
+     * @param {ISdkTranscriptResult=} [properties] Properties to set
+     */
+    function SdkTranscriptResult(properties) {
+        this.alternatives = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTranscriptResult alternatives.
+     * @member {Array.<ISdkTranscriptAlternative>} alternatives
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.alternatives = $util.emptyArray;
+
+    /**
+     * SdkTranscriptResult channelId.
+     * @member {string} channelId
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.channelId = "";
+
+    /**
+     * SdkTranscriptResult endTime.
+     * @member {number|Long} endTime
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.endTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkTranscriptResult isPartial.
+     * @member {boolean} isPartial
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.isPartial = false;
+
+    /**
+     * SdkTranscriptResult resultId.
+     * @member {string} resultId
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.resultId = "";
+
+    /**
+     * SdkTranscriptResult startTime.
+     * @member {number|Long} startTime
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * Creates a new SdkTranscriptResult instance using the specified properties.
+     * @function create
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {ISdkTranscriptResult=} [properties] Properties to set
+     * @returns {SdkTranscriptResult} SdkTranscriptResult instance
+     */
+    SdkTranscriptResult.create = function create(properties) {
+        return new SdkTranscriptResult(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptResult message. Does not implicitly {@link SdkTranscriptResult.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {ISdkTranscriptResult} message SdkTranscriptResult message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptResult.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.alternatives != null && message.alternatives.length)
+            for (var i = 0; i < message.alternatives.length; ++i)
+                $root.SdkTranscriptAlternative.encode(message.alternatives[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.channelId != null && message.hasOwnProperty("channelId"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.channelId);
+        if (message.endTime != null && message.hasOwnProperty("endTime"))
+            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.endTime);
+        if (message.isPartial != null && message.hasOwnProperty("isPartial"))
+            writer.uint32(/* id 4, wireType 0 =*/32).bool(message.isPartial);
+        if (message.resultId != null && message.hasOwnProperty("resultId"))
+            writer.uint32(/* id 5, wireType 2 =*/42).string(message.resultId);
+        if (message.startTime != null && message.hasOwnProperty("startTime"))
+            writer.uint32(/* id 6, wireType 0 =*/48).int64(message.startTime);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptResult message, length delimited. Does not implicitly {@link SdkTranscriptResult.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {ISdkTranscriptResult} message SdkTranscriptResult message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptResult.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTranscriptResult message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTranscriptResult} SdkTranscriptResult
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptResult.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptResult();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                if (!(message.alternatives && message.alternatives.length))
+                    message.alternatives = [];
+                message.alternatives.push($root.SdkTranscriptAlternative.decode(reader, reader.uint32()));
+                break;
+            case 2:
+                message.channelId = reader.string();
+                break;
+            case 3:
+                message.endTime = reader.int64();
+                break;
+            case 4:
+                message.isPartial = reader.bool();
+                break;
+            case 5:
+                message.resultId = reader.string();
+                break;
+            case 6:
+                message.startTime = reader.int64();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTranscriptResult message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTranscriptResult} SdkTranscriptResult
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptResult.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTranscriptResult message.
+     * @function verify
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTranscriptResult.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.alternatives != null && message.hasOwnProperty("alternatives")) {
+            if (!Array.isArray(message.alternatives))
+                return "alternatives: array expected";
+            for (var i = 0; i < message.alternatives.length; ++i) {
+                var error = $root.SdkTranscriptAlternative.verify(message.alternatives[i]);
+                if (error)
+                    return "alternatives." + error;
+            }
+        }
+        if (message.channelId != null && message.hasOwnProperty("channelId"))
+            if (!$util.isString(message.channelId))
+                return "channelId: string expected";
+        if (message.endTime != null && message.hasOwnProperty("endTime"))
+            if (!$util.isInteger(message.endTime) && !(message.endTime && $util.isInteger(message.endTime.low) && $util.isInteger(message.endTime.high)))
+                return "endTime: integer|Long expected";
+        if (message.isPartial != null && message.hasOwnProperty("isPartial"))
+            if (typeof message.isPartial !== "boolean")
+                return "isPartial: boolean expected";
+        if (message.resultId != null && message.hasOwnProperty("resultId"))
+            if (!$util.isString(message.resultId))
+                return "resultId: string expected";
+        if (message.startTime != null && message.hasOwnProperty("startTime"))
+            if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
+                return "startTime: integer|Long expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkTranscriptResult message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTranscriptResult} SdkTranscriptResult
+     */
+    SdkTranscriptResult.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTranscriptResult)
+            return object;
+        var message = new $root.SdkTranscriptResult();
+        if (object.alternatives) {
+            if (!Array.isArray(object.alternatives))
+                throw TypeError(".SdkTranscriptResult.alternatives: array expected");
+            message.alternatives = [];
+            for (var i = 0; i < object.alternatives.length; ++i) {
+                if (typeof object.alternatives[i] !== "object")
+                    throw TypeError(".SdkTranscriptResult.alternatives: object expected");
+                message.alternatives[i] = $root.SdkTranscriptAlternative.fromObject(object.alternatives[i]);
+            }
+        }
+        if (object.channelId != null)
+            message.channelId = String(object.channelId);
+        if (object.endTime != null)
+            if ($util.Long)
+                (message.endTime = $util.Long.fromValue(object.endTime)).unsigned = false;
+            else if (typeof object.endTime === "string")
+                message.endTime = parseInt(object.endTime, 10);
+            else if (typeof object.endTime === "number")
+                message.endTime = object.endTime;
+            else if (typeof object.endTime === "object")
+                message.endTime = new $util.LongBits(object.endTime.low >>> 0, object.endTime.high >>> 0).toNumber();
+        if (object.isPartial != null)
+            message.isPartial = Boolean(object.isPartial);
+        if (object.resultId != null)
+            message.resultId = String(object.resultId);
+        if (object.startTime != null)
+            if ($util.Long)
+                (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
+            else if (typeof object.startTime === "string")
+                message.startTime = parseInt(object.startTime, 10);
+            else if (typeof object.startTime === "number")
+                message.startTime = object.startTime;
+            else if (typeof object.startTime === "object")
+                message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTranscriptResult message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTranscriptResult
+     * @static
+     * @param {SdkTranscriptResult} message SdkTranscriptResult
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTranscriptResult.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.alternatives = [];
+        if (options.defaults) {
+            object.channelId = "";
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.endTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.endTime = options.longs === String ? "0" : 0;
+            object.isPartial = false;
+            object.resultId = "";
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.startTime = options.longs === String ? "0" : 0;
+        }
+        if (message.alternatives && message.alternatives.length) {
+            object.alternatives = [];
+            for (var j = 0; j < message.alternatives.length; ++j)
+                object.alternatives[j] = $root.SdkTranscriptAlternative.toObject(message.alternatives[j], options);
+        }
+        if (message.channelId != null && message.hasOwnProperty("channelId"))
+            object.channelId = message.channelId;
+        if (message.endTime != null && message.hasOwnProperty("endTime"))
+            if (typeof message.endTime === "number")
+                object.endTime = options.longs === String ? String(message.endTime) : message.endTime;
+            else
+                object.endTime = options.longs === String ? $util.Long.prototype.toString.call(message.endTime) : options.longs === Number ? new $util.LongBits(message.endTime.low >>> 0, message.endTime.high >>> 0).toNumber() : message.endTime;
+        if (message.isPartial != null && message.hasOwnProperty("isPartial"))
+            object.isPartial = message.isPartial;
+        if (message.resultId != null && message.hasOwnProperty("resultId"))
+            object.resultId = message.resultId;
+        if (message.startTime != null && message.hasOwnProperty("startTime"))
+            if (typeof message.startTime === "number")
+                object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
+            else
+                object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
+        return object;
+    };
+
+    /**
+     * Converts this SdkTranscriptResult to JSON.
+     * @function toJSON
+     * @memberof SdkTranscriptResult
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTranscriptResult.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkTranscriptResult;
+})();
+
+$root.SdkTranscript = (function() {
+
+    /**
+     * Properties of a SdkTranscript.
+     * @exports ISdkTranscript
+     * @interface ISdkTranscript
+     * @property {Array.<ISdkTranscriptResult>|null} [results] SdkTranscript results
+     */
+
+    /**
+     * Constructs a new SdkTranscript.
+     * @exports SdkTranscript
+     * @classdesc Represents a SdkTranscript.
+     * @implements ISdkTranscript
+     * @constructor
+     * @param {ISdkTranscript=} [properties] Properties to set
+     */
+    function SdkTranscript(properties) {
+        this.results = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTranscript results.
+     * @member {Array.<ISdkTranscriptResult>} results
+     * @memberof SdkTranscript
+     * @instance
+     */
+    SdkTranscript.prototype.results = $util.emptyArray;
+
+    /**
+     * Creates a new SdkTranscript instance using the specified properties.
+     * @function create
+     * @memberof SdkTranscript
+     * @static
+     * @param {ISdkTranscript=} [properties] Properties to set
+     * @returns {SdkTranscript} SdkTranscript instance
+     */
+    SdkTranscript.create = function create(properties) {
+        return new SdkTranscript(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTranscript message. Does not implicitly {@link SdkTranscript.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTranscript
+     * @static
+     * @param {ISdkTranscript} message SdkTranscript message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscript.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.results != null && message.results.length)
+            for (var i = 0; i < message.results.length; ++i)
+                $root.SdkTranscriptResult.encode(message.results[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTranscript message, length delimited. Does not implicitly {@link SdkTranscript.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTranscript
+     * @static
+     * @param {ISdkTranscript} message SdkTranscript message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscript.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTranscript message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTranscript
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTranscript} SdkTranscript
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscript.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscript();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                if (!(message.results && message.results.length))
+                    message.results = [];
+                message.results.push($root.SdkTranscriptResult.decode(reader, reader.uint32()));
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTranscript message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTranscript
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTranscript} SdkTranscript
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscript.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTranscript message.
+     * @function verify
+     * @memberof SdkTranscript
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTranscript.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.results != null && message.hasOwnProperty("results")) {
+            if (!Array.isArray(message.results))
+                return "results: array expected";
+            for (var i = 0; i < message.results.length; ++i) {
+                var error = $root.SdkTranscriptResult.verify(message.results[i]);
+                if (error)
+                    return "results." + error;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkTranscript message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTranscript
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTranscript} SdkTranscript
+     */
+    SdkTranscript.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTranscript)
+            return object;
+        var message = new $root.SdkTranscript();
+        if (object.results) {
+            if (!Array.isArray(object.results))
+                throw TypeError(".SdkTranscript.results: array expected");
+            message.results = [];
+            for (var i = 0; i < object.results.length; ++i) {
+                if (typeof object.results[i] !== "object")
+                    throw TypeError(".SdkTranscript.results: object expected");
+                message.results[i] = $root.SdkTranscriptResult.fromObject(object.results[i]);
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTranscript message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTranscript
+     * @static
+     * @param {SdkTranscript} message SdkTranscript
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTranscript.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.results = [];
+        if (message.results && message.results.length) {
+            object.results = [];
+            for (var j = 0; j < message.results.length; ++j)
+                object.results[j] = $root.SdkTranscriptResult.toObject(message.results[j], options);
+        }
+        return object;
+    };
+
+    /**
+     * Converts this SdkTranscript to JSON.
+     * @function toJSON
+     * @memberof SdkTranscript
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTranscript.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkTranscript;
+})();
+
+$root.SdkTranscriptionStatus = (function() {
+
+    /**
+     * Properties of a SdkTranscriptionStatus.
+     * @exports ISdkTranscriptionStatus
+     * @interface ISdkTranscriptionStatus
+     * @property {SdkTranscriptionStatus.Type|null} [type] SdkTranscriptionStatus type
+     * @property {number|Long|null} [eventTime] SdkTranscriptionStatus eventTime
+     * @property {string|null} [transcriptionRegion] SdkTranscriptionStatus transcriptionRegion
+     * @property {string|null} [transcriptionConfiguration] SdkTranscriptionStatus transcriptionConfiguration
+     * @property {string|null} [message] SdkTranscriptionStatus message
+     */
+
+    /**
+     * Constructs a new SdkTranscriptionStatus.
+     * @exports SdkTranscriptionStatus
+     * @classdesc Represents a SdkTranscriptionStatus.
+     * @implements ISdkTranscriptionStatus
+     * @constructor
+     * @param {ISdkTranscriptionStatus=} [properties] Properties to set
+     */
+    function SdkTranscriptionStatus(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTranscriptionStatus type.
+     * @member {SdkTranscriptionStatus.Type} type
+     * @memberof SdkTranscriptionStatus
+     * @instance
+     */
+    SdkTranscriptionStatus.prototype.type = 1;
+
+    /**
+     * SdkTranscriptionStatus eventTime.
+     * @member {number|Long} eventTime
+     * @memberof SdkTranscriptionStatus
+     * @instance
+     */
+    SdkTranscriptionStatus.prototype.eventTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkTranscriptionStatus transcriptionRegion.
+     * @member {string} transcriptionRegion
+     * @memberof SdkTranscriptionStatus
+     * @instance
+     */
+    SdkTranscriptionStatus.prototype.transcriptionRegion = "";
+
+    /**
+     * SdkTranscriptionStatus transcriptionConfiguration.
+     * @member {string} transcriptionConfiguration
+     * @memberof SdkTranscriptionStatus
+     * @instance
+     */
+    SdkTranscriptionStatus.prototype.transcriptionConfiguration = "";
+
+    /**
+     * SdkTranscriptionStatus message.
+     * @member {string} message
+     * @memberof SdkTranscriptionStatus
+     * @instance
+     */
+    SdkTranscriptionStatus.prototype.message = "";
+
+    /**
+     * Creates a new SdkTranscriptionStatus instance using the specified properties.
+     * @function create
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {ISdkTranscriptionStatus=} [properties] Properties to set
+     * @returns {SdkTranscriptionStatus} SdkTranscriptionStatus instance
+     */
+    SdkTranscriptionStatus.create = function create(properties) {
+        return new SdkTranscriptionStatus(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptionStatus message. Does not implicitly {@link SdkTranscriptionStatus.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {ISdkTranscriptionStatus} message SdkTranscriptionStatus message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptionStatus.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.type != null && message.hasOwnProperty("type"))
+            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
+        if (message.eventTime != null && message.hasOwnProperty("eventTime"))
+            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.eventTime);
+        if (message.transcriptionRegion != null && message.hasOwnProperty("transcriptionRegion"))
+            writer.uint32(/* id 3, wireType 2 =*/26).string(message.transcriptionRegion);
+        if (message.transcriptionConfiguration != null && message.hasOwnProperty("transcriptionConfiguration"))
+            writer.uint32(/* id 4, wireType 2 =*/34).string(message.transcriptionConfiguration);
+        if (message.message != null && message.hasOwnProperty("message"))
+            writer.uint32(/* id 5, wireType 2 =*/42).string(message.message);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptionStatus message, length delimited. Does not implicitly {@link SdkTranscriptionStatus.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {ISdkTranscriptionStatus} message SdkTranscriptionStatus message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptionStatus.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTranscriptionStatus message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTranscriptionStatus} SdkTranscriptionStatus
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptionStatus.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptionStatus();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.type = reader.int32();
+                break;
+            case 2:
+                message.eventTime = reader.int64();
+                break;
+            case 3:
+                message.transcriptionRegion = reader.string();
+                break;
+            case 4:
+                message.transcriptionConfiguration = reader.string();
+                break;
+            case 5:
+                message.message = reader.string();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTranscriptionStatus message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTranscriptionStatus} SdkTranscriptionStatus
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptionStatus.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTranscriptionStatus message.
+     * @function verify
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTranscriptionStatus.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.type != null && message.hasOwnProperty("type"))
+            switch (message.type) {
+            default:
+                return "type: enum value expected";
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                break;
+            }
+        if (message.eventTime != null && message.hasOwnProperty("eventTime"))
+            if (!$util.isInteger(message.eventTime) && !(message.eventTime && $util.isInteger(message.eventTime.low) && $util.isInteger(message.eventTime.high)))
+                return "eventTime: integer|Long expected";
+        if (message.transcriptionRegion != null && message.hasOwnProperty("transcriptionRegion"))
+            if (!$util.isString(message.transcriptionRegion))
+                return "transcriptionRegion: string expected";
+        if (message.transcriptionConfiguration != null && message.hasOwnProperty("transcriptionConfiguration"))
+            if (!$util.isString(message.transcriptionConfiguration))
+                return "transcriptionConfiguration: string expected";
+        if (message.message != null && message.hasOwnProperty("message"))
+            if (!$util.isString(message.message))
+                return "message: string expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkTranscriptionStatus message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTranscriptionStatus} SdkTranscriptionStatus
+     */
+    SdkTranscriptionStatus.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTranscriptionStatus)
+            return object;
+        var message = new $root.SdkTranscriptionStatus();
+        switch (object.type) {
+        case "STARTED":
+        case 1:
+            message.type = 1;
+            break;
+        case "INTERRUPTED":
+        case 2:
+            message.type = 2;
+            break;
+        case "RESUMED":
+        case 3:
+            message.type = 3;
+            break;
+        case "STOPPED":
+        case 4:
+            message.type = 4;
+            break;
+        case "FAILED":
+        case 5:
+            message.type = 5;
+            break;
+        }
+        if (object.eventTime != null)
+            if ($util.Long)
+                (message.eventTime = $util.Long.fromValue(object.eventTime)).unsigned = false;
+            else if (typeof object.eventTime === "string")
+                message.eventTime = parseInt(object.eventTime, 10);
+            else if (typeof object.eventTime === "number")
+                message.eventTime = object.eventTime;
+            else if (typeof object.eventTime === "object")
+                message.eventTime = new $util.LongBits(object.eventTime.low >>> 0, object.eventTime.high >>> 0).toNumber();
+        if (object.transcriptionRegion != null)
+            message.transcriptionRegion = String(object.transcriptionRegion);
+        if (object.transcriptionConfiguration != null)
+            message.transcriptionConfiguration = String(object.transcriptionConfiguration);
+        if (object.message != null)
+            message.message = String(object.message);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTranscriptionStatus message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTranscriptionStatus
+     * @static
+     * @param {SdkTranscriptionStatus} message SdkTranscriptionStatus
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTranscriptionStatus.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.type = options.enums === String ? "STARTED" : 1;
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, false);
+                object.eventTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.eventTime = options.longs === String ? "0" : 0;
+            object.transcriptionRegion = "";
+            object.transcriptionConfiguration = "";
+            object.message = "";
+        }
+        if (message.type != null && message.hasOwnProperty("type"))
+            object.type = options.enums === String ? $root.SdkTranscriptionStatus.Type[message.type] : message.type;
+        if (message.eventTime != null && message.hasOwnProperty("eventTime"))
+            if (typeof message.eventTime === "number")
+                object.eventTime = options.longs === String ? String(message.eventTime) : message.eventTime;
+            else
+                object.eventTime = options.longs === String ? $util.Long.prototype.toString.call(message.eventTime) : options.longs === Number ? new $util.LongBits(message.eventTime.low >>> 0, message.eventTime.high >>> 0).toNumber() : message.eventTime;
+        if (message.transcriptionRegion != null && message.hasOwnProperty("transcriptionRegion"))
+            object.transcriptionRegion = message.transcriptionRegion;
+        if (message.transcriptionConfiguration != null && message.hasOwnProperty("transcriptionConfiguration"))
+            object.transcriptionConfiguration = message.transcriptionConfiguration;
+        if (message.message != null && message.hasOwnProperty("message"))
+            object.message = message.message;
+        return object;
+    };
+
+    /**
+     * Converts this SdkTranscriptionStatus to JSON.
+     * @function toJSON
+     * @memberof SdkTranscriptionStatus
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTranscriptionStatus.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Type enum.
+     * @name SdkTranscriptionStatus.Type
+     * @enum {string}
+     * @property {number} STARTED=1 STARTED value
+     * @property {number} INTERRUPTED=2 INTERRUPTED value
+     * @property {number} RESUMED=3 RESUMED value
+     * @property {number} STOPPED=4 STOPPED value
+     * @property {number} FAILED=5 FAILED value
+     */
+    SdkTranscriptionStatus.Type = (function() {
+        var valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[1] = "STARTED"] = 1;
+        values[valuesById[2] = "INTERRUPTED"] = 2;
+        values[valuesById[3] = "RESUMED"] = 3;
+        values[valuesById[4] = "STOPPED"] = 4;
+        values[valuesById[5] = "FAILED"] = 5;
+        return values;
+    })();
+
+    return SdkTranscriptionStatus;
+})();
+
+$root.SdkTranscriptEvent = (function() {
+
+    /**
+     * Properties of a SdkTranscriptEvent.
+     * @exports ISdkTranscriptEvent
+     * @interface ISdkTranscriptEvent
+     * @property {ISdkTranscriptionStatus|null} [status] SdkTranscriptEvent status
+     * @property {ISdkTranscript|null} [transcript] SdkTranscriptEvent transcript
+     */
+
+    /**
+     * Constructs a new SdkTranscriptEvent.
+     * @exports SdkTranscriptEvent
+     * @classdesc Represents a SdkTranscriptEvent.
+     * @implements ISdkTranscriptEvent
+     * @constructor
+     * @param {ISdkTranscriptEvent=} [properties] Properties to set
+     */
+    function SdkTranscriptEvent(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTranscriptEvent status.
+     * @member {ISdkTranscriptionStatus|null|undefined} status
+     * @memberof SdkTranscriptEvent
+     * @instance
+     */
+    SdkTranscriptEvent.prototype.status = null;
+
+    /**
+     * SdkTranscriptEvent transcript.
+     * @member {ISdkTranscript|null|undefined} transcript
+     * @memberof SdkTranscriptEvent
+     * @instance
+     */
+    SdkTranscriptEvent.prototype.transcript = null;
+
+    // OneOf field names bound to virtual getters and setters
+    var $oneOfFields;
+
+    /**
+     * SdkTranscriptEvent Event.
+     * @member {"status"|"transcript"|undefined} Event
+     * @memberof SdkTranscriptEvent
+     * @instance
+     */
+    Object.defineProperty(SdkTranscriptEvent.prototype, "Event", {
+        get: $util.oneOfGetter($oneOfFields = ["status", "transcript"]),
+        set: $util.oneOfSetter($oneOfFields)
+    });
+
+    /**
+     * Creates a new SdkTranscriptEvent instance using the specified properties.
+     * @function create
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {ISdkTranscriptEvent=} [properties] Properties to set
+     * @returns {SdkTranscriptEvent} SdkTranscriptEvent instance
+     */
+    SdkTranscriptEvent.create = function create(properties) {
+        return new SdkTranscriptEvent(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptEvent message. Does not implicitly {@link SdkTranscriptEvent.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {ISdkTranscriptEvent} message SdkTranscriptEvent message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptEvent.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.status != null && message.hasOwnProperty("status"))
+            $root.SdkTranscriptionStatus.encode(message.status, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.transcript != null && message.hasOwnProperty("transcript"))
+            $root.SdkTranscript.encode(message.transcript, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptEvent message, length delimited. Does not implicitly {@link SdkTranscriptEvent.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {ISdkTranscriptEvent} message SdkTranscriptEvent message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptEvent.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTranscriptEvent message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTranscriptEvent} SdkTranscriptEvent
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptEvent.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptEvent();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.status = $root.SdkTranscriptionStatus.decode(reader, reader.uint32());
+                break;
+            case 2:
+                message.transcript = $root.SdkTranscript.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTranscriptEvent message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTranscriptEvent} SdkTranscriptEvent
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptEvent.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTranscriptEvent message.
+     * @function verify
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTranscriptEvent.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        var properties = {};
+        if (message.status != null && message.hasOwnProperty("status")) {
+            properties.Event = 1;
+            {
+                var error = $root.SdkTranscriptionStatus.verify(message.status);
+                if (error)
+                    return "status." + error;
+            }
+        }
+        if (message.transcript != null && message.hasOwnProperty("transcript")) {
+            if (properties.Event === 1)
+                return "Event: multiple values";
+            properties.Event = 1;
+            {
+                var error = $root.SdkTranscript.verify(message.transcript);
+                if (error)
+                    return "transcript." + error;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkTranscriptEvent message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTranscriptEvent} SdkTranscriptEvent
+     */
+    SdkTranscriptEvent.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTranscriptEvent)
+            return object;
+        var message = new $root.SdkTranscriptEvent();
+        if (object.status != null) {
+            if (typeof object.status !== "object")
+                throw TypeError(".SdkTranscriptEvent.status: object expected");
+            message.status = $root.SdkTranscriptionStatus.fromObject(object.status);
+        }
+        if (object.transcript != null) {
+            if (typeof object.transcript !== "object")
+                throw TypeError(".SdkTranscriptEvent.transcript: object expected");
+            message.transcript = $root.SdkTranscript.fromObject(object.transcript);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTranscriptEvent message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTranscriptEvent
+     * @static
+     * @param {SdkTranscriptEvent} message SdkTranscriptEvent
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTranscriptEvent.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (message.status != null && message.hasOwnProperty("status")) {
+            object.status = $root.SdkTranscriptionStatus.toObject(message.status, options);
+            if (options.oneofs)
+                object.Event = "status";
+        }
+        if (message.transcript != null && message.hasOwnProperty("transcript")) {
+            object.transcript = $root.SdkTranscript.toObject(message.transcript, options);
+            if (options.oneofs)
+                object.Event = "transcript";
+        }
+        return object;
+    };
+
+    /**
+     * Converts this SdkTranscriptEvent to JSON.
+     * @function toJSON
+     * @memberof SdkTranscriptEvent
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTranscriptEvent.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkTranscriptEvent;
+})();
+
+$root.SdkTranscriptFrame = (function() {
+
+    /**
+     * Properties of a SdkTranscriptFrame.
+     * @exports ISdkTranscriptFrame
+     * @interface ISdkTranscriptFrame
+     * @property {Array.<ISdkTranscriptEvent>|null} [events] SdkTranscriptFrame events
+     */
+
+    /**
+     * Constructs a new SdkTranscriptFrame.
+     * @exports SdkTranscriptFrame
+     * @classdesc Represents a SdkTranscriptFrame.
+     * @implements ISdkTranscriptFrame
+     * @constructor
+     * @param {ISdkTranscriptFrame=} [properties] Properties to set
+     */
+    function SdkTranscriptFrame(properties) {
+        this.events = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTranscriptFrame events.
+     * @member {Array.<ISdkTranscriptEvent>} events
+     * @memberof SdkTranscriptFrame
+     * @instance
+     */
+    SdkTranscriptFrame.prototype.events = $util.emptyArray;
+
+    /**
+     * Creates a new SdkTranscriptFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {ISdkTranscriptFrame=} [properties] Properties to set
+     * @returns {SdkTranscriptFrame} SdkTranscriptFrame instance
+     */
+    SdkTranscriptFrame.create = function create(properties) {
+        return new SdkTranscriptFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptFrame message. Does not implicitly {@link SdkTranscriptFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {ISdkTranscriptFrame} message SdkTranscriptFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.events != null && message.events.length)
+            for (var i = 0; i < message.events.length; ++i)
+                $root.SdkTranscriptEvent.encode(message.events[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptFrame message, length delimited. Does not implicitly {@link SdkTranscriptFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {ISdkTranscriptFrame} message SdkTranscriptFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTranscriptFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTranscriptFrame} SdkTranscriptFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                if (!(message.events && message.events.length))
+                    message.events = [];
+                message.events.push($root.SdkTranscriptEvent.decode(reader, reader.uint32()));
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTranscriptFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTranscriptFrame} SdkTranscriptFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTranscriptFrame message.
+     * @function verify
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTranscriptFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.events != null && message.hasOwnProperty("events")) {
+            if (!Array.isArray(message.events))
+                return "events: array expected";
+            for (var i = 0; i < message.events.length; ++i) {
+                var error = $root.SdkTranscriptEvent.verify(message.events[i]);
+                if (error)
+                    return "events." + error;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkTranscriptFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTranscriptFrame} SdkTranscriptFrame
+     */
+    SdkTranscriptFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTranscriptFrame)
+            return object;
+        var message = new $root.SdkTranscriptFrame();
+        if (object.events) {
+            if (!Array.isArray(object.events))
+                throw TypeError(".SdkTranscriptFrame.events: array expected");
+            message.events = [];
+            for (var i = 0; i < object.events.length; ++i) {
+                if (typeof object.events[i] !== "object")
+                    throw TypeError(".SdkTranscriptFrame.events: object expected");
+                message.events[i] = $root.SdkTranscriptEvent.fromObject(object.events[i]);
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTranscriptFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTranscriptFrame
+     * @static
+     * @param {SdkTranscriptFrame} message SdkTranscriptFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTranscriptFrame.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.events = [];
+        if (message.events && message.events.length) {
+            object.events = [];
+            for (var j = 0; j < message.events.length; ++j)
+                object.events[j] = $root.SdkTranscriptEvent.toObject(message.events[j], options);
+        }
+        return object;
+    };
+
+    /**
+     * Converts this SdkTranscriptFrame to JSON.
+     * @function toJSON
+     * @memberof SdkTranscriptFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTranscriptFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkTranscriptFrame;
+})();
+
 module.exports = $root;

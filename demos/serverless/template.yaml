@@ -58,6 +58,8 @@ Resources:
               - 'chime:DeleteAttendee'
               - 'chime:GetAttendee'
               - 'chime:ListAttendees'
+              - 'chime:StartMeetingTranscription'
+              - 'chime:StopMeetingTranscription'
               - 'chime:CreateMediaCapturePipeline'
               - 'chime:DeleteMediaCapturePipeline'
               - 's3:GetBucketPolicy'
@@ -66,6 +68,8 @@ Resources:
       Roles:
         - Ref: ChimeSdkJoinLambdaRole
         - Ref: ChimeSdkEndLambdaRole
+        - Ref: ChimeSdkStartTranscriptionLambdaRole
+        - Ref: ChimeSdkStopTranscriptionLambdaRole
         - Ref: ChimeSdkStartCaptureLambdaRole
         - Ref: ChimeSdkEndCaptureLambdaRole
   ChimeMessagingAccessPolicy:
@@ -165,6 +169,17 @@ Resources:
           Type: Api
           Properties:
             Path: /
+            Method: GET
+  ChimeSdkAudioFileLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.audio_file
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /audio_file
             Method: GET
   ChimeSdkJoinLambda:
     Type: AWS::Serverless::Function
@@ -326,6 +341,34 @@ Resources:
           Type: Api
           Properties:
             Path: /create_browser_event_log_stream
+            Method: POST
+  ChimeSdkStartTranscriptionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.start_transcription
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /start_transcription
+            Method: POST
+  ChimeSdkStopTranscriptionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.stop_transcription
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /stop_transcription
             Method: POST
   ChimeSdkBrowserFetchCredentialsLambda:
     Type: AWS::Serverless::Function
