@@ -72,7 +72,7 @@ The following developer guides cover specific topics for a technical audience.
 - [Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser) — A browser
  meeting application with a local server
 - [Serverless Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless) — A self-contained serverless meeting application
-- [Single JS](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/singlejs) — A script to bundle the SDK into a single `.js` file
+- [Single JS](https://github.com/aws-samples/amazon-chime-sdk/tree/main/utils/singlejs) — A script to bundle the SDK into a single `.js` file
 - [Recording Demo](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) — Recording the meeting's audio, video and screen share in high definition
 - [Virtual Classroom](https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/) — An online classroom built with Electron and React
 - [Live Events](https://aws.amazon.com/blogs/opensource/how-to-deploy-a-live-events-solution-built-with-the-amazon-chime-sdk/) — Interactive live events solution
