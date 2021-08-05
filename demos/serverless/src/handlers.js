@@ -109,6 +109,7 @@ exports.start_transcription = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
   const languageCode = event.queryStringParameters.language;
+  const region = event.queryStringParameters.region;
   let transcriptionConfiguration = {};
   if (event.queryStringParameters.engine === 'transcribe') {
     transcriptionConfiguration = {
@@ -116,6 +117,9 @@ exports.start_transcription = async (event, context) => {
         LanguageCode: languageCode,
       }
     };
+    if (region) {
+      transcriptionConfiguration.EngineTranscribeSettings.Region = region;
+    }
   } else if (event.queryStringParameters.engine === 'transcribe_medical') {
     transcriptionConfiguration = {
       EngineTranscribeMedicalSettings: {
@@ -124,6 +128,9 @@ exports.start_transcription = async (event, context) => {
         Type: 'CONVERSATION',
       }
     };
+    if (region) {
+      transcriptionConfiguration.EngineTranscribeMedicalSettings.Region = region;
+    }
   } else {
     return response(400, 'application/json', JSON.stringify({
       error: 'Unknown transcription engine'

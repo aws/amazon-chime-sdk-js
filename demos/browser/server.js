@@ -143,6 +143,7 @@ function serve(host = '127.0.0.1:8080') {
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/start_transcription') {
         const languageCode = requestUrl.query.language;
+        const region = requestUrl.query.region;
         let transcriptionConfiguration = {};
         if (requestUrl.query.engine === 'transcribe') {
           transcriptionConfiguration = {
@@ -150,6 +151,9 @@ function serve(host = '127.0.0.1:8080') {
               LanguageCode: languageCode,
             }
           };
+          if (region) {
+            transcriptionConfiguration.EngineTranscribeSettings.Region = region;
+          }
         } else if (requestUrl.query.engine === 'transcribe_medical') {
           transcriptionConfiguration = {
             EngineTranscribeMedicalSettings: {
@@ -158,6 +162,13 @@ function serve(host = '127.0.0.1:8080') {
               Type: 'CONVERSATION',
             }
           };
+          if (region) {
+            transcriptionConfiguration.EngineTranscribeMedicalSettings.Region = region;
+          }
+        } else {
+          return response(400, 'application/json', JSON.stringify({
+            error: 'Unknown transcription engine'
+          }));
         }
 
         await chime.startMeetingTranscription({
