@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
+import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import {
@@ -10,6 +12,7 @@ import {
   SdkStreamDescriptor,
   SdkStreamMediaType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
@@ -20,6 +23,20 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
   const logger = new NoOpLogger(LogLevel.DEBUG);
   const selfAttendeeId = 'self-cb7cb43b';
   let policy: NScaleVideoUplinkBandwidthPolicy;
+
+  class TestTransceiverController extends DefaultTransceiverController {
+    constructor(private hasLocalVideo: boolean) {
+      super(new NoOpLogger(), new DefaultBrowserBehavior());
+    }
+
+    hasVideoInput(): boolean {
+      return this.hasLocalVideo;
+    }
+
+    setEncodingParameters(_encodingParamMap: Map<string, RTCRtpEncodingParameters>): Promise<void> {
+      return;
+    }
+  }
 
   beforeEach(() => {
     policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId);
@@ -44,15 +61,15 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       [14, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 146, false, 2)],
       [15, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 139, false, 2)],
       [16, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 134, false, 2)],
-      [17, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 129, false, 4)],
-      [18, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 124, false, 4)],
-      [19, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 120, false, 4)],
-      [20, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 117, false, 4)],
-      [21, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 113, false, 4)],
-      [22, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 110, false, 4)],
-      [23, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 108, false, 4)],
-      [24, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 105, false, 4)],
-      [25, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 103, false, 4)],
+      [17, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 129, false, 3)],
+      [18, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 124, false, 3)],
+      [19, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 120, false, 3)],
+      [20, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 117, false, 3)],
+      [21, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 113, false, 3)],
+      [22, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 110, false, 3)],
+      [23, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 108, false, 3)],
+      [24, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 105, false, 3)],
+      [25, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 103, false, 3)],
     ]);
 
     const expectedNumParticipantsToParametersWithPriority = new Map([
@@ -85,6 +102,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
 
     it('returns the correct values when the self is present in the SdkIndexFrame', () => {
       for (const entry of expectedNumParticipantsToParameters) {
+        policy.setTransceiverController(new TestTransceiverController(true));
         const numParticipants = entry[0];
         const expectedParams = entry[1];
         const sources: SdkStreamDescriptor[] = [];
@@ -123,6 +141,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
     });
 
     it('returns the correct values when bandwidth has priority', () => {
+      policy.setTransceiverController(new TestTransceiverController(true));
       policy.setHasBandwidthPriority(true);
       for (const entry of expectedNumParticipantsToParametersWithPriority) {
         const numParticipants = entry[0];
@@ -163,11 +182,12 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
     });
 
     it('returns the correct values when the self is not present in the SdkIndexFrame', () => {
+      policy.setTransceiverController(new TestTransceiverController(false));
       for (const entry of expectedNumParticipantsToParameters) {
         const numParticipants = entry[0];
         const expectedParams = entry[1];
         const sources: SdkStreamDescriptor[] = [];
-        for (let i = 0; i < numParticipants - 1; i++) {
+        for (let i = 0; i < numParticipants; i++) {
           const attendee = `attendee-${i}`;
           sources.push(
             new SdkStreamDescriptor({
@@ -286,6 +306,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       policy.updateIndex(index);
       expect(policy.wantsResubscribe()).to.be.true;
     });
+
     it('returns false if optimal parameters have not changed', () => {
       const index = new DefaultVideoStreamIndex(logger);
       // transition from 1 to 2 participants (note the +1 implicit participant for self)
@@ -329,6 +350,112 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
   describe('chooseEncodingParameters', () => {
     it('returns empty MediaTrackConstraint for NScaleUplinkPolicy', () => {
       expect(policy.chooseEncodingParameters().size).to.equal(0);
+    });
+  });
+
+  describe('updateTransceiverController', () => {
+    it('Calling setEncodingParameters if there is changed', () => {
+      policy.setTransceiverController(new TestTransceiverController(false));
+      const index = new DefaultVideoStreamIndex(logger);
+      const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              maxBitrateKbps: 200,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      policy.updateIndex(index);
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 6,
+              groupId: 2,
+              maxBitrateKbps: 400,
+              attendeeId: 'xy2',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              maxBitrateKbps: 200,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      policy.updateIndex(index);
+      policy.updateTransceiverController();
+      expect(spy.calledOnce).to.be.true;
+      spy.restore();
+    });
+    it('Do not calling setEncodingParameters if there is no changed', () => {
+      policy.setTransceiverController(new TestTransceiverController(false));
+      const index = new DefaultVideoStreamIndex(logger);
+      const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              maxBitrateKbps: 200,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      policy.updateIndex(index);
+      policy.updateTransceiverController();
+      expect(spy.calledOnce).to.be.true;
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              maxBitrateKbps: 200,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      policy.updateIndex(index);
+      policy.updateTransceiverController();
+      expect(spy.calledOnce).to.be.true;
+      spy.restore();
+    });
+
+    it('Return early if there is no transceiver controller', () => {
+      const index = new DefaultVideoStreamIndex(logger);
+      const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              maxBitrateKbps: 200,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      policy.updateIndex(index);
+      policy.updateTransceiverController();
+      expect(spy.notCalled).to.be.true;
+      spy.restore();
     });
   });
 });

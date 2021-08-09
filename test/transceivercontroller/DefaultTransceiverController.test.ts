@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import BrowserBehavior from '../../src/browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -514,28 +515,6 @@ describe('DefaultTransceiverController', () => {
       tc.setVideoSendingBitrateKbps(100);
     });
 
-    it('default scale down factor if not passed in', async () => {
-      const peer: RTCPeerConnection = new RTCPeerConnection();
-      tc.setPeer(peer);
-      tc.setupLocalTransceivers();
-
-      const newVideoTrack = new MediaStreamTrack();
-      await tc.setVideoInput(newVideoTrack);
-      const videoTransceiver = peer.getTransceivers()[1];
-      const parameter = {
-        degradationPreference: null,
-        transactionId: '',
-      } as RTCRtpSendParameters;
-      await videoTransceiver.sender.setParameters(parameter);
-      await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
-        videoTransceiver.sender,
-        100,
-        logger
-      );
-      expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
-      expect(parameter.encodings[0].scaleResolutionDownBy).to.equal(1);
-    });
-
     it('sets bitrate on RTCRtpSender correctly', async () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
@@ -556,12 +535,10 @@ describe('DefaultTransceiverController', () => {
       tc.setVideoSendingBitrateKbps(100);
       parameter = peer.getTransceivers()[1].sender.getParameters();
       expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
-      expect(parameter.encodings[0].scaleResolutionDownBy).to.equal(1);
 
-      tc.setVideoSendingBitrateKbps(200, 2);
+      tc.setVideoSendingBitrateKbps(200);
       parameter = peer.getTransceivers()[1].sender.getParameters();
       expect(parameter.encodings[0].maxBitrate).to.equal(200 * 1000);
-      expect(parameter.encodings[0].scaleResolutionDownBy).to.equal(2);
     });
   });
 
@@ -609,6 +586,191 @@ describe('DefaultTransceiverController', () => {
       );
       expect(success).to.be.true;
       expect(sender.track).to.equal(audioTrack);
+    });
+  });
+
+  describe('setEncodingParameters', () => {
+    it('is no-op if local transceivers are not set up', async () => {
+      tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          scaleResolutionDownBy: 1,
+          maxBitrate: 1400000,
+        })
+      );
+    });
+
+    it('is no-op if local video transceiver is inactive', async () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      const getParamSpy = sinon.spy(peer.getTransceivers()[1].sender, 'getParameters');
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          scaleResolutionDownBy: 1,
+          maxBitrate: 1400000,
+        })
+      );
+      expect(tc.localVideoTransceiver().direction).to.equal('inactive');
+      expect(getParamSpy.notCalled).to.be.true;
+      getParamSpy.restore();
+    });
+
+    it('Do not set encoding parameters if input params is empty', async () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      const newVideoTrack = new MediaStreamTrack();
+      await tc.setVideoInput(newVideoTrack);
+
+      const getParamSpy = sinon.spy(peer.getTransceivers()[1].sender, 'getParameters');
+      const setParamSpy = sinon.spy(peer.getTransceivers()[1].sender, 'setParameters');
+      tc.setEncodingParameters(new Map<string, RTCRtpEncodingParameters>());
+
+      expect(getParamSpy.notCalled).to.be.true;
+      expect(setParamSpy.notCalled).to.be.true;
+      getParamSpy.restore();
+      setParamSpy.restore();
+    });
+
+    it('Set encoding parameters', async () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      const newVideoTrack = new MediaStreamTrack();
+      await tc.setVideoInput(newVideoTrack);
+
+      const localSender = tc.localVideoTransceiver().sender;
+      const setParamSpy = sinon.spy(localSender, 'setParameters');
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          scaleResolutionDownBy: 1,
+          maxBitrate: 1400000,
+        })
+      );
+
+      expect(setParamSpy.calledOnce).to.be.true;
+      const params = localSender.getParameters();
+      expect(params.encodings.length).to.be.equal(1);
+      expect(params.encodings[0].maxBitrate).to.be.equal(1400000);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(1);
+      setParamSpy.restore();
+    });
+
+    it('Can update encoding parameters', async () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      const newVideoTrack = new MediaStreamTrack();
+      await tc.setVideoInput(newVideoTrack);
+
+      const localSender = tc.localVideoTransceiver().sender;
+      const setParamSpy = sinon.spy(localSender, 'setParameters');
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          scaleResolutionDownBy: 1,
+          maxBitrate: 1400000,
+        })
+      );
+
+      expect(setParamSpy.calledOnce).to.be.true;
+      let params = localSender.getParameters();
+      expect(params.encodings.length).to.be.equal(1);
+      expect(params.encodings[0].maxBitrate).to.be.equal(1400000);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(1);
+
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          scaleResolutionDownBy: 2,
+          maxBitrate: 600000,
+        })
+      );
+      expect(setParamSpy.calledTwice).to.be.true;
+      params = localSender.getParameters();
+      expect(params.encodings.length).to.be.equal(1);
+      expect(params.encodings[0].maxBitrate).to.be.equal(600000);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(2);
+      setParamSpy.restore();
+    });
+
+    it('Only set encoding parameters with the same rid', async () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      const newVideoTrack = new MediaStreamTrack();
+      await tc.setVideoInput(newVideoTrack);
+
+      const localSender = peer.getTransceivers()[1].sender;
+      const setParamSpy = sinon.spy(localSender, 'setParameters');
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          rid: 'video',
+          scaleResolutionDownBy: 1,
+          maxBitrate: 1400000,
+        })
+      );
+
+      expect(setParamSpy.calledOnce).to.be.true;
+      let params = localSender.getParameters();
+      expect(params.encodings.length).to.be.equal(1);
+      expect(params.encodings[0].maxBitrate).to.be.equal(1400000);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(1);
+
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          rid: 'video2',
+          scaleResolutionDownBy: 2,
+          maxBitrate: 600000,
+        })
+      );
+      expect(setParamSpy.calledTwice).to.be.true;
+      params = localSender.getParameters();
+      expect(params.encodings.length).to.be.equal(1);
+      expect(params.encodings[0].maxBitrate).to.be.equal(1400000);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(1);
+
+      setParamSpy.restore();
+    });
+
+    it('Does not set codecPayloadType', async () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+      const newVideoTrack = new MediaStreamTrack();
+      await tc.setVideoInput(newVideoTrack);
+
+      const localSender = peer.getTransceivers()[1].sender;
+      const setParamSpy = sinon.spy(localSender, 'setParameters');
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          rid: 'video',
+          codecPayloadType: 1,
+          scaleResolutionDownBy: 1,
+          maxBitrate: 1400000,
+        })
+      );
+
+      expect(setParamSpy.calledOnce).to.be.true;
+      let params = localSender.getParameters();
+      expect(params.encodings.length).to.be.equal(1);
+      expect(params.encodings[0].maxBitrate).to.be.equal(1400000);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(1);
+
+      await tc.setEncodingParameters(
+        new Map<string, RTCRtpEncodingParameters>().set('video', {
+          rid: 'video',
+          codecPayloadType: 2,
+          scaleResolutionDownBy: 2,
+          maxBitrate: 600000,
+        })
+      );
+      expect(setParamSpy.calledTwice).to.be.true;
+      params = localSender.getParameters();
+      expect(params.encodings.length).to.be.equal(1);
+      expect(params.encodings[0].maxBitrate).to.be.equal(600000);
+      expect(params.encodings[0].scaleResolutionDownBy).to.be.equal(2);
+      expect(params.encodings[0].codecPayloadType).to.be.equal(1);
+
+      setParamSpy.restore();
     });
   });
 });

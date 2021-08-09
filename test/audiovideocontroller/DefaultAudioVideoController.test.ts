@@ -4,7 +4,6 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
-import { NoVideoUplinkBandwidthPolicy } from '../../build';
 import Attendee from '../../src/attendee/Attendee';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import DefaultAudioVideoController from '../../src/audiovideocontroller/DefaultAudioVideoController';
@@ -43,6 +42,7 @@ import { wait as delay } from '../../src/utils/Utils';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoSource from '../../src/videosource/VideoSource';
+import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -757,7 +757,38 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
-    it('can be started and take a bandwidth update with no scale down method', async () => {
+    it('can be started and take a bandwidth update without update transceiver controller method', async () => {
+      class TestVideoUplinkBandwidth extends NoVideoUplinkBandwidthPolicy {
+        hasBandwidthPriority: boolean = false;
+
+        setHasBandwidthPriority(hasBandwidthPriority: boolean): void {
+          this.hasBandwidthPriority = hasBandwidthPriority;
+        }
+
+        maxBandwidthKbps(): number {
+          if (this.hasBandwidthPriority) {
+            return 100;
+          }
+          return 0;
+        }
+      }
+      const policy = new TestVideoUplinkBandwidth();
+      configuration.videoUplinkBandwidthPolicy = policy;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+      await delay(defaultDelay);
+      audioVideoController.handleHasBandwidthPriority(true);
+    });
+
+    it('can be started and take a bandwidth update with update transceiver controller method', async () => {
+      setUserAgent('Chrome/77.0.3865.75');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
       configuration.videoUplinkBandwidthPolicy = new NoVideoUplinkBandwidthPolicy();
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -769,7 +800,7 @@ describe('DefaultAudioVideoController', () => {
       await start();
       await delay(defaultDelay);
       audioVideoController.setVideoMaxBandwidthKbps(100);
-      audioVideoController.handleHasBandwidthPriority(false);
+      audioVideoController.handleHasBandwidthPriority(true);
     });
 
     it('can be started even when the stats collector has an issue starting due to an unsupported browser', async () => {

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import TransceiverController from '../transceivercontroller/TransceiverController';
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import ConnectionMetrics from './ConnectionMetrics';
@@ -11,15 +12,23 @@ import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
  *  traditional native clients, except for a modification to
  *  maxBandwidthKbps and scaleResolutionDownBy described below. */
 export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
+  static readonly encondingMapKey = 'video';
+
   private numParticipants: number = 0;
   private optimalParameters: DefaultVideoAndEncodeParameter;
   private parametersInEffect: DefaultVideoAndEncodeParameter;
   private idealMaxBandwidthKbps = 1400;
   private hasBandwidthPriority: boolean = false;
+  private encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
+  private transceiverController: TransceiverController;
 
   constructor(private selfAttendeeId: string) {
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
+    this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encondingMapKey, {
+      scaleResolutionDownBy: 1,
+      maxBitrate: this.idealMaxBandwidthKbps * 1000,
+    });
   }
 
   updateConnectionMetric(_metrics: ConnectionMetrics): void {
@@ -35,10 +44,14 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   }
 
   updateIndex(videoIndex: VideoStreamIndex): void {
+    const hasLocalVideo = this.transceiverController
+      ? this.transceiverController.hasVideoInput()
+      : true;
     // the +1 for self is assuming that we intend to send video, since
     // the context here is VideoUplinkBandwidthPolicy
     this.numParticipants =
-      videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) + 1;
+      videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) +
+      (hasLocalVideo ? 1 : 0);
     this.optimalParameters = new DefaultVideoAndEncodeParameter(
       this.captureWidth(),
       this.captureHeight(),
@@ -93,7 +106,48 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     return Math.trunc(rate);
   }
 
-  scaleResolutionDownBy(): number {
+  setIdealMaxBandwidthKbps(idealMaxBandwidthKbps: number): void {
+    this.idealMaxBandwidthKbps = idealMaxBandwidthKbps;
+  }
+
+  setHasBandwidthPriority(hasBandwidthPriority: boolean): void {
+    this.hasBandwidthPriority = hasBandwidthPriority;
+  }
+
+  setTransceiverController(transceiverController: TransceiverController): void {
+    this.transceiverController = transceiverController;
+  }
+
+  async updateTransceiverController(): Promise<void> {
+    if (!this.transceiverController) {
+      return;
+    }
+    const encodingParams: RTCRtpEncodingParameters = {
+      scaleResolutionDownBy: this.scaleResolutionDownBy(),
+      maxBitrate: this.maxBandwidthKbps() * 1000,
+    };
+    if (
+      !this.isEncodingParameterEqual(
+        encodingParams,
+        this.encodingParamMap.get(NScaleVideoUplinkBandwidthPolicy.encondingMapKey)
+      )
+    ) {
+      this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encondingMapKey, encodingParams);
+      this.transceiverController.setEncodingParameters(this.encodingParamMap);
+    }
+  }
+
+  private isEncodingParameterEqual(
+    encoding1: RTCRtpEncodingParameters,
+    encoding2: RTCRtpEncodingParameters
+  ): boolean {
+    return (
+      encoding1.maxBitrate === encoding2.maxBitrate &&
+      encoding1.scaleResolutionDownBy === encoding2.scaleResolutionDownBy
+    );
+  }
+
+  private scaleResolutionDownBy(): number {
     if (this.hasBandwidthPriority) {
       return 1;
     }
@@ -105,16 +159,8 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     } else if (this.numParticipants <= 16) {
       scale = 2;
     } else {
-      scale = 4;
+      scale = 3;
     }
     return scale;
-  }
-
-  setIdealMaxBandwidthKbps(idealMaxBandwidthKbps: number): void {
-    this.idealMaxBandwidthKbps = idealMaxBandwidthKbps;
-  }
-
-  setHasBandwidthPriority(hasBandwidthPriority: boolean): void {
-    this.hasBandwidthPriority = hasBandwidthPriority;
   }
 }

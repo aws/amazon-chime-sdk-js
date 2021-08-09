@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import TransceiverController from '../transceivercontroller/TransceiverController';
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import ConnectionMetrics from './ConnectionMetrics';
@@ -34,11 +35,6 @@ export default interface VideoUplinkBandwidthPolicy {
   maxBandwidthKbps(): number;
 
   /**
-   * Gets the factor by which to scale down the video during encoding.
-   */
-  scaleResolutionDownBy?(): number;
-
-  /**
    * Sets ideal maximum bandwidth kbps.
    */
   setIdealMaxBandwidthKbps(maxBandwidthKbps: number): void;
@@ -62,4 +58,23 @@ export default interface VideoUplinkBandwidthPolicy {
    * Returns the selected [[MediaTrackConstraints]] to update
    */
   chooseMediaTrackConstraints(): MediaTrackConstraints;
+
+  /**
+   * Set a reference to the current transceiver controller.
+   * This should be called whenever a transceiver controller is available when the call starts.
+   * The default audio video controllers calls this at the end of connection.
+   * This method should not throw.
+   * @param {TransceiverController} transceiverController - The transceiver controller
+   */
+  setTransceiverController?(transceiverController: TransceiverController): void;
+
+  /**
+   * Update the transceiver controller that is set from setTransceiverController such as setEncodingParameters.
+   * Only used when unified plan is enabled but not available for simulcast for now.
+   * This method should be called when the policy needs to update the local video encoding parameters such as after
+   * setHasBandwidthPriority has been called.
+   * The default audio video controller calls this after a video is on/off or when an active speakers changes.
+   * This method should not throw.
+   */
+  updateTransceiverController?(): void;
 }
