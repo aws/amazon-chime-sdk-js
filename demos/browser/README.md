@@ -43,8 +43,8 @@ For messaging session, make sure your role policy contains `chime:Connect` and `
 
 1. Navigate to the `demos/browser` folder: `cd demos/browser`
 
-2. Start the demo application in 'hot reload' mode: `npm run start:hot`
-Note: The first time when the demo is run there might be a dependency error. Please run `npm run start` first as that will install the required dependencies. After that, `npm run start:hot` should not throw any errors.
+2. Start the demo application: `npm run start`
+> Note: Once the demo is run for the first time, you can run the application in hot reload mode by calling `npm run start:hot`.
 
 3. Open http://localhost:8080 in your browser.
 
