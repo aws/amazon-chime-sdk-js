@@ -61,12 +61,14 @@ export default interface VideoUplinkBandwidthPolicy {
 
   /**
    * Set a reference to the current transceiver controller.
-   * This should be called whenever a transceiver controller is available when the call starts.
-   * The default audio video controllers calls this at the end of connection.
+   * The audio video controller should call this method to pass down a transceiver controller to the policy
+   * when the meeting starts and set it to undefined when the meeting ends.
+   * If a meeting is stopped and started repeatedly, this pair of calls will be repeated to match.
+   * All calls to updateTransceiverController will occur between this pair of calls.
    * This method should not throw.
    * @param {TransceiverController} transceiverController - The transceiver controller
    */
-  setTransceiverController?(transceiverController: TransceiverController): void;
+  setTransceiverController?(transceiverController: TransceiverController | undefined): void;
 
   /**
    * Update the transceiver controller that is set from setTransceiverController such as setEncodingParameters.

@@ -16,6 +16,8 @@ import DefaultTransceiverController from '../../src/transceivercontroller/Defaul
 import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
+import DOMMockBehavior from '../dommock/DOMMockBehavior';
+import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
 describe('NScaleVideoUplinkBandwidthPolicy', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -23,16 +25,11 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
   const logger = new NoOpLogger(LogLevel.DEBUG);
   const selfAttendeeId = 'self-cb7cb43b';
   let policy: NScaleVideoUplinkBandwidthPolicy;
+  let domMockBehavior: DOMMockBehavior;
+  let domMockBuilder: DOMMockBuilder | null = null;
+  let transceiverController: DefaultTransceiverController;
 
   class TestTransceiverController extends DefaultTransceiverController {
-    constructor(private hasLocalVideo: boolean) {
-      super(new NoOpLogger(), new DefaultBrowserBehavior());
-    }
-
-    hasVideoInput(): boolean {
-      return this.hasLocalVideo;
-    }
-
     setEncodingParameters(_encodingParamMap: Map<string, RTCRtpEncodingParameters>): Promise<void> {
       return;
     }
@@ -41,22 +38,41 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
   beforeEach(() => {
     policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId);
     policy.setIdealMaxBandwidthKbps(600);
+    domMockBehavior = new DOMMockBehavior();
+    domMockBehavior.mediaStreamTrackSettings = {
+      width: 960,
+      height: 540,
+      deviceId: '',
+    };
+    domMockBuilder = new DOMMockBuilder(domMockBehavior);
+    const peer = new RTCPeerConnection();
+    transceiverController = new TestTransceiverController(
+      new NoOpLogger(),
+      new DefaultBrowserBehavior()
+    );
+    transceiverController.setPeer(peer);
+    transceiverController.setupLocalTransceivers();
+  });
+
+  afterEach(() => {
+    domMockBuilder.cleanup();
   });
 
   describe('chooseCaptureAndEncodeParameters', () => {
+    //This is for default capture of 540p
     const expectedNumParticipantsToParameters = new Map([
       [1, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 600, false, 1)],
       [2, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 600, false, 1)],
       [3, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 400, false, 1)],
       [4, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 400, false, 1)],
-      [5, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 320, false, 1.5)],
-      [6, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 274, false, 1.5)],
-      [7, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 242, false, 1.5)],
-      [8, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 218, false, 1.5)],
-      [9, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 199, false, 2)],
-      [10, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 184, false, 2)],
-      [11, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 172, false, 2)],
-      [12, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 162, false, 2)],
+      [5, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 320, false, 1.125)],
+      [6, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 274, false, 1.125)],
+      [7, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 242, false, 1.125)],
+      [8, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 218, false, 1.125)],
+      [9, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 199, false, 1.5)],
+      [10, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 184, false, 1.5)],
+      [11, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 172, false, 1.5)],
+      [12, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 162, false, 1.5)],
       [13, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 153, false, 2)],
       [14, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 146, false, 2)],
       [15, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 139, false, 2)],
@@ -70,6 +86,34 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       [23, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 108, false, 3)],
       [24, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 105, false, 3)],
       [25, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 103, false, 3)],
+    ]);
+
+    const expectedNumParticipantsToParametersWithNoResolutionScaling = new Map([
+      [1, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 600, false, 1)],
+      [2, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 600, false, 1)],
+      [3, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 400, false, 1)],
+      [4, new DefaultVideoCaptureAndEncodeParameter(640, 384, 15, 400, false, 1)],
+      [5, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 320, false, 1)],
+      [6, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 274, false, 1)],
+      [7, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 242, false, 1)],
+      [8, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 218, false, 1)],
+      [9, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 199, false, 1)],
+      [10, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 184, false, 1)],
+      [11, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 172, false, 1)],
+      [12, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 162, false, 1)],
+      [13, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 153, false, 1)],
+      [14, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 146, false, 1)],
+      [15, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 139, false, 1)],
+      [16, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 134, false, 1)],
+      [17, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 129, false, 1)],
+      [18, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 124, false, 1)],
+      [19, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 120, false, 1)],
+      [20, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 117, false, 1)],
+      [21, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 113, false, 1)],
+      [22, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 110, false, 1)],
+      [23, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 108, false, 1)],
+      [24, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 105, false, 1)],
+      [25, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 103, false, 1)],
     ]);
 
     const expectedNumParticipantsToParametersWithPriority = new Map([
@@ -102,7 +146,8 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
 
     it('returns the correct values when the self is present in the SdkIndexFrame', () => {
       for (const entry of expectedNumParticipantsToParameters) {
-        policy.setTransceiverController(new TestTransceiverController(true));
+        policy.setTransceiverController(transceiverController);
+        transceiverController.setVideoInput(new MediaStreamTrack());
         const numParticipants = entry[0];
         const expectedParams = entry[1];
         const sources: SdkStreamDescriptor[] = [];
@@ -141,7 +186,8 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
     });
 
     it('returns the correct values when bandwidth has priority', () => {
-      policy.setTransceiverController(new TestTransceiverController(true));
+      policy.setTransceiverController(transceiverController);
+      transceiverController.setVideoInput(new MediaStreamTrack());
       policy.setHasBandwidthPriority(true);
       for (const entry of expectedNumParticipantsToParametersWithPriority) {
         const numParticipants = entry[0];
@@ -182,13 +228,138 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
     });
 
     it('returns the correct values when the self is not present in the SdkIndexFrame', () => {
-      policy.setTransceiverController(new TestTransceiverController(false));
+      policy.setTransceiverController(transceiverController);
       for (const entry of expectedNumParticipantsToParameters) {
         const numParticipants = entry[0];
         const expectedParams = entry[1];
         const sources: SdkStreamDescriptor[] = [];
         for (let i = 0; i < numParticipants; i++) {
           const attendee = `attendee-${i}`;
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i,
+              groupId: i,
+              maxBitrateKbps: 100,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i * 2,
+              groupId: i,
+              maxBitrateKbps: 200,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+        }
+        const index = new DefaultVideoStreamIndex(logger);
+        index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
+        policy.updateIndex(index);
+        const actualParams = policy.chooseCaptureAndEncodeParameters();
+        assert(
+          actualParams.equal(expectedParams),
+          `numParticipants: ${numParticipants} expected: ${JSON.stringify(
+            expectedParams
+          )} actual: ${JSON.stringify(actualParams)}`
+        );
+      }
+    });
+
+    it('Do not scale resolution if no transceiver controller', () => {
+      for (const entry of expectedNumParticipantsToParametersWithNoResolutionScaling) {
+        const numParticipants = entry[0];
+        const expectedParams = entry[1];
+        const sources: SdkStreamDescriptor[] = [];
+        for (let i = 0; i < numParticipants; i++) {
+          const attendee = i === 0 ? selfAttendeeId : `attendee-${i}`;
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i,
+              groupId: i,
+              maxBitrateKbps: 100,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i * 2,
+              groupId: i,
+              maxBitrateKbps: 200,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+        }
+        const index = new DefaultVideoStreamIndex(logger);
+        index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
+        policy.updateIndex(index);
+        const actualParams = policy.chooseCaptureAndEncodeParameters();
+        assert(
+          actualParams.equal(expectedParams),
+          `numParticipants: ${numParticipants} expected: ${JSON.stringify(
+            expectedParams
+          )} actual: ${JSON.stringify(actualParams)}`
+        );
+      }
+    });
+
+    it('Do not scale resolution if builders set to not scale in the constructor', () => {
+      policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId, false);
+      policy.setTransceiverController(transceiverController);
+      policy.setIdealMaxBandwidthKbps(600);
+      transceiverController.setVideoInput(new MediaStreamTrack());
+      for (const entry of expectedNumParticipantsToParametersWithNoResolutionScaling) {
+        const numParticipants = entry[0];
+        const expectedParams = entry[1];
+        const sources: SdkStreamDescriptor[] = [];
+        for (let i = 0; i < numParticipants; i++) {
+          const attendee = i === 0 ? selfAttendeeId : `attendee-${i}`;
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i,
+              groupId: i,
+              maxBitrateKbps: 100,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i * 2,
+              groupId: i,
+              maxBitrateKbps: 200,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+        }
+        const index = new DefaultVideoStreamIndex(logger);
+        index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
+        policy.updateIndex(index);
+        const actualParams = policy.chooseCaptureAndEncodeParameters();
+        assert(
+          actualParams.equal(expectedParams),
+          `numParticipants: ${numParticipants} expected: ${JSON.stringify(
+            expectedParams
+          )} actual: ${JSON.stringify(actualParams)}`
+        );
+      }
+    });
+
+    it('Do not scale resolution if there is no track setting', () => {
+      domMockBehavior.mediaStreamTrackSettings = undefined;
+      policy.setTransceiverController(transceiverController);
+      policy.setIdealMaxBandwidthKbps(600);
+      transceiverController.setVideoInput(new MediaStreamTrack());
+      for (const entry of expectedNumParticipantsToParametersWithNoResolutionScaling) {
+        const numParticipants = entry[0];
+        const expectedParams = entry[1];
+        const sources: SdkStreamDescriptor[] = [];
+        for (let i = 0; i < numParticipants; i++) {
+          const attendee = i === 0 ? selfAttendeeId : `attendee-${i}`;
           sources.push(
             new SdkStreamDescriptor({
               streamId: i,
@@ -355,7 +526,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
 
   describe('updateTransceiverController', () => {
     it('Calling setEncodingParameters if there is changed', () => {
-      policy.setTransceiverController(new TestTransceiverController(false));
+      policy.setTransceiverController(transceiverController);
       const index = new DefaultVideoStreamIndex(logger);
       const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
       index.integrateIndexFrame(
@@ -398,7 +569,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       spy.restore();
     });
     it('Do not calling setEncodingParameters if there is no changed', () => {
-      policy.setTransceiverController(new TestTransceiverController(false));
+      policy.setTransceiverController(transceiverController);
       const index = new DefaultVideoStreamIndex(logger);
       const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
       index.integrateIndexFrame(

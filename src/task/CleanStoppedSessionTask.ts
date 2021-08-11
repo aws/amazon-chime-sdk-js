@@ -56,6 +56,9 @@ export default class CleanStoppedSessionTask extends BaseTask {
       this.context.turnCredentials = null;
       this.context.videoSubscriptions = null;
       this.context.transceiverController.reset();
+      if (this.context.videoUplinkBandwidthPolicy.setTransceiverController) {
+        this.context.videoUplinkBandwidthPolicy.setTransceiverController(undefined);
+      }
 
       const tile = this.context.videoTileController.getLocalVideoTile();
       if (tile) {

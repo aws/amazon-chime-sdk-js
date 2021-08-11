@@ -12,7 +12,36 @@ import VideoUplinkBandwidthPolicy from './VideoUplinkBandwidthPolicy';
  *  traditional native clients, except for a modification to
  *  maxBandwidthKbps and scaleResolutionDownBy described below. */
 export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBandwidthPolicy {
-  static readonly encondingMapKey = 'video';
+  static readonly encodingMapKey = 'video';
+  // 0, 1, 2 have dummy value as we keep the original resolution if we have less than 2 videos.
+  static readonly targetHeightArray = [
+    0,
+    0,
+    0,
+    540,
+    540,
+    480,
+    480,
+    480,
+    480,
+    360,
+    360,
+    360,
+    360,
+    270,
+    270,
+    270,
+    270,
+    180,
+    180,
+    180,
+    180,
+    180,
+    180,
+    180,
+    180,
+    180,
+  ];
 
   private numParticipants: number = 0;
   private optimalParameters: DefaultVideoAndEncodeParameter;
@@ -22,10 +51,10 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
   private transceiverController: TransceiverController;
 
-  constructor(private selfAttendeeId: string) {
+  constructor(private selfAttendeeId: string, private scaleResolution: boolean = true) {
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
-    this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encondingMapKey, {
+    this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, {
       scaleResolutionDownBy: 1,
       maxBitrate: this.idealMaxBandwidthKbps * 1000,
     });
@@ -44,21 +73,32 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   }
 
   updateIndex(videoIndex: VideoStreamIndex): void {
-    const hasLocalVideo = this.transceiverController
-      ? this.transceiverController.hasVideoInput()
-      : true;
+    let hasLocalVideo = true;
+    let scale = 1;
+    if (this.transceiverController) {
+      hasLocalVideo = this.transceiverController.hasVideoInput();
+    }
+
     // the +1 for self is assuming that we intend to send video, since
     // the context here is VideoUplinkBandwidthPolicy
     this.numParticipants =
       videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) +
       (hasLocalVideo ? 1 : 0);
+
+    if (this.transceiverController) {
+      const settings = this.getStreamCaptureSetting();
+      if (settings) {
+        const encodingParams = this.calculateEncodingParameters(settings);
+        scale = encodingParams.scaleResolutionDownBy;
+      }
+    }
     this.optimalParameters = new DefaultVideoAndEncodeParameter(
       this.captureWidth(),
       this.captureHeight(),
       this.captureFrameRate(),
       this.maxBandwidthKbps(),
       false,
-      this.scaleResolutionDownBy()
+      scale
     );
   }
 
@@ -114,53 +154,54 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     this.hasBandwidthPriority = hasBandwidthPriority;
   }
 
-  setTransceiverController(transceiverController: TransceiverController): void {
+  setTransceiverController(transceiverController: TransceiverController | undefined): void {
     this.transceiverController = transceiverController;
   }
 
   async updateTransceiverController(): Promise<void> {
-    if (!this.transceiverController) {
+    const settings = this.getStreamCaptureSetting();
+    if (!settings) {
       return;
     }
-    const encodingParams: RTCRtpEncodingParameters = {
-      scaleResolutionDownBy: this.scaleResolutionDownBy(),
-      maxBitrate: this.maxBandwidthKbps() * 1000,
-    };
+
+    const encodingParams: RTCRtpEncodingParameters = this.calculateEncodingParameters(settings);
     if (
-      !this.isEncodingParameterEqual(
+      !this.encodingParametersHaveSameBitrateAndScaling(
         encodingParams,
-        this.encodingParamMap.get(NScaleVideoUplinkBandwidthPolicy.encondingMapKey)
+        this.encodingParamMap.get(NScaleVideoUplinkBandwidthPolicy.encodingMapKey)
       )
     ) {
-      this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encondingMapKey, encodingParams);
+      this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, encodingParams);
       this.transceiverController.setEncodingParameters(this.encodingParamMap);
     }
   }
 
-  private isEncodingParameterEqual(
+  private encodingParametersHaveSameBitrateAndScaling(
     encoding1: RTCRtpEncodingParameters,
     encoding2: RTCRtpEncodingParameters
   ): boolean {
     return (
-      encoding1.maxBitrate === encoding2.maxBitrate &&
-      encoding1.scaleResolutionDownBy === encoding2.scaleResolutionDownBy
+      encoding1 === encoding2 ||
+      (encoding1.maxBitrate === encoding2.maxBitrate &&
+        encoding1.scaleResolutionDownBy === encoding2.scaleResolutionDownBy)
     );
   }
 
-  private scaleResolutionDownBy(): number {
-    if (this.hasBandwidthPriority) {
-      return 1;
+  private calculateEncodingParameters(setting: MediaTrackSettings): RTCRtpEncodingParameters {
+    const maxBitrate = this.maxBandwidthKbps() * 1000;
+    let scale = 1;
+    if (setting && this.scaleResolution && !this.hasBandwidthPriority && this.numParticipants > 2) {
+      const targetHeight = NScaleVideoUplinkBandwidthPolicy.targetHeightArray[this.numParticipants];
+
+      scale = Math.max(setting.height / targetHeight, 1);
     }
-    let scale;
-    if (this.numParticipants <= 4) {
-      scale = 1;
-    } else if (this.numParticipants <= 8) {
-      scale = 1.5;
-    } else if (this.numParticipants <= 16) {
-      scale = 2;
-    } else {
-      scale = 3;
-    }
-    return scale;
+    return {
+      scaleResolutionDownBy: scale,
+      maxBitrate: maxBitrate,
+    };
+  }
+
+  private getStreamCaptureSetting(): MediaTrackSettings | undefined {
+    return this.transceiverController?.localVideoTransceiver()?.sender?.track?.getSettings();
   }
 }

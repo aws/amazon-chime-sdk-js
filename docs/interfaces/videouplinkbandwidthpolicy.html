@@ -268,27 +268,29 @@
 					<a name="settransceivercontroller" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> set<wbr>Transceiver<wbr>Controller</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Transceiver<wbr>Controller<span class="tsd-signature-symbol">(</span>transceiverController<span class="tsd-signature-symbol">: </span><a href="transceivercontroller.html" class="tsd-signature-type">TransceiverController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Transceiver<wbr>Controller<span class="tsd-signature-symbol">(</span>transceiverController<span class="tsd-signature-symbol">: </span><a href="transceivercontroller.html" class="tsd-signature-type">TransceiverController</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L69">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:69</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L71">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:71</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Set a reference to the current transceiver controller.
-										This should be called whenever a transceiver controller is available when the call starts.
-										The default audio video controllers calls this at the end of connection.
+										The audio video controller should call this method to pass down a transceiver controller to the policy
+										when the meeting starts and set it to undefined when the meeting ends.
+										If a meeting is stopped and started repeatedly, this pair of calls will be repeated to match.
+										All calls to updateTransceiverController will occur between this pair of calls.
 									This method should not throw.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>transceiverController: <a href="transceivercontroller.html" class="tsd-signature-type">TransceiverController</a></h5>
+									<h5>transceiverController: <a href="transceivercontroller.html" class="tsd-signature-type">TransceiverController</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The transceiver controller</p>
 									</div>
@@ -365,7 +367,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L79">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts#L81">src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy.ts:81</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
