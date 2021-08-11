@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Fix race condition in Safari when disconnect and connect stream from video element.
 
 ## [2.15.0] - 2021-08-04
 

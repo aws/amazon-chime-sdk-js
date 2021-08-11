@@ -150,7 +150,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   requiresVideoElementWorkaround(): boolean {
-    return this.isSafari();
+    return this.isSafari() && this.majorVersion() === 12;
   }
 
   requiresNoExactMediaStreamConstraints(): boolean {

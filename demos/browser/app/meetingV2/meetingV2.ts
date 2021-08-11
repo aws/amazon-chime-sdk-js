@@ -819,7 +819,7 @@ export class DemoMeetingApp
     );
 
     const buttonMute = document.getElementById('button-microphone');
-    buttonMute.addEventListener('mousedown', _e => {
+    buttonMute.addEventListener('click', _e => {
       if (this.toggleButton('button-microphone')) {
         this.audioVideo.realtimeUnmuteLocalAudio();
       } else {

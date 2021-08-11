@@ -181,8 +181,8 @@ describe('DefaultVideoTile', () => {
       expect(tileControllerSpy.called).to.be.true;
     });
 
-    it('binds a video stream in Safari', done => {
-      domMockBehavior.browserName = 'safari';
+    it('binds a video stream in Safari 12', done => {
+      domMockBehavior.browserName = 'safari12';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       const videoElement = videoElementFactory.create();
@@ -236,7 +236,7 @@ describe('DefaultVideoTile', () => {
     });
 
     it('unbinds a video stream in Safari', done => {
-      domMockBehavior.browserName = 'safari';
+      domMockBehavior.browserName = 'safari12';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       const videoElement = videoElementFactory.create();
@@ -269,6 +269,28 @@ describe('DefaultVideoTile', () => {
       expect(tileControllerSpy.called).to.be.true;
       new TimeoutScheduler(10).start(() => {
         expect(videoElement.srcObject).to.be.null;
+        done();
+      });
+    });
+
+    it('does not set srcObject to null for safari12 if it already changes to a new stream', done => {
+      domMockBehavior.browserName = 'safari12';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      // @ts-ignore
+      const mockVideoStream2 = new MediaStream();
+      // @ts-ignore
+      mockVideoStream2.addTrack(new MediaStreamTrack('mockVideoStream2', 'video'));
+
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+      tile.bindVideoStream(null, true, null, null, null, null);
+      tile.bindVideoStream('attendee', true, mockVideoStream2, 2, 2, 1);
+
+      expect(tileControllerSpy.called).to.be.true;
+      new TimeoutScheduler(10).start(() => {
+        expect(videoElement.srcObject).to.equal(mockVideoStream2);
         done();
       });
     });
