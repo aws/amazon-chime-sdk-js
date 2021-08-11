@@ -1,0 +1,18 @@
+
+
+name: Trigger CI Workflow
+
+on:
+  pull_request:
+    branches:
+      - master
+      - release-1.x
+
+jobs:
+  trigger:
+    name: Trigger CI Workflow
+    runs-on: ubuntu-latest
+    environment: 
+      name: CI Workflow
+    steps:
+      - run: echo 'Starting CI Workflow'

@@ -4,10 +4,9 @@
 name: Build and Test Workflow
 
 on:
-  pull_request:
-    branches:
-      - master
-      - release-1.x
+  workflow_run:
+    workflows: ["Trigger CI Workflow"]
+    types:  [completed]
 
 jobs:
   build:
