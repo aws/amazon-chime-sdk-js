@@ -400,6 +400,7 @@
 								<li class="tsd-kind-type-alias"><a href="globals.html#listenerfunction" class="tsd-kind-icon">Listener<wbr>Function</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#meetinghistorystate" class="tsd-kind-icon">Meeting<wbr>History<wbr>State</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#rawmetricreport" class="tsd-kind-icon">Raw<wbr>Metric<wbr>Report</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-kind-icon">Realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence<wbr>Callback</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#statsreportitem" class="tsd-kind-icon">Stats<wbr>Report<wbr>Item</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#thunk" class="tsd-kind-icon">Thunk</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#transcriptevent" class="tsd-kind-icon">Transcript<wbr>Event</a></li>
@@ -608,6 +609,93 @@
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/statscollector/DefaultStatsCollector.ts#L28">src/statscollector/DefaultStatsCollector.ts:28</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="realtimesubscribetoattendeeidpresencecallback" class="tsd-anchor"></a>
+					<h3>Realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">Realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, present<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, dropped<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, posInFrame<span class="tsd-signature-symbol">?: </span><a href="classes/realtimeattendeepositioninframe.html" class="tsd-signature-type">RealtimeAttendeePositionInFrame</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback.ts#L9">src/realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback.ts:9</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Realtime attendee presence callback that listens to changes in attendee presence.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, present<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, dropped<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, posInFrame<span class="tsd-signature-symbol">?: </span><a href="classes/realtimeattendeepositioninframe.html" class="tsd-signature-type">RealtimeAttendeePositionInFrame</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+										</div>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>attendeeId: <span class="tsd-signature-type">string</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Internal Amazon Chime <code>AttendeeId</code> created by <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html"><code>CreateAttendee</code></a> API.</p>
+													</div>
+												</div>
+											</li>
+											<li>
+												<h5>present: <span class="tsd-signature-type">boolean</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Indicates the attendee&#39;s presence in a meeting.</p>
+													</div>
+												</div>
+											</li>
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> externalUserId: <span class="tsd-signature-type">string</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Indicates the attendee&#39;s <code>externalUserId</code> provided while joining a meeting.</p>
+													</div>
+												</div>
+											</li>
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> dropped: <span class="tsd-signature-type">boolean</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Indicates whether the attendee dropped from the meeting.</p>
+														<p>The Amazon Chime SDK for JavaScript reconnects a meeting session in below scenarios:</p>
+														<ul>
+															<li>No audio packets (WebRTC)</li>
+															<li>Bad audio delay (WebRTC)</li>
+															<li>No pong reply (WebSocket)</li>
+														</ul>
+														<p>This value is provided by the Amazon Chime backend when an attendee is dropped and could not join the same meeting again due to re-connection issues.
+														It is also provided to differentiate the scenarios between normal attendee leave and the attendee dropping due to re-connection issues.</p>
+														<p>In re-connection scenarios, if an attendee drops and could never join back successfully, the JS SDK will call this callback setting
+														the <code>dropped</code> value to a boolean value received from Amazon Chime backend, and it will set the <code>present</code> parameter to <code>false</code>.</p>
+													</div>
+												</div>
+											</li>
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> posInFrame: <a href="classes/realtimeattendeepositioninframe.html" class="tsd-signature-type">RealtimeAttendeePositionInFrame</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>This object indicates which attendee out of how many total attendees the update is for.
+															For example, if you were to join on a call with 3 total attendees, you would get presence callbacks for attendeeIndex 0, attendeeIndex 1, attendeeIndex 2 out of the total attendeesInFrame of 3.
+														You will receive callback for each attendee present in the meeting after you join the meeting. Later, you will receive callback as attendees leave or join the meeting.</p>
+													</div>
+												</div>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="statsreportitem" class="tsd-anchor"></a>
@@ -1956,6 +2044,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#rawmetricreport" class="tsd-kind-icon">Raw<wbr>Metric<wbr>Report</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#realtimesubscribetoattendeeidpresencecallback" class="tsd-kind-icon">Realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence<wbr>Callback</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#statsreportitem" class="tsd-kind-icon">Stats<wbr>Report<wbr>Item</a>
