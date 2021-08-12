@@ -29,7 +29,10 @@ import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVi
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
-import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
+import DOMMockBuilder, {
+  MockMediaStream,
+  StoppableMediaStreamTrack,
+} from '../dommock/DOMMockBuilder';
 import MockError from '../dommock/MockError';
 import UserMediaState from '../dommock/UserMediaState';
 import {
@@ -1503,6 +1506,45 @@ describe('DefaultDeviceController', () => {
       await device.stop();
     });
 
+    it('does not reuse existing stream if two video streams without IDs are selected within a video transform', async () => {
+      const t1 = new MediaStreamTrack() as StoppableMediaStreamTrack;
+      const t2 = new MediaStreamTrack() as StoppableMediaStreamTrack;
+
+      // Make them synthetic streams with no device ID.
+      t1.setStreamDeviceID(undefined);
+      t2.setStreamDeviceID(undefined);
+
+      const s1 = new MockMediaStream([t1]);
+      const s2 = new MockMediaStream([t2]);
+
+      // Otherwise the media stream will be ignored.
+      s1.active = true;
+      s2.active = true;
+
+      const processor1 = new NoOpVideoFrameProcessor();
+      const processor2 = new NoOpVideoFrameProcessor();
+      const transform1 = new DefaultVideoTransformDevice(logger, (s1 as unknown) as MediaStream, [
+        processor1,
+      ]);
+      const transform2 = new DefaultVideoTransformDevice(logger, 'default', [processor2]);
+
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      deviceController = new DefaultDeviceController(logger);
+      const spy = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+      try {
+        await deviceController.chooseVideoInputDevice(transform1);
+        await deviceController.chooseVideoInputDevice(transform2);
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+      expect(spy.calledOnce).to.be.true;
+      expect(s1.getTracks()[0].readyState).to.equal('ended');
+      expect(s2.getTracks()[0].readyState).to.equal('live');
+
+      await transform1.stop();
+      await transform2.stop();
+    });
+
     it('can replace the local video for VideoTransformDevice', async () => {
       domMockBehavior.getUserMediaSucceeds = true;
       const mockVideoStream = new MediaStream();
@@ -2157,6 +2199,92 @@ describe('DefaultDeviceController', () => {
       deviceController.removeDeviceChangeObserver(observer);
       await delay(100);
       expect(callCount).to.equal(0);
+    });
+
+    it('gets a non-mute callback when a device is chosen', async () => {
+      const output = new Promise((resolve, _reject) => {
+        const observer: DeviceChangeObserver = {
+          audioInputMuteStateChanged: (device, muted): void => {
+            resolve([device, muted]);
+          },
+        };
+
+        deviceController.addDeviceChangeObserver(observer);
+        deviceController.chooseAudioInputDevice('default');
+      });
+
+      // In real code, `test` will actually be `default` -- our mocks aren't great.
+      expect(await output).to.deep.equal(['test', false]);
+    });
+
+    it('has working mocks', () => {
+      const fakeStream = new MediaStream();
+      const track = new MediaStreamTrack() as StoppableMediaStreamTrack;
+      track.setStreamDeviceID('foobar');
+      track.externalMute();
+      expect(track.muted).to.be.true;
+      expect(track.getSettings().deviceId).to.equal('foobar');
+
+      fakeStream.addTrack(track);
+      expect(fakeStream.getAudioTracks()[0].muted).to.be.true;
+      expect(fakeStream.getAudioTracks()[0].getSettings().deviceId).to.equal('foobar');
+    });
+
+    it('gets a mute callback when the stream is muted', async () => {
+      const fakeStream = new MediaStream();
+      const track = new MediaStreamTrack() as StoppableMediaStreamTrack;
+      track.setStreamDeviceID('foobar');
+      track.externalMute();
+      fakeStream.addTrack(track);
+      expect(!!fakeStream.id).to.be.true;
+
+      const output = new Promise((resolve, _reject) => {
+        const observer: DeviceChangeObserver = {
+          audioInputMuteStateChanged: (device, muted): void => {
+            resolve([device, muted]);
+          },
+        };
+
+        deviceController.addDeviceChangeObserver(observer);
+        deviceController.chooseAudioInputDevice(fakeStream);
+      });
+
+      // If only choosing returned a promise!
+      await delay(100);
+      expect(await output).to.deep.equal(['foobar', true]);
+    });
+
+    it('gets a mute callback when the stream is muted after selection', async () => {
+      const track = new MediaStreamTrack() as StoppableMediaStreamTrack;
+
+      // Make it a synthetic stream with no device ID.
+      track.setStreamDeviceID(undefined);
+      const fakeStream = new MediaStream([track]);
+      track.externalMute();
+
+      const output = new Promise((resolve, _reject) => {
+        const observer: DeviceChangeObserver = {
+          audioInputMuteStateChanged: (device, muted): void => {
+            if (!muted) {
+              resolve([device, muted]);
+            }
+          },
+        };
+
+        deviceController.addDeviceChangeObserver(observer);
+        deviceController.chooseAudioInputDevice(fakeStream);
+      });
+
+      // If only choosing returned a promise!
+      await delay(100);
+      track.externalUnmute();
+
+      // This will return the whole stream, because there's no device ID.
+      expect(await output).to.deep.equal([fakeStream, false]);
+
+      // Deselect so we release the stream.
+      deviceController.chooseAudioInputDevice('default');
+      await delay(100);
     });
   });
 

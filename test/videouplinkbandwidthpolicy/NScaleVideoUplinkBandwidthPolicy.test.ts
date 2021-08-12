@@ -348,49 +348,6 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
         );
       }
     });
-
-    it('Do not scale resolution if there is no track setting', () => {
-      domMockBehavior.mediaStreamTrackSettings = undefined;
-      policy.setTransceiverController(transceiverController);
-      policy.setIdealMaxBandwidthKbps(600);
-      transceiverController.setVideoInput(new MediaStreamTrack());
-      for (const entry of expectedNumParticipantsToParametersWithNoResolutionScaling) {
-        const numParticipants = entry[0];
-        const expectedParams = entry[1];
-        const sources: SdkStreamDescriptor[] = [];
-        for (let i = 0; i < numParticipants; i++) {
-          const attendee = i === 0 ? selfAttendeeId : `attendee-${i}`;
-          sources.push(
-            new SdkStreamDescriptor({
-              streamId: i,
-              groupId: i,
-              maxBitrateKbps: 100,
-              attendeeId: attendee,
-              mediaType: SdkStreamMediaType.VIDEO,
-            })
-          );
-          sources.push(
-            new SdkStreamDescriptor({
-              streamId: i * 2,
-              groupId: i,
-              maxBitrateKbps: 200,
-              attendeeId: attendee,
-              mediaType: SdkStreamMediaType.VIDEO,
-            })
-          );
-        }
-        const index = new DefaultVideoStreamIndex(logger);
-        index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
-        policy.updateIndex(index);
-        const actualParams = policy.chooseCaptureAndEncodeParameters();
-        assert(
-          actualParams.equal(expectedParams),
-          `numParticipants: ${numParticipants} expected: ${JSON.stringify(
-            expectedParams
-          )} actual: ${JSON.stringify(actualParams)}`
-        );
-      }
-    });
   });
 
   describe('wantsResubscribe', () => {
