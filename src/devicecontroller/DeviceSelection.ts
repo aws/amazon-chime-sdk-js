@@ -5,7 +5,10 @@ export default class DeviceSelection {
   constraints: MediaStreamConstraints;
   stream: MediaStream;
   groupId: string = '';
+
   endedCallback?: undefined | (() => void);
+  trackMuteCallback?: undefined | (() => void);
+  trackUnmuteCallback?: undefined | (() => void);
 
   matchesConstraints(constraints: MediaStreamConstraints): boolean {
     return JSON.stringify(this.constraints) === JSON.stringify(constraints);

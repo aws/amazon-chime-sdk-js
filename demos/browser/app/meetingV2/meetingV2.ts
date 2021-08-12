@@ -1267,6 +1267,10 @@ export class DemoMeetingApp
     }
   }
 
+  audioInputMuteStateChanged(device: string | MediaStream, muted: boolean): void {
+    this.log('Mute state: device', device, muted ? 'is muted' : 'is not muted');
+  }
+
   audioInputsChanged(freshAudioInputDeviceList: MediaDeviceInfo[]): void {
     this.onAudioInputsChanged(freshAudioInputDeviceList);
   }

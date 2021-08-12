@@ -45,6 +45,8 @@ export default class DefaultEventController implements EventController {
       this.parserResult =
         navigator && navigator.userAgent ? new UAParser(navigator.userAgent).getResult() : null;
     } catch (error) {
+      // This seems to never happen with ua-parser-js in reality, even with malformed strings.
+      /* istanbul ignore next */
       audioVideoController.logger.error(error.message);
     }
 

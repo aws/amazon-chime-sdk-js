@@ -94,7 +94,7 @@ describe('InMemoryJSONEventBuffer', () => {
   });
 
   describe('addItem', () => {
-    it('succefully adds item', () => {
+    it('successfully adds item', () => {
       expect(() => buffer.addItem(getItemEvent('audioInputSelected'))).to.not.throw();
     });
 
