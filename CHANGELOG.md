@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `audioInputMuteStateChanged` to the `DeviceChangeObserver` interface. This is called whenever the device is changed or is muted or unmuted, allowing applications to adapt to OS-level mute state for input devices.
 - Added Android WebView Sample UI test to workflow.
 - Add a new optional API `getVideoTileForAttendeeId` in `VideoTileController` and raise the `tileWillBePausedByDownlinkPolicy` event for empty video tiles.
+- Add retry logic in FAQs.
 
 ### Changed
 - Clarify why not use default downlink policy with simulcast.
@@ -35,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `RealtimeSubscribeToAttendeeIdPresenceCallback` type for `realtimeSubscribeToAttendeeIdPresence` callback to document the callback parameters.
 - Added support for Android WebView
-- Add a SignalClientEvent check in `SubscribeAndReceiveSubscribeAckTask` to immediately cancel the task when websocket connection is terminated.≈
+- Add a SignalClientEvent check in `SubscribeAndReceiveSubscribeAckTask` to immediately cancel the task when websocket connection is terminated.
 
 ### Changed
 - Update the default behavior of NScale video uplink bandwidth policy to scale down resolution based on the number
