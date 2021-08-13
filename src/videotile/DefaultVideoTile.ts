@@ -98,8 +98,11 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
       // Need to yield the message loop before clearing `srcObject` to
       // prevent Safari from crashing.
       if (new DefaultBrowserBehavior().requiresVideoElementWorkaround()) {
+        const prevSrcObject = videoElement.srcObject;
         AsyncScheduler.nextTick(() => {
-          videoElement.srcObject = null;
+          if (videoElement.srcObject === prevSrcObject) {
+            videoElement.srcObject = null;
+          }
         });
       } else {
         videoElement.srcObject = null;
