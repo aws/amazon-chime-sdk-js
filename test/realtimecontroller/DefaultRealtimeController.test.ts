@@ -1142,6 +1142,13 @@ describe('DefaultRealtimeController', () => {
     });
   });
 
+  describe('transcription controller', () => {
+    it('can get transcriptionController', () => {
+      const rt: RealtimeController = new DefaultRealtimeController();
+      expect(rt.transcriptionController).to.not.equal(null);
+    });
+  });
+
   describe('unsubscribe', () => {
     it('can unsubscribe from callbacks', () => {
       const rt: RealtimeController = new DefaultRealtimeController();

@@ -72,7 +72,7 @@ The following developer guides cover specific topics for a technical audience.
 - [Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser) — A browser
  meeting application with a local server
 - [Serverless Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless) — A self-contained serverless meeting application
-- [Single JS](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/singlejs) — A script to bundle the SDK into a single `.js` file
+- [Single JS](https://github.com/aws-samples/amazon-chime-sdk/tree/main/utils/singlejs) — A script to bundle the SDK into a single `.js` file
 - [Recording Demo](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) — Recording the meeting's audio, video and screen share in high definition
 - [Virtual Classroom](https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/) — An online classroom built with Electron and React
 - [Live Events](https://aws.amazon.com/blogs/opensource/how-to-deploy-a-live-events-solution-built-with-the-amazon-chime-sdk/) — Interactive live events solution
@@ -1133,6 +1133,10 @@ The use of Amazon Voice Focus runtime code is subject to additional notices. See
 The browser demo applications in the [demos directory](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos) use [TensorFlow.js](https://github.com/tensorflow/tfjs) and pre-trained [TensorFlow.js models](https://github.com/tensorflow/tfjs-models) for image segmentation. Use of these third party models involves downloading and execution of code at runtime from [jsDelivr](https://www.jsdelivr.com/) by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this [link](https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net).
 
 The use of TensorFlow runtime code referenced above may be subject to additional license requirements. See the licenses page for TensorFlow.js [here](https://github.com/tensorflow/tfjs/blob/master/LICENSE) and TensorFlow.js models [here](https://github.com/tensorflow/tfjs-models/blob/master/LICENSE) for details.
+
+Live transcription using the Amazon Chime SDK for JavaScript is powered by Amazon Transcribe. Use of Amazon Transcribe is subject to the [AWS Service Terms](https://aws.amazon.com/service-terms/), including the terms specific to the AWS Machine Learning and Artificial Intelligence Services. Standard charges for Amazon Transcribe and Amazon Transcribe Medical will apply.
+
+You and your end users understand that recording Amazon Chime SDK meetings may be subject to laws or regulations regarding the recording of electronic communications. It is your and your end users’ responsibility to comply with all applicable laws regarding the recordings, including properly notifying all participants in a recorded session, or communication that the session or communication is being recorded, and obtain their consent.
 
 ---
 

@@ -105,6 +105,50 @@ exports.end = async (event, context) => {
   return response(200, 'application/json', JSON.stringify({}));
 };
 
+exports.start_transcription = async (event, context) => {
+  // Fetch the meeting by title
+  const meeting = await getMeeting(event.queryStringParameters.title);
+  const languageCode = event.queryStringParameters.language;
+  let transcriptionConfiguration = {};
+  if (event.queryStringParameters.engine === 'transcribe') {
+    transcriptionConfiguration = {
+      EngineTranscribeSettings: {
+        LanguageCode: languageCode,
+      }
+    };
+  } else if (event.queryStringParameters.engine === 'transcribe_medical') {
+    transcriptionConfiguration = {
+      EngineTranscribeMedicalSettings: {
+        LanguageCode: languageCode,
+        Specialty: 'PRIMARYCARE',
+        Type: 'CONVERSATION',
+      }
+    };
+  } else {
+    return response(400, 'application/json', JSON.stringify({
+      error: 'Unknown transcription engine'
+    }));
+  }
+
+  // start transcription for the meeting
+  await chime.startMeetingTranscription({
+    MeetingId: meeting.Meeting.MeetingId,
+    TranscriptionConfiguration: transcriptionConfiguration
+  }).promise();
+  return response(200, 'application/json', JSON.stringify({}));
+};
+
+exports.stop_transcription = async (event, context) => {
+  // Fetch the meeting by title
+  const meeting = await getMeeting(event.queryStringParameters.title);
+
+  // stop transcription for the meeting
+  await chime.stopMeetingTranscription({
+    MeetingId: meeting.Meeting.MeetingId
+  }).promise();
+  return response(200, 'application/json', JSON.stringify({}));
+};
+
 exports.start_capture = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
@@ -133,6 +177,10 @@ exports.end_capture = async (event, context) => {
   } else {
     response(response, 500, 'application/json', JSON.stringify({msg: "No pipeline to stop for this meeting"}))
   }
+};
+
+exports.audio_file = async (event, context) => {
+  return response(200, 'audio/mpeg', fs.readFileSync('./speech.mp3', {encoding: 'base64'}), true);
 };
 
 exports.fetch_credentials = async (event, context) => {
@@ -346,12 +394,12 @@ function createLogStreamName(meetingId, attendeeId) {
   return `ChimeSDKMeeting_${meetingId}_${attendeeId}`;
 }
 
-function response(statusCode, contentType, body) {
+function response(statusCode, contentType, body, isBase64Encoded=false) {
   return {
     statusCode: statusCode,
     headers: { 'Content-Type': contentType },
     body: body,
-    isBase64Encoded: false
+    isBase64Encoded,
   };
 }
 
@@ -385,22 +433,18 @@ function addEventIngestionMetricsToCloudWatch(log, meetingId, attendeeId) {
   let errorMetricValue = 0;
   let retryMetricValue = 0;
   let ingestionTriggerSuccessMetricValue = 0;
-  // Filter out browser errors which happen due to page unload.
-  // We cannot handle these failures in realtime, hence filter out.
-  if (
-    logLevel === 'ERROR' &&
-    (
-      !message.includes('NetworkError when attempting to fetch resource') &&
-      !message.includes('error reading OK response AbortError')
-    )
-  ) {
-    errorMetricValue = 1;
-  } else if (logLevel === 'WARN' && message.match(/Retry (count)? limit reached/g)) {
+  let networkErrors = 0;
+  if (logLevel === 'WARN' && message.includes('Retry count limit reached')) {
     retryMetricValue = 1;
+  } else if (logLevel === 'ERROR') {
+    errorMetricValue = 1;
   } else if (message.includes('send successful')) {
     ingestionTriggerSuccessMetricValue = 1;
+  } else if (message.match(/(NetworkError|AbortError|Failed to fetch)/g) !== null) {
+    networkErrors = 1;
   }
   putMetric('EventIngestionTriggerSuccess', ingestionTriggerSuccessMetricValue, meetingId, attendeeId);
   putMetric('EventIngestionError', errorMetricValue, meetingId, attendeeId);
   putMetric('EventIngestionRetryCountLimitReached', retryMetricValue, meetingId, attendeeId);
+  putMetric('EventIngestionNetworkErrors', networkErrors, meetingId, attendeeId);
 }

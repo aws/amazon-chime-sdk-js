@@ -20,6 +20,7 @@ import {
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import ReceiveVideoStreamIndexTask from '../../src/task/ReceiveVideoStreamIndexTask';
+import { wait as delay } from '../../src/utils/Utils';
 import DefaultVideoCaptureAndEncodeParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
@@ -35,7 +36,6 @@ import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpoli
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('ReceiveVideoStreamIndexTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;

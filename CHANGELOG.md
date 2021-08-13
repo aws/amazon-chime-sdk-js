@@ -8,10 +8,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Add `RealtimeSubscribeToAttendeeIdPresenceCallback` type for `realtimeSubscribeToAttendeeIdPresence` callback to document the callback parameters.
 
+### Changed
+
+### Removed
+
+### Fixed
+
+## [2.15.0] - 2021-08-04
+
+### Added 
+
+- Supports integration with Amazon Transcribe and Amazon Transcribe Medical for live transcription. The Amazon Chime Service uses its active talker algorithm to select the top two active talkers, and sends their audio to Amazon Transcribe (or Amazon Transcribe Medical) in your AWS account. User-attributed transcriptions are then sent directly to every meeting attendee via data messages. Use transcriptions to overlay subtitles, build a transcript, or perform real-time content analysis. For more information, visit [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html).
+- [Demo] Add live transcription functionality. You will need to have a serverless deployment to create new AWS Lambda endpoints for live transcription. Follow [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) to create necessary service-linked role so that the demo app can call Amazon Transcribe and Amazon Transcribe Medical on your behalf.
+- Exposed Amazon Voice Focus model complexity as a type in order to support
+  showcasing complexity limitation in the meeting demo.
+- Packet-per-second (PPS) logging is now enabled in the meeting demo by
+  default. If the browser sends an incorrect packet rate, this will be logged
+  as an error in the console.
+- Add a warning log in `InMemoryJSONEventBuffer`'s `send` function when retrying starts.
+
+### Changed
+- Update `InMemoryJSONEventBuffer` to retry with backoff.
+
+### Removed
+
+### Fixed
+- Stop `activeDevice` video track before selecting a new device to prevent `NotReadableError` when calling `getUserMedia` for a new video input device.
+- Fix priority-based downlink policy default behavior.
+- Fix client event ingestion guide rendering in typedoc.
+
+## [2.14.0] - 2021-07-23
+
+### Added
 - Added `VideoPriorityBasedPolicyConfig` to control video downlink policy with network event response and recovery delays. Check [User Guide for Priority-based Downlink Policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#user-guide-for-priority-based-downlink-policy) for more information.
 - Amazon Chime SDK Project Board Overview and Guide.
-
 - Added 25 video tile support for demo app.
 
 ### Changed
@@ -283,7 +315,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DefaultDeviceController` now attempts to resume a suspended `AudioContext`
   when choosing a transform device (#1062).
 - `DefaultVideoStreamIndex` now ignores old group IDs from a given attendee ID (#1029).
-
 
 ## [2.4.1] - 2021-01-28
 

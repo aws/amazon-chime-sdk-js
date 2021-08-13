@@ -19,6 +19,7 @@ import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import { isVideoTransformDevice } from '../devicecontroller/VideoTransformDevice';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import type VolumeIndicatorCallback from '../realtimecontroller/VolumeIndicatorCallback';
+import TranscriptionController from '../transcript/TranscriptionController';
 import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
@@ -471,5 +472,9 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     const result = this.audioVideoController.getRemoteVideoSources();
     this.trace('getRemoteVideoSources', null, result);
     return result;
+  }
+
+  get transcriptionController(): TranscriptionController {
+    return this.realtimeController.transcriptionController;
   }
 }

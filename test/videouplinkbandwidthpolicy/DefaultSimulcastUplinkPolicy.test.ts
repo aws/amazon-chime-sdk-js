@@ -17,12 +17,12 @@ import {
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from '../../src/transceivercontroller/SimulcastTransceiverController';
+import { wait as delay } from '../../src/utils/Utils';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import SimulcastUplinkObserver from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkObserver';
 import SimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import VideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
-import { delay } from '../utils';
 
 describe('DefaultSimulcastUplinkPolicy', () => {
   const expect: Chai.ExpectStatic = chai.expect;

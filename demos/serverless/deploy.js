@@ -225,6 +225,10 @@ function createCaptureS3Buckets(bucketPrefix, regions) {
   }
 }
 
+function copyAssets() {
+  fs.copySync('../browser/dist/speech.mp3', 'src/speech.mp3');
+}
+
 parseArgs();
 ensureTools();
 ensureApp(app);
@@ -236,6 +240,7 @@ if (!fs.existsSync('build')) {
 console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}, disable-printing-logs ${disablePrintingLogs}`);
 ensureBucket();
 
+copyAssets();
 fs.copySync(appHtml(app), 'src/index.html');
 spawnOrFail('npm', ['install'], {cwd: path.join(__dirname, 'src')});
 spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,

@@ -83,6 +83,7 @@ import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
 import DefaultSimulcastUplinkPolicy from './videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import DefaultStatsCollector from './statscollector/DefaultStatsCollector';
 import DefaultTransceiverController from './transceivercontroller/DefaultTransceiverController';
+import DefaultTranscriptionController from './transcript/DefaultTranscriptionController';
 import DefaultUserAgentParser from './useragentparser/DefaultUserAgentParser';
 import DefaultVideoCaptureAndEncodeParameter from './videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import DefaultVideoFrameProcessorPipeline from './videoframeprocessor/DefaultVideoFrameProcessorPipeline';
@@ -187,6 +188,7 @@ import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttend
 import RealtimeController from './realtimecontroller/RealtimeController';
 import RealtimeControllerFacade from './realtimecontroller/RealtimeControllerFacade';
 import RealtimeState from './realtimecontroller/RealtimeState';
+import RealtimeSubscribeToAttendeeIdPresenceCallback from './realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback';
 import RealtimeVolumeIndicator from './realtimecontroller/RealtimeVolumeIndicator';
 import ReceiveAudioInputTask from './task/ReceiveAudioInputTask';
 import ReceiveTURNCredentialsTask from './task/ReceiveTURNCredentialsTask';
@@ -236,6 +238,15 @@ import TaskStatus from './task/TaskStatus';
 import TimeoutScheduler from './scheduler/TimeoutScheduler';
 import TimeoutTask from './task/TimeoutTask';
 import TransceiverController from './transceivercontroller/TransceiverController';
+import Transcript from './transcript/Transcript';
+import TranscriptAlternative from './transcript/TranscriptAlternative';
+import TranscriptEvent from './transcript/TranscriptEvent';
+import TranscriptItem from './transcript/TranscriptItem';
+import TranscriptItemType from './transcript/TranscriptItemType';
+import TranscriptResult from './transcript/TranscriptResult';
+import TranscriptionController from './transcript/TranscriptionController';
+import TranscriptionStatus from './transcript/TranscriptionStatus';
+import TranscriptionStatusType from './transcript/TranscriptionStatusType';
 import TypeError from './devicecontroller/TypeError';
 import UnusableAudioWarningConnectionHealthPolicy from './connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import UserAgentParser from './useragentparser/UserAgentParser';
@@ -271,6 +282,7 @@ import VideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/VideoUplink
 import VoiceFocusConfig from './voicefocus/VoiceFocusConfig';
 import VoiceFocusDeviceOptions from './voicefocus/VoiceFocusDeviceOptions';
 import VoiceFocusDeviceTransformer from './voicefocus/VoiceFocusDeviceTransformer';
+import VoiceFocusModelComplexity from './voicefocus/VoiceFocusModelComplexity';
 import VoiceFocusPaths from './voicefocus/VoiceFocusPaths';
 import VoiceFocusSpec from './voicefocus/VoiceFocusSpec';
 import VoiceFocusTransformDevice from './voicefocus/VoiceFocusTransformDevice';
@@ -371,6 +383,7 @@ export {
   DefaultSimulcastUplinkPolicy,
   DefaultStatsCollector,
   DefaultTransceiverController,
+  DefaultTranscriptionController,
   DefaultUserAgentParser,
   DefaultVideoCaptureAndEncodeParameter,
   DefaultVideoFrameProcessorPipeline,
@@ -476,6 +489,7 @@ export {
   RealtimeController,
   RealtimeControllerFacade,
   RealtimeState,
+  RealtimeSubscribeToAttendeeIdPresenceCallback,
   RealtimeVolumeIndicator,
   ReceiveAudioInputTask,
   ReceiveTURNCredentialsTask,
@@ -525,6 +539,15 @@ export {
   TimeoutScheduler,
   TimeoutTask,
   TransceiverController,
+  Transcript,
+  TranscriptAlternative,
+  TranscriptEvent,
+  TranscriptItem,
+  TranscriptItemType,
+  TranscriptResult,
+  TranscriptionController,
+  TranscriptionStatus,
+  TranscriptionStatusType,
   TypeError,
   UnusableAudioWarningConnectionHealthPolicy,
   UserAgentParser,
@@ -560,6 +583,7 @@ export {
   VoiceFocusConfig,
   VoiceFocusDeviceOptions,
   VoiceFocusDeviceTransformer,
+  VoiceFocusModelComplexity,
   VoiceFocusPaths,
   VoiceFocusSpec,
   VoiceFocusTransformDevice,

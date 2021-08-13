@@ -50,6 +50,9 @@ npm run deploy -- -r us-east-1 -b <deploy-bucekt> -o <capture-bucket-prefix> -i 
 
 Note that you need to enable these regions if you plan to use media capture. For more information, see [Managing AWS Regions](https://docs.aws.amazon.com/general/latest/gr/rande-manage.html).
 
+#### Live Transcription
+If you want to use live transcription, follow [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) to create necessary service-linked role so that the demo app can call Amazon Transcribe and Amazon Transcribe Medical on your behalf.
+
 #### Meeting Readiness Checker app
 The following will create a CloudFormation stack containing a Lambda and
 API Gateway deployment that runs the `meetingReadinessChecker` demo.

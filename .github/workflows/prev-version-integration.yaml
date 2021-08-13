@@ -57,6 +57,13 @@ jobs:
         run: integration/js/script/install-kite
       - name: Setup
         run: git checkout tags/v${{ steps.prev.outputs.prev_version }}
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-${{ steps.prev.outputs.prev_version }}.tgz
       - name: Clean Install
         run: npm ci
       - name: Run Audio Integration Test

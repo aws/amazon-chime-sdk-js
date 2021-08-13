@@ -6,6 +6,7 @@ import 'bootstrap';
 
 import {
   AsyncScheduler,
+  Attendee,
   AudioInputDevice,
   AudioProfile,
   AudioVideoFacade,
@@ -20,15 +21,19 @@ import {
   DefaultAudioVideoController,
   DefaultBrowserBehavior,
   DefaultDeviceController,
+  DefaultMeetingEventReporter,
   DefaultMeetingSession,
   DefaultModality,
   DefaultVideoTransformDevice,
   Device,
   DeviceChangeObserver,
   EventAttributes,
+  EventIngestionConfiguration,
   EventName,
+  EventReporter,
   LogLevel,
   Logger,
+  MeetingEventsClientConfiguration,
   MeetingSession,
   MeetingSessionConfiguration,
   MeetingSessionPOSTLogger,
@@ -36,11 +41,18 @@ import {
   MeetingSessionStatusCode,
   MeetingSessionVideoAvailability,
   MultiLogger,
+  NoOpEventReporter,
   NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
   SimulcastLayers,
   TargetDisplaySize,
   TimeoutScheduler,
+  Transcript,
+  TranscriptEvent,
+  TranscriptionStatus,
+  TranscriptionStatusType,
+  TranscriptItemType,
+  TranscriptResult,
   Versioning,
   VideoDownlinkObserver,
   VideoFrameProcessor,
@@ -48,19 +60,16 @@ import {
   VideoPreference,
   VideoPreferences,
   VideoPriorityBasedPolicy,
+  VideoPriorityBasedPolicyConfig,
   VideoSource,
   VideoTileState,
   VoiceFocusDeviceTransformer,
+  VoiceFocusModelComplexity,
   VoiceFocusPaths,
+  VoiceFocusSpec,
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
-  VideoPriorityBasedPolicyConfig,
-  NoOpEventReporter,
-  EventReporter,
   isDestroyable,
-  MeetingEventsClientConfiguration,
-  EventIngestionConfiguration,
-  DefaultMeetingEventReporter
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -82,7 +91,7 @@ let SHOULD_DIE_ON_FATALS = (() => {
   return fatalYes || (isLocal && !fatalNo);
 })();
 
-let DEBUG_LOG_PPS = false;
+let DEBUG_LOG_PPS = true;
 
 let fatal: (e: Error) => void;
 
@@ -148,6 +157,8 @@ const VOICE_FOCUS_SPEC = {
   revisionID: VOICE_FOCUS_REVISION_ID,
   paths: VOICE_FOCUS_PATHS,
 };
+
+const MAX_VOICE_FOCUS_COMPLEXITY: VoiceFocusModelComplexity | undefined = undefined;
 
 type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'None';
 
@@ -221,10 +232,22 @@ const SimulcastLayerMapping = {
   [SimulcastLayers.High]: 'High',
 };
 
+const LANGUAGES_NO_WORD_SEPARATOR = new Set([
+  'ja-JP',
+  'zh-CN',
+]);
+
 interface Toggle {
   name: string;
   oncreate: (elem: HTMLElement) => void;
   action: () => void;
+}
+
+interface TranscriptSegment {
+  content: string;
+  attendee: Attendee;
+  startTimeMs: number;
+  endTimeMs: number;
 }
 
 export class DemoMeetingApp
@@ -284,6 +307,7 @@ export class DemoMeetingApp
     'button-speaker': true,
     'button-content-share': false,
     'button-pause-content-share': false,
+    'button-live-transcription': false,
     'button-video-stats': false,
     'button-video-filter': false,
     'button-record-self': false,
@@ -304,6 +328,9 @@ export class DemoMeetingApp
   enableVoiceFocus = false;
   voiceFocusIsActive = false;
 
+  enableLiveTranscription = false;
+  noWordSeparatorForTranscription = false;
+
   markdown = require('markdown-it')({ linkify: true });
   lastMessageSender: string | null = null;
   lastReceivedMessageTimestamp = 0;
@@ -319,6 +346,8 @@ export class DemoMeetingApp
   // will be updated when the Amazon Voice Focus display state changes.
   voiceFocusDisplayables: HTMLElement[] = [];
   analyserNode: RemovableAnalyserNode;
+
+  liveTranscriptionDisplayables: HTMLElement[] = [];
 
   chosenVideoTransformDevice: DefaultVideoTransformDevice;
   chosenVideoFilter: VideoFilterName = 'None';
@@ -357,6 +386,11 @@ export class DemoMeetingApp
   videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
 
   removeFatalHandlers: () => void;
+
+  transcriptContainerDiv = document.getElementById('transcript-container') as HTMLDivElement;
+  partialTranscriptDiv: HTMLDivElement | undefined;
+  partialTranscriptResultTimeMap = new Map<string, number>();
+  partialTranscriptResultMap = new Map<string, TranscriptResult>();
 
   addFatalHandlers(): void {
     fatal = this.fatal.bind(this);
@@ -461,7 +495,7 @@ export class DemoMeetingApp
         logger,
       });
       if (this.supportsVoiceFocus) {
-        this.voiceFocusTransformer = await this.getVoiceFocusDeviceTransformer();
+        this.voiceFocusTransformer = await this.getVoiceFocusDeviceTransformer(MAX_VOICE_FOCUS_COMPLEXITY);
         this.supportsVoiceFocus =
           this.voiceFocusTransformer && this.voiceFocusTransformer.isSupported();
         if (this.supportsVoiceFocus) {
@@ -938,6 +972,54 @@ export class DemoMeetingApp
       });
     });
 
+    const buttonLiveTranscription = document.getElementById('button-live-transcription');
+    buttonLiveTranscription.addEventListener('click', () => {
+      this.transcriptContainerDiv.style.display = this.isButtonOn('button-live-transcription') ? 'none' : 'block';
+      this.toggleButton('button-live-transcription');
+    });
+
+    const buttonLiveTranscriptionModal = document.getElementById('button-live-transcription-modal-close');
+    buttonLiveTranscriptionModal.addEventListener('click', () => {
+      document.getElementById('live-transcription-modal').style.display = 'none';
+    });
+
+    // show only languages available to selected transcription engine
+    document.getElementsByName('transcription-engine').forEach(e => {
+      e.addEventListener('change', () => {
+        const engineTranscribeChecked = (document.getElementById('engine-transcribe') as HTMLInputElement).checked;
+        document.getElementById('engine-transcribe-language').classList.toggle('hidden', !engineTranscribeChecked);
+		    document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
+      });
+    });
+
+    const buttonStartTranscription = document.getElementById('button-start-transcription');
+    buttonStartTranscription.addEventListener('click', async () => {
+      let engine = '';
+      let languageCode = '';
+      if ((document.getElementById('engine-transcribe') as HTMLInputElement).checked) {
+        engine = 'transcribe';
+        languageCode = (document.getElementById('transcribe-language') as HTMLInputElement).value;
+      } else if ((document.getElementById('engine-transcribe-medical') as HTMLInputElement).checked) {
+        engine = 'transcribe_medical';
+        languageCode = (document.getElementById('transcribe-medical-language') as HTMLInputElement).value;
+      } else {
+        throw new Error('Unknown transcription engine');
+      }
+      await startLiveTranscription(engine, languageCode);
+    });
+
+    const startLiveTranscription = async (engine: string, languageCode: string) => {
+      const response = await fetch(`${DemoMeetingApp.BASE_URL}start_transcription?title=${encodeURIComponent(this.meeting)}&engine=${encodeURIComponent(engine)}&language=${encodeURIComponent(languageCode)}`, {
+        method: 'POST',
+      });
+      const json = await response.json();
+      if (json.error) {
+        throw new Error(`Server error: ${json.error}`);
+      }
+
+      document.getElementById('live-transcription-modal').style.display = 'none';
+    };
+
     const buttonVideoStats = document.getElementById('button-video-stats');
     buttonVideoStats.addEventListener('click', () => {
       if (this.isButtonOn('button-video-stats')) {
@@ -1041,7 +1123,15 @@ export class DemoMeetingApp
           const now = Date.now();
           const deltat = now - start;
           const deltap = entry.packetsSent - packets;
-          console.info('PPS:', (1000 * deltap) / deltat);
+          const pps = (1000 * deltap) / deltat;
+
+          let overage = 0;
+          if ((pps > 52) || (pps < 47)) {
+            console.error('PPS:', pps, `(${++overage})`);
+          } else {
+            overage = 0;
+            console.debug('PPS:', pps);
+          }
           start = now;
           packets = entry.packetsSent;
           return;
@@ -1096,7 +1186,11 @@ export class DemoMeetingApp
     );
   }
 
-
+  setButtonVisibility(button: string, visible: boolean, state?: 'on' | 'off') {
+    const element = document.getElementById(button);
+    element.style.display = visible ? 'inline-block' : 'none';
+    this.toggleButton(button, state);
+  }
 
   toggleButton(button: string, state?: 'on' | 'off'): boolean {
     if (state === 'on') {
@@ -1467,7 +1561,7 @@ export class DemoMeetingApp
     }
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     if (this.usePriorityBasedDownlinkPolicy) {
-      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger);
+      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
@@ -1478,10 +1572,6 @@ export class DemoMeetingApp
       deviceController,
       this.eventReporter
     );
-    if (this.usePriorityBasedDownlinkPolicy) {
-      this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
-      configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
-    }
 
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
@@ -1503,6 +1593,7 @@ export class DemoMeetingApp
     this.setupSubscribeToAttendeeIdPresenceHandler();
     this.setupDataMessage();
     this.setupAttendeeActionsDataMessage();
+    this.setupLiveTranscription();
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
     this.initContentShareDropDownItems();
@@ -1896,6 +1987,196 @@ export class DemoMeetingApp
     );
   }
   
+  transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
+    if (!this.enableLiveTranscription) {
+      // Toggle disabled 'Live Transcription' button to enabled when we receive any transcript event
+      this.enableLiveTranscription = true;
+      this.updateLiveTranscriptionDisplayState();
+
+      // Transcripts view and the button to show and hide it are initially hidden
+      // Show them when when live transcription gets enabled, and do not hide afterwards
+      this.setButtonVisibility('button-live-transcription', true, 'on');
+      this.transcriptContainerDiv.style.display = 'block';
+    }
+
+    if (transcriptEvent instanceof TranscriptionStatus) {
+      this.appendStatusDiv(transcriptEvent);
+      if (transcriptEvent.type === TranscriptionStatusType.STARTED) {
+        // Determine word separator based on language code
+        let languageCode = null;
+        const transcriptionConfiguration = JSON.parse(transcriptEvent.transcriptionConfiguration);
+        if (transcriptionConfiguration) {
+          if (transcriptionConfiguration.EngineTranscribeSettings) {
+            languageCode = transcriptionConfiguration.EngineTranscribeSettings.LanguageCode;
+          } else if (transcriptionConfiguration.EngineTranscribeMedicalSettings) {
+            languageCode = transcriptionConfiguration.EngineTranscribeMedicalSettings.languageCode;
+          }
+        }
+
+        if (languageCode && LANGUAGES_NO_WORD_SEPARATOR.has(languageCode)) {
+          this.noWordSeparatorForTranscription = true;
+        }
+      } else if (transcriptEvent.type === TranscriptionStatusType.STOPPED && this.enableLiveTranscription) {
+        // When we receive a STOPPED status event:
+        // 1. toggle enabled 'Live Transcription' button to disabled
+        this.enableLiveTranscription = false;
+        this.noWordSeparatorForTranscription = false;
+        this.updateLiveTranscriptionDisplayState();
+
+        // 2. force finalize all partial results
+        this.partialTranscriptResultTimeMap.clear();
+        this.partialTranscriptDiv = null;
+        this.partialTranscriptResultMap.clear();
+      }
+    } else if (transcriptEvent instanceof Transcript) {
+      for (const result of transcriptEvent.results) {
+        const resultId = result.resultId;
+        const isPartial = result.isPartial;
+
+        this.partialTranscriptResultMap.set(resultId, result);
+        this.partialTranscriptResultTimeMap.set(resultId, result.endTimeMs);
+        this.renderPartialTranscriptResults();
+        if (isPartial) {
+          continue;
+        }
+
+        // Force finalizing partial results that's 5 seconds older than the latest one,
+        // to prevent local partial results from indefinitely growing
+        for (const [olderResultId, endTimeMs] of this.partialTranscriptResultTimeMap) {
+          if (olderResultId === resultId) {
+            break;
+          } else if (endTimeMs < result.endTimeMs - 5000) {
+            this.partialTranscriptResultTimeMap.delete(olderResultId);
+          }
+        }
+
+        this.partialTranscriptResultTimeMap.delete(resultId);
+
+        if (this.partialTranscriptResultTimeMap.size === 0) {
+          // No more partial results in current batch, reset current batch
+          this.partialTranscriptDiv = null;
+          this.partialTranscriptResultMap.clear();
+        }
+      }
+    }
+
+    this.transcriptContainerDiv.scrollTop = this.transcriptContainerDiv.scrollHeight;
+  };
+
+  renderPartialTranscriptResults = () => {
+    if (this.partialTranscriptDiv) {
+      // Keep updating existing partial result div
+      this.updatePartialTranscriptDiv();
+    } else {
+      // All previous results were finalized. Create a new div for new results, update, then add it to DOM
+      this.partialTranscriptDiv = document.createElement('div') as HTMLDivElement;
+      this.updatePartialTranscriptDiv();
+      this.transcriptContainerDiv.appendChild(this.partialTranscriptDiv);
+    }
+  };
+
+  updatePartialTranscriptDiv = () => {
+    this.partialTranscriptDiv.innerHTML = '';
+
+    const partialTranscriptSegments: TranscriptSegment[] = [];
+    for (const result of this.partialTranscriptResultMap.values()) {
+      this.populatePartialTranscriptSegmentsFromResult(partialTranscriptSegments, result);
+    }
+    partialTranscriptSegments.sort((a, b) => a.startTimeMs - b.startTimeMs);
+
+    const speakerToTranscriptSpanMap = new Map<string, HTMLSpanElement>();
+    for (const segment of partialTranscriptSegments) {
+      const newSpeakerId = segment.attendee.attendeeId;
+      if (!speakerToTranscriptSpanMap.has(newSpeakerId)) {
+        this.appendNewSpeakerTranscriptDiv(segment, speakerToTranscriptSpanMap);
+      } else {
+        const partialResultSpeakers: string[] = Array.from(speakerToTranscriptSpanMap.keys());
+        if (partialResultSpeakers.indexOf(newSpeakerId) < partialResultSpeakers.length - 1) {
+          // Not the latest speaker and we reach the end of a sentence, clear the speaker to Span mapping to break line
+          speakerToTranscriptSpanMap.delete(newSpeakerId);
+          this.appendNewSpeakerTranscriptDiv(segment, speakerToTranscriptSpanMap);
+        } else {
+          const transcriptSpan = speakerToTranscriptSpanMap.get(newSpeakerId);
+          transcriptSpan.innerText = transcriptSpan.innerText + '\u00a0' + segment.content;
+        }
+      }
+    }
+  };
+
+  populatePartialTranscriptSegmentsFromResult = (segments: TranscriptSegment[], result: TranscriptResult) => {
+    let startTimeMs: number = null;
+    let content = '';
+    let attendee: Attendee = null;
+    for (const item of result.alternatives[0].items) {
+      if (!startTimeMs) {
+        content = item.content;
+        attendee = item.attendee;
+        startTimeMs = item.startTimeMs;
+      } else if (item.type === TranscriptItemType.PUNCTUATION) {
+        content = content + item.content;
+        segments.push({
+          content: content,
+          attendee: attendee,
+          startTimeMs: startTimeMs,
+          endTimeMs: item.endTimeMs
+        });
+        content = '';
+        startTimeMs = null;
+        attendee = null;
+      } else {
+        if (this.noWordSeparatorForTranscription) {
+          content = content + item.content;
+        } else {
+          content = content + ' ' + item.content;
+        }
+      }
+    }
+
+    // Reached end of the result but there is no closing punctuation
+    if (startTimeMs) {
+      segments.push({
+        content: content,
+        attendee: attendee,
+        startTimeMs: startTimeMs,
+        endTimeMs: result.endTimeMs,
+      });
+    }
+  };
+
+  appendNewSpeakerTranscriptDiv = (
+    segment: TranscriptSegment,
+    speakerToTranscriptSpanMap: Map<string, HTMLSpanElement>) =>
+  {
+    const speakerTranscriptDiv = document.createElement('div') as HTMLDivElement;
+    speakerTranscriptDiv.classList.add('transcript');
+
+    const speakerSpan = document.createElement('span') as HTMLSpanElement;
+    speakerSpan.classList.add('transcript-speaker');
+    speakerSpan.innerText = segment.attendee.externalUserId.split('#').slice(-1)[0] + ': ';
+    speakerTranscriptDiv.appendChild(speakerSpan);
+
+    const transcriptSpan = document.createElement('span') as HTMLSpanElement;
+    transcriptSpan.classList.add('transcript-content');
+    transcriptSpan.innerText = segment.content;
+    speakerTranscriptDiv.appendChild(transcriptSpan);
+
+    this.partialTranscriptDiv.appendChild(speakerTranscriptDiv);
+
+    speakerToTranscriptSpanMap.set(segment.attendee.attendeeId, transcriptSpan);
+  };
+
+  appendStatusDiv = (status: TranscriptionStatus) => {
+    const statusDiv = document.createElement('div') as HTMLDivElement;
+    statusDiv.innerText = '(Live Transcription ' + status.type + ' at '
+      + new Date(status.eventTimeMs).toLocaleTimeString() + ' in ' + status.transcriptionRegion
+      + ' with configuration: ' + status.transcriptionConfiguration + ')';
+    this.transcriptContainerDiv.appendChild(statusDiv);
+  };
+
+  setupLiveTranscription = () => {
+    this.audioVideo.transcriptionController?.subscribeToTranscriptEvent(this.transcriptEventHandler);
+  };
+
   // eslint-disable-next-line
   async joinMeeting(): Promise<any> {
     const response = await fetch(
@@ -2141,7 +2422,7 @@ export class DemoMeetingApp
 
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
-    const additionalDevices = ['None', '440 Hz'];
+    const additionalDevices = ['None', '440 Hz', 'Prerecorded Speech'];
     const additionalToggles = [];
 
     // This can't work unless Web Audio is enabled.
@@ -2154,6 +2435,14 @@ export class DemoMeetingApp
         action: () => this.toggleVoiceFocusInMeeting(),
       });
     }
+
+    additionalToggles.push({
+      name: 'Live Transcription',
+      oncreate: (elem: HTMLElement) => {
+        this.liveTranscriptionDisplayables.push(elem);
+      },
+      action: () => this.toggleLiveTranscription(),
+    });
 
     this.populateDeviceList(
       'audio-input',
@@ -2219,6 +2508,30 @@ export class DemoMeetingApp
     this.log('Amazon Voice Focus toggle is now', elem.checked);
 
     await this.reselectAudioInputDevice();
+  }
+
+  private updateLiveTranscriptionDisplayState() {
+    this.log('Updating live transcription display state to:', this.enableLiveTranscription);
+    for (const elem of this.liveTranscriptionDisplayables) {
+      elem.classList.toggle('live-transcription-active', this.enableLiveTranscription);
+    }
+  }
+
+  private async toggleLiveTranscription(): Promise<void> {
+    this.log('live transcription were previously set to ' + this.enableLiveTranscription + '; attempting to toggle');
+
+    if (this.enableLiveTranscription) {
+      const response = await fetch(`${DemoMeetingApp.BASE_URL}${encodeURIComponent('stop_transcription')}?title=${encodeURIComponent(this.meeting)}`, {
+        method: 'POST',
+      });
+      const json = await response.json();
+      if (json.error) {
+        throw new Error(`Server error: ${json.error}`);
+      }
+    } else {
+      const liveTranscriptionModal = document.getElementById(`live-transcription-modal`);
+      liveTranscriptionModal.style.display = "block";
+    }
   }
 
   async populateVideoInputList(): Promise<void> {
@@ -2463,6 +2776,28 @@ export class DemoMeetingApp
       return DefaultDeviceController.synthesizeAudioDevice(440);
     }
 
+    if (value == 'Prerecorded Speech') {
+      const audioPath = 'audio_file';
+      try {
+        const resp = await fetch(audioPath);
+        const bytes = await resp.arrayBuffer();
+        const audioData = new TextDecoder('utf8').decode(bytes);
+        const audio = new Audio('data:audio/mpeg;base64,' + audioData);
+        audio.loop = false;
+        audio.crossOrigin = 'anonymous';
+        audio.play();
+        // @ts-ignore
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const streamDestination = audioContext.createMediaStreamDestination();
+        const mediaElementSource = audioContext.createMediaElementSource(audio);
+        mediaElementSource.connect(streamDestination);
+        return streamDestination.stream;
+      } catch (e) {
+        this.log(`Error fetching audio from ${audioPath}: ${e}`);
+        return null;
+      }
+    }
+
     if (value === 'None') {
       return null;
     }
@@ -2470,14 +2805,33 @@ export class DemoMeetingApp
     return value;
   }
 
-  private async getVoiceFocusDeviceTransformer(): Promise<VoiceFocusDeviceTransformer> {
+  private async getVoiceFocusDeviceTransformer(maxComplexity?: VoiceFocusModelComplexity): Promise<VoiceFocusDeviceTransformer> {
     if (this.voiceFocusTransformer) {
       return this.voiceFocusTransformer;
     }
+
+    function exceeds(configured: VoiceFocusModelComplexity): boolean {
+      const max = Number.parseInt(maxComplexity.substring(1), 10);
+      const complexity = Number.parseInt(configured.substring(1), 10);
+      return complexity > max;
+    }
+
     const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
-    const transformer = await VoiceFocusDeviceTransformer.create(VOICE_FOCUS_SPEC, { logger });
-    this.voiceFocusTransformer = transformer;
-    return transformer;
+
+    // Find out what it will actually execute, and cap it if needed.
+    const spec: VoiceFocusSpec = { ...VOICE_FOCUS_SPEC };
+    const config = await VoiceFocusDeviceTransformer.configure(spec, { logger });
+
+    let transformer;
+    if (maxComplexity && config.supported && exceeds(config.model.variant)) {
+      logger.info(`Downgrading VF to ${maxComplexity}`);
+      spec.variant = maxComplexity;
+      transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+    } else {
+      transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, config);
+    }
+
+    return this.voiceFocusTransformer = await transformer;
   }
 
   private async createVoiceFocusDevice(inner: Device): Promise<VoiceFocusTransformDevice | Device> {
@@ -2491,7 +2845,7 @@ export class DemoMeetingApp
     }
 
     try {
-      const transformer = await this.getVoiceFocusDeviceTransformer();
+      const transformer = await this.getVoiceFocusDeviceTransformer(MAX_VOICE_FOCUS_COMPLEXITY);
       const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner);
       if (vf) {
         return (this.voiceFocusDevice = vf);
@@ -2786,6 +3140,9 @@ export class DemoMeetingApp
       // Stop listening to attendee presence.
       this.audioVideo.realtimeUnsubscribeToAttendeeIdPresence(this.attendeeIdPresenceHandler);
 
+      // Stop listening to transcript events.
+      this.audioVideo.transcriptionController?.unsubscribeFromTranscriptEvent(this.transcriptEventHandler);
+
       // Stop watching device changes in the UI.
       this.audioVideo.removeDeviceChangeObserver(this);
 
@@ -2931,7 +3288,7 @@ export class DemoMeetingApp
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
-    this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#')[1]);
+    this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#').slice(-1)[0]);
     this.updateProperty(attendeeIdElement, 'innerText', tileState.boundAttendeeId);
     if (tileState.paused && this.roster[tileState.boundAttendeeId].bandwidthConstrained) {
       this.updateProperty(pauseStateElement, 'innerText', '⚡');
@@ -3164,4 +3521,11 @@ export class DemoMeetingApp
 
 window.addEventListener('load', () => {
   new DemoMeetingApp();
+});
+
+window.addEventListener('click', event => {
+  const liveTranscriptionModal = document.getElementById('live-transcription-modal');
+  if (event.target === liveTranscriptionModal) {
+    liveTranscriptionModal.style.display = 'none';
+  }
 });

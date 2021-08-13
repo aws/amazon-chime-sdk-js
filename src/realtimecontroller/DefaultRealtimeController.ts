@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
+import DefaultTranscriptionController from '../transcript/DefaultTranscriptionController';
+import TranscriptionController from '../transcript/TranscriptionController';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
 import RealtimeController from './RealtimeController';
 import RealtimeState from './RealtimeState';
@@ -54,6 +56,12 @@ import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
  */
 export default class DefaultRealtimeController implements RealtimeController {
   private readonly state: RealtimeState = new RealtimeState();
+  private readonly _transcriptionController: TranscriptionController;
+
+  constructor(transcriptionController?: TranscriptionController) {
+    this._transcriptionController =
+      transcriptionController || new DefaultTranscriptionController(this);
+  }
 
   realtimeSetLocalAttendeeId(attendeeId: string, externalUserId: string): void {
     this.state.localAttendeeId = attendeeId;
@@ -445,6 +453,10 @@ export default class DefaultRealtimeController implements RealtimeController {
     } catch (e) {
       this.onError(e);
     }
+  }
+
+  get transcriptionController(): TranscriptionController {
+    return this._transcriptionController;
   }
 
   // Internals

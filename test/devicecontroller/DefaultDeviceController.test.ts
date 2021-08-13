@@ -23,6 +23,7 @@ import EventName from '../../src/eventcontroller/EventName';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MediaDeviceProxyHandler from '../../src/mediadevicefactory/MediaDeviceProxyHandler';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import { wait as delay } from '../../src/utils/Utils';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
@@ -37,7 +38,6 @@ import {
   MockThrowingTransformDevice,
   MutingTransformDevice,
 } from '../transformdevicemock/MockTransformDevice';
-import { delay } from '../utils';
 import WatchingLogger from './WatchingLogger';
 
 chai.use(chaiAsPromised);
@@ -1075,43 +1075,21 @@ describe('DefaultDeviceController', () => {
       }
     });
 
-    it('releases all previously-acquired audio streams', done => {
+    it('releases all previously-acquired audio streams', async () => {
       const stringDeviceIds: AudioInputDevice[] = [
         'device-id-1',
         'device-id-2',
         'device-id-3',
         'device-id-4',
       ];
-      const releasedDevices = new Set();
 
-      class TestDeviceController extends DefaultDeviceController {
-        releaseMediaStream(mediaStreamToRelease: MediaStream | null): void {
-          super.releaseMediaStream(mediaStreamToRelease);
+      const spy = sinon.spy(deviceController, 'releaseMediaStream');
+      await deviceController.chooseAudioInputDevice(stringDeviceIds[0]);
+      await deviceController.chooseAudioInputDevice(stringDeviceIds[1]);
+      await deviceController.chooseAudioInputDevice(stringDeviceIds[2]);
+      await deviceController.chooseAudioInputDevice(stringDeviceIds[3]);
 
-          if (!mediaStreamToRelease) {
-            return;
-          }
-          // @ts-ignore
-          if (mediaStreamToRelease.constraints && mediaStreamToRelease.constraints.audio) {
-            // @ts-ignore
-            releasedDevices.add(mediaStreamToRelease.constraints.audio.deviceId.exact);
-          }
-        }
-      }
-
-      deviceController = new TestDeviceController(logger);
-      domMockBehavior.asyncWaitMs = 100;
-      deviceController.chooseAudioInputDevice(stringDeviceIds[0]).then(async () => {
-        deviceController.chooseAudioInputDevice(stringDeviceIds[1]);
-        await delay(10);
-        deviceController.chooseAudioInputDevice(stringDeviceIds[2]);
-        await delay(10);
-        deviceController.chooseAudioInputDevice(stringDeviceIds[3]);
-      });
-      new TimeoutScheduler(500).start(() => {
-        expect(releasedDevices.size).to.equal(3);
-        done();
-      });
+      expect(spy.callCount).to.equal(3);
     });
 
     it('releases all previously-acquired audio streams with iOS 12', done => {
@@ -1409,13 +1387,12 @@ describe('DefaultDeviceController', () => {
       expect(spy.notCalled).to.be.true;
     });
 
-    it('releases an old stream', async () => {
+    it('releases an old stream video tracks', async () => {
       deviceController.bindToAudioVideoController(audioVideoController);
       await deviceController.chooseVideoInputDevice(stringDeviceId);
-      const stream = await deviceController.acquireVideoInputStream();
-      const spy = sinon.spy(deviceController, 'releaseMediaStream');
+      const firstStream = await deviceController.acquireVideoInputStream();
       await deviceController.chooseVideoInputDevice('new-device-id');
-      expect(spy.calledOnceWith(stream)).to.be.true;
+      expect(firstStream.getVideoTracks()[0].readyState).to.equal('ended');
     });
 
     it('restarts the local video if enabled', async () => {
@@ -1431,10 +1408,9 @@ describe('DefaultDeviceController', () => {
       audioVideoController.videoTileController.startLocalVideoTile();
 
       await deviceController.chooseVideoInputDevice(stringDeviceId);
-      const stream = await deviceController.acquireVideoInputStream();
-      const spy = sinon.spy(deviceController, 'releaseMediaStream');
+      const spy = sinon.spy(audioVideoController, 'restartLocalVideo');
       await deviceController.chooseVideoInputDevice('new-device-id');
-      expect(spy.calledOnceWith(stream)).to.be.true;
+      expect(spy.calledOnce).to.be.true;
     });
 
     it('denies the permission by browser', async () => {
@@ -1883,76 +1859,33 @@ describe('DefaultDeviceController', () => {
       const spyRMS = sinon.spy(deviceController, 'releaseMediaStream');
       domMockBehavior.asyncWaitMs = 500;
       await deviceController.chooseVideoInputDevice(null);
-      expect(spyRAD.notCalled).to.be.true;
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       // @ts-ignore
-      expect(spyRAD.calledOnceWith(null)).to.be.true;
+      expect(spyRAD.notCalled).to.be.true;
       expect(spyRMS.notCalled).to.be.true;
     });
 
-    it('releases 3 video input streams acquired before no device request', done => {
-      const spy = sinon.spy(deviceController, 'releaseMediaStream');
-      let callCount = 0;
-      domMockBehavior.asyncWaitMs = 1000;
-      deviceController.chooseVideoInputDevice(stringDeviceId).then(() => {
-        callCount += 1;
-      });
-      new TimeoutScheduler(100).start(() => {
-        deviceController.chooseVideoInputDevice(stringDeviceId).then(() => {
-          callCount += 1;
-        });
-      });
-      new TimeoutScheduler(300).start(() => {
-        deviceController.chooseVideoInputDevice(stringDeviceId).then(() => {
-          callCount += 1;
-        });
-      });
-      new TimeoutScheduler(500).start(() => {
-        deviceController.chooseVideoInputDevice(null);
-      });
-      new TimeoutScheduler(1500).start(() => {
-        expect(callCount).to.equal(3);
-        expect(spy.callCount).to.equal(3);
-        done();
-      });
-    });
-
-    it('releases all previously-acquired video streams', done => {
+    it('releases all previously-acquired video streams', async () => {
       const stringDeviceIds: VideoInputDevice[] = [
         'device-id-1',
         'device-id-2',
         'device-id-3',
         'device-id-4',
       ];
-      let index = 0;
-
-      class TestDeviceController extends DefaultDeviceController {
-        releaseMediaStream(mediaStreamToRelease: MediaStream | null): void {
-          super.releaseMediaStream(mediaStreamToRelease);
-
-          if (mediaStreamToRelease) {
-            // @ts-ignore
-            expect(mediaStreamToRelease.constraints.video.deviceId.exact).to.equal(
-              stringDeviceIds[index]
-            );
-            index += 1;
-          }
-        }
-      }
-
-      deviceController = new TestDeviceController(logger);
-      domMockBehavior.asyncWaitMs = 100;
-      deviceController.chooseVideoInputDevice(stringDeviceIds[0]).then(async () => {
-        deviceController.chooseVideoInputDevice(stringDeviceIds[1]);
-        await delay(10);
-        deviceController.chooseVideoInputDevice(stringDeviceIds[2]);
-        await delay(10);
-        deviceController.chooseVideoInputDevice(stringDeviceIds[3]);
-      });
-      new TimeoutScheduler(500).start(() => {
-        expect(index).to.equal(3);
-        done();
-      });
+      await deviceController.chooseVideoInputDevice(stringDeviceIds[0]);
+      const firstStream = await deviceController.acquireVideoInputStream();
+      await deviceController.chooseVideoInputDevice(stringDeviceIds[1]);
+      const secondStream = await deviceController.acquireVideoInputStream();
+      await deviceController.chooseVideoInputDevice(stringDeviceIds[2]);
+      const thirdStream = await deviceController.acquireVideoInputStream();
+      await deviceController.chooseVideoInputDevice(stringDeviceIds[3]);
+      const fourthStream = await deviceController.acquireVideoInputStream();
+      expect(firstStream.getVideoTracks()[0].readyState).to.equal('ended');
+      expect(secondStream.getVideoTracks()[0].readyState).to.equal('ended');
+      expect(thirdStream.getVideoTracks()[0].readyState).to.equal('ended');
+      expect(fourthStream.getVideoTracks()[0].readyState).to.not.equal('ended');
+      await deviceController.chooseVideoInputDevice(null);
+      expect(fourthStream.getVideoTracks()[0].readyState).to.equal('ended');
     });
   });
 

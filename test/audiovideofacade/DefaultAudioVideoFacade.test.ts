@@ -640,5 +640,9 @@ describe('DefaultAudioVideoFacade', () => {
       facade.getRemoteVideoSources();
       assert(spy.calledOnceWith());
     });
+
+    it('will return transcription controller ', () => {
+      expect(facade.transcriptionController).to.not.equal(null);
+    });
   });
 });

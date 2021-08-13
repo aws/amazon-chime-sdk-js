@@ -5,11 +5,12 @@ We send the [Amazon Chime SDK meeting events](https://aws.github.io/amazon-chime
 ## Sensitive attributes
 
 The Amazon Chime SDK for JavaScript will not send below sensitive attributes to the Amazon Chime backend.
+
 |Attribute|Description
 |--|--
 |`externalMeetingId`|The Amazon Chime SDK external meeting ID.
 |`externalUserId`|The Amazon Chime SDK external user ID that can indicate an identity managed by your application.
-   
+
 ## Opt out of Event Ingestion
    
 To opt out of event ingestion, provide `NoOpEventReporter` to `DefaultMeetingSession` while creating the meeting session.

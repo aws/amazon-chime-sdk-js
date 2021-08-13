@@ -114,7 +114,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.optimalNonPausedReceiveStreams = [];
     this.subscribedReceiveSet = new DefaultVideoStreamIdSet();
     this.subscribedReceiveStreams = [];
-    this.videoPreferences = VideoPreferences.default();
+    this.videoPreferences = undefined;
     this.defaultVideoPreferences = undefined;
     this.shouldPauseTiles = true;
     this.pausedStreamIds = new DefaultVideoStreamIdSet();
@@ -143,7 +143,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   // which would require not using the internal keyword
 
   chooseRemoteVideoSources(preferences: VideoPreferences): void {
-    if (this.videoPreferences.equals(preferences)) {
+    if (this.videoPreferences?.equals(preferences)) {
       return;
     }
     this.videoPreferences = preferences;
@@ -156,8 +156,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   updateIndex(videoIndex: VideoStreamIndex): void {
     this.videoIndex = videoIndex;
-    if (this.videoPreferences === undefined) {
+    if (!this.videoPreferences) {
       this.updateDefaultVideoPreferences();
+      this.videoPreferences = this.defaultVideoPreferences;
     }
   }
 
@@ -274,7 +275,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   protected calculateOptimalReceiveStreams(): void {
     const chosenStreams: VideoStreamDescription[] = [];
     const remoteInfos: VideoStreamDescription[] = this.videoIndex.remoteStreamDescriptions();
-    if (remoteInfos.length === 0 || this.videoPreferences?.isEmpty()) {
+    if (remoteInfos.length === 0 || !this.videoPreferences || this.videoPreferences.isEmpty()) {
       this.optimalReceiveStreams = [];
       return;
     }
@@ -813,8 +814,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     chosenStreams: VideoStreamDescription[]
   ): VideoStreamDescription {
     let upgradeStream: VideoStreamDescription;
-    const videoPreferences: VideoPreferences =
-      this.videoPreferences || this.defaultVideoPreferences;
+    const videoPreferences: VideoPreferences = this.videoPreferences;
 
     const highestPriority = videoPreferences.highestPriority();
     let nextPriority;
@@ -1012,6 +1012,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       )}  bw attendees { ${Array.from(this.pausedBwAttendeeIds).join(' ')} }\n`;
     }
 
+    /* istanbul ignore else */
     if (this.videoPreferences) {
       logString += `bwe:   preferences: ${JSON.stringify(this.videoPreferences)}`;
     }

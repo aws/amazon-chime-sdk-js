@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DataMessage from '../datamessage/DataMessage';
+import TranscriptionController from '../transcript/TranscriptionController';
 import RealtimeAttendeePositionInFrame from './RealtimeAttendeePositionInFrame';
+import type RealtimeSubscribeToAttendeeIdPresenceCallback from './RealtimeSubscribeToAttendeeIdPresenceCallback';
 import type VolumeIndicatorCallback from './VolumeIndicatorCallback';
 
 /**
@@ -61,26 +63,14 @@ export default interface RealtimeController {
    * subscribe and unsubscribe to for volume indicator updates.
    */
   realtimeSubscribeToAttendeeIdPresence(
-    callback: (
-      attendeeId: string,
-      present: boolean,
-      externalUserId?: string,
-      dropped?: boolean,
-      posInFrame?: RealtimeAttendeePositionInFrame | null
-    ) => void
+    callback: RealtimeSubscribeToAttendeeIdPresenceCallback
   ): void;
 
   /**
-   * Unsubscribes to changes in attendee ids
+   * Unsubscribes to changes in attendee ids.
    */
   realtimeUnsubscribeToAttendeeIdPresence(
-    callback: (
-      attendeeId: string,
-      present: boolean,
-      externalUserId?: string,
-      dropped?: boolean,
-      posInFrame?: RealtimeAttendeePositionInFrame | null
-    ) => void
+    callback: RealtimeSubscribeToAttendeeIdPresenceCallback
   ): void;
 
   // Audio Input
@@ -249,4 +239,9 @@ export default interface RealtimeController {
    * Unsubscribes from receiving callbacks when fatal errors occur
    */
   realtimeUnsubscribeToFatalError(callback: (error: Error) => void): void;
+
+  /**
+   * Returns the [[TranscriptionController]] for this realtime controller.
+   */
+  readonly transcriptionController?: TranscriptionController;
 }

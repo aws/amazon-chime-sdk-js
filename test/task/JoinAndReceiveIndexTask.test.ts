@@ -21,10 +21,10 @@ import {
   SdkTurnCredentials,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import JoinAndReceiveIndexTask from '../../src/task/JoinAndReceiveIndexTask';
+import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 describe('JoinAndReceiveIndexTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;

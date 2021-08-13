@@ -37,12 +37,14 @@ const ignoredTypes = [
 
   // Events ingestion buffer's JSON interfaces.
   'JSONIngestionPayloadItem',
-  'JSONIngestionBufferItem',
   'JSONIngestionEvent',
   'JSONIngestionRecord',
 
   // Events ingestion internal functions.
-  'flattenEventAttributes'
+  'flattenEventAttributes',
+
+  // Ignore utils
+  'Utils'
 ];
 
 walk('src')

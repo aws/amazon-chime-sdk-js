@@ -15,12 +15,12 @@ import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollecto
 import CleanRestartedSessionTask from '../../src/task/CleanRestartedSessionTask';
 import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
+import { wait as delay } from '../../src/utils/Utils';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { delay } from '../utils';
 
 class TestPingPong implements PingPong {
   addObserver(_observer: PingPongObserver): void {}
