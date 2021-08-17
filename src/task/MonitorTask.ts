@@ -17,6 +17,8 @@ import Maybe from '../maybe/Maybe';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import RemovableObserver from '../removableobserver/RemovableObserver';
+import DefaultResourceMonitor from '../resourcemonitor/DefaultResourceMonitor';
+import ResourceMonitor from '../resourcemonitor/ResourceMonitor';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
@@ -44,6 +46,7 @@ export default class MonitorTask
   private currentAvailableStreamAvgBitrates: ISdkBitrateFrame = null;
   private hasSignalingError: boolean = false;
   private presenceHandlerCalled: boolean = false;
+  private readonly resourceMonitor: ResourceMonitor;
 
   constructor(
     private context: AudioVideoControllerState,
@@ -60,6 +63,7 @@ export default class MonitorTask
       { ...connectionHealthPolicyConfiguration },
       this.initialConnectionHealthData.clone()
     );
+    this.resourceMonitor = new DefaultResourceMonitor(context.logger);
   }
 
   removeObserver(): void {
@@ -74,6 +78,7 @@ export default class MonitorTask
       this.realtimeAttendeeIdPresenceHandler
     );
     this.context.signalingClient.removeObserver(this);
+    this.resourceMonitor.stop();
   }
 
   async run(): Promise<void> {
@@ -90,6 +95,7 @@ export default class MonitorTask
     this.context.connectionMonitor.start();
     this.context.statsCollector.start(this.context.signalingClient, this.context.videoStreamIndex);
     this.context.signalingClient.registerObserver(this);
+    this.resourceMonitor.start();
   }
 
   videoTileDidUpdate(_tileState: VideoTileState): void {

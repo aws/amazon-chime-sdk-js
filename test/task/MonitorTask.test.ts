@@ -204,6 +204,7 @@ describe('MonitorTask', () => {
       domMockBuilder.cleanup();
       domMockBuilder = null;
     }
+    context.removableObservers?.[0]?.removeObserver();
   });
 
   describe('run', () => {

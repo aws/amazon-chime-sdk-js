@@ -43,6 +43,10 @@ const ignoredTypes = [
   // Events ingestion internal functions.
   'flattenEventAttributes',
 
+  // Resource monitor
+  'ResourceMonitor',
+  'DefaultResourceMonitor',
+
   // Ignore utils
   'Utils'
 ];

@@ -799,6 +799,7 @@ describe('DefaultAudioVideoController', () => {
       spy1.restore();
       spy2.restore();
       spy3.restore();
+      await stop();
     });
 
     it('can be started and take a bandwidth update with update transceiver controller method', async () => {
@@ -819,6 +820,7 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.handleHasBandwidthPriority(true);
       expect(spy.calledTwice).to.be.true;
       spy.restore();
+      await stop();
     });
 
     it('can be started and stopped multiple times with transceiver controller set correctly', async function () {
