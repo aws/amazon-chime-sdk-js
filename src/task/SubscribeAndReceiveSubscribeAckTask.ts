@@ -111,7 +111,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
         handleSignalingClientEvent(event: SignalingClientEvent): void {
           if (event.isConnectionTerminated()) {
-            const message = 'SubscribeAndReceiveSubscribeAckTask connection terminated';
+            const message = `SubscribeAndReceiveSubscribeAckTask connection was terminated with code ${event.closeCode} and reason: ${event.closeReason}`;
             context.logger.warn(message);
 
             let statusCode: MeetingSessionStatusCode = MeetingSessionStatusCode.TaskFailed;
