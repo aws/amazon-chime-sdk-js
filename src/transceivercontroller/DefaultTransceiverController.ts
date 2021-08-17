@@ -16,8 +16,46 @@ export default class DefaultTransceiverController implements TransceiverControll
 
   constructor(protected logger: Logger, protected browserBehavior: BrowserBehavior) {}
 
-  setEncodingParameters(_params: Map<string, RTCRtpEncodingParameters>): void {
-    return;
+  async setEncodingParameters(
+    encodingParamMap: Map<string, RTCRtpEncodingParameters>
+  ): Promise<void> {
+    if (!this._localCameraTransceiver || this._localCameraTransceiver.direction !== 'sendrecv') {
+      return;
+    }
+
+    const sender = this._localCameraTransceiver.sender;
+    if (!encodingParamMap || encodingParamMap.size === 0) {
+      return;
+    }
+    const newEncodingParams = Array.from(encodingParamMap.values());
+
+    const oldParam: RTCRtpSendParameters = sender.getParameters();
+    if (!oldParam.encodings || oldParam.encodings.length === 0) {
+      oldParam.encodings = newEncodingParams;
+    } else {
+      for (const existing of oldParam.encodings) {
+        for (const changed of newEncodingParams) {
+          if ((existing.rid || changed.rid) && existing.rid !== changed.rid) {
+            continue;
+          }
+          let key: keyof RTCRtpEncodingParameters;
+          for (key in changed) {
+            // These properties can't be changed.
+            if (key === 'rid' || key === 'codecPayloadType') {
+              continue;
+            }
+            /* istanbul ignore else */
+            if (changed.hasOwnProperty(key)) {
+              (existing[key] as RTCRtpEncodingParameters[keyof RTCRtpEncodingParameters]) = changed[
+                key
+              ];
+            }
+          }
+        }
+      }
+    }
+
+    await sender.setParameters(oldParam);
   }
 
   static async setVideoSendingBitrateKbpsForSender(
@@ -59,7 +97,6 @@ export default class DefaultTransceiverController implements TransceiverControll
   }
 
   async setVideoSendingBitrateKbps(bitrateKbps: number): Promise<void> {
-    // this won't set bandwidth limitation for video in Chrome
     if (!this._localCameraTransceiver || this._localCameraTransceiver.direction !== 'sendrecv') {
       return;
     }

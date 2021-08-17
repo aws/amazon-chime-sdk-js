@@ -42,6 +42,7 @@ import { wait as delay } from '../../src/utils/Utils';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoSource from '../../src/videosource/VideoSource';
+import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -754,6 +755,102 @@ describe('DefaultAudioVideoController', () => {
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
       await stop();
+    });
+
+    it('can be started and take a bandwidth update without update transceiver controller method', async () => {
+      class TestVideoUplinkBandwidth extends NoVideoUplinkBandwidthPolicy {
+        hasBandwidthPriority: boolean = false;
+
+        setHasBandwidthPriority(hasBandwidthPriority: boolean): void {
+          this.hasBandwidthPriority = hasBandwidthPriority;
+        }
+
+        maxBandwidthKbps(): number {
+          if (this.hasBandwidthPriority) {
+            return 100;
+          }
+          return 0;
+        }
+      }
+      const policy = new TestVideoUplinkBandwidth();
+      const spy1 = sinon.spy(policy, 'setHasBandwidthPriority');
+      const spy2 = sinon.spy(policy, 'maxBandwidthKbps');
+      const logger = new NoOpDebugLogger();
+      const spy3 = sinon.spy(logger, 'info');
+      configuration.videoUplinkBandwidthPolicy = policy;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+      await delay(defaultDelay);
+      spy3.resetHistory();
+      await audioVideoController.handleHasBandwidthPriority(true);
+      expect(spy1.calledOnceWith(true)).to.be.true;
+      expect(spy2.calledTwice).to.be.true;
+      expect(spy3.calledOnce).to.be.true;
+      await audioVideoController.handleHasBandwidthPriority(true);
+      expect(spy1.calledWith(true)).to.be.true;
+      expect(spy2.callCount).to.be.equal(4);
+      expect(spy3.calledOnce).to.be.true;
+      spy1.restore();
+      spy2.restore();
+      spy3.restore();
+    });
+
+    it('can be started and take a bandwidth update with update transceiver controller method', async () => {
+      const policy = new NScaleVideoUplinkBandwidthPolicy('test');
+      const spy = sinon.spy(policy, 'updateTransceiverController');
+      configuration.videoUplinkBandwidthPolicy = policy;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+      await delay(defaultDelay);
+      expect(spy.calledOnce).to.be.true;
+      audioVideoController.setVideoMaxBandwidthKbps(100);
+      audioVideoController.handleHasBandwidthPriority(true);
+      expect(spy.calledTwice).to.be.true;
+      spy.restore();
+    });
+
+    it('can be started and stopped multiple times with transceiver controller set correctly', async function () {
+      this.timeout(5000); // Need to increase the default mocha timeout of 2000ms
+      const policy = new NScaleVideoUplinkBandwidthPolicy('test');
+      const spy = sinon.spy(policy, 'setTransceiverController');
+      configuration.videoUplinkBandwidthPolicy = policy;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+      await delay(defaultDelay);
+      expect(spy.callCount).to.be.equal(1);
+      const transceiverControllerArg = spy.getCall(0).args[0];
+      expect(spy.getCall(0).args[0]).not.be.undefined;
+      await stop();
+      await delay(defaultDelay);
+      expect(spy.callCount).to.be.equal(2);
+      expect(spy.getCall(1).args[0]).to.be.undefined;
+      await start();
+      await delay(defaultDelay);
+      expect(spy.callCount).to.be.equal(3);
+      expect(spy.getCall(2).args[0]).not.equal(transceiverControllerArg);
+      await stop();
+      await delay(defaultDelay);
+      expect(spy.callCount).to.be.equal(4);
+      expect(spy.getCall(3).args[0]).to.be.undefined;
+      spy.restore();
     });
 
     it('can be started even when the stats collector has an issue starting due to an unsupported browser', async () => {

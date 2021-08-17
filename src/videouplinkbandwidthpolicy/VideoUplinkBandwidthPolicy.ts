@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import TransceiverController from '../transceivercontroller/TransceiverController';
 import VideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/VideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import ConnectionMetrics from './ConnectionMetrics';
@@ -57,4 +58,25 @@ export default interface VideoUplinkBandwidthPolicy {
    * Returns the selected [[MediaTrackConstraints]] to update
    */
   chooseMediaTrackConstraints(): MediaTrackConstraints;
+
+  /**
+   * Set a reference to the current transceiver controller.
+   * The audio video controller should call this method to pass down a transceiver controller to the policy
+   * when the meeting starts and set it to undefined when the meeting ends.
+   * If a meeting is stopped and started repeatedly, this pair of calls will be repeated to match.
+   * All calls to updateTransceiverController will occur between this pair of calls.
+   * This method should not throw.
+   * @param {TransceiverController} transceiverController - The transceiver controller
+   */
+  setTransceiverController?(transceiverController: TransceiverController | undefined): void;
+
+  /**
+   * Update the transceiver controller that is set from setTransceiverController such as setEncodingParameters.
+   * Only used when unified plan is enabled but not available for simulcast for now.
+   * This method should be called when the policy needs to update the local video encoding parameters such as after
+   * setHasBandwidthPriority has been called.
+   * The default audio video controller calls this after a video is on/off or when an active speakers changes.
+   * This method should not throw.
+   */
+  updateTransceiverController?(): void;
 }

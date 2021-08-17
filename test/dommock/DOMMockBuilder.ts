@@ -258,6 +258,9 @@ export default class DOMMockBuilder {
       }
 
       getSettings(): MediaTrackSettings {
+        if (!mockBehavior.mediaStreamTrackSettings) {
+          return undefined;
+        }
         return {
           width: mockBehavior.mediaStreamTrackSettings.width,
           height: mockBehavior.mediaStreamTrackSettings.height,

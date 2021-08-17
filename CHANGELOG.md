@@ -11,11 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `RealtimeSubscribeToAttendeeIdPresenceCallback` type for `realtimeSubscribeToAttendeeIdPresence` callback to document the callback parameters.
 
 ### Changed
+- Update the default behavior of NScale video uplink bandwidth policy to scale down resolution based on the number
+of videos.
 
 ### Removed
 
 ### Fixed
 - Fix race condition in Safari when disconnect and connect stream from video element.
+
 
 ## [2.15.0] - 2021-08-04
 
