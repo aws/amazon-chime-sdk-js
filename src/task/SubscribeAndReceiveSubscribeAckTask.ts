@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
+import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import DefaultSDP from '../sdp/DefaultSDP';
 import SignalingClient from '../signalingclient/SignalingClient';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
@@ -94,6 +96,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
   private receiveSubscribeAck(): Promise<SdkSubscribeAckFrame> {
     return new Promise((resolve, reject) => {
+      const context = this.context;
       class Interceptor implements SignalingClientObserver, TaskCanceler {
         constructor(private signalingClient: SignalingClient) {}
 
@@ -107,6 +110,21 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
         }
 
         handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.isConnectionTerminated()) {
+            const message = 'SubscribeAndReceiveSubscribeAckTask connection terminated';
+            context.logger.warn(message);
+
+            let statusCode: MeetingSessionStatusCode = MeetingSessionStatusCode.TaskFailed;
+            if (event.closeCode >= 4500 && event.closeCode < 4600) {
+              statusCode = MeetingSessionStatusCode.SignalingInternalServerError;
+            }
+            context.audioVideoController.handleMeetingSessionStatus(
+              new MeetingSessionStatus(statusCode),
+              new Error(message)
+            );
+            return;
+          }
+
           if (
             event.type !== SignalingClientEventType.ReceivedSignalFrame ||
             event.message.type !== SdkSignalFrame.Type.SUBSCRIBE_ACK
