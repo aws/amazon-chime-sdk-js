@@ -2590,8 +2590,14 @@ describe('DefaultAudioVideoController', () => {
 
       // Forcibly clean up the stats collector so it doesn't spam after the test runs.
       // This will _eventually_ get cleaned by the main CleanStoppedSessionTask, but that takes a while.
-      // @ts-ignore
-      await new CleanStoppedSessionTask(audioVideoController.meetingSessionContext).run();
+      let success = true;
+      try {
+        // @ts-ignore
+        await new CleanStoppedSessionTask(audioVideoController.meetingSessionContext).run();
+      } catch (error) {
+        success = false;
+      }
+      expect(success).to.be.false;
     });
 
     it('should return an array of length 0, when videoStreamIndex is not initialized', async () => {
