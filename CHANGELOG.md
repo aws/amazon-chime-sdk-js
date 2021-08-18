@@ -18,6 +18,7 @@ of videos.
 
 ### Fixed
 - Fix race condition in Safari when disconnect and connect stream from video element.
+- Fix priority-based downlink policy to not unpaused tiles that are not paused by the policy.
 
 
 ## [2.15.0] - 2021-08-04
