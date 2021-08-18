@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add `audioInputMuteStateChanged` to the `DeviceChangeObserver` interface. This is called whenever the device is changed or is muted or unmuted, allowing applications to adapt to OS-level mute state for input devices.
+- Added Android WebView Sample UI test to workflow
 
 ### Changed
 

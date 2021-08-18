@@ -1,0 +1,58 @@
+name: WebView Sample Demos E2E Tests
+
+on:
+  workflow_run:
+    workflows: ["Deploy Demo App Workflow"]
+    branches: [master]
+    types: 
+      - completed
+
+jobs:
+  xcuitest:
+    runs-on: macos-11
+    env:
+      DEPLOYED_MEETING_DEMO: ${{secrets.DEPLOYED_MEETING_DEMO}}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout amazon-chime-sdk repo
+        uses: actions/checkout@v2
+        with:
+          repository: 'aws-samples/amazon-chime-sdk'
+      - name: Insert  meeting demo URL
+        run: |
+          sed -i '' -e 's@YOUR_SERVER_URL@${{secrets.DEPLOYED_MEETING_DEMO}}@' apps/iOS-WKWebView-sample/WkWebView\ Demo/AppConfiguration.swift
+
+      - name: Run XCUITest Locally
+        run: |
+          xcodebuild test -project apps/iOS-WKWebView-sample/WkWebView\ Demo.xcodeproj -scheme WkWebView\ Demo  -sdk iphonesimulator -destination "platform=iOS Simulator,OS=14.5,name=iPhone 11 Pro"
+  androidtest:
+    runs-on: macos-11
+    defaults:
+      run:
+        working-directory: ./apps/Android-WebView-sample
+    env:
+      DEPLOYED_MEETING_DEMO: ${{secrets.DEPLOYED_MEETING_DEMO}}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout amazon-chime-sdk repo
+        uses: actions/checkout@v2
+        with:
+          repository: 'aws-samples/amazon-chime-sdk'
+      - name: Insert Android meeting demo URL
+        run: |
+          sed -i '' -e 's@PLACEHOLDER@${{secrets.DEPLOYED_MEETING_DEMO}}@' ./app/src/main/java/com/amazonaws/android_webview_sample/AppConfig.kt
+      - name: Set Up JDK 11.0.11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.11
+      - name: Build the App
+        run: ./gradlew build
+      - name: Run Android UI Test Locally
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: default
+          arch: x86
+          profile: Nexus 6
+          working-directory: ./apps/Android-WebView-sample
+          script: ./gradlew connectedCheck --stacktrace
