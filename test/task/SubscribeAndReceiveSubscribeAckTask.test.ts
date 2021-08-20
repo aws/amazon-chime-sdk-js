@@ -8,11 +8,15 @@ import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVi
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
+import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
+import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
 import DefaultSignalingClient from '../../src/signalingclient/DefaultSignalingClient';
 import SignalingClientConnectionRequest from '../../src/signalingclient/SignalingClientConnectionRequest';
+import SignalingClientEvent from '../../src/signalingclient/SignalingClientEvent';
+import SignalingClientEventType from '../../src/signalingclient/SignalingClientEventType';
 import SignalingClientSubscribe from '../../src/signalingclient/SignalingClientSubscribe';
 import {
   SdkSignalFrame,
@@ -188,6 +192,160 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       expect(settings.audioHost).to.equal(audioHost);
       expect(settings.audioMuted).to.equal(false);
       expect(settings.audioCheckin).to.equal(false);
+    });
+
+    it('should throw reject when the connection is closed while waiting for ack', async () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.SignalingInternalServerError);
+        receivedStatus = true;
+        return true;
+      };
+      await delay(behavior.asyncWaitMs + 10);
+      expect(context.signalingClient.ready()).to.equal(true);
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() =>
+        webSocketAdapter.close(4500, 'service unavailable')
+      );
+      new TimeoutScheduler(200).start(() => {
+        // Simulate task cancellation due to close message being received
+        task.cancel();
+      });
+      try {
+        await task.run();
+        expect(false).to.equal(true);
+      } catch {
+        expect(receivedStatus).to.equal(true);
+      }
+    });
+
+    it('should throw reject when receiving closing event while waiting for ack', async () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
+        receivedStatus = true;
+        return true;
+      };
+      await delay(behavior.asyncWaitMs + 10);
+      expect(context.signalingClient.ready()).to.equal(true);
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => context.signalingClient.closeConnection());
+      new TimeoutScheduler(200).start(() => {
+        // Simulate task cancellation due to close message being received
+        task.cancel();
+      });
+      try {
+        await task.run();
+        expect(false).to.equal(true);
+      } catch {
+        expect(receivedStatus).to.equal(true);
+      }
+    });
+
+    it('should throw reject when receiving error event while waiting for ack', async () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
+        receivedStatus = true;
+        return true;
+      };
+      await delay(behavior.asyncWaitMs + 10);
+      expect(context.signalingClient.ready()).to.equal(true);
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => {
+        behavior.webSocketSendSucceeds = false;
+        webSocketAdapter.send(new Uint8Array([0]));
+      });
+      new TimeoutScheduler(200).start(() => {
+        // Simulate task cancellation due to close message being received
+        task.cancel();
+      });
+      try {
+        await task.run();
+        expect(false).to.equal(true);
+      } catch {
+        expect(receivedStatus).to.equal(true);
+      }
+    });
+
+    it('should throw reject when receiving failed event while waiting for ack', async () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
+        receivedStatus = true;
+        return true;
+      };
+      await delay(behavior.asyncWaitMs + 200);
+      expect(context.signalingClient.ready()).to.equal(true);
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => {
+        // @ts-ignore
+        context.signalingClient.sendEvent(
+          new SignalingClientEvent(
+            context.signalingClient,
+            SignalingClientEventType.WebSocketFailed,
+            null
+          )
+        );
+      });
+      new TimeoutScheduler(200).start(() => {
+        // Simulate task cancellation due to close message being received
+        task.cancel();
+      });
+      try {
+        await task.run();
+        expect(false).to.equal(true);
+      } catch {
+        expect(receivedStatus).to.equal(true);
+      }
+    });
+
+    it('should throw reject when the connection is already closed', async () => {
+      // @ts-ignore
+      let receivedStatus = false;
+      context.audioVideoController.handleMeetingSessionStatus = (
+        status: MeetingSessionStatus,
+        _error: Error
+      ): boolean => {
+        expect(status.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
+        receivedStatus = true;
+        return true;
+      };
+      await delay(behavior.asyncWaitMs + 20);
+      expect(context.signalingClient.ready()).to.equal(true);
+
+      context.signalingClient.closeConnection();
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(200).start(() => {
+        // Simulate task cancellation due to close message being received
+        task.cancel();
+      });
+      try {
+        await task.run();
+        expect(false).to.equal(true);
+      } catch {
+        expect(receivedStatus).to.equal(true);
+      }
     });
   });
 

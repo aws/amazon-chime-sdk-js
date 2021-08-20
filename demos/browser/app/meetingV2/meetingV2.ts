@@ -2162,17 +2162,22 @@ export class DemoMeetingApp
     // Also note that Firefox has its own device picker, which may be useful
     // for the first device selection. Subsequent device selections could use
     // a custom UX with a specific device id.
-    this.audioVideo.setDeviceLabelTrigger(
-      async (): Promise<MediaStream> => {
-        if (this.isRecorder() || this.isBroadcaster()) {
-          throw new Error('Recorder or Broadcaster does not need device labels');
+    if(!this.defaultBrowserBehaviour.doesNotSupportMediaDeviceLabels())
+    {
+      this.audioVideo.setDeviceLabelTrigger(
+        async (): Promise<MediaStream> => {
+          if (this.isRecorder() || this.isBroadcaster()) {
+            throw new Error('Recorder or Broadcaster does not need device labels');
+          }
+          this.switchToFlow('flow-need-permission');
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+          this.switchToFlow('flow-devices');
+          return stream;
+          
+        
         }
-        this.switchToFlow('flow-need-permission');
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        this.switchToFlow('flow-devices');
-        return stream;
-      }
     );
+    }
   }
 
   populateDeviceList(
