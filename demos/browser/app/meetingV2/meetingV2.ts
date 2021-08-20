@@ -3215,7 +3215,9 @@ export class DemoMeetingApp
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
-    this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#').slice(-1)[0]);
+    if (tileState.boundExternalUserId) {
+      this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#').slice(-1)[0]);
+    }
     this.updateProperty(attendeeIdElement, 'innerText', tileState.boundAttendeeId);
     if (tileState.paused && this.roster[tileState.boundAttendeeId].bandwidthConstrained) {
       this.updateProperty(pauseStateElement, 'innerText', '⚡');
