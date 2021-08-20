@@ -733,7 +733,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       this.logger.warn('tileController not found!');
       return;
     }
-    this.pausedBwAttendeeIds = new Set<string>();
     if (this.videoPreferences && this.shouldPauseTiles) {
       const videoTiles = this.tileController.getAllVideoTiles();
       for (const preference of this.videoPreferences) {
@@ -773,12 +772,13 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
             );
             this.pausedBwAttendeeIds.add(preference.attendeeId);
           }
-        } else if (paused) {
+        } else if (paused && this.pausedBwAttendeeIds.has(preference.attendeeId)) {
           this.logger.info(`bwe: unpausing attendee ${preference.attendeeId} due to bandwidth`);
           this.forEachObserver(observer => {
             observer.tileWillBeUnpausedByDownlinkPolicy(videoTile.id());
           });
           this.tileController.unpauseVideoTile(videoTile.id());
+          this.pausedBwAttendeeIds.delete(preference.attendeeId);
         }
       }
     }
