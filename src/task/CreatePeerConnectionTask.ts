@@ -3,6 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import RemovableObserver from '../removableobserver/RemovableObserver';
+import VideoTile from '../videotile/VideoTile';
 import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
 
@@ -156,14 +157,27 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       trackId = track.id;
     }
     const attendeeId = this.context.videoStreamIndex.attendeeIdForTrack(trackId);
-    if (this.context.videoTileController.haveVideoTileForAttendeeId(attendeeId)) {
+    let skipAdding: boolean;
+    let tile: VideoTile;
+    if (this.context.videoTileController.getVideoTileForAttendeeId) {
+      tile = this.context.videoTileController.getVideoTileForAttendeeId(attendeeId);
+      skipAdding = !!tile?.state()?.boundVideoStream;
+    } else {
+      skipAdding = this.context.videoTileController.haveVideoTileForAttendeeId(attendeeId);
+    }
+
+    if (skipAdding) {
       this.context.logger.info(
         `Not adding remote track. Already have tile for attendeeId:  ${attendeeId}`
       );
       return;
     }
 
-    const tile = this.context.videoTileController.addVideoTile();
+    if (!tile) {
+      tile = this.context.videoTileController.addVideoTile();
+      this.logger.info(`Created video tile ${tile.id()}`);
+    }
+
     let streamId: number | null = this.context.videoStreamIndex.streamIdForTrack(trackId);
     if (typeof streamId === 'undefined') {
       this.logger.warn(`stream not found for tile=${tile.id()} track=${trackId}`);
@@ -209,7 +223,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     const externalUserId = this.context.videoStreamIndex.externalUserIdForTrack(trackId);
     tile.bindVideoStream(attendeeId, false, stream, width, height, streamId, externalUserId);
     this.logger.info(
-      `video track added, created tile=${tile.id()} track=${trackId} streamId=${streamId}`
+      `video track added, use tile=${tile.id()} track=${trackId} streamId=${streamId}`
     );
 
     let endEvent = 'removetrack';

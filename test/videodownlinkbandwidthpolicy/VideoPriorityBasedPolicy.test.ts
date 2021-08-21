@@ -19,6 +19,7 @@ import {
   SdkStreamDescriptor,
   SdkStreamMediaType,
 } from '../../src/signalingprotocol/SignalingProtocol';
+import { wait } from '../../src/utils/Utils';
 import TargetDisplaySize from '../../src/videodownlinkbandwidthpolicy/TargetDisplaySize';
 import VideoDownlinkObserver from '../../src/videodownlinkbandwidthpolicy/VideoDownlinkObserver';
 import VideoPreference from '../../src/videodownlinkbandwidthpolicy/VideoPreference';
@@ -582,8 +583,15 @@ describe('VideoPriorityBasedPolicy', () => {
   });
 
   describe('paused', () => {
-    it('Tile added but not in subscribe', () => {
+    it('Tile added but not in subscribe', async () => {
       const domMockBuilder = new DOMMockBuilder();
+      const observer: VideoDownlinkObserver = {
+        tileWillBePausedByDownlinkPolicy(_tileId: number) {},
+        tileWillBeUnpausedByDownlinkPolicy(_tileId: number) {},
+      };
+      const spyPause = sinon.spy(observer, 'tileWillBePausedByDownlinkPolicy');
+      const spyUnpause = sinon.spy(observer, 'tileWillBeUnpausedByDownlinkPolicy');
+      policy.addObserver(observer);
       updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
       const metricReport = new DefaultClientMetricReport(logger);
@@ -631,14 +639,18 @@ describe('VideoPriorityBasedPolicy', () => {
       resub = policy.wantsResubscribe();
       expect(resub).to.equal(false);
       const tiles = tileController.getAllRemoteVideoTiles();
+      let attendee3TileId;
       for (const tile of tiles) {
         const state = tile.state();
         if (state.boundAttendeeId === 'attendee-3') {
+          attendee3TileId = tile.id();
           expect(state.paused).to.equal(true);
         } else {
           expect(state.paused).to.equal(false);
         }
       }
+      await wait(5);
+      expect(spyPause.calledOnceWith(attendee3TileId)).to.be.true;
 
       incrementTime(3000);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 2400 * 1000;
@@ -658,7 +670,11 @@ describe('VideoPriorityBasedPolicy', () => {
         const state = tile.state();
         expect(state.paused).to.equal(false);
       }
+      await wait(5);
+      expect(spyUnpause.calledOnceWith(attendee3TileId)).to.be.true;
       domMockBuilder.cleanup();
+      spyPause.restore();
+      spyUnpause.restore();
     });
 
     it('Stream not added until enough bandwidth', () => {

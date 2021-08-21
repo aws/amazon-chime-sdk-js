@@ -2202,8 +2202,6 @@ export class DemoMeetingApp
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
           this.switchToFlow('flow-devices');
           return stream;
-
-
         }
     );
     }
