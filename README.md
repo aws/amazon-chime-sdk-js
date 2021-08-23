@@ -293,6 +293,9 @@ await meetingSession.audioVideo.chooseVideoInputDevice(null);
 For example, when you pair Bluetooth headsets with your computer, `audioInputsChanged` and `audioOutputsChanged` are called
 with the device list including headsets.
 
+You can use the `audioInputMuteStateChanged` callback to track the underlying
+hardware mute state on browsers and operating systems that support that.
+
 ```js
 const observer = {
   audioInputsChanged: freshAudioInputDeviceList => {
@@ -301,12 +304,18 @@ const observer = {
       console.log(`Device ID: ${mediaDeviceInfo.deviceId} Microphone: ${mediaDeviceInfo.label}`);
     });
   },
+
   audioOutputsChanged: freshAudioOutputDeviceList => {
     console.log('Audio outputs updated: ', freshAudioOutputDeviceList);
   },
+
   videoInputsChanged: freshVideoInputDeviceList => {
     console.log('Video inputs updated: ', freshVideoInputDeviceList);
-  }
+  },
+
+  audioInputMuteStateChanged: (device, muted) => {
+    console.log('Device', device, muted ? 'is muted in hardware' : 'is not muted);
+  },
 };
 
 meetingSession.audioVideo.addDeviceChangeObserver(observer);

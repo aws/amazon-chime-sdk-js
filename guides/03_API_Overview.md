@@ -101,6 +101,7 @@ You can implement the following callbacks:
 * [audioInputsChanged](https://aws.github.io/amazon-chime-sdk-js/interfaces/devicechangeobserver.html#audioinputschanged): occurs when audio inputs are changed
 * [audioOutputsChanged](https://aws.github.io/amazon-chime-sdk-js/interfaces/devicechangeobserver.html#audiooutputschanged): occurs when audio outputs are changed
 * [videoInputsChanged](https://aws.github.io/amazon-chime-sdk-js/interfaces/devicechangeobserver.html#videoinputschanged): occurs when video inputs are changed
+* [audioInputMuteStateChanged](https://aws.github.io/amazon-chime-sdk-js/interfaces/devicechangeobserver.html#audioinputmutestatechanged): occurs when the underlying OS or hardware mute setting is detected on an audio track input
 
 ### 2c. Configure the audio input device
 

@@ -348,19 +348,27 @@ audioInputDevices.forEach(<span class="hljs-function"><span class="hljs-params">
 				<p><strong>Use case 4.</strong> Add a device change observer to receive the updated device list.
 					For example, when you pair Bluetooth headsets with your computer, <code>audioInputsChanged</code> and <code>audioOutputsChanged</code> are called
 				with the device list including headsets.</p>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> observer = {
-  <span class="hljs-attr">audioInputsChanged</span>: <span class="hljs-function"><span class="hljs-params">freshAudioInputDeviceList</span> =&gt;</span> {
-    <span class="hljs-comment">// An array of MediaDeviceInfo objects</span>
-    freshAudioInputDeviceList.forEach(<span class="hljs-function"><span class="hljs-params">mediaDeviceInfo</span> =&gt;</span> {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Device ID: <span class="hljs-subst">${mediaDeviceInfo.deviceId}</span> Microphone: <span class="hljs-subst">${mediaDeviceInfo.label}</span>`</span>);
+				<p>You can use the <code>audioInputMuteStateChanged</code> callback to track the underlying
+				hardware mute state on browsers and operating systems that support that.</p>
+				<pre><code class="language-js">const observer = {
+  audioInputsChanged: freshAudioInputDeviceList =&gt; {
+    // An array of MediaDeviceInfo objects
+    freshAudioInputDeviceList.forEach(mediaDeviceInfo =&gt; {
+      console.log(`Device ID: ${mediaDeviceInfo.deviceId} Microphone: ${mediaDeviceInfo.label}`);
     });
   },
-  <span class="hljs-attr">audioOutputsChanged</span>: <span class="hljs-function"><span class="hljs-params">freshAudioOutputDeviceList</span> =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Audio outputs updated: &#x27;</span>, freshAudioOutputDeviceList);
+
+  audioOutputsChanged: freshAudioOutputDeviceList =&gt; {
+    console.log(&#x27;Audio outputs updated: &#x27;, freshAudioOutputDeviceList);
   },
-  <span class="hljs-attr">videoInputsChanged</span>: <span class="hljs-function"><span class="hljs-params">freshVideoInputDeviceList</span> =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Video inputs updated: &#x27;</span>, freshVideoInputDeviceList);
-  }
+
+  videoInputsChanged: freshVideoInputDeviceList =&gt; {
+    console.log(&#x27;Video inputs updated: &#x27;, freshVideoInputDeviceList);
+  },
+
+  audioInputMuteStateChanged: (device, muted) =&gt; {
+    console.log(&#x27;Device&#x27;, device, muted ? &#x27;is muted in hardware&#x27; : &#x27;is not muted);
+  },
 };
 
 meetingSession.audioVideo.addDeviceChangeObserver(observer);

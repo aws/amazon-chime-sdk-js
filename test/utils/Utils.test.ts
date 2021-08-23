@@ -13,6 +13,8 @@ describe('Utils', () => {
     const delay = 500;
     await wait(delay);
     const endTime = new Date().getTime();
-    expect(endTime - startTime).to.gte(delay);
+
+    // Timing is imprecise. Allow 2 milliseconds of fudge. I have seen this run in 499.
+    expect(endTime - startTime).to.gte(delay - 2);
   });
 });
