@@ -54,6 +54,7 @@ import {
   TranscriptItemType,
   TranscriptResult,
   Versioning,
+  VideoAdaptiveProbePolicy,
   VideoDownlinkObserver,
   VideoFrameProcessor,
   VideoInputDevice,
@@ -322,6 +323,7 @@ export class DemoMeetingApp
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
+  enablePin = false;
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
@@ -522,6 +524,7 @@ export class DemoMeetingApp
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('planB') as HTMLInputElement).disabled = true;
     }
+    (document.getElementById('enable-pin') as HTMLInputElement).disabled = true;
 
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
@@ -529,11 +532,16 @@ export class DemoMeetingApp
       const priorityBasedDownlinkPolicyConfig = document.getElementById(
         'priority-downlink-policy-preset'
       ) as HTMLSelectElement;
+      const enablePinElem = document.getElementById('enable-pin') as HTMLInputElement;
 
       if (this.usePriorityBasedDownlinkPolicy) {
         priorityBasedDownlinkPolicyConfig.style.display = 'block';
+        enablePinElem.disabled = false;
+        enablePinElem.checked = true;
       } else {
         priorityBasedDownlinkPolicyConfig.style.display = 'none';
+        enablePinElem.disabled = true;
+        enablePinElem.checked = false;
       }
     });
 
@@ -590,6 +598,16 @@ export class DemoMeetingApp
           this.logLevel = LogLevel.OFF;
           break;
       }
+
+      if (this.priorityBasedDownlinkPolicy) {
+        this.enablePin = (document.getElementById('enable-pin') as HTMLInputElement).checked;
+      }
+      if (!this.enablePin) {
+        for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
+          (document.getElementById(`video-pin-${i}`) as HTMLButtonElement).style.display = 'none';
+        }
+      }
+
       AsyncScheduler.nextTick(
         async (): Promise<void> => {
           let chimeMeetingId: string = '';
@@ -1572,6 +1590,8 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
+    } else if (this.enableSimulcast) {
+      configuration.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(this.meetingLogger);
     }
 
     this.meetingSession = new DefaultMeetingSession(
@@ -2182,8 +2202,8 @@ export class DemoMeetingApp
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
           this.switchToFlow('flow-devices');
           return stream;
-          
-        
+
+
         }
     );
     }
@@ -3157,6 +3177,9 @@ export class DemoMeetingApp
   }
 
   updateDownlinkPreference(): void {
+    if (!this.priorityBasedDownlinkPolicy) {
+      return;
+    }
     const videoPreferences = VideoPreferences.prepare();
     for (const attendeeId in this.roster) {
       if (this.roster[attendeeId].hasVideo) {
@@ -3209,7 +3232,7 @@ export class DemoMeetingApp
     pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
     this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
     pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
-    if (this.usePriorityBasedDownlinkPolicy) {
+    if (this.enablePin) {
       this.log('pinButtonElement addEventListener for tileIndex ' + tileIndex);
       pinButtonElement.removeEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
       this.tileIndexToPinEventListener[tileIndex] = this.createPinUnpinListener(tileState);
@@ -3420,7 +3443,7 @@ export class DemoMeetingApp
 
   remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
     this.log(`available remote video sources changed: ${JSON.stringify(videoSources)}`);
-    if (!this.usePriorityBasedDownlinkPolicy) {
+    if (!this.enablePin) {
       return;
     }
     for (const attendeeId in this.roster) {

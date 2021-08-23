@@ -158,7 +158,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.videoIndex = videoIndex;
     if (!this.videoPreferences) {
       this.updateDefaultVideoPreferences();
-      this.videoPreferences = this.defaultVideoPreferences;
     }
   }
 
@@ -275,7 +274,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   protected calculateOptimalReceiveStreams(): void {
     const chosenStreams: VideoStreamDescription[] = [];
     const remoteInfos: VideoStreamDescription[] = this.videoIndex.remoteStreamDescriptions();
-    if (remoteInfos.length === 0 || !this.videoPreferences || this.videoPreferences.isEmpty()) {
+    if (remoteInfos.length === 0 || this.videoPreferences?.isEmpty()) {
       this.optimalReceiveStreams = [];
       return;
     }
@@ -814,7 +813,8 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     chosenStreams: VideoStreamDescription[]
   ): VideoStreamDescription {
     let upgradeStream: VideoStreamDescription;
-    const videoPreferences: VideoPreferences = this.videoPreferences;
+    const videoPreferences: VideoPreferences =
+      this.videoPreferences || this.defaultVideoPreferences;
 
     const highestPriority = videoPreferences.highestPriority();
     let nextPriority;
@@ -1012,7 +1012,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       )}  bw attendees { ${Array.from(this.pausedBwAttendeeIds).join(' ')} }\n`;
     }
 
-    /* istanbul ignore else */
     if (this.videoPreferences) {
       logString += `bwe:   preferences: ${JSON.stringify(this.videoPreferences)}`;
     }
