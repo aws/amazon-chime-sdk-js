@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Clarify why not use default downlink policy with simulcast.
+- Trace `getRTCPeerConnectionStats()` and `hasStartedLocalVideoTile()` with DEBUG level logs instead of INFO to reduce logging noise.
 
 ### Removed
 

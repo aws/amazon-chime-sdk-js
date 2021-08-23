@@ -1380,6 +1380,9 @@ export class DemoMeetingApp
   }
 
   showVideoWebRTCStats(videoMetricReport: { [id: string]: { [id: string]: {} } }): void {
+    if (this.availablelTileSize() === 0) {
+      return;
+    }
     const videoTiles = this.audioVideo.getAllVideoTiles();
     if (videoTiles.length === 0) {
       return;
@@ -3249,7 +3252,11 @@ export class DemoMeetingApp
     } else {
       this.updateProperty(pauseStateElement, 'innerText', '');
     }
-    this.showTile(tileElement, tileState);
+    if (tileState.localTile && !tileState.active && !tileState.paused) {
+      this.hideTile(tileIndex);
+    } else {
+      this.showTile(tileElement, tileState);
+    }
     this.updateGridClasses();
     this.layoutFeaturedTile();
   }

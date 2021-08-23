@@ -17,6 +17,7 @@ import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
 import VideoInputDevice from '../devicecontroller/VideoInputDevice';
 import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import { isVideoTransformDevice } from '../devicecontroller/VideoTransformDevice';
+import LogLevel from '../logger/LogLevel';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import type VolumeIndicatorCallback from '../realtimecontroller/VolumeIndicatorCallback';
 import TranscriptionController from '../transcript/TranscriptionController';
@@ -60,7 +61,12 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
   }
 
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport> {
-    this.trace('getRTCPeerConnectionStats', selector ? selector.id : null);
+    this.trace(
+      'getRTCPeerConnectionStats',
+      selector ? selector.id : null,
+      undefined,
+      LogLevel.DEBUG
+    );
     return this.audioVideoController.getRTCPeerConnectionStats(selector);
   }
 
@@ -98,7 +104,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
 
   hasStartedLocalVideoTile(): boolean {
     const result = this.videoTileController.hasStartedLocalVideoTile();
-    this.trace('hasStartedLocalVideoTile', null, result);
+    this.trace('hasStartedLocalVideoTile', null, result, LogLevel.DEBUG);
     return result;
   }
 
@@ -455,7 +461,7 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private trace(name: string, input?: any, output?: any): void {
+  private trace(name: string, input?: any, output?: any, logLevel = LogLevel.INFO): void {
     const meetingId = this.audioVideoController.configuration.meetingId;
     const attendeeId = this.audioVideoController.configuration.credentials.attendeeId;
     let s = `API/DefaultAudioVideoFacade/${meetingId}/${attendeeId}/${name}`;
@@ -465,7 +471,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
     if (typeof output !== 'undefined') {
       s += ` -> ${JSON.stringify(output)}`;
     }
-    this.audioVideoController.logger.info(s);
+    if (logLevel === LogLevel.DEBUG) {
+      this.audioVideoController.logger.debug(s);
+    } else {
+      this.audioVideoController.logger.info(s);
+    }
   }
 
   getRemoteVideoSources(): VideoSource[] {
