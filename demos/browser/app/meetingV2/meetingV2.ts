@@ -988,6 +988,8 @@ export class DemoMeetingApp
         const engineTranscribeChecked = (document.getElementById('engine-transcribe') as HTMLInputElement).checked;
         document.getElementById('engine-transcribe-language').classList.toggle('hidden', !engineTranscribeChecked);
 		    document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-region').classList.toggle('hidden', !engineTranscribeChecked);
+        document.getElementById('engine-transcribe-medical-region').classList.toggle('hidden', engineTranscribeChecked);
       });
     });
 
@@ -995,20 +997,23 @@ export class DemoMeetingApp
     buttonStartTranscription.addEventListener('click', async () => {
       let engine = '';
       let languageCode = '';
+      let region = '';
       if ((document.getElementById('engine-transcribe') as HTMLInputElement).checked) {
         engine = 'transcribe';
         languageCode = (document.getElementById('transcribe-language') as HTMLInputElement).value;
+        region = (document.getElementById('transcribe-region') as HTMLInputElement).value;
       } else if ((document.getElementById('engine-transcribe-medical') as HTMLInputElement).checked) {
         engine = 'transcribe_medical';
         languageCode = (document.getElementById('transcribe-medical-language') as HTMLInputElement).value;
+        region = (document.getElementById('transcribe-medical-region') as HTMLInputElement).value;
       } else {
         throw new Error('Unknown transcription engine');
       }
-      await startLiveTranscription(engine, languageCode);
+      await startLiveTranscription(engine, languageCode, region);
     });
 
-    const startLiveTranscription = async (engine: string, languageCode: string) => {
-      const response = await fetch(`${DemoMeetingApp.BASE_URL}start_transcription?title=${encodeURIComponent(this.meeting)}&engine=${encodeURIComponent(engine)}&language=${encodeURIComponent(languageCode)}`, {
+    const startLiveTranscription = async (engine: string, languageCode: string, region: string) => {
+      const response = await fetch(`${DemoMeetingApp.BASE_URL}start_transcription?title=${encodeURIComponent(this.meeting)}&engine=${encodeURIComponent(engine)}&language=${encodeURIComponent(languageCode)}&region=${encodeURIComponent(region)}`, {
         method: 'POST',
       });
       const json = await response.json();
