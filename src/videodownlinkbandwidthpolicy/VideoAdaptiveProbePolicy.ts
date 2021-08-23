@@ -45,6 +45,8 @@ export default class VideoAdaptiveProbePolicy extends VideoPriorityBasedPolicy {
     if (containsContent) {
       this.videoPreferences = newPreferences.build();
       this.videoPreferencesUpdated = true;
+    } else {
+      this.videoPreferences = undefined;
     }
   }
 
