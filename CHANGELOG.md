@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Fix default priority downlink policy to update default preference correctly.
 
 ## [2.16.0] - 2021-08-17
 
