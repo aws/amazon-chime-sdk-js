@@ -599,7 +599,7 @@ export class DemoMeetingApp
           break;
       }
 
-      if (this.priorityBasedDownlinkPolicy) {
+      if (this.usePriorityBasedDownlinkPolicy) {
         this.enablePin = (document.getElementById('enable-pin') as HTMLInputElement).checked;
       }
       if (!this.enablePin) {
