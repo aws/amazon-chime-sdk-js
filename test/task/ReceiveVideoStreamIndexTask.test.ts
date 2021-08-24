@@ -36,6 +36,7 @@ import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpoli
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { shortcut } from '../utils';
 
 describe('ReceiveVideoStreamIndexTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -517,7 +518,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
     });
 
     describe('SimulcastUplinkPolicy (uplink) and VideoAdaptiveProbePolicy (downlink)', () => {
-      it('deep compare received video sources', done => {
+      it('deep compare received video sources', async () => {
         const selfAttendeeId = 'attendee-1';
         context.audioVideoController.configuration.credentials.attendeeId = selfAttendeeId;
         context.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
@@ -525,18 +526,15 @@ describe('ReceiveVideoStreamIndexTask', () => {
           logger
         );
         context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(logger);
-        let calledTimes = 0;
+
+        const { done, wait } = shortcut<VideoSource[]>(behavior.asyncWaitMs + 100);
+
         class TestObserver implements AudioVideoObserver {
           remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
-            calledTimes += 1;
-            expect([...videoSources].sort(compare)).to.deep.equal(
-              [
-                { attendee: { attendeeId: 'attendee-2', externalUserId: '' } },
-                { attendee: { attendeeId: 'attendee-3', externalUserId: '' } },
-              ].sort(compare)
-            );
+            done(videoSources);
           }
         }
+
         context.audioVideoController.addObserver(new TestObserver());
         const streamDescriptor1 = createStreamDescriptor('attendee-1', 1, 1, 48, 24000);
         const streamDescriptor2 = createStreamDescriptor('attendee-2', 2, 2, 48, 24000);
@@ -546,13 +544,17 @@ describe('ReceiveVideoStreamIndexTask', () => {
           streamDescriptor2,
           streamDescriptor3,
         ]);
-        new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
-          webSocketAdapter.send(indexSignalBuffer);
-          await delay(behavior.asyncWaitMs + 10);
-          expect(calledTimes).to.equal(1);
-          done();
-        });
+
+        webSocketAdapter.send(indexSignalBuffer);
         task.run();
+        const sources = await wait;
+
+        expect([...sources].sort(compare)).to.deep.equal(
+          [
+            { attendee: { attendeeId: 'attendee-2', externalUserId: '' } },
+            { attendee: { attendeeId: 'attendee-3', externalUserId: '' } },
+          ].sort(compare)
+        );
       });
 
       it('remoteVideoSourcesDidChange call count check', done => {

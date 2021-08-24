@@ -15,6 +15,7 @@ import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import FirefoxSDPMock from '../sdp/FirefoxSDPMock';
 import SDPMock from '../sdp/SDPMock';
+import { delay } from '../utils';
 
 describe('SetRemoteDescriptionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -58,7 +59,9 @@ describe('SetRemoteDescriptionTask', () => {
     task = new SetRemoteDescriptionTask(context);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Wait for calls to finish.
+    await delay(100);
     if (domMockBuilder) {
       domMockBuilder.cleanup();
       domMockBuilder = null;

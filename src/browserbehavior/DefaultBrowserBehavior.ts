@@ -21,6 +21,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     crios: 86,
     fxios: 23,
     'ios-webview': 605,
+    'chromium-webview': 92,
   };
 
   private browserName: { [id: string]: string } = {
@@ -35,6 +36,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     crios: 'Chrome iOS',
     fxios: 'Firefox iOS',
     'ios-webview': 'WKWebView iOS',
+    'chromium-webview': 'Chrome WebView',
   };
 
   private chromeLike: string[] = [
@@ -150,7 +152,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   requiresVideoElementWorkaround(): boolean {
-    return this.isSafari();
+    return this.isSafari() && this.majorVersion() === 12;
   }
 
   requiresNoExactMediaStreamConstraints(): boolean {
@@ -199,6 +201,12 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   supportsSenderSideBandwidthEstimation(): boolean {
     return this.hasChromiumWebRTC() || this.isSafari();
+  }
+
+  // There's a issue in Chormium WebView that causes enumerate devices to return empty labels, this is a check for this issue.
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=669492
+  doesNotSupportMediaDeviceLabels(): boolean {
+    return this.browser.name === 'chromium-webview';
   }
 
   // TODO: Deprecated, needs to be removed

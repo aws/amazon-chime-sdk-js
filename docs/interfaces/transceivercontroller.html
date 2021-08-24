@@ -272,18 +272,30 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/TransceiverController.ts#L83">src/transceivercontroller/TransceiverController.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/TransceiverController.ts#L93">src/transceivercontroller/TransceiverController.ts:93</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Set [[RTCRtpEncodingParameters]] on the sender of transceiver</p>
+									<p>Set [[RTCRtpEncodingParameters]] on the sender of transceiver.
+										This method should be called whenever the sender&#39;s encoding parameters of the local video transceiver need to
+										be updated.
+										For example, the default NScaleVideoUplinkBandwidthPolicy calls this method whenever a video is on/off or the
+										active speaker changes.
+										This method assumes that the sender of the local video transceiver is available and the input parameters should
+										not be empty.
+										The encoding parameters for sender should be retrieved using sender.getParameters and updated using
+									sender.setParameters method.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>params: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RTCRtpEncodingParameters</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The encoding parameters. If you have multiple encoding
+										parameters for different video layers, the key should be the rid corresponding to the RTCRtpEncodingParameters.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>

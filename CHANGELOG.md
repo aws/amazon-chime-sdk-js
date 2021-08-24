@@ -8,13 +8,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Add `RealtimeSubscribeToAttendeeIdPresenceCallback` type for `realtimeSubscribeToAttendeeIdPresence` callback to document the callback parameters.
+- Add `audioInputMuteStateChanged` to the `DeviceChangeObserver` interface. This is called whenever the device is changed or is muted or unmuted, allowing applications to adapt to OS-level mute state for input devices.
 
 ### Changed
 
 ### Removed
 
 ### Fixed
+- Fix priority-based downlink policy to not unpaused tiles that are not paused by the policy.
+
+## [2.16.1] - 2021-08-23
+
+### Fixed
+- Fix default priority downlink policy to update default preference correctly.
+
+## [2.16.0] - 2021-08-17
+
+### Added
+
+- Add `RealtimeSubscribeToAttendeeIdPresenceCallback` type for `realtimeSubscribeToAttendeeIdPresence` callback to document the callback parameters.
+- Added support for Android WebView
+- Add a SignalClientEvent check in `SubscribeAndReceiveSubscribeAckTask` to immediately cancel the task when websocket connection is terminated.≈
+
+### Changed
+- Update the default behavior of NScale video uplink bandwidth policy to scale down resolution based on the number
+of videos.
+
+### Removed
+
+### Fixed
+- Fix race condition in Safari when disconnect and connect stream from video element.
+
 
 ## [2.15.0] - 2021-08-04
 

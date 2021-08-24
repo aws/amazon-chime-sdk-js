@@ -10,7 +10,8 @@ export default class DefaultVideoCaptureAndEncodeParameter
     private cameraHeight: number,
     private cameraFrameRate: number,
     private maxEncodeBitrateKbps: number,
-    private isSimulcast: boolean
+    private isSimulcast: boolean,
+    private scaleResolutionDownBy: number = 1
   ) {}
 
   equal(other: DefaultVideoCaptureAndEncodeParameter): boolean {
@@ -19,6 +20,7 @@ export default class DefaultVideoCaptureAndEncodeParameter
       other.captureHeight() === this.cameraHeight &&
       other.captureFrameRate() === this.cameraFrameRate &&
       other.encodeBitrates().length === this.encodeBitrates().length &&
+      other.encodeScaleResolutionDownBy().length === this.encodeScaleResolutionDownBy().length &&
       other.encodeWidths().length === this.encodeWidths().length &&
       other.encodeHeights().length === this.encodeHeights().length;
 
@@ -27,7 +29,8 @@ export default class DefaultVideoCaptureAndEncodeParameter
         if (
           other.encodeWidths()[i] !== this.encodeWidths()[i] ||
           other.encodeHeights()[i] !== this.encodeHeights()[i] ||
-          other.encodeBitrates()[i] !== this.encodeBitrates()[i]
+          other.encodeBitrates()[i] !== this.encodeBitrates()[i] ||
+          other.encodeScaleResolutionDownBy()[i] !== this.encodeScaleResolutionDownBy()[i]
         ) {
           checkForEqual = false;
           return checkForEqual;
@@ -44,7 +47,8 @@ export default class DefaultVideoCaptureAndEncodeParameter
       this.cameraHeight,
       this.cameraFrameRate,
       this.maxEncodeBitrateKbps,
-      this.isSimulcast
+      this.isSimulcast,
+      this.scaleResolutionDownBy
     );
   }
 
@@ -63,6 +67,10 @@ export default class DefaultVideoCaptureAndEncodeParameter
   encodeBitrates(): number[] {
     // TODO: add simulcast layer
     return [this.maxEncodeBitrateKbps];
+  }
+
+  encodeScaleResolutionDownBy(): number[] {
+    return [this.scaleResolutionDownBy];
   }
 
   encodeWidths(): number[] {

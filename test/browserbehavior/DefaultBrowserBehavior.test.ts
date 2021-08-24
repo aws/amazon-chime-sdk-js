@@ -47,6 +47,8 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Windows NT 10.0.18362; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.9.0 Chrome/85.0.4183.93 Electron/10.1.1 Safari/537.36 Sonic Slack_SSB/4.9.0';
   const WKWEBVIEW_IOS_USER_AGENT =
     'Mozilla/5.0 (iPhone; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
+  const CHROMIUM_WEBVIEW_USER_AGENT =
+    'Mozilla/5.0 (Linux; Android 10; LM-G710 Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.115 Mobile Safari/537.36';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
@@ -216,7 +218,6 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
@@ -271,6 +272,40 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
     });
 
+    it('can detect Chromium Webview', () => {
+      setUserAgent(CHROMIUM_WEBVIEW_USER_AGENT);
+      expect(new DefaultBrowserBehavior().name()).to.eq('chromium-webview');
+      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(92);
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
+      expect(new DefaultBrowserBehavior().doesNotSupportMediaDeviceLabels()).to.be.true;
+      const enableUnifiedPlan = true;
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.be.true;
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.be.true;
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlan()
+      ).to.be.false;
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
+        }).requiresUnifiedPlanMunging()
+      ).to.be.false;
+    });
+
     it('can test Safari version 12', () => {
       domMockBehavior = new DOMMockBehavior();
       domMockBehavior.isUnifiedPlanSupported = false;
@@ -280,6 +315,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
+      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.false;

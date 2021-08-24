@@ -98,6 +98,10 @@
               </select>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="enable-pin" class="custom-control-input">
+              <label for="enable-pin" class="custom-control-label">Enable pin</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" checked id="preconnect" class="custom-control-input">
               <label for="preconnect" class="custom-control-label">Open signaling connection early</label>
             </div>
@@ -310,6 +314,39 @@
           <label for="transcribe-medical-language" class="sr-only">Language</label>
           <select id="transcribe-medical-language" class="custom-select"  style="width:100%">
             <option value="en-US" selected>US English (en-US)</option>
+          </select>
+        </div>
+      </div>
+      <div id="transcription-region-group">
+        <div id="engine-transcribe-region">
+          <label for="transcribe-region" class="sr-only">Region</label>
+          <select id="transcribe-region" class="custom-select"  style="width:100%">
+            <option value="auto" selected>Auto</option>
+            <option value="">Not specified</option>
+            <option value="ap-northeast-1">Japan (Tokyo)</option>
+            <option value="ap-northeast-2">South Korea (Seoul)</option>
+            <option value="ap-southeast-2">Australia (Sydney)</option>
+            <option value="ca-central-1">Canada</option>
+            <option value="eu-central-1">Germany (Frankfurt)</option>
+            <option value="eu-west-1">Ireland</option>
+            <option value="eu-west-2">United Kingdom (London)</option>
+            <option value="sa-east-1">Brazil (São Paulo)</option>
+            <option value="us-east-1">United States (N. Virginia)</option>
+            <option value="us-east-2">United States (Ohio)</option>
+            <option value="us-west-2">United States (Oregon)</option>
+          </select>
+        </div>
+        <div id="engine-transcribe-medical-region" class="hidden">
+          <label for="transcribe-medical-region" class="sr-only">Language</label>
+          <select id="transcribe-medical-region" class="custom-select"  style="width:100%">
+            <option value="auto" selected>Auto</option>
+            <option value="">Not specified</option>
+            <option value="ap-southeast-2">Australia (Sydney)</option>
+            <option value="ca-central-1">Canada</option>
+            <option value="eu-west-1">Ireland</option>
+            <option value="us-east-1">United States (N. Virginia)</option>
+            <option value="us-east-2">United States (Ohio)</option>
+            <option value="us-west-2">United States (Oregon)</option>
           </select>
         </div>
       </div>

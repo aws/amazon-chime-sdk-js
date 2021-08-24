@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Substitute } from '@fluffy-spoon/substitute';
+// We use V1 UUIDs because V4 — random — hits the Mocha equivalent of this Jest issue.
+// https://github.com/facebook/jest/issues/11275
+import { v1 as uuidv1 } from 'uuid';
 
 import GetUserMediaError from '../../src/devicecontroller/GetUserMediaError';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -12,9 +15,20 @@ import MockError, { OverconstrainedError } from './MockError';
 import UserMediaState from './UserMediaState';
 
 export interface StoppableMediaStreamTrack extends MediaStreamTrack {
+  streamDeviceID: string | undefined;
+
   // This stops the track _and dispatches 'ended'_.
   // https://stackoverflow.com/a/55960232
   externalStop(): void;
+
+  // This sets muted and dispatches 'mute'.
+  externalMute(): void;
+
+  // This sets unmuted and dispatches 'unmute'.
+  externalUnmute(): void;
+
+  // Tracks know their source device ID. This lets us fake it in tests.
+  setStreamDeviceID(id: string | undefined): void;
 }
 
 // eslint-disable-next-line
@@ -34,6 +48,66 @@ interface EventListenerObjectWrapper {
   type: string;
   listener: EventListenerOrEventListenerObject;
 }
+
+export class MockMediaStream {
+  private listeners: { [type: string]: MockListener[] } = {};
+
+  id: string = uuidv1();
+  constraints: MockMediaStreamConstraints = {};
+  tracks: typeof GlobalAny.MediaStreamTrack[] = [];
+  active: boolean = false;
+
+  constructor(tracks: typeof GlobalAny.MediaStreamTrack[] = []) {
+    this.tracks = tracks;
+  }
+
+  clone(): typeof GlobalAny.MediaStream {
+    return new MockMediaStream(this.tracks);
+  }
+
+  addTrack(track: MediaStreamTrack): void {
+    this.tracks.push(track);
+  }
+
+  removeTrack(track: MediaStreamTrack): void {
+    this.tracks = this.tracks.filter(eachTrack => eachTrack.id !== track.id);
+
+    if (this.listeners.hasOwnProperty('removetrack')) {
+      this.listeners.removetrack.forEach((listener: MockListener) =>
+        listener({
+          ...Substitute.for(),
+          type: 'removetrack',
+        })
+      );
+    }
+  }
+
+  getTracks(): typeof GlobalAny.MediaStreamTrack[] {
+    return this.tracks;
+  }
+
+  getVideoTracks(): typeof GlobalAny.MediaStreamTrack[] {
+    return this.tracks;
+  }
+
+  getAudioTracks(): typeof GlobalAny.MediaStreamTrack[] {
+    return this.tracks;
+  }
+
+  addEventListener(type: string, listener: MockListener): void {
+    if (!this.listeners.hasOwnProperty(type)) {
+      this.listeners[type] = [];
+    }
+    this.listeners[type].push(listener);
+  }
+
+  removeEventListener(type: string, listener: MockListener): void {
+    if (this.listeners.hasOwnProperty(type)) {
+      this.listeners[type] = this.listeners[type].filter(eachListener => eachListener !== listener);
+    }
+  }
+}
+
 export default class DOMMockBuilder {
   constructor(mockBehavior?: DOMMockBehavior) {
     mockBehavior = mockBehavior || new DOMMockBehavior();
@@ -171,6 +245,8 @@ export default class DOMMockBuilder {
       listeners: { [type: string]: { once: boolean; listener: MockListener }[] } = {};
       readyState: MediaStreamTrackState = 'live';
 
+      streamDeviceID = mockBehavior.mediaStreamTrackSettings.deviceId || uuidv1();
+
       readonly id: string;
       readonly kind: string = '';
       readonly constraints: MockMediaStreamConstraints = {};
@@ -233,6 +309,20 @@ export default class DOMMockBuilder {
         return !event.cancelable || event.defaultPrevented;
       }
 
+      externalUnmute(): void {
+        this.muted = false;
+        this.dispatchEvent({ ...Substitute.for(), type: 'unmute' });
+      }
+
+      externalMute(): void {
+        this.muted = true;
+        this.dispatchEvent({ ...Substitute.for(), type: 'mute' });
+      }
+
+      setStreamDeviceID(id: string | undefined): void {
+        this.streamDeviceID = id;
+      }
+
       // This stops the track _and dispatches 'ended'_.
       // https://stackoverflow.com/a/55960232
       externalStop(): void {
@@ -258,10 +348,12 @@ export default class DOMMockBuilder {
       }
 
       getSettings(): MediaTrackSettings {
+        const deviceId = this.streamDeviceID;
+
         return {
+          deviceId,
           width: mockBehavior.mediaStreamTrackSettings.width,
           height: mockBehavior.mediaStreamTrackSettings.height,
-          deviceId: mockBehavior.mediaStreamTrackSettings.deviceId,
           facingMode: mockBehavior.mediaStreamTrackSettings.facingMode,
           groupId: mockBehavior.mediaStreamTrackSettings.groupId,
         };
@@ -295,66 +387,7 @@ export default class DOMMockBuilder {
       }
     };
 
-    GlobalAny.MediaStream = class MockMediaStream {
-      private listeners: { [type: string]: MockListener[] } = {};
-
-      id: string = '';
-      constraints: MockMediaStreamConstraints = {};
-      tracks: typeof GlobalAny.MediaStreamTrack[] = [];
-      active: boolean = false;
-
-      constructor(tracks: typeof GlobalAny.MediaStreamTrack[] = []) {
-        this.tracks = tracks;
-      }
-
-      clone(): typeof GlobalAny.MediaStream {
-        return new MockMediaStream(this.tracks);
-      }
-
-      addTrack(track: MediaStreamTrack): void {
-        this.tracks.push(track);
-      }
-
-      removeTrack(track: MediaStreamTrack): void {
-        this.tracks = this.tracks.filter(eachTrack => eachTrack.id !== track.id);
-
-        if (this.listeners.hasOwnProperty('removetrack')) {
-          this.listeners.removetrack.forEach((listener: MockListener) =>
-            listener({
-              ...Substitute.for(),
-              type: 'removetrack',
-            })
-          );
-        }
-      }
-
-      getTracks(): typeof GlobalAny.MediaStreamTrack[] {
-        return this.tracks;
-      }
-
-      getVideoTracks(): typeof GlobalAny.MediaStreamTrack[] {
-        return this.tracks;
-      }
-
-      getAudioTracks(): typeof GlobalAny.MediaStreamTrack[] {
-        return this.tracks;
-      }
-
-      addEventListener(type: string, listener: MockListener): void {
-        if (!this.listeners.hasOwnProperty(type)) {
-          this.listeners[type] = [];
-        }
-        this.listeners[type].push(listener);
-      }
-
-      removeEventListener(type: string, listener: MockListener): void {
-        if (this.listeners.hasOwnProperty(type)) {
-          this.listeners[type] = this.listeners[type].filter(
-            eachListener => eachListener !== listener
-          );
-        }
-      }
-    };
+    GlobalAny.MediaStream = MockMediaStream;
 
     GlobalAny.MediaDeviceInfo = mockBehavior.mediaDeviceInfoSupported
       ? class MockMediaDeviceInfo {
@@ -1359,7 +1392,8 @@ export default class DOMMockBuilder {
 
   cleanup(): void {
     // This is a bit of an awful hack. Some of our tests end up adding listeners that
-    // subsequently cause uncaught exceptions because they rely on `WebSocket` being defined.
+    // subsequently cause uncaught exceptions because they rely on `WebSocket`
+    // and other classes being defined.
     //
     // Almost every test cleans up these mocks in `after` or `afterEach`, and so random
     // tests will fail at the end of a test suite due to these asynchronous listeners.
@@ -1368,10 +1402,12 @@ export default class DOMMockBuilder {
     // However, fixing them is tricky, so we instead do a small hack: don't undefine `WebSocket`.
     //
     //
-    // delete GlobalAny.WebSocket;
-
+    /*
+    delete GlobalAny.WebSocket;
     delete GlobalAny.fetch;
     delete GlobalAny.Response;
+    delete GlobalAny.navigator;
+     */
     delete GlobalAny.RTCPeerConnectionIceEvent;
     delete GlobalAny.RTCIceCandidate;
     delete GlobalAny.RTCPeerConnection;
@@ -1382,7 +1418,6 @@ export default class DOMMockBuilder {
     delete GlobalAny.MediaStreamTrack;
     delete GlobalAny.MediaStream;
     delete GlobalAny.MediaDevices;
-    delete GlobalAny.navigator;
     delete GlobalAny.window;
     delete GlobalAny.devicePixelRatio;
     delete GlobalAny.MediaQueryList;

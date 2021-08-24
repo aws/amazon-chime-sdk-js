@@ -54,6 +54,7 @@ import {
   TranscriptItemType,
   TranscriptResult,
   Versioning,
+  VideoAdaptiveProbePolicy,
   VideoDownlinkObserver,
   VideoFrameProcessor,
   VideoInputDevice,
@@ -323,6 +324,7 @@ export class DemoMeetingApp
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
+  enablePin = false;
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
@@ -523,6 +525,7 @@ export class DemoMeetingApp
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('planB') as HTMLInputElement).disabled = true;
     }
+    (document.getElementById('enable-pin') as HTMLInputElement).disabled = true;
 
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
@@ -530,11 +533,16 @@ export class DemoMeetingApp
       const priorityBasedDownlinkPolicyConfig = document.getElementById(
         'priority-downlink-policy-preset'
       ) as HTMLSelectElement;
+      const enablePinElem = document.getElementById('enable-pin') as HTMLInputElement;
 
       if (this.usePriorityBasedDownlinkPolicy) {
         priorityBasedDownlinkPolicyConfig.style.display = 'block';
+        enablePinElem.disabled = false;
+        enablePinElem.checked = true;
       } else {
         priorityBasedDownlinkPolicyConfig.style.display = 'none';
+        enablePinElem.disabled = true;
+        enablePinElem.checked = false;
       }
     });
 
@@ -591,6 +599,16 @@ export class DemoMeetingApp
           this.logLevel = LogLevel.OFF;
           break;
       }
+
+      if (this.usePriorityBasedDownlinkPolicy) {
+        this.enablePin = (document.getElementById('enable-pin') as HTMLInputElement).checked;
+      }
+      if (!this.enablePin) {
+        for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
+          (document.getElementById(`video-pin-${i}`) as HTMLButtonElement).style.display = 'none';
+        }
+      }
+
       AsyncScheduler.nextTick(
         async (): Promise<void> => {
           let chimeMeetingId: string = '';
@@ -820,7 +838,7 @@ export class DemoMeetingApp
     );
 
     const buttonMute = document.getElementById('button-microphone');
-    buttonMute.addEventListener('mousedown', _e => {
+    buttonMute.addEventListener('click', _e => {
       if (this.toggleButton('button-microphone')) {
         this.audioVideo.realtimeUnmuteLocalAudio();
       } else {
@@ -989,6 +1007,8 @@ export class DemoMeetingApp
         const engineTranscribeChecked = (document.getElementById('engine-transcribe') as HTMLInputElement).checked;
         document.getElementById('engine-transcribe-language').classList.toggle('hidden', !engineTranscribeChecked);
 		    document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-region').classList.toggle('hidden', !engineTranscribeChecked);
+        document.getElementById('engine-transcribe-medical-region').classList.toggle('hidden', engineTranscribeChecked);
       });
     });
 
@@ -996,20 +1016,23 @@ export class DemoMeetingApp
     buttonStartTranscription.addEventListener('click', async () => {
       let engine = '';
       let languageCode = '';
+      let region = '';
       if ((document.getElementById('engine-transcribe') as HTMLInputElement).checked) {
         engine = 'transcribe';
         languageCode = (document.getElementById('transcribe-language') as HTMLInputElement).value;
+        region = (document.getElementById('transcribe-region') as HTMLInputElement).value;
       } else if ((document.getElementById('engine-transcribe-medical') as HTMLInputElement).checked) {
         engine = 'transcribe_medical';
         languageCode = (document.getElementById('transcribe-medical-language') as HTMLInputElement).value;
+        region = (document.getElementById('transcribe-medical-region') as HTMLInputElement).value;
       } else {
         throw new Error('Unknown transcription engine');
       }
-      await startLiveTranscription(engine, languageCode);
+      await startLiveTranscription(engine, languageCode, region);
     });
 
-    const startLiveTranscription = async (engine: string, languageCode: string) => {
-      const response = await fetch(`${DemoMeetingApp.BASE_URL}start_transcription?title=${encodeURIComponent(this.meeting)}&engine=${encodeURIComponent(engine)}&language=${encodeURIComponent(languageCode)}`, {
+    const startLiveTranscription = async (engine: string, languageCode: string, region: string) => {
+      const response = await fetch(`${DemoMeetingApp.BASE_URL}start_transcription?title=${encodeURIComponent(this.meeting)}&engine=${encodeURIComponent(engine)}&language=${encodeURIComponent(languageCode)}&region=${encodeURIComponent(region)}`, {
         method: 'POST',
       });
       const json = await response.json();
@@ -1266,6 +1289,10 @@ export class DemoMeetingApp
       // Select a new device.
       await this.openAudioInputFromSelectionAndPreview();
     }
+  }
+
+  audioInputMuteStateChanged(device: string | MediaStream, muted: boolean): void {
+    this.log('Mute state: device', device, muted ? 'is muted' : 'is not muted');
   }
 
   audioInputsChanged(freshAudioInputDeviceList: MediaDeviceInfo[]): void {
@@ -1564,6 +1591,8 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
+    } else if (this.enableSimulcast) {
+      configuration.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(this.meetingLogger);
     }
 
     this.meetingSession = new DefaultMeetingSession(
@@ -2245,17 +2274,22 @@ export class DemoMeetingApp
     // Also note that Firefox has its own device picker, which may be useful
     // for the first device selection. Subsequent device selections could use
     // a custom UX with a specific device id.
-    this.audioVideo.setDeviceLabelTrigger(
-      async (): Promise<MediaStream> => {
-        if (this.isRecorder() || this.isBroadcaster()) {
-          throw new Error('Recorder or Broadcaster does not need device labels');
+    if(!this.defaultBrowserBehaviour.doesNotSupportMediaDeviceLabels())
+    {
+      this.audioVideo.setDeviceLabelTrigger(
+        async (): Promise<MediaStream> => {
+          if (this.isRecorder() || this.isBroadcaster()) {
+            throw new Error('Recorder or Broadcaster does not need device labels');
+          }
+          this.switchToFlow('flow-need-permission');
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+          this.switchToFlow('flow-devices');
+          return stream;
+
+
         }
-        this.switchToFlow('flow-need-permission');
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        this.switchToFlow('flow-devices');
-        return stream;
-      }
     );
+    }
   }
 
   populateDeviceList(
@@ -3226,6 +3260,9 @@ export class DemoMeetingApp
   }
 
   updateDownlinkPreference(): void {
+    if (!this.priorityBasedDownlinkPolicy) {
+      return;
+    }
     const videoPreferences = VideoPreferences.prepare();
     for (const attendeeId in this.roster) {
       if (this.roster[attendeeId].hasVideo) {
@@ -3278,7 +3315,7 @@ export class DemoMeetingApp
     pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
     this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
     pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
-    if (this.usePriorityBasedDownlinkPolicy) {
+    if (this.enablePin) {
       this.log('pinButtonElement addEventListener for tileIndex ' + tileIndex);
       pinButtonElement.removeEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
       this.tileIndexToPinEventListener[tileIndex] = this.createPinUnpinListener(tileState);
@@ -3288,7 +3325,9 @@ export class DemoMeetingApp
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
-    this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#').slice(-1)[0]);
+    if (tileState.boundExternalUserId) {
+      this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#').slice(-1)[0]);
+    }
     this.updateProperty(attendeeIdElement, 'innerText', tileState.boundAttendeeId);
     if (tileState.paused && this.roster[tileState.boundAttendeeId].bandwidthConstrained) {
       this.updateProperty(pauseStateElement, 'innerText', '⚡');
@@ -3487,7 +3526,7 @@ export class DemoMeetingApp
 
   remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
     this.log(`available remote video sources changed: ${JSON.stringify(videoSources)}`);
-    if (!this.usePriorityBasedDownlinkPolicy) {
+    if (!this.enablePin) {
       return;
     }
     for (const attendeeId in this.roster) {

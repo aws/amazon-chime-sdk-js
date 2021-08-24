@@ -295,6 +295,10 @@ For better user experience, we recommend considering [Chime SDK iOS](https://git
 
 This seems to be a [bug](https://bugs.chromium.org/p/webrtc/issues/detail?id=11677) with Android 8 or 9 when using getUserMedia with speakerphone device Id that the audio stream will end after a brief moment. Using default device Id will fix this issue. Note that this only happens if users select speakerphone first. If you use default device when joining the meeting then switch to Speakerphone, this issue does not happen.
 
+### **Why can I not grab device labels in Android Webview?**
+
+This is a [bug](https://bugs.chromium.org/p/chromium/issues/detail?id=669492) with Chromium WebView. There is currently no fix for this issue, but you are able to provide default labels for devices.
+
 ### I see a slate which says "Your client does not support hardware acceleration" when I enable video on my device?
 
 This error indicates that the device you are using does not support hardware acceleration decoding. However this does not impact the ability of this user to participate in Amazon Chime SDK meetings as the device can render and transmit VP8 streams to other parties in the call. Specifically for Chrome, you will need to enable Unified Plan support by setting this [flag](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers) to true or enable [Simulcast](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers).

@@ -153,6 +153,20 @@ export default class DefaultDeviceController
   private inputDeviceCount: number = 0;
   private lastNoVideoInputDeviceCount: number;
 
+  // This handles the dispatch of `mute` and `unmute` events from audio tracks.
+  // There's a bit of a semantic mismatch here if input streams allow individual component tracks to be muted,
+  // but addressing that gap is not feasible in our stream-oriented world.
+  private mediaStreamMuteObserver = (id: string | MediaStream, muted: boolean): void => {
+    for (const observer of this.deviceChangeObservers) {
+      AsyncScheduler.nextTick(() => {
+        /* istanbul ignore else */
+        if (this.deviceChangeObservers.has(observer) && observer.audioInputMuteStateChanged) {
+          observer.audioInputMuteStateChanged(id, muted);
+        }
+      });
+    }
+  };
+
   constructor(
     private logger: Logger,
     options?: { enableWebAudio?: boolean },
@@ -743,7 +757,7 @@ export default class DefaultDeviceController
   private releaseAudioTransformStream(): void {
     this.logger.info('Stopping audio track for Web Audio graph');
 
-    this.stopTracksAndRemoveCallback('audio');
+    this.stopTracksAndRemoveCallbacks('audio');
 
     this.logger.info('Removing audio transform, if there is one.');
     this.removeTransform();
@@ -766,14 +780,14 @@ export default class DefaultDeviceController
   private releaseVideoTransformStream(): void {
     this.logger.info('Stopping video track for transform');
 
-    this.stopTracksAndRemoveCallback('video');
+    this.stopTracksAndRemoveCallbacks('video');
 
     this.logger.info('Disconnecting video transform');
     this.chosenVideoTransformDevice.onOutputStreamDisconnect();
     this.chosenVideoTransformDevice = null;
   }
 
-  private stopTracksAndRemoveCallback(kind: 'video' | 'audio'): void {
+  private stopTracksAndRemoveCallbacks(kind: 'video' | 'audio'): void {
     const activeDevice = this.activeDevices[kind];
 
     // Just-in-case error handling.
@@ -784,6 +798,8 @@ export default class DefaultDeviceController
 
     /* istanbul ignore next */
     const endedCallback = activeDevice.endedCallback;
+    const trackMuteCallback = activeDevice.trackMuteCallback;
+    const trackUnmuteCallback = activeDevice.trackUnmuteCallback;
 
     for (const track of activeDevice.stream.getTracks()) {
       track.stop();
@@ -791,9 +807,19 @@ export default class DefaultDeviceController
       /* istanbul ignore else */
       if (endedCallback) {
         track.removeEventListener('ended', endedCallback);
-        delete activeDevice.endedCallback;
+      }
+      /* istanbul ignore else */
+      if (trackMuteCallback) {
+        track.removeEventListener('mute', trackMuteCallback);
+      }
+      /* istanbul ignore else */
+      if (trackUnmuteCallback) {
+        track.removeEventListener('unmute', trackUnmuteCallback);
       }
 
+      delete activeDevice.endedCallback;
+      delete activeDevice.trackMuteCallback;
+      delete activeDevice.trackUnmuteCallback;
       delete this.activeDevices[kind];
     }
   }
@@ -811,24 +837,44 @@ export default class DefaultDeviceController
 
     // This function is called from `CleanStoppedSessionTask` using the
     // session state, which does not allow us to clean up any associated 'ended'
-    // callbacks in advance. Look here to see if we have any to clean up.
+    // or 'mute'/'unmute' callbacks in advance.
+    // Look here to see if we have any to clean up.
     for (const kind in this.activeDevices) {
       const activeDevice = this.activeDevices[kind];
       if (activeDevice?.stream !== mediaStreamToRelease) {
         continue;
       }
-      if (activeDevice.endedCallback) {
-        tracksToStop[0].removeEventListener('ended', activeDevice.endedCallback);
-        delete activeDevice.endedCallback;
-      }
-      delete this.activeDevices[kind];
 
-      if (
-        kind === 'video' &&
-        this.boundAudioVideoController?.videoTileController.hasStartedLocalVideoTile()
-      ) {
-        this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
+      switch (kind) {
+        case 'audio': {
+          for (const track of mediaStreamToRelease.getAudioTracks()) {
+            track.removeEventListener('mute', activeDevice.trackMuteCallback);
+            track.removeEventListener('unmute', activeDevice.trackUnmuteCallback);
+            track.removeEventListener('ended', activeDevice.endedCallback);
+          }
+          delete activeDevice.trackMuteCallback;
+          delete activeDevice.trackUnmuteCallback;
+          delete activeDevice.endedCallback;
+          break;
+        }
+        case 'video': {
+          const endedCallback = activeDevice.endedCallback;
+          if (endedCallback) {
+            for (const track of mediaStreamToRelease.getTracks()) {
+              track.removeEventListener('ended', activeDevice.endedCallback);
+            }
+            delete activeDevice.endedCallback;
+          }
+
+          const tileController = this.boundAudioVideoController?.videoTileController;
+          if (tileController?.hasStartedLocalVideoTile()) {
+            tileController.stopLocalVideoTile();
+          }
+          break;
+        }
       }
+
+      delete this.activeDevices[kind];
     }
   }
 
@@ -1305,6 +1351,7 @@ export default class DefaultDeviceController
     if (!device || !device.stream) {
       return;
     }
+
     if (device.endedCallback) {
       const track = device.stream.getTracks()[0];
       // Safety.
@@ -1314,7 +1361,7 @@ export default class DefaultDeviceController
       }
     }
     delete device.endedCallback;
-    this.logger.debug(`Releasing active device ${JSON.stringify(device)}`);
+
     this.releaseMediaStream(device.stream);
     delete device.stream;
   }
@@ -1389,7 +1436,7 @@ export default class DefaultDeviceController
       if (kind === 'audio') {
         this.releaseActiveDevice(this.activeDevices[kind]);
       } else if (kind === 'video') {
-        this.stopTracksAndRemoveCallback('video');
+        this.stopTracksAndRemoveCallbacks('video');
         delete this.activeDevices[kind];
       }
     }
@@ -1422,7 +1469,10 @@ export default class DefaultDeviceController
         }
 
         await this.handleDeviceChange();
+
+        // We only monitor the first track, and use its device ID for observer notifications.
         const track = newDevice.stream.getTracks()[0];
+
         newDevice.endedCallback = (): void => {
           // Hard to test, but the safety check is worthwhile.
           /* istanbul ignore else */
@@ -1440,6 +1490,23 @@ export default class DefaultDeviceController
         kind,
         this.getMediaTrackSettings(newDevice.stream)?.deviceId || ''
       );
+
+      if (kind === 'audio') {
+        // We only monitor the first track, and use its device ID for observer notifications.
+        const track = newDevice.stream.getAudioTracks()[0];
+        if (track) {
+          const id = track.getSettings().deviceId || newDevice.stream;
+
+          newDevice.trackMuteCallback = (): void => {
+            this.mediaStreamMuteObserver(id, true);
+          };
+          newDevice.trackUnmuteCallback = (): void => {
+            this.mediaStreamMuteObserver(id, false);
+          };
+          track.addEventListener('mute', newDevice.trackMuteCallback, { once: false });
+          track.addEventListener('unmute', newDevice.trackUnmuteCallback, { once: false });
+        }
+      }
     } catch (error) {
       let errorMessage: string;
       if (error?.name && error.message) {
@@ -1499,6 +1566,18 @@ export default class DefaultDeviceController
 
     this.logger.info(`got ${kind} device for constraints ${JSON.stringify(proposedConstraints)}`);
     await this.handleNewInputDevice(kind, newDevice, fromAcquire, fromVideoTransformDevice);
+
+    // Notify the device mute state immediately after selection.
+    if (kind === 'audio') {
+      this.logger.debug('Notifying mute state after selection');
+      for (const track of newDevice.stream.getAudioTracks()) {
+        if (track.muted) {
+          newDevice.trackMuteCallback();
+        } else {
+          newDevice.trackUnmuteCallback();
+        }
+      }
+    }
     return;
   }
 
