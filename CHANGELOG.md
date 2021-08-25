@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix priority-based downlink policy to not unpaused tiles that are not paused by the policy.
 - Fix empty video tiles when using priority-based downlink policy.
+- Fix simulcast guide that adaptive probe downlink policy is not enabled by default.
 
 ## [2.16.1] - 2021-08-23
 
