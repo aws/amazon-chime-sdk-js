@@ -18,7 +18,9 @@ import { wait as delay } from '../../src/utils/Utils';
 import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import VideoTile from '../../src/videotile/VideoTile';
+import VideoTileState from '../../src/videotile/VideoTileState';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
+import VideoTileController from '../../src/videotilecontroller/VideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';
@@ -271,12 +273,7 @@ describe('CreatePeerConnectionTask', () => {
         expect(addVideoTileSpy.called).to.be.false;
       });
 
-      it('ignore track event when attendee ID already associated with tile', async () => {
-        const addVideoTileSpy: sinon.SinonSpy = sinon.spy(
-          context.videoTileController,
-          'addVideoTile'
-        );
-
+      it('ignore track event when attendee ID already associated with tile with bound stream', async () => {
         let called = false;
 
         const attendeeIdForTrack = 'attendee-id';
@@ -288,23 +285,163 @@ describe('CreatePeerConnectionTask', () => {
         context.videoStreamIndex = new TestVideoStreamIndex(logger);
 
         class TestVideoTileController extends DefaultVideoTileController {
-          haveVideoTileForAttendeeId(attendeeId: string): boolean {
+          getVideoTileForAttendeeId(attendeeId: string): VideoTile | undefined {
             expect(attendeeId).to.equal(attendeeIdForTrack);
             called = true;
-            return true;
+            return super.getVideoTileForAttendeeId(attendeeId);
           }
         }
-        context.videoTileController = new TestVideoTileController(
+        const videoTileController = new TestVideoTileController(
           new DefaultVideoTileFactory(),
           context.audioVideoController,
           logger
         );
+
+        context.videoTileController = videoTileController;
+        const tile = videoTileController.addVideoTile();
+        tile.bindVideoStream(attendeeIdForTrack, false, new MediaStream(), 0, 0, 0, '');
+
+        const addVideoTileSpy: sinon.SinonSpy = sinon.spy(videoTileController, 'addVideoTile');
+        const bindVideoStreamSpy = sinon.spy(tile, 'bindVideoStream');
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
         await delay(domMockBehavior.asyncWaitMs + 10);
         expect(called).to.be.true;
         expect(addVideoTileSpy.called).to.be.false;
+        expect(bindVideoStreamSpy.called).to.be.false;
+        addVideoTileSpy.restore();
+        bindVideoStreamSpy.restore();
+      });
+
+      it('bind video stream even when attendee ID already associated with tile with no stream', async () => {
+        let called = false;
+
+        const attendeeIdForTrack = 'attendee-id';
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+
+        class TestVideoTileController extends DefaultVideoTileController {
+          getVideoTileForAttendeeId(attendeeId: string): VideoTile | undefined {
+            expect(attendeeId).to.equal(attendeeIdForTrack);
+            called = true;
+            return super.getVideoTileForAttendeeId(attendeeId);
+          }
+        }
+        const videoTileController = new TestVideoTileController(
+          new DefaultVideoTileFactory(),
+          context.audioVideoController,
+          logger
+        );
+
+        context.videoTileController = videoTileController;
+        const tile = videoTileController.addVideoTile();
+        tile.bindVideoStream(attendeeIdForTrack, false, null, 0, 0, 0, '');
+
+        const addVideoTileSpy: sinon.SinonSpy = sinon.spy(videoTileController, 'addVideoTile');
+        const bindVideoStreamSpy = sinon.spy(tile, 'bindVideoStream');
+
+        await task.run();
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+        await delay(domMockBehavior.asyncWaitMs + 10);
+        expect(called).to.be.true;
+        expect(addVideoTileSpy.called).to.be.false;
+        expect(bindVideoStreamSpy.called).to.be.true;
+        addVideoTileSpy.restore();
+        bindVideoStreamSpy.restore();
+      });
+
+      it('Fall back to use haveVideoTileForAttendeeId if getVideoTileForAttendeeId is not implemented', async () => {
+        let hasVideoTileCalled = false;
+        let addVideoTileCalled = false;
+
+        const attendeeIdForTrack = 'attendee-id';
+        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+          attendeeIdForTrack(_trackId: string): string {
+            return attendeeIdForTrack;
+          }
+        }
+        context.videoStreamIndex = new TestVideoStreamIndex(logger);
+
+        class TestVideoTileController implements VideoTileController {
+          haveVideoTileForAttendeeId(attendeeId: string): boolean {
+            expect(attendeeId).to.equal(attendeeIdForTrack);
+            hasVideoTileCalled = true;
+            return true;
+          }
+
+          addVideoTile(): VideoTile {
+            addVideoTileCalled = true;
+            return undefined;
+          }
+
+          bindVideoElement(_tileId: number, _videoElement: HTMLVideoElement): void {}
+
+          getAllRemoteVideoTiles(): VideoTile[] {
+            return [];
+          }
+
+          getAllVideoTiles(): VideoTile[] {
+            return [];
+          }
+
+          getLocalVideoTile(): VideoTile | null {
+            return undefined;
+          }
+
+          getVideoTile(_tileId: number): VideoTile | null {
+            return undefined;
+          }
+
+          getVideoTileArea(_tile: VideoTile): number {
+            return 0;
+          }
+
+          hasStartedLocalVideoTile(): boolean {
+            return false;
+          }
+
+          haveVideoTilesWithStreams(): boolean {
+            return false;
+          }
+
+          pauseVideoTile(_tileId: number): void {}
+
+          removeAllVideoTiles(): void {}
+
+          removeLocalVideoTile(): void {}
+
+          removeVideoTile(_tileId: number): void {}
+
+          removeVideoTilesByAttendeeId(_attendeeId: string): number[] {
+            return [];
+          }
+
+          sendTileStateUpdate(_tileState: VideoTileState): void {}
+
+          startLocalVideoTile(): number {
+            return 0;
+          }
+
+          stopLocalVideoTile(): void {}
+
+          unbindVideoElement(_tileId: number): void {}
+
+          unpauseVideoTile(_tileId: number): void {}
+        }
+
+        const videoTileController = new TestVideoTileController();
+        context.videoTileController = videoTileController;
+
+        await task.run();
+        await context.peer.setRemoteDescription(videoRemoteDescription);
+        await delay(domMockBehavior.asyncWaitMs + 10);
+        expect(hasVideoTileCalled).to.be.true;
+        expect(addVideoTileCalled).to.be.false;
       });
 
       it('can have a stream ID', async () => {

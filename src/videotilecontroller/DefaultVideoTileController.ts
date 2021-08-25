@@ -206,13 +206,17 @@ export default class DefaultVideoTileController implements VideoTileController {
   }
 
   haveVideoTileForAttendeeId(attendeeId: string): boolean {
+    return !!this.getVideoTileForAttendeeId(attendeeId);
+  }
+
+  getVideoTileForAttendeeId(attendeeId: string): VideoTile | undefined {
     for (const tile of this.getAllVideoTiles()) {
       const state = tile.state();
       if (state.boundAttendeeId === attendeeId) {
-        return true;
+        return tile;
       }
     }
-    return false;
+    return undefined;
   }
 
   captureVideoTile(tileId: number): ImageData | null {

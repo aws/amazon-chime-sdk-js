@@ -762,8 +762,11 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
             // Create a tile for this participant if one doesn't already exist and mark it as paused
             // Don't include it in the chosen streams because we don't want to subscribe for it then have to pause it.
             const newTile = this.tileController.addVideoTile();
-            newTile.pause();
             newTile.bindVideoStream(preference.attendeeId, false, null, 0, 0, 0, null);
+            this.forEachObserver(observer => {
+              observer.tileWillBePausedByDownlinkPolicy(newTile.id());
+            });
+            newTile.pause();
             this.logger.info(
               `bwe: Created video tile ${newTile.id()} for bw paused attendee ${
                 preference.attendeeId

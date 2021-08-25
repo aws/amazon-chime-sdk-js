@@ -130,6 +130,12 @@ export default interface VideoTileController {
   haveVideoTileForAttendeeId(attendeeId: string): boolean;
 
   /**
+   * Returns the video tile associated with the given attendeeId
+   * @param attendeeId The attendeeId to retrieve the video tile
+   */
+  getVideoTileForAttendeeId?(attendeeId: string): VideoTile | undefined;
+
+  /**
    * This can be used to capture the image data for a given tile.
    */
   captureVideoTile?(tileId: number): ImageData | null;
