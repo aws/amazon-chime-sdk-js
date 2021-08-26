@@ -26,6 +26,10 @@ export default class DefaultVideoStreamIdSet implements VideoStreamIdSet {
     return this.ids.has(streamId);
   }
 
+  forEach(callbackFn: (streamId: number) => void): void {
+    this.ids.forEach(callbackFn);
+  }
+
   empty(): boolean {
     return this.ids.size === 0;
   }

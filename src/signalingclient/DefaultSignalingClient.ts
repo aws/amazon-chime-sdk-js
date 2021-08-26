@@ -165,7 +165,7 @@ export default class DefaultSignalingClient implements SignalingClient {
   private covertVideoSubscriptionConfiguration(
     config: SignalingClientVideoSubscriptionConfiguration
   ): SdkVideoSubscriptionConfiguration {
-    const signalConfig: SdkVideoSubscriptionConfiguration = new SdkVideoSubscriptionConfiguration();
+    const signalConfig = new SdkVideoSubscriptionConfiguration();
     signalConfig.mid = config.mid;
     signalConfig.attendeeId = config.attendeeId;
     signalConfig.streamId = config.streamId;

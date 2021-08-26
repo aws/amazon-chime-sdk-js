@@ -741,26 +741,21 @@ export default class DefaultAudioVideoController
     });
   }
 
-  update(options?: { needsRenegotiation?: boolean }): boolean {
-    let needsRenegotiation = false;
-    if (options?.needsRenegotiation === undefined) {
-      needsRenegotiation = true;
-    }
-    needsRenegotiation ||= options?.needsRenegotiation || needsRenegotiation;
+  update(options: { needsRenegotiation: boolean } = { needsRenegotiation: true }): boolean {
+    let needsRenegotiation = options.needsRenegotiation;
 
     // Check in case this function has been called before peer connection is set up
     // since that is necessary to try to update remote videos without the full resubscribe path
     needsRenegotiation ||= this.meetingSessionContext.peer === undefined;
     // If updating remote video without negotiation fails, fall back to renegotiation
-    needsRenegotiation ||= !this.updateRemoteVideosFromPolicy();
+    needsRenegotiation ||= !this.updateRemoteVideosFromLastVideosToReceive();
     // `MeetingSessionContext.lastVideosToReceive` needs to be updated regardless
     this.meetingSessionContext.lastVideosToReceive = this.meetingSessionContext.videosToReceive;
     if (!needsRenegotiation) {
       this.logger.info('Update request does not require resubscribe');
       return true; // Skip the subscribe!
-    } else {
-      this.logger.info('Update request requires resubscribe');
     }
+    this.logger.info('Update request requires resubscribe');
 
     const result = this.sessionStateController.perform(SessionStateControllerAction.Update, () => {
       this.actionUpdateWithRenegotiation(true);
@@ -771,17 +766,29 @@ export default class DefaultAudioVideoController
     );
   }
 
-  private updateRemoteVideosFromPolicy(): boolean {
+  // This function will try to use the diff between `this.meetingSessionContext.lastVideosToReceive`
+  // and `this.meetingSessionContext.videosToReceive` to determine if the changes can be accomplished
+  // through `SignalingClient.remoteVideoUpdate` rather then the full subscribe.
+  //
+  // It requires the caller to manage `this.meetingSessionContext.lastVideosToReceive`
+  // and `this.meetingSessionContext.videosToReceive` so that `this.meetingSessionContext.lastVideosToReceive`
+  // contains the stream IDs from either last time a subscribe was set, or last time this function was set.
+  //
+  // It will return true if succesful, if false the caller must fall back to a full renegotiation
+  private updateRemoteVideosFromLastVideosToReceive(): boolean {
     const context = this.meetingSessionContext;
     if (context.videosToReceive?.empty() || context.lastVideosToReceive?.empty()) {
       return false;
     }
 
-    // `getMidForStreamId` is optional for backwards compatability but necessary for this function
+    // Check existence of all required dependencies and requisite functions
     if (
       !context.transceiverController ||
       !context.transceiverController.getMidForStreamId ||
-      !context.transceiverController.setMidForStreamId
+      !context.transceiverController.setMidForStreamId ||
+      !context.videosToReceive.forEach ||
+      !context.signalingClient.remoteVideoUpdate ||
+      !context.videoStreamIndex.overrideStreamIdMappings
     ) {
       return false;
     }
@@ -793,26 +800,25 @@ export default class DefaultAudioVideoController
     if (context.lastVideosToReceive === null) {
       added = context.videosToReceive.array();
     } else {
-      const index = this.meetingSessionContext.videoStreamIndex;
-      for (const currentId of context.videosToReceive.array()) {
+      const index = context.videoStreamIndex;
+      context.videosToReceive.forEach((currentId: number) => {
         if (context.lastVideosToReceive.contain(currentId)) {
-          continue;
+          return;
         }
 
         // Check if group ID exists in previous set (i.e. simulcast stream switch)
         let foundUpdatedPreviousStreamId = false;
-        for (const previousId of context.lastVideosToReceive.array()) {
+        context.lastVideosToReceive.forEach((previousId: number) => {
           if (index.StreamIdsInSameGroup(previousId, currentId)) {
             simulcastStreamUpdates.set(previousId, currentId);
             foundUpdatedPreviousStreamId = true;
-            break;
           }
-        }
+        });
         if (!foundUpdatedPreviousStreamId) {
           // Otherwise this must be a new stream
           added.push(currentId);
         }
-      }
+      });
       removed = context.lastVideosToReceive.array().filter(idFromPrevious => {
         const stillReceiving = context.videosToReceive
           .array()
@@ -827,13 +833,11 @@ export default class DefaultAudioVideoController
       ]}, removed: ${removed}`
     );
 
-    const updatedVideoSubscriptionConfigurations: SignalingClientVideoSubscriptionConfiguration[] = new Array();
+    const updatedVideoSubscriptionConfigurations: SignalingClientVideoSubscriptionConfiguration[] = [];
     for (const [previousId, currentId] of simulcastStreamUpdates.entries()) {
       const updatedConfig = new SignalingClientVideoSubscriptionConfiguration();
       updatedConfig.streamId = currentId;
-      updatedConfig.attendeeId = this.meetingSessionContext.videoStreamIndex.attendeeIdForStreamId(
-        currentId
-      );
+      updatedConfig.attendeeId = context.videoStreamIndex.attendeeIdForStreamId(currentId);
       updatedConfig.mid = context.transceiverController.getMidForStreamId(previousId);
       if (updatedConfig.mid === undefined) {
         this.logger.info(
@@ -844,7 +848,7 @@ export default class DefaultAudioVideoController
       updatedVideoSubscriptionConfigurations.push(updatedConfig);
       // We need to override some other components dependent on the subscribe paths for certain functionality
       context.transceiverController.setMidForStreamId(currentId, updatedConfig.mid);
-      this.meetingSessionContext.videoStreamIndex.overrideStreamIdMappings(previousId, currentId);
+      context.videoStreamIndex.overrideStreamIdMappings(previousId, currentId);
     }
     if (updatedVideoSubscriptionConfigurations.length !== 0) {
       context.signalingClient.remoteVideoUpdate(updatedVideoSubscriptionConfigurations, []);

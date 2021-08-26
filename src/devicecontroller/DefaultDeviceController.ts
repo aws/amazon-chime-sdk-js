@@ -522,7 +522,7 @@ export default class DefaultDeviceController
       if (this.boundAudioVideoController.replaceLocalVideo) {
         this.restartLocalVideoAfterSelection(false, true);
       } else {
-        // Non-optimal path for backwards compatability with self implementated controller which will require renegotiation
+        // Non-optimal path for backwards compatibility with self implemented controller which will require renegotiation
         await this.boundAudioVideoController.update({ needsRenegotiation: true });
       }
     }

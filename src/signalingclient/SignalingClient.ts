@@ -76,7 +76,7 @@ export default interface SignalingClient {
    * @param addedOrUpdated Added or updated configurations, see note above.
    * @param removedMids List of MIDs to remove
    */
-  remoteVideoUpdate(
+  remoteVideoUpdate?(
     addedOrUpdated: SignalingClientVideoSubscriptionConfiguration[],
     removedMids: string[]
   ): void;
