@@ -77,8 +77,10 @@
 					The uplink policy controls the configuration of the renditions through camera capture and encoding parameters. The simulcast-enabled uplink policy is <a href="https://aws.github.io/amazon-chime-sdk-js/classes/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>.</p>
 					<p>Simulcast is currently disabled by default. To enable it <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers">MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers</a> and <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers">MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers</a> must both be set. With those set to true, the simulcast uplink policy will be automatically selected. We currently do not allow overriding the uplink policy when enable simulcast is set to true. Currently, only Chrome 76 and above is supported.</p>
 					<p>The <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a>
-						downlink policy adaptively subscribes to the best simulcast layer and should be used instead of the default
-					<a href="https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html">AllHighestDownlinkPolicy</a>.</p>
+						downlink policy adaptively subscribes to the best simulcast layer and should be used instead of the default downlink
+						policy. The default downlink policy [AllHighestDownlinkPolicy](<a href="https://aws.github">https://aws.github</a>.
+						io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html) just subscribes to the highest video stream
+					available and does not choose optimal simulcast layer according to bandwidth condition.</p>
 					<p>If you want more fine-grained control of which simulcast layer to subscribe, please use <a href="https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy">VideoPriorityBasedPolicy</a>. More details about priority-based downlink policy can be
 					found <a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html">here</a>.</p>
 					<a href="#details" id="details" style="color: inherit; text-decoration: none;">
