@@ -351,7 +351,7 @@
         </div>
       </div>
       <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start" data-toggle="button" aria-pressed="false" autocomplete="off">
-        ${require('../../node_modules/open-iconic/svg/caret-right.svg').default}
+        <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
       </button>
     </div>
   </div>
@@ -378,7 +378,7 @@
       <div class="col-8 col-lg-6 order-2 order-lg-2 text-left text-lg-center">
         <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
           <button id="button-microphone" type="button" class="btn btn-success" title="Toggle microphone">
-            ${require('../../node_modules/open-iconic/svg/microphone.svg').default}
+            <%= require('../../node_modules/open-iconic/svg/microphone.svg') %>
           </button>
           <div class="btn-group" role="group">
             <button id="button-microphone-drop" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select microphone"></button>
@@ -389,7 +389,7 @@
         </div>
         <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle camera">
           <button id="button-camera" type="button" class="btn btn-success" title="Toggle camera">
-            ${require('../../node_modules/open-iconic/svg/video.svg').default}
+            <%= require('../../node_modules/open-iconic/svg/video.svg') %>
           </button>
           <div class="btn-group" role="group">
             <button id="button-camera-drop" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select camera"></button>
@@ -400,7 +400,7 @@
         </div>
         <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Apply filter">
           <button id="button-video-filter" type="button" class="btn btn-success" title="Apply filter">
-            ${require('../../node_modules/open-iconic/svg/contrast.svg').default}
+            <%= require('../../node_modules/open-iconic/svg/contrast.svg') %>
           </button>
           <div class="btn-group" role="group">
             <button id="button-video-filter-drop" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
@@ -411,7 +411,7 @@
         </div>
         <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle content share">
           <button id="button-content-share" type="button" class="btn btn-success" title="Toggle content share">
-            ${require('../../node_modules/open-iconic/svg/camera-slr.svg').default}
+            <%= require('../../node_modules/open-iconic/svg/camera-slr.svg') %>
           </button>
           <div class="btn-group" role="group">
             <button id="button-content-share-drop" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select content to share"></button>
@@ -424,11 +424,11 @@
           </div>
         </div>
         <button id="button-pause-content-share" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Pause and unpause content share">
-          ${require('../../node_modules/open-iconic/svg/media-pause.svg').default}
+          <%= require('../../node_modules/open-iconic/svg/media-pause.svg') %>
         </button>
         <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle speaker">
           <button id="button-speaker" type="button" class="btn btn-success" title="Toggle speaker">
-            ${require('../../node_modules/open-iconic/svg/volume-low.svg').default}
+            <%= require('../../node_modules/open-iconic/svg/volume-low.svg') %>
           </button>
           <div class="btn-group" role="group">
             <button id="button-speaker-drop" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
@@ -438,24 +438,24 @@
           </div>
         </div>
         <button id="button-live-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle live transcription display" data-toggle="button" aria-pressed="false" autocomplete="off" style="display: none">
-          ${require('../../node_modules/open-iconic/svg/code.svg').default}
+          <%= require('../../node_modules/open-iconic/svg/code.svg') %>
         </button>
         <button id="button-video-stats" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle video WebRTC stats display" data-toggle="button" aria-pressed="false" autocomplete="off">
-          ${require('../../node_modules/open-iconic/svg/signal.svg').default}
+          <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
         </button>
         <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Record my audio and video" data-toggle="button" aria-pressed="false" autocomplete="off">
-          <svg><circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle></svg>
+          <svg class="svg"><circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle></svg>
         </button>
         <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Capture audio and video in the cloud" data-toggle="button" aria-pressed="false" autocomplete="off">
-          ${require('../../node_modules/open-iconic/svg/cloud-upload.svg').default}
+          <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
         </button>
       </div>
       <div class="col-4 col-lg-3 order-3 order-lg-3 text-right text-lg-right">
         <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4" title="Leave meeting">
-          ${require('../../node_modules/open-iconic/svg/account-logout.svg').default}
+          <%= require('../../node_modules/open-iconic/svg/account-logout.svg') %>
         </button>
         <button id="button-meeting-end" type="button" class="btn btn-outline-danger mx-1 mx-xl-2 my-2 px-4" title="End meeting">
-          ${require('../../node_modules/open-iconic/svg/power-standby.svg').default}
+          <%= require('../../node_modules/open-iconic/svg/power-standby.svg') %>
         </button>
       </div>
     </div>
