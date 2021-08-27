@@ -241,7 +241,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L78">src/sdp/SDP.ts:78</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L81">src/sdp/SDP.ts:81</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -263,7 +263,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L68">src/sdp/SDP.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L71">src/sdp/SDP.ts:71</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -285,7 +285,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L73">src/sdp/SDP.ts:73</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L76">src/sdp/SDP.ts:76</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -335,19 +335,21 @@
 					<a name="withbandwidthrestriction" class="tsd-anchor"></a>
 					<h3>with<wbr>Bandwidth<wbr>Restriction</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">with<wbr>Bandwidth<wbr>Restriction<span class="tsd-signature-symbol">(</span>maxBitrateKbps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, isUnifiedPlan<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
+						<li class="tsd-signature tsd-kind-icon">with<wbr>Bandwidth<wbr>Restriction<span class="tsd-signature-symbol">(</span>maxBitrateKbps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, isFirefox<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L58">src/sdp/SDP.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L61">src/sdp/SDP.ts:61</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Inserts a bandwidth limitation attribute to answer SDP for setRemoteDescription and limiting client outbound maximum bitrate</p>
+									<p>Deprecated: <code>RTCRtpSender.setParameters</code> has supported setting bitrates for a while and
+									we no longer use this function in other areas of the SDK. Should remove when possible.</p>
 								</div>
+								<p>Inserts a bandwidth limitation attribute to answer SDP for setRemoteDescription and limiting client outbound maximum bitrate</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -355,7 +357,7 @@
 									<h5>maxBitrateKbps: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>isUnifiedPlan: <span class="tsd-signature-type">boolean</span></h5>
+									<h5>isFirefox: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="sdp.html" class="tsd-signature-type">SDP</a></h4>
@@ -394,7 +396,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L63">src/sdp/SDP.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/sdp/SDP.ts#L66">src/sdp/SDP.ts:66</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
