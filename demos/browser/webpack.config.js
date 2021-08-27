@@ -3,8 +3,8 @@
 
 /* eslint-disable */
 var webpack = require('webpack');
-var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 /* eslint-enable */
 
 module.exports = env => {
@@ -42,7 +42,7 @@ module.exports = env => {
         filename: __dirname + `/dist/${app}.html`,
         inject: 'head',
       }),
-      new HtmlWebpackInlineSourcePlugin(),
+      new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [new RegExp(`${app}`)]),
       new webpack.EnvironmentPlugin({
         IS_LOCAL: process.env.npm_config_is_local === 'true' ? 'true' : 'false'
       })
@@ -62,7 +62,7 @@ module.exports = env => {
       rules: [
         {
           test: /\.(svg)$/,
-          loader: 'raw-loader',
+          type: 'asset/source'
         },
         {
           test: /\.(scss)$/,
