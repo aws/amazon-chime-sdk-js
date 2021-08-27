@@ -190,13 +190,14 @@ export default class DefaultSDP implements SDP {
     return this.withoutCandidateType(SDPCandidateType.ServerReflexive);
   }
 
-  withBandwidthRestriction(maxBitrateKbps: number, isUnifiedPlan: boolean): DefaultSDP {
+  withBandwidthRestriction(maxBitrateKbps: number, isFirefox: boolean): DefaultSDP {
     const srcLines: string[] = this.lines();
     const dstLines: string[] = [];
     for (const line of srcLines) {
       dstLines.push(line);
       if (/^m=video/.test(line)) {
-        if (isUnifiedPlan) {
+        if (isFirefox) {
+          // https://bugzilla.mozilla.org/show_bug.cgi?id=1359854
           dstLines.push(`b=TIAS:${maxBitrateKbps * 1000}`);
         } else {
           dstLines.push(`b=AS:${maxBitrateKbps}`);

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Clarify why not use default downlink policy with simulcast.
+- Corrected argument `isUnifiedPlan` in `withBandwidthRestriction` to `isFirefox`. Also marked as deprecated since we no longer use it.
 
 ### Removed
 

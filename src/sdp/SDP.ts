@@ -53,9 +53,12 @@ export default interface SDP {
   withAudioMaxAverageBitrate(maxAverageBitrate: number): SDP;
 
   /**
+   * Deprecated: `RTCRtpSender.setParameters` has supported setting bitrates for a while and
+   * we no longer use this function in other areas of the SDK. Should remove when possible.
+   *
    * Inserts a bandwidth limitation attribute to answer SDP for setRemoteDescription and limiting client outbound maximum bitrate
    */
-  withBandwidthRestriction(maxBitrateKbps: number, isUnifiedPlan: boolean): SDP;
+  withBandwidthRestriction(maxBitrateKbps: number, isFirefox: boolean): SDP;
 
   /**
    * Munges Unified-Plan SDP from different browsers to conform to one format
