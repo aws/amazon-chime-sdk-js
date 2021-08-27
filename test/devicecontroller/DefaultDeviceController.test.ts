@@ -113,6 +113,22 @@ describe('DefaultDeviceController', () => {
     }
   });
 
+  describe('broken', () => {
+    it('does not break things when failing to init.', async () => {
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.mediaDevicesSupported = false;
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      const ddc = new DefaultDeviceController(logger);
+
+      const obs: DeviceChangeObserver = {};
+      await ddc.addDeviceChangeObserver(obs);
+      await ddc.removeDeviceChangeObserver(obs);
+
+      ddc.destroy();
+    });
+  });
+
   describe('constructor', () => {
     it('can be constructed without navigator.mediaDevices', () => {
       domMockBehavior = new DOMMockBehavior();

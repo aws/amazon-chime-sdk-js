@@ -7,6 +7,7 @@ import type { NodeArguments } from '../../libs/voicefocus/voicefocus';
 import { VoiceFocus } from '../../libs/voicefocus/voicefocus';
 import type Device from '../devicecontroller/Device';
 import Logger from '../logger/Logger';
+import { isIFramed } from '../utils/Utils';
 import Versioning from '../versioning/Versioning';
 import type AssetSpec from './AssetSpec';
 import LoggerAdapter from './LoggerAdapter';
@@ -81,11 +82,18 @@ export class VoiceFocusDeviceTransformer {
    *
    * @param spec An optional asset group and URL paths to use when fetching. You can pass
    *             a complete {@link VoiceFocusSpec} here for convenience, matching the signature of {@link VoiceFocusDeviceTransformer.create}.
-   * @param options Additional named arguments, including `logger`.
+   * @param options Additional named arguments, including `logger`. Set
+   *                `allowIFrame` to false to cause the support check to fail in
+   *                an iframe.
+   *                Chromium's security model means that audio processing works
+   *                poorly in iframes.
    */
   static isSupported(
     spec?: AssetSpec & { paths?: VoiceFocusPaths },
-    options?: { logger?: Logger }
+    options?: {
+      logger?: Logger;
+      allowIFrame?: boolean;
+    }
   ): Promise<boolean> {
     const fetchBehavior = VoiceFocusDeviceTransformer.defaultFetchBehavior();
     const logger = options?.logger ? new LoggerAdapter(options.logger) : undefined;
@@ -93,6 +101,18 @@ export class VoiceFocusDeviceTransformer {
       fetchBehavior,
       logger,
     };
+
+    // This is impossible to test in Node, so Istanbul ignore.
+    /* istanbul ignore next */
+    if (isIFramed()) {
+      if (options?.allowIFrame === false) {
+        options?.logger?.error('Amazon Voice Focus support check inside iframe: not supported.');
+        return Promise.resolve(false);
+      } else {
+        options?.logger?.warn('Amazon Voice Focus support check inside iframe: not recommended.');
+      }
+    }
+
     return VoiceFocus.isSupported(VoiceFocusDeviceTransformer.augmentSpec(spec), opts);
   }
 
