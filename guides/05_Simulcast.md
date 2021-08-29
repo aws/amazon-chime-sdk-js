@@ -7,8 +7,7 @@ Simulcast is currently disabled by default. To enable it [MeetingSessionConfigur
 
 The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) 
 downlink policy adaptively subscribes to the best simulcast layer and should be used instead of the default downlink 
-policy. The default downlink policy [AllHighestDownlinkPolicy](https://aws.github.
-io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html) just subscribes to the highest video stream 
+policy. The default downlink policy [AllHighestDownlinkPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html) just subscribes to the highest video stream 
 available and does not choose optimal simulcast layer according to bandwidth condition.
 
 If you want more fine-grained control of which simulcast layer to subscribe, please use [VideoPriorityBasedPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy). More details about priority-based downlink policy can be 
