@@ -31,7 +31,7 @@ WebRTC Unified Plan is also required. Unified Plan is by default enabled in [Mee
 |iOS Chrome                                                             |Not supported             
 |iOS Firefox                                                            |Not supported             
 
-## Video Processing APIs and Usage
+## Video Processing APIs
 
 ### VideoTransformDevice
 `VideoTransformDevice` allows `VideoFrameProcessor`s to be applied to to a `Device` and provide a new object which can be passed into `meetingSession.audioVideo.chooseVideoInputDevice`.
@@ -42,6 +42,7 @@ The `DefaultVideoTransformDevice` uses `VideoFrameProcessorPipeline` under the h
 #### Construction and Starting Video Processing
 
 The construction of the `DefaultVideoTransformDevice` will not start the camera or start processing. The method `meetingSession.audioVideo.chooseVideoInputDevice` is needed to be called. The device controller will use the inner `Device` to acquire the source `MediaStream` and start the processing pipeline at the same frame rate.
+"Inner device" in this context refers to the original video stream coming from the selected camera.
 The parameters to `chooseVideoInputQuality` are used as constraints on the source `MediaStream`. 
 After the video input is chosen, `meetingSession.audioVideo.startLocalVideoTile` can be called to start streaming video.
 
@@ -142,7 +143,8 @@ async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
 }
 ```
 
-Usage of the custom processor looks like the following:
+## Video Processing Usage
+### Custom processor usage during meeting
 
 ```typescript
 import {
@@ -160,4 +162,23 @@ const transformDevice = new DefaultVideoTransformDevice(
 await meetingSession.audioVideo.chooseVideoInputDevice(transformDevice);
 meetingSession.audioVideo.startLocalVideo();
 
+```
+
+### Custom processor usage during meeting preview
+
+```typescript
+import {
+  DefaultVideoTransformDevice
+} from 'amazon-chime-sdk-js';
+
+const processor = new VideoResizeProcessor(4/3);
+const videoElement = document.getElementById('video-preview') as HTMLVideoElement;
+const transformDevice = new DefaultVideoTransformDevice(
+  logger,
+  'foobar', // device id string
+  processor
+);
+
+await meetingSession.audioVideo.chooseVideoInputDevice(transformDevice);
+meetingSession.audioVideo.startVideoPreviewForVideoInput(videoElement);
 ```

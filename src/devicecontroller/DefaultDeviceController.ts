@@ -636,14 +636,28 @@ export default class DefaultDeviceController
       return;
     }
 
+    const stream = element.srcObject as MediaStream;
     // TODO: implement MediaDestroyer to provide single release MediaStream function
-    this.releaseMediaStream(element.srcObject as MediaStream);
-    DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
-    DefaultVideoTile.connectVideoStreamToVideoElement(
-      this.activeDevices['video'].stream,
-      element,
-      true
-    );
+    // The video stream should be released only if the video stream in the HTML element is different from current stream.
+    // When a filter is applied the existing stream is reused and in that case the stream should not be released.
+    if (stream && this.activeDevices['video'].stream !== stream) {
+      this.releaseMediaStream(element.srcObject as MediaStream);
+      DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
+    }
+
+    if (this.chosenVideoTransformDevice) {
+      DefaultVideoTile.connectVideoStreamToVideoElement(
+        this.chosenVideoTransformDevice.outputMediaStream,
+        element,
+        true
+      );
+    } else {
+      DefaultVideoTile.connectVideoStreamToVideoElement(
+        this.activeDevices['video'].stream,
+        element,
+        true
+      );
+    }
 
     this.trace('startVideoPreviewForVideoInput', element.id);
   }

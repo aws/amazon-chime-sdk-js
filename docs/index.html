@@ -279,6 +279,11 @@ npm run test
 				<p>Tags are fetched in order to correctly generate versioning metadata.</p>
 				<p>To view code coverage results open <code>coverage/index.html</code> in your browser
 				after running <code>npm run test</code>.</p>
+				<p>If you run <code>npm run test</code> and the tests are running but the coverage report is not getting generated
+					then you might have a resource clean up issue. In Mocha v4.0.0 or newer the implementation was changed so
+					that the Mocha processes will not force exit when the test run is complete. <br /> For example, if you have a
+					<code>DefaultVideoTransformDevice</code> in your unit test then you must call <code>await device.stop();</code> to clean up the
+				resources and not run into this issue. You can also look into the usage of <code>done();</code> in the <a href="https://mochajs.org/#asynchronous-code">Mocha documentation</a>. </p>
 				<a href="#generating-the-documentation" id="generating-the-documentation" style="color: inherit; text-decoration: none;">
 					<h2>Generating the documentation</h2>
 				</a>
