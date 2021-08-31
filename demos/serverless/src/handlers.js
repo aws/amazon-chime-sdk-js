@@ -170,7 +170,7 @@ exports.start_capture = async (event, context) => {
   }).promise();
   await putCapturePipeline(event.queryStringParameters.title, pipelineInfo)
 
-  response(response, 201, 'application/json', JSON.stringify(pipelineInfo));
+  return response(201, 'application/json', JSON.stringify(pipelineInfo));
 };
 
 exports.end_capture = async (event, context) => {
@@ -180,9 +180,9 @@ exports.end_capture = async (event, context) => {
     await chime.deleteMediaCapturePipeline({
       MediaPipelineId: pipelineInfo.MediaCapturePipeline.MediaPipelineId
     }).promise();
-    response(response, 200, 'application/json', JSON.stringify({}));
+    return response(200, 'application/json', JSON.stringify({}));
   } else {
-    response(response, 500, 'application/json', JSON.stringify({msg: "No pipeline to stop for this meeting"}))
+    return response(500, 'application/json', JSON.stringify({msg: "No pipeline to stop for this meeting"}))
   }
 };
 
