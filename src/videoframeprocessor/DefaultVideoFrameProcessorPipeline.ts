@@ -257,6 +257,7 @@ export default class DefaultVideoFrameProcessorPipeline implements VideoFramePro
     }
 
     // TODO: use requestAnimationFrame which is more organic and allows browser to conserve resources by its choices.
+    /* @ts-ignore */
     this.lastTimeOut = setTimeout(this.process, nextFrameDelay);
   };
 

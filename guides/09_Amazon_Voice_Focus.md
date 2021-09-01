@@ -111,6 +111,22 @@ Cross-Origin-Embedder-Policy: require-corp
 
 when serving your application HTML. These headers are optional but advised: they improve web security, as well as allowing the browser to support technologies like `SharedArrayBuffer`.
 
+## Frames
+
+Before attempting to use Amazon Voice Focus, make sure that your application is not running in an iframe. Browsers, particularly Chromium-based browsers like Chrome, Electron, and Edge, can restrict use of real-time scheduling in iframes (called "subframes" in Chromium). This results in choppy and unintelligible audio.
+
+You can check whether your page or application is running in a subframe by using Chromium's `about:tracing` page.
+
+1. Load your application as normal.
+2. Press **Record** in the tracing page.
+3. Choose "Manually select settings", click **None** on both sides, check `audio-worklet` and `webaudio.audionode` on the right side and `webaudio` on the left, then press **Record**.
+4. In your application, start audio and activate Amazon Voice Focus.
+5. Return to the tracing page and press **Stop**.
+6. Expand the "Renderer" row for your page in the main part of the window. Make sure you see "Realtime AudioWorklet thread".
+7. Click **Processes** in the top right. Make sure the one that shows your page title _does not_ say "Subframe".
+
+The Amazon Voice Focus support check in `VoiceFocusDeviceTransformer.isSupported` will warn to its provided logger if run in an iframe, and will report no support if `{ allowIFrame: false }` is provided as part of its options argument.
+
 ## Checking for support before offering noise suppression
 
 Some browsers support the Amazon Chime SDK but do not support Amazon Voice Focus. Additionally, some devices are not fast enough to keep up with real-time audio while suppressing noise.

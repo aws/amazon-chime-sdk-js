@@ -16,9 +16,10 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
         super(context, options.processor, options);
         this.channelCountMode = 'explicit';
         this.channelCount = 1;
-        const { modelURL, worker, fetchBehavior, logger, } = options;
+        const { modelURL, worker, fetchBehavior, logger, delegate, } = options;
         this.logger = logger;
         this.port.onmessage = this.onProcessorMessage.bind(this);
+        this.delegate = delegate;
         if (logger)
             logger.debug('VoiceFocusInlineNode:', modelURL);
         this.worker = worker;
@@ -54,13 +55,15 @@ class VoiceFocusInlineNode extends types_js_1.VoiceFocusAudioWorkletNode {
         });
     }
     onProcessorMessage(event) {
-        var _a;
+        var _a, _b, _c;
         const data = event.data;
         switch (data.message) {
             case 'cpu':
+                (_a = this.logger) === null || _a === void 0 ? void 0 : _a.warn('CPU warning:', data.message);
+                (_b = this.delegate) === null || _b === void 0 ? void 0 : _b.onCPUWarning();
                 break;
             default:
-                (_a = this.logger) === null || _a === void 0 ? void 0 : _a.debug('Ignoring processor message.');
+                (_c = this.logger) === null || _c === void 0 ? void 0 : _c.debug('Ignoring processor message.');
         }
     }
     onWorkerMessage(event) {
