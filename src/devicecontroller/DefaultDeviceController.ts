@@ -1285,6 +1285,7 @@ export default class DefaultDeviceController
       }
       return activeDeviceId;
     }
+
     /* istanbul ignore next */
     return null;
   }
@@ -1399,6 +1400,17 @@ export default class DefaultDeviceController
     return false;
   }
 
+  private setGroupIDFromStream(device: DeviceSelection, kind: string, stream: MediaStream): void {
+    const trackSettings = this.getMediaTrackSettings(stream);
+
+    if (trackSettings?.groupId !== undefined) {
+      device.groupId = trackSettings.groupId;
+    }
+
+    // A stream from a device will have both a `deviceId` and a `groupId`, so if
+    // there's no `groupId` here there's no point in calling `getGroupIdFromDeviceId`.
+  }
+
   private async chooseInputIntrinsicDevice(
     kind: string,
     device: Device,
@@ -1451,10 +1463,15 @@ export default class DefaultDeviceController
       if (kind === 'audio' && device === null) {
         newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
         newDevice.constraints = null;
+
+        // By definition, the null device has no group.
+        newDevice.groupId = '';
       } else if (stream) {
         this.logger.info(`using media stream ${stream.id} for ${kind} device`);
         newDevice.stream = stream;
         newDevice.constraints = proposedConstraints;
+
+        this.setGroupIDFromStream(newDevice, kind, stream);
       } else {
         newDevice.stream = await navigator.mediaDevices.getUserMedia(proposedConstraints);
         newDevice.constraints = proposedConstraints;
@@ -1485,11 +1502,10 @@ export default class DefaultDeviceController
           }
         };
         track.addEventListener('ended', newDevice.endedCallback, { once: true });
+
+        // Every stream that comes from a device will have a group ID.
+        this.setGroupIDFromStream(newDevice, kind, newDevice.stream);
       }
-      newDevice.groupId = this.getGroupIdFromDeviceId(
-        kind,
-        this.getMediaTrackSettings(newDevice.stream)?.deviceId || ''
-      );
 
       if (kind === 'audio') {
         // We only monitor the first track, and use its device ID for observer notifications.
@@ -1633,7 +1649,9 @@ export default class DefaultDeviceController
     const stream = this.intrinsicDeviceAsMediaStream(device);
     if (device === null) {
       return null;
-    } else if (typeof device === 'string') {
+    }
+
+    if (typeof device === 'string') {
       if (
         this.browserBehavior.requiresNoExactMediaStreamConstraints() &&
         this.browserBehavior.requiresGroupIdMediaStreamConstraints()

@@ -997,6 +997,22 @@ describe('DefaultDeviceController', () => {
       }
     });
 
+    it('allows you to choose a null device without logging', () => {
+      const e = sinon.spy(logger, 'error');
+      const i = sinon.spy(logger, 'info');
+      const w = sinon.spy(logger, 'warn');
+
+      deviceController.chooseAudioInputDevice(null);
+
+      expect(e.notCalled).to.be.true;
+      expect(i.called).to.be.true;
+      expect(w.notCalled).to.be.true;
+
+      e.restore();
+      i.restore();
+      w.restore();
+    });
+
     it('releases audio media stream when requesting default device and default is already active in chromium based browser', async () => {
       enableWebAudio(true);
       domMockBehavior.browserName = 'chrome';
