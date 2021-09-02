@@ -15,8 +15,8 @@ module.exports = env => {
   return {
     devServer: {
       hot: true,
-      dev: {
-        index: `${app}.html`,
+      devMiddleware: {
+        index: `${app}.html`
       },
       onListening: (server) => {
         // Just so that the code in server.js isn't confused about

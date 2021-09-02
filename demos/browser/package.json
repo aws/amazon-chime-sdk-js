@@ -8,7 +8,7 @@
     "build:fast": "npm run copy-assets && node script/webpack-wrapper.js",
     "build": "npm run deps && npm install && tsc && npm run build:fast",
     "start:fast": "npm run copy-assets && node script/webpack-wrapper.js --serve",
-    "start:hot": "npm run copy-assets && webpack-cli serve --config ./webpack.config.js",
+    "start:hot": "npm run copy-assets && webpack serve --config ./webpack.config.js",
     "start": "npm run deps && npm install && npm run start:fast"
   },
   "devDependencies": {
