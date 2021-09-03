@@ -286,7 +286,7 @@ export default class MonitorTask
       this.logger.info(`unusable audio warning is now: ${unusableAudioWarningValue}`);
       if (unusableAudioWarningValue === 0) {
         this.context.poorConnectionCount += 1;
-        this.context.eventController?.pushMeetingState('receivingAudioDropped');
+        this.context.eventController?.publishEvent('receivingAudioDropped');
         if (this.context.videoTileController.haveVideoTilesWithStreams()) {
           this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
             Maybe.of(observer.connectionDidSuggestStopVideo).map(f => f.bind(observer)());
@@ -345,7 +345,7 @@ export default class MonitorTask
       event.type === SignalingClientEventType.WebSocketFailed
     ) {
       if (!this.hasSignalingError) {
-        this.context.eventController?.pushMeetingState('signalingDropped');
+        this.context.eventController?.publishEvent('signalingDropped');
         this.hasSignalingError = true;
       }
     } else if (event.type === SignalingClientEventType.WebSocketOpen) {

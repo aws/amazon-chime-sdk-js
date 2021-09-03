@@ -13,6 +13,9 @@ type EventName =
   | 'audioInputFailed'
   | 'videoInputSelected'
   | 'videoInputUnselected'
-  | 'videoInputFailed';
+  | 'videoInputFailed'
+  | 'meetingReconnected'
+  | 'receivingAudioDropped'
+  | 'signalingDropped';
 
 export default EventName;

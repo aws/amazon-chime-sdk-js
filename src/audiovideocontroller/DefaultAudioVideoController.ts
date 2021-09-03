@@ -1016,7 +1016,7 @@ export default class DefaultAudioVideoController
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
         if (this.eventController) {
-          this.eventController.pushMeetingState('meetingReconnected');
+          this.eventController.publishEvent('meetingReconnected');
         }
         this.actionFinishConnecting();
       });

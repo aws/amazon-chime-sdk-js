@@ -10,11 +10,4 @@ import EventName from './EventName';
 type MeetingHistoryState =
   | EventName
 
-  // Meeting lifecycle
-  | 'meetingReconnected'
-
-  // Connectivity
-  | 'signalingDropped'
-  | 'receivingAudioDropped';
-
 export default MeetingHistoryState;

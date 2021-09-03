@@ -1514,6 +1514,9 @@ export class DemoMeetingApp
       case 'videoInputSelected':
       case 'audioInputUnselected':
       case 'videoInputUnselected':
+      case 'meetingReconnected':
+      case 'receivingAudioDropped':
+      case 'signalingDropped':
       case 'attendeePresenceReceived': {
         // Exclude the "meetingHistory" attribute for successful events.
         this.meetingEventPOSTLogger?.info(
