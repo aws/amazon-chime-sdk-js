@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix empty video tiles when using priority-based downlink policy.
 - Fix simulcast guide that adaptive probe downlink policy is not enabled by default.
 - Fix a link format in simulcast guide.
+- No longer put useless 'pin' and 'pause' buttons on local tile in demo.
 
 ## [2.16.1] - 2021-08-23
 
