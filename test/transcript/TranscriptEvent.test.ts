@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import Attendee from '../../src/attendee/Attendee';
 import DataMessage from '../../src/datamessage/DataMessage';
 import {
   SdkTranscriptEvent,
@@ -20,6 +21,8 @@ import {
   makeSdkTranscript,
   makeSdkTranscriptFrame,
   makeSdkTranscriptionStatus,
+  makeTranscript,
+  makeTranscriptionStatus,
   TRANSCRIPT_EVENT_TEST_VECTORS,
 } from './TranscriptEventTestDataHelper';
 
@@ -27,8 +30,47 @@ describe('TranscriptEvent', () => {
   const assert: Chai.AssertStatic = chai.assert;
   const expect: Chai.ExpectStatic = chai.expect;
 
-  function makeTranscriptDataMessageFrom(data: Uint8Array): DataMessage {
-    return new DataMessage(10000, TRANSCRIPTION_DATA_MESSAGE_TOPIC, data, '', '');
+  function makeTranscriptDataMessageFrom(
+    data: Uint8Array,
+    senderAttendeeId: string = '',
+    senderExternalUserId: string = ''
+  ): DataMessage {
+    return new DataMessage(
+      10000,
+      TRANSCRIPTION_DATA_MESSAGE_TOPIC,
+      data,
+      senderAttendeeId,
+      senderExternalUserId
+    );
+  }
+
+  function checkTranscriptEvent(actualEvent: Transcript): void {
+    expect(actualEvent.results.length).to.equal(1);
+    expect(actualEvent.results[0].alternatives.length).to.equal(1);
+    expect(actualEvent.results[0].alternatives[0].transcript).to.eql('Test.');
+    expect(actualEvent.results[0].alternatives[0].items.length).to.eql(2);
+    expect(actualEvent.results[0].alternatives[0].items[0].content).to.eql('Test');
+    expect(actualEvent.results[0].alternatives[0].items[0].type).to.eql(
+      TranscriptItemType.PRONUNCIATION
+    );
+    expect(actualEvent.results[0].alternatives[0].items[0].attendee.attendeeId).to.eql(
+      'speaker-attendee-id'
+    );
+    expect(actualEvent.results[0].alternatives[0].items[0].attendee.externalUserId).to.eql(
+      'speaker-external-user-id'
+    );
+    expect(actualEvent.results[0].alternatives[0].items[0].vocabularyFilterMatch).to.eql(true);
+    expect(actualEvent.results[0].alternatives[0].items[1].content).to.eql('.');
+    expect(actualEvent.results[0].alternatives[0].items[1].type).to.eql(
+      TranscriptItemType.PUNCTUATION
+    );
+    expect(actualEvent.results[0].alternatives[0].items[1].attendee.attendeeId).to.eql(
+      'speaker-attendee-id'
+    );
+    expect(actualEvent.results[0].alternatives[0].items[1].attendee.externalUserId).to.eql(
+      'speaker-external-user-id'
+    );
+    expect(actualEvent.results[0].alternatives[0].items[1].vocabularyFilterMatch).to.be.undefined;
   }
 
   beforeEach(async () => {});
@@ -148,33 +190,8 @@ describe('TranscriptEvent', () => {
       return;
     }
 
-    expect(actualEvents[0].results.length).to.equal(1);
-    expect(actualEvents[0].results[0].alternatives.length).to.equal(1);
-    expect(actualEvents[0].results[0].alternatives[0].transcript).to.eql('Test.');
-    expect(actualEvents[0].results[0].alternatives[0].items.length).to.eql(2);
-    expect(actualEvents[0].results[0].alternatives[0].items[0].content).to.eql('Test');
-    expect(actualEvents[0].results[0].alternatives[0].items[0].type).to.eql(
-      TranscriptItemType.PRONUNCIATION
-    );
-    expect(actualEvents[0].results[0].alternatives[0].items[0].attendee.attendeeId).to.eql(
-      'speaker-attendee-id'
-    );
-    expect(actualEvents[0].results[0].alternatives[0].items[0].attendee.externalUserId).to.eql(
-      'speaker-external-user-id'
-    );
-    expect(actualEvents[0].results[0].alternatives[0].items[0].vocabularyFilterMatch).to.eql(true);
-    expect(actualEvents[0].results[0].alternatives[0].items[1].content).to.eql('.');
-    expect(actualEvents[0].results[0].alternatives[0].items[1].type).to.eql(
-      TranscriptItemType.PUNCTUATION
-    );
-    expect(actualEvents[0].results[0].alternatives[0].items[1].attendee.attendeeId).to.eql(
-      'speaker-attendee-id'
-    );
-    expect(actualEvents[0].results[0].alternatives[0].items[1].attendee.externalUserId).to.eql(
-      'speaker-external-user-id'
-    );
-    expect(actualEvents[0].results[0].alternatives[0].items[1].vocabularyFilterMatch).to.be
-      .undefined;
+    checkTranscriptEvent(actualEvents[0]);
+    expect(actualEvents[0].results[0].editor).to.be.undefined;
   });
 
   it('handles multiple transcript event of mixed type', async () => {
@@ -198,6 +215,30 @@ describe('TranscriptEvent', () => {
     }
     expect(actualEvents[0].type).to.equal(TranscriptionStatusType.STARTED);
     expect(actualEvents[1].results[0].alternatives[0].transcript).to.be.equal('Test.');
+  });
+
+  it('handles manual transcript event', async () => {
+    const editor: Attendee = {
+      attendeeId: 'editor-attendee-id',
+      externalUserId: 'editor-external-user-id',
+    };
+
+    const dataMessage = makeTranscriptDataMessageFrom(
+      TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPT_SINGLE,
+      editor.attendeeId,
+      editor.externalUserId
+    );
+
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
+
+    expect(actualEvents.length).to.equal(1);
+    if (!(actualEvents[0] instanceof Transcript)) {
+      assert.fail();
+      return;
+    }
+
+    checkTranscriptEvent(actualEvents[0]);
+    expect(actualEvents[0].results[0].editor).to.eql(editor);
   });
 
   it('handles malformed data message', async () => {
@@ -226,5 +267,45 @@ describe('TranscriptEvent', () => {
     const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(0);
+  });
+
+  it('handles converting a transcript', async () => {
+    const event = makeTranscript();
+    const data = TranscriptEventConverter.toByteArray(event);
+
+    const editor = {
+      attendeeId: 'sender-attendee-id',
+      externalUserId: 'sender-external-user-id',
+    };
+    event.results[0].editor = editor;
+    event.results[0].channelId = '';
+
+    const mockMessage = new DataMessage(
+      1234567890,
+      TRANSCRIPTION_DATA_MESSAGE_TOPIC,
+      data,
+      editor.attendeeId,
+      editor.externalUserId,
+      false
+    );
+    const events = TranscriptEventConverter.from(mockMessage);
+    expect(events.length).to.equal(1);
+    expect(events[0]).to.eql(event);
+  });
+
+  it('handles converting a transcription status', async () => {
+    const event = makeTranscriptionStatus();
+    const data = TranscriptEventConverter.toByteArray(event);
+
+    const mockMessage = new DataMessage(
+      1234567890,
+      TRANSCRIPTION_DATA_MESSAGE_TOPIC,
+      data,
+      'sender-attendee-id',
+      'sender-external-user-id'
+    );
+    const events = TranscriptEventConverter.from(mockMessage);
+    expect(events.length).to.equal(1);
+    expect(events[0]).to.eql(event);
   });
 });

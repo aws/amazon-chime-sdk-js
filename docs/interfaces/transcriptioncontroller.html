@@ -87,6 +87,7 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transcriptioncontroller.html#sendtranscriptevent" class="tsd-kind-icon">send<wbr>Transcript<wbr>Event</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transcriptioncontroller.html#subscribetotranscriptevent" class="tsd-kind-icon">subscribe<wbr>ToTranscript<wbr>Event</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="transcriptioncontroller.html#unsubscribefromtranscriptevent" class="tsd-kind-icon">unsubscribe<wbr>From<wbr>Transcript<wbr>Event</a></li>
 							</ul>
@@ -96,6 +97,37 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="sendtranscriptevent" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> send<wbr>Transcript<wbr>Event</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">send<wbr>Transcript<wbr>Event<span class="tsd-signature-symbol">(</span>transcriptEvent<span class="tsd-signature-symbol">: </span><a href="../globals.html#transcriptevent" class="tsd-signature-type">TranscriptEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptionController.ts#L21">src/transcript/TranscriptionController.ts:21</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends a manual or corrected transcription to other attendees</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>transcriptEvent: <a href="../globals.html#transcriptevent" class="tsd-signature-type">TranscriptEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>TranscriptEvent to send</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="subscribetotranscriptevent" class="tsd-anchor"></a>
 					<h3>subscribe<wbr>ToTranscript<wbr>Event</h3>
@@ -205,6 +237,9 @@
 					<li class="current tsd-kind-interface">
 						<a href="transcriptioncontroller.html" class="tsd-kind-icon">Transcription<wbr>Controller</a>
 						<ul>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="transcriptioncontroller.html#sendtranscriptevent" class="tsd-kind-icon">send<wbr>Transcript<wbr>Event</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="transcriptioncontroller.html#subscribetotranscriptevent" class="tsd-kind-icon">subscribe<wbr>ToTranscript<wbr>Event</a>
 							</li>

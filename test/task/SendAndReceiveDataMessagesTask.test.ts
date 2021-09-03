@@ -18,6 +18,7 @@ import {
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol';
 import SendAndReceiveDataMessagesTask from '../../src/task/SendAndReceiveDataMessagesTask';
+import { MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC } from '../../src/transcript/DefaultTranscriptionController';
 import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -34,7 +35,7 @@ describe('SendAndReceiveDataMessagesTask', () => {
   let webSocketAdapter: DefaultWebSocketAdapter;
   let task: SendAndReceiveDataMessagesTask;
 
-  function makeReceiveDataMassageFrame(data: string, throttled?: boolean): SignalingClientEvent {
+  function makeReceiveDataMessageFrame(data: string, throttled?: boolean): SignalingClientEvent {
     const dataMessageFrame = SdkDataMessageFrame.create();
     const signalFrame = SdkSignalFrame.create();
     signalFrame.type = SdkSignalFrame.Type.DATA_MESSAGE;
@@ -104,9 +105,9 @@ describe('SendAndReceiveDataMessagesTask', () => {
     const text1 = 'Test message 1';
     const text2 = 'Test message 2';
     const text3 = 'Test message 3';
-    task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text1));
-    task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text2));
-    task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text3));
+    task.handleSignalingClientEvent(makeReceiveDataMessageFrame(text1));
+    task.handleSignalingClientEvent(makeReceiveDataMessageFrame(text2));
+    task.handleSignalingClientEvent(makeReceiveDataMessageFrame(text3));
     await delay(behavior.asyncWaitMs + 10);
     expect(spy.callCount).to.equal(3);
     expect(spy.getCall(0).args[0].text()).to.eql(text1);
@@ -119,8 +120,8 @@ describe('SendAndReceiveDataMessagesTask', () => {
     await task.run();
     const text1 = 'Test message 1';
     const text2 = 'Test message 2';
-    task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text1));
-    task.handleSignalingClientEvent(makeReceiveDataMassageFrame(text2, true));
+    task.handleSignalingClientEvent(makeReceiveDataMessageFrame(text1));
+    task.handleSignalingClientEvent(makeReceiveDataMessageFrame(text2, true));
     await delay(behavior.asyncWaitMs + 10);
     expect(spy.callCount).to.equal(2);
     expect(spy.getCall(0).args[0].text()).to.eql(text1);
@@ -171,6 +172,24 @@ describe('SendAndReceiveDataMessagesTask', () => {
     expect(spy.calledOnceWithExactly(sinon.match(dataMessageFrame))).to.be.true;
   });
 
+  it('handles sending transcription data message', async () => {
+    const spy = sinon.spy(context.signalingClient, 'sendDataMessage');
+    await task.run();
+
+    const data = new Uint8Array(4000);
+    context.realtimeController.realtimeSendDataMessage(
+      MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC,
+      data,
+      100
+    );
+    const dataMessageFrame = makeSendDataMessageFrame(
+      MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC,
+      data
+    );
+
+    expect(spy.calledOnceWithExactly(sinon.match(dataMessageFrame))).to.be.true;
+  });
+
   it('log an error if signaling client is not ready', () => {
     const spy = sinon.spy(context.logger, 'error');
     context.signalingClient.closeConnection();
@@ -178,21 +197,25 @@ describe('SendAndReceiveDataMessagesTask', () => {
     expect(spy.calledOnce).to.be.true;
   });
 
-  it('thow error if invalid topic', async () => {
+  it('throw error if invalid topic', async () => {
     await task.run();
     expect(() => {
       task.sendDataMessageHandler('@@@', 'Test message');
     }).to.throw('Invalid topic');
   });
 
-  it('thow error if data is too big', async () => {
+  it('throw error if data is too big', async () => {
     await task.run();
     expect(() => {
       task.sendDataMessageHandler('topic', new Uint8Array(2050));
     }).to.throw('Data size has to be less than 2048 bytes');
+
+    expect(() => {
+      task.sendDataMessageHandler(MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC, new Uint8Array(5000));
+    }).to.throw('Data size has to be less than 4096 bytes');
   });
 
-  it('thow error if negative lifetime', async () => {
+  it('throw error if negative lifetime', async () => {
     await task.run();
     expect(() => {
       task.sendDataMessageHandler('topic', 'Test message', -1);

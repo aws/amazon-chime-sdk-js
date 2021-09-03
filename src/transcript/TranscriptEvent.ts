@@ -1,11 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import Long = require('long');
 import DataMessage from '../datamessage/DataMessage';
 import {
+  SdkTranscript,
+  SdkTranscriptAlternative,
+  SdkTranscriptEvent,
   SdkTranscriptFrame,
   SdkTranscriptionStatus,
   SdkTranscriptItem,
+  SdkTranscriptResult,
 } from '../signalingprotocol/SignalingProtocol';
 import Transcript from './Transcript';
 import TranscriptAlternative from './TranscriptAlternative';
@@ -23,7 +28,19 @@ const TranscriptionStatusTypes = {
   [SdkTranscriptionStatus.Type.FAILED]: TranscriptionStatusType.FAILED,
 };
 
+const SdkTranscriptionStatusType = {
+  [TranscriptionStatusType.STARTED]: SdkTranscriptionStatus.Type.STARTED,
+  [TranscriptionStatusType.INTERRUPTED]: SdkTranscriptionStatus.Type.INTERRUPTED,
+  [TranscriptionStatusType.RESUMED]: SdkTranscriptionStatus.Type.RESUMED,
+  [TranscriptionStatusType.STOPPED]: SdkTranscriptionStatus.Type.STOPPED,
+  [TranscriptionStatusType.FAILED]: SdkTranscriptionStatus.Type.FAILED,
+};
+
 type TranscriptEvent = Transcript | TranscriptionStatus;
+
+function sdkTimeToNumber(sdkTime: number | Long): number {
+  return Long.fromValue(sdkTime).toNumber();
+}
 
 export class TranscriptEventConverter {
   /**
@@ -49,7 +66,7 @@ export class TranscriptEventConverter {
         }
         const transcriptionStatus = new TranscriptionStatus();
         transcriptionStatus.type = transcriptionStatusType;
-        transcriptionStatus.eventTimeMs = sdkTranscriptEvent.status.eventTime as number;
+        transcriptionStatus.eventTimeMs = sdkTimeToNumber(sdkTranscriptEvent.status.eventTime);
         transcriptionStatus.transcriptionRegion = sdkTranscriptEvent.status.transcriptionRegion;
         transcriptionStatus.transcriptionConfiguration =
           sdkTranscriptEvent.status.transcriptionConfiguration;
@@ -68,10 +85,18 @@ export class TranscriptEventConverter {
             channelId: result.channelId,
             isPartial: result.isPartial,
             resultId: result.resultId,
-            startTimeMs: result.startTime as number,
-            endTimeMs: result.endTime as number,
+            startTimeMs: sdkTimeToNumber(result.startTime),
+            endTimeMs: sdkTimeToNumber(result.endTime),
             alternatives: [],
           };
+
+          // manually sent message
+          if (dataMessage.senderAttendeeId) {
+            transcriptResult.editor = {
+              attendeeId: dataMessage.senderAttendeeId,
+              externalUserId: dataMessage.senderExternalUserId,
+            };
+          }
 
           for (const alternative of result.alternatives) {
             const transcriptAlternative: TranscriptAlternative = {
@@ -86,8 +111,8 @@ export class TranscriptEventConverter {
                   attendeeId: item.speakerAttendeeId,
                   externalUserId: item.speakerExternalUserId,
                 },
-                startTimeMs: item.startTime as number,
-                endTimeMs: item.endTime as number,
+                startTimeMs: sdkTimeToNumber(item.startTime),
+                endTimeMs: sdkTimeToNumber(item.endTime),
                 type: null,
               };
 
@@ -118,6 +143,87 @@ export class TranscriptEventConverter {
     }
 
     return transcriptEvents;
+  }
+
+  /**
+   * Encodes a TranscriptEvent into binary encoded form.
+   * @param result TranscriptEvent to encode
+   * @returns Binary encoded form of SdkTranscriptFrame
+   */
+  static toByteArray(event: TranscriptEvent): Uint8Array {
+    let sdkTranscriptEvent: SdkTranscriptEvent;
+
+    if (event instanceof TranscriptionStatus) {
+      sdkTranscriptEvent = SdkTranscriptEvent.create({
+        status: {
+          type: SdkTranscriptionStatusType[event.type],
+          eventTime: event.eventTimeMs,
+          transcriptionRegion: event.transcriptionRegion,
+          transcriptionConfiguration: event.transcriptionConfiguration,
+          message: event.message,
+        },
+      });
+    } else {
+      // instanceof Transcript
+      const sdkResults: SdkTranscriptResult[] = [];
+      for (const result of event.results) {
+        const alternatives: SdkTranscriptAlternative[] = [];
+        for (const alternative of result.alternatives) {
+          const items: SdkTranscriptItem[] = [];
+          for (const item of alternative.items) {
+            let itemType: SdkTranscriptItem.Type;
+            switch (item.type) {
+              case TranscriptItemType.PRONUNCIATION:
+                itemType = SdkTranscriptItem.Type.PRONUNCIATION;
+                break;
+              case TranscriptItemType.PUNCTUATION:
+                itemType = SdkTranscriptItem.Type.PUNCTUATION;
+                break;
+            }
+
+            items.push(
+              SdkTranscriptItem.create({
+                content: item.content,
+                endTime: item.endTimeMs,
+                startTime: item.startTimeMs,
+                speakerAttendeeId: item.attendee.attendeeId,
+                speakerExternalUserId: item.attendee.externalUserId,
+                vocabularyFilterMatch: item.vocabularyFilterMatch,
+                type: itemType,
+              })
+            );
+          }
+
+          alternatives.push(
+            SdkTranscriptAlternative.create({
+              items,
+              transcript: alternative.transcript,
+            })
+          );
+        }
+
+        sdkResults.push(
+          SdkTranscriptResult.create({
+            alternatives: alternatives,
+            endTime: result.endTimeMs,
+            startTime: result.startTimeMs,
+            isPartial: result.isPartial,
+            resultId: result.resultId,
+          })
+        );
+      }
+      sdkTranscriptEvent = SdkTranscriptEvent.create({
+        transcript: SdkTranscript.create({
+          results: sdkResults,
+        }),
+      });
+    }
+
+    const frame = SdkTranscriptFrame.create({
+      events: [sdkTranscriptEvent],
+    });
+
+    return SdkTranscriptFrame.encode(frame).finish();
   }
 }
 

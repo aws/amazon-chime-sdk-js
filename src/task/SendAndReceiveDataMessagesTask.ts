@@ -12,6 +12,7 @@ import {
   SdkDataMessagePayload,
   SdkSignalFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
+import { MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC } from '../transcript/DefaultTranscriptionController';
 import BaseTask from './BaseTask';
 
 export default class SendAndReceiveDataMessagesTask
@@ -20,7 +21,11 @@ export default class SendAndReceiveDataMessagesTask
   protected taskName = 'SendAndReceiveDataMessagesTask';
 
   private static TOPIC_REGEX = new RegExp(/^[a-zA-Z0-9_-]{1,36}$/);
+  private static readonly RESERVED_TOPICS = new Set([MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC]);
   private static DATA_SIZE = 2048;
+  private static readonly TOPIC_TO_MAX_DATA_SIZE: Record<string, number> = {
+    [MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC]: 4096,
+  };
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
@@ -86,12 +91,18 @@ export default class SendAndReceiveDataMessagesTask
   };
 
   private validateDataMessage(topic: string, data: Uint8Array, lifetimeMs?: number): void {
-    if (!SendAndReceiveDataMessagesTask.TOPIC_REGEX.test(topic)) {
+    if (
+      !SendAndReceiveDataMessagesTask.RESERVED_TOPICS.has(topic) &&
+      !SendAndReceiveDataMessagesTask.TOPIC_REGEX.test(topic)
+    ) {
       throw new Error('Invalid topic');
     }
 
-    if (data.length > SendAndReceiveDataMessagesTask.DATA_SIZE) {
-      throw new Error('Data size has to be less than 2048 bytes');
+    const maxDataSize =
+      SendAndReceiveDataMessagesTask.TOPIC_TO_MAX_DATA_SIZE[topic] ??
+      SendAndReceiveDataMessagesTask.DATA_SIZE;
+    if (data.length > maxDataSize) {
+      throw new Error(`Data size has to be less than ${maxDataSize} bytes`);
     }
 
     if (lifetimeMs && lifetimeMs < 0) {

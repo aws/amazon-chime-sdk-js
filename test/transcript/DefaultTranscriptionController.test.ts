@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 
 import DataMessage from '../../src/datamessage/DataMessage';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
@@ -11,12 +12,14 @@ import {
   SdkTranscriptionStatus,
 } from '../../src/signalingprotocol/SignalingProtocol';
 import DefaultTranscriptionController, {
+  MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC,
   TRANSCRIPTION_DATA_MESSAGE_TOPIC,
 } from '../../src/transcript/DefaultTranscriptionController';
-import TranscriptEvent from '../../src/transcript/TranscriptEvent';
+import TranscriptEvent, { TranscriptEventConverter } from '../../src/transcript/TranscriptEvent';
 import TranscriptionController from '../../src/transcript/TranscriptionController';
 import TranscriptionStatus from '../../src/transcript/TranscriptionStatus';
 import TranscriptionStatusType from '../../src/transcript/TranscriptionStatusType';
+import { makeTranscript, makeTranscriptionStatus } from './TranscriptEventTestDataHelper';
 
 function makeTranscriptDataMessage(): DataMessage {
   const status = SdkTranscriptionStatus.create();
@@ -125,6 +128,54 @@ describe('DefaultTranscriptionController', () => {
       realtimeController.realtimeReceiveDataMessage(makeTranscriptDataMessage());
       expect(callbackFired).to.equal(true);
       expect(resultTranscriptEvent).to.not.be.null;
+    });
+  });
+
+  describe('transcript sending', () => {
+    it('it can send transcript', () => {
+      const realtimeController = new DefaultRealtimeController();
+      const transcriptionController: TranscriptionController = new DefaultTranscriptionController(
+        realtimeController
+      );
+      const spy = sinon.spy(realtimeController, 'realtimeSendDataMessage');
+
+      const event = makeTranscript();
+      transcriptionController.sendTranscriptEvent(event);
+
+      const data = TranscriptEventConverter.toByteArray(event);
+      assert(spy.calledOnceWithExactly(MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC, data, 0));
+    });
+
+    it('it can send transcription status', () => {
+      const realtimeController = new DefaultRealtimeController();
+      const transcriptionController: TranscriptionController = new DefaultTranscriptionController(
+        realtimeController
+      );
+      const spy = sinon.spy(realtimeController, 'realtimeSendDataMessage');
+
+      const event = makeTranscriptionStatus();
+      transcriptionController.sendTranscriptEvent(event);
+
+      const data = TranscriptEventConverter.toByteArray(event);
+      assert(spy.calledOnceWithExactly(MANUAL_TRANSCRIPTION_DATA_MESSAGE_TOPIC, data, 0));
+    });
+
+    it('throw error if no result alternatives', () => {
+      const transcriptionController: TranscriptionController = new DefaultTranscriptionController(
+        new DefaultRealtimeController()
+      );
+
+      const event = makeTranscript();
+
+      event.results[0].alternatives = [];
+      expect(() => {
+        transcriptionController.sendTranscriptEvent(event);
+      }).to.throw('Transcript result must have at least one alternative');
+
+      event.results = [];
+      expect(() => {
+        transcriptionController.sendTranscriptEvent(event);
+      }).to.throw('Transcript result must have at least one alternative');
     });
   });
 });

@@ -412,6 +412,8 @@
 							<h3>Variables</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-variable"><a href="globals.html#default_framerate" class="tsd-kind-icon">DEFAULT_<wbr>FRAMERATE</a></li>
+								<li class="tsd-kind-variable"><a href="globals.html#long" class="tsd-kind-icon">Long</a></li>
+								<li class="tsd-kind-variable"><a href="globals.html#manual_transcription_data_message_topic" class="tsd-kind-icon">MANUAL_<wbr>TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#transcription_data_message_topic" class="tsd-kind-icon">TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC</a></li>
 							</ul>
 						</section>
@@ -427,12 +429,14 @@
 								<li class="tsd-kind-function"><a href="globals.html#ismediadeviceinfo" class="tsd-kind-icon">is<wbr>Media<wbr>Device<wbr>Info</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#sdktimetonumber" class="tsd-kind-icon">sdk<wbr>Time<wbr>ToNumber</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#wait" class="tsd-kind-icon">wait</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Object literals</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-object-literal"><a href="globals.html#sdktranscriptionstatustype" class="tsd-kind-icon">Sdk<wbr>Transcription<wbr>Status<wbr>Type</a></li>
 								<li class="tsd-kind-object-literal"><a href="globals.html#transcriptionstatustypes" class="tsd-kind-icon">Transcription<wbr>Status<wbr>Types</a></li>
 							</ul>
 						</section>
@@ -739,7 +743,7 @@
 					<div class="tsd-signature tsd-kind-icon">Transcript<wbr>Event<span class="tsd-signature-symbol">:</span> <a href="classes/transcript.html" class="tsd-signature-type">Transcript</a><span class="tsd-signature-symbol"> | </span><a href="classes/transcriptionstatus.html" class="tsd-signature-type">TranscriptionStatus</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L26">src/transcript/TranscriptEvent.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L39">src/transcript/TranscriptEvent.ts:39</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -815,12 +819,32 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="long" class="tsd-anchor"></a>
+					<h3>Long</h3>
+					<div class="tsd-signature tsd-kind-icon">Long<span class="tsd-signature-symbol">:</span> <a href="globals.html#long" class="tsd-signature-type">Long</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L4">src/transcript/TranscriptEvent.ts:4</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="manual_transcription_data_message_topic" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> MANUAL_<wbr>TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC</h3>
+					<div class="tsd-signature tsd-kind-icon">MANUAL_<wbr>TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"aws:chime:manualtranscription"</span><span class="tsd-signature-symbol"> = &quot;aws:chime:manualtranscription&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/DefaultTranscriptionController.ts#L11">src/transcript/DefaultTranscriptionController.ts:11</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
 					<a name="transcription_data_message_topic" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC</h3>
 					<div class="tsd-signature tsd-kind-icon">TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"aws:chime:transcription"</span><span class="tsd-signature-symbol"> = &quot;aws:chime:transcription&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/DefaultTranscriptionController.ts#L9">src/transcript/DefaultTranscriptionController.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/DefaultTranscriptionController.ts#L10">src/transcript/DefaultTranscriptionController.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1075,6 +1099,29 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="sdktimetonumber" class="tsd-anchor"></a>
+					<h3>sdk<wbr>Time<wbr>ToNumber</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">sdk<wbr>Time<wbr>ToNumber<span class="tsd-signature-symbol">(</span>sdkTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><a href="globals.html#long" class="tsd-signature-type">Long</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L41">src/transcript/TranscriptEvent.ts:41</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sdkTime: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><a href="globals.html#long" class="tsd-signature-type">Long</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
 					<a name="wait" class="tsd-anchor"></a>
 					<h3>wait</h3>
 					<ul class="tsd-signatures tsd-kind-function">
@@ -1101,12 +1148,72 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Object literals</h2>
 				<section class="tsd-panel tsd-member tsd-kind-object-literal">
+					<a name="sdktranscriptionstatustype" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Sdk<wbr>Transcription<wbr>Status<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Sdk<wbr>Transcription<wbr>Status<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L31">src/transcript/TranscriptEvent.ts:31</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="sdktranscriptionstatustype._transcriptionstatustype_failed_" class="tsd-anchor"></a>
+						<h3>[<wbr>Transcription<wbr>Status<wbr>Type.FAILED]</h3>
+						<div class="tsd-signature tsd-kind-icon">[<wbr>Transcription<wbr>Status<wbr>Type.FAILED]<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span><span class="tsd-signature-symbol"> = SdkTranscriptionStatus.Type.FAILED</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L36">src/transcript/TranscriptEvent.ts:36</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="sdktranscriptionstatustype._transcriptionstatustype_interrupted_" class="tsd-anchor"></a>
+						<h3>[<wbr>Transcription<wbr>Status<wbr>Type.INTERRUPTED]</h3>
+						<div class="tsd-signature tsd-kind-icon">[<wbr>Transcription<wbr>Status<wbr>Type.INTERRUPTED]<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span><span class="tsd-signature-symbol"> = SdkTranscriptionStatus.Type.INTERRUPTED</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L33">src/transcript/TranscriptEvent.ts:33</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="sdktranscriptionstatustype._transcriptionstatustype_resumed_" class="tsd-anchor"></a>
+						<h3>[<wbr>Transcription<wbr>Status<wbr>Type.RESUMED]</h3>
+						<div class="tsd-signature tsd-kind-icon">[<wbr>Transcription<wbr>Status<wbr>Type.RESUMED]<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span><span class="tsd-signature-symbol"> = SdkTranscriptionStatus.Type.RESUMED</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L34">src/transcript/TranscriptEvent.ts:34</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="sdktranscriptionstatustype._transcriptionstatustype_started_" class="tsd-anchor"></a>
+						<h3>[<wbr>Transcription<wbr>Status<wbr>Type.STARTED]</h3>
+						<div class="tsd-signature tsd-kind-icon">[<wbr>Transcription<wbr>Status<wbr>Type.STARTED]<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span><span class="tsd-signature-symbol"> = SdkTranscriptionStatus.Type.STARTED</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L32">src/transcript/TranscriptEvent.ts:32</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="sdktranscriptionstatustype._transcriptionstatustype_stopped_" class="tsd-anchor"></a>
+						<h3>[<wbr>Transcription<wbr>Status<wbr>Type.STOPPED]</h3>
+						<div class="tsd-signature tsd-kind-icon">[<wbr>Transcription<wbr>Status<wbr>Type.STOPPED]<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Type</span><span class="tsd-signature-symbol"> = SdkTranscriptionStatus.Type.STOPPED</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L35">src/transcript/TranscriptEvent.ts:35</a></li>
+							</ul>
+						</aside>
+					</section>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal">
 					<a name="transcriptionstatustypes" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> Transcription<wbr>Status<wbr>Types</h3>
 					<div class="tsd-signature tsd-kind-icon">Transcription<wbr>Status<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L18">src/transcript/TranscriptEvent.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L23">src/transcript/TranscriptEvent.ts:23</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -1115,7 +1222,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.FAILED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.FAILED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L23">src/transcript/TranscriptEvent.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L28">src/transcript/TranscriptEvent.ts:28</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1125,7 +1232,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.INTERRUPTED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.INTERRUPTED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L20">src/transcript/TranscriptEvent.ts:20</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L25">src/transcript/TranscriptEvent.ts:25</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1135,7 +1242,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.RESUMED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.RESUMED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L21">src/transcript/TranscriptEvent.ts:21</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L26">src/transcript/TranscriptEvent.ts:26</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1145,7 +1252,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.STARTED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.STARTED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L19">src/transcript/TranscriptEvent.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L24">src/transcript/TranscriptEvent.ts:24</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1155,7 +1262,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.STOPPED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.STOPPED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L22">src/transcript/TranscriptEvent.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L27">src/transcript/TranscriptEvent.ts:27</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -2085,6 +2192,12 @@
 						<a href="globals.html#default_framerate" class="tsd-kind-icon">DEFAULT_<wbr>FRAMERATE</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#long" class="tsd-kind-icon">Long</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#manual_transcription_data_message_topic" class="tsd-kind-icon">MANUAL_<wbr>TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#transcription_data_message_topic" class="tsd-kind-icon">TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC</a>
 					</li>
 					<li class=" tsd-kind-function">
@@ -2115,7 +2228,13 @@
 						<a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#sdktimetonumber" class="tsd-kind-icon">sdk<wbr>Time<wbr>ToNumber</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#wait" class="tsd-kind-icon">wait</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#sdktranscriptionstatustype" class="tsd-kind-icon">Sdk<wbr>Transcription<wbr>Status<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-object-literal">
 						<a href="globals.html#transcriptionstatustypes" class="tsd-kind-icon">Transcription<wbr>Status<wbr>Types</a>
