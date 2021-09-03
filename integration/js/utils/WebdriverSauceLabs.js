@@ -106,42 +106,34 @@ const getSauceLabsDomain = (platform)  => {
   const platformUpperCase = platform.toUpperCase();
   if (platformUpperCase === 'LINUX') {
     return 'us-east-1.saucelabs.com';
-  } else if (platformUpperCase === 'ANDROID' || platformUpperCase === 'IOS') {
-    return 'us1-manual.app.testobject.com';
-  }
-  return 'saucelabs.com';
+  } 
+  return 'us-west-1.saucelabs.com';
 };
 
 const getSafariIOSConfig = (capabilities) => {
   return {
-    platformName: 'iOS',
+    platformName: capabilities.platform,
     platformVersion: capabilities.version,
-    testobject_api_key: '059183B9A1A148D188B3AC5BA1ECBD52',
     deviceOrientation: 'portrait',
     name: capabilities.name,
   };
 };
 
 const getChromeAndroidConfig = capabilities => {
+
   return {
-    platformName: 'Android',
+    platformName: capabilities.platform,
     platformVersion: capabilities.version,
-    testobject_api_key: '059183B9A1A148D188B3AC5BA1ECBD52',
     deviceOrientation: 'portrait',
     chromeOptions: {
       'args': ['use-fake-device-for-media-stream', 'use-fake-ui-for-media-stream'],
       'w3c': false
     },
-    name: capabilities.name,
+    name: capabilities.name
   };
 };
 
 const getSauceLabsUrl = (domain) => {
-  if (isMobileDomain(domain)) {
-    return (
-      'https://us1-manual.app.testobject.com/wd/hub'
-    );
-  }
   return (
     'https://' +
     process.env.SAUCE_USERNAME +
@@ -150,10 +142,6 @@ const getSauceLabsUrl = (domain) => {
     `@ondemand.${domain}:443/wd/hub`
   );
 };
-
-const isMobileDomain = (domain) => {
-  return domain === 'us1-manual.app.testobject.com' ? true : false;
-}
 
 class SaucelabsSession {
   static async createSession(capabilities, appName) {
@@ -200,8 +188,18 @@ class SaucelabsSession {
 
   async getSessionId() {
     if (this.sessionId === undefined) {
-      const session = await this.driver.getSession();
-      this.sessionId = session.getId();
+      // This is needed to obtain the job ID from mobile tests and only works on mobile tests
+      const cap = await this.driver.getCapabilities();
+      const url = cap.get('testobject_test_report_api_url')
+      if(url !== undefined)
+      {
+        this.sessionId = url.substring(url.lastIndexOf('/')+1);
+      }
+      else
+      {
+        const session = await this.driver.getSession();
+        this.sessionId = session.getId();
+      }
     }
     return this.sessionId
   }
@@ -248,19 +246,7 @@ class SaucelabsSession {
   async updateTestResults(passed) {
     const sessionId = await this.getSessionId();
     console.log(`Publishing test results to saucelabs for session: ${sessionId} status: ${passed ? 'passed' : 'failed'}`);
-    let url = "";
-    if (isMobileDomain(this.domain)) {
-      url = `https://app.testobject.com/api/rest/v2/appium/session/${sessionId}/test/`;
-    } else {
-      url = `https://${this.domain}/rest/v1/${process.env.SAUCE_USERNAME}/jobs/${sessionId}`;
-    }
-    await axios.put(url, `{\"passed\": ${passed}}`, {
-      headers: {
-        "Accept": "application/json",
-        "Content-type": "application/json",
-        "Authorization": 'Basic ' + Base64.encode(process.env.SAUCE_USERNAME + ':' + process.env.SAUCE_ACCESS_KEY)
-      }
-    })
+    this.driver.executeScript(`sauce:job-result=${passed}`)
   };
 
   async printRunDetails() {
