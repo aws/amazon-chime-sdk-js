@@ -437,7 +437,7 @@
             </div>
           </div>
         </div>
-        <button id="button-live-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle live transcription display" data-toggle="button" aria-pressed="false" autocomplete="off" style="display: none">
+        <button id="button-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle transcription display" data-toggle="button" aria-pressed="false" autocomplete="off">
           <%= require('../../node_modules/open-iconic/svg/code.svg') %>
         </button>
         <button id="button-video-stats" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Toggle video WebRTC stats display" data-toggle="button" aria-pressed="false" autocomplete="off">
@@ -700,7 +700,19 @@
             <button id="video-pin-27" class="video-tile-pin" class="btn">Pin</button>
           </div>
         </div>
-        <div id="transcript-container" class="transcript-container" style="display:none"></div>
+        <div id="transcript-container" class="transcript-container" style="display:none">
+          <div class="transcript-container-inner scrolled-bottom">
+            <button class="transcript-scroll-bottom">Scroll to bottom</button>
+          </div>
+          <div class="transcript-inputs">
+            <div class="transcript-input-labels">
+              <label for="transcript-textarea">Manual transcription</label>
+              <label for="manual-transcript-speaker">spoken by</label>
+              <select name="manual-transcript-speaker" id="manual-transcript-speaker" class="manual-transcript-speaker"></select>
+            </div>
+            <textarea id="transcript-textarea" class="transcript-textarea"></textarea>
+          </div>
+        </div>
       </div>
       <video id="content-share-video" playsinline crossOrigin="anonymous" style="display:none"></video>
     </div>

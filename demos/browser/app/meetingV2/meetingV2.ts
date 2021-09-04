@@ -3,6 +3,7 @@
 
 import './styleV2.scss';
 import 'bootstrap';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   AsyncScheduler,
@@ -51,6 +52,7 @@ import {
   TranscriptEvent,
   TranscriptionStatus,
   TranscriptionStatusType,
+  TranscriptItem,
   TranscriptItemType,
   TranscriptResult,
   Versioning,
@@ -245,10 +247,14 @@ interface Toggle {
 }
 
 interface TranscriptSegment {
+  resultId: string; // resultId of parent TranscriptResult
   content: string;
   attendee: Attendee;
   startTimeMs: number;
   endTimeMs: number;
+  isPartial: boolean;
+  editor?: Attendee;
+  element?: HTMLDivElement;
 }
 
 export class DemoMeetingApp
@@ -309,7 +315,7 @@ export class DemoMeetingApp
     'button-speaker': true,
     'button-content-share': false,
     'button-pause-content-share': false,
-    'button-live-transcription': false,
+    'button-transcription': false,
     'button-video-stats': false,
     'button-video-filter': false,
     'button-record-self': false,
@@ -332,6 +338,7 @@ export class DemoMeetingApp
   voiceFocusIsActive = false;
 
   enableLiveTranscription = false;
+  enableManualTranscription = false;
   noWordSeparatorForTranscription = false;
 
   markdown = require('markdown-it')({ linkify: true });
@@ -351,6 +358,7 @@ export class DemoMeetingApp
   analyserNode: RemovableAnalyserNode;
 
   liveTranscriptionDisplayables: HTMLElement[] = [];
+  manualTranscriptionDisplayables: HTMLElement[] = [];
 
   chosenVideoTransformDevice: DefaultVideoTransformDevice;
   chosenVideoFilter: VideoFilterName = 'None';
@@ -390,10 +398,13 @@ export class DemoMeetingApp
 
   removeFatalHandlers: () => void;
 
-  transcriptContainerDiv = document.getElementById('transcript-container') as HTMLDivElement;
-  partialTranscriptDiv: HTMLDivElement | undefined;
-  partialTranscriptResultTimeMap = new Map<string, number>();
-  partialTranscriptResultMap = new Map<string, TranscriptResult>();
+  transcriptContainerDiv = document.querySelector('.transcript-container') as HTMLDivElement;
+  transcriptContainerInnerDiv = document.querySelector('.transcript-container-inner') as HTMLDivElement;
+  transcriptScrollButton = document.querySelector('.transcript-scroll-bottom') as HTMLButtonElement;
+  transcriptTextArea = document.querySelector('.transcript-textarea') as HTMLTextAreaElement;
+  transcriptSpeakerSelect = document.querySelector('.manual-transcript-speaker') as HTMLSelectElement;
+  transcriptSegmentMap: Map<string, TranscriptSegment[]> = new Map();
+  transcriptSegmentsOrdered: TranscriptSegment[] = [];
 
   addFatalHandlers(): void {
     fatal = this.fatal.bind(this);
@@ -994,10 +1005,10 @@ export class DemoMeetingApp
       });
     });
 
-    const buttonLiveTranscription = document.getElementById('button-live-transcription');
-    buttonLiveTranscription.addEventListener('click', () => {
-      this.transcriptContainerDiv.style.display = this.isButtonOn('button-live-transcription') ? 'none' : 'block';
-      this.toggleButton('button-live-transcription');
+    const buttonTranscription = document.getElementById('button-transcription');
+    buttonTranscription.addEventListener('click', () => {
+      this.transcriptContainerDiv.style.display = this.isButtonOn('button-transcription') ? 'none' : 'block';
+      this.toggleButton('button-transcription');
     });
 
     const buttonLiveTranscriptionModal = document.getElementById('button-live-transcription-modal-close');
@@ -1046,6 +1057,16 @@ export class DemoMeetingApp
 
       document.getElementById('live-transcription-modal').style.display = 'none';
     };
+
+    this.transcriptContainerInnerDiv.addEventListener('scroll', (e) => {
+      const target = e.target as HTMLDivElement;
+      const isScrolledToEnd = (target.scrollHeight - target.scrollTop - target.clientHeight) < 10;
+      target.classList.toggle('scrolled-bottom', isScrolledToEnd);
+    }, { passive: true });
+
+    this.transcriptScrollButton.addEventListener('click', () => {
+      this.transcriptContainerInnerDiv.scrollTo(0, this.transcriptContainerInnerDiv.scrollHeight);
+    });
 
     const buttonVideoStats = document.getElementById('button-video-stats');
     buttonVideoStats.addEventListener('click', () => {
@@ -1747,12 +1768,38 @@ export class DemoMeetingApp
       this.updateProperty(spanStatus, 'className', statusClass);
       i++;
     }
+    this.updateManualSpeakerSelection();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateProperty(obj: any, key: string, value: string): void {
     if (value !== undefined && obj[key] !== value) {
       obj[key] = value;
+    }
+  }
+
+  updateManualSpeakerSelection(): void {
+    const ids = Object.keys(this.roster).sort();
+    // move current user to top of the list
+    const currentUserIndex = ids.indexOf(this.meetingSession.configuration.credentials.attendeeId);
+    if (currentUserIndex > 0) {
+      [ids[currentUserIndex], ids[0]] = [ids[0], ids[currentUserIndex]];
+    }
+
+    while (this.transcriptSpeakerSelect.getElementsByTagName('option').length < ids.length) {
+      this.transcriptSpeakerSelect.appendChild(document.createElement('option'));
+    }
+    while (this.transcriptSpeakerSelect.getElementsByTagName('option').length > ids.length) {
+      this.transcriptSpeakerSelect.removeChild(this.transcriptSpeakerSelect.querySelector('option'));
+    }
+    const options = this.transcriptSpeakerSelect.getElementsByTagName('option');
+    for (let i = 0; i < ids.length; i++) {
+      const externalUserId = this.roster[ids[i]].name;
+      if (options[i].value !== externalUserId) {
+        options[i].value = externalUserId;
+        options[i].dataset.attendeeId = ids[i];
+        options[i].innerText = externalUserId;
+      }
     }
   }
 
@@ -1938,18 +1985,84 @@ export class DemoMeetingApp
     );
   }
 
-  transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
-    if (!this.enableLiveTranscription) {
-      // Toggle disabled 'Live Transcription' button to enabled when we receive any transcript event
-      this.enableLiveTranscription = true;
-      this.updateLiveTranscriptionDisplayState();
+  sendManualTranscript(segment: TranscriptSegment): void {
+    const result: TranscriptResult = {
+      resultId: segment.resultId,
+      startTimeMs: segment.startTimeMs,
+      endTimeMs: segment.endTimeMs,
+      isPartial: segment.isPartial,
+      alternatives: [
+        {
+          transcript: segment.content,
+          items: [
+            {
+              content: segment.content,
+              startTimeMs: segment.startTimeMs,
+              endTimeMs: segment.endTimeMs,
+              attendee: segment.attendee,
+              type: TranscriptItemType.PRONUNCIATION,
+            },
+          ],
+        },
+      ],
+      editor: {
+        attendeeId: this.meetingSession.configuration.credentials.attendeeId,
+        externalUserId: this.meetingSession.configuration.credentials.externalUserId,
+      },
+    };
 
-      // Transcripts view and the button to show and hide it are initially hidden
-      // Show them when when live transcription gets enabled, and do not hide afterwards
-      this.setButtonVisibility('button-live-transcription', true, 'on');
-      this.transcriptContainerDiv.style.display = 'block';
+    const event = new Transcript();
+    event.results = [result];
+    this.audioVideo.transcriptionController?.sendTranscriptEvent?.(event);
+    this.transcriptEventHandler(event);
+  }
+
+  // reconstruct TranscriptResult and send it to connected clients
+  sendUpdatedTranscript(segment: TranscriptSegment): void {
+    const segmentsInResult = this.transcriptSegmentMap.get(segment.resultId);
+
+    const startTimeMs = segmentsInResult[0].startTimeMs;
+    const endTimeMs = segmentsInResult[segmentsInResult.length - 1].endTimeMs;
+
+    const items: TranscriptItem[] = [];
+    let transcript = '';
+
+    for (const seg of segmentsInResult) {
+      transcript += seg.content + ' ';
+      items.push({
+        content: seg.content,
+        attendee: seg.attendee,
+        startTimeMs: seg.startTimeMs,
+        endTimeMs: seg.endTimeMs,
+        type: TranscriptItemType.PRONUNCIATION,
+      });
     }
 
+    const result: TranscriptResult = {
+      startTimeMs,
+      endTimeMs,
+      resultId: segment.resultId,
+      isPartial: false,
+      alternatives: [
+        {
+          items,
+          transcript: transcript.trim(),
+        },
+      ],
+      editor: {
+        attendeeId: this.meetingSession.configuration.credentials.attendeeId,
+        externalUserId: this.meetingSession.configuration.credentials.externalUserId,
+      },
+    };
+
+    const event = new Transcript();
+    event.results = [result];
+
+    this.audioVideo?.transcriptionController.sendTranscriptEvent?.(event);
+    this.transcriptEventHandler(event);
+  }
+
+  transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
     if (transcriptEvent instanceof TranscriptionStatus) {
       this.appendStatusDiv(transcriptEvent);
       if (transcriptEvent.type === TranscriptionStatusType.STARTED) {
@@ -1967,165 +2080,350 @@ export class DemoMeetingApp
         if (languageCode && LANGUAGES_NO_WORD_SEPARATOR.has(languageCode)) {
           this.noWordSeparatorForTranscription = true;
         }
+
+        // Toggle disabled 'Live Transcription' button to enabled when we get confirmation ASR transcription started
+        this.enableLiveTranscription = true;
+        // Transcripts view and the button to show and hide it are initially hidden
+        // Show them when live transcription gets enabled, and do not hide afterwards
+        this.updateLiveTranscriptionDisplayState();
+        this.setButtonVisibility('button-transcription', true, 'on');
+        this.transcriptContainerDiv.style.display = 'block';
       } else if (transcriptEvent.type === TranscriptionStatusType.STOPPED && this.enableLiveTranscription) {
         // When we receive a STOPPED status event:
         // 1. toggle enabled 'Live Transcription' button to disabled
         this.enableLiveTranscription = false;
         this.noWordSeparatorForTranscription = false;
         this.updateLiveTranscriptionDisplayState();
-
-        // 2. force finalize all partial results
-        this.partialTranscriptResultTimeMap.clear();
-        this.partialTranscriptDiv = null;
-        this.partialTranscriptResultMap.clear();
       }
     } else if (transcriptEvent instanceof Transcript) {
       for (const result of transcriptEvent.results) {
-        const resultId = result.resultId;
-        const isPartial = result.isPartial;
-
-        this.partialTranscriptResultMap.set(resultId, result);
-        this.partialTranscriptResultTimeMap.set(resultId, result.endTimeMs);
-        this.renderPartialTranscriptResults();
-        if (isPartial) {
-          continue;
-        }
-
-        // Force finalizing partial results that's 5 seconds older than the latest one,
-        // to prevent local partial results from indefinitely growing
-        for (const [olderResultId, endTimeMs] of this.partialTranscriptResultTimeMap) {
-          if (olderResultId === resultId) {
-            break;
-          } else if (endTimeMs < result.endTimeMs - 5000) {
-            this.partialTranscriptResultTimeMap.delete(olderResultId);
-          }
-        }
-
-        this.partialTranscriptResultTimeMap.delete(resultId);
-
-        if (this.partialTranscriptResultTimeMap.size === 0) {
-          // No more partial results in current batch, reset current batch
-          this.partialTranscriptDiv = null;
-          this.partialTranscriptResultMap.clear();
-        }
+        this.renderTranscriptResult(result);
       }
     }
 
-    this.transcriptContainerDiv.scrollTop = this.transcriptContainerDiv.scrollHeight;
-  };
-
-  renderPartialTranscriptResults = () => {
-    if (this.partialTranscriptDiv) {
-      // Keep updating existing partial result div
-      this.updatePartialTranscriptDiv();
-    } else {
-      // All previous results were finalized. Create a new div for new results, update, then add it to DOM
-      this.partialTranscriptDiv = document.createElement('div') as HTMLDivElement;
-      this.updatePartialTranscriptDiv();
-      this.transcriptContainerDiv.appendChild(this.partialTranscriptDiv);
+    // auto scroll to bottom of transcript if user was at bottom before
+    if (this.transcriptContainerInnerDiv.classList.contains('scrolled-bottom') && !this.transcriptContainerInnerDiv.classList.contains('editing')) {
+      this.transcriptContainerInnerDiv.scrollTo(0, this.transcriptContainerInnerDiv.scrollHeight);
     }
   };
 
-  updatePartialTranscriptDiv = () => {
-    this.partialTranscriptDiv.innerHTML = '';
+  // converts TranscriptResult into an array of TranscriptSegments, separated by speaker
+  getTranscriptSegmentsFromResult(result: TranscriptResult): TranscriptSegment[] {
+    const segments: TranscriptSegment[] = [];
 
-    const partialTranscriptSegments: TranscriptSegment[] = [];
-    for (const result of this.partialTranscriptResultMap.values()) {
-      this.populatePartialTranscriptSegmentsFromResult(partialTranscriptSegments, result);
+    if (!result.alternatives[0].transcript) {
+      return segments;
     }
-    partialTranscriptSegments.sort((a, b) => a.startTimeMs - b.startTimeMs);
 
-    const speakerToTranscriptSpanMap = new Map<string, HTMLSpanElement>();
-    for (const segment of partialTranscriptSegments) {
-      const newSpeakerId = segment.attendee.attendeeId;
-      if (!speakerToTranscriptSpanMap.has(newSpeakerId)) {
-        this.appendNewSpeakerTranscriptDiv(segment, speakerToTranscriptSpanMap);
-      } else {
-        const partialResultSpeakers: string[] = Array.from(speakerToTranscriptSpanMap.keys());
-        if (partialResultSpeakers.indexOf(newSpeakerId) < partialResultSpeakers.length - 1) {
-          // Not the latest speaker and we reach the end of a sentence, clear the speaker to Span mapping to break line
-          speakerToTranscriptSpanMap.delete(newSpeakerId);
-          this.appendNewSpeakerTranscriptDiv(segment, speakerToTranscriptSpanMap);
-        } else {
-          const transcriptSpan = speakerToTranscriptSpanMap.get(newSpeakerId);
-          transcriptSpan.innerText = transcriptSpan.innerText + '\u00a0' + segment.content;
-        }
-      }
-    }
-  };
-
-  populatePartialTranscriptSegmentsFromResult = (segments: TranscriptSegment[], result: TranscriptResult) => {
-    let startTimeMs: number = null;
+    const { resultId, isPartial, editor } = result;
+    let startTimeMs = result.startTimeMs;
+    let endTimeMs: number;
+    let attendee = result.alternatives[0].items[0].attendee;
     let content = '';
-    let attendee: Attendee = null;
+
     for (const item of result.alternatives[0].items) {
-      if (!startTimeMs) {
-        content = item.content;
+      if (attendee.externalUserId !== item.attendee.externalUserId) {
+        // speaker change
+        segments.push({
+          resultId,
+          content: content.trim(),
+          isPartial,
+          attendee,
+          editor,
+          startTimeMs,
+          endTimeMs,
+        });
+
         attendee = item.attendee;
         startTimeMs = item.startTimeMs;
-      } else if (item.type === TranscriptItemType.PUNCTUATION) {
-        content = content + item.content;
-        segments.push({
-          content: content,
-          attendee: attendee,
-          startTimeMs: startTimeMs,
-          endTimeMs: item.endTimeMs
-        });
         content = '';
-        startTimeMs = null;
-        attendee = null;
-      } else {
-        if (this.noWordSeparatorForTranscription) {
-          content = content + item.content;
-        } else {
-          content = content + ' ' + item.content;
-        }
+      }
+
+      if (!this.noWordSeparatorForTranscription && item.type === TranscriptItemType.PRONUNCIATION) {
+        content += ' ';
+      }
+
+      content += item.content;
+      endTimeMs = item.endTimeMs;
+    }
+
+    // if all items are spoken by the same speaker, simply return the transcript
+    if (!segments.length) {
+      content = result.alternatives[0].transcript;
+    }
+
+    segments.push({
+      resultId,
+      content: content.trim(),
+      isPartial,
+      attendee,
+      editor,
+      startTimeMs,
+      endTimeMs: endTimeMs,
+    });
+
+    return segments;
+  }
+
+  // set classes of segment's element
+  setTranscriptSpanProperties(segment: TranscriptSegment): void {
+    const span = segment.element.querySelector('span');
+    span.innerText = segment.content;
+    if (segment.resultId) {
+      const isDeleted = segment.content.length === 0;
+      if (span.dataset.resultId && !span.classList.contains('manual') && segment.editor) {
+        span.classList.add('corrected');
+      }
+      span.dataset.resultId = segment.resultId;
+      span.classList.toggle('partial', segment.isPartial && !isDeleted);
+      span.classList.toggle('editable', !segment.isPartial);
+      span.classList.toggle('manual', segment.editor != undefined);
+      span.classList.toggle('deleted', isDeleted);
+    }
+    if (segment.editor) {
+      const editor = segment.editor.externalUserId.split('#').slice(-1)[0];
+      span.title = `Last edited by ${editor} at ${new Date().toLocaleTimeString()}`;
+    }
+  }
+
+  createTranscriptSpeakerElement(speaker: Attendee): HTMLDivElement {
+    const div = document.createElement('div');
+    div.classList.add('transcript-speaker');
+    div.innerText = speaker.externalUserId.split('#').slice(-1)[0];
+    return div;
+  }
+
+  createTranscriptSegmentElement(segment: TranscriptSegment, index: number): void {
+    const div = document.createElement('div');
+    div.classList.add('transcript-content');
+
+    const datetime = new Date(segment.startTimeMs);
+    const timeElement = document.createElement('time');
+    timeElement.innerText = datetime.toLocaleTimeString();
+    timeElement.dateTime = datetime.toISOString();
+    div.appendChild(timeElement);
+
+    const span = document.createElement('span');
+    span.dataset.index = '' + index;
+    div.appendChild(span);
+    segment.element = div;
+    this.setTranscriptSpanProperties(segment);
+  }
+
+  insertTranscriptSegment(segment: TranscriptSegment): void {
+    // find correct index to insert segment at to maintain ordering by startTimeMs
+    let index = this.transcriptSegmentsOrdered.length;
+    if (index > 0) {
+      while (segment.startTimeMs < this.transcriptSegmentsOrdered[index - 1].startTimeMs) {
+        index--;
       }
     }
+    this.transcriptSegmentsOrdered.splice(index, 0, segment);
 
-    // Reached end of the result but there is no closing punctuation
-    if (startTimeMs) {
-      segments.push({
-        content: content,
-        attendee: attendee,
-        startTimeMs: startTimeMs,
-        endTimeMs: result.endTimeMs,
-      });
+    const MAX_TIME_DIFF = 15 * 1000; // time gap in milliseconds before adding a new speaker heading
+
+    const prev = this.transcriptSegmentsOrdered[index - 1];
+    const next = this.transcriptSegmentsOrdered[index + 1];
+
+    if (prev?.attendee.externalUserId === segment.attendee.externalUserId && segment.startTimeMs - prev.startTimeMs < MAX_TIME_DIFF) {
+      // same as previous segment's speaker
+      prev.element.insertAdjacentElement('afterend', segment.element);
+    } else if (next?.attendee.externalUserId === segment.attendee.externalUserId && next.startTimeMs - segment.startTimeMs < MAX_TIME_DIFF) {
+      // same as next segment's speaker
+      next.element.insertAdjacentElement('beforebegin', segment.element);
+    } else {
+      // add new speaker label
+      if (prev) {
+        prev.element.insertAdjacentElement('afterend', segment.element);
+        if (prev.attendee.externalUserId === next?.attendee.externalUserId) {
+          // add speaker element before next segment to maintain correct speaker attribution
+          const nextSpeakerElement = this.createTranscriptSpeakerElement(next.attendee);
+          next.element.insertAdjacentElement('beforebegin', nextSpeakerElement);
+        }
+      } else {
+        this.transcriptContainerInnerDiv.appendChild(segment.element);
+      }
+      segment.element.insertAdjacentElement('beforebegin', this.createTranscriptSpeakerElement(segment.attendee));
     }
-  };
+  }
 
-  appendNewSpeakerTranscriptDiv = (
-    segment: TranscriptSegment,
-    speakerToTranscriptSpanMap: Map<string, HTMLSpanElement>) =>
-  {
-    const speakerTranscriptDiv = document.createElement('div') as HTMLDivElement;
-    speakerTranscriptDiv.classList.add('transcript');
+  renderTranscriptResult(result: TranscriptResult): void {
+    const resultId = result.resultId;
+    const newSegments = this.getTranscriptSegmentsFromResult(result);
 
-    const speakerSpan = document.createElement('span') as HTMLSpanElement;
-    speakerSpan.classList.add('transcript-speaker');
-    speakerSpan.innerText = segment.attendee.externalUserId.split('#').slice(-1)[0] + ': ';
-    speakerTranscriptDiv.appendChild(speakerSpan);
+    if (!this.transcriptSegmentMap.has(resultId)) {
+      this.transcriptSegmentMap.set(resultId, []);
+    }
+    const segments = this.transcriptSegmentMap.get(resultId);
 
-    const transcriptSpan = document.createElement('span') as HTMLSpanElement;
-    transcriptSpan.classList.add('transcript-content');
-    transcriptSpan.innerText = segment.content;
-    speakerTranscriptDiv.appendChild(transcriptSpan);
+    // handle updated segments
+    for (let i = 0; i < segments.length && i < newSegments.length; i++) {
+      const segment = segments[i];
+      segment.content = newSegments[i].content;
+      segment.editor = newSegments[i].editor;
+      segment.isPartial = newSegments[i].isPartial;
+      segment.startTimeMs = newSegments[i].startTimeMs;
+      segment.endTimeMs = newSegments[i].endTimeMs;
+      this.setTranscriptSpanProperties(segment);
+    }
 
-    this.partialTranscriptDiv.appendChild(speakerTranscriptDiv);
+    // handle deleted segments
+    if (result.editor) {
+      // manually deleted, so keep element and mark as manually deleted
+      for (let i = newSegments.length; i < segments.length; i++) {
+        const segment = segments[i];
+        segment.content = '';
+        this.setTranscriptSpanProperties(segment);
+      }
+    } else {
+      // deleted by Transcribe, so delete element completely
+      for (let i = newSegments.length; i < segments.length; i++) {
+        const segment = segments[i];
+        const index = this.transcriptSegmentsOrdered.lastIndexOf(segment);
+        if (index > -1) {
+          this.transcriptSegmentsOrdered.splice(index, 1);
+          // remove speaker div if it is unneeded
+          const prev = segment.element.previousElementSibling;
+          const next = segment.element.nextElementSibling;
+          if (prev?.classList.contains('transcript-speaker') && !next?.classList.contains('transcript-content')) {
+            // prev is a speaker div and next does not share the same speaker
+            prev.remove();
+          }
+          segment.element.remove();
+        }
+      }
+      segments.splice(newSegments.length);
+    }
 
-    speakerToTranscriptSpanMap.set(segment.attendee.attendeeId, transcriptSpan);
-  };
+    // handle new segments
+    for (let i = segments.length; i < newSegments.length; i++) {
+      segments.push(newSegments[i]);
+      this.createTranscriptSegmentElement(newSegments[i], i);
+      this.insertTranscriptSegment(newSegments[i]);
+    }
+  }
 
-  appendStatusDiv = (status: TranscriptionStatus) => {
-    const statusDiv = document.createElement('div') as HTMLDivElement;
-    statusDiv.innerText = '(Live Transcription ' + status.type + ' at '
-      + new Date(status.eventTimeMs).toLocaleTimeString() + ' in ' + status.transcriptionRegion
-      + ' with configuration: ' + status.transcriptionConfiguration + ')';
-    this.transcriptContainerDiv.appendChild(statusDiv);
-  };
+  appendStatusDiv(status: TranscriptionStatus): void {
+    const eventTime = new Date(status.eventTimeMs);
+    const content = `Live Transcription ${status.type} at ${eventTime.toLocaleTimeString()} in ${status.transcriptionRegion} with configuration: ${status.transcriptionConfiguration}`;
+    const systemSpeaker: Attendee = {
+      externalUserId: 'Live Transcription',
+      attendeeId: 'Live Transcription',
+    };
+
+    const segment: TranscriptSegment = {
+      content,
+      resultId: '',
+      attendee: systemSpeaker,
+      isPartial: false,
+      startTimeMs: eventTime.getTime(),
+      endTimeMs: 0,
+    };
+    this.createTranscriptSegmentElement(segment, -1);
+    this.insertTranscriptSegment(segment);
+  }
+
+  // setup event listener to allow sending manual transcripts
+  setupManualTranscript(): void {
+    let manualTranscriptResultId: string = undefined;
+    let manualTranscriptResultStartTimeMs: number = undefined;
+    const transcriptTextArea = document.querySelector('.transcript-textarea') as HTMLTextAreaElement;
+    transcriptTextArea.addEventListener('keyup', e => {
+      const text = transcriptTextArea.value.trim();
+      if (!text.length || (e.key !== 'Enter' && e.key !== ' ')) {
+        return;
+      }
+
+      const selectedAttendee = this.transcriptSpeakerSelect.selectedOptions[0];
+      const speaker: Attendee = {
+        attendeeId: selectedAttendee.dataset.attendeeId,
+        externalUserId: selectedAttendee.value,
+      };
+
+      manualTranscriptResultId ||= uuidv4();
+      manualTranscriptResultStartTimeMs ||= new Date().getTime();
+
+      const segment: TranscriptSegment = {
+        resultId: manualTranscriptResultId,
+        startTimeMs: manualTranscriptResultStartTimeMs,
+        content: text,
+        attendee: speaker,
+        endTimeMs: new Date().getTime(),
+        isPartial: true,
+      };
+
+      if (e.key === 'Enter') {
+        transcriptTextArea.value = '';
+        e.preventDefault();
+        segment.isPartial = false;
+        // reset id and start time for next manual transcript
+        manualTranscriptResultId = undefined;
+        manualTranscriptResultStartTimeMs = undefined;
+      }
+
+      this.sendManualTranscript(segment);
+    });
+  }
+
+  // set up event listeners to allow client to correct a transcript
+  setupTranscriptEdit(): void {
+    this.transcriptContainerInnerDiv.addEventListener(
+      'click',
+      e => {
+        const target = e.target as HTMLElement;
+        if (target.nodeType === Node.ELEMENT_NODE && target.classList.contains('editable')) {
+          const resultId = target.dataset.resultId;
+          const index = +target.dataset.index;
+
+          const segment = this.transcriptSegmentMap.get(resultId)[index];
+
+          // replace target element with textarea
+          target.classList.add('editing');
+          const textarea = document.createElement('textarea') as HTMLTextAreaElement;
+          textarea.value = segment.content;
+          textarea.classList.add('transcript-edit');
+          target.innerText = '';
+          target.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          textarea.style.height = textarea.scrollHeight + 'px';
+
+          this.transcriptContainerInnerDiv.classList.add('editing');
+
+          let removed = false;
+
+          const onBlur = () => {
+            if (!removed && target.contains(textarea)) {
+              removed = true;
+              textarea.remove();
+              target.classList.remove('editing');
+              const content = textarea.value.trim();
+              target.innerText = content;
+              if (content === '' || content !== segment.content) {
+                segment.content = content;
+                this.sendUpdatedTranscript(segment);
+              }
+            }
+            this.transcriptContainerInnerDiv.classList.remove('editing');
+          };
+
+          textarea.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              onBlur();
+            }
+          });
+          textarea.addEventListener('blur', onBlur, { once: true });
+        }
+      },
+      { passive: true }
+    );
+  }
 
   setupLiveTranscription = () => {
     this.audioVideo.transcriptionController?.subscribeToTranscriptEvent(this.transcriptEventHandler);
+    this.setupManualTranscript();
+    this.setupTranscriptEdit();
   };
 
   // eslint-disable-next-line
@@ -2398,6 +2696,14 @@ export class DemoMeetingApp
       action: () => this.toggleLiveTranscription(),
     });
 
+    additionalToggles.push({
+      name: 'Manual Transcription',
+      oncreate: (elem: HTMLElement) => {
+        this.manualTranscriptionDisplayables.push(elem);
+      },
+      action: () => this.toggleManualTranscription(),
+    });
+
     this.populateDeviceList(
       'audio-input',
       genericName,
@@ -2471,6 +2777,18 @@ export class DemoMeetingApp
     }
   }
 
+  private updateManualTranscriptionDisplayState() {
+    this.log('Updating manual transcription display state to:', this.enableManualTranscription);
+    for (const elem of this.manualTranscriptionDisplayables) {
+      elem.classList.toggle('manual-transcription-active', this.enableManualTranscription);
+    }
+    this.transcriptContainerDiv.classList.toggle('enable-manual-transcription', this.enableManualTranscription);
+    if (this.enableManualTranscription) {
+      this.transcriptContainerDiv.style.display = 'block';
+      this.setButtonVisibility('button-transcription', true, 'on');
+    }
+  }
+
   private async toggleLiveTranscription(): Promise<void> {
     this.log('live transcription were previously set to ' + this.enableLiveTranscription + '; attempting to toggle');
 
@@ -2484,8 +2802,13 @@ export class DemoMeetingApp
       }
     } else {
       const liveTranscriptionModal = document.getElementById(`live-transcription-modal`);
-      liveTranscriptionModal.style.display = "block";
+      liveTranscriptionModal.style.display = 'block';
     }
+  }
+
+  private async toggleManualTranscription(): Promise<void> {
+    this.enableManualTranscription = !this.enableManualTranscription;
+    this.updateManualTranscriptionDisplayState();
   }
 
   async populateVideoInputList(): Promise<void> {

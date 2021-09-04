@@ -355,7 +355,7 @@ class AppPage {
 
   async checkIfTranscriptionStarted(useMedical) {
     const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
-    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
+    const transcriptDivs = await transcriptContainer.findElements(By.css('.transcript-content span'));
     if (transcriptDivs.length < 1) {
       return false;
     }
@@ -384,7 +384,7 @@ class AppPage {
 
   async checkIfTranscriptionStopped(useMedical) {
     const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
-    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
+    const transcriptDivs = await transcriptContainer.findElements(By.css('.transcript-content span'));
     if (transcriptDivs.length < 1) {
       return false;
     }
@@ -403,7 +403,7 @@ class AppPage {
 
   async checkTranscriptsFromLastStart(expectedTranscriptContentBySpeaker, compareFn) {
     const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
-    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
+    const transcriptDivs = await transcriptContainer.findElements(By.css('.transcript-speaker, .transcript-content'));
     if (transcriptDivs.length < 1) {
       return false;
     }
@@ -420,28 +420,25 @@ class AppPage {
       return false;
     }
 
-    // Filter out wrapper divs.
-    const transcriptsAfterLastStart = transcriptDivs.slice(lastStartedIdx + 1);
-    let transcriptsToValidate = [];
-    for (let i = 0; i < transcriptsAfterLastStart.length; i++) {
-      const transcriptElement = transcriptsAfterLastStart[i];
-      const classes = await transcriptElement.getAttribute('class');
-      if (classes.split(' ').includes('transcript')) {
-        transcriptsToValidate.push(transcriptElement);
-      }
-    }
-
     // Verify that each speaker's content is as expected according to compareFn.
     // Sequential transcripts for the same speaker are appended together for comparison.
     const actualTranscriptContentBySpeaker = {};
-    for (let i = 0; i < transcriptsToValidate.length; i++) {
-      const transcriptText = await transcriptsToValidate[i].getText();
-      const speaker = transcriptText.slice(0, transcriptText.indexOf(':'));
-      const content = transcriptText.slice(transcriptText.indexOf(':') + 1).trim();
-      if (actualTranscriptContentBySpeaker[speaker]) {
-        actualTranscriptContentBySpeaker[speaker] += " " + content;
+
+    let speaker = '';
+    const transcriptsAfterLastStart = transcriptDivs.slice(lastStartedIdx + 1);
+    for (let i = 0; i < transcriptsAfterLastStart.length; i++) {
+      const transcriptElement = transcriptsAfterLastStart[i];
+      const classes = await transcriptElement.getAttribute('class');
+      if (classes.split(' ').includes('transcript-speaker')) {
+        speaker = await transcriptElement.getText();
       } else {
-        actualTranscriptContentBySpeaker[speaker] = content;
+        const span = await transcriptElement.findElement(By.css('span'));
+        const content = await span.getText();
+        if (actualTranscriptContentBySpeaker[speaker]) {
+          actualTranscriptContentBySpeaker[speaker] += ' ' + content;
+        } else {
+          actualTranscriptContentBySpeaker[speaker] = content;
+        }
       }
     }
 
