@@ -1486,10 +1486,13 @@ export default class DefaultDeviceController
         };
         track.addEventListener('ended', newDevice.endedCallback, { once: true });
       }
-      newDevice.groupId = this.getGroupIdFromDeviceId(
-        kind,
-        this.getMediaTrackSettings(newDevice.stream)?.deviceId || ''
-      );
+
+      if (device !== null) {
+        const newDeviceId = this.getMediaTrackSettings(newDevice.stream)?.deviceId;
+        newDevice.groupId = newDeviceId ? this.getGroupIdFromDeviceId(kind, newDeviceId) : '';
+      } else {
+        newDevice.groupId = '';
+      }
 
       if (kind === 'audio') {
         // We only monitor the first track, and use its device ID for observer notifications.
