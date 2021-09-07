@@ -987,7 +987,7 @@ describe('MonitorTask', () => {
     it('publish event for Signalling Dropped when Web Socket Closed', () => {
       const spy = sinon.spy(context.eventController, 'publishEvent');
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
-      let currentEvent = new SignalingClientEvent(
+      const currentEvent = new SignalingClientEvent(
         new DefaultSignalingClient(webSocketAdapter, logger),
         SignalingClientEventType.WebSocketError,
         null
