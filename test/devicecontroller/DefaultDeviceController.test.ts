@@ -997,6 +997,74 @@ describe('DefaultDeviceController', () => {
       }
     });
 
+    it('Do not log error if choose null device with no device cache', () => {
+      const e = sinon.spy(logger, 'error');
+      const i = sinon.spy(logger, 'info');
+      const w = sinon.spy(logger, 'warn');
+
+      deviceController.chooseAudioInputDevice(null);
+
+      expect(e.notCalled).to.be.true;
+      expect(i.called).to.be.true;
+      expect(w.notCalled).to.be.true;
+
+      e.restore();
+      i.restore();
+      w.restore();
+    });
+
+    it('Do not log error if choose a media stream without device Id with no device cache', () => {
+      const e = sinon.spy(logger, 'error');
+      const i = sinon.spy(logger, 'info');
+      const w = sinon.spy(logger, 'warn');
+
+      deviceController.chooseAudioInputDevice(new MediaStream());
+
+      expect(e.notCalled).to.be.true;
+      expect(i.called).to.be.true;
+      expect(w.notCalled).to.be.true;
+
+      e.restore();
+      i.restore();
+      w.restore();
+    });
+
+    it('Use groupdId from device cache to prevent infinite loop', async () => {
+      // In rare case (e.g., Edge browser), the media stream setting can return different groupId than enumerateDevices
+      // Thus, we will try to set groupId from the device cache using the deviceId from the media stream
+      // to prevent infinite loop when selecting devices.
+      class TestAudioVideoController extends NoOpAudioVideoController {
+        async restartLocalAudio(_callback: () => void): Promise<void> {
+          await deviceController.acquireAudioInputStream();
+        }
+      }
+      domMockBehavior.mediaStreamTrackSettings = {
+        deviceId: 'device-Id',
+        groupId: 'group-Id2',
+      };
+
+      const mediaDeviceInfo = Object.create(
+        getMediaDeviceInfo('device-Id', 'audioinput', 'label', 'group-Id1')
+      );
+      domMockBehavior.enumerateDeviceList = [mediaDeviceInfo];
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      try {
+        deviceController.bindToAudioVideoController(new TestAudioVideoController());
+        await deviceController.listAudioInputDevices();
+        // @ts-ignore
+        const spy = sinon.spy(deviceController, 'chooseInputIntrinsicDevice');
+        const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
+        await deviceController.chooseAudioInputDevice(mediaDeviceInfo);
+        expect(gUM.calledOnce).to.be.true;
+        expect(spy.calledTwice).to.be.true;
+        gUM.restore();
+        spy.restore();
+      } catch (e) {
+        throw new Error('This line should not be reached.');
+      }
+    });
+
     it('releases audio media stream when requesting default device and default is already active in chromium based browser', async () => {
       enableWebAudio(true);
       domMockBehavior.browserName = 'chrome';
