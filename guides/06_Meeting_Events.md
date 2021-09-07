@@ -99,6 +99,9 @@ The Chime SDK for JavaScript sends these meeting events.
 |`videoInputSelected`    |The camera was selected.
 |`videoInputUnselected`  |The camera was removed. You called `meetingSession.audioVideo.chooseVideoInputDevice` with `null`.
 |`videoInputFailed`      |The camera selection failed.
+|`signalingDropped`      |The WebSocket failed or closed with an error.
+|`meetingReconnected`    |The meeting reconnected.
+|`receivingAudioDropped` |A significant number of receive-audio packets dropped.
 
 <br>
 
