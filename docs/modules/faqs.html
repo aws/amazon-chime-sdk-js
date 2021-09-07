@@ -202,6 +202,61 @@ handling status: SignalingBadRequest
 						<li>The close code <code>4410</code> from the Chime backend indicates that an attendee has attempted to join an already-ended meeting. The Chime SDK for JavaScript throws an error with the status code <code>MeetingEnded</code>.</li>
 						<li>The close code between <code>4500</code> and <code>4599</code> (inclusive) indicates an internal server error in the Amazon Chime backend. In this case, the Chime SDK for JavaScript throws an error with the status code <code>SignalingInternalServerError</code>. Please create a GitHub issue including the Chime SDK browser logs.</li>
 					</ol>
+					<a href="#when-does-the-amazon-chime-sdk-retry-the-connection-can-i-customize-this-retry-behavior" id="when-does-the-amazon-chime-sdk-retry-the-connection-can-i-customize-this-retry-behavior" style="color: inherit; text-decoration: none;">
+						<h3>When does the Amazon Chime SDK retry the connection? Can I customize this retry behavior?</h3>
+					</a>
+					<p>The Amazon Chime SDK for JavaScript retries the connection in the following situations.</p>
+					<ul>
+						<li>The SDK misses consecutive pong messages from the Chime server.</li>
+						<li>The SDK detects a high rate of audio packet loss.</li>
+						<li>The SDK experiences a significant audio delay.</li>
+						<li>The SDK encounters a retryable error during the session. Retryable errors are errors with <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html#isfailure">retryable response status codes</a> received regarding the session. i.e. status code with <code>TaskFailed</code> or <code>SignalingInternalServerError</code> will handled for retries.</li>
+					</ul>
+					<p>The SDK uses <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts">ConnectionHealthPolicyConfiguration</a> to trigger a reconnection. We recommend using the default configuration, but you can also provide the custom ConnectionHealthPolicyConfiguration object to change this behavior.</p>
+					<pre><code class="language-js"><span class="hljs-keyword">import</span> {
+  ConnectionHealthPolicyConfiguration,
+  ConsoleLogger,
+  DefaultDeviceController,
+  DefaultMeetingSession,
+  LogLevel,
+  MeetingSessionConfiguration
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> ConsoleLogger(<span class="hljs-string">&#x27;MyLogger&#x27;</span>, LogLevel.INFO);
+<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+
+<span class="hljs-keyword">const</span> healthPolicyConfiguration = <span class="hljs-keyword">new</span> ConnectionHealthPolicyConfiguration();
+
+<span class="hljs-comment">// Default: 25 consecutive WebRTC stats with no packet. You can reduce this value for a faster retry.</span>
+healthPolicyConfiguration.connectionUnhealthyThreshold = <span class="hljs-number">50</span>;
+
+<span class="hljs-comment">// Default: 10000 ms</span>
+healthPolicyConfiguration.connectionWaitTimeMs = <span class="hljs-number">20000</span>;
+
+<span class="hljs-comment">// Default: 60000 ms delay</span>
+healthPolicyConfiguration.maximumAudioDelayMs = <span class="hljs-number">30000</span>;
+
+<span class="hljs-comment">// Default: 10 data points</span>
+healthPolicyConfiguration.maximumAudioDelayDataPoints = <span class="hljs-number">5</span>;
+
+<span class="hljs-comment">// Default: 4 missed pongs. You can set the missed pongs upper threshold to zero to force restart the session.</span>
+healthPolicyConfiguration.missedPongsUpperThreshold = <span class="hljs-number">4</span>;
+
+<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(meetingResponse, attendeeResponse);
+
+<span class="hljs-comment">// Override the default health policy configuration.</span>
+configuration.connectionHealthPolicyConfiguration = healthPolicyConfiguration;
+
+<span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(
+  configuration,
+  logger,
+  deviceController
+);
+</code></pre>
+					<a href="#what-is-the-timeout-for-connect-and-reconnect-and-where-can-i-configure-the-value" id="what-is-the-timeout-for-connect-and-reconnect-and-where-can-i-configure-the-value" style="color: inherit; text-decoration: none;">
+						<h3>What is the timeout for connect and reconnect and where can I configure the value?</h3>
+					</a>
+					<p>The maximum amount of time to allow for connecting is 15 seconds, which can be configurable in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L40">MeetingSessionConfiguration</a>. The <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L67">reconnectTimeout</a> is configurable for how long you want to timeout the reconnection. The default value is 2 minutes.</p>
 					<a href="#media" id="media" style="color: inherit; text-decoration: none;">
 						<h2>Media</h2>
 					</a>

@@ -15,12 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Amazon Voice Focus will now trigger the `onCPUWarning` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
 - The Amazon Voice Focus support check, `VoiceFocusDeviceTransformer.isSupported`, now warns to the logger when run in an iframe, and can be configured to fail in that case.
 - Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events where as these events are currently being pushed into meeting History. 
+- Add retry logic in FAQs.
 
 ### Changed
 
 - Clarify why not use default downlink policy with simulcast.
 - Corrected argument `isUnifiedPlan` in `withBandwidthRestriction` to `isFirefox`. Also marked as deprecated since we no longer use it.
 - Update data message limit in the API Overview guide.
+- Do not trigger real time attendee presence event for local attendee if they are not appear in audio info frame 
+  during reconnection.
 
 ### Removed
 
@@ -42,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `RealtimeSubscribeToAttendeeIdPresenceCallback` type for `realtimeSubscribeToAttendeeIdPresence` callback to document the callback parameters.
 - Added support for Android WebView
-- Add a SignalClientEvent check in `SubscribeAndReceiveSubscribeAckTask` to immediately cancel the task when websocket connection is terminated.≈
+- Add a SignalClientEvent check in `SubscribeAndReceiveSubscribeAckTask` to immediately cancel the task when websocket connection is terminated.
 
 ### Changed
 - Update the default behavior of NScale video uplink bandwidth policy to scale down resolution based on the number
