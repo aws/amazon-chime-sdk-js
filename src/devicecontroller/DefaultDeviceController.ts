@@ -142,7 +142,7 @@ export default class DefaultDeviceController
   private audioInputDestinationNode: MediaStreamAudioDestinationNode | null = null;
   private audioInputSourceNode: MediaStreamAudioSourceNode | null = null;
 
-  private mediaDeviceWrapper: MediaDevices;
+  private mediaDeviceWrapper: MediaDevices | undefined;
   private onDeviceChangeCallback?: Thunk;
   private muteCallback: (muted: boolean) => void;
 
@@ -220,7 +220,7 @@ export default class DefaultDeviceController
       this.logger.info('Device change event callback is triggered');
       this.handleDeviceChange();
     };
-    this.mediaDeviceWrapper.addEventListener('devicechange', this.onDeviceChangeCallback);
+    this.mediaDeviceWrapper?.addEventListener('devicechange', this.onDeviceChangeCallback);
   }
 
   /**
@@ -232,7 +232,7 @@ export default class DefaultDeviceController
       return;
     }
     this.logger.info('Stopping devicechange listener.');
-    this.mediaDeviceWrapper.removeEventListener('devicechange', this.onDeviceChangeCallback);
+    this.mediaDeviceWrapper?.removeEventListener('devicechange', this.onDeviceChangeCallback);
     this.onDeviceChangeCallback = undefined;
   }
 

@@ -201,6 +201,21 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 <span class="hljs-keyword">Cross</span>-Origin-Embedder-<span class="hljs-keyword">Policy</span>: require-corp
 </code></pre>
 					<p>when serving your application HTML. These headers are optional but advised: they improve web security, as well as allowing the browser to support technologies like <code>SharedArrayBuffer</code>.</p>
+					<a href="#frames" id="frames" style="color: inherit; text-decoration: none;">
+						<h2>Frames</h2>
+					</a>
+					<p>Before attempting to use Amazon Voice Focus, make sure that your application is not running in an iframe. Browsers, particularly Chromium-based browsers like Chrome, Electron, and Edge, can restrict use of real-time scheduling in iframes (called &quot;subframes&quot; in Chromium). This results in choppy and unintelligible audio.</p>
+					<p>You can check whether your page or application is running in a subframe by using Chromium&#39;s <code>about:tracing</code> page.</p>
+					<ol>
+						<li>Load your application as normal.</li>
+						<li>Press <strong>Record</strong> in the tracing page.</li>
+						<li>Choose &quot;Manually select settings&quot;, click <strong>None</strong> on both sides, check <code>audio-worklet</code> and <code>webaudio.audionode</code> on the right side and <code>webaudio</code> on the left, then press <strong>Record</strong>.</li>
+						<li>In your application, start audio and activate Amazon Voice Focus.</li>
+						<li>Return to the tracing page and press <strong>Stop</strong>.</li>
+						<li>Expand the &quot;Renderer&quot; row for your page in the main part of the window. Make sure you see &quot;Realtime AudioWorklet thread&quot;.</li>
+						<li>Click <strong>Processes</strong> in the top right. Make sure the one that shows your page title <em>does not</em> say &quot;Subframe&quot;.</li>
+					</ol>
+					<p>The Amazon Voice Focus support check in <code>VoiceFocusDeviceTransformer.isSupported</code> will warn to its provided logger if run in an iframe, and will report no support if <code>{ allowIFrame: false }</code> is provided as part of its options argument.</p>
 					<a href="#checking-for-support-before-offering-noise-suppression" id="checking-for-support-before-offering-noise-suppression" style="color: inherit; text-decoration: none;">
 						<h2>Checking for support before offering noise suppression</h2>
 					</a>

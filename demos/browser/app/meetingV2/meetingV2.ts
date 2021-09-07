@@ -267,6 +267,8 @@ export class DemoMeetingApp
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
+  // We reserve the last tile index for local video
+  static readonly LOCAL_VIDEO_TILE_INDEX: number = DemoTileOrganizer.MAX_TILES;
 
   // Ideally we don't need to change this. Keep this configurable in case users have a super slow network.
   loadingBodyPixDependencyTimeoutMs: number = 10_000;
@@ -607,6 +609,9 @@ export class DemoMeetingApp
           (document.getElementById(`video-pin-${i}`) as HTMLButtonElement).style.display = 'none';
         }
       }
+      // Don't show pin or pause button on local video because they don't make sense there
+      (document.getElementById(`video-pin-${DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX}`) as HTMLButtonElement).style.display = 'none';
+      (document.getElementById(`video-pause-${DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX}`) as HTMLButtonElement).style.display = 'none';
 
       AsyncScheduler.nextTick(
         async (): Promise<void> => {
@@ -3212,7 +3217,7 @@ export class DemoMeetingApp
       return;
     }
     const tileIndex = tileState.localTile
-      ? 27
+      ? DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX
       : this.tileOrganizer.acquireTileIndex(tileState.tileId);
     const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
     const videoElement = document.getElementById(`video-${tileIndex}`) as HTMLVideoElement;
@@ -3226,11 +3231,12 @@ export class DemoMeetingApp
       `video-pin-${tileIndex}`
     ) as HTMLButtonElement;
 
-
-    pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
-    this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
-    pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
-    if (this.enablePin) {
+    if (!tileState.localTile) { // Pausing local tile doesn't make sense
+        pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
+        this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
+        pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
+    }
+    if (this.enablePin && !tileState.localTile) { // Pinning local tile doesn't make sense since this doesn't have any UI effects
       this.log('pinButtonElement addEventListener for tileIndex ' + tileIndex);
       pinButtonElement.removeEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
       this.tileIndexToPinEventListener[tileIndex] = this.createPinUnpinListener(tileState);

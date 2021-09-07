@@ -1,5 +1,6 @@
 import { ProcessorMessage, VoiceFocusAudioWorkletNode, VoiceFocusNodeOptions, WorkerMessage } from './types.js';
 declare class VoiceFocusInlineNode extends VoiceFocusAudioWorkletNode {
+    private delegate?;
     private worker;
     private logger;
     constructor(context: AudioContext, options: VoiceFocusNodeOptions);

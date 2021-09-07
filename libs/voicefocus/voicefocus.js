@@ -241,6 +241,7 @@ class VoiceFocus {
                 fetchBehavior: fetchConfig,
                 modelURL,
                 delegate,
+                logger,
             };
             const factory = new VoiceFocus(worker, processorURL, node, nodeOptions, executionQuanta);
             return Promise.resolve(factory);
