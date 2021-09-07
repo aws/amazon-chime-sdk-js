@@ -123,6 +123,15 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
       delete this.warnedAboutMissingStreamIdMapping[streamId];
       delete this.attendeeIdToStreamId[deletedAttendeeId];
 
+      // During reconnection, the audio info frame might not include self attendee.
+      // However, if that happens, there would be another audio info frame with the self attendee after reconnection.
+      // So we should not send leave event here for self attendee.
+      if (deletedAttendeeId === this.selfAttendeeId) {
+        this.logger.warn(
+          `the volume indicator adapter cleans up the current attendee (presence = false) after reconnection`
+        );
+        continue;
+      }
       // The reconnect event does not have information whether the attendee is dropped/left.
       // Defaulting to attendee leaving the meeting
       this.realtimeController.realtimeSetAttendeeIdPresence(
@@ -132,12 +141,6 @@ export default class DefaultVolumeIndicatorAdapter implements VolumeIndicatorAda
         false,
         { attendeeIndex: index, attendeesInFrame: deletedAttendeeId.length }
       );
-
-      if (deletedAttendeeId === this.selfAttendeeId) {
-        this.logger.warn(
-          `the volume indicator adapter cleans up the current attendee (presence = false) after reconnection`
-        );
-      }
     }
   }
 
