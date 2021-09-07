@@ -26,7 +26,7 @@ const chime = new AWS.Chime({ region: 'us-east-1' });
 const sts = new AWS.STS({ region: 'us-east-1' })
 
 // Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
-const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
+const endpoint = process.env.ENDPOINT || 'https://tapioca.us-east-1.amazonaws.com';
 console.info('Using endpoint', endpoint);
 
 chime.endpoint = new AWS.Endpoint(endpoint);

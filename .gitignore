@@ -9,6 +9,7 @@ __data*
 build
 coverage
 demos/browser/logs/
+demos/browser/package-lock.json
 demos/components/node_modules
 demos/react/node_modules
 demos/react/lib

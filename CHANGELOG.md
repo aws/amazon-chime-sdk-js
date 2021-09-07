@@ -22,9 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Corrected argument `isUnifiedPlan` in `withBandwidthRestriction` to `isFirefox`. Also marked as deprecated since we no longer use it.
 - Update data message limit in the API Overview guide.
 
-
 ### Removed
-
 
 ### Fixed
 - Fix priority-based downlink policy to not unpaused tiles that are not paused by the policy.
