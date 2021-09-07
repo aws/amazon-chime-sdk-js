@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Android WebView Sample UI test to workflow.
 - Add a new optional API `getVideoTileForAttendeeId` in `VideoTileController` and raise the `tileWillBePausedByDownlinkPolicy` event for empty video tiles.
 - Amazon Voice Focus will now trigger the `onCPUWarning` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
-- The Amazon Voice Focus support check, `VoiceFocusDeviceTransformer.isSupported`, now warns to the logger when run in an iframe, and can be configured to fail in that case.
+- Amazon Voice Focus will now trigger the `voiceFocusInsufficientResources` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
 - Add retry logic in FAQs.
 
 ### Changed
@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix simulcast guide that adaptive probe downlink policy is not enabled by default.
 - Fix a link format in simulcast guide.
 - No longer put useless 'pin' and 'pause' buttons on local tile in demo.
+- Choose a null device or media stream without a deviceId without first listing devices no longer logs `Device cache 
+  is not populated`.
 
 ## [2.16.1] - 2021-08-23
 
