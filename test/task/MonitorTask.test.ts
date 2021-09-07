@@ -694,7 +694,7 @@ describe('MonitorTask', () => {
     });
 
     it('notifies the connection is poor', done => {
-      const spy = sinon.spy(context.eventController, 'pushMeetingState');
+      const spy = sinon.spy(context.eventController, 'publishEvent');
 
       class TestObserver implements AudioVideoObserver {
         connectionDidBecomePoor(): void {
@@ -956,6 +956,45 @@ describe('MonitorTask', () => {
         )
       );
       expect(spy.called).to.be.false;
+    });
+
+    it('publish event for Signalling Dropped when Web Socket Failed', () => {
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketFailed,
+          null
+        )
+      );
+      expect(spy.calledWith('signalingDropped')).to.be.true;
+    });
+
+    it('publish event for Signalling Dropped when Web Socket Error', () => {
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketError,
+          null
+        )
+      );
+      expect(spy.calledWith('signalingDropped')).to.be.true;
+    });
+
+    it('publish event for Signalling Dropped when Web Socket Closed', () => {
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      let currentEvent = new SignalingClientEvent(
+        new DefaultSignalingClient(webSocketAdapter, logger),
+        SignalingClientEventType.WebSocketError,
+        null
+      );
+      currentEvent.closeCode = 4410;
+      task.handleSignalingClientEvent(currentEvent);
+      expect(spy.calledWith('signalingDropped')).to.be.true;
     });
 
     it('does not handle the non-OK status code', () => {
