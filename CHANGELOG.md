@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Amazon Voice Focus will now trigger the `onCPUWarning` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
 - Amazon Voice Focus will now trigger the `voiceFocusInsufficientResources` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
 - Add retry logic in FAQs.
+- The Amazon Voice Focus support check, `VoiceFocusDeviceTransformer.isSupported`, now warns to the logger when run in an iframe, and can be configured to fail in that case.
+- Add documentation in Video Processing APIs on how to add filters in the preview window.
 
 ### Changed
 
@@ -23,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update data message limit in the API Overview guide.
 - Do not trigger real time attendee presence event for local attendee if they are not appear in audio info frame 
   during reconnection.
+- Update `startVideoPreviewForVideoInput` to support filters in the preview window.
+- Update browser demo to showcase preview filter capability.
 
 ### Removed
 

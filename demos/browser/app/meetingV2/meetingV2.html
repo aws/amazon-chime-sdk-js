@@ -213,12 +213,17 @@
     <form id="form-devices">
       <h1 class="h3 mb-3 font-weight-normal text-center">Select devices</h1>
       <div class="row mt-3">
-        <div class="col-12 col-sm-8">
+        <div class="col-12 text-center d-sm-block video-preview">
+          <video id="video-preview" class="" style="border-radius:8px"></video>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-12">
           <label for="audio-input block">Microphone</label>
           <select id="audio-input" class="custom-select" style="width:100%"></select>
         </div>
 
-        <div class="text-center col-sm-4 d-sm-block">
+        <div class="text-center col-12 d-sm-block">
           <label>Preview</label>
           <div class="w-100 progress" style="margin-top:0.75rem">
             <div id="audio-preview" class="progress-bar bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -226,22 +231,21 @@
         </div>
       </div>
       <div class="row mt-3">
-        <div id="voice-focus-setting" class="col-12 col-sm-8 hidden">
+        <div id="voice-focus-setting" class="col-12 hidden">
           <input autocomplete="off" type="checkbox" id="add-voice-focus"></input>
           <label style="margin-left: 0.5em" for="voice-focus-setting block">Add Voice Focus</label>
         </div>
       </div>
       <div class="row mt-3">
-        <div class="col-12 col-sm-8">
+        <div class="col-12">
           <label for="video-input block">Camera</label>
           <select id="video-input" class="custom-select" style="width:100%"></select>
         </div>
-        <div class="col-sm-4 text-center d-sm-block video-preview">
-          <video id="video-preview" class="w-100 h-100" style="max-width:137px;max-height:82px;border-radius:8px"></video>
-        </div>
+        
       </div>
       <div class="row mt-3">
-        <div class="col-12 col-sm-8">
+        <div class="col-12">
+          <label for="video-input-quality block">Resolution</label>
           <select id="video-input-quality" class="custom-select" style="width:100%">
             <option value="360p">360p (nHD) @ 15 fps (600 Kbps max)</option>
             <option value="540p" selected>540p (qHD) @ 15 fps (1.4 Mbps max)</option>
@@ -249,13 +253,21 @@
           </select>
         </div>
       </div>
+      <div class="row mt-3" id="video-input-filter-container">
+        <div class="col-12">
+          <label for="video-input-filter block">Video Filter</label>
+          <select id="video-input-filter" class="custom-select" style="width:100%">
+            <option value="None" selected>None</option>
+          </select>
+        </div>
+      </div>
       <div class="row mt-3">
-        <div class="col-12 col-sm-8">
+        <div class="col-12">
           <label for="audio-output block">Speaker</label>
           <select id="audio-output" class="custom-select" style="width:100%"></select>
         </div>
-        <div class="col-sm-4">
-          <button id="button-test-sound" class="btn btn-outline-secondary btn-block h-50 d-sm-block" style="margin-top:2rem">Test</button>
+        <div class="col-12">
+          <button id="button-test-sound" class="btn btn-outline-secondary btn-block h-50 d-sm-block" style="margin-top:2rem">Test Speaker</button>
         </div>
       </div>
 

@@ -27,6 +27,7 @@ import { wait as delay } from '../../src/utils/Utils';
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 import DefaultVideoTransformDevice from '../../src/videoframeprocessor/DefaultVideoTransformDevice';
 import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFrameProcessor';
+import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
 import DefaultVideoTile from '../../src/videotile/DefaultVideoTile';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, {
@@ -97,6 +98,12 @@ describe('DefaultDeviceController', () => {
 
   function anyDeviceHasId(devices: MediaDeviceInfo[], deviceId: string): boolean {
     return devices.some(device => device.deviceId === deviceId);
+  }
+
+  function setupMockCaptureStream(): void {
+    const mediaStream = new MediaStream();
+    mediaStream.addTrack(new MediaStreamTrack());
+    domMockBehavior.createElementCaptureStream = mediaStream;
   }
 
   beforeEach(() => {
@@ -2016,6 +2023,12 @@ describe('DefaultDeviceController', () => {
   });
 
   describe('releaseMediaStream', () => {
+    it('returns immediately if the stream is null', async () => {
+      const spy = sinon.spy(audioVideoController.videoTileController, 'stopLocalVideoTile');
+      deviceController.releaseMediaStream(null);
+      expect(spy.called).to.be.false;
+    });
+
     it('stops the local video if enabled', async () => {
       const spy = sinon.spy(audioVideoController.videoTileController, 'stopLocalVideoTile');
       deviceController.bindToAudioVideoController(audioVideoController);
@@ -2476,48 +2489,178 @@ describe('DefaultDeviceController', () => {
 
   describe('preview', () => {
     let element: HTMLVideoElement;
+    let releaseMediaStreamSpy: sinon.SinonSpy;
+    let disconnectVideoStreamSpy: sinon.SinonSpy;
+    let connectVideoStreamSpy: sinon.SinonSpy;
+    let gUM: sinon.SinonSpy;
 
     beforeEach(() => {
       const videoElementFactory = new NoOpVideoElementFactory();
       element = videoElementFactory.create();
+      releaseMediaStreamSpy = sinon.spy(deviceController, 'releaseMediaStream');
+      disconnectVideoStreamSpy = sinon.spy(
+        DefaultVideoTile,
+        'disconnectVideoStreamFromVideoElement'
+      );
+      connectVideoStreamSpy = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
+      gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
     });
 
-    it('connects the video stream to the video element', async () => {
-      const spy1 = sinon.spy(DefaultVideoTile, 'disconnectVideoStreamFromVideoElement');
-      const spy2 = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
-      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
-      await deviceController.chooseVideoInputDevice(stringDeviceId);
-      deviceController.startVideoPreviewForVideoInput(element);
-      expect(spy1.calledOnce).to.be.true;
-      expect(spy2.calledOnce).to.be.true;
-      expect(gUM.calledOnce).to.be.true;
-      spy1.restore();
-      spy2.restore();
+    afterEach(() => {
+      releaseMediaStreamSpy.restore();
+      disconnectVideoStreamSpy.restore();
+      connectVideoStreamSpy.restore();
       gUM.restore();
     });
 
     it('does not disconnect or connect the video stream for preview if no active video exists', () => {
-      const spy1 = sinon.spy(DefaultVideoTile, 'disconnectVideoStreamFromVideoElement');
-      const spy2 = sinon.spy(DefaultVideoTile, 'connectVideoStreamToVideoElement');
-      const gUM = sinon.spy(navigator.mediaDevices, 'getUserMedia');
       deviceController.startVideoPreviewForVideoInput(element);
-      expect(spy1.called).to.be.false;
-      expect(spy2.called).to.be.false;
-      expect(gUM.calledOnce).to.be.false;
-      spy1.restore();
-      spy2.restore();
-      gUM.restore();
+
+      expect(releaseMediaStreamSpy.called).to.be.false;
+      expect(disconnectVideoStreamSpy.called).to.be.false;
+      expect(connectVideoStreamSpy.called).to.be.false;
+      expect(gUM.called).to.be.false;
+    });
+
+    it('connects the transform video stream to the video element if there is a transform device stream', async () => {
+      // It is important that the domMockBehavior setup is before the original video stream generation to mock browser behavior.
+      setupMockCaptureStream();
+      domMockBehavior.mediaStreamTrackSettings.deviceId = stringDeviceId;
+      // Connect the original video stream
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      deviceController.startVideoPreviewForVideoInput(element);
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [processor]);
+      // Connect the transform video stream
+      await deviceController.chooseVideoInputDevice(device);
+      deviceController.startVideoPreviewForVideoInput(element);
+
+      expect(device.getInnerDevice() === stringDeviceId);
+      expect(element.srcObject === (await gUM.returnValues.pop()));
+      expect(releaseMediaStreamSpy.called).to.be.false;
+      expect(disconnectVideoStreamSpy.called).to.be.false;
+      expect(connectVideoStreamSpy.calledTwice).to.be.true;
+      expect(gUM.calledOnce).to.be.true;
+      await device.stop();
+    });
+
+    it('connects the second transform video stream if a transform stream exists', async () => {
+      class TestVideoFrameProcessor1 extends NoOpVideoFrameProcessor {
+        width = 0;
+        height = 0;
+        process(_buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
+          this.width = 10;
+          this.height = 10;
+          return Promise.resolve(_buffers);
+        }
+      }
+
+      class TestVideoFrameProcessor2 extends NoOpVideoFrameProcessor {
+        width = 0;
+        height = 0;
+        process(_buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
+          this.width = 20;
+          this.height = 20;
+          return Promise.resolve(_buffers);
+        }
+      }
+      setupMockCaptureStream();
+      audioVideoController = new NoOpAudioVideoController();
+      const processor = new TestVideoFrameProcessor1();
+      const firstTransformDevice = new DefaultVideoTransformDevice(logger, stringDeviceId, [
+        processor,
+      ]);
+      await deviceController.chooseVideoInputDevice(firstTransformDevice);
+      deviceController.startVideoPreviewForVideoInput(element);
+      const firstMediaStream = await gUM.returnValues[0];
+      // The current DOMMockBuilder does not set active property of media stream to false if the media stream track is stopped which is not consistent to the browser behavior so we have to manually set the property here.
+      // @ts-ignore
+      await deviceController.chosenVideoTransformDevice.stop();
+      // @ts-ignore
+      firstMediaStream.active = false;
+      // The dom mock behavior's createElementCaptureStream variable needs to be reset here again to mock true browser behavior.
+      setupMockCaptureStream();
+      const newProcessor = new TestVideoFrameProcessor2();
+      const secondTransformDevice = new DefaultVideoTransformDevice(logger, stringDeviceId, [
+        newProcessor,
+      ]);
+      await deviceController.chooseVideoInputDevice(secondTransformDevice);
+      deviceController.startVideoPreviewForVideoInput(element);
+      const secondMediaStream = await gUM.returnValues[1];
+
+      expect(secondTransformDevice.getInnerDevice() === stringDeviceId);
+      expect(element.srcObject === secondMediaStream);
+      expect(releaseMediaStreamSpy.calledOnce).to.be.true;
+      expect(disconnectVideoStreamSpy.calledOnce).to.be.true;
+      expect(connectVideoStreamSpy.calledTwice).to.be.true;
+      expect(gUM.calledTwice).to.be.true;
+      await firstTransformDevice.stop();
+      await secondTransformDevice.stop();
+    });
+
+    it('connects the original device video stream to the video element if there is no transform device stream', async () => {
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      deviceController.startVideoPreviewForVideoInput(element);
+
+      expect(element.srcObject === (await gUM.returnValues.pop()));
+      expect(releaseMediaStreamSpy.called).to.be.false;
+      expect(disconnectVideoStreamSpy.called).to.be.false;
+      expect(connectVideoStreamSpy.calledOnce).to.be.true;
+      expect(gUM.calledOnce).to.be.true;
+    });
+
+    it('reuses the original video stream to create a transform device stream', async () => {
+      // It is important that the domMockBehavior setup is before the original video stream generation to mock browser behavior.
+      setupMockCaptureStream();
+      domMockBehavior.mediaStreamTrackSettings.deviceId = stringDeviceId;
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      deviceController.startVideoPreviewForVideoInput(element);
+      const processor = new NoOpVideoFrameProcessor();
+      const device = new DefaultVideoTransformDevice(logger, stringDeviceId, [processor]);
+      await deviceController.chooseVideoInputDevice(device);
+      deviceController.startVideoPreviewForVideoInput(element);
+
+      expect(element.srcObject === (await gUM.returnValues.pop()));
+      expect(releaseMediaStreamSpy.called).to.be.false;
+      expect(disconnectVideoStreamSpy.called).to.be.false;
+      expect(connectVideoStreamSpy.calledTwice).to.be.true;
+      expect(gUM.calledOnce).to.be.true;
+      await device.stop();
+    });
+
+    it('disconnects and releases the video stream if the video element stream is different from the active video stream', async () => {
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      deviceController.startVideoPreviewForVideoInput(element);
+      const newStringDeviceId = 'device-id-with-transformation';
+      await deviceController.chooseVideoInputDevice(newStringDeviceId);
+      deviceController.startVideoPreviewForVideoInput(element);
+
+      expect(releaseMediaStreamSpy.calledOnce).to.be.true;
+      expect(disconnectVideoStreamSpy.calledOnce).to.be.true;
+      expect(connectVideoStreamSpy.calledTwice).to.be.true;
+      expect(gUM.calledTwice).to.be.true;
+    });
+
+    it('does not disconnect and release the video stream if the video element stream is same as the active video stream', async () => {
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      deviceController.startVideoPreviewForVideoInput(element);
+      await deviceController.chooseVideoInputDevice(stringDeviceId);
+      deviceController.startVideoPreviewForVideoInput(element);
+
+      expect(releaseMediaStreamSpy.called).to.be.false;
+      expect(disconnectVideoStreamSpy.called).to.be.false;
+      expect(connectVideoStreamSpy.calledTwice).to.be.true;
+      expect(gUM.calledOnce).to.be.true;
     });
 
     it('disconnects the video stream of the given element', async () => {
-      const spy = sinon.spy(DefaultVideoTile, 'disconnectVideoStreamFromVideoElement');
       await deviceController.chooseVideoInputDevice(stringDeviceId);
       const stream = await deviceController.acquireVideoInputStream();
       // @ts-ignore
       element.srcObject = stream;
       deviceController.stopVideoPreviewForVideoInput(element);
       await delay(100);
-      expect(spy.calledOnceWith(element, false)).to.be.true;
+      expect(disconnectVideoStreamSpy.calledOnceWith(element, false)).to.be.true;
     });
 
     it('releases the video stream of the active video input', async () => {

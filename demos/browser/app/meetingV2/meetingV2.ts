@@ -76,6 +76,7 @@ import {
 import CircularCut from './videofilter/CircularCut';
 import EmojifyVideoFrameProcessor from './videofilter/EmojifyVideoFrameProcessor';
 import SegmentationProcessor from './videofilter/SegmentationProcessor';
+import ResizeProcessor from './videofilter/ResizeProcessor';
 import {
   loadBodyPixDependency,
   platformCanSupportBodyPixWithoutDegradation,
@@ -161,9 +162,9 @@ const VOICE_FOCUS_SPEC = {
 
 const MAX_VOICE_FOCUS_COMPLEXITY: VoiceFocusModelComplexity | undefined = undefined;
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'None';
+type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'None';
 
-const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp'];
+const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
 class TestSound {
   static testAudioElement = new Audio();
@@ -651,7 +652,8 @@ export class DemoMeetingApp
 
           await this.initVoiceFocus();
           await this.populateAllDeviceLists();
-          await this.populateVideoFilterInputList();
+          await this.populateVideoFilterInputList(false);
+          await this.populateVideoFilterInputList(true);
 
           this.switchToFlow('flow-devices');
           await this.openAudioInputFromSelectionAndPreview();
@@ -751,6 +753,17 @@ export class DemoMeetingApp
       );
     });
 
+    if(!this.areVideoFiltersSupported())  {
+      document.getElementById('video-input-filter-container').style.display = 'none';
+    }
+
+    let videoInputFilter = document.getElementById('video-input-filter') as HTMLInputElement;
+    videoInputFilter.addEventListener('change', async () => {
+      this.selectedVideoFilterItem = <VideoFilterName>videoInputFilter.value;
+      this.log(`Clicking video filter: ${this.selectedVideoFilterItem}`);
+      await this.openVideoInputFromSelection(this.selectedVideoInput, true)
+    });
+
     document.getElementById('copy-sip-uri').addEventListener('click', () => {
       const sipUriElement = document.getElementById('sip-uri') as HTMLInputElement;
       sipUriElement.select();
@@ -816,8 +829,10 @@ export class DemoMeetingApp
           this.audioVideo.stopVideoPreviewForVideoInput(
             document.getElementById('video-preview') as HTMLVideoElement
           );
+          // stopVideoProcessor should be called before join; it ensures that state variables and video processor stream are cleaned / removed before joining the meeting.
+          // If stopVideoProcessor is not called then the state from preview screen will be carried into the in meeting experience and it will cause undesired side effects.
+          await this.stopVideoProcessor();
           await this.join();
-          this.audioVideo.chooseVideoInputDevice(null);
           this.hideProgress('progress-join');
           this.displayButtonStates();
           this.switchToFlow('flow-meeting');
@@ -2247,6 +2262,29 @@ export class DemoMeetingApp
     }
   }
 
+  populateVideoPreviewFilterList(
+    elementId: string,
+    genericName: string,
+    filters: VideoFilterName[]
+  ): void {
+    const list = document.getElementById(elementId) as HTMLSelectElement;
+    while (list.firstElementChild) {
+      list.removeChild(list.firstElementChild);
+    }
+    for (let i = 0; i < filters.length; i++) {
+      const option = document.createElement('option');
+      list.appendChild(option);
+      option.text = filters[i] || `${genericName} ${i + 1}`;
+      option.value = filters[i];
+    }
+    
+    if (!list.firstElementChild) {
+      const option = document.createElement('option');
+      option.text = 'Filter selection unavailable';
+      list.appendChild(option);
+    }
+  }
+
   populateInMeetingDeviceList(
     elementId: string,
     genericName: string,
@@ -2330,14 +2368,18 @@ export class DemoMeetingApp
     }
   }
 
-  private async populateVideoFilterInputList(): Promise<void> {
+  private async stopVideoProcessor(): Promise<void>  {
+    this.log('Clearing filter variables and stopping the video transform device');
+    this.chosenVideoFilter = 'None';
+    this.selectedVideoFilterItem = 'None';
+    this.chosenVideoTransformDevice?.stop();
+  }
+
+  private async populateVideoFilterInputList(isPreviewWindow: boolean): Promise<void> {
     const genericName = 'Filter';
     let filters: VideoFilterName[] = ['None'];
 
-    if (
-      this.defaultBrowserBehaviour.supportsCanvasCapturedStreamPlayback() &&
-      this.enableUnifiedPlanForChromiumBasedBrowsers
-    ) {
+    if (this.areVideoFiltersSupported()) {
       filters = filters.concat(VIDEO_FILTERS);
       if (platformCanSupportBodyPixWithoutDegradation()) {
         if (!this.loadingBodyPixDependencyPromise) {
@@ -2346,32 +2388,36 @@ export class DemoMeetingApp
         // do not use `await` to avoid blocking page loading
         this.loadingBodyPixDependencyPromise.then(() => {
           filters.push('Segmentation');
-          this.populateInMeetingDeviceList(
-            'dropdown-menu-filter',
-            genericName,
-            [],
-            filters,
-            undefined,
-            async (name: VideoFilterName) => {
-              await this.selectVideoFilterByName(name);
-            }
-          );
+          this.populateFilterList(isPreviewWindow, genericName, filters);
         }).catch(err => {
           this.log('Could not load BodyPix dependency', err);
         });
       }
     }
 
-    this.populateInMeetingDeviceList(
-      'dropdown-menu-filter',
-      genericName,
-      [],
-      filters,
-      undefined,
-      async (name: VideoFilterName) => {
-        await this.selectVideoFilterByName(name);
-      }
-    );
+    this.populateFilterList(isPreviewWindow, genericName, filters);
+  }
+
+  private async populateFilterList(isPreviewWindow: boolean, genericName: string, filters: VideoFilterName[]): Promise<void> {
+    if(isPreviewWindow) {
+      this.populateVideoPreviewFilterList(
+        'video-input-filter',
+        genericName,
+        filters
+      );
+    }
+    else  {
+      this.populateInMeetingDeviceList(
+        'dropdown-menu-filter',
+        genericName,
+        [],
+        filters,
+        undefined,
+        async (name: VideoFilterName) => {
+          await this.selectVideoFilterByName(name);
+        }
+      );
+    }
   }
 
   async populateAudioInputList(): Promise<void> {
@@ -2415,6 +2461,10 @@ export class DemoMeetingApp
         await this.selectAudioInputDeviceByName(name);
       }
     );
+  }
+
+  private areVideoFiltersSupported(): boolean {
+    return this.defaultBrowserBehaviour.supportsCanvasCapturedStreamPlayback() && this.enableUnifiedPlanForChromiumBasedBrowsers;
   }
 
   private isVoiceFocusActive(): boolean {
@@ -2865,6 +2915,10 @@ export class DemoMeetingApp
 
     if (videoFilter === 'Segmentation') {
       return new SegmentationProcessor();
+    }
+
+    if (videoFilter === 'Resize (9/16)') {
+      return new ResizeProcessor(0.5625);  // 16/9 Aspect Ratio
     }
 
     return null;
