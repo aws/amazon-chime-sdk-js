@@ -20,6 +20,7 @@ import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport'
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
+import AudioVideoEventAttributes from '../../src/eventcontroller/AudioVideoEventAttributes';
 import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventName from '../../src/eventcontroller/EventName';
@@ -699,7 +700,10 @@ describe('MonitorTask', () => {
       class TestObserver implements AudioVideoObserver {
         connectionDidBecomePoor(): void {
           expect(context.poorConnectionCount).to.eq(1);
-          expect(spy.calledWith('receivingAudioDropped')).to.be.true;
+          const args = spy.getCalls()[0].args;
+          const additionalArgs = <AudioVideoEventAttributes>args[1];
+          assert.equal(args[0], 'receivingAudioDropped');
+          assert.equal(additionalArgs.poorConnectionCount, 1);
           done();
         }
       }

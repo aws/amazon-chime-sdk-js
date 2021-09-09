@@ -1538,7 +1538,7 @@ export class DemoMeetingApp
       case 'receivingAudioDropped':
       case 'signalingDropped':
       case 'attendeePresenceReceived': {
-        // Exclude the "meetingHistory" attribute for successful events.
+        // Exclude the "meetingHistory" attribute for successful -> published events.
         this.meetingEventPOSTLogger?.info(
           JSON.stringify({
             name,

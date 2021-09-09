@@ -4,6 +4,7 @@
 type EventName =
   | 'meetingStartRequested'
   | 'meetingStartSucceeded'
+  | 'meetingReconnected'
   | 'meetingStartFailed'
   | 'meetingEnded'
   | 'meetingFailed'
@@ -14,8 +15,7 @@ type EventName =
   | 'videoInputSelected'
   | 'videoInputUnselected'
   | 'videoInputFailed'
-  | 'meetingReconnected'
-  | 'receivingAudioDropped'
-  | 'signalingDropped';
+  | 'signalingDropped'
+  | 'receivingAudioDropped';
 
 export default EventName;
