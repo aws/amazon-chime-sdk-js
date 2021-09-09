@@ -70,7 +70,7 @@ import {
   VoiceFocusSpec,
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
-  isDestroyable,
+  isDestroyable, VideoUplinkBandwidthPolicy, NScaleVideoUplinkBandwidthPolicy,
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -100,6 +100,12 @@ let fatal: (e: Error) => void;
 declare global {
   interface Window {
     webkitAudioContext: typeof AudioContext
+  }
+}
+
+class DemoActiveSpeakerPolicy extends DefaultActiveSpeakerPolicy {
+  prioritizeVideoSendBandwidthForActiveSpeaker() {
+    return false;
   }
 }
 
@@ -303,6 +309,9 @@ export class DemoMeetingApp
   microphoneDeviceIds: string[] = [];
   currentAudioInputDevice: AudioInputDevice | undefined;
 
+  curator: boolean = false;
+  featureAttendeeId: string = '';
+
   buttonStates: { [key: string]: boolean } = {
     'button-microphone': true,
     'button-camera': false,
@@ -325,6 +334,7 @@ export class DemoMeetingApp
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
+  videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy;
   enablePin = false;
 
   supportsVoiceFocus = false;
@@ -604,11 +614,11 @@ export class DemoMeetingApp
       if (this.usePriorityBasedDownlinkPolicy) {
         this.enablePin = (document.getElementById('enable-pin') as HTMLInputElement).checked;
       }
-      if (!this.enablePin) {
-        for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
-          (document.getElementById(`video-pin-${i}`) as HTMLButtonElement).style.display = 'none';
-        }
-      }
+      // if (!this.enablePin) {
+      //   for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
+      //     (document.getElementById(`video-pin-${i}`) as HTMLButtonElement).style.display = 'none';
+      //   }
+      // }
       // Don't show pin or pause button on local video because they don't make sense there
       (document.getElementById(`video-pin-${DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX}`) as HTMLButtonElement).style.display = 'none';
       (document.getElementById(`video-pause-${DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX}`) as HTMLButtonElement).style.display = 'none';
@@ -670,6 +680,14 @@ export class DemoMeetingApp
           const preconnect = document.getElementById('preconnect') as HTMLInputElement;
           if (preconnect.checked) {
             this.audioVideo.start({ signalingOnly: true });
+          }
+          this.curator = (document.getElementById('curator') as HTMLInputElement).checked;
+          if (this.curator) {
+            this.activeSpeakerLayout = false;
+          } else {
+            for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
+              (document.getElementById(`video-pin-${i}`) as HTMLButtonElement).style.display = 'none';
+            }
           }
         }
       );
@@ -1599,6 +1617,11 @@ export class DemoMeetingApp
       configuration.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(this.meetingLogger);
     }
 
+    // if (!this.enableSimulcast) {
+    //   this.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(configuration.credentials.attendeeId);
+    //   configuration.videoUplinkBandwidthPolicy = this.videoUplinkBandwidthPolicy;
+    // }
+
     this.meetingSession = new DefaultMeetingSession(
       configuration,
       this.meetingLogger,
@@ -1616,9 +1639,7 @@ export class DemoMeetingApp
       this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
     }
     this.audioVideo = this.meetingSession.audioVideo;
-    if (this.enableSimulcast) {
-      this.audioVideo.chooseVideoInputQuality(1280, 720, 15, 1400);
-    }
+    this.audioVideo.chooseVideoInputQuality(1280, 720, 15, 1400);
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
     this.setupMuteHandler();
@@ -1830,7 +1851,7 @@ export class DemoMeetingApp
           break; // only show the most active speaker
         }
       }
-      this.layoutFeaturedTile();
+      // this.layoutFeaturedTile();
     };
 
     const scoreHandler = (scores: { [attendeeId: string]: number }) => {
@@ -1843,7 +1864,7 @@ export class DemoMeetingApp
     };
 
     this.audioVideo.subscribeToActiveSpeakerDetector(
-      new DefaultActiveSpeakerPolicy(),
+      new DemoActiveSpeakerPolicy(),
       this.activeSpeakerHandler,
       scoreHandler,
       this.showActiveSpeakerScores ? 100 : 0
@@ -1895,6 +1916,38 @@ export class DemoMeetingApp
 
   dataMessageHandler(dataMessage: DataMessage): void {
     if (!dataMessage.throttled) {
+      if (dataMessage.topic === 'feature') {
+        if (!this.videoUplinkBandwidthPolicy) {
+          this.videoUplinkBandwidthPolicy = this.meetingSession.configuration.videoUplinkBandwidthPolicy;
+        }
+        let featureAttendeeId = dataMessage.text();
+        featureAttendeeId = featureAttendeeId !== 'None' ? featureAttendeeId : '';
+        const selfAttendeeId = this.meetingSession.configuration.credentials.attendeeId;
+        //Clean up previous feature state
+        if (this.featureAttendeeId !== featureAttendeeId) {
+          if (this.featureAttendeeId) {
+            if (this.featureAttendeeId === selfAttendeeId) {
+              console.log(`>_< I am no longer featured`);
+              this.videoUplinkBandwidthPolicy.setHasBandwidthPriority(false);
+              this.videoUplinkBandwidthPolicy.updateTransceiverController();
+            } else {
+              const prevFeatureTileId = this.tileIdForAttendeeId(this.featureAttendeeId);
+              this.audioVideo.pauseVideoTile(prevFeatureTileId);
+            }
+          }
+          this.featureAttendeeId = featureAttendeeId;
+        }
+        if (this.featureAttendeeId === selfAttendeeId) {
+          console.log(`Yay I am featured`);
+          this.videoUplinkBandwidthPolicy.setHasBandwidthPriority(true);
+          this.videoUplinkBandwidthPolicy.updateTransceiverController();
+        } else if (this.featureAttendeeId) {
+          const featureTileId = this.tileIdForAttendeeId(this.featureAttendeeId);
+          this.audioVideo.unpauseVideoTile(featureTileId);
+        }
+        this.layoutFeaturedTile();
+        return;
+      }
       const isSelf =
         dataMessage.senderAttendeeId === this.meetingSession.configuration.credentials.attendeeId;
       if (dataMessage.timestampMs <= this.lastReceivedMessageTimestamp) {
@@ -1936,6 +1989,14 @@ export class DemoMeetingApp
         this.dataMessageHandler(dataMessage);
       }
     );
+    if (!this.curator) {
+      this.audioVideo.realtimeSubscribeToReceiveDataMessage(
+        'feature',
+        (dataMessage: DataMessage) => {
+          this.dataMessageHandler(dataMessage);
+        }
+      )
+    }
   }
 
   transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
@@ -3167,15 +3228,28 @@ export class DemoMeetingApp
 
   createPinUnpinListener(tileState: VideoTileState): (event: Event) => void {
     return (event: Event): void => {
-      const attendeeId = tileState.boundAttendeeId;
+        const attendeeId = tileState.boundAttendeeId;
         if (this.roster[attendeeId].pinned ) {
           (event.target as HTMLButtonElement).innerText = 'Pin';
           this.roster[attendeeId].pinned = false;
+          this.featureAttendeeId = '';
+          console.log(`Stop featuring ${attendeeId}`);
         } else {
           (event.target as HTMLButtonElement).innerText = 'Unpin';
           this.roster[attendeeId].pinned = true;
+          if (this.featureAttendeeId && this.featureAttendeeId !== attendeeId) {
+            const prevFeatureTileId = this.tileIdForAttendeeId(this.featureAttendeeId);
+            const tileIndex = this.tileIdToTileIndex[prevFeatureTileId];
+            const pinButtonElement = document.getElementById(
+              `video-pin-${tileIndex}`
+            ) as HTMLButtonElement;
+            pinButtonElement.innerText = 'Pin';
+            this.roster[this.featureAttendeeId].pinned = false;
+          }
+          this.featureAttendeeId = attendeeId;
+          console.log(`Featuring ${attendeeId}`);
         }
-        this.updateDownlinkPreference();
+        this.audioVideo.realtimeSendDataMessage('feature', this.featureAttendeeId ? this.featureAttendeeId : 'None');
       }
   }
 
@@ -3216,6 +3290,9 @@ export class DemoMeetingApp
     if (!tileState.boundAttendeeId) {
       return;
     }
+    if (!this.curator && !tileState.localTile && tileState.boundAttendeeId !== this.featureAttendeeId) {
+      this.audioVideo.pauseVideoTile(tileState.tileId);
+    }
     const tileIndex = tileState.localTile
       ? DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX
       : this.tileOrganizer.acquireTileIndex(tileState.tileId);
@@ -3236,7 +3313,8 @@ export class DemoMeetingApp
         this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
         pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
     }
-    if (this.enablePin && !tileState.localTile) { // Pinning local tile doesn't make sense since this doesn't have any UI effects
+    if (this.curator && !tileState.localTile) { // Pinning local tile doesn't make sense since this doesn't have any UI
+      // effects
       this.log('pinButtonElement addEventListener for tileIndex ' + tileIndex);
       pinButtonElement.removeEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
       this.tileIndexToPinEventListener[tileIndex] = this.createPinUnpinListener(tileState);
@@ -3250,11 +3328,11 @@ export class DemoMeetingApp
       this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#').slice(-1)[0]);
     }
     this.updateProperty(attendeeIdElement, 'innerText', tileState.boundAttendeeId);
-    if (tileState.paused && this.roster[tileState.boundAttendeeId].bandwidthConstrained) {
-      this.updateProperty(pauseStateElement, 'innerText', '⚡');
-    } else {
-      this.updateProperty(pauseStateElement, 'innerText', '');
-    }
+    // if (tileState.paused && this.roster[tileState.boundAttendeeId].bandwidthConstrained) {
+    //   this.updateProperty(pauseStateElement, 'innerText', '⚡');
+    // } else {
+    //   this.updateProperty(pauseStateElement, 'innerText', '');
+    // }
     this.showTile(tileElement, tileState);
     this.updateGridClasses();
     this.layoutFeaturedTile();
@@ -3326,16 +3404,19 @@ export class DemoMeetingApp
     if (!this.meetingSession) {
       return;
     }
+    if (!this.activeSpeakerLayout) {
+      return;
+    }
     const tilesIndices = this.visibleTileIndices();
     const localTileId = this.localTileId();
-    const activeTile = this.activeTileId();
+    const featureTileId = this.tileIdForAttendeeId(this.featureAttendeeId);
 
     for (let i = 0; i < tilesIndices.length; i++) {
       const tileIndex = tilesIndices[i];
       const tileElement = document.getElementById(`tile-${tileIndex}`) as HTMLDivElement;
       const tileId = this.tileIndexToTileId[tileIndex];
 
-      if (tileId === activeTile && tileId !== localTileId) {
+      if (tileId !== localTileId && tileId === featureTileId) {
         tileElement.classList.add('featured');
       } else {
         tileElement.classList.remove('featured');
@@ -3347,11 +3428,11 @@ export class DemoMeetingApp
 
   updateGridClasses(): void {
     const localTileId = this.localTileId();
-    const activeTile = this.activeTileId();
+    const featureTileId = this.tileIdForAttendeeId(this.featureAttendeeId);
 
     this.tileArea.className = `v-grid size-${this.availablelTileSize()}`;
 
-    if (activeTile && activeTile !== localTileId) {
+    if (featureTileId && featureTileId !== localTileId) {
       this.tileArea.classList.add('featured');
     } else {
       this.tileArea.classList.remove('featured');
