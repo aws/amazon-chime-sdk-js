@@ -1026,7 +1026,7 @@ export default class DefaultAudioVideoController
           } = this.meetingSessionContext;
           const attributes: AudioVideoEventAttributes = {
             maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
-            meetingDurationMs: startTimeMs === null ? 0 : Math.round(Date.now() - startTimeMs),
+            meetingDurationMs: Math.round(Date.now() - startTimeMs),
             meetingStatus: MeetingSessionStatusCode[status.statusCode()],
             signalingOpenDurationMs,
             iceGatheringDurationMs,
