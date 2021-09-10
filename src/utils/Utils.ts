@@ -18,3 +18,21 @@ export function isIFramed(): boolean {
     return true;
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toLowerCasePropertyNames(input: any): any {
+  if (input === null) {
+    return null;
+  } else if (typeof input !== 'object') {
+    return input;
+  } else if (Array.isArray(input)) {
+    return input.map(toLowerCasePropertyNames);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return Object.keys(input).reduce((result: any, key: string) => {
+    const value = input[key];
+    const newValue = typeof value === 'object' ? toLowerCasePropertyNames(value) : value;
+    result[key.toLowerCase()] = newValue;
+    return result;
+  }, {});
+}
