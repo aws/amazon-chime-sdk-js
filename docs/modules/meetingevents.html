@@ -295,12 +295,12 @@ meetingSession.audioVideo.addObserver(observer);
 						<tbody><tr>
 								<td><code>attendeePresenceDurationMs</code></td>
 								<td>The time taken for the attendee to be present in the meeting.<br><br>Unit: Milliseconds</td>
-								<td><code>attendeePresenceReceived</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code></td>
+								<td><code>attendeePresenceReceived</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>iceGatheringDurationMs</code></td>
 								<td>The time taken for connection&#39;s ICE gathering state to complete.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>maxVideoTileCount</code></td>
@@ -310,7 +310,7 @@ meetingSession.audioVideo.addObserver(observer);
 							<tr>
 								<td><code>meetingDurationMs</code></td>
 								<td>The time that elapsed between the beginning (<code>AudioVideoObserver.audioVideoDidStart</code>) and the end (<code>AudioVideoObserver.audioVideoDidStop</code>) of the meeting.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code></td>
+								<td><code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>meetingErrorMessage</code></td>
@@ -320,7 +320,7 @@ meetingSession.audioVideo.addObserver(observer);
 							<tr>
 								<td><code>meetingStartDurationMs</code></td>
 								<td>The time that elapsed between the start request <code>meetingSession.audioVideo.start</code> and the beginning of the meeting <code>AudioVideoObserver.audioVideoDidStart</code>.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>meetingStatus</code></td>
@@ -330,17 +330,17 @@ meetingSession.audioVideo.addObserver(observer);
 							<tr>
 								<td><code>poorConnectionCount</code></td>
 								<td>The number of times the significant packet loss occurred during the meeting. Per count, you receive <code>AudioVideoObserver.connectionDidBecomePoor</code> or <code>AudioVideoObserver.connectionDidSuggestStopVideo</code>.<br><br>Unit: Count</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>retryCount</code></td>
 								<td>The number of connection retries performed during the meeting.<br><br>Unit: Count</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>signalingOpenDurationMs</code></td>
 								<td>The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 					</tbody></table>
 					<br>
