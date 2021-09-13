@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   during reconnection.
 - Update `startVideoPreviewForVideoInput` to support filters in the preview window.
 - Update browser demo to showcase preview filter capability.
+- Migrate SauceLabs mobile tests to new api. 
 
 ### Removed
 
