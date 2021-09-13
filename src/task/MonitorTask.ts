@@ -348,7 +348,7 @@ export default class MonitorTask
     ) {
       if (!this.hasSignalingError) {
         const attributes = this.generateAudioVideoEventAttributes();
-        this.context.eventController?.publishEvent('signalingDropped',attributes);
+        this.context.eventController?.publishEvent('signalingDropped', attributes);
         this.hasSignalingError = true;
       }
     } else if (event.type === SignalingClientEventType.WebSocketOpen) {
@@ -413,7 +413,7 @@ export default class MonitorTask
     }
   };
 
-  private generateAudioVideoEventAttributes = () : AudioVideoEventAttributes => {
+  private generateAudioVideoEventAttributes = (): AudioVideoEventAttributes => {
     const {
       signalingOpenDurationMs,
       poorConnectionCount,
