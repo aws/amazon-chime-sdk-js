@@ -1767,6 +1767,37 @@ describe('DefaultAudioVideoController', () => {
       ]);
     }).timeout(5000);
 
+    it('publish meeting reconnected', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      const events: { name: EventName; attributes: EventAttributes }[] = [];
+      audioVideoController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          events.push({
+            name,
+            attributes,
+          });
+        },
+      });
+      await start();
+      await reconnect();
+      await stop();
+
+      const eventNames = events.map(({ name }) => name);
+      expect(eventNames).to.eql([
+        'meetingStartRequested',
+        'attendeePresenceReceived',
+        'meetingStartSucceeded',
+        'meetingReconnected',
+        'meetingEnded',
+      ]);
+    }).timeout(5000);
+
     it('does not reconnect if canceled', async () => {
       let called = 0;
       audioVideoController = new DefaultAudioVideoController(

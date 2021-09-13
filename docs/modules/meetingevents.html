@@ -158,6 +158,10 @@ meetingSession.audioVideo.addObserver(observer);
 								<td>The meeting started.</td>
 							</tr>
 							<tr>
+								<td><code>meetingReconnected</code></td>
+								<td>The meeting reconnected.</td>
+							</tr>
+							<tr>
 								<td><code>meetingStartFailed</code></td>
 								<td>The meeting failed to start due to the following failure <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a>: <br><ul><li><code>AudioCallAtCapacity</code></li><li><code>MeetingEnded</code></li><li><code>SignalingBadRequest</code></li><li><code>TaskFailed</code></li></ul>For more information, see the <a href="#meeting-error-messages">&quot;Meeting error messages&quot; section</a>.</td>
 							</tr>
@@ -196,6 +200,14 @@ meetingSession.audioVideo.addObserver(observer);
 							<tr>
 								<td><code>videoInputFailed</code></td>
 								<td>The camera selection failed.</td>
+							</tr>
+							<tr>
+								<td><code>signalingDropped</code></td>
+								<td>The WebSocket failed or closed with an error.</td>
+							</tr>
+							<tr>
+								<td><code>receivingAudioDropped</code></td>
+								<td>A significant number of receive-audio packets dropped.</td>
 							</tr>
 					</tbody></table>
 					<br>
@@ -283,22 +295,22 @@ meetingSession.audioVideo.addObserver(observer);
 						<tbody><tr>
 								<td><code>attendeePresenceDurationMs</code></td>
 								<td>The time taken for the attendee to be present in the meeting.<br><br>Unit: Milliseconds</td>
-								<td><code>attendeePresenceReceived</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>attendeePresenceReceived</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>iceGatheringDurationMs</code></td>
 								<td>The time taken for connection&#39;s ICE gathering state to complete.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>maxVideoTileCount</code></td>
 								<td>The maximum number of simultaneous video tiles shared during the meeting. This includes a local tile (your video), remote tiles, and content shares.<br><br>Unit: Count</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>meetingDurationMs</code></td>
 								<td>The time that elapsed between the beginning (<code>AudioVideoObserver.audioVideoDidStart</code>) and the end (<code>AudioVideoObserver.audioVideoDidStop</code>) of the meeting.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>meetingErrorMessage</code></td>
@@ -308,27 +320,27 @@ meetingSession.audioVideo.addObserver(observer);
 							<tr>
 								<td><code>meetingStartDurationMs</code></td>
 								<td>The time that elapsed between the start request <code>meetingSession.audioVideo.start</code> and the beginning of the meeting <code>AudioVideoObserver.audioVideoDidStart</code>.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>meetingStatus</code></td>
 								<td>The meeting status when the meeting ended or failed. Note that this attribute indicates an enum name in <a href="https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html">MeetingSessionStatusCode</a>, such as <code>Left</code> or <code>MeetingEnded</code>.</td>
-								<td><code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code></td>
 							</tr>
 							<tr>
 								<td><code>poorConnectionCount</code></td>
 								<td>The number of times the significant packet loss occurred during the meeting. Per count, you receive <code>AudioVideoObserver.connectionDidBecomePoor</code> or <code>AudioVideoObserver.connectionDidSuggestStopVideo</code>.<br><br>Unit: Count</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>retryCount</code></td>
 								<td>The number of connection retries performed during the meeting.<br><br>Unit: Count</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 							<tr>
 								<td><code>signalingOpenDurationMs</code></td>
 								<td>The time taken for opening a WebSocket connection.<br><br>Unit: Milliseconds</td>
-								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code></td>
+								<td><code>meetingStartSucceeded</code>, <code>meetingStartFailed</code>, <code>meetingEnded</code>, <code>meetingFailed</code>, <code>meetingReconnected</code>, <code>receivingAudioDropped</code>, <code>signalingDropped</code></td>
 							</tr>
 					</tbody></table>
 					<br>

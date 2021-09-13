@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.17.0] - 2021-09-08
 
 ### Added
+- Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events. Currently, these events were only included in the meeting history attribute when a meeting event is published. 
+
+
+### Changed
+- Move `toLowerCasePropertyNames` inside `Utils.ts` and add test coverage.
+
+## [2.17.0] - 2021-09-08
+
+### Added
 
 - Add `audioInputMuteStateChanged` to the `DeviceChangeObserver` interface. This is called whenever the device is changed or is muted or unmuted, allowing applications to adapt to OS-level mute state for input devices.
 - Added Android WebView Sample UI test to workflow.
