@@ -10,12 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-
 - Modified browser demo to make video preferences easier to test by adding explicit configuration replacing non-functional pin button
 
 ### Removed
 
 ### Fixed
+- Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events. Currently, these events were only included in the meeting history attribute when a meeting event is published. 
+
+### Changed
+- Move `toLowerCasePropertyNames` inside `Utils.ts` and add test coverage.
 
 ## [2.17.0] - 2021-09-08
 
@@ -39,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   during reconnection.
 - Update `startVideoPreviewForVideoInput` to support filters in the preview window.
 - Update browser demo to showcase preview filter capability.
+- Migrate SauceLabs mobile tests to new api. 
 
 ### Removed
 

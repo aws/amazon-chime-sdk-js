@@ -427,6 +427,7 @@
 								<li class="tsd-kind-function"><a href="globals.html#ismediadeviceinfo" class="tsd-kind-icon">is<wbr>Media<wbr>Device<wbr>Info</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#isvideotransformdevice" class="tsd-kind-icon">is<wbr>Video<wbr>Transform<wbr>Device</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#tolowercasepropertynames" class="tsd-kind-icon">to<wbr>Lower<wbr>Case<wbr>Property<wbr>Names</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#wait" class="tsd-kind-icon">wait</a></li>
 							</ul>
 						</section>
@@ -541,7 +542,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="eventname" class="tsd-anchor"></a>
 					<h3>Event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">Event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"meetingStartRequested"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartSucceeded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingEnded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"attendeePresenceReceived"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputFailed"</span></div>
+					<div class="tsd-signature tsd-kind-icon">Event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"meetingStartRequested"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartSucceeded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingReconnected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingEnded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"attendeePresenceReceived"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"signalingDropped"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"receivingAudioDropped"</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/eventcontroller/EventName.ts#L4">src/eventcontroller/EventName.ts:4</a></li>
@@ -588,7 +589,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="meetinghistorystate" class="tsd-anchor"></a>
 					<h3>Meeting<wbr>History<wbr>State</h3>
-					<div class="tsd-signature tsd-kind-icon">Meeting<wbr>History<wbr>State<span class="tsd-signature-symbol">:</span> <a href="globals.html#eventname" class="tsd-signature-type">EventName</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingReconnected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"signalingDropped"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"receivingAudioDropped"</span></div>
+					<div class="tsd-signature tsd-kind-icon">Meeting<wbr>History<wbr>State<span class="tsd-signature-symbol">:</span> <a href="globals.html#eventname" class="tsd-signature-type">EventName</a></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/eventcontroller/MeetingHistoryState.ts#L10">src/eventcontroller/MeetingHistoryState.ts:10</a></li>
@@ -1071,6 +1072,29 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>listener<span class="tsd-signature-symbol">: </span><a href="globals.html#thunk" class="tsd-signature-type">Thunk</a><span class="tsd-signature-symbol">; </span>scheduler<span class="tsd-signature-symbol">: </span><a href="classes/intervalscheduler.html" class="tsd-signature-type">IntervalScheduler</a><span class="tsd-signature-symbol">; </span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> }</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="tolowercasepropertynames" class="tsd-anchor"></a>
+					<h3>to<wbr>Lower<wbr>Case<wbr>Property<wbr>Names</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>Lower<wbr>Case<wbr>Property<wbr>Names<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/utils/Utils.ts#L23">src/utils/Utils.ts:23</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>input: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2113,6 +2137,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#makecolorbars" class="tsd-kind-icon">make<wbr>Color<wbr>Bars</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tolowercasepropertynames" class="tsd-kind-icon">to<wbr>Lower<wbr>Case<wbr>Property<wbr>Names</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#wait" class="tsd-kind-icon">wait</a>

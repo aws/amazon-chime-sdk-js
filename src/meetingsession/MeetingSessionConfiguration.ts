@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
+import { toLowerCasePropertyNames } from '../utils/Utils';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
@@ -152,7 +153,7 @@ export default class MeetingSessionConfiguration {
    */
   constructor(createMeetingResponse?: any, createAttendeeResponse?: any) { // eslint-disable-line
     if (createMeetingResponse) {
-      createMeetingResponse = this.toLowerCasePropertyNames(createMeetingResponse);
+      createMeetingResponse = toLowerCasePropertyNames(createMeetingResponse);
       if (createMeetingResponse.meeting) {
         createMeetingResponse = createMeetingResponse.meeting;
       }
@@ -170,7 +171,7 @@ export default class MeetingSessionConfiguration {
       }
     }
     if (createAttendeeResponse) {
-      createAttendeeResponse = this.toLowerCasePropertyNames(createAttendeeResponse);
+      createAttendeeResponse = toLowerCasePropertyNames(createAttendeeResponse);
       if (createAttendeeResponse.attendee) {
         createAttendeeResponse = createAttendeeResponse.attendee;
       }
@@ -187,23 +188,5 @@ export default class MeetingSessionConfiguration {
     this.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
       this.credentials ? this.credentials.attendeeId : null
     );
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private toLowerCasePropertyNames(input: any): any {
-    if (input === null) {
-      return null;
-    } else if (typeof input !== 'object') {
-      return input;
-    } else if (Array.isArray(input)) {
-      return input.map(this.toLowerCasePropertyNames);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return Object.keys(input).reduce((result: any, key: string) => {
-      const value = input[key];
-      const newValue = typeof value === 'object' ? this.toLowerCasePropertyNames(value) : value;
-      result[key.toLowerCase()] = newValue;
-      return result;
-    }, {});
   }
 }

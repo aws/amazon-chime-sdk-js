@@ -13,6 +13,7 @@ import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ReconnectionHealthPolicy from '../connectionhealthpolicy/ReconnectionHealthPolicy';
 import UnusableAudioWarningConnectionHealthPolicy from '../connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
+import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
 import Maybe from '../maybe/Maybe';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
@@ -286,7 +287,8 @@ export default class MonitorTask
       this.logger.info(`unusable audio warning is now: ${unusableAudioWarningValue}`);
       if (unusableAudioWarningValue === 0) {
         this.context.poorConnectionCount += 1;
-        this.context.eventController?.pushMeetingState('receivingAudioDropped');
+        const attributes = this.generateAudioVideoEventAttributes();
+        this.context.eventController?.publishEvent('receivingAudioDropped', attributes);
         if (this.context.videoTileController.haveVideoTilesWithStreams()) {
           this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
             Maybe.of(observer.connectionDidSuggestStopVideo).map(f => f.bind(observer)());
@@ -345,7 +347,8 @@ export default class MonitorTask
       event.type === SignalingClientEventType.WebSocketFailed
     ) {
       if (!this.hasSignalingError) {
-        this.context.eventController?.pushMeetingState('signalingDropped');
+        const attributes = this.generateAudioVideoEventAttributes();
+        this.context.eventController?.publishEvent('signalingDropped', attributes);
         this.hasSignalingError = true;
       }
     } else if (event.type === SignalingClientEventType.WebSocketOpen) {
@@ -408,5 +411,26 @@ export default class MonitorTask
         });
       }
     }
+  };
+
+  private generateAudioVideoEventAttributes = (): AudioVideoEventAttributes => {
+    const {
+      signalingOpenDurationMs,
+      poorConnectionCount,
+      startTimeMs,
+      iceGatheringDurationMs,
+      attendeePresenceDurationMs,
+      meetingStartDurationMs,
+    } = this.context;
+    const attributes: AudioVideoEventAttributes = {
+      maxVideoTileCount: this.context.maxVideoTileCount,
+      meetingDurationMs: startTimeMs === null ? 0 : Math.round(Date.now() - startTimeMs),
+      signalingOpenDurationMs,
+      iceGatheringDurationMs,
+      attendeePresenceDurationMs,
+      poorConnectionCount,
+      meetingStartDurationMs,
+    };
+    return attributes;
   };
 }

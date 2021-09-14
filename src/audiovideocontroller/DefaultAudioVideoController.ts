@@ -954,7 +954,7 @@ export default class DefaultAudioVideoController
           });
         } else {
           this.sessionStateController.perform(SessionStateControllerAction.Reconnect, () => {
-            this.actionReconnect();
+            this.actionReconnect(status);
           });
         }
         this.totalRetryCount += 1;
@@ -972,7 +972,7 @@ export default class DefaultAudioVideoController
     return willRetry;
   }
 
-  private async actionReconnect(): Promise<void> {
+  private async actionReconnect(status: MeetingSessionStatus): Promise<void> {
     if (!this._reconnectController.hasStartedConnectionAttempt()) {
       this._reconnectController.startedConnectionAttempt(false);
       this.forEachObserver(observer => {
@@ -1016,7 +1016,26 @@ export default class DefaultAudioVideoController
       this.sessionStateController.perform(SessionStateControllerAction.FinishConnecting, () => {
         /* istanbul ignore else */
         if (this.eventController) {
-          this.eventController.pushMeetingState('meetingReconnected');
+          const {
+            signalingOpenDurationMs,
+            poorConnectionCount,
+            startTimeMs,
+            iceGatheringDurationMs,
+            attendeePresenceDurationMs,
+            meetingStartDurationMs,
+          } = this.meetingSessionContext;
+          const attributes: AudioVideoEventAttributes = {
+            maxVideoTileCount: this.meetingSessionContext.maxVideoTileCount,
+            meetingDurationMs: Math.round(Date.now() - startTimeMs),
+            meetingStatus: MeetingSessionStatusCode[status.statusCode()],
+            signalingOpenDurationMs,
+            iceGatheringDurationMs,
+            attendeePresenceDurationMs,
+            poorConnectionCount,
+            meetingStartDurationMs,
+            retryCount: this.totalRetryCount,
+          };
+          this.eventController.publishEvent('meetingReconnected', attributes);
         }
         this.actionFinishConnecting();
       });
