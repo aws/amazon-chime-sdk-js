@@ -270,6 +270,8 @@ export class DemoMeetingApp
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
   // We reserve the last tile index for local video
   static readonly LOCAL_VIDEO_TILE_INDEX: number = DemoTileOrganizer.MAX_TILES;
+  static readonly DEFAULT_PRIORITY: number = 5;
+  static readonly DEFAULT_TARGET_SIZE: TargetDisplaySize = TargetDisplaySize.High;
 
   // Ideally we don't need to change this. Keep this configurable in case users have a super slow network.
   loadingBodyPixDependencyTimeoutMs: number = 10_000;
@@ -296,8 +298,11 @@ export class DemoMeetingApp
   roster: any = {};
   tileIndexToTileId: { [id: number]: number } = {};
   tileIdToTileIndex: { [id: number]: number } = {};
+  tileIdToAttendeeId: { [id: number]: string } = {};
   tileIndexToPauseEventListener: { [id: number]: (event: Event) => void } = {};
-  tileIndexToPinEventListener: { [id: number]: (event: Event) => void } = {};
+  tileIndexToTargetResolutionEventListener: { [id: number]: (event: Event) => void } = {};
+  tileIndexToPriorityEventListener: { [id: number]: (event: Event) => void } = {};
+  attendeeIdToVideoPreference = new Map<string, VideoPreference>();
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
 
   cameraDeviceIds: string[] = [];
@@ -527,7 +532,6 @@ export class DemoMeetingApp
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
       (document.getElementById('planB') as HTMLInputElement).disabled = true;
     }
-    (document.getElementById('enable-pin') as HTMLInputElement).disabled = true;
 
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
@@ -535,16 +539,11 @@ export class DemoMeetingApp
       const priorityBasedDownlinkPolicyConfig = document.getElementById(
         'priority-downlink-policy-preset'
       ) as HTMLSelectElement;
-      const enablePinElem = document.getElementById('enable-pin') as HTMLInputElement;
 
       if (this.usePriorityBasedDownlinkPolicy) {
         priorityBasedDownlinkPolicyConfig.style.display = 'block';
-        enablePinElem.disabled = false;
-        enablePinElem.checked = true;
       } else {
         priorityBasedDownlinkPolicyConfig.style.display = 'none';
-        enablePinElem.disabled = true;
-        enablePinElem.checked = false;
       }
     });
 
@@ -582,6 +581,7 @@ export class DemoMeetingApp
       this.enableUnifiedPlanForChromiumBasedBrowsers = !(document.getElementById(
         'planB'
       ) as HTMLInputElement).checked;
+      this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
 
       const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
       switch (chosenLogLevel) {
@@ -601,18 +601,18 @@ export class DemoMeetingApp
           this.logLevel = LogLevel.OFF;
           break;
       }
-
-      if (this.usePriorityBasedDownlinkPolicy) {
-        this.enablePin = (document.getElementById('enable-pin') as HTMLInputElement).checked;
-      }
-      if (!this.enablePin) {
+      // Don't show config or pause on local video because they don't make sense there
+      document.getElementById(`button-video-tile-config-drop-${DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX}`).style.display = 'none';
+      document.getElementById(`video-pause-${DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX}`).style.display = 'none';
+      if (!this.usePriorityBasedDownlinkPolicy) {
+        // Don't show priority related configuration if we don't support it
         for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
-          (document.getElementById(`video-pin-${i}`) as HTMLButtonElement).style.display = 'none';
+          document.getElementById(`target-resolution-header-${i}`).style.display = 'none';
+          document.getElementById(`target-resolution-toggle-${i}`).style.display = 'none';
+          document.getElementById(`video-priority-header-${i}`).style.display = 'none';
+          document.getElementById(`video-priority-toggle-${i}`).style.display = 'none';
         }
       }
-      // Don't show pin or pause button on local video because they don't make sense there
-      (document.getElementById(`video-pin-${DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX}`) as HTMLButtonElement).style.display = 'none';
-      (document.getElementById(`video-pause-${DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX}`) as HTMLButtonElement).style.display = 'none';
 
       AsyncScheduler.nextTick(
         async (): Promise<void> => {
@@ -3222,34 +3222,81 @@ export class DemoMeetingApp
         }
   }
 
-  createPinUnpinListener(tileState: VideoTileState): (event: Event) => void {
+  convertTargetResolutionValue(value: string): TargetDisplaySize {
+    switch (value) {
+      case 'low':
+        return TargetDisplaySize.Low;
+      case 'medium':
+        return TargetDisplaySize.Medium;
+      case 'high':
+        return TargetDisplaySize.High;
+    }
+  }
+
+  createTargetResolutionListener(tileState: VideoTileState, form: HTMLFormElement): (event: Event) => void {
     return (event: Event): void => {
-      const attendeeId = tileState.boundAttendeeId;
-        if (this.roster[attendeeId].pinned ) {
-          (event.target as HTMLButtonElement).innerText = 'Pin';
-          this.roster[attendeeId].pinned = false;
-        } else {
-          (event.target as HTMLButtonElement).innerText = 'Unpin';
-          this.roster[attendeeId].pinned = true;
-        }
-        this.updateDownlinkPreference();
+      if (!(event.target instanceof HTMLInputElement)) {
+        // Ignore the Label event which will have a stale value
+        return;
       }
+      const attendeeId = tileState.boundAttendeeId;
+      const value: string = (form.elements.namedItem('level') as RadioNodeList).value;
+      this.log(`target resolution changed for: ${attendeeId} to ${value}`);
+      if (this.attendeeIdToVideoPreference.has(attendeeId)) {
+        this.attendeeIdToVideoPreference.get(attendeeId).targetSize = this.convertTargetResolutionValue(value);
+      } else {
+        this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(attendeeId, DemoMeetingApp.DEFAULT_PRIORITY, this.convertTargetResolutionValue(value)));
+      }
+      this.updateDownlinkPreference();
+    }
+  }
+
+  convertPriorityValue(value: string): number {
+    switch (value) {
+      case 'low':
+        return 10;
+      case 'medium':
+        return 5;
+      case 'high':
+        return 1;
+    }
+  }
+
+  createVideoPriorityListener(tileState: VideoTileState, form: HTMLFormElement): (event: Event) => void {
+    return (event: Event): void => {
+      if (!(event.target instanceof HTMLInputElement)) {
+        // Ignore the Label event which will have a stale value
+        return;
+      }
+      const attendeeId = tileState.boundAttendeeId;
+      const value: string = (form.elements.namedItem('level') as RadioNodeList).value;
+      this.log(`priority changed for: ${attendeeId} to ${value}`);
+      const priority = this.convertPriorityValue(value);
+      if (this.attendeeIdToVideoPreference.has(attendeeId)) {
+        this.attendeeIdToVideoPreference.get(attendeeId).priority = priority
+      } else {
+        this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(attendeeId, priority, DemoMeetingApp.DEFAULT_TARGET_SIZE));
+      }
+      this.updateDownlinkPreference();
+    }
   }
 
   updateDownlinkPreference(): void {
+    if (this.attendeeIdToVideoPreference.size === 0) {
+      // Preserve default behavior if no preferences have been set yet
+      this.log('No video preferences set yet, not updating');
+      return;
+    }
     if (!this.priorityBasedDownlinkPolicy) {
       return;
     }
     const videoPreferences = VideoPreferences.prepare();
     for (const attendeeId in this.roster) {
       if (this.roster[attendeeId].hasVideo) {
-        if (this.roster[attendeeId].pinned) {
-          videoPreferences.add(new VideoPreference(attendeeId, 1, TargetDisplaySize.High));
-          this.log(`Pinned video: bwe: new preferences: ${JSON.stringify(videoPreferences)}`);
-        }
-        else {
-          videoPreferences.add(new VideoPreference(attendeeId, 2, TargetDisplaySize.Low));
-          this.log(`Unpinned: bwe: new preferences: ${JSON.stringify(videoPreferences)}`);
+        if (this.attendeeIdToVideoPreference.has(attendeeId)) {
+          videoPreferences.add(this.attendeeIdToVideoPreference.get(attendeeId));
+        } else {
+          videoPreferences.add(new VideoPreference(attendeeId, DemoMeetingApp.DEFAULT_PRIORITY, DemoMeetingApp.DEFAULT_TARGET_SIZE));
         }
       }
     }
@@ -3284,25 +3331,35 @@ export class DemoMeetingApp
     const pauseButtonElement = document.getElementById(
       `video-pause-${tileIndex}`
     ) as HTMLButtonElement;
-    const pinButtonElement = document.getElementById(
-      `video-pin-${tileIndex}`
-    ) as HTMLButtonElement;
+    const targetResolutionRadioElement = document.getElementById(
+        `target-resolution-toggle-${tileIndex}`
+      ) as HTMLFormElement;
+      const videoPriorityRadioElement = document.getElementById(
+        `video-priority-toggle-${tileIndex}`
+      ) as HTMLFormElement;
 
     if (!tileState.localTile) { // Pausing local tile doesn't make sense
         pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
         this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
         pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
     }
-    if (this.enablePin && !tileState.localTile) { // Pinning local tile doesn't make sense since this doesn't have any UI effects
-      this.log('pinButtonElement addEventListener for tileIndex ' + tileIndex);
-      pinButtonElement.removeEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
-      this.tileIndexToPinEventListener[tileIndex] = this.createPinUnpinListener(tileState);
-      pinButtonElement.addEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
+
+    if (this.usePriorityBasedDownlinkPolicy && !tileState.localTile) { // No current config possible on local tile
+      this.log('adding config listeners for tileIndex ' + tileIndex);
+      targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
+      this.tileIndexToTargetResolutionEventListener[tileIndex] = this.createTargetResolutionListener(tileState, targetResolutionRadioElement);
+      targetResolutionRadioElement.addEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
+
+      videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
+      this.tileIndexToPriorityEventListener[tileIndex] = this.createVideoPriorityListener(tileState, videoPriorityRadioElement);
+      videoPriorityRadioElement.addEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
     }
+
     this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
     this.audioVideo.bindVideoElement(tileState.tileId, videoElement);
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
+    this.tileIdToAttendeeId[tileState.tileId] = tileState.boundAttendeeId;
     if (tileState.boundExternalUserId) {
       this.updateProperty(nameplateElement, 'innerText', tileState.boundExternalUserId.split('#').slice(-1)[0]);
     }
@@ -3320,9 +3377,20 @@ export class DemoMeetingApp
   videoTileWasRemoved(tileId: number): void {
     const tileIndex = this.tileOrganizer.releaseTileIndex(tileId);
     this.log(`video tileId removed: ${tileId} from tile-${tileIndex}`);
+    const pauseButtonElement = document.getElementById(
+      `video-pause-${tileIndex}`
+    ) as HTMLButtonElement;
+    pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
     if (this.usePriorityBasedDownlinkPolicy) {
-      const pinButtonElement = document.getElementById(`video-pin-${tileIndex}`) as HTMLButtonElement;
-      pinButtonElement.removeEventListener('click', this.tileIndexToPinEventListener[tileIndex]);
+      const targetResolutionRadioElement = document.getElementById(
+          `target-resolution-toggle-${tileIndex}`
+        ) as HTMLFormElement;
+      const videoPriorityRadioElement = document.getElementById(
+        `video-priority-toggle-${tileIndex}`
+      ) as HTMLFormElement;
+
+      targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
+      videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
     }
     this.hideTile(tileIndex);
     this.updateGridClasses();
@@ -3504,9 +3572,6 @@ export class DemoMeetingApp
 
   remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
     this.log(`available remote video sources changed: ${JSON.stringify(videoSources)}`);
-    if (!this.enablePin) {
-      return;
-    }
     for (const attendeeId in this.roster) {
       this.roster[attendeeId].hasVideo = false;
     }
