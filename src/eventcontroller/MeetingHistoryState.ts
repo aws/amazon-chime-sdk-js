@@ -7,14 +7,6 @@ import EventName from './EventName';
  * [[MeetingHistoryState]] describes user actions and events, including all event names
  * in [[EventName]].
  */
-type MeetingHistoryState =
-  | EventName
-
-  // Meeting lifecycle
-  | 'meetingReconnected'
-
-  // Connectivity
-  | 'signalingDropped'
-  | 'receivingAudioDropped';
+type MeetingHistoryState = EventName;
 
 export default MeetingHistoryState;
