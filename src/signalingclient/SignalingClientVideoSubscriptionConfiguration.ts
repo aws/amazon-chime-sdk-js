@@ -6,9 +6,11 @@
  * on an individual stream level. This can be used to update remote video sessions set up through `subscribe`
  */
 export default class SignalingClientVideoSubscriptionConfiguration {
-  // These comments should be kept in sync with SignalingPro
+  // These comments should be kept in sync with SignalingProtocol
   /**
-   * Associated MID for this configuration, i.e. the key in the flat map when a list of [[SignalingClientVideoSubscriptionConfiguration]] is provided
+   * Associated MID for this configuration, i.e. the key in the flat map when a list of [[SignalingClientVideoSubscriptionConfiguration]] is provided.
+   *
+   * See https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/mid for more details.
    */
   mid?: string;
 

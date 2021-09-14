@@ -152,7 +152,7 @@ export default class DefaultSignalingClient implements SignalingClient {
   ): void {
     const remoteVideoUpdate = SdkRemoteVideoUpdateFrame.create();
     remoteVideoUpdate.addedOrUpdatedVideoSubscriptions = addedOrUpdated.map(
-      this.covertVideoSubscriptionConfiguration
+      this.convertVideoSubscriptionConfiguration
     );
     remoteVideoUpdate.removedVideoSubscriptionMids = removed;
 
@@ -162,7 +162,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     this.sendMessage(message);
   }
 
-  private covertVideoSubscriptionConfiguration(
+  private convertVideoSubscriptionConfiguration(
     config: SignalingClientVideoSubscriptionConfiguration
   ): SdkVideoSubscriptionConfiguration {
     const signalConfig = new SdkVideoSubscriptionConfiguration();

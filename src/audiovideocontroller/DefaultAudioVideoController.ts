@@ -849,6 +849,11 @@ export default class DefaultAudioVideoController
       // We need to override some other components dependent on the subscribe paths for certain functionality
       context.transceiverController.setMidForStreamId(currentId, updatedConfig.mid);
       context.videoStreamIndex.overrideStreamIdMappings(previousId, currentId);
+      if (context.videoTileController.haveVideoTileForAttendeeId(updatedConfig.attendeeId)) {
+        context.videoTileController
+          .getVideoTileForAttendeeId(updatedConfig.attendeeId)
+          .setStreamId(currentId);
+      }
     }
     if (updatedVideoSubscriptionConfigurations.length !== 0) {
       context.signalingClient.remoteVideoUpdate(updatedVideoSubscriptionConfigurations, []);

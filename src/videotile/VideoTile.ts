@@ -89,4 +89,10 @@ export default interface VideoTile {
    * active right now.
    */
   capture(): ImageData | null;
+
+  /**
+   * Override the internal stream ID.  Needed as some logic around pause state has been
+   * coupled to the stream ID in the `VideoTileState` struct.
+   */
+  setStreamId(id: number): void;
 }
