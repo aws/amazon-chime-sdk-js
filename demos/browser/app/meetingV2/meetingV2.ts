@@ -3222,11 +3222,11 @@ export class DemoMeetingApp
   convertTargetResolutionValue(value: string): TargetDisplaySize {
     switch (value) {
       case 'low':
-        return TargetDisplaySize.Low
+        return TargetDisplaySize.Low;
       case 'medium':
-        return TargetDisplaySize.Medium
+        return TargetDisplaySize.Medium;
       case 'high':
-        return TargetDisplaySize.High
+        return TargetDisplaySize.High;
     }
   }
 
@@ -3234,7 +3234,7 @@ export class DemoMeetingApp
     return (event: Event): void => {
       if (!(event.target instanceof HTMLInputElement)) {
         // Ignore the Label event which will have a stale value
-        return
+        return;
       }
       const attendeeId = tileState.boundAttendeeId;
       const value: string = (form.elements.namedItem('level') as RadioNodeList).value;
@@ -3251,11 +3251,11 @@ export class DemoMeetingApp
   convertPriorityValue(value: string): number {
     switch (value) {
       case 'low':
-        return 10
+        return 10;
       case 'medium':
-        return 5
+        return 5;
       case 'high':
-        return 0
+        return 1;
     }
   }
 
@@ -3263,7 +3263,7 @@ export class DemoMeetingApp
     return (event: Event): void => {
       if (!(event.target instanceof HTMLInputElement)) {
         // Ignore the Label event which will have a stale value
-        return
+        return;
       }
       const attendeeId = tileState.boundAttendeeId;
       const value: string = (form.elements.namedItem('level') as RadioNodeList).value;
