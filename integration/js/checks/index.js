@@ -28,3 +28,4 @@ exports.GetLocalVideoTileCheck = require('./GetLocalVideoTileCheck');
 exports.TranscriptionStartedCheck = require('./TranscriptionStartedCheck');
 exports.TranscriptionStoppedCheck = require('./TranscriptionStoppedCheck');
 exports.TranscriptsReceivedCheck = require('./TranscriptsReceivedCheck');
+exports.SecurityPolicyViolationCheck = require('./SecurityPolicyViolationCheck');

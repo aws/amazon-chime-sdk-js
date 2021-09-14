@@ -733,6 +733,16 @@ class AppPage {
     const dataMessageSpan = await this.driver.findElement(By.xpath(`//div[@id='receive-message']//*[text() = '${message}']`));
     return dataMessageSpan? true: false;
   }
+
+  async checkSecurityPolicyViolation(stepInfo) {
+    this.driver.executeScript(() => {
+      document.addEventListener('securitypolicyviolation', (cspViolation) => {
+        console.log(cspViolation);
+        return true;
+      });
+      return false;
+    });
+  }
 }
 
 module.exports = AppPage;

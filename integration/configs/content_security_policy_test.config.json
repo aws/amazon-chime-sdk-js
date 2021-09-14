@@ -1,0 +1,27 @@
+{
+    "`": 1,
+    "name": "content_security_policy_test.config.json %ts",
+    "grids": [],
+    "tests": [
+      {
+        "name": "Content Security Policy Test %ts",
+        "description": "Content Security Policy Test",
+        "tupleSize": 2,
+        "noOfThreads": 1,
+        "testImpl": "ContentSecurityPolicyTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "port": 30001,
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "version": "latest",
+        "platform": "MAC"
+      }
+    ]
+  }
+  
