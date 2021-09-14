@@ -98,10 +98,6 @@
               </select>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
-              <input type="checkbox" id="enable-pin" class="custom-control-input">
-              <label for="enable-pin" class="custom-control-label">Enable pin</label>
-            </div>
-            <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" checked id="preconnect" class="custom-control-input">
               <label for="preconnect" class="custom-control-label">Open signaling connection early</label>
             </div>
@@ -492,8 +488,37 @@
             <div id="attendeeid-0" class="video-tile-attendeeid"></div>
             <div id="nameplate-0" class="video-tile-nameplate"></div>
             <div id="pause-state-0"></div>
-            <button id="video-pause-0" class="video-tile-pause">Pause</button>
-            <button id="video-pin-0" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-0" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-0" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-0" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-0">Target Resolution</h6>
+                <form id="target-resolution-toggle-0" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary active">
+                    <input type="radio" name="level" value="medium" autocomplete="off" checked>Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-0">Video Priority</h6>
+                <form id="video-priority-toggle-0" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary active">
+                    <input type="radio" name="level" value="medium" autocomplete="off" checked>Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-1" class="video-tile">
             <video id="video-1" class="video-tile-video"></video>
@@ -501,7 +526,37 @@
             <div id="nameplate-1" class="video-tile-nameplate"></div>
             <div id="pause-state-1"></div>
             <button id="video-pause-1" class="video-tile-pause">Pause</button>
-            <button id="video-pin-1" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-1" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-1" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-1" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-1">Target Resolution</h6>
+                <form id="target-resolution-toggle-1" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-1">Video Priority</h6>
+                <form id="video-priority-toggle-1" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-2" class="video-tile">
             <video id="video-2" class="video-tile-video"></video>
@@ -509,7 +564,37 @@
             <div id="nameplate-2" class="video-tile-nameplate"></div>
             <div id="pause-state-2"></div>
             <button id="video-pause-2" class="video-tile-pause">Pause</button>
-            <button id="video-pin-2" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-2" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-2" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-2" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-2">Target Resolution</h6>
+                <form id="target-resolution-toggle-2" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-2">Video Priority</h6>
+                <form id="video-priority-toggle-2" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-3" class="video-tile">
             <video id="video-3" class="video-tile-video"></video>
@@ -517,7 +602,37 @@
             <div id="nameplate-3" class="video-tile-nameplate"></div>
             <div id="pause-state-3"></div>
             <button id="video-pause-3" class="video-tile-pause">Pause</button>
-            <button id="video-pin-3" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-3" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-3" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-3" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-3">Target Resolution</h6>
+                <form id="target-resolution-toggle-3" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-3">Video Priority</h6>
+                <form id="video-priority-toggle-3" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-4" class="video-tile">
             <video id="video-4" class="video-tile-video"></video>
@@ -525,7 +640,37 @@
             <div id="nameplate-4" class="video-tile-nameplate"></div>
             <div id="pause-state-4"></div>
             <button id="video-pause-4" class="video-tile-pause">Pause</button>
-            <button id="video-pin-4" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-4" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-4" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-4" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-4">Target Resolution</h6>
+                <form id="target-resolution-toggle-4" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-4">Video Priority</h6>
+                <form id="video-priority-toggle-4" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-5" class="video-tile">
             <video id="video-5" class="video-tile-video"></video>
@@ -533,7 +678,37 @@
             <div id="nameplate-5" class="video-tile-nameplate"></div>
             <div id="pause-state-5"></div>
             <button id="video-pause-5" class="video-tile-pause">Pause</button>
-            <button id="video-pin-5" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-5" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-5" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-5" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-5">Target Resolution</h6>
+                <form id="target-resolution-toggle-5" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-5">Video Priority</h6>
+                <form id="video-priority-toggle-5" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-6" class="video-tile">
             <video id="video-6" class="video-tile-video"></video>
@@ -541,7 +716,37 @@
             <div id="nameplate-6" class="video-tile-nameplate"></div>
             <div id="pause-state-6"></div>
             <button id="video-pause-6" class="video-tile-pause">Pause</button>
-            <button id="video-pin-6" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-6" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-6" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-6" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-6">Target Resolution</h6>
+                <form id="target-resolution-toggle-6" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-6">Video Priority</h6>
+                <form id="video-priority-toggle-6" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-7" class="video-tile">
             <video id="video-7" class="video-tile-video"></video>
@@ -549,7 +754,37 @@
             <div id="nameplate-7" class="video-tile-nameplate"></div>
             <div id="pause-state-7"></div>
             <button id="video-pause-7" class="video-tile-pause">Pause</button>
-            <button id="video-pin-7" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-7" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-7" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-7" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-7">Target Resolution</h6>
+                <form id="target-resolution-toggle-7" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-7">Video Priority</h6>
+                <form id="video-priority-toggle-7" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-8" class="video-tile">
             <video id="video-8" class="video-tile-video"></video>
@@ -557,7 +792,37 @@
             <div id="nameplate-8" class="video-tile-nameplate"></div>
             <div id="pause-state-8"></div>
             <button id="video-pause-8" class="video-tile-pause">Pause</button>
-            <button id="video-pin-8" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-8" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-8" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-8" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-8">Target Resolution</h6>
+                <form id="target-resolution-toggle-8" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-8">Video Priority</h6>
+                <form id="video-priority-toggle-8" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-9" class="video-tile">
             <video id="video-9" class="video-tile-video"></video>
@@ -565,7 +830,37 @@
             <div id="nameplate-9" class="video-tile-nameplate"></div>
             <div id="pause-state-9"></div>
             <button id="video-pause-9" class="video-tile-pause">Pause</button>
-            <button id="video-pin-9" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-9" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-9" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-9" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-9">Target Resolution</h6>
+                <form id="target-resolution-toggle-9" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-9">Video Priority</h6>
+                <form id="video-priority-toggle-9" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-10" class="video-tile">
             <video id="video-10" class="video-tile-video"></video>
@@ -573,7 +868,37 @@
             <div id="nameplate-10" class="video-tile-nameplate"></div>
             <div id="pause-state-10"></div>
             <button id="video-pause-10" class="video-tile-pause">Pause</button>
-            <button id="video-pin-10" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-10" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-10" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-10" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-10">Target Resolution</h6>
+                <form id="target-resolution-toggle-10" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-10">Video Priority</h6>
+                <form id="video-priority-toggle-10" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-11" class="video-tile">
             <video id="video-11" class="video-tile-video"></video>
@@ -581,7 +906,37 @@
             <div id="nameplate-11" class="video-tile-nameplate"></div>
             <div id="pause-state-11"></div>
             <button id="video-pause-11" class="video-tile-pause">Pause</button>
-            <button id="video-pin-11" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-11" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-11" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-11" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-11">Target Resolution</h6>
+                <form id="target-resolution-toggle-11" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-11">Video Priority</h6>
+                <form id="video-priority-toggle-11" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-12" class="video-tile">
             <video id="video-12" class="video-tile-video"></video>
@@ -589,7 +944,37 @@
             <div id="nameplate-12" class="video-tile-nameplate"></div>
             <div id="pause-state-12"></div>
             <button id="video-pause-12" class="video-tile-pause">Pause</button>
-            <button id="video-pin-12" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-12" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-12" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-12" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-12">Target Resolution</h6>
+                <form id="target-resolution-toggle-12" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-12">Video Priority</h6>
+                <form id="video-priority-toggle-12" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-13" class="video-tile">
             <video id="video-13" class="video-tile-video"></video>
@@ -597,7 +982,37 @@
             <div id="nameplate-13" class="video-tile-nameplate"></div>
             <div id="pause-state-13"></div>
             <button id="video-pause-13" class="video-tile-pause">Pause</button>
-            <button id="video-pin-13" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-13" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-13" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-13" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-13">Target Resolution</h6>
+                <form id="target-resolution-toggle-13" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-13">Video Priority</h6>
+                <form id="video-priority-toggle-13" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-14" class="video-tile">
             <video id="video-14" class="video-tile-video"></video>
@@ -605,7 +1020,37 @@
             <div id="nameplate-14" class="video-tile-nameplate"></div>
             <div id="pause-state-14"></div>
             <button id="video-pause-14" class="video-tile-pause">Pause</button>
-            <button id="video-pin-14" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-14" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-14" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-14" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-14">Target Resolution</h6>
+                <form id="target-resolution-toggle-14" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-14">Video Priority</h6>
+                <form id="video-priority-toggle-14" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-15" class="video-tile">
             <video id="video-15" class="video-tile-video"></video>
@@ -613,7 +1058,37 @@
             <div id="nameplate-15" class="video-tile-nameplate"></div>
             <div id="pause-state-15"></div>
             <button id="video-pause-15" class="video-tile-pause">Pause</button>
-            <button id="video-pin-15" class="video-tile-pin">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-15" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-15" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-15" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-15">Target Resolution</h6>
+                <form id="target-resolution-toggle-15" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-15">Video Priority</h6>
+                <form id="video-priority-toggle-15" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-16" class="video-tile">
             <video id="video-16" class="video-tile-video"></video>
@@ -621,7 +1096,37 @@
             <div id="nameplate-16" class="video-tile-nameplate"></div>
             <div id="pause-state-16"></div>
             <button id="video-pause-16" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-16" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-16" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-16" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-16" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-16">Target Resolution</h6>
+                <form id="target-resolution-toggle-16" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-16">Video Priority</h6>
+                <form id="video-priority-toggle-16" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-17" class="video-tile">
             <video id="video-17" class="video-tile-video"></video>
@@ -629,7 +1134,37 @@
             <div id="nameplate-17" class="video-tile-nameplate"></div>
             <div id="pause-state-17"></div>
             <button id="video-pause-17" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-17" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-17" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-17" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-17" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-17">Target Resolution</h6>
+                <form id="target-resolution-toggle-17" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-17">Video Priority</h6>
+                <form id="video-priority-toggle-17" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-18" class="video-tile">
             <video id="video-18" class="video-tile-video"></video>
@@ -637,7 +1172,37 @@
             <div id="nameplate-18" class="video-tile-nameplate"></div>
             <div id="pause-state-18"></div>
             <button id="video-pause-18" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-18" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-18" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-18" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-18" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-18">Target Resolution</h6>
+                <form id="target-resolution-toggle-18" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-18">Video Priority</h6>
+                <form id="video-priority-toggle-18" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-19" class="video-tile">
             <video id="video-19" class="video-tile-video"></video>
@@ -645,7 +1210,37 @@
             <div id="nameplate-19" class="video-tile-nameplate"></div>
             <div id="pause-state-19"></div>
             <button id="video-pause-19" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-19" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-19" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-19" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-19" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-19">Target Resolution</h6>
+                <form id="target-resolution-toggle-19" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-19">Video Priority</h6>
+                <form id="video-priority-toggle-19" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-20" class="video-tile">
             <video id="video-20" class="video-tile-video"></video>
@@ -653,7 +1248,37 @@
             <div id="nameplate-20" class="video-tile-nameplate"></div>
             <div id="pause-state-20"></div>
             <button id="video-pause-20" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-20" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-20" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-20" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-20" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-20">Target Resolution</h6>
+                <form id="target-resolution-toggle-20" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-20">Video Priority</h6>
+                <form id="video-priority-toggle-20" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-21" class="video-tile">
             <video id="video-21" class="video-tile-video"></video>
@@ -661,7 +1286,37 @@
             <div id="nameplate-21" class="video-tile-nameplate"></div>
             <div id="pause-state-21"></div>
             <button id="video-pause-21" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-21" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-21" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-21" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-21" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-21">Target Resolution</h6>
+                <form id="target-resolution-toggle-21" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-21">Video Priority</h6>
+                <form id="video-priority-toggle-21" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-22" class="video-tile">
             <video id="video-22" class="video-tile-video"></video>
@@ -669,7 +1324,37 @@
             <div id="nameplate-22" class="video-tile-nameplate"></div>
             <div id="pause-state-22"></div>
             <button id="video-pause-22" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-22" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-22" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-22" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-22" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-22">Target Resolution</h6>
+                <form id="target-resolution-toggle-22" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-22">Video Priority</h6>
+                <form id="video-priority-toggle-22" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-23" class="video-tile">
             <video id="video-23" class="video-tile-video"></video>
@@ -677,7 +1362,37 @@
             <div id="nameplate-23" class="video-tile-nameplate"></div>
             <div id="pause-state-23"></div>
             <button id="video-pause-23" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-23" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-23" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-23" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-23" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-23">Target Resolution</h6>
+                <form id="target-resolution-toggle-23" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-23">Video Priority</h6>
+                <form id="video-priority-toggle-23" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-24" class="video-tile">
             <video id="video-24" class="video-tile-video"></video>
@@ -685,7 +1400,37 @@
             <div id="nameplate-24" class="video-tile-nameplate"></div>
             <div id="pause-state-24"></div>
             <button id="video-pause-24" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-24" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-24" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-24" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-24" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-24">Target Resolution</h6>
+                <form id="target-resolution-toggle-24" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-24">Video Priority</h6>
+                <form id="video-priority-toggle-24" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-25" class="video-tile">
             <div id="attendeeid-25" class="video-tile-attendeeid"></div>
@@ -693,7 +1438,37 @@
             <div id="nameplate-25" class="video-tile-nameplate"></div>
             <div id="pause-state-25"></div>
             <button id="video-pause-25" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-25" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-25" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-25" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-25" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-25">Target Resolution</h6>
+                <form id="target-resolution-toggle-25" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-25">Video Priority</h6>
+                <form id="video-priority-toggle-25" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-26" class="video-tile">
             <div id="attendeeid-26" class="video-tile-attendeeid"></div>
@@ -701,7 +1476,37 @@
             <div id="nameplate-26" class="video-tile-nameplate"></div>
             <div id="pause-state-26"></div>
             <button id="video-pause-26" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-26" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-26" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-26" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-26" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-26">Target Resolution</h6>
+                <form id="target-resolution-toggle-26" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-26">Video Priority</h6>
+                <form id="video-priority-toggle-26" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
           <div id="tile-27" class="video-tile">
             <div id="attendeeid-27" class="video-tile-attendeeid"></div>
@@ -709,7 +1514,37 @@
             <div id="nameplate-27" class="video-tile-nameplate"></div>
             <div id="pause-state-27"></div>
             <button id="video-pause-27" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-27" class="video-tile-pin" class="btn">Pin</button>
+            <div class="button-video-tile-config" role="group">
+              <button id="button-video-tile-config-drop-27" type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+              <div id="dropdown-video-tile-config-27" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+                <a id="video-pause-27" class="dropdown-item">Pause</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header" id="target-resolution-header-27">Target Resolution</h6>
+                <form id="target-resolution-toggle-27" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+                <h6 class="dropdown-header" id="video-priority-header-27">Video Priority</h6>
+                <form id="video-priority-toggle-27" class="btn-group btn-group-toggle video-tile-config-toggle" data-toggle="buttons">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="low" autocomplete="off">Low
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="medium" autocomplete="off">Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="level" value="high" autocomplete="off">High
+                  </label>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
         <div id="transcript-container" class="transcript-container" style="display:none"></div>
