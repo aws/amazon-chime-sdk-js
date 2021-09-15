@@ -9,12 +9,14 @@ class AuthenticateUserStep extends AppTestStep {
     useSimulcastFlag = false,
     useWebAudioFlag = false,
     enableEventReporting = false,
+    region = ''
   ) {
     super(kiteBaseTest, sessionInfo);
     this.attendee_id = attendee_id;
     this.useSimulcastFlag = useSimulcastFlag;
     this.useWebAudioFlag = useWebAudioFlag;
     this.enableEventReporting = enableEventReporting;
+    this.region = region;
   }
 
   static async executeStep(
@@ -24,6 +26,7 @@ class AuthenticateUserStep extends AppTestStep {
     useSimulcastFlag = false,
     useWebAudioFlag = false,
     enableEventReporting = false,
+    region = '',
   ) {
     const step = new AuthenticateUserStep(
       KiteBaseTest,
@@ -31,7 +34,8 @@ class AuthenticateUserStep extends AppTestStep {
       attendee_id,
       useSimulcastFlag,
       useWebAudioFlag,
-      enableEventReporting
+      enableEventReporting,
+      region
     );
     await step.execute(KiteBaseTest);
   }
@@ -58,6 +62,10 @@ class AuthenticateUserStep extends AppTestStep {
     if (this.enableEventReporting) {
       this.logger("Event reporting enabled");
       await this.page.chooseEnableEventReporting();
+    }
+    if (this.region !== '') {
+      this.logger(`selecting region ${this.region}`);
+      await this.page.selectRegion(this.region);
     }
     await this.page.authenticate();
     this.logger("waiting to authenticate");
