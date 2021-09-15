@@ -86,6 +86,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       [23, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 108, false, 3)],
       [24, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 105, false, 3)],
       [25, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 103, false, 3)],
+      [26, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 101, false, 3)],
     ]);
 
     const expectedNumParticipantsToParametersWithNoResolutionScaling = new Map([
@@ -114,6 +115,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       [23, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 108, false, 1)],
       [24, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 105, false, 1)],
       [25, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 103, false, 1)],
+      [26, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 101, false, 1)],
     ]);
 
     const expectedNumParticipantsToParametersWithPriority = new Map([
@@ -142,6 +144,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       [23, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 600, false, 1)],
       [24, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 600, false, 1)],
       [25, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 600, false, 1)],
+      [26, new DefaultVideoCaptureAndEncodeParameter(320, 192, 15, 600, false, 1)],
     ]);
 
     it('returns the correct values when the self is present in the SdkIndexFrame', () => {
