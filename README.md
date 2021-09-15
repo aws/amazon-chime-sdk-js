@@ -78,10 +78,14 @@ The following developer guides cover specific topics for a technical audience.
 - [Live Events](https://aws.amazon.com/blogs/opensource/how-to-deploy-a-live-events-solution-built-with-the-amazon-chime-sdk/) — Interactive live events solution
 - [Amazon Chime SDK Smart Video Sending Demo](https://aws.amazon.com/blogs/business-productivity/amazon-chime-sdk-smart-video-sending-demo/) — Demo showcasing how to dynamically display up to 25 video tiles from a pool of up to 250 meeting attendees
 - [Amazon Chime SDK and Amazon Connect Integration](https://aws.amazon.com/blogs/business-productivity/build-a-video-contact-center-with-amazon-connect-and-amazon-chime-sdk/) — Build a video contact center with Amazon Connect and Amazon Chime SDK
-- [PSTN Dial In](https://github.com/aws-samples/chime-sipmediaapplication-samples) —  Add PSTN dialin capabilities to your Amazon Chime SDK Meeting using SIP Media Application
 - [Device Integration](https://aws.amazon.com/blogs/business-productivity/using-the-amazon-chime-sdk-for-3rd-party-devices/) — Using the Amazon Chime SDK for 3rd party devices
 - [Messaging](https://aws.amazon.com/blogs/business-productivity/build-chat-features-into-your-application-with-amazon-chime-sdk-messaging/) — Build chat features into your application with Amazon Chime SDK messaging
 
+### SIP Media Application Examples
+- [PSTN Dial In](https://github.com/aws-samples/chime-sipmediaapplication-samples) —  Add PSTN dialin capabilities to your Amazon Chime SDK Meeting using SIP media application
+- [Outbound Call Notifications](https://github.com/aws-samples/amazon-chime-sma-outbound-call-notifications) - Send meeting reminders with SIP media application and get real time results back.  
+- [Update In-Progress Call](https://github.com/aws-samples/amazon-chime-sma-update-call) - Update an in-progress SIP media application call via API call
+  
 ## Troubleshooting and Support
 Review the resources given in the ReadMe and use our [client documentation](https://aws.github.io/amazon-chime-sdk-js/) for guidance on how to develop on the Chime SDK for JavaScript. Additionally, search our [issues database](https://github.com/aws/amazon-chime-sdk-js/issues) and [FAQs](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html) to see if your issue is already addressed. If not please cut us an [issue](https://github.com/aws/amazon-chime-sdk-js/issues/new/choose) using the provided templates.
 
