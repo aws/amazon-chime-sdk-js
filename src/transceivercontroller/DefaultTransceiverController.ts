@@ -295,7 +295,7 @@ export default class DefaultTransceiverController implements TransceiverControll
     return this.streamIdToTransceiver.get(streamId)?.mid;
   }
 
-  setMidForStreamId(newStreamId: number, mid: string): void {
+  setStreamIdForMid(mid: string, newStreamId: number): void {
     for (const [streamId, transceiver] of this.streamIdToTransceiver.entries()) {
       if (transceiver.mid === mid) {
         this.streamIdToTransceiver.delete(streamId);

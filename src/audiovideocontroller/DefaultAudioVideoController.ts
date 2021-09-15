@@ -785,7 +785,7 @@ export default class DefaultAudioVideoController
     if (
       !context.transceiverController ||
       !context.transceiverController.getMidForStreamId ||
-      !context.transceiverController.setMidForStreamId ||
+      !context.transceiverController.setStreamIdForMid ||
       !context.videosToReceive.forEach ||
       !context.signalingClient.remoteVideoUpdate ||
       !context.videoStreamIndex.overrideStreamIdMappings
@@ -847,12 +847,17 @@ export default class DefaultAudioVideoController
       }
       updatedVideoSubscriptionConfigurations.push(updatedConfig);
       // We need to override some other components dependent on the subscribe paths for certain functionality
-      context.transceiverController.setMidForStreamId(currentId, updatedConfig.mid);
+      context.transceiverController.setStreamIdForMid(updatedConfig.mid, currentId);
       context.videoStreamIndex.overrideStreamIdMappings(previousId, currentId);
       if (context.videoTileController.haveVideoTileForAttendeeId(updatedConfig.attendeeId)) {
-        context.videoTileController
-          .getVideoTileForAttendeeId(updatedConfig.attendeeId)
-          .setStreamId(currentId);
+        const tile = context.videoTileController.getVideoTileForAttendeeId(
+          updatedConfig.attendeeId
+        );
+        if (!tile.setStreamId) {
+          // Required function
+          return false;
+        }
+        tile.setStreamId(currentId);
       }
     }
     if (updatedVideoSubscriptionConfigurations.length !== 0) {

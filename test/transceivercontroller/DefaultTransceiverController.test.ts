@@ -455,7 +455,7 @@ describe('DefaultTransceiverController', () => {
 
       expect(tc.getMidForStreamId(1)).to.equal('1');
 
-      tc.setMidForStreamId(2, '1');
+      tc.setStreamIdForMid('1', 2);
       expect(tc.getMidForStreamId(2)).to.equal('1');
       expect(tc.getMidForStreamId(1)).to.equal(undefined);
     });
@@ -545,6 +545,33 @@ describe('DefaultTransceiverController', () => {
       videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
       expect(videoSubscriptions).to.deep.equal([0, streamId, 8]);
       verifyTransceiverDirections(['recvonly', 'recvonly']);
+    });
+
+    it('will override stream ids via setStreamId', async () => {
+      const videoStreamIndex = prepareIndex([1, 4]);
+      let videosToReceive: VideoStreamIdSet = new DefaultVideoStreamIdSet([1]);
+      let videoSubscriptions: number[] = tc.updateVideoTransceivers(
+        videoStreamIndex,
+        videosToReceive
+      );
+      expect(videoSubscriptions).to.deep.equal([0, 1]);
+      verifyTransceiverDirections(['recvonly']);
+      const subackFrame = new SdkSubscribeAckFrame({
+        tracks: [new SdkTrackMapping({ streamId: 1, trackLabel: 'v_1' })],
+      });
+      videoStreamIndex.integrateSubscribeAckFrame(subackFrame);
+      setTransceiverStreamId(videosToReceive);
+
+      videosToReceive = new DefaultVideoStreamIdSet([4]);
+      videoSubscriptions = tc.updateVideoTransceivers(videoStreamIndex, videosToReceive);
+      expect(videoSubscriptions).to.deep.equal([0, 0, 4]);
+      verifyTransceiverDirections(['inactive', 'recvonly']);
+
+      const mid = tc.getMidForStreamId(1);
+      tc.setStreamIdForMid('otherMid', 2);
+      expect(tc.getMidForStreamId(1)).to.be.equal(mid);
+      tc.setStreamIdForMid(mid, 3);
+      expect(tc.getMidForStreamId(3)).to.be.equal(mid);
     });
   });
 

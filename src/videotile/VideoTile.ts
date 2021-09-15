@@ -94,5 +94,5 @@ export default interface VideoTile {
    * Override the internal stream ID.  Needed as some logic around pause state has been
    * coupled to the stream ID in the `VideoTileState` struct.
    */
-  setStreamId(id: number): void;
+  setStreamId?(id: number): void;
 }

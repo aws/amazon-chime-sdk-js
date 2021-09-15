@@ -149,6 +149,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
     }
     return false;
   }
+
   private addRemoteVideoTrack(track: MediaStreamTrack, stream: MediaStream): void {
     let trackId = stream.id;
     if (!this.context.browserBehavior.requiresUnifiedPlan()) {
