@@ -1,0 +1,53 @@
+{
+    "`": 1,
+    "name": "content_share_test_suite_two.config.json %ts",
+    "grids": [],
+    "tests": [
+      {
+        "name": "Content Share Only Allow Two Test %ts",
+        "description": "Only allow two content share at the same time",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "ContentShareOnlyAllowTwoTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "retry": 2
+        }
+      },
+      {
+        "name": "Content Share Join Later Test %ts",
+        "description": "Test that content share can be viewed when an attendee joins after",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "ContentShareJoinLaterTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "retry": 2
+        }
+      },
+      {
+        "name": "App Quit Content Share Test %ts",
+        "description": "App Quit Content Share Test",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "AppQuitContentShareTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "version": "latest",
+        "platform": "MAC"
+      },
+      {
+        "browserName": "firefox",
+        "version": "86",
+        "platform": "MAC"
+      }
+    ]
+  }
+  
