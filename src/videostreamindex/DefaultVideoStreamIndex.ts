@@ -360,6 +360,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       for (const [track, streamId] of this.subscribeTrackToStreamMap.entries()) {
         if (previous === streamId) {
           this.subscribeTrackToStreamMap.set(track, current);
+          break;
         }
       }
     }
@@ -368,6 +369,7 @@ export default class DefaultVideoStreamIndex implements VideoStreamIndex {
       for (const [ssrc, streamId] of this.subscribeSsrcToStreamMap.entries()) {
         if (previous === streamId) {
           this.subscribeSsrcToStreamMap.set(ssrc, current);
+          break;
         }
       }
     }

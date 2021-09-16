@@ -66,7 +66,7 @@ export default interface TransceiverController {
    * Get the associated MID for a given stream ID, either set via `updateVideoTranceivers`
    * or overriden through `setStreamIdForMid`.
    */
-  getMidForStreamId?(streamId: number): string;
+  getMidForStreamId?(streamId: number): string | undefined;
 
   /**
    * Override or set an internal mapping of stream ID to MID.

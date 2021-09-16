@@ -291,7 +291,7 @@ export default class DefaultTransceiverController implements TransceiverControll
     }
   }
 
-  getMidForStreamId(streamId: number): string {
+  getMidForStreamId(streamId: number): string | undefined {
     return this.streamIdToTransceiver.get(streamId)?.mid;
   }
 

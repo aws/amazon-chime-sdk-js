@@ -1383,13 +1383,13 @@ describe('DefaultAudioVideoController', () => {
       await start();
 
       class TestVideoStreamIndex extends DefaultVideoStreamIndex {
-        StreamIdsInSameGroup(_streamId1: number, _streamId2: number): boolean {
-          return true;
+        StreamIdsInSameGroup(streamId1: number, streamId2: number): boolean {
+          return (streamId1 === 1 && streamId2 === 2) || (streamId1 === 3 && streamId2 === 4);
         }
       }
 
       class TestTransceiverController extends DefaultTransceiverController {
-        getMidForStreamId(streamId: number): string {
+        getMidForStreamId(streamId: number): string | undefined {
           return streamId.toString();
         }
       }
@@ -1424,9 +1424,13 @@ describe('DefaultAudioVideoController', () => {
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
         1,
+        3,
       ]);
       // @ts-ignore
-      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([2]);
+      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([
+        2,
+        4,
+      ]);
       // @ts-ignore
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
@@ -1472,7 +1476,7 @@ describe('DefaultAudioVideoController', () => {
       }
 
       class TestTransceiverController extends DefaultTransceiverController {
-        getMidForStreamId(streamId: number): string {
+        getMidForStreamId(streamId: number): string | undefined {
           return streamId.toString();
         }
       }
@@ -1557,7 +1561,7 @@ describe('DefaultAudioVideoController', () => {
       }
 
       class TestTransceiverController extends DefaultTransceiverController {
-        getMidForStreamId(streamId: number): string {
+        getMidForStreamId(streamId: number): string | undefined {
           return streamId.toString();
         }
       }
@@ -1631,7 +1635,7 @@ describe('DefaultAudioVideoController', () => {
       }
 
       class TestTransceiverController extends DefaultTransceiverController {
-        getMidForStreamId(streamId: number): string {
+        getMidForStreamId(streamId: number): string | undefined {
           return streamId.toString();
         }
       }
@@ -1690,7 +1694,7 @@ describe('DefaultAudioVideoController', () => {
       }
 
       class TestTransceiverController extends DefaultTransceiverController {
-        getMidForStreamId(streamId: number): string {
+        getMidForStreamId(streamId: number): string | undefined {
           return streamId.toString();
         }
       }

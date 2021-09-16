@@ -809,6 +809,9 @@ export default class DefaultAudioVideoController
         // Check if group ID exists in previous set (i.e. simulcast stream switch)
         let foundUpdatedPreviousStreamId = false;
         context.lastVideosToReceive.forEach((previousId: number) => {
+          if (foundUpdatedPreviousStreamId) {
+            return; // Short circuit since we have already found it
+          }
           if (index.StreamIdsInSameGroup(previousId, currentId)) {
             simulcastStreamUpdates.set(previousId, currentId);
             foundUpdatedPreviousStreamId = true;
@@ -820,9 +823,7 @@ export default class DefaultAudioVideoController
         }
       });
       removed = context.lastVideosToReceive.array().filter(idFromPrevious => {
-        const stillReceiving = context.videosToReceive
-          .array()
-          .some(idFromCurrent => idFromCurrent === idFromPrevious);
+        const stillReceiving = context.videosToReceive.contain(idFromPrevious);
         const isUpdated = simulcastStreamUpdates.has(idFromPrevious);
         return !stillReceiving && !isUpdated;
       });
