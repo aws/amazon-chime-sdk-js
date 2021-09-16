@@ -140,6 +140,12 @@ class DemoTileOrganizer {
 }
 
 class DemoVideoTile extends HTMLElement {
+  public set tileIndex(tileIndex: number) {
+    // Update IDs for integration tests which need them
+    this.querySelector('.video-tile-nameplate').id = `nameplate-${tileIndex}`
+    this.querySelector('.video-tile-video').id = `video-${tileIndex}`
+  }
+
   public set showConfigDropdown(v : boolean) {
     const display: string = v ? 'block' : 'none';
     (this.querySelector('.button-video-tile-config-drop') as HTMLElement).style.display = display;
@@ -3536,8 +3542,10 @@ export class DemoMeetingApp
     const tileArea = document.getElementById(`tile-area`);
     for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
       let tile = document.createElement('video-tile') as DemoVideoTile
+      // `DemoVideoTile` requires being added to DOM before calling any functions
       tileArea.appendChild(tile);
 
+      tile.tileIndex = i;
       if (i === DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX) {
         // Don't show config or pause on local video because they don't make sense there
         tile.showConfigDropdown = false;
