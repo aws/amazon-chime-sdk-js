@@ -115,6 +115,7 @@ export default class DefaultAudioVideoController
   private startAudioVideoTimestamp: number = 0;
   private signalingTask: Task;
   private preStartObserver: SignalingClientObserver | undefined;
+  private mayNeedRenegotiationForSimulcastLayerChange: boolean = false;
 
   destroyed = false;
 
@@ -747,12 +748,15 @@ export default class DefaultAudioVideoController
     // Check in case this function has been called before peer connection is set up
     // since that is necessary to try to update remote videos without the full resubscribe path
     needsRenegotiation ||= this.meetingSessionContext.peer === undefined;
-    // If updating remote video without negotiation fails, fall back to renegotiation
+    // If updating local or remote video without negotiation fails, fall back to renegotiation
     needsRenegotiation ||= !this.updateRemoteVideosFromLastVideosToReceive();
+    needsRenegotiation ||= !this.updateLocalVideoFromPolicy();
     // `MeetingSessionContext.lastVideosToReceive` needs to be updated regardless
     this.meetingSessionContext.lastVideosToReceive = this.meetingSessionContext.videosToReceive;
     if (!needsRenegotiation) {
       this.logger.info('Update request does not require resubscribe');
+      // Call `actionFinishUpdating` to apply the new encoding parameters that may have been set in `updateLocalVideoFromPolicy`.
+      this.actionFinishUpdating();
       return true; // Skip the subscribe!
     }
     this.logger.info('Update request requires resubscribe');
@@ -868,6 +872,26 @@ export default class DefaultAudioVideoController
     // Only simulcast stream switches (i.e. not add/remove/source switches) are possible currently
     if (added.length !== 0 || removed.length !== 0) {
       return false;
+    }
+    return true;
+  }
+
+  updateLocalVideoFromPolicy(): boolean {
+    if (this.mayNeedRenegotiationForSimulcastLayerChange) {
+      this.logger.info('Needs regenotiation for local video simulcast layer change');
+      this.mayNeedRenegotiationForSimulcastLayerChange = false;
+      return false;
+    }
+
+    // Update bandwidth without renegotiation
+    this.logger.info('Updating local video from policy without renegotiation');
+    if (this.meetingSessionContext.enableSimulcast) {
+      // `AttachMediaInputTask` will update sender's simulcast streams encoding parameters of the local video transceiver 
+      new AttachMediaInputTask(this.meetingSessionContext).run();
+    } else {
+      // `ReceiveVideoInputTask` will update `meetingSessionContext.videoCaptureAndEncodeParameter`
+      // from uplink policy on internal state
+      new ReceiveVideoInputTask(this.meetingSessionContext).run();
     }
     return true;
   }
@@ -1316,6 +1340,7 @@ export default class DefaultAudioVideoController
   }
 
   encodingSimulcastLayersDidChange(simulcastLayers: SimulcastLayers): void {
+    this.mayNeedRenegotiationForSimulcastLayerChange = true;
     this.forEachObserver(observer => {
       Maybe.of(observer.encodingSimulcastLayersDidChange).map(f =>
         f.bind(observer)(simulcastLayers)

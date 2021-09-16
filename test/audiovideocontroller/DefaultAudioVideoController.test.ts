@@ -1370,6 +1370,124 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
+    it('will not skip renegotiation if we are switching simulcast streams', async () => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'info');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        StreamIdsInSameGroup(_streamId1: number, _streamId2: number): boolean {
+          return false;
+        }
+      }
+
+      class TestTransceiverController extends DefaultTransceiverController {
+        getMidForStreamId(streamId: number): string | undefined {
+          return streamId.toString();
+        }
+      }
+
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
+        1,
+      ]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([1]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
+
+      await delay(defaultDelay);
+      audioVideoController.update({ needsRenegotiation: false });
+
+      await stop();
+
+      // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
+      expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
+        .false;
+    });
+
+    it('will skip renegotiation if we are only completing simulcast stream encoding change', async () => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'info');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+
+      class TestVideoStreamIndex extends DefaultVideoStreamIndex {
+        StreamIdsInSameGroup(_streamId1: number, _streamId2: number): boolean {
+          return false;
+        }
+      }
+
+      class TestTransceiverController extends DefaultTransceiverController {
+        getMidForStreamId(streamId: number): string | undefined {
+          return streamId.toString();
+        }
+      }
+
+      let remoteVideoUpdateCalled = false;
+      class TestSignalingClient extends DefaultSignalingClient {
+        remoteVideoUpdate(
+          _addedOrUpdated: SignalingClientVideoSubscriptionConfiguration[],
+          _removedMids: string[]
+        ): void {
+          remoteVideoUpdateCalled = true;
+        }
+      }
+
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
+        1,
+      ]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([1]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
+        webSocketAdapter,
+        new NoOpDebugLogger()
+      );
+
+      audioVideoController.update({ needsRenegotiation: false });
+
+      await stop();
+
+      expect(remoteVideoUpdateCalled).to.be.false;
+      // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
+      expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
+        .true;
+    });
+
     it('will skip renegotiation if we are only completing simulcast stream switches', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');

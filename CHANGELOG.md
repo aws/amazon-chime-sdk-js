@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Move `toLowerCasePropertyNames` inside `Utils.ts` and add test coverage.
 - Modified browser demo to make video preferences easier to test by adding explicit configuration replacing non-functional pin button
+- Reduced uplink resubscription when only stream encoding is changed by adding bypassing path.
 
 ## [2.17.0] - 2021-09-08
 
