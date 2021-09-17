@@ -142,8 +142,8 @@ class DemoTileOrganizer {
 class DemoVideoTile extends HTMLElement {
   public set tileIndex(tileIndex: number) {
     // Update IDs for integration tests which need them
-    this.querySelector('.video-tile-nameplate').id = `nameplate-${tileIndex}`
-    this.querySelector('.video-tile-video').id = `video-${tileIndex}`
+    this.querySelector('.video-tile-nameplate').id = `nameplate-${tileIndex}`;
+    this.querySelector('.video-tile-video').id = `video-${tileIndex}`;
   }
 
   public set showConfigDropdown(shouldShow: boolean) {
@@ -161,7 +161,7 @@ class DemoVideoTile extends HTMLElement {
   }
 
   show(isContent: boolean) {
-    this.classList.add(`active`);
+    this.classList.add('active');
     if (isContent) {
       this.classList.add('content');
     }
@@ -169,9 +169,9 @@ class DemoVideoTile extends HTMLElement {
 
   public set featured(featured: boolean) {
     if (featured) {
-      this.classList.add(`featured`);
+      this.classList.add('featured');
     } else {
-      this.classList.remove(`featured`);
+      this.classList.remove('featured');
     }
   }
 
@@ -189,14 +189,14 @@ class DemoVideoTile extends HTMLElement {
       return;
     }
 
-    let statsInfo: HTMLDivElement = this.querySelector(`#stats-info`) as HTMLDivElement;
+    let statsInfo: HTMLDivElement = this.querySelector('#stats-info') as HTMLDivElement;
     if (!statsInfo) {
       statsInfo = document.createElement('div');
-      statsInfo.setAttribute('id', `stats-info`);
-      statsInfo.setAttribute('class', `stats-info`);
+      statsInfo.setAttribute('id', 'stats-info');
+      statsInfo.setAttribute('class', 'stats-info');
     }
 
-    let statsInfoTable = this.querySelector(`#stats-table`) as HTMLTableElement;
+    let statsInfoTable = this.querySelector('#stats-table') as HTMLTableElement;
     if (statsInfoTable) {
       statsInfo.removeChild(statsInfoTable);
     }
@@ -226,8 +226,8 @@ class DemoVideoTile extends HTMLElement {
             cell = row.insertCell(-1);
             cell.innerHTML = keyStatstoShow[metricName];
           }
-            cell = row.insertCell(-1);
-            cell.innerHTML = `${value}`;
+          cell = row.insertCell(-1);
+          cell.innerHTML = `${value}`;
         }
       }
     }
@@ -238,20 +238,20 @@ class DemoVideoTile extends HTMLElement {
   }
 
   public set nameplate(nameplate: string) {
-    const nameplateElement = this.querySelector('.video-tile-nameplate')
-    console.log(`setting nameplate to ${nameplate}`)
-    nameplateElement.innerHTML = nameplate
+    const nameplateElement = this.querySelector('.video-tile-nameplate');
+    console.log(`setting nameplate to ${nameplate}`);
+    nameplateElement.innerHTML = nameplate;
   }
 
   public set attendeeId(attendeeId: string) {
-    const attendeeIdElement = this.querySelector('.video-tile-attendee-id')
-    console.log(`setting attendeeId to ${attendeeId}`)
-    attendeeIdElement.innerHTML = attendeeId
+    const attendeeIdElement = this.querySelector('.video-tile-attendee-id');
+    console.log(`setting attendeeId to ${attendeeId}`);
+    attendeeIdElement.innerHTML = attendeeId;
   }
 
   public set pauseState(state: string) {
-    const pauseState = this.querySelector('.video-tile-pause-state') 
-    pauseState.innerHTML = state
+    const pauseState = this.querySelector('.video-tile-pause-state') ;
+    pauseState.innerHTML = state;
   }
 
   public get pauseButtonElement(): HTMLButtonElement {
@@ -377,7 +377,7 @@ const LANGUAGES_NO_WORD_SEPARATOR = new Set([
 
 // We use the same config options for multiple settings when configuring
 // video tiles, regardless of what they map to internally
-type ConfigLevel = 'low' | 'medium' | 'high'
+type ConfigLevel = 'low' | 'medium' | 'high';
 
 const ConfigLevelToVideoPriority: {[Key in ConfigLevel]: number} = {
   low: 10,
@@ -3414,7 +3414,7 @@ export class DemoMeetingApp
 
     const videoElement = demoVideoTile.videoElement;
     this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
-    this.audioVideo.bindVideoElement(tileState.tileId, this.tileIndexToDemoVideoTile.get(tileIndex).videoElement)
+    this.audioVideo.bindVideoElement(tileState.tileId, this.tileIndexToDemoVideoTile.get(tileIndex).videoElement);
 
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
