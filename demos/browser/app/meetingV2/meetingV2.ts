@@ -3541,7 +3541,7 @@ export class DemoMeetingApp
   setupVideoTiles(): void {
     const tileArea = document.getElementById(`tile-area`);
     for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
-      let tile = document.createElement('video-tile') as DemoVideoTile
+      const tile = document.createElement('video-tile') as DemoVideoTile
       // `DemoVideoTile` requires being added to DOM before calling any functions
       tileArea.appendChild(tile);
 
