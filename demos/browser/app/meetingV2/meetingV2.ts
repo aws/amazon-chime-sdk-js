@@ -146,14 +146,14 @@ class DemoVideoTile extends HTMLElement {
     this.querySelector('.video-tile-video').id = `video-${tileIndex}`
   }
 
-  public set showConfigDropdown(v : boolean) {
-    const display: string = v ? 'block' : 'none';
+  public set showConfigDropdown(shouldShow: boolean) {
+    const display: string = shouldShow ? 'block' : 'none';
     (this.querySelector('.button-video-tile-config-drop') as HTMLElement).style.display = display;
     (this.querySelector('.video-tile-pause') as HTMLElement).style.display = display;
   }
 
-  public set showRemoteVideoPreferences(v : boolean) {
-    const display: string = v ? 'block' : 'none';
+  public set showRemoteVideoPreferences(shouldShow: boolean) {
+    const display: string = shouldShow? 'block' : 'none';
     (this.querySelector('.target-resolution-header') as HTMLElement).style.display = display;
     (this.querySelector('.target-resolution-toggle') as HTMLElement).style.display = display;
     (this.querySelector('.video-priority-header') as HTMLElement).style.display = display;
