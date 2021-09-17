@@ -1,4 +1,4 @@
-  name: Meeting End Integration Workflow
+  name: Miscellaneous Integration Workflow
 
   on:
     pull_request:
@@ -14,8 +14,8 @@
     SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
 
   jobs:
-    integ-meeting-end:
-      name: Meeting End Integration Test
+    integ-data-message:
+      name: Miscellaneous Integration Test
       runs-on: ubuntu-latest
 
       steps:
@@ -74,6 +74,12 @@
         - name: Clean Install
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm ci
-        - name: Run Meeting End Integ Test
+        - name: Run Data Message Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-data-message
+        - name: Run Meeting Readiness Checker Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-meeting-readiness-checker
+        - name: Run Meeting End Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-meeting-end
