@@ -1127,6 +1127,27 @@ describe('DefaultVideoStreamIndex', () => {
       expect(index.streamIdForSSRC(0xdead10cc)).to.equal(9);
     });
 
+    it('allows overriding stream id', () => {
+      expect(index.streamIdForSSRC(12345)).to.be.undefined;
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [
+            new SdkTrackMapping({ streamId: 2, trackLabel: 'b18b9db2', ssrc: 0xdeadbeef }),
+            new SdkTrackMapping({ streamId: 4, trackLabel: '85e9', ssrc: 0xdeadc0de }),
+            new SdkTrackMapping({ streamId: 9, trackLabel: '9318', ssrc: 0xdead10cc }),
+          ],
+        })
+      );
+      expect(index.streamIdForSSRC(0xdeadbeef)).to.equal(2);
+      expect(index.streamIdForSSRC(0xdead10cc)).to.equal(9);
+
+      index.overrideStreamIdMappings(2, 3);
+      index.overrideStreamIdMappings(9, 10);
+
+      expect(index.streamIdForSSRC(0xdeadbeef)).to.equal(3);
+      expect(index.streamIdForSSRC(0xdead10cc)).to.equal(10);
+    });
+
     it('ignores track mapping with empty track label or zero-valued stream id', () => {
       index.integrateSubscribeAckFrame(
         new SdkSubscribeAckFrame({
@@ -1139,6 +1160,44 @@ describe('DefaultVideoStreamIndex', () => {
       );
       expect(index.streamIdForSSRC(0xdeadbeef)).to.undefined;
       expect(index.streamIdForSSRC(0xdeadc0de)).to.undefined;
+    });
+  });
+
+  describe('streamIdForTrack', () => {
+    it('returns correct stream id', () => {
+      expect(index.streamIdForSSRC(12345)).to.be.undefined;
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [
+            new SdkTrackMapping({ streamId: 2, trackLabel: 'b18b9db2', ssrc: 0xdeadbeef }),
+            new SdkTrackMapping({ streamId: 4, trackLabel: '85e9', ssrc: 0xdeadc0de }),
+            new SdkTrackMapping({ streamId: 9, trackLabel: '9318', ssrc: 0xdead10cc }),
+          ],
+        })
+      );
+      expect(index.streamIdForTrack('b18b9db2')).to.equal(2);
+      expect(index.streamIdForTrack('9318')).to.equal(9);
+    });
+
+    it('allows overriding stream id', () => {
+      expect(index.streamIdForTrack('b18b9db2')).to.be.undefined;
+      index.integrateSubscribeAckFrame(
+        new SdkSubscribeAckFrame({
+          tracks: [
+            new SdkTrackMapping({ streamId: 2, trackLabel: 'b18b9db2', ssrc: 0xdeadbeef }),
+            new SdkTrackMapping({ streamId: 4, trackLabel: '85e9', ssrc: 0xdeadc0de }),
+            new SdkTrackMapping({ streamId: 9, trackLabel: '9318', ssrc: 0xdead10cc }),
+          ],
+        })
+      );
+      expect(index.streamIdForTrack('b18b9db2')).to.equal(2);
+      expect(index.streamIdForTrack('9318')).to.equal(9);
+
+      index.overrideStreamIdMappings(2, 3);
+      index.overrideStreamIdMappings(9, 10);
+
+      expect(index.streamIdForTrack('b18b9db2')).to.equal(3);
+      expect(index.streamIdForTrack('9318')).to.equal(10);
     });
   });
 
