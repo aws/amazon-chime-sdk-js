@@ -886,7 +886,7 @@ export default class DefaultAudioVideoController
     // Update bandwidth without renegotiation
     this.logger.info('Updating local video from policy without renegotiation');
     if (this.meetingSessionContext.enableSimulcast) {
-      // `AttachMediaInputTask` will update sender's simulcast streams encoding parameters of the local video transceiver 
+      // `AttachMediaInputTask` will update sender's simulcast streams encoding parameters of the local video transceiver
       new AttachMediaInputTask(this.meetingSessionContext).run();
     } else {
       // `ReceiveVideoInputTask` will update `meetingSessionContext.videoCaptureAndEncodeParameter`
