@@ -10,7 +10,7 @@ export default class VideoPriorityBasedPolicyConfig {
   static readonly UnstableNetworkPreset = new VideoPriorityBasedPolicyConfig(0, 1);
   static readonly StableNetworkPreset = new VideoPriorityBasedPolicyConfig(1, 0);
 
-  /** Initializes a [[PriorityBasedPolicyConfig]] with the network event delays.
+  /** Initializes a [[VideoPriorityBasedPolicyConfig]] with the network event delays.
    *
    * @param networkIssueResponseDelayFactor Delays before reducing subscribed video bitrate. Input should be a value between 0 and 1.
    * @param networkIssueRecoveryDelayFactor Delays before starting to increase bitrates after a network event and

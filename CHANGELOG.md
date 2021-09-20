@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Move `toLowerCasePropertyNames` inside `Utils.ts` and add test coverage.
+- Reduced uplink resubscription when only stream encoding is changed by adding bypassing path.
 - The browser demo now offers a configuration menu on each video tile. This menu replaces the 'Pin' button, which previously set the priority of the corresponding remote video to 1, and then rest to 2. The new configuration menu allows the user to specify the desired video quality and priority, which will be respected by simulcast and priority downlink policies. This is useful for testing or to demonstrate the behavior of those policies.
 - Switched to using Web Components for video tiles in the browser demo.
 
