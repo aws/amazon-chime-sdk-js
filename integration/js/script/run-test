@@ -98,13 +98,15 @@ case $1 in
    meeting_end)
       r meeting_end_test.config.json
       ;;
-   content_share)
+   content_share_test_suite_one)
       r content_share_screen_capture_test.config.json
+      r meeting_leave_content_share_test.config.json
+      r content_share_video_test.config.json
+      ;;
+   content_share_test_suite_two)
       r content_share_only_allow_two_test.config.json
       r content_share_join_later_test.config.json
       r app_quit_content_share_test.config.json
-      r meeting_leave_content_share_test.config.json
-      r content_share_video_test.config.json
       ;;
    data_message)
       r data_message_test.config.json
