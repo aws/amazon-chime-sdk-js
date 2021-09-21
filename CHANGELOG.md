@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Add safeguard for Nscale policy in case we increase to more than 25 videos.
+- Fixed issue that caused mobile integration tests not to run.
 
 ### Changed
 - Move `toLowerCasePropertyNames` inside `Utils.ts` and add test coverage.
