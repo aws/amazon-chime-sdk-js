@@ -54,7 +54,6 @@ import {
   TranscriptItemType,
   TranscriptResult,
   Versioning,
-  VideoAdaptiveProbePolicy,
   VideoDownlinkObserver,
   VideoFrameProcessor,
   VideoInputDevice,
@@ -1700,8 +1699,6 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
-    } else if (this.enableSimulcast) {
-      configuration.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(this.meetingLogger);
     }
 
     this.meetingSession = new DefaultMeetingSession(

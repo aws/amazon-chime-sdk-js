@@ -5,10 +5,7 @@ The uplink policy controls the configuration of the renditions through camera ca
 
 Simulcast is currently disabled by default. To enable it [MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers) and [MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers) must both be set. With those set to true, the simulcast uplink policy will be automatically selected. We currently do not allow overriding the uplink policy when enable simulcast is set to true. Currently, only Chrome 76 and above is supported.
 
-The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) 
-downlink policy adaptively subscribes to the best simulcast layer and should be used instead of the default downlink 
-policy. The default downlink policy [AllHighestDownlinkPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html) just subscribes to the highest video stream 
-available and does not choose optimal simulcast layer according to bandwidth condition.
+The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) downlink policy adaptively subscribes to the best simulcast layer and is automatically selected if [MeetingSessionConfiguration.enableUnifiedPlanForChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers) and [MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers) are set to true.
 
 If you want more fine-grained control of which simulcast layer to subscribe, please use [VideoPriorityBasedPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy). More details about priority-based downlink policy can be 
 found [here](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html).

@@ -451,4 +451,25 @@ describe('DefaultBrowserBehavior', () => {
       expect(dbb().requiresContextRecreationForAudioWorklet()).to.be.true;
     });
   });
+
+  describe('support Simulcast', () => {
+    it('Supports for Chrome and unified plan', () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: true,
+        }).isSimulcastSupported()
+      ).to.be.true;
+    });
+
+    it('Does not support for Chrome plan-b', () => {
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().isSimulcastSupported()).to.be.false;
+    });
+
+    it('Does not support for other non-Chrome browsers', () => {
+      setUserAgent(FIREFOX_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().isSimulcastSupported()).to.be.false;
+    });
+  });
 });
