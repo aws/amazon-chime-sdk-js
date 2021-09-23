@@ -1550,6 +1550,92 @@ describe('DefaultAudioVideoController', () => {
         .true;
     });
 
+    it('will skip renegotiation if we are updating simulcast layer change with header extension', async () => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'info');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+
+      // @ts-ignore
+      class MockRTCRtpSender implements RTCRtpSender {
+        getParameters(): RTCRtpSendParameters {
+          // @ts-ignore
+          return {
+            headerExtensions: [
+              {
+                id: 15,
+                uri: 'http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00',
+              },
+            ],
+          };
+        }
+      }
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.transceiverController.localVideoTransceiver().sender = new MockRTCRtpSender();
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
+        1,
+      ]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([1]);
+
+      // @ts-ignore
+      audioVideoController.mayNeedRenegotiationForSimulcastLayerChange = true;
+      audioVideoController.update({ needsRenegotiation: false });
+
+      // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
+      expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
+        .true;
+    });
+
+    it('will not skip renegotiation if we are updating simulcast layer change without header extension', async () => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'info');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.transceiverController.localVideoTransceiver().sender = new RTCRtpSender();
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
+        1,
+      ]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([1]);
+
+      // @ts-ignore
+      audioVideoController.mayNeedRenegotiationForSimulcastLayerChange = true;
+      audioVideoController.update({ needsRenegotiation: false });
+
+      await stop();
+
+      // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
+      expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
+        .false;
+    });
+
     it('will skip renegotiation if we are only completing simulcast stream switches', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');

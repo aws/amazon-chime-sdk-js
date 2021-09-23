@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
+import { DefaultBrowserBehavior } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -32,6 +33,7 @@ describe('SetLocalDescriptionTask', () => {
     const peer: RTCPeerConnection = new RTCPeerConnection();
     context.peer = peer;
     context.sdpOfferInit = sdpOffer;
+    context.browserBehavior = new DefaultBrowserBehavior();
     task = new SetLocalDescriptionTask(context);
   });
 

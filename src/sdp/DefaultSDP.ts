@@ -267,6 +267,20 @@ export default class DefaultSDP implements SDP {
     return new DefaultSDP(originalSdp);
   }
 
+  withVideoLayersAllocationRtpHeaderExtension(): DefaultSDP {
+    const srcLines: string[] = this.lines();
+    const dstLines: string[] = [];
+    for (const line of srcLines) {
+      dstLines.push(line);
+      if (/^a=sendrecv/.test(line.trim())) {
+        dstLines.push(
+          `a=extmap:15 http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`
+        );
+      }
+    }
+    return DefaultSDP.linesToSDP(dstLines);
+  }
+
   preferH264IfExists(): DefaultSDP {
     const srcSDP: string = this.sdp;
     const sections = DefaultSDP.splitSections(srcSDP);
