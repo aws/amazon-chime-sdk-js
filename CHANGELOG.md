@@ -8,57 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.20.0] - 2021-10-18
 
 ### Added
-
-- Add background blur video frame processor to enable background blur on streaming video. See [guide](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html)
+- Add support for layers allocation negotiation in Chromium based browsers to avoid resubscribing to preemptively turn off simulcast streams or to switch layers. 
 
 ### Removed
 
-### Fixed
-
-### Changed
-
-## [2.19.0] - 2021-10-14
-
-### Added
-
-- Add API `isSimulcastSupported` so applications can check whether simulcast can be enabled and pass corresponding policy.
-- Add `bindToTileController` optional method to `VideoDownlinkBandwidthPolicy`.
-- Add [Content Security Policy](https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html) setup guide for customers who want to secure their application and add CSP headers.
-- Add `securitypolicyviolation` event listener to listen for CSP violations. If customers have set up CSP for their app, the event listener will detect violations and print warnings.
-  
-### Removed
-
-- Remove Getting Started documentation guide and use [API overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html) to cover the development in more details.
-- Remove interface matching rule for all the components so that it is not required to have an interface of the same name for each component directory.
 
 ### Fixed
 
-- Amazon Voice Focus now works in Chrome 95 or later: WebAssembly policy changes required a change in how modules were loaded. This requires additional Content Security Policy changes, which are documented in the [CSP guide](https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html) and the [Amazon Voice Focus guide](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html).
-- Add safeguard in `ReceivedVideoInputTask` to prevent crashing when video input stream does not contain any video track.
-- Add missing `captureOutputPrefix` param for SDK demo app in release script.
-- Add opt-in region `eu-south-1` to meetings demo in deploy-canary-demo script to support media capture canary.
-- Fix bug: DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22.
-- Fix `removeObserver` function in `DefaultVideoTransformDevice`.
-- Fix handling pausing when using default preference for priority-based video bandwidth policy.
-- Bind tile controller for any downlink policy that implements `bindToTileController` such as 
-  `VideoAdaptiveProbePolicy`.
-- Do not pause streams that do not exist in conference in `VideoPriorityBasedPolicy`.
 
 ### Changed
 
-- Allow passing in custom video simulcast uplink policy that implements the `SimulcastUplinkPolicy` interface.
-- Change the default video downlink policy to `VideoAdaptiveProbePolicy` to match with documentation.
-- Move configuration default from meeting session configuration to audio video controller.
-- Update the default priority-based video downlink policy to adjust target size based on number of videos in the meeting.
-- Add a new section "Known Browser Issues" in FAQ.html.
-- Refactor some types to avoid a circular dependency (#1565).
-- Update package.json to include npm 8.
-- Update mocha to version 9.
-  
-## [2.18.0] - 2021-09-22
+
+## [2.18.0] - 2021-09-27
 
 ### Added
-
 - Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events. Currently, these events were only included in the meeting history attribute when a meeting event is published. 
 - Added support for skipping full SDP renegotiations when switching simulcast streams.  This will result in less freezing when switching between layers in response to a network event as done in `VideoPriorityBasedPolicy`.  This will have no impact if not using simulcast.
 - Add link to SIP Media Application examples in README.

@@ -1574,7 +1574,7 @@ describe('DefaultAudioVideoController', () => {
           return {
             headerExtensions: [
               {
-                id: 15,
+                id: 12,
                 uri: 'http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00',
               },
             ],

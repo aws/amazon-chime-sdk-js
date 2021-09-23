@@ -267,18 +267,63 @@ export default class DefaultSDP implements SDP {
     return new DefaultSDP(originalSdp);
   }
 
-  withVideoLayersAllocationRtpHeaderExtension(): DefaultSDP {
-    const srcLines: string[] = this.lines();
-    const dstLines: string[] = [];
+  getUniqueRtpHeaderExtensionId(srcLines: string[]): number {
+    const headerExtensionIds: number[] = [];
+
     for (const line of srcLines) {
-      dstLines.push(line);
-      if (/^a=sendrecv/.test(line.trim())) {
-        dstLines.push(
-          `a=extmap:15 http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`
-        );
+      if (/^a=extmap:/.test(line.trim())) {
+        const headerExtension = line.split('a=extmap:')[1].split(' ');
+        const id = +headerExtension[0];
+        headerExtensionIds.push(id);
       }
     }
-    return DefaultSDP.linesToSDP(dstLines);
+
+    headerExtensionIds.sort((a, b) => a - b);
+    let previousId = 0; // header extension cannot be 0, refer https://datatracker.ietf.org/doc/html/rfc5285
+    for (const id of headerExtensionIds) {
+      if (id - previousId > 1) {
+        return previousId + 1;
+      }
+      previousId = id;
+    }
+
+    // One-Byte Header header extension cannot be bigger than 14, refer https://datatracker.ietf.org/doc/html/rfc5285
+    return previousId === 14 ? -1 : previousId + 1;
+  }
+
+  // this will not add the packet overhead unless negotiated to avoid waste
+  // it is tested against local Tincan
+  withVideoLayersAllocationRtpHeaderExtension(): DefaultSDP {
+    const sections = DefaultSDP.splitSections(this.sdp);
+
+    const newSections = [];
+    for (let section of sections) {
+      if (/^m=video/.test(section)) {
+        const srcLines: string[] = DefaultSDP.splitLines(section);
+        const dstLines: string[] = [];
+        const id = this.getUniqueRtpHeaderExtensionId(srcLines);
+        if (id === -1) {
+          // if all ids are used, we won't add new line to it
+          newSections.push(section);
+          continue;
+        }
+
+        for (const line of srcLines) {
+          dstLines.push(line);
+          if (/^a=sendrecv/.test(line.trim())) {
+            const targetLine =
+              `a=extmap:` +
+              id +
+              ` http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00`;
+            dstLines.push(targetLine);
+          }
+        }
+        section = dstLines.join(DefaultSDP.CRLF) + DefaultSDP.CRLF;
+      }
+      newSections.push(section);
+    }
+    const newSdp = newSections.join('');
+    return new DefaultSDP(newSdp);
   }
 
   preferH264IfExists(): DefaultSDP {
