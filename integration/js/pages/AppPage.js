@@ -13,6 +13,7 @@ function findAllElements() {
     attendeeNameInput: By.id('inputName'),
     authenticateButton: By.id('authenticate'),
     localVideoButton: By.id('button-camera'),
+    mediaCaptureButton: By.id('button-record-cloud'),
     addVoiceFocusInput: By.id('add-voice-focus'),        // Checkbox.
     joinButton: By.id('joinButton'),
     meetingEndButtom: By.id('button-meeting-end'),
@@ -102,6 +103,10 @@ class AppPage {
     await attendeeNameInputBox.sendKeys(attendeeName);
   }
 
+  async selectRegion(region) {
+    await this.driver.findElement(By.css(`option[value=${region}]`)).click();
+  }
+
   async authenticate() {
     let authenticateButton = await this.driver.findElement(elements.authenticateButton);
     await authenticateButton.click();
@@ -181,6 +186,11 @@ class AppPage {
   async clickCameraButton() {
     let localVideoButton = await this.driver.findElement(elements.localVideoButton);
     await localVideoButton.click();
+  }
+
+  async clickMediaCaptureButton() {
+    let mediaCaptureButton = await this.driver.findElement(elements.mediaCaptureButton);
+    await mediaCaptureButton.click();
   }
 
   async clickMicrophoneButton() {

@@ -20,6 +20,10 @@ class SdkBaseTest extends KiteBaseTest {
       this.userArn = this.payload.userArn;
     }
 
+    if (testName === 'MediaCapture') {
+      this.region = this.payload.region;
+    }
+
     if (['Video', 'Audio'].includes(testName)) {
       this.url = this.getTransformedURL(this.url, 'attendee-presence-timeout-ms', 5000);
       // Allows us to easily treat unexpected reconnects as failures
@@ -200,7 +204,11 @@ class SdkBaseTest extends KiteBaseTest {
       }
       try {
         if (!await this.initializeSeleniumSession(numberOfSeleniumSessions)) {
-          await emitMetric(this.testName, this.capabilities, 'E2E', 0);
+          if (this.testName === 'MediaCapture') {
+            await emitMetric(this.testName, this.capabilities, 'E2E_' + this.region, 0);
+          } else {
+            await emitMetric(this.testName, this.capabilities, 'E2E', 0);
+          }
           return;
         }
 
@@ -282,7 +290,11 @@ class SdkBaseTest extends KiteBaseTest {
   async closeCurrentTest(testResult) {
     try {
       await this.updateSeleniumTestResult(testResult);
-      await emitMetric(this.testName, this.capabilities, 'E2E', testResult? 1 : 0);
+      if (this.testName === 'MediaCapture') {
+        await emitMetric(this.testName, this.capabilities, 'E2E_' + this.region, testResult? 1 : 0);
+      } else {
+        await emitMetric(this.testName, this.capabilities, 'E2E', testResult? 1 : 0);
+      }
       await this.printRunDetails(testResult);
     } catch (e) {
       console.log(e);

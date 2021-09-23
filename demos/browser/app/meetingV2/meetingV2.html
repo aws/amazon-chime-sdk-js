@@ -17,6 +17,44 @@
   </div>
 </div>
 
+<template id="video-tile-template">
+  <video class="video-tile-video"></video>
+  <div class="video-tile-attendee-id"></div>
+  <div class="video-tile-nameplate"></div>
+  <div class="video-tile-pause-state"></div>
+  <div class="button-video-tile-config" role="group">
+    <button type="button" class="btn btn-success dropdown-toggle button-video-tile-config-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
+    <div class="dropdown-menu dropdown-menu-right dropdown-video-tile-config" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+      <a class="dropdown-item video-tile-pause">Pause</a>
+      <div class="dropdown-divider"></div>
+      <h6 class="dropdown-header target-resolution-header">Target Resolution</h6>
+      <form class="btn-group btn-group-toggle video-tile-config-toggle target-resolution-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary">
+          <input type="radio" name="level" value="low" autocomplete="off">Low
+        </label>
+        <label class="btn btn-secondary">
+          <input type="radio" name="level" value="medium" autocomplete="off">Medium
+        </label>
+        <label class="btn btn-secondary active">
+          <input type="radio" name="level" value="high" autocomplete="off" checked>High
+        </label>
+      </form>
+      <h6 class="dropdown-header video-priority-header">Video Priority</h6>
+      <form class="btn-group btn-group-toggle video-tile-config-toggle video-priority-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary">
+          <input type="radio" name="level" value="low" autocomplete="off">Low
+        </label>
+        <label class="btn btn-secondary active">
+          <input type="radio" name="level" value="medium" autocomplete="off" checked>Medium
+        </label>
+        <label class="btn btn-secondary">
+            <input type="radio" name="level" value="high" autocomplete="off">High
+        </label>
+      </form>
+    </div>
+  </div>
+</template>
+
 <!-- Initial meeting authentication screen with meeting and name inputs -->
 <div id="flow-authenticate" class="flow text-center p-2">
   <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
@@ -96,10 +134,6 @@
                 <option value="stable">Stable Network</option>
                 <option value="unstable">Unstable Network</option>
               </select>
-            </div>
-            <div class="custom-control custom-checkbox" style="text-align: left;">
-              <input type="checkbox" id="enable-pin" class="custom-control-input">
-              <label for="enable-pin" class="custom-control-label">Enable pin</label>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" checked id="preconnect" class="custom-control-input">
@@ -298,7 +332,7 @@
         <span class="modal-title text-muted">Live Transcription Configuration</span>
         <span id="button-live-transcription-modal-close" class="close">&times;</span>
       </div>
-      <div id="engine-option-group">
+      <div id="engine-option-group active">
         <input type="radio" id="engine-transcribe" name="transcription-engine" value="engine-transcribe" checked=true>
         <label for="engine-transcribe">Amazon Transcribe</label><br>
         <input type="radio" id="engine-transcribe-medical" name="transcription-engine" value="engine-transcribe-medical">
@@ -486,232 +520,7 @@
         </div>
       </div>
       <div id="tile-transcript-container" class="d-flex flex-column col-12 col-sm-7 col-md-8 col-lg-9 my-4 my-sm-0 h-100" style="overflow-y: scroll">
-        <div id="tile-area" class="v-grid">
-          <div id="tile-0" class="video-tile">
-            <video id="video-0" class="video-tile-video"></video>
-            <div id="attendeeid-0" class="video-tile-attendeeid"></div>
-            <div id="nameplate-0" class="video-tile-nameplate"></div>
-            <div id="pause-state-0"></div>
-            <button id="video-pause-0" class="video-tile-pause">Pause</button>
-            <button id="video-pin-0" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-1" class="video-tile">
-            <video id="video-1" class="video-tile-video"></video>
-            <div id="attendeeid-1" class="video-tile-attendeeid"></div>
-            <div id="nameplate-1" class="video-tile-nameplate"></div>
-            <div id="pause-state-1"></div>
-            <button id="video-pause-1" class="video-tile-pause">Pause</button>
-            <button id="video-pin-1" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-2" class="video-tile">
-            <video id="video-2" class="video-tile-video"></video>
-            <div id="attendeeid-2" class="video-tile-attendeeid"></div>
-            <div id="nameplate-2" class="video-tile-nameplate"></div>
-            <div id="pause-state-2"></div>
-            <button id="video-pause-2" class="video-tile-pause">Pause</button>
-            <button id="video-pin-2" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-3" class="video-tile">
-            <video id="video-3" class="video-tile-video"></video>
-            <div id="attendeeid-3" class="video-tile-attendeeid"></div>
-            <div id="nameplate-3" class="video-tile-nameplate"></div>
-            <div id="pause-state-3"></div>
-            <button id="video-pause-3" class="video-tile-pause">Pause</button>
-            <button id="video-pin-3" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-4" class="video-tile">
-            <video id="video-4" class="video-tile-video"></video>
-            <div id="attendeeid-4" class="video-tile-attendeeid"></div>
-            <div id="nameplate-4" class="video-tile-nameplate"></div>
-            <div id="pause-state-4"></div>
-            <button id="video-pause-4" class="video-tile-pause">Pause</button>
-            <button id="video-pin-4" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-5" class="video-tile">
-            <video id="video-5" class="video-tile-video"></video>
-            <div id="attendeeid-5" class="video-tile-attendeeid"></div>
-            <div id="nameplate-5" class="video-tile-nameplate"></div>
-            <div id="pause-state-5"></div>
-            <button id="video-pause-5" class="video-tile-pause">Pause</button>
-            <button id="video-pin-5" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-6" class="video-tile">
-            <video id="video-6" class="video-tile-video"></video>
-            <div id="attendeeid-6" class="video-tile-attendeeid"></div>
-            <div id="nameplate-6" class="video-tile-nameplate"></div>
-            <div id="pause-state-6"></div>
-            <button id="video-pause-6" class="video-tile-pause">Pause</button>
-            <button id="video-pin-6" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-7" class="video-tile">
-            <video id="video-7" class="video-tile-video"></video>
-            <div id="attendeeid-7" class="video-tile-attendeeid"></div>
-            <div id="nameplate-7" class="video-tile-nameplate"></div>
-            <div id="pause-state-7"></div>
-            <button id="video-pause-7" class="video-tile-pause">Pause</button>
-            <button id="video-pin-7" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-8" class="video-tile">
-            <video id="video-8" class="video-tile-video"></video>
-            <div id="attendeeid-8" class="video-tile-attendeeid"></div>
-            <div id="nameplate-8" class="video-tile-nameplate"></div>
-            <div id="pause-state-8"></div>
-            <button id="video-pause-8" class="video-tile-pause">Pause</button>
-            <button id="video-pin-8" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-9" class="video-tile">
-            <video id="video-9" class="video-tile-video"></video>
-            <div id="attendeeid-9" class="video-tile-attendeeid"></div>
-            <div id="nameplate-9" class="video-tile-nameplate"></div>
-            <div id="pause-state-9"></div>
-            <button id="video-pause-9" class="video-tile-pause">Pause</button>
-            <button id="video-pin-9" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-10" class="video-tile">
-            <video id="video-10" class="video-tile-video"></video>
-            <div id="attendeeid-10" class="video-tile-attendeeid"></div>
-            <div id="nameplate-10" class="video-tile-nameplate"></div>
-            <div id="pause-state-10"></div>
-            <button id="video-pause-10" class="video-tile-pause">Pause</button>
-            <button id="video-pin-10" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-11" class="video-tile">
-            <video id="video-11" class="video-tile-video"></video>
-            <div id="attendeeid-11" class="video-tile-attendeeid"></div>
-            <div id="nameplate-11" class="video-tile-nameplate"></div>
-            <div id="pause-state-11"></div>
-            <button id="video-pause-11" class="video-tile-pause">Pause</button>
-            <button id="video-pin-11" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-12" class="video-tile">
-            <video id="video-12" class="video-tile-video"></video>
-            <div id="attendeeid-12" class="video-tile-attendeeid"></div>
-            <div id="nameplate-12" class="video-tile-nameplate"></div>
-            <div id="pause-state-12"></div>
-            <button id="video-pause-12" class="video-tile-pause">Pause</button>
-            <button id="video-pin-12" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-13" class="video-tile">
-            <video id="video-13" class="video-tile-video"></video>
-            <div id="attendeeid-13" class="video-tile-attendeeid"></div>
-            <div id="nameplate-13" class="video-tile-nameplate"></div>
-            <div id="pause-state-13"></div>
-            <button id="video-pause-13" class="video-tile-pause">Pause</button>
-            <button id="video-pin-13" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-14" class="video-tile">
-            <video id="video-14" class="video-tile-video"></video>
-            <div id="attendeeid-14" class="video-tile-attendeeid"></div>
-            <div id="nameplate-14" class="video-tile-nameplate"></div>
-            <div id="pause-state-14"></div>
-            <button id="video-pause-14" class="video-tile-pause">Pause</button>
-            <button id="video-pin-14" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-15" class="video-tile">
-            <video id="video-15" class="video-tile-video"></video>
-            <div id="attendeeid-15" class="video-tile-attendeeid"></div>
-            <div id="nameplate-15" class="video-tile-nameplate"></div>
-            <div id="pause-state-15"></div>
-            <button id="video-pause-15" class="video-tile-pause">Pause</button>
-            <button id="video-pin-15" class="video-tile-pin">Pin</button>
-          </div>
-          <div id="tile-16" class="video-tile">
-            <video id="video-16" class="video-tile-video"></video>
-            <div id="attendeeid-16" class="video-tile-attendeeid"></div>
-            <div id="nameplate-16" class="video-tile-nameplate"></div>
-            <div id="pause-state-16"></div>
-            <button id="video-pause-16" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-16" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-17" class="video-tile">
-            <video id="video-17" class="video-tile-video"></video>
-            <div id="attendeeid-17" class="video-tile-attendeeid"></div>
-            <div id="nameplate-17" class="video-tile-nameplate"></div>
-            <div id="pause-state-17"></div>
-            <button id="video-pause-17" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-17" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-18" class="video-tile">
-            <video id="video-18" class="video-tile-video"></video>
-            <div id="attendeeid-18" class="video-tile-attendeeid"></div>
-            <div id="nameplate-18" class="video-tile-nameplate"></div>
-            <div id="pause-state-18"></div>
-            <button id="video-pause-18" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-18" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-19" class="video-tile">
-            <video id="video-19" class="video-tile-video"></video>
-            <div id="attendeeid-19" class="video-tile-attendeeid"></div>
-            <div id="nameplate-19" class="video-tile-nameplate"></div>
-            <div id="pause-state-19"></div>
-            <button id="video-pause-19" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-19" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-20" class="video-tile">
-            <video id="video-20" class="video-tile-video"></video>
-            <div id="attendeeid-20" class="video-tile-attendeeid"></div>
-            <div id="nameplate-20" class="video-tile-nameplate"></div>
-            <div id="pause-state-20"></div>
-            <button id="video-pause-20" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-20" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-21" class="video-tile">
-            <video id="video-21" class="video-tile-video"></video>
-            <div id="attendeeid-21" class="video-tile-attendeeid"></div>
-            <div id="nameplate-21" class="video-tile-nameplate"></div>
-            <div id="pause-state-21"></div>
-            <button id="video-pause-21" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-21" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-22" class="video-tile">
-            <video id="video-22" class="video-tile-video"></video>
-            <div id="attendeeid-22" class="video-tile-attendeeid"></div>
-            <div id="nameplate-22" class="video-tile-nameplate"></div>
-            <div id="pause-state-22"></div>
-            <button id="video-pause-22" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-22" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-23" class="video-tile">
-            <video id="video-23" class="video-tile-video"></video>
-            <div id="attendeeid-23" class="video-tile-attendeeid"></div>
-            <div id="nameplate-23" class="video-tile-nameplate"></div>
-            <div id="pause-state-23"></div>
-            <button id="video-pause-23" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-23" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-24" class="video-tile">
-            <video id="video-24" class="video-tile-video"></video>
-            <div id="attendeeid-24" class="video-tile-attendeeid"></div>
-            <div id="nameplate-24" class="video-tile-nameplate"></div>
-            <div id="pause-state-24"></div>
-            <button id="video-pause-24" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-24" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-25" class="video-tile">
-            <div id="attendeeid-25" class="video-tile-attendeeid"></div>
-            <video id="video-25" class="video-tile-video"></video>
-            <div id="nameplate-25" class="video-tile-nameplate"></div>
-            <div id="pause-state-25"></div>
-            <button id="video-pause-25" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-25" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-26" class="video-tile">
-            <div id="attendeeid-26" class="video-tile-attendeeid"></div>
-            <video id="video-26" class="video-tile-video"></video>
-            <div id="nameplate-26" class="video-tile-nameplate"></div>
-            <div id="pause-state-26"></div>
-            <button id="video-pause-26" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-26" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-          <div id="tile-27" class="video-tile">
-            <div id="attendeeid-27" class="video-tile-attendeeid"></div>
-            <video id="video-27" class="video-tile-video"></video>
-            <div id="nameplate-27" class="video-tile-nameplate"></div>
-            <div id="pause-state-27"></div>
-            <button id="video-pause-27" class="video-tile-pause" class="btn">Pause</button>
-            <button id="video-pin-27" class="video-tile-pin" class="btn">Pin</button>
-          </div>
-        </div>
+        <div id="tile-area" class="v-grid"></div>
         <div id="transcript-container" class="transcript-container" style="display:none"></div>
       </div>
       <video id="content-share-video" playsinline crossOrigin="anonymous" style="display:none"></video>

@@ -49,6 +49,7 @@ import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import MonitorTask from '../../src/task/MonitorTask';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
+import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
@@ -897,7 +898,7 @@ describe('MonitorTask', () => {
           done();
         }
       }
-      context.videoSubscriptions = [streamIdTestValue];
+      context.videosToReceive = new DefaultVideoStreamIdSet([streamIdTestValue]);
       context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
       context.audioVideoController.addObserver(new TestObserver());
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);

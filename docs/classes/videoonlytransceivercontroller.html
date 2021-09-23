@@ -104,12 +104,14 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="videoonlytransceivercontroller.html#defaultmediastream" class="tsd-kind-icon">default<wbr>Media<wbr>Stream</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="videoonlytransceivercontroller.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="videoonlytransceivercontroller.html#peer" class="tsd-kind-icon">peer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="videoonlytransceivercontroller.html#streamidtotransceiver" class="tsd-kind-icon">stream<wbr>IdTo<wbr>Transceiver</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="videoonlytransceivercontroller.html#videosubscriptions" class="tsd-kind-icon">video<wbr>Subscriptions</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#getmidforstreamid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Stream<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#hasvideoinput" class="tsd-kind-icon">has<wbr>Video<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#localaudiotransceiver" class="tsd-kind-icon">local<wbr>Audio<wbr>Transceiver</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#localvideotransceiver" class="tsd-kind-icon">local<wbr>Video<wbr>Transceiver</a></li>
@@ -118,10 +120,12 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#setaudioinput" class="tsd-kind-icon">set<wbr>Audio<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#setencodingparameters" class="tsd-kind-icon">set<wbr>Encoding<wbr>Parameters</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#setpeer" class="tsd-kind-icon">set<wbr>Peer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#setstreamidformid" class="tsd-kind-icon">set<wbr>Stream<wbr>IdFor<wbr>Mid</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#setvideoinput" class="tsd-kind-icon">set<wbr>Video<wbr>Input</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#setvideosendingbitratekbps" class="tsd-kind-icon">set<wbr>Video<wbr>Sending<wbr>Bitrate<wbr>Kbps</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="videoonlytransceivercontroller.html#setuplocaltransceivers" class="tsd-kind-icon">setup<wbr>Local<wbr>Transceivers</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#trackisvideoinput" class="tsd-kind-icon">track<wbr>IsVideo<wbr>Input</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="videoonlytransceivercontroller.html#transceiverisvideo" class="tsd-kind-icon">transceiver<wbr>IsVideo</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#updatevideotransceivers" class="tsd-kind-icon">update<wbr>Video<wbr>Transceivers</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoonlytransceivercontroller.html#usetransceivers" class="tsd-kind-icon">use<wbr>Transceivers</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="videoonlytransceivercontroller.html#replaceaudiotrackforsender" class="tsd-kind-icon">replace<wbr>Audio<wbr>Track<wbr>For<wbr>Sender</a></li>
@@ -192,7 +196,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#browserbehavior">browserBehavior</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L17">src/transceivercontroller/DefaultTransceiverController.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L18">src/transceivercontroller/DefaultTransceiverController.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -214,7 +218,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#logger">logger</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L17">src/transceivercontroller/DefaultTransceiverController.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L18">src/transceivercontroller/DefaultTransceiverController.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -226,6 +230,17 @@
 						<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#peer">peer</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L15">src/transceivercontroller/DefaultTransceiverController.ts:15</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="streamidtotransceiver" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> stream<wbr>IdTo<wbr>Transceiver</h3>
+					<div class="tsd-signature tsd-kind-icon">stream<wbr>IdTo<wbr>Transceiver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RTCRtpTransceiver</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map()</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#streamidtotransceiver">streamIdToTransceiver</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L16">src/transceivercontroller/DefaultTransceiverController.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -244,6 +259,31 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="getmidforstreamid" class="tsd-anchor"></a>
+					<h3>get<wbr>Mid<wbr>For<wbr>Stream<wbr>Id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Stream<wbr>Id<span class="tsd-signature-symbol">(</span>streamId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#getmidforstreamid">getMidForStreamId</a></p>
+								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#getmidforstreamid">getMidForStreamId</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L294">src/transceivercontroller/DefaultTransceiverController.ts:294</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>streamId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="hasvideoinput" class="tsd-anchor"></a>
 					<h3>has<wbr>Video<wbr>Input</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
@@ -255,7 +295,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#hasvideoinput">hasVideoInput</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#hasvideoinput">hasVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L131">src/transceivercontroller/DefaultTransceiverController.ts:131</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L132">src/transceivercontroller/DefaultTransceiverController.ts:132</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -274,7 +314,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#localaudiotransceiver">localAudioTransceiver</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#localaudiotransceiver">localAudioTransceiver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L91">src/transceivercontroller/DefaultTransceiverController.ts:91</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L92">src/transceivercontroller/DefaultTransceiverController.ts:92</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RTCRtpTransceiver</span></h4>
@@ -293,7 +333,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#localvideotransceiver">localVideoTransceiver</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#localvideotransceiver">localVideoTransceiver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L95">src/transceivercontroller/DefaultTransceiverController.ts:95</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L96">src/transceivercontroller/DefaultTransceiverController.ts:96</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RTCRtpTransceiver</span></h4>
@@ -312,7 +352,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#replaceaudiotrack">replaceAudioTrack</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#replaceaudiotrack">replaceAudioTrack</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L172">src/transceivercontroller/DefaultTransceiverController.ts:172</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L173">src/transceivercontroller/DefaultTransceiverController.ts:173</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -337,7 +377,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#reset">reset</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#reset">reset</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L115">src/transceivercontroller/DefaultTransceiverController.ts:115</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L116">src/transceivercontroller/DefaultTransceiverController.ts:116</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -356,7 +396,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#setaudioinput">setAudioInput</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#setaudioinput">setAudioInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L181">src/transceivercontroller/DefaultTransceiverController.ts:181</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L182">src/transceivercontroller/DefaultTransceiverController.ts:182</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -381,7 +421,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#setencodingparameters">setEncodingParameters</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#setencodingparameters">setEncodingParameters</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L19">src/transceivercontroller/DefaultTransceiverController.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L20">src/transceivercontroller/DefaultTransceiverController.ts:20</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -406,13 +446,41 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#setpeer">setPeer</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#setpeer">setPeer</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L111">src/transceivercontroller/DefaultTransceiverController.ts:111</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L112">src/transceivercontroller/DefaultTransceiverController.ts:112</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>peer: <span class="tsd-signature-type">RTCPeerConnection</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="setstreamidformid" class="tsd-anchor"></a>
+					<h3>set<wbr>Stream<wbr>IdFor<wbr>Mid</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Stream<wbr>IdFor<wbr>Mid<span class="tsd-signature-symbol">(</span>mid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newStreamId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#setstreamidformid">setStreamIdForMid</a></p>
+								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#setstreamidformid">setStreamIdForMid</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L298">src/transceivercontroller/DefaultTransceiverController.ts:298</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>mid: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>newStreamId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -431,7 +499,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#setvideoinput">setVideoInput</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#setvideoinput">setVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L186">src/transceivercontroller/DefaultTransceiverController.ts:186</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L187">src/transceivercontroller/DefaultTransceiverController.ts:187</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -456,7 +524,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#setvideosendingbitratekbps">setVideoSendingBitrateKbps</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#setvideosendingbitratekbps">setVideoSendingBitrateKbps</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L99">src/transceivercontroller/DefaultTransceiverController.ts:99</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L100">src/transceivercontroller/DefaultTransceiverController.ts:100</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -500,13 +568,37 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#trackisvideoinput">trackIsVideoInput</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#trackisvideoinput">trackIsVideoInput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L138">src/transceivercontroller/DefaultTransceiverController.ts:138</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L139">src/transceivercontroller/DefaultTransceiverController.ts:139</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>track: <span class="tsd-signature-type">MediaStreamTrack</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="transceiverisvideo" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> transceiver<wbr>IsVideo</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">transceiver<wbr>IsVideo<span class="tsd-signature-symbol">(</span>transceiver<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCRtpTransceiver</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#transceiverisvideo">transceiverIsVideo</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L308">src/transceivercontroller/DefaultTransceiverController.ts:308</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>transceiver: <span class="tsd-signature-type">RTCRtpTransceiver</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -525,7 +617,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#updatevideotransceivers">updateVideoTransceivers</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#updatevideotransceivers">updateVideoTransceivers</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L191">src/transceivercontroller/DefaultTransceiverController.ts:191</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L192">src/transceivercontroller/DefaultTransceiverController.ts:192</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -553,7 +645,7 @@
 								<p>Implementation of <a href="../interfaces/transceivercontroller.html">TransceiverController</a>.<a href="../interfaces/transceivercontroller.html#usetransceivers">useTransceivers</a></p>
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#usetransceivers">useTransceivers</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L123">src/transceivercontroller/DefaultTransceiverController.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L124">src/transceivercontroller/DefaultTransceiverController.ts:124</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -571,7 +663,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#replaceaudiotrackforsender">replaceAudioTrackForSender</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L79">src/transceivercontroller/DefaultTransceiverController.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L80">src/transceivercontroller/DefaultTransceiverController.ts:80</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -598,7 +690,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="defaulttransceivercontroller.html">DefaultTransceiverController</a>.<a href="defaulttransceivercontroller.html#setvideosendingbitratekbpsforsender">setVideoSendingBitrateKbpsForSender</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L61">src/transceivercontroller/DefaultTransceiverController.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transceivercontroller/DefaultTransceiverController.ts#L62">src/transceivercontroller/DefaultTransceiverController.ts:62</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -656,7 +748,13 @@
 								<a href="videoonlytransceivercontroller.html#peer" class="tsd-kind-icon">peer</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="videoonlytransceivercontroller.html#streamidtotransceiver" class="tsd-kind-icon">stream<wbr>IdTo<wbr>Transceiver</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 								<a href="videoonlytransceivercontroller.html#videosubscriptions" class="tsd-kind-icon">video<wbr>Subscriptions</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="videoonlytransceivercontroller.html#getmidforstreamid" class="tsd-kind-icon">get<wbr>Mid<wbr>For<wbr>Stream<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="videoonlytransceivercontroller.html#hasvideoinput" class="tsd-kind-icon">has<wbr>Video<wbr>Input</a>
@@ -683,6 +781,9 @@
 								<a href="videoonlytransceivercontroller.html#setpeer" class="tsd-kind-icon">set<wbr>Peer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="videoonlytransceivercontroller.html#setstreamidformid" class="tsd-kind-icon">set<wbr>Stream<wbr>IdFor<wbr>Mid</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="videoonlytransceivercontroller.html#setvideoinput" class="tsd-kind-icon">set<wbr>Video<wbr>Input</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
@@ -693,6 +794,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="videoonlytransceivercontroller.html#trackisvideoinput" class="tsd-kind-icon">track<wbr>IsVideo<wbr>Input</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="videoonlytransceivercontroller.html#transceiverisvideo" class="tsd-kind-icon">transceiver<wbr>IsVideo</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="videoonlytransceivercontroller.html#updatevideotransceivers" class="tsd-kind-icon">update<wbr>Video<wbr>Transceivers</a>

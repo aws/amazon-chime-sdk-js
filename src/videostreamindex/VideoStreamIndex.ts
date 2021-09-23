@@ -105,6 +105,12 @@ export default interface VideoStreamIndex {
   streamIdForSSRC(ssrcId: number): number;
 
   /**
+   * Override mappings using stream ID (i.e. for `streamIdForTrack`, and `streamIdForSSRC`)
+   * locally (i.e. without the need for a subscribe ACK message)
+   */
+  overrideStreamIdMappings?(previous: number, current: number): void;
+
+  /**
    * Returns the set of streams which are paused at source.
    */
   streamsPausedAtSource(): VideoStreamIdSet;
