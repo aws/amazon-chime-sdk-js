@@ -24,9 +24,10 @@ export default interface AudioVideoController extends AudioVideoControllerFacade
   forEachObserver(observerFunc: (observer: AudioVideoObserver) => void): void;
 
   /**
-   * Updates the peer connection when video tiles have changed.
+   * Updates the peer connection when video tiles have changed.  If `needsRenegotiation`
+   * is set explicitly to false, we may skip SDP negotiation if it is not necessary.
    */
-  update(): boolean;
+  update(options?: { needsRenegotiation?: boolean }): boolean;
 
   /**
    * Restarts the local video device. The callback is called when the device

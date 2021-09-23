@@ -148,6 +148,7 @@ export default class MonitorTask
     if (!metricReport) {
       return false;
     }
+
     const availableSendBandwidth =
       metricReport.availableSendBandwidth || metricReport.availableOutgoingBitrate;
     const nackCountPerSecond =
@@ -191,7 +192,7 @@ export default class MonitorTask
     }
 
     if (this.checkResubscribe(clientMetricReport)) {
-      this.context.audioVideoController.update();
+      this.context.audioVideoController.update({ needsRenegotiation: false });
     }
 
     if (!this.currentAvailableStreamAvgBitrates) {
@@ -307,8 +308,6 @@ export default class MonitorTask
   }
 
   private handleBitrateFrame(bitrates: ISdkBitrateFrame): void {
-    const videoSubscription: number[] = this.context.videoSubscriptions || [];
-
     let requiredBandwidthKbps = 0;
     this.currentAvailableStreamAvgBitrates = bitrates;
 
@@ -316,7 +315,7 @@ export default class MonitorTask
       return `simulcast: bitrates from server ${JSON.stringify(bitrates)}`;
     });
     for (const bitrate of bitrates.bitrates) {
-      if (videoSubscription.indexOf(bitrate.sourceStreamId) !== -1) {
+      if (this.context.videosToReceive.contain(bitrate.sourceStreamId)) {
         requiredBandwidthKbps += bitrate.avgBitrateBps;
       }
     }

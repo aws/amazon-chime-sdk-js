@@ -94,8 +94,16 @@ export default class AudioVideoControllerState {
 
   videoCaptureAndEncodeParameter: VideoCaptureAndEncodeParameter | null = null;
 
+  // An unordered list of IDs provided by the downlink policy that
+  // we will eventually subscribe to.
   videosToReceive: VideoStreamIdSet | null = null;
 
+  // The last processed set of IDs provided by the policy, so that we can
+  // compare what changes were additions, stream switches, or removals.
+  lastVideosToReceive: VideoStreamIdSet | null = null;
+
+  // An ordered list corresponding to `videosToReceive` where the order
+  // itself correspond to transceivers; 0 in this list corresponds to an inactive tranceiver.
   videoSubscriptions: number[] | null = null;
 
   videosPaused: VideoStreamIdSet | null = null;

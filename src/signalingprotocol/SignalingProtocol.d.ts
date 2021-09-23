@@ -59,6 +59,9 @@ export interface ISdkSignalFrame {
 
     /** SdkSignalFrame dataMessage */
     dataMessage?: (ISdkDataMessageFrame|null);
+
+    /** SdkSignalFrame remoteVideoUpdate */
+    remoteVideoUpdate?: (ISdkRemoteVideoUpdateFrame|null);
 }
 
 /** Represents a SdkSignalFrame. */
@@ -126,6 +129,9 @@ export class SdkSignalFrame implements ISdkSignalFrame {
 
     /** SdkSignalFrame dataMessage. */
     public dataMessage?: (ISdkDataMessageFrame|null);
+
+    /** SdkSignalFrame remoteVideoUpdate. */
+    public remoteVideoUpdate?: (ISdkRemoteVideoUpdateFrame|null);
 
     /**
      * Creates a new SdkSignalFrame instance using the specified properties.
@@ -218,7 +224,8 @@ export namespace SdkSignalFrame {
         PING_PONG = 19,
         AUDIO_STATUS = 20,
         CLIENT_METRIC = 21,
-        DATA_MESSAGE = 22
+        DATA_MESSAGE = 22,
+        REMOTE_VIDEO_UPDATE = 24
     }
 }
 
@@ -3292,7 +3299,6 @@ export namespace SdkTranscriptItem {
 
     /** Type enum. */
     enum Type {
-        UNKNOWN = 0,
         PRONUNCIATION = 1,
         PUNCTUATION = 2
     }
@@ -3914,6 +3920,204 @@ export class SdkTranscriptFrame implements ISdkTranscriptFrame {
 
     /**
      * Converts this SdkTranscriptFrame to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkRemoteVideoUpdateFrame. */
+export interface ISdkRemoteVideoUpdateFrame {
+
+    /** SdkRemoteVideoUpdateFrame addedOrUpdatedVideoSubscriptions */
+    addedOrUpdatedVideoSubscriptions?: (ISdkVideoSubscriptionConfiguration[]|null);
+
+    /** SdkRemoteVideoUpdateFrame removedVideoSubscriptionMids */
+    removedVideoSubscriptionMids?: (string[]|null);
+}
+
+/** Represents a SdkRemoteVideoUpdateFrame. */
+export class SdkRemoteVideoUpdateFrame implements ISdkRemoteVideoUpdateFrame {
+
+    /**
+     * Constructs a new SdkRemoteVideoUpdateFrame.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkRemoteVideoUpdateFrame);
+
+    /** SdkRemoteVideoUpdateFrame addedOrUpdatedVideoSubscriptions. */
+    public addedOrUpdatedVideoSubscriptions: ISdkVideoSubscriptionConfiguration[];
+
+    /** SdkRemoteVideoUpdateFrame removedVideoSubscriptionMids. */
+    public removedVideoSubscriptionMids: string[];
+
+    /**
+     * Creates a new SdkRemoteVideoUpdateFrame instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkRemoteVideoUpdateFrame instance
+     */
+    public static create(properties?: ISdkRemoteVideoUpdateFrame): SdkRemoteVideoUpdateFrame;
+
+    /**
+     * Encodes the specified SdkRemoteVideoUpdateFrame message. Does not implicitly {@link SdkRemoteVideoUpdateFrame.verify|verify} messages.
+     * @param message SdkRemoteVideoUpdateFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkRemoteVideoUpdateFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkRemoteVideoUpdateFrame message, length delimited. Does not implicitly {@link SdkRemoteVideoUpdateFrame.verify|verify} messages.
+     * @param message SdkRemoteVideoUpdateFrame message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkRemoteVideoUpdateFrame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkRemoteVideoUpdateFrame message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkRemoteVideoUpdateFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkRemoteVideoUpdateFrame;
+
+    /**
+     * Decodes a SdkRemoteVideoUpdateFrame message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkRemoteVideoUpdateFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkRemoteVideoUpdateFrame;
+
+    /**
+     * Verifies a SdkRemoteVideoUpdateFrame message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkRemoteVideoUpdateFrame message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkRemoteVideoUpdateFrame
+     */
+    public static fromObject(object: { [k: string]: any }): SdkRemoteVideoUpdateFrame;
+
+    /**
+     * Creates a plain object from a SdkRemoteVideoUpdateFrame message. Also converts values to other types if specified.
+     * @param message SdkRemoteVideoUpdateFrame
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkRemoteVideoUpdateFrame, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkRemoteVideoUpdateFrame to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a SdkVideoSubscriptionConfiguration. */
+export interface ISdkVideoSubscriptionConfiguration {
+
+    /** SdkVideoSubscriptionConfiguration mid */
+    mid: string;
+
+    /** SdkVideoSubscriptionConfiguration attendeeId */
+    attendeeId?: (string|null);
+
+    /** SdkVideoSubscriptionConfiguration streamId */
+    streamId?: (number|null);
+}
+
+/** Represents a SdkVideoSubscriptionConfiguration. */
+export class SdkVideoSubscriptionConfiguration implements ISdkVideoSubscriptionConfiguration {
+
+    /**
+     * Constructs a new SdkVideoSubscriptionConfiguration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkVideoSubscriptionConfiguration);
+
+    /** SdkVideoSubscriptionConfiguration mid. */
+    public mid: string;
+
+    /** SdkVideoSubscriptionConfiguration attendeeId. */
+    public attendeeId: string;
+
+    /** SdkVideoSubscriptionConfiguration streamId. */
+    public streamId: number;
+
+    /**
+     * Creates a new SdkVideoSubscriptionConfiguration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkVideoSubscriptionConfiguration instance
+     */
+    public static create(properties?: ISdkVideoSubscriptionConfiguration): SdkVideoSubscriptionConfiguration;
+
+    /**
+     * Encodes the specified SdkVideoSubscriptionConfiguration message. Does not implicitly {@link SdkVideoSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkVideoSubscriptionConfiguration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkVideoSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkVideoSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkVideoSubscriptionConfiguration.verify|verify} messages.
+     * @param message SdkVideoSubscriptionConfiguration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkVideoSubscriptionConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkVideoSubscriptionConfiguration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkVideoSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkVideoSubscriptionConfiguration;
+
+    /**
+     * Decodes a SdkVideoSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkVideoSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkVideoSubscriptionConfiguration;
+
+    /**
+     * Verifies a SdkVideoSubscriptionConfiguration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkVideoSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkVideoSubscriptionConfiguration
+     */
+    public static fromObject(object: { [k: string]: any }): SdkVideoSubscriptionConfiguration;
+
+    /**
+     * Creates a plain object from a SdkVideoSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @param message SdkVideoSubscriptionConfiguration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkVideoSubscriptionConfiguration, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkVideoSubscriptionConfiguration to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };

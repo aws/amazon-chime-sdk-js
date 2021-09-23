@@ -21,6 +21,11 @@ export default interface VideoStreamIdSet {
   contain(streamId: number): boolean;
 
   /**
+   * Checks whether the current set contains a stream id
+   */
+  forEach?(callbackFn: (streamId: number) => void): void;
+
+  /**
    * Checks whether the current set is empty
    */
   empty(): boolean;

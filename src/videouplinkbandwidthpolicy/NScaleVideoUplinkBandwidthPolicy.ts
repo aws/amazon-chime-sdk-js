@@ -191,8 +191,13 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     const maxBitrate = this.maxBandwidthKbps() * 1000;
     let scale = 1;
     if (setting && this.scaleResolution && !this.hasBandwidthPriority && this.numParticipants > 2) {
-      const targetHeight = NScaleVideoUplinkBandwidthPolicy.targetHeightArray[this.numParticipants];
-
+      const targetHeight =
+        NScaleVideoUplinkBandwidthPolicy.targetHeightArray[
+          Math.min(
+            this.numParticipants,
+            NScaleVideoUplinkBandwidthPolicy.targetHeightArray.length - 1
+          )
+        ];
       scale = Math.max(setting.height / targetHeight, 1);
     }
     return {

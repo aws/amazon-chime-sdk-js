@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import { SignalingClientVideoSubscriptionConfiguration } from '../../src';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -443,6 +444,44 @@ describe('DefaultSignalingClient', () => {
                 true
               )
             );
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+  });
+
+  describe('remoteVideoUpdate', () => {
+    it('will send a remoteVideoUpdate frame', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.REMOTE_VIDEO_UPDATE);
+              expect(frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].streamId).to.equal(
+                1
+              );
+              expect(
+                frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].attendeeId
+              ).to.equal('attendeeId');
+              expect(frame.remoteVideoUpdate.addedOrUpdatedVideoSubscriptions[0].mid).to.equal(
+                'midToAdd'
+              );
+              expect(frame.remoteVideoUpdate.removedVideoSubscriptionMids[0]).to.equal(
+                'midToRemove'
+              );
+              done();
+            });
+            const addedConfig = new SignalingClientVideoSubscriptionConfiguration();
+            addedConfig.mid = 'midToAdd';
+            addedConfig.attendeeId = 'attendeeId';
+            addedConfig.streamId = 1;
+            event.client.remoteVideoUpdate([addedConfig], ['midToRemove']);
           }
         }
       }

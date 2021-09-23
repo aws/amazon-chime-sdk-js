@@ -582,4 +582,17 @@ describe('DefaultVideoTile', () => {
       expect(image.height).to.equal(videoElement.height);
     });
   });
+
+  describe('setStreamId', () => {
+    it('allows stream ID to be set', () => {
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+
+      tile.setStreamId(2);
+      expect(tile.state().streamId).to.equal(2);
+    });
+  });
 });
