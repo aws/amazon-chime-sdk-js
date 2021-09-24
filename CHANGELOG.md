@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.30.0] - 2022-03-08
     
 ### Added
-    
+
+- Added support for use of replicated meetings to extend meeting sizes to up to 10k view only participants with glareless promotion ability. See the Chime Developer Guide and the [JS SDK guide](https://aws.github.io/amazon-chime-sdk-js/modules/replicatedmeetings.html) for more details.
+
 ### Removed
     
 ### Changed

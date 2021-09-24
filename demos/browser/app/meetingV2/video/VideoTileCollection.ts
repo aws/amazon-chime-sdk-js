@@ -12,7 +12,7 @@ import {
 
 import VideoPreferenceManager from './VideoPreferenceManager';
 import PaginationManager from './PaginationManager';
-import { DemoVideoTile } from './VideoTile'; DemoVideoTile; // Make sure this file is included
+import { DemoVideoTile } from './VideoTile'; DemoVideoTile; // Make sure this file is included in webpack
 
 // We use the same config options for multiple settings when configuring
 // video tiles, regardless of what they map to internally
@@ -199,7 +199,12 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
     demoVideoTile.attendeeId = tileState.boundAttendeeId;
 
-    demoVideoTile.show(tileState.isContent);
+    if (tileState.active || tileState.paused) {
+        demoVideoTile.show(tileState.isContent);
+    } else {
+        // Hide non-active tiles that aren't just paused
+        demoVideoTile.hide();
+    }
     this.updateLayout();
     this.layoutFeaturedTile();
   }

@@ -7,6 +7,8 @@ import NoOpDebugLogger from '../logger/NoOpDebugLogger';
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../meetingsession/MeetingSessionCredentials';
+import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
+import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../meetingsession/MeetingSessionURLs';
 import DefaultReconnectController from '../reconnectcontroller/DefaultReconnectController';
 import DefaultWebSocketAdapter from '../websocketadapter/DefaultWebSocketAdapter';
@@ -41,4 +43,10 @@ export default class NoOpAudioVideoController extends DefaultAudioVideoControlle
   start(): void {}
 
   stop(): void {}
+
+  promoteToPrimaryMeeting(_: MeetingSessionCredentials): Promise<MeetingSessionStatus> {
+    return Promise.resolve(new MeetingSessionStatus(MeetingSessionStatusCode.OK));
+  }
+
+  demoteFromPrimaryMeeting(): void {}
 }

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { MeetingSessionCredentials } from '..';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
   SdkClientMetricFrame,
@@ -128,4 +129,23 @@ export default interface SignalingClient {
    * Sends a resume frame with the given stream ids.
    */
   resume(streamIds: number[]): void;
+
+  /**
+   * Allows an attendee in a replica meeting to join the primary meeting as if
+   * they were a normal attendee. Once successfully joined they will receive a callback on
+   * `SignalingClientObserver.handleSignalingClientEvent`.  See documentation of observer for more information.
+   *
+   * They may also receive another callback on `SignalingClientObserver.handleSignalingClientEvent` to indicate they
+   * can begin to share video.
+   *
+   * Failure will also be indicated through the `SignalingClientObserver.handleSignalingClientEvent` callback.
+   *
+   * @param credentials The credentials for the primary meeting.  This needs to be obtained out of band.
+   */
+  promoteToPrimaryMeeting(credentials: MeetingSessionCredentials): void;
+
+  /**
+   * Leave the primary meeting and stop sharing audio, video (if started), and data messages.
+   */
+  demoteFromPrimaryMeeting(): void;
 }
