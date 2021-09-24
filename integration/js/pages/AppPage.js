@@ -569,6 +569,7 @@ class AppPage {
   }
 
   async videoCheckByAttendeeName(stepInfo, attendeeName, expectedState = 'video') {
+    const startTime = Date.now();
     let checked;
     let videos = await this.driver.findElements(By.css('video[id^="video-"]'));
     for (let i = 0; i < videos.length; i++) {
@@ -582,17 +583,20 @@ class AppPage {
           if (nameplate && nameplateText === attendeeName) {
             let numRetries = 10;
             let retry = 0;
+            console.log('Start verifying video display by ID', attendeeName, tileIndex);
             let checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
             while ((checked.result !== expectedState) && retry < numRetries) {
               checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
               retry++;
               await TestUtils.waitAround(1000);
             }
+            console.log(`videoCheckByAttendeeName completed in: ${Date.now()-startTime}ms`);
             return checked.result;
           }
         }
       }
     }
+    console.log(`videoCheckByAttendeeName completed in: ${Date.now()-startTime}ms`);
     return 'blank';
   }
 
