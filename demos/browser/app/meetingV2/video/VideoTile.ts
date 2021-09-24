@@ -40,8 +40,6 @@ export class DemoVideoTile extends HTMLElement {
   </div>
 `;
 
-  rootDiv: HTMLElement | undefined = undefined;
-
   public set tileIndex(tileIndex: number) {
     // Update IDs for integration tests which need them
     this.querySelector('.video-tile-nameplate').id = `nameplate-${tileIndex}`;

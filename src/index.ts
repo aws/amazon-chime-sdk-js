@@ -199,6 +199,7 @@ import ParallelGroupTask from './task/ParallelGroupTask';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
+import PromoteToPrimaryMeetingTask from './task/PromoteToPrimaryMeetingTask';
 import RealtimeAttendeePositionInFrame from './realtimecontroller/RealtimeAttendeePositionInFrame';
 import RealtimeController from './realtimecontroller/RealtimeController';
 import RealtimeControllerFacade from './realtimecontroller/RealtimeControllerFacade';
@@ -526,6 +527,7 @@ export {
   PermissionDeniedError,
   PingPong,
   PingPongObserver,
+  PromoteToPrimaryMeetingTask,
   RealtimeAttendeePositionInFrame,
   RealtimeController,
   RealtimeControllerFacade,

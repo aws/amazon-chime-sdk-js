@@ -266,6 +266,14 @@ $overlay-z-index: 10;
 
 // Forms =======================================================================
 
+#primary-meeting-external-id {
+    display: none;
+}
+
+#replica-meeting-input:checked ~ #primary-meeting-external-id {
+    display: block;
+}
+
 // Navs ========================================================================
 
 .nav-tabs {
@@ -1021,4 +1029,10 @@ a.markdown:active {
 
 #live-transcription-modal-content > * {
   margin: 8px 0;
+}
+
+#toast-container {
+    bottom: 20px;
+    right: 20px;
+    position: absolute;
 }

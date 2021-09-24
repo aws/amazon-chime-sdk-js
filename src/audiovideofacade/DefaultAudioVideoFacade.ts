@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { MeetingSessionCredentials, MeetingSessionStatus } from '..';
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioMixObserver from '../audiomixobserver/AudioMixObserver';
@@ -25,7 +26,7 @@ import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 
-export default class DefaultAudioVideoFacade implements AudioVideoFacade {
+export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioVideoObserver {
   constructor(
     private audioVideoController: AudioVideoController,
     private videoTileController: VideoTileController,
@@ -492,5 +493,26 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
 
   get transcriptionController(): TranscriptionController {
     return this.realtimeController.transcriptionController;
+  }
+
+  promoteToPrimaryMeeting(credentials: MeetingSessionCredentials): Promise<MeetingSessionStatus> {
+    this.audioVideoController.removeObserver(this); // Avoid adding multiple times
+    this.audioVideoController.addObserver(this); // See note in `audioVideoWasDemotedFromPrimaryMeeting`
+    const result = this.audioVideoController.promoteToPrimaryMeeting(credentials);
+    this.trace('promoteToPrimaryMeeting', null, result); // Don't trace credentials
+    return result;
+  }
+
+  demoteFromPrimaryMeeting(): void {
+    this.trace('demoteFromPrimaryMeeting');
+    this.audioVideoController.demoteFromPrimaryMeeting();
+  }
+
+  audioVideoWasDemotedFromPrimaryMeeting(_: MeetingSessionStatus): void {
+    // `DefaultContentShareController` currently does not respond to the connection ending
+    // so `contentShareDidStop` will not be called even if backend cleans up the connection.
+    // Thus we try to pre-emptively clean up on client side.
+    this.contentShareController.stopContentShare();
+    this.audioVideoController.removeObserver(this);
   }
 }
