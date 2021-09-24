@@ -28,14 +28,13 @@ if(chimeSDKMeetingsEndpoint != 'https://service.chime.aws.amazon.com' && useChim
   chimeSDKMeetings.endpoint = new AWS.Endpoint(chimeSDKMeetingsEndpoint);
 }
 
-
 // return chime meetings SDK client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
-  if(useChimeSDKMeetings === 'true'){
+  if (useChimeSDKMeetings === 'true') {
     return chimeSDKMeetings;
   }
   if (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE') {
-      return chimeSDKMeetings;
+    return chimeSDKMeetings;
   }
   return chime;
 }
@@ -56,37 +55,53 @@ const {
 
 exports.index = async (event, context, callback) => {
   // Return the contents of the index page
-  return response(200, 'text/html', fs.readFileSync('./index.html', {encoding: 'utf8'}));
+  return response(200, 'text/html', fs.readFileSync('./index.html', { encoding: 'utf8' }));
 };
 
-exports.join = async(event, context) => {
+exports.join = async (event, context) => {
   const query = event.queryStringParameters;
-  if (!query.title || !query.name || !query.region) {
-    return response(400, 'application/json', JSON.stringify({error: 'Need parameters: title, name, region'}));
+  if (!query.title || !query.name) {
+    return response(400, 'application/json', JSON.stringify({ error: 'Need parameters: title, name' }));
   }
 
   // Look up the meeting by its title. If it does not exist, create the meeting.
   let meeting = await getMeeting(query.title);
-  
+
   let client = getClientForMeeting(meeting);
 
+  let primaryMeeting = undefined
+  if (query.primaryExternalMeetingId) {
+    primaryMeeting = await getMeeting(query.primaryExternalMeetingId)
+    if (primaryMeeting !== undefined) {
+      console.info(`Retrieved primary meeting ID ${primaryMeeting.Meeting.MeetingId} for external meeting ID ${query.primaryExternalMeetingId}`)
+    } else {
+      return response(400, 'application/json', JSON.stringify({ error: 'Primary meeting has not been created' }));
+    }
+  }
+
   if (!meeting) {
+    if (!query.region) {
+      return response(400, 'application/json', JSON.stringify({ error: 'Need region parameter set if meeting has not yet been created' }));
+    }
     let request = {
       // Use a UUID for the client request token to ensure that any request retries
       // do not create multiple meetings.
       ClientRequestToken: uuidv4(),
-  
+
       // Specify the media region (where the meeting is hosted).
       // In this case, we use the region selected by the user.
       MediaRegion: query.region,
-  
+
       // Set up SQS notifications if being used
       NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? { SqsQueueArn: SQS_QUEUE_ARN } : {},
-  
+
       // Any meeting ID you wish to associate with the meeting.
       // For simplicity here, we use the meeting title.
       ExternalMeetingId: query.title.substring(0, 64),
     };
+    if (primaryMeeting !== undefined) {
+      request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
+    }
     if (query.ns_es === 'true') {
       client = chimeSDKMeetings;
       request.MeetingFeatures = {
@@ -95,9 +110,14 @@ exports.join = async(event, context) => {
           EchoReduction: 'AVAILABLE'
         }
       };
-    } 
+    }
     console.info('Creating new meeting: ' + JSON.stringify(request));
     meeting = await client.createMeeting(request).promise();
+
+    // Extend meeting with primary external meeting ID if it exists
+    if (primaryMeeting !== undefined) {
+      meeting.Meeting.PrimaryExternalMeetingId = primaryMeeting.Meeting.ExternalMeetingId;
+    }
 
     // Store the meeting in the table using the meeting title as the key.
     await putMeeting(query.title, meeting);
@@ -118,12 +138,17 @@ exports.join = async(event, context) => {
 
   // Return the meeting and attendee responses. The client will use these
   // to join the meeting.
-  return response(200, 'application/json', JSON.stringify({
+  let joinResponse = {
     JoinInfo: {
       Meeting: meeting,
       Attendee: attendee,
     },
-  }, null, 2));
+  }
+  if (meeting.Meeting.PrimaryExternalMeetingId !== undefined) {
+    // Put this where it expects it, since it is not technically part of create meeting response
+    joinResponse.JoinInfo.PrimaryExternalMeetingId = meeting.Meeting.PrimaryExternalMeetingId;
+  }
+  return response(200, 'application/json', JSON.stringify(joinResponse, null, 2));
 };
 
 exports.end = async (event, context) => {
@@ -133,6 +158,22 @@ exports.end = async (event, context) => {
 
   // End the meeting. All attendee connections will hang up.
   await client.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId }).promise();
+  return response(200, 'application/json', JSON.stringify({}));
+};
+
+// We currently don't store external users, so we rely on directly getting
+// passed the Chime Attendee ID
+exports.deleteAttendee = async (event, context) => {
+  // Fetch the meeting by title
+  const meeting = await getMeeting(event.queryStringParameters.title);
+  let client = getClientForMeeting(meeting);
+
+  // End the meeting. All attendee connections will hang up.
+  await client.deleteAttendee({
+    MeetingId: meeting.Meeting.MeetingId,
+    AttendeeId: event.queryStringParameters.attendeeId,
+  }).promise();
+
   return response(200, 'application/json', JSON.stringify({}));
 };
 
@@ -252,16 +293,16 @@ exports.end_capture = async (event, context) => {
     }).promise();
     return response(200, 'application/json', JSON.stringify({}));
   } else {
-    return response(500, 'application/json', JSON.stringify({msg: "No pipeline to stop for this meeting"}))
+    return response(500, 'application/json', JSON.stringify({ msg: "No pipeline to stop for this meeting" }))
   }
 };
 
 exports.audio_file = async (event, context) => {
-  return response(200, 'audio/mpeg', fs.readFileSync('./speech.mp3', {encoding: 'base64'}), true);
+  return response(200, 'audio/mpeg', fs.readFileSync('./speech.mp3', { encoding: 'base64' }), true);
 };
 
 exports.stereo_audio_file = async (event, context) => {
-  return response(200, 'audio/mpeg', fs.readFileSync('./speech_stereo.mp3', {encoding: 'base64'}), true);
+  return response(200, 'audio/mpeg', fs.readFileSync('./speech_stereo.mp3', { encoding: 'base64' }), true);
 };
 
 exports.fetch_credentials = async (event, context) => {
@@ -475,7 +516,7 @@ function createLogStreamName(meetingId, attendeeId) {
   return `ChimeSDKMeeting_${meetingId}_${attendeeId}`;
 }
 
-function response(statusCode, contentType, body, isBase64Encoded=false) {
+function response(statusCode, contentType, body, isBase64Encoded = false) {
   return {
     statusCode: statusCode,
     headers: { 'Content-Type': contentType },
@@ -497,7 +538,7 @@ function addSignalMetricsToCloudWatch(logMsg, meetingId, attendeeId) {
     const metricName = metricList[metricIndex];
     if (logMsgJson.attributes.hasOwnProperty(metricName)) {
       const metricValue = logMsgJson.attributes[metricName];
-      console.log('Logging metric -> ', metricName, ': ', metricValue );
+      console.log('Logging metric -> ', metricName, ': ', metricValue);
       putMetric(metricName, metricValue, meetingId, attendeeId);
     }
   }

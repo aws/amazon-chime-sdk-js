@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { MeetingSessionCredentials } from '..';
 import ActiveSpeakerDetector from '../activespeakerdetector/ActiveSpeakerDetector';
 import DefaultActiveSpeakerDetector from '../activespeakerdetector/DefaultActiveSpeakerDetector';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
@@ -50,6 +51,7 @@ import ListenForVolumeIndicatorsTask from '../task/ListenForVolumeIndicatorsTask
 import MonitorTask from '../task/MonitorTask';
 import OpenSignalingConnectionTask from '../task/OpenSignalingConnectionTask';
 import ParallelGroupTask from '../task/ParallelGroupTask';
+import PromoteToPrimaryMeetingTask from '../task/PromoteToPrimaryMeetingTask';
 import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
 import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
@@ -116,7 +118,13 @@ export default class DefaultAudioVideoController
   private preStartObserver: SignalingClientObserver | undefined;
   private mayNeedRenegotiationForSimulcastLayerChange: boolean = false;
   private maxUplinkBandwidthKbps: number;
+  // Stored solely to trigger demotion callback on disconnection (expected behavior).
+  //
+  // We otherwise intentionally do not use this for any other behavior to avoid the complexity
+  // of the added state.
+  private promotedToPrimaryMeeting: boolean = false;
   private hasGetRTCPeerConnectionStatsDeprecationMessageBeenSent: boolean = false;
+
   // `connectWithPromises`, `connectWithTasks`, and `actionUpdateWithRenegotiation` all
   // contains a significant portion of asynchronous tasks, so we need to explicitly defer
   // any task operation which may be performed on the event queue that may modify
@@ -1113,6 +1121,17 @@ export default class DefaultAudioVideoController
       Maybe.of(observer.audioVideoDidStop).map(f => f.bind(observer)(status));
     });
 
+    if (this.promotedToPrimaryMeeting && error) {
+      this.forEachObserver(observer => {
+        this.promotedToPrimaryMeeting = false;
+        Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
+          f.bind(observer)(
+            new MeetingSessionStatus(MeetingSessionStatusCode.SignalingInternalServerError)
+          )
+        );
+      });
+    }
+
     /* istanbul ignore else */
     if (this.eventController) {
       const {
@@ -1280,6 +1299,11 @@ export default class DefaultAudioVideoController
     return `${taskName}/${this.configuration.meetingId}/${this.configuration.credentials.attendeeId}`;
   }
 
+  // Extract the meeting status from `Error.message`, relying on specific phrasing
+  // 'the meeting status code ${CODE}`.
+  //
+  // e.g. reject(new Error(
+  //        `canceling ${this.name()} due to the meeting status code: ${MeetingSessionStatusCode.MeetingEnded}`));
   private getMeetingStatusCode(error: Error): MeetingSessionStatusCode | null {
     const matched = /the meeting status code: (\d+)/.exec(error && error.message);
     if (matched && matched.length > 1) {
@@ -1311,6 +1335,14 @@ export default class DefaultAudioVideoController
       this._videoTileController.removeLocalVideoTile();
       this.forEachObserver((observer: AudioVideoObserver) => {
         Maybe.of(observer.videoSendDidBecomeUnavailable).map(f => f.bind(observer)());
+      });
+      return false;
+    }
+    if (status.statusCode() === MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting) {
+      this.forEachObserver((observer: AudioVideoObserver) => {
+        Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
+          f.bind(observer)(status)
+        );
       });
       return false;
     }
@@ -1409,6 +1441,40 @@ export default class DefaultAudioVideoController
     this.forEachObserver(observer => {
       Maybe.of(observer.encodingSimulcastLayersDidChange).map(f =>
         f.bind(observer)(simulcastLayers)
+      );
+    });
+  }
+
+  promoteToPrimaryMeeting(credentials: MeetingSessionCredentials): Promise<MeetingSessionStatus> {
+    return this.actionPromoteToPrimaryMeeting(credentials);
+  }
+
+  private async actionPromoteToPrimaryMeeting(
+    credentials: MeetingSessionCredentials
+  ): Promise<MeetingSessionStatus> {
+    let resultingStatus = new MeetingSessionStatus(MeetingSessionStatusCode.SignalingRequestFailed);
+    await new SerialGroupTask(this.logger, this.wrapTaskName('PromoteToPrimaryMeeting'), [
+      new TimeoutTask(
+        this.logger,
+        new PromoteToPrimaryMeetingTask(
+          this.meetingSessionContext,
+          credentials,
+          (status: MeetingSessionStatus) => {
+            resultingStatus = status;
+          }
+        ),
+        this.configuration.connectionTimeoutMs
+      ),
+    ]).run();
+    this.promotedToPrimaryMeeting = resultingStatus.statusCode() === MeetingSessionStatusCode.OK;
+    return resultingStatus;
+  }
+
+  demoteFromPrimaryMeeting(): void {
+    this.meetingSessionContext.signalingClient.demoteFromPrimaryMeeting();
+    this.forEachObserver(observer => {
+      Maybe.of(observer.audioVideoWasDemotedFromPrimaryMeeting).map(f =>
+        f.bind(observer)(new MeetingSessionStatus(MeetingSessionStatusCode.OK))
       );
     });
   }

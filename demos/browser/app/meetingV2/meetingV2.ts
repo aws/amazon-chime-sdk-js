@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import './styleV2.scss';
-import 'bootstrap';
 
 import {
   ApplicationMetadata,
@@ -76,13 +75,13 @@ import {
   BackgroundFilterPaths,
   ModelSpecBuilder,
   DefaultEventController,
+  MeetingSessionCredentials,
 } from 'amazon-chime-sdk-js';
 
 import TestSound from './audio/TestSound';
-
+import MeetingToast from './util/MeetingToast'; MeetingToast; // Make sure this file is included in webpack
 import VideoTileCollection from './video/VideoTileCollection'
 import VideoPreferenceManager from './video/VideoPreferenceManager';
-
 import CircularCut from './video/filters/CircularCut';
 import EmojifyVideoFrameProcessor from './video/filters/EmojifyVideoFrameProcessor';
 import SegmentationProcessor from './video/filters/SegmentationProcessor';
@@ -176,6 +175,8 @@ type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Re
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
+type ButtonState = 'on' | 'off' | 'disabled';
+
 export enum ContentShareType {
   ScreenCapture,
   VideoFile,
@@ -258,6 +259,10 @@ export class DemoMeetingApp
   voiceConnectorId: string | null = null;
   sipURI: string | null = null;
   region: string | null = null;
+  primaryExternalMeetingId: string | undefined = undefined;
+  // We cache these so we can avoid having to create new attendees for promotion retries
+  // and so the local UX on attendee IDs matches the remote experience
+  primaryMeetingSessionCredentials: MeetingSessionCredentials | undefined = undefined;
   meetingSession: MeetingSession | null = null;
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
   audioVideo: AudioVideoFacade | null = null;
@@ -273,17 +278,18 @@ export class DemoMeetingApp
   microphoneDeviceIds: string[] = [];
   currentAudioInputDevice: AudioInputDevice | undefined;
 
-  buttonStates: { [key: string]: boolean } = {
-    'button-microphone': true,
-    'button-camera': false,
-    'button-speaker': true,
-    'button-content-share': false,
-    'button-pause-content-share': false,
-    'button-live-transcription': false,
-    'button-video-stats': false,
-    'button-video-filter': false,
-    'button-record-self': false,
-    'button-record-cloud': false,
+  buttonStates: { [key: string]: ButtonState } = {
+    'button-microphone': 'on',
+    'button-camera': 'off',
+    'button-speaker': 'on',
+    'button-content-share': 'off',
+    'button-pause-content-share': 'off',
+    'button-live-transcription': 'off',
+    'button-video-stats': 'off',
+    'button-promote-to-primary': 'off',
+    'button-video-filter': 'off',
+    'button-record-self': 'off',
+    'button-record-cloud': 'off',
   };
 
   contentShareType: ContentShareType = ContentShareType.ScreenCapture;
@@ -320,6 +326,7 @@ export class DemoMeetingApp
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
   joinInfo: any | undefined;
+  deleteOwnAttendeeToLeave = false;
 
   blurProcessor: BackgroundBlurProcessor | undefined;
   replacementProcessor: BackgroundReplacementProcessor | undefined;
@@ -587,6 +594,11 @@ export class DemoMeetingApp
       this.log('priority-downlink-policy-preset is changed: ' + presetDropDown.value);
     });
 
+    const replicaMeetingInput = document.getElementById('replica-meeting-input');
+    replicaMeetingInput.addEventListener('change', async _e => {
+      (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value = "";
+    });
+
     document.getElementById('form-authenticate').addEventListener('submit', e => {
       e.preventDefault();
       this.meeting = (document.getElementById('inputMeeting') as HTMLInputElement).value;
@@ -594,9 +606,11 @@ export class DemoMeetingApp
       this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
       this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
       this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
+      this.deleteOwnAttendeeToLeave = (document.getElementById('delete-attendee') as HTMLInputElement).checked;
       this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
       this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
+      this.primaryExternalMeetingId = (document.getElementById('primary-meeting-external-id') as HTMLInputElement).value;
 
       const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
       switch (chosenLogLevel) {
@@ -665,6 +679,15 @@ export class DemoMeetingApp
             ) as HTMLSelectElement;
             videoInputQuality.value = '720p';
             this.audioVideo.chooseVideoInputQuality(1280, 720, 15, 1400);
+          }
+
+          // `this.primaryExternalMeetingId` may by the join request
+          const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');
+          if (!this.primaryExternalMeetingId) {
+            buttonPromoteToPrimary.style.display = 'none';
+          } else {
+            this.setButtonVisibility('button-record-cloud', false);
+            this.updateUXForReplicaMeetingPromotionState('demoted');
           }
 
           this.switchToFlow('flow-devices');
@@ -884,7 +907,8 @@ export class DemoMeetingApp
 
     const buttonMute = document.getElementById('button-microphone');
     buttonMute.addEventListener('click', _e => {
-      if (this.toggleButton('button-microphone')) {
+      this.toggleButton('button-microphone');
+      if (this.isButtonOn('button-microphone')) {
         this.audioVideo.realtimeUnmuteLocalAudio();
       } else {
         this.audioVideo.realtimeMuteLocalAudio();
@@ -893,7 +917,8 @@ export class DemoMeetingApp
 
     const buttonCloudCapture = document.getElementById('button-record-cloud') as HTMLButtonElement;
     buttonCloudCapture.addEventListener('click', _e => {
-      if (this.toggleButton('button-record-cloud')) {
+      this.toggleButton('button-record-cloud');
+      if (this.isButtonOn('button-record-cloud')) {
         AsyncScheduler.nextTick(async () => {
           buttonCloudCapture.disabled = true;
           await this.startMediaCapture();
@@ -913,7 +938,8 @@ export class DemoMeetingApp
     buttonRecordSelf.addEventListener('click', _e => {
       const chunks: Blob[] = [];
       AsyncScheduler.nextTick(async () => {
-        if (!this.toggleButton('button-record-self')) {
+        this.toggleButton('button-record-self');
+        if (!this.isButtonOn('button-record-self')) {
           console.info('Stopping recorder ', recorder);
           recorder.stop();
           recorder = undefined;
@@ -966,7 +992,7 @@ export class DemoMeetingApp
     const buttonVideo = document.getElementById('button-camera');
     buttonVideo.addEventListener('click', _e => {
       AsyncScheduler.nextTick(async () => {
-        if (this.toggleButton('button-camera') && this.canStartLocalVideo) {
+        if (this.toggleButton('button-camera') === 'on' && this.canStartLocalVideo) {
           try {
             let camera: string | null = this.selectedVideoInput;
             if (camera === null || camera === 'None') {
@@ -975,6 +1001,7 @@ export class DemoMeetingApp
             await this.openVideoInputFromSelection(camera, false);
             this.audioVideo.startLocalVideoTile();
           } catch (err) {
+            this.toggleButton('button-camera', 'off')
             fatal(err);
           }
         } else {
@@ -990,7 +1017,8 @@ export class DemoMeetingApp
         return;
       }
       AsyncScheduler.nextTick(async () => {
-        if (this.toggleButton('button-pause-content-share')) {
+        this.toggleButton('button-pause-content-share');
+        if (this.isButtonOn('button-pause-content-share')) {
           this.audioVideo.pauseContentShare();
           if (this.contentShareType === ContentShareType.VideoFile) {
             const videoFile = document.getElementById('content-share-video') as HTMLVideoElement;
@@ -1020,7 +1048,8 @@ export class DemoMeetingApp
     const buttonSpeaker = document.getElementById('button-speaker');
     buttonSpeaker.addEventListener('click', _e => {
       AsyncScheduler.nextTick(async () => {
-        if (this.toggleButton('button-speaker')) {
+        this.toggleButton('button-speaker');
+        if (this.isButtonOn('button-speaker')) {
           try {
             await this.audioVideo.bindAudioElement(
               document.getElementById('meeting-audio') as HTMLAudioElement
@@ -1261,6 +1290,21 @@ export class DemoMeetingApp
       this.toggleButton('button-video-stats');
     });
 
+    const buttonPromoteToPrimary = document.getElementById('button-promote-to-primary');
+    buttonPromoteToPrimary.addEventListener('click', async () => {
+      if (!this.isButtonOn('button-promote-to-primary')) {
+        await this.promoteToPrimaryMeeting();
+      } else {
+        this.meetingLogger.info("Demoting from primary meeting");
+        if (this.deleteOwnAttendeeToLeave) {
+          this.deleteAttendee(this.primaryExternalMeetingId, this.primaryMeetingSessionCredentials?.attendeeId);
+        } else {
+          this.audioVideo.demoteFromPrimaryMeeting()
+        }
+        // `audioVideoWasDemotedFromPrimaryMeeting` will adjust UX
+      }
+    });
+
     const sendMessage = (): void => {
       AsyncScheduler.nextTick(() => {
         const textArea = document.getElementById('send-message') as HTMLTextAreaElement;
@@ -1399,42 +1443,111 @@ export class DemoMeetingApp
     );
   }
 
-  setButtonVisibility(button: string, visible: boolean, state?: 'on' | 'off') {
+  async promoteToPrimaryMeeting() {
+    this.meetingLogger.info("Attempting to promote self to primary meeting from replica");
+
+    if (this.primaryMeetingSessionCredentials === undefined) {
+      this.primaryMeetingSessionCredentials = await this.getPrimaryMeetingCredentials();
+    }
+    await this.audioVideo.promoteToPrimaryMeeting(this.primaryMeetingSessionCredentials)
+      .then((status) => {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('meeting-toast') as MeetingToast
+        toastContainer.appendChild(toast);
+        if (status.isFailure()) {
+          toast.message = ` Failed to promote to primary meeting due to error: ${status.toString()}`;
+          toast.addButton('Retry', () => { this.promoteToPrimaryMeeting() });
+        } else {
+          toast.message = `Successfully promoted to primary meeting`;
+          this.updateUXForReplicaMeetingPromotionState('promoted');
+        }
+        toast.show();
+      })
+  }
+
+  private async getPrimaryMeetingCredentials(): Promise<MeetingSessionCredentials> {
+    // Use the same join endpoint, but point it to the provided primary meeting title and give us an arbitrarily different user name
+    const joinInfo = (await this.sendJoinRequest(this.primaryExternalMeetingId, `promoted-${this.name}`, this.region)).JoinInfo;
+    // To avoid duplicating code we reuse the constructor for `MeetingSessionConfiguration` which contains `MeetingSessionCredentials`
+    // within it and properly does the parsing of the `chime::CreateAttendee` response
+    const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
+    return configuration.credentials;
+  }
+
+  updateUXForReplicaMeetingPromotionState(promotedState: 'promoted' | 'demoted') {
+    const isPromoted = promotedState === 'promoted'
+
+    // Enable/disable buttons as appropriate
+    for (const button in this.buttonStates) {
+      if (button === 'button-speaker' || button === 'button-video-stats') {
+        continue;
+      }
+
+      if (button === 'button-promote-to-primary') {
+        // Don't disable promotion button
+        this.meetingLogger.info(`promote button ${isPromoted ? 'on' : 'off'}`)
+        this.toggleButton(button, isPromoted ? 'on' : 'off');
+        continue;
+      }
+
+      this.toggleButton(button, isPromoted ? 'off' : 'disabled');
+    }
+
+    // Additionally mute audio so it's not in an unexpected state when demoted
+    if (!isPromoted) {
+      this.audioVideo.realtimeMuteLocalAudio();
+    }
+  }
+
+  setButtonVisibility(button: string, visible: boolean, state?: ButtonState) {
     const element = document.getElementById(button);
     element.style.display = visible ? 'inline-block' : 'none';
     this.toggleButton(button, state);
   }
 
-  toggleButton(button: string, state?: 'on' | 'off'): boolean {
-    if (state === 'on') {
-      this.buttonStates[button] = true;
-    } else if (state === 'off') {
-      this.buttonStates[button] = false;
+  toggleButton(button: string, state?: ButtonState): ButtonState {
+    console.log(`button: ${button} state ${state}`)
+
+    if (state) {
+      this.buttonStates[button] = state;
+    } else if (this.buttonStates[button] === 'on') {
+      this.buttonStates[button] = 'off';
     } else {
-      this.buttonStates[button] = !this.buttonStates[button];
+      this.buttonStates[button] = 'on';
     }
     this.displayButtonStates();
     return this.buttonStates[button];
   }
 
   isButtonOn(button: string): boolean {
-    return this.buttonStates[button];
+    return this.buttonStates[button] === 'on';
   }
 
   displayButtonStates(): void {
     for (const button in this.buttonStates) {
       const element = document.getElementById(button);
       const drop = document.getElementById(`${button}-drop`);
-      const on = this.buttonStates[button];
+      const on = this.isButtonOn(button);
+      console.log(`on: ${on} for ${element.id}`)
       element.classList.add(on ? 'btn-success' : 'btn-outline-secondary');
       element.classList.remove(on ? 'btn-outline-secondary' : 'btn-success');
       (element.firstElementChild as SVGElement).classList.add(on ? 'svg-active' : 'svg-inactive');
       (element.firstElementChild as SVGElement).classList.remove(
         on ? 'svg-inactive' : 'svg-active'
       );
+      if (this.buttonStates[button] === 'disabled') {
+        element.setAttribute('disabled', '');
+      } else {
+        element.removeAttribute('disabled');
+      }
       if (drop) {
         drop.classList.add(on ? 'btn-success' : 'btn-outline-secondary');
         drop.classList.remove(on ? 'btn-outline-secondary' : 'btn-success');
+        if (this.buttonStates[button] === 'disabled') {
+          drop.setAttribute('disabled', '');
+        } else {
+          drop.removeAttribute('disabled');
+        }
       }
     }
   }
@@ -1782,6 +1895,10 @@ export class DemoMeetingApp
   }
 
   async leave(): Promise<void> {
+    if (this.deleteOwnAttendeeToLeave) {
+      await this.deleteAttendee(this.meeting, this.meetingSession.configuration.credentials.attendeeId);
+      return;
+    }
     this.resetStats();
     this.audioVideo.stop();
     await this.voiceFocusDevice?.stop();
@@ -1866,8 +1983,8 @@ export class DemoMeetingApp
         DefaultModality.MODALITY_CONTENT
       );
       const isSelfAttendee =
-        new DefaultModality(attendeeId).base() ===
-        this.meetingSession.configuration.credentials.attendeeId;
+        new DefaultModality(attendeeId).base() === this.meetingSession.configuration.credentials.attendeeId 
+          || new DefaultModality(attendeeId).base() === this.primaryMeetingSessionCredentials?.attendeeId
       if (!present) {
         delete this.roster[attendeeId];
         this.updateRoster();
@@ -2007,8 +2124,10 @@ export class DemoMeetingApp
 
       // Transcripts view and the button to show and hide it are initially hidden
       // Show them when when live transcription gets enabled, and do not hide afterwards
-      this.setButtonVisibility('button-live-transcription', true, 'on');
-      this.transcriptContainerDiv.style.display = 'block';
+      if (this.primaryExternalMeetingId === undefined || this.primaryExternalMeetingId.length === 0) {
+        this.setButtonVisibility('button-live-transcription', true, 'on');
+        this.transcriptContainerDiv.style.display = 'block';
+      }
     }
 
     if (transcriptEvent instanceof TranscriptionStatus) {
@@ -2224,11 +2343,19 @@ export class DemoMeetingApp
   };
 
   // eslint-disable-next-line
-  async joinMeeting(): Promise<any> {
-    const response = await fetch(
-      `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(
-        this.meeting
-      )}&name=${encodeURIComponent(this.name)}&region=${encodeURIComponent(this.region)}&ns_es=${this.echoReductionCapability}`,
+  async sendJoinRequest(
+    meeting: string,
+    name: string,
+    region: string,
+    primaryExternalMeetingId?: string): Promise<any> {
+    let uri = `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(
+      meeting
+    )}&name=${encodeURIComponent(name)}&region=${encodeURIComponent(region)}`
+    if (primaryExternalMeetingId) {
+      uri += `&primaryExternalMeetingId=${primaryExternalMeetingId}`;
+    }
+    uri += `&ns_es=${this.echoReductionCapability}`
+    const response = await fetch(uri,
       {
         method: 'POST',
       }
@@ -2238,6 +2365,17 @@ export class DemoMeetingApp
       throw new Error(`Server error: ${json.error}`);
     }
     return json;
+  }
+
+  async deleteAttendee(meeting: string, attendeeId: string): Promise<void> {
+    let uri = `${DemoMeetingApp.BASE_URL}deleteAttendee?title=${encodeURIComponent(meeting)}&attendeeId=${encodeURIComponent(attendeeId)}`
+    const response = await fetch(uri,
+      {
+        method: 'POST',
+      }
+    );
+    const json = await response.json();
+    this.meetingLogger.info(`Delete attendee response: ${JSON.stringify(json)}`)
   }
 
   async startMediaCapture(): Promise<any> {
@@ -2535,13 +2673,16 @@ export class DemoMeetingApp
       });
     }
 
-    additionalToggles.push({
-      name: 'Live Transcription',
-      oncreate: (elem: HTMLElement) => {
-        this.liveTranscriptionDisplayables.push(elem);
-      },
-      action: () => this.toggleLiveTranscription(),
-    });
+    // Don't allow replica meeting attendees to enable transcription even when promoted
+    if (this.primaryExternalMeetingId === undefined || this.primaryExternalMeetingId.length === 0) {
+      additionalToggles.push({
+        name: 'Live Transcription',
+        oncreate: (elem: HTMLElement) => {
+          this.liveTranscriptionDisplayables.push(elem);
+        },
+        action: () => this.toggleLiveTranscription(),
+      });
+    }
 
     this.populateDeviceList(
       'audio-input',
@@ -3316,9 +3457,10 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    this.joinInfo = (await this.joinMeeting()).JoinInfo;
+    this.joinInfo = (await this.sendJoinRequest(this.meeting, this.name, this.region, this.primaryExternalMeetingId)).JoinInfo;
     const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
+    this.primaryExternalMeetingId = this.joinInfo.PrimaryExternalMeetingId
     const url = new URL(window.location.href);
     url.searchParams.set('m', this.meeting);
     history.replaceState({}, `${this.meeting}`, url.toString());
@@ -3456,9 +3598,43 @@ export class DemoMeetingApp
     }
   }
 
+
+  audioVideoWasDemotedFromPrimaryMeeting(status: any): void {
+    const message = `Was demoted from primary meeting with status ${status.toString()}`
+    this.log(message);
+    this.updateUXForReplicaMeetingPromotionState('demoted');
+    const toastContainer = document.getElementById('toast-container');
+    const toast = document.createElement('meeting-toast') as MeetingToast
+    toastContainer.appendChild(toast);
+    toast.message = message;
+    toast.addButton('Retry Promotion', () => { this.promoteToPrimaryMeeting() });
+    toast.show();
+  }
+
   videoAvailabilityDidChange(availability: MeetingSessionVideoAvailability): void {
+    const didChange = this.canStartLocalVideo !== availability.canStartLocalVideo;
     this.canStartLocalVideo = availability.canStartLocalVideo;
     this.log(`video availability changed: canStartLocalVideo  ${availability.canStartLocalVideo}`);
+    if (didChange && !this.canStartLocalVideo) {
+      this.disableLocalVideo('Can no longer enable local video in conference');
+    } else if (didChange && this.buttonStates['button-camera'] === 'disabled') {
+      // Enable ability to press button again
+      this.toggleButton('button-camera', 'off');
+    }
+  }
+
+  private disableLocalVideo(warningMessage: string = null): void {
+    this.toggleButton('button-camera', 'disabled');
+
+    this.audioVideo.stopLocalVideoTile();
+
+    if (warningMessage !== null) {
+      const toastContainer = document.getElementById('toast-container');
+      const toast = document.createElement('meeting-toast') as MeetingToast
+      toastContainer.appendChild(toast);
+      toast.message = warningMessage;
+      toast.show();
+    }
   }
 
   allowMaxContentShare(): boolean {
@@ -3483,6 +3659,7 @@ export class DemoMeetingApp
 
   videoSendDidBecomeUnavailable(): void {
     this.log('sending video is not available');
+    this.disableLocalVideo('Cannot enable local video due to call being at capacity');
   }
 
   contentShareDidStart(): void {
@@ -3492,11 +3669,11 @@ export class DemoMeetingApp
   contentShareDidStop(): void {
     this.log('content share stopped.');
     if (this.isButtonOn('button-content-share')) {
-      this.buttonStates['button-content-share'] = false;
-      this.buttonStates['button-pause-content-share'] = false;
-      this.displayButtonStates();
-      this.updateContentShareDropdown(false);
+      this.buttonStates['button-content-share'] = 'off';
+      this.buttonStates['button-pause-content-share'] = 'off';
     }
+    this.displayButtonStates();
+    this.updateContentShareDropdown(false);
   }
 
   contentShareDidPause(): void {

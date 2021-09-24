@@ -84,6 +84,7 @@ Resources:
       Roles:
         - Ref: ChimeSdkJoinLambdaRole
         - Ref: ChimeSdkEndLambdaRole
+        - Ref: ChimeSdkDeleteAttendeeLambdaRole
         - Ref: ChimeSdkStartTranscriptionLambdaRole
         - Ref: ChimeSdkStopTranscriptionLambdaRole
         - Ref: ChimeSdkStartCaptureLambdaRole
@@ -228,6 +229,20 @@ Resources:
           Type: Api
           Properties:
             Path: /join
+            Method: POST
+  ChimeSdkDeleteAttendeeLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.deleteAttendee
+      CodeUri: src/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Meetings
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /deleteAttendee
             Method: POST
   ChimeSdkEndLambda:
     Type: AWS::Serverless::Function

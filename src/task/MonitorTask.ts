@@ -19,7 +19,7 @@ import RemovableObserver from '../removableobserver/RemovableObserver';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
-import { ISdkBitrateFrame } from '../signalingprotocol/SignalingProtocol';
+import { ISdkBitrateFrame, SdkSignalFrame } from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import VideoLogEvent from '../statscollector/VideoLogEvent';
 import { Maybe } from '../utils/Types';
@@ -392,7 +392,11 @@ export default class MonitorTask
         this.handleBitrateFrame(event.message.bitrates);
       }
       const status = MeetingSessionStatus.fromSignalFrame(event.message);
-      if (status.statusCode() !== MeetingSessionStatusCode.OK) {
+      // Primary meeting join ack status will be handled by `PromoteToPrimaryMeetingTask`
+      if (
+        event.message.type !== SdkSignalFrame.Type.PRIMARY_MEETING_JOIN_ACK &&
+        status.statusCode() !== MeetingSessionStatusCode.OK
+      ) {
         this.context.audioVideoController.handleMeetingSessionStatus(status, null);
       }
     }

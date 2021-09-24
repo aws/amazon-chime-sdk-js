@@ -33,12 +33,14 @@ chime.endpoint = endpoint;
 
 
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
-if(endpoint != 'https://service.chime.aws.amazon.com'){
+if (endpoint !== 'https://service.chime.aws.amazon.com') {
   chimeSDKMeetings.endpoint = endpoint;
 }
 
 const sts = new AWS.STS({ region: 'us-east-1' })
 
+// For internal debugging - ignore this and its usage.
+const debug = require('./debug.js');
 
 const captureS3Destination = process.env.CAPTURE_S3_DESTINATION;
 if (captureS3Destination) {
@@ -70,17 +72,20 @@ function serve(host = '127.0.0.1:8080') {
       if (request.method === 'GET' && requestUrl.pathname === '/') {
         // Return the contents of the index page
         respond(response, 200, 'text/html', indexPage);
-      } else if (process.env.DEBUG && request.method === 'POST' && requestUrl.pathname === '/join') {
-        // For internal debugging - ignore this.
-        respond(response, 201, 'application/json', JSON.stringify(require('./debug.js').debug(requestUrl.query), null, 2));
+      } else if (process.env.DEBUG) {
+        const debugResponse = debug.debug(request);
+        respond(response, debugResponse.status, 'application/json', JSON.stringify(debugResponse.response, null, 2));
       } else if (request.method === 'POST' && requestUrl.pathname === '/join') {
-        if (!requestUrl.query.title || !requestUrl.query.name || !requestUrl.query.region) {
-          throw new Error('Need parameters: title, name, region');
+        if (!requestUrl.query.title || !requestUrl.query.name) {
+          respond(response, 400, 'application/json', JSON.stringify({ error: 'Need parameters: title and name' }));
         }
         let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
 
         // Look up the meeting by its title. If it does not exist, create the meeting.
         if (!meetingTable[requestUrl.query.title]) {
+          if (!requestUrl.query.region) {
+            respond(response, 400, 'application/json', JSON.stringify({ error: 'Need region parameter set if meeting has not yet been created' }));
+          }
           let request = {
             // Use a UUID for the client request token to ensure that any request retries
             // do not create multiple meetings.
@@ -93,6 +98,17 @@ function serve(host = '127.0.0.1:8080') {
             ExternalMeetingId: requestUrl.query.title.substring(0, 64),
           };
 
+          let primaryMeeting = undefined;
+          if (requestUrl.query.primaryExternalMeetingId) {
+            primaryMeeting = meetingTable[requestUrl.query.primaryExternalMeetingId]
+            if (primaryMeeting !== undefined) {
+              log(`Retrieved primary meeting ID ${primaryMeeting.Meeting.MeetingId} for external meeting ID ${requestUrl.query.primaryExternalMeetingId}`)
+              request.PrimaryMeetingId = primaryMeeting.Meeting.MeetingId;
+            } else {
+              respond(response, 400, 'application/json', JSON.stringify({ error: 'Primary meeting has not been created' }));
+            }
+          }
+
           if (requestUrl.query.ns_es === 'true') {
             client = chimeSDKMeetings;
             request.MeetingFeatures = {
@@ -102,7 +118,14 @@ function serve(host = '127.0.0.1:8080') {
               }
             };
           }
-          meetingTable[requestUrl.query.title] = await client.createMeeting(request).promise();
+          let meeting = await client.createMeeting(request).promise();
+
+          // Extend meeting with primary external meeting ID if it exists
+          if (primaryMeeting !== undefined) {
+            meeting.Meeting.PrimaryExternalMeetingId = primaryMeeting.Meeting.ExternalMeetingId;
+          }
+
+          meetingTable[requestUrl.query.title] = meeting;
         }
 
         // Fetch the meeting info
@@ -122,12 +145,17 @@ function serve(host = '127.0.0.1:8080') {
 
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
-        respond(response, 201, 'application/json', JSON.stringify({
+        let joinResponse = {
           JoinInfo: {
             Meeting: meeting,
             Attendee: attendee,
           },
-        }, null, 2));
+        }
+        if (meeting.Meeting.PrimaryExternalMeetingId !== undefined) {
+          // Put this where it expects it, since it is not technically part of create meeting response
+          joinResponse.JoinInfo.PrimaryExternalMeetingId = meeting.Meeting.PrimaryExternalMeetingId;
+        }
+        respond(response, 201, 'application/json', JSON.stringify(joinResponse, null, 2));
       } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
         // End the meeting. All attendee connections will hang up.
         let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
@@ -151,6 +179,21 @@ function serve(host = '127.0.0.1:8080') {
           console.warn("Cloud media capture not available")
           respond(response, 500, 'application/json', JSON.stringify({}))
         }
+      } else if (request.method === 'POST' && requestUrl.pathname === '/deleteAttendee') {
+        if (!requestUrl.query.title || !requestUrl.query.attendeeId) {
+          throw new Error('Need parameters: title, attendeeId');
+        }
+        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+
+        // Fetch the meeting info
+        const meeting = meetingTable[requestUrl.query.title];
+
+        await client.deleteAttendee({
+          MeetingId: meeting.Meeting.MeetingId,
+          AttendeeId: requestUrl.query.attendeeId,
+        }).promise();
+
+        respond(response, 201, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/endCapture') {
         if (captureS3Destination) {
           pipelineInfo = meetingTable[requestUrl.query.title].Capture;
@@ -176,7 +219,7 @@ function serve(host = '127.0.0.1:8080') {
         const region = requestUrl.query.region;
         let transcriptionConfiguration = {};
         let transcriptionStreamParams = {};
-        if (requestUrl.query.transcriptionStreamParams){
+        if (requestUrl.query.transcriptionStreamParams) {
           transcriptionStreamParams = JSON.parse(requestUrl.query.transcriptionStreamParams);
         }
         const contentIdentification = requestUrl.query.contentIdentification;
@@ -263,7 +306,7 @@ function serve(host = '127.0.0.1:8080') {
         if (requestUrl.pathname === '/stereo_audio_file') {
           filePath = 'dist/speech_stereo.mp3';
         }
-        fs.readFile(filePath, {encoding: 'base64'}, function(err, data) {
+        fs.readFile(filePath, { encoding: 'base64' }, function (err, data) {
           if (err) {
             log(`Error reading audio file ${filePath}: ${err}`)
             respond(response, 404, 'application/json', JSON.stringify({}));

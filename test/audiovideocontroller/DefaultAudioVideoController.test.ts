@@ -1,6 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+  SdkPrimaryMeetingJoinAckFrame,
+  SdkPrimaryMeetingLeaveFrame,
+} from 'amazon-chime-sdk-js/build/signalingprotocol/SignalingProtocol';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
@@ -224,6 +228,30 @@ describe('DefaultAudioVideoController', () => {
     audioMetadataBuffer[0] = 0x5;
     audioMetadataBuffer.set(buffer, 1);
     return audioMetadataBuffer;
+  }
+
+  function makePrimaryMeetingJoinAckFrame(): Uint8Array {
+    const joinAckFrame = SdkPrimaryMeetingJoinAckFrame.create();
+    const joinAckSignal = SdkSignalFrame.create();
+    joinAckSignal.type = SdkSignalFrame.Type.PRIMARY_MEETING_JOIN_ACK;
+    joinAckSignal.primaryMeetingJoinAck = joinAckFrame;
+    const buffer = SdkSignalFrame.encode(joinAckSignal).finish();
+    const joinAckSignalBuffer = new Uint8Array(buffer.length + 1);
+    joinAckSignalBuffer[0] = 0x5;
+    joinAckSignalBuffer.set(buffer, 1);
+    return joinAckSignalBuffer;
+  }
+
+  function makePrimaryMeetingLeaveFrame(): Uint8Array {
+    const leaveFrame = SdkPrimaryMeetingLeaveFrame.create();
+    const leaveSignal = SdkSignalFrame.create();
+    leaveSignal.type = SdkSignalFrame.Type.PRIMARY_MEETING_LEAVE;
+    leaveSignal.primaryMeetingLeave = leaveFrame;
+    const buffer = SdkSignalFrame.encode(leaveSignal).finish();
+    const leaveSignalBuffer = new Uint8Array(buffer.length + 1);
+    leaveSignalBuffer[0] = 0x5;
+    leaveSignalBuffer.set(buffer, 1);
+    return leaveSignalBuffer;
   }
 
   // For FinishGatheringICECandidatesTask
@@ -3445,6 +3473,173 @@ describe('DefaultAudioVideoController', () => {
       await delay(defaultDelay);
       await stop();
       expect(spy.notCalled).to.be.true;
+    });
+  });
+
+  describe('promoteToPrimaryMeeting & demoteFromPrimaryMeeting', () => {
+    it('sends promotion through signaling client and waits for ack, demotes sends through signaling client', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      let demotionCalled = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoWasDemotedFromPrimaryMeeting(_: MeetingSessionStatus): void {
+          demotionCalled = true;
+        }
+      }
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
+      await start();
+
+      const promoteSpy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.signalingClient,
+        'promoteToPrimaryMeeting'
+      );
+      const demoteSpy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.signalingClient,
+        'demoteFromPrimaryMeeting'
+      );
+      const credentials = new MeetingSessionCredentials();
+      const promotionPromise = audioVideoController.promoteToPrimaryMeeting(credentials);
+
+      await delay(200);
+      webSocketAdapter.send(makePrimaryMeetingJoinAckFrame());
+      expect((await promotionPromise).statusCode()).to.equal(MeetingSessionStatusCode.OK);
+
+      await delay(200);
+      audioVideoController.demoteFromPrimaryMeeting();
+      await delay(200);
+
+      await stop();
+      expect(promoteSpy.callCount).to.equal(1);
+      expect(demoteSpy.callCount).to.equal(1);
+      expect(demotionCalled).to.be.true;
+    });
+
+    it('fails promotion if timeout', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      let demotionCalled = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoWasDemotedFromPrimaryMeeting(_: MeetingSessionStatus): void {
+          demotionCalled = true;
+        }
+      }
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
+      await start();
+      configuration.connectionTimeoutMs = 100;
+
+      const promoteSpy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.signalingClient,
+        'promoteToPrimaryMeeting'
+      );
+      const demoteSpy = sinon.spy(
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.signalingClient,
+        'demoteFromPrimaryMeeting'
+      );
+      const credentials = new MeetingSessionCredentials();
+      const promotionPromise = audioVideoController.promoteToPrimaryMeeting(credentials);
+
+      await delay(200);
+      webSocketAdapter.send(makePrimaryMeetingJoinAckFrame());
+      expect((await promotionPromise).statusCode()).to.equal(
+        MeetingSessionStatusCode.SignalingRequestFailed
+      );
+
+      await stop();
+      expect(promoteSpy.callCount).to.equal(1);
+      expect(demoteSpy.callCount).to.equal(0);
+      expect(demotionCalled).to.be.false;
+      configuration.connectionTimeoutMs = 15000;
+    });
+
+    it('calls demotion observer when leave is received', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      let demotionCalled = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoWasDemotedFromPrimaryMeeting(status: MeetingSessionStatus): void {
+          demotionCalled = true;
+          expect(status.statusCode()).to.equal(
+            MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting
+          );
+        }
+      }
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
+      await start();
+
+      // @ts-ignore
+      const credentials = new MeetingSessionCredentials();
+      const promotionPromise = audioVideoController.promoteToPrimaryMeeting(credentials);
+
+      await delay(200);
+      webSocketAdapter.send(makePrimaryMeetingJoinAckFrame());
+      await promotionPromise;
+
+      webSocketAdapter.send(makePrimaryMeetingLeaveFrame());
+
+      await stop();
+      expect(demotionCalled).to.be.true;
+    });
+
+    it('calls demotion observer when disconnection occurs', async () => {
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        new NoOpDebugLogger(),
+        webSocketAdapter,
+        new NoOpDeviceController(),
+        reconnectController
+      );
+      let demotionCalled = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoWasDemotedFromPrimaryMeeting(status: MeetingSessionStatus): void {
+          demotionCalled = true;
+          expect(status.statusCode()).to.equal(
+            MeetingSessionStatusCode.SignalingInternalServerError
+          );
+        }
+      }
+      const observer = new TestObserver();
+      audioVideoController.addObserver(observer);
+      await start();
+
+      // @ts-ignore
+      const credentials = new MeetingSessionCredentials();
+      const promotionPromise = audioVideoController.promoteToPrimaryMeeting(credentials);
+
+      await delay(200);
+      webSocketAdapter.send(makePrimaryMeetingJoinAckFrame());
+      await promotionPromise;
+
+      reconnectController.disableReconnect();
+      audioVideoController.reconnect(
+        new MeetingSessionStatus(MeetingSessionStatusCode.SignalingBadRequest),
+        new Error('uh oh')
+      );
+      await delay(200);
+
+      await stop();
+      expect(demotionCalled).to.be.true;
     });
   });
 });

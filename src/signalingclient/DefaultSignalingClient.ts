@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { MeetingSessionCredentials } from '..';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import TimeoutScheduler from '../scheduler/TimeoutScheduler';
@@ -14,8 +15,11 @@ import {
   SdkJoinFlags,
   SdkJoinFrame,
   SdkLeaveFrame,
+  SdkMeetingSessionCredentials,
   SdkPauseResumeFrame,
   SdkPingPongFrame,
+  SdkPrimaryMeetingJoinFrame,
+  SdkPrimaryMeetingLeaveFrame,
   SdkRemoteVideoUpdateFrame,
   SdkSignalFrame,
   SdkStreamDescriptor,
@@ -452,4 +456,28 @@ export default class DefaultSignalingClient implements SignalingClient {
     );
     this.serviceConnectionRequestQueue();
   };
+
+  promoteToPrimaryMeeting(credentials: MeetingSessionCredentials): void {
+    const signaledCredentials = SdkMeetingSessionCredentials.create();
+    signaledCredentials.attendeeId = credentials.attendeeId;
+    signaledCredentials.externalUserId = credentials.externalUserId;
+    signaledCredentials.joinToken = credentials.joinToken;
+
+    const primaryMeetingJoin = SdkPrimaryMeetingJoinFrame.create();
+    primaryMeetingJoin.credentials = signaledCredentials;
+
+    const message = SdkSignalFrame.create();
+    message.type = SdkSignalFrame.Type.PRIMARY_MEETING_JOIN;
+    message.primaryMeetingJoin = primaryMeetingJoin;
+    this.sendMessage(message);
+  }
+
+  demoteFromPrimaryMeeting(): void {
+    const primaryMeetingLeave = SdkPrimaryMeetingLeaveFrame.create();
+
+    const message = SdkSignalFrame.create();
+    message.type = SdkSignalFrame.Type.PRIMARY_MEETING_LEAVE;
+    message.primaryMeetingLeave = primaryMeetingLeave;
+    this.sendMessage(message);
+  }
 }

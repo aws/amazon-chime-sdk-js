@@ -37,6 +37,7 @@ describe('MeetingSessionStatus', () => {
     MeetingSessionStatusCode.TURNCredentialsForbidden,
     MeetingSessionStatusCode.NoAttendeePresent,
     MeetingSessionStatusCode.AudioAttendeeRemoved,
+    MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting,
   ];
 
   describe('isFailure', () => {
@@ -119,6 +120,8 @@ describe('MeetingSessionStatus', () => {
         300: MeetingSessionStatusCode.SignalingRequestFailed,
         400: MeetingSessionStatusCode.SignalingBadRequest,
         500: MeetingSessionStatusCode.SignalingInternalServerError,
+        403: MeetingSessionStatusCode.AudioAuthenticationRejected,
+        409: MeetingSessionStatusCode.AudioCallAtCapacity,
       };
 
       for (const errorStatusCode in errorStatusCodes) {
@@ -167,6 +170,15 @@ describe('MeetingSessionStatus', () => {
       message.type = SdkSignalFrame.Type.JOIN;
       const status = MeetingSessionStatus.fromSignalFrame(message);
       expect(status.statusCode()).to.equal(MeetingSessionStatusCode.OK);
+    });
+
+    it('handles primary meeting leave frames', () => {
+      const message = SdkSignalFrame.create();
+      message.type = SdkSignalFrame.Type.PRIMARY_MEETING_LEAVE;
+      const status = MeetingSessionStatus.fromSignalFrame(message);
+      expect(status.statusCode()).to.equal(
+        MeetingSessionStatusCode.AudioVideoWasRemovedFromPrimaryMeeting
+      );
     });
   });
 });

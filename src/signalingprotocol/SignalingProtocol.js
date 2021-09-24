@@ -35,6 +35,9 @@ $root.SdkSignalFrame = (function() {
      * @property {ISdkClientMetricFrame|null} [clientMetric] SdkSignalFrame clientMetric
      * @property {ISdkDataMessageFrame|null} [dataMessage] SdkSignalFrame dataMessage
      * @property {ISdkRemoteVideoUpdateFrame|null} [remoteVideoUpdate] SdkSignalFrame remoteVideoUpdate
+     * @property {ISdkPrimaryMeetingJoinFrame|null} [primaryMeetingJoin] SdkSignalFrame primaryMeetingJoin
+     * @property {ISdkPrimaryMeetingJoinAckFrame|null} [primaryMeetingJoinAck] SdkSignalFrame primaryMeetingJoinAck
+     * @property {ISdkPrimaryMeetingLeaveFrame|null} [primaryMeetingLeave] SdkSignalFrame primaryMeetingLeave
      */
 
     /**
@@ -213,6 +216,30 @@ $root.SdkSignalFrame = (function() {
     SdkSignalFrame.prototype.remoteVideoUpdate = null;
 
     /**
+     * SdkSignalFrame primaryMeetingJoin.
+     * @member {ISdkPrimaryMeetingJoinFrame|null|undefined} primaryMeetingJoin
+     * @memberof SdkSignalFrame
+     * @instance
+     */
+    SdkSignalFrame.prototype.primaryMeetingJoin = null;
+
+    /**
+     * SdkSignalFrame primaryMeetingJoinAck.
+     * @member {ISdkPrimaryMeetingJoinAckFrame|null|undefined} primaryMeetingJoinAck
+     * @memberof SdkSignalFrame
+     * @instance
+     */
+    SdkSignalFrame.prototype.primaryMeetingJoinAck = null;
+
+    /**
+     * SdkSignalFrame primaryMeetingLeave.
+     * @member {ISdkPrimaryMeetingLeaveFrame|null|undefined} primaryMeetingLeave
+     * @memberof SdkSignalFrame
+     * @instance
+     */
+    SdkSignalFrame.prototype.primaryMeetingLeave = null;
+
+    /**
      * Creates a new SdkSignalFrame instance using the specified properties.
      * @function create
      * @memberof SdkSignalFrame
@@ -274,6 +301,12 @@ $root.SdkSignalFrame = (function() {
             $root.SdkDataMessageFrame.encode(message.dataMessage, writer.uint32(/* id 23, wireType 2 =*/186).fork()).ldelim();
         if (message.remoteVideoUpdate != null && message.hasOwnProperty("remoteVideoUpdate"))
             $root.SdkRemoteVideoUpdateFrame.encode(message.remoteVideoUpdate, writer.uint32(/* id 25, wireType 2 =*/202).fork()).ldelim();
+        if (message.primaryMeetingJoin != null && message.hasOwnProperty("primaryMeetingJoin"))
+            $root.SdkPrimaryMeetingJoinFrame.encode(message.primaryMeetingJoin, writer.uint32(/* id 26, wireType 2 =*/210).fork()).ldelim();
+        if (message.primaryMeetingJoinAck != null && message.hasOwnProperty("primaryMeetingJoinAck"))
+            $root.SdkPrimaryMeetingJoinAckFrame.encode(message.primaryMeetingJoinAck, writer.uint32(/* id 27, wireType 2 =*/218).fork()).ldelim();
+        if (message.primaryMeetingLeave != null && message.hasOwnProperty("primaryMeetingLeave"))
+            $root.SdkPrimaryMeetingLeaveFrame.encode(message.primaryMeetingLeave, writer.uint32(/* id 28, wireType 2 =*/226).fork()).ldelim();
         return writer;
     };
 
@@ -368,6 +401,15 @@ $root.SdkSignalFrame = (function() {
             case 25:
                 message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.decode(reader, reader.uint32());
                 break;
+            case 26:
+                message.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.decode(reader, reader.uint32());
+                break;
+            case 27:
+                message.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.decode(reader, reader.uint32());
+                break;
+            case 28:
+                message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.decode(reader, reader.uint32());
+                break;
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -430,6 +472,9 @@ $root.SdkSignalFrame = (function() {
         case 21:
         case 22:
         case 24:
+        case 25:
+        case 26:
+        case 27:
             break;
         }
         if (message.error != null && message.hasOwnProperty("error")) {
@@ -521,6 +566,21 @@ $root.SdkSignalFrame = (function() {
             var error = $root.SdkRemoteVideoUpdateFrame.verify(message.remoteVideoUpdate);
             if (error)
                 return "remoteVideoUpdate." + error;
+        }
+        if (message.primaryMeetingJoin != null && message.hasOwnProperty("primaryMeetingJoin")) {
+            var error = $root.SdkPrimaryMeetingJoinFrame.verify(message.primaryMeetingJoin);
+            if (error)
+                return "primaryMeetingJoin." + error;
+        }
+        if (message.primaryMeetingJoinAck != null && message.hasOwnProperty("primaryMeetingJoinAck")) {
+            var error = $root.SdkPrimaryMeetingJoinAckFrame.verify(message.primaryMeetingJoinAck);
+            if (error)
+                return "primaryMeetingJoinAck." + error;
+        }
+        if (message.primaryMeetingLeave != null && message.hasOwnProperty("primaryMeetingLeave")) {
+            var error = $root.SdkPrimaryMeetingLeaveFrame.verify(message.primaryMeetingLeave);
+            if (error)
+                return "primaryMeetingLeave." + error;
         }
         return null;
     };
@@ -619,6 +679,18 @@ $root.SdkSignalFrame = (function() {
         case 24:
             message.type = 24;
             break;
+        case "PRIMARY_MEETING_JOIN":
+        case 25:
+            message.type = 25;
+            break;
+        case "PRIMARY_MEETING_JOIN_ACK":
+        case 26:
+            message.type = 26;
+            break;
+        case "PRIMARY_MEETING_LEAVE":
+        case 27:
+            message.type = 27;
+            break;
         }
         if (object.error != null) {
             if (typeof object.error !== "object")
@@ -710,6 +782,21 @@ $root.SdkSignalFrame = (function() {
                 throw TypeError(".SdkSignalFrame.remoteVideoUpdate: object expected");
             message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.fromObject(object.remoteVideoUpdate);
         }
+        if (object.primaryMeetingJoin != null) {
+            if (typeof object.primaryMeetingJoin !== "object")
+                throw TypeError(".SdkSignalFrame.primaryMeetingJoin: object expected");
+            message.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.fromObject(object.primaryMeetingJoin);
+        }
+        if (object.primaryMeetingJoinAck != null) {
+            if (typeof object.primaryMeetingJoinAck !== "object")
+                throw TypeError(".SdkSignalFrame.primaryMeetingJoinAck: object expected");
+            message.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.fromObject(object.primaryMeetingJoinAck);
+        }
+        if (object.primaryMeetingLeave != null) {
+            if (typeof object.primaryMeetingLeave !== "object")
+                throw TypeError(".SdkSignalFrame.primaryMeetingLeave: object expected");
+            message.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.fromObject(object.primaryMeetingLeave);
+        }
         return message;
     };
 
@@ -751,6 +838,9 @@ $root.SdkSignalFrame = (function() {
             object.clientMetric = null;
             object.dataMessage = null;
             object.remoteVideoUpdate = null;
+            object.primaryMeetingJoin = null;
+            object.primaryMeetingJoinAck = null;
+            object.primaryMeetingLeave = null;
         }
         if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
             if (typeof message.timestampMs === "number")
@@ -795,6 +885,12 @@ $root.SdkSignalFrame = (function() {
             object.dataMessage = $root.SdkDataMessageFrame.toObject(message.dataMessage, options);
         if (message.remoteVideoUpdate != null && message.hasOwnProperty("remoteVideoUpdate"))
             object.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.toObject(message.remoteVideoUpdate, options);
+        if (message.primaryMeetingJoin != null && message.hasOwnProperty("primaryMeetingJoin"))
+            object.primaryMeetingJoin = $root.SdkPrimaryMeetingJoinFrame.toObject(message.primaryMeetingJoin, options);
+        if (message.primaryMeetingJoinAck != null && message.hasOwnProperty("primaryMeetingJoinAck"))
+            object.primaryMeetingJoinAck = $root.SdkPrimaryMeetingJoinAckFrame.toObject(message.primaryMeetingJoinAck, options);
+        if (message.primaryMeetingLeave != null && message.hasOwnProperty("primaryMeetingLeave"))
+            object.primaryMeetingLeave = $root.SdkPrimaryMeetingLeaveFrame.toObject(message.primaryMeetingLeave, options);
         return object;
     };
 
@@ -831,6 +927,9 @@ $root.SdkSignalFrame = (function() {
      * @property {number} CLIENT_METRIC=21 CLIENT_METRIC value
      * @property {number} DATA_MESSAGE=22 DATA_MESSAGE value
      * @property {number} REMOTE_VIDEO_UPDATE=24 REMOTE_VIDEO_UPDATE value
+     * @property {number} PRIMARY_MEETING_JOIN=25 PRIMARY_MEETING_JOIN value
+     * @property {number} PRIMARY_MEETING_JOIN_ACK=26 PRIMARY_MEETING_JOIN_ACK value
+     * @property {number} PRIMARY_MEETING_LEAVE=27 PRIMARY_MEETING_LEAVE value
      */
     SdkSignalFrame.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -852,6 +951,9 @@ $root.SdkSignalFrame = (function() {
         values[valuesById[21] = "CLIENT_METRIC"] = 21;
         values[valuesById[22] = "DATA_MESSAGE"] = 22;
         values[valuesById[24] = "REMOTE_VIDEO_UPDATE"] = 24;
+        values[valuesById[25] = "PRIMARY_MEETING_JOIN"] = 25;
+        values[valuesById[26] = "PRIMARY_MEETING_JOIN_ACK"] = 26;
+        values[valuesById[27] = "PRIMARY_MEETING_LEAVE"] = 27;
         return values;
     })();
 
@@ -11446,6 +11548,750 @@ $root.SdkVideoSubscriptionConfiguration = (function() {
     };
 
     return SdkVideoSubscriptionConfiguration;
+})();
+
+$root.SdkPrimaryMeetingJoinFrame = (function() {
+
+    /**
+     * Properties of a SdkPrimaryMeetingJoinFrame.
+     * @exports ISdkPrimaryMeetingJoinFrame
+     * @interface ISdkPrimaryMeetingJoinFrame
+     * @property {ISdkMeetingSessionCredentials|null} [credentials] SdkPrimaryMeetingJoinFrame credentials
+     */
+
+    /**
+     * Constructs a new SdkPrimaryMeetingJoinFrame.
+     * @exports SdkPrimaryMeetingJoinFrame
+     * @classdesc Represents a SdkPrimaryMeetingJoinFrame.
+     * @implements ISdkPrimaryMeetingJoinFrame
+     * @constructor
+     * @param {ISdkPrimaryMeetingJoinFrame=} [properties] Properties to set
+     */
+    function SdkPrimaryMeetingJoinFrame(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkPrimaryMeetingJoinFrame credentials.
+     * @member {ISdkMeetingSessionCredentials|null|undefined} credentials
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @instance
+     */
+    SdkPrimaryMeetingJoinFrame.prototype.credentials = null;
+
+    /**
+     * Creates a new SdkPrimaryMeetingJoinFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {ISdkPrimaryMeetingJoinFrame=} [properties] Properties to set
+     * @returns {SdkPrimaryMeetingJoinFrame} SdkPrimaryMeetingJoinFrame instance
+     */
+    SdkPrimaryMeetingJoinFrame.create = function create(properties) {
+        return new SdkPrimaryMeetingJoinFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkPrimaryMeetingJoinFrame message. Does not implicitly {@link SdkPrimaryMeetingJoinFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {ISdkPrimaryMeetingJoinFrame} message SdkPrimaryMeetingJoinFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkPrimaryMeetingJoinFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.credentials != null && message.hasOwnProperty("credentials"))
+            $root.SdkMeetingSessionCredentials.encode(message.credentials, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkPrimaryMeetingJoinFrame message, length delimited. Does not implicitly {@link SdkPrimaryMeetingJoinFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {ISdkPrimaryMeetingJoinFrame} message SdkPrimaryMeetingJoinFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkPrimaryMeetingJoinFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkPrimaryMeetingJoinFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkPrimaryMeetingJoinFrame} SdkPrimaryMeetingJoinFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkPrimaryMeetingJoinFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkPrimaryMeetingJoinFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.credentials = $root.SdkMeetingSessionCredentials.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkPrimaryMeetingJoinFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkPrimaryMeetingJoinFrame} SdkPrimaryMeetingJoinFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkPrimaryMeetingJoinFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkPrimaryMeetingJoinFrame message.
+     * @function verify
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkPrimaryMeetingJoinFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.credentials != null && message.hasOwnProperty("credentials")) {
+            var error = $root.SdkMeetingSessionCredentials.verify(message.credentials);
+            if (error)
+                return "credentials." + error;
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkPrimaryMeetingJoinFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkPrimaryMeetingJoinFrame} SdkPrimaryMeetingJoinFrame
+     */
+    SdkPrimaryMeetingJoinFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkPrimaryMeetingJoinFrame)
+            return object;
+        var message = new $root.SdkPrimaryMeetingJoinFrame();
+        if (object.credentials != null) {
+            if (typeof object.credentials !== "object")
+                throw TypeError(".SdkPrimaryMeetingJoinFrame.credentials: object expected");
+            message.credentials = $root.SdkMeetingSessionCredentials.fromObject(object.credentials);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkPrimaryMeetingJoinFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @static
+     * @param {SdkPrimaryMeetingJoinFrame} message SdkPrimaryMeetingJoinFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkPrimaryMeetingJoinFrame.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            object.credentials = null;
+        if (message.credentials != null && message.hasOwnProperty("credentials"))
+            object.credentials = $root.SdkMeetingSessionCredentials.toObject(message.credentials, options);
+        return object;
+    };
+
+    /**
+     * Converts this SdkPrimaryMeetingJoinFrame to JSON.
+     * @function toJSON
+     * @memberof SdkPrimaryMeetingJoinFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkPrimaryMeetingJoinFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkPrimaryMeetingJoinFrame;
+})();
+
+$root.SdkPrimaryMeetingJoinAckFrame = (function() {
+
+    /**
+     * Properties of a SdkPrimaryMeetingJoinAckFrame.
+     * @exports ISdkPrimaryMeetingJoinAckFrame
+     * @interface ISdkPrimaryMeetingJoinAckFrame
+     */
+
+    /**
+     * Constructs a new SdkPrimaryMeetingJoinAckFrame.
+     * @exports SdkPrimaryMeetingJoinAckFrame
+     * @classdesc Represents a SdkPrimaryMeetingJoinAckFrame.
+     * @implements ISdkPrimaryMeetingJoinAckFrame
+     * @constructor
+     * @param {ISdkPrimaryMeetingJoinAckFrame=} [properties] Properties to set
+     */
+    function SdkPrimaryMeetingJoinAckFrame(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * Creates a new SdkPrimaryMeetingJoinAckFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {ISdkPrimaryMeetingJoinAckFrame=} [properties] Properties to set
+     * @returns {SdkPrimaryMeetingJoinAckFrame} SdkPrimaryMeetingJoinAckFrame instance
+     */
+    SdkPrimaryMeetingJoinAckFrame.create = function create(properties) {
+        return new SdkPrimaryMeetingJoinAckFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkPrimaryMeetingJoinAckFrame message. Does not implicitly {@link SdkPrimaryMeetingJoinAckFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {ISdkPrimaryMeetingJoinAckFrame} message SdkPrimaryMeetingJoinAckFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkPrimaryMeetingJoinAckFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkPrimaryMeetingJoinAckFrame message, length delimited. Does not implicitly {@link SdkPrimaryMeetingJoinAckFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {ISdkPrimaryMeetingJoinAckFrame} message SdkPrimaryMeetingJoinAckFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkPrimaryMeetingJoinAckFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkPrimaryMeetingJoinAckFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkPrimaryMeetingJoinAckFrame} SdkPrimaryMeetingJoinAckFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkPrimaryMeetingJoinAckFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkPrimaryMeetingJoinAckFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkPrimaryMeetingJoinAckFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkPrimaryMeetingJoinAckFrame} SdkPrimaryMeetingJoinAckFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkPrimaryMeetingJoinAckFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkPrimaryMeetingJoinAckFrame message.
+     * @function verify
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkPrimaryMeetingJoinAckFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkPrimaryMeetingJoinAckFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkPrimaryMeetingJoinAckFrame} SdkPrimaryMeetingJoinAckFrame
+     */
+    SdkPrimaryMeetingJoinAckFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkPrimaryMeetingJoinAckFrame)
+            return object;
+        return new $root.SdkPrimaryMeetingJoinAckFrame();
+    };
+
+    /**
+     * Creates a plain object from a SdkPrimaryMeetingJoinAckFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @static
+     * @param {SdkPrimaryMeetingJoinAckFrame} message SdkPrimaryMeetingJoinAckFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkPrimaryMeetingJoinAckFrame.toObject = function toObject() {
+        return {};
+    };
+
+    /**
+     * Converts this SdkPrimaryMeetingJoinAckFrame to JSON.
+     * @function toJSON
+     * @memberof SdkPrimaryMeetingJoinAckFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkPrimaryMeetingJoinAckFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkPrimaryMeetingJoinAckFrame;
+})();
+
+$root.SdkPrimaryMeetingLeaveFrame = (function() {
+
+    /**
+     * Properties of a SdkPrimaryMeetingLeaveFrame.
+     * @exports ISdkPrimaryMeetingLeaveFrame
+     * @interface ISdkPrimaryMeetingLeaveFrame
+     */
+
+    /**
+     * Constructs a new SdkPrimaryMeetingLeaveFrame.
+     * @exports SdkPrimaryMeetingLeaveFrame
+     * @classdesc Represents a SdkPrimaryMeetingLeaveFrame.
+     * @implements ISdkPrimaryMeetingLeaveFrame
+     * @constructor
+     * @param {ISdkPrimaryMeetingLeaveFrame=} [properties] Properties to set
+     */
+    function SdkPrimaryMeetingLeaveFrame(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * Creates a new SdkPrimaryMeetingLeaveFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {ISdkPrimaryMeetingLeaveFrame=} [properties] Properties to set
+     * @returns {SdkPrimaryMeetingLeaveFrame} SdkPrimaryMeetingLeaveFrame instance
+     */
+    SdkPrimaryMeetingLeaveFrame.create = function create(properties) {
+        return new SdkPrimaryMeetingLeaveFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkPrimaryMeetingLeaveFrame message. Does not implicitly {@link SdkPrimaryMeetingLeaveFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {ISdkPrimaryMeetingLeaveFrame} message SdkPrimaryMeetingLeaveFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkPrimaryMeetingLeaveFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkPrimaryMeetingLeaveFrame message, length delimited. Does not implicitly {@link SdkPrimaryMeetingLeaveFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {ISdkPrimaryMeetingLeaveFrame} message SdkPrimaryMeetingLeaveFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkPrimaryMeetingLeaveFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkPrimaryMeetingLeaveFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkPrimaryMeetingLeaveFrame} SdkPrimaryMeetingLeaveFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkPrimaryMeetingLeaveFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkPrimaryMeetingLeaveFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkPrimaryMeetingLeaveFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkPrimaryMeetingLeaveFrame} SdkPrimaryMeetingLeaveFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkPrimaryMeetingLeaveFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkPrimaryMeetingLeaveFrame message.
+     * @function verify
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkPrimaryMeetingLeaveFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkPrimaryMeetingLeaveFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkPrimaryMeetingLeaveFrame} SdkPrimaryMeetingLeaveFrame
+     */
+    SdkPrimaryMeetingLeaveFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkPrimaryMeetingLeaveFrame)
+            return object;
+        return new $root.SdkPrimaryMeetingLeaveFrame();
+    };
+
+    /**
+     * Creates a plain object from a SdkPrimaryMeetingLeaveFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @static
+     * @param {SdkPrimaryMeetingLeaveFrame} message SdkPrimaryMeetingLeaveFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkPrimaryMeetingLeaveFrame.toObject = function toObject() {
+        return {};
+    };
+
+    /**
+     * Converts this SdkPrimaryMeetingLeaveFrame to JSON.
+     * @function toJSON
+     * @memberof SdkPrimaryMeetingLeaveFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkPrimaryMeetingLeaveFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkPrimaryMeetingLeaveFrame;
+})();
+
+$root.SdkMeetingSessionCredentials = (function() {
+
+    /**
+     * Properties of a SdkMeetingSessionCredentials.
+     * @exports ISdkMeetingSessionCredentials
+     * @interface ISdkMeetingSessionCredentials
+     * @property {string|null} [attendeeId] SdkMeetingSessionCredentials attendeeId
+     * @property {string|null} [externalUserId] SdkMeetingSessionCredentials externalUserId
+     * @property {string|null} [joinToken] SdkMeetingSessionCredentials joinToken
+     */
+
+    /**
+     * Constructs a new SdkMeetingSessionCredentials.
+     * @exports SdkMeetingSessionCredentials
+     * @classdesc Represents a SdkMeetingSessionCredentials.
+     * @implements ISdkMeetingSessionCredentials
+     * @constructor
+     * @param {ISdkMeetingSessionCredentials=} [properties] Properties to set
+     */
+    function SdkMeetingSessionCredentials(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkMeetingSessionCredentials attendeeId.
+     * @member {string} attendeeId
+     * @memberof SdkMeetingSessionCredentials
+     * @instance
+     */
+    SdkMeetingSessionCredentials.prototype.attendeeId = "";
+
+    /**
+     * SdkMeetingSessionCredentials externalUserId.
+     * @member {string} externalUserId
+     * @memberof SdkMeetingSessionCredentials
+     * @instance
+     */
+    SdkMeetingSessionCredentials.prototype.externalUserId = "";
+
+    /**
+     * SdkMeetingSessionCredentials joinToken.
+     * @member {string} joinToken
+     * @memberof SdkMeetingSessionCredentials
+     * @instance
+     */
+    SdkMeetingSessionCredentials.prototype.joinToken = "";
+
+    /**
+     * Creates a new SdkMeetingSessionCredentials instance using the specified properties.
+     * @function create
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {ISdkMeetingSessionCredentials=} [properties] Properties to set
+     * @returns {SdkMeetingSessionCredentials} SdkMeetingSessionCredentials instance
+     */
+    SdkMeetingSessionCredentials.create = function create(properties) {
+        return new SdkMeetingSessionCredentials(properties);
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionCredentials message. Does not implicitly {@link SdkMeetingSessionCredentials.verify|verify} messages.
+     * @function encode
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {ISdkMeetingSessionCredentials} message SdkMeetingSessionCredentials message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionCredentials.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.attendeeId);
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.externalUserId);
+        if (message.joinToken != null && message.hasOwnProperty("joinToken"))
+            writer.uint32(/* id 3, wireType 2 =*/26).string(message.joinToken);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkMeetingSessionCredentials message, length delimited. Does not implicitly {@link SdkMeetingSessionCredentials.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {ISdkMeetingSessionCredentials} message SdkMeetingSessionCredentials message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkMeetingSessionCredentials.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionCredentials message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkMeetingSessionCredentials} SdkMeetingSessionCredentials
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionCredentials.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkMeetingSessionCredentials();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.attendeeId = reader.string();
+                break;
+            case 2:
+                message.externalUserId = reader.string();
+                break;
+            case 3:
+                message.joinToken = reader.string();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkMeetingSessionCredentials message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkMeetingSessionCredentials} SdkMeetingSessionCredentials
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkMeetingSessionCredentials.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkMeetingSessionCredentials message.
+     * @function verify
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkMeetingSessionCredentials.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+            if (!$util.isString(message.attendeeId))
+                return "attendeeId: string expected";
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            if (!$util.isString(message.externalUserId))
+                return "externalUserId: string expected";
+        if (message.joinToken != null && message.hasOwnProperty("joinToken"))
+            if (!$util.isString(message.joinToken))
+                return "joinToken: string expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkMeetingSessionCredentials message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkMeetingSessionCredentials} SdkMeetingSessionCredentials
+     */
+    SdkMeetingSessionCredentials.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkMeetingSessionCredentials)
+            return object;
+        var message = new $root.SdkMeetingSessionCredentials();
+        if (object.attendeeId != null)
+            message.attendeeId = String(object.attendeeId);
+        if (object.externalUserId != null)
+            message.externalUserId = String(object.externalUserId);
+        if (object.joinToken != null)
+            message.joinToken = String(object.joinToken);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkMeetingSessionCredentials message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkMeetingSessionCredentials
+     * @static
+     * @param {SdkMeetingSessionCredentials} message SdkMeetingSessionCredentials
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkMeetingSessionCredentials.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.attendeeId = "";
+            object.externalUserId = "";
+            object.joinToken = "";
+        }
+        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+            object.attendeeId = message.attendeeId;
+        if (message.externalUserId != null && message.hasOwnProperty("externalUserId"))
+            object.externalUserId = message.externalUserId;
+        if (message.joinToken != null && message.hasOwnProperty("joinToken"))
+            object.joinToken = message.joinToken;
+        return object;
+    };
+
+    /**
+     * Converts this SdkMeetingSessionCredentials to JSON.
+     * @function toJSON
+     * @memberof SdkMeetingSessionCredentials
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkMeetingSessionCredentials.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkMeetingSessionCredentials;
 })();
 
 module.exports = $root;

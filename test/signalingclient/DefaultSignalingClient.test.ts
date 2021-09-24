@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { MeetingSessionCredentials } from 'amazon-chime-sdk-js';
 import * as chai from 'chai';
 
 import { SignalingClientVideoSubscriptionConfiguration } from '../../src';
@@ -574,6 +575,48 @@ describe('DefaultSignalingClient', () => {
               done();
             });
             event.client.sendClientMetrics(SdkClientMetricFrame.create());
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+  });
+
+  describe('primary meeting join and leave', () => {
+    it('will send a primary meeting join frame', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.PRIMARY_MEETING_JOIN);
+              done();
+            });
+            event.client.promoteToPrimaryMeeting(new MeetingSessionCredentials());
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a primary meeting leave frame', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.PRIMARY_MEETING_LEAVE);
+              done();
+            });
+            event.client.demoteFromPrimaryMeeting();
           }
         }
       }

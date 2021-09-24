@@ -119,4 +119,19 @@ export default interface AudioVideoObserver {
    * Called when simulcast is enabled and simulcast uplink encoding layers get changed.
    */
   encodingSimulcastLayersDidChange?(simulcastLayers: SimulcastLayers): void;
+
+  /**
+   * This observer callback will only be called for attendees in Replica meetings.
+   *
+   * Indicates that the client is no longer authenticated to the Primary meeting
+   * and can no longer share media. `status` will contain a `MeetingSessionStatusCode` of the following:
+   *
+   * * `MeetingSessionStatusCode.OK`: `demoteFromPrimaryMeeting` was used to remove the attendee.
+   * * `MeetingSessionStatusCode.AudioAuthenticationRejected`: `chime::DeleteAttendee` was called on the Primary
+   *   meeting attendee used in `promoteToPrimaryMeeting`.
+   * * `MeetingSessionStatusCode.SignalingBadRequest`: Other failure, possibly due to disconnect
+   *   or timeout. These failures are likely retryable. Any disconnection will trigger an automatic
+   *   demotion to avoid unexpected or unwanted promotion state on reconnection.
+   */
+  audioVideoWasDemotedFromPrimaryMeeting?(status: MeetingSessionStatus): void;
 }

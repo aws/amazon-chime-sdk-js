@@ -125,6 +125,11 @@ export enum MeetingSessionStatusCode {
    * The meeting was ended because the attendee has been removed.
    */
   AudioAttendeeRemoved,
+
+  /**
+   * The attendees Primary meeting credentials have been revoked or deleted.
+   */
+  AudioVideoWasRemovedFromPrimaryMeeting,
 }
 
 export default MeetingSessionStatusCode;
