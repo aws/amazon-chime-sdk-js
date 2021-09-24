@@ -10,6 +10,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ContentShareController from '../contentsharecontroller/ContentShareController';
 import ContentShareMediaStreamBroker from '../contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../contentsharecontroller/DefaultContentShareController';
+import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import DeviceController from '../devicecontroller/DeviceController';
 import EventIngestionConfiguration from '../eventingestionconfiguration/EventIngestionConfiguration';
@@ -45,6 +46,9 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     this._logger = logger;
 
     this.checkBrowserSupportAndFeatureConfiguration();
+
+    CSPMonitor.addLogger(this._logger);
+    CSPMonitor.register();
 
     this.setupEventReporter(configuration, logger, eventReporter);
     this._deviceController = deviceController;
@@ -134,6 +138,8 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     if (isDestroyable(this.eventReporter)) {
       await this.eventReporter.destroy();
     }
+
+    CSPMonitor.removeLogger(this._logger);
 
     this._logger = undefined;
     this._configuration = undefined;

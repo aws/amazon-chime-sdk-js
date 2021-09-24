@@ -26,6 +26,7 @@ import BaseConnectionHealthPolicy from './connectionhealthpolicy/BaseConnectionH
 import BaseTask from './task/BaseTask';
 import BitrateParameters from './videouplinkbandwidthpolicy/BitrateParameters';
 import BrowserBehavior from './browserbehavior/BrowserBehavior';
+import CSPMonitor from './cspmonitor/CSPMonitor';
 import CanvasVideoFrameBuffer from './videoframeprocessor/CanvasVideoFrameBuffer';
 import CheckAudioConnectivityFeedback from './meetingreadinesschecker/CheckAudioConnectivityFeedback';
 import CheckAudioInputFeedback from './meetingreadinesschecker/CheckAudioInputFeedback';
@@ -327,6 +328,7 @@ export {
   BaseTask,
   BitrateParameters,
   BrowserBehavior,
+  CSPMonitor,
   CanvasVideoFrameBuffer,
   CheckAudioConnectivityFeedback,
   CheckAudioInputFeedback,
