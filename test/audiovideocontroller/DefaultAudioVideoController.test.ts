@@ -781,54 +781,6 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
-    it(
-      'default to default simulcast policy if the customized policy does not implement SimulcastUplinkPolicy' +
-        ' interface',
-      async () => {
-        domMockBehavior.browserName = 'chrome';
-        domMockBuilder = new DOMMockBuilder(domMockBehavior);
-
-        const logger = new NoOpDebugLogger();
-        const myUplinkPolicy = new NScaleVideoUplinkBandwidthPolicy('test');
-        configuration.videoUplinkBandwidthPolicy = myUplinkPolicy;
-        configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
-        configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-        audioVideoController = new DefaultAudioVideoController(
-          configuration,
-          logger,
-          webSocketAdapter,
-          new NoOpMediaStreamBroker(),
-          reconnectController
-        );
-
-        let sessionStarted = false;
-        let sessionConnecting = false;
-        class TestObserver implements AudioVideoObserver {
-          audioVideoDidStart(): void {
-            sessionStarted = true;
-          }
-          audioVideoDidStartConnecting(): void {
-            sessionConnecting = true;
-          }
-        }
-        audioVideoController.addObserver(new TestObserver());
-        expect(audioVideoController.configuration).to.equal(configuration);
-        expect(audioVideoController.rtcPeerConnection).to.be.null;
-        await start();
-        await delay(defaultDelay);
-        expect(sessionStarted).to.be.true;
-        expect(sessionConnecting).to.be.true;
-
-        // @ts-ignore
-        const uplink = audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy;
-        expect(uplink instanceof DefaultSimulcastUplinkPolicy).to.be.true;
-
-        await sendICEEventAndSubscribeAckFrame();
-        await delay(defaultDelay);
-        await stop();
-      }
-    );
-
     it('can be started and take a bandwidth update', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,

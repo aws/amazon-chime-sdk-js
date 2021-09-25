@@ -133,3 +133,20 @@ const observer = {
 
 meetingSession.audioVideo.addObserver(observer);
 ```
+### Custom Simulcast Policy
+If the default simulcast uplink policy does not work for you, you can create your own simulcast video uplink policy 
+by implementing [SimulcastUplinkPolicy](https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html) 
+and set the video uplink policy via [MeetingSessionConfiguration.videoUplinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy).
+
+```typescript
+export default class MySimulcastUplinkPolicy implements SimulcastUplinkPolicy {
+}
+
+const browserBehavior = new DefaultBrowserBehavior({
+  enableUnifiedPlanForChromiumBasedBrowsers: meetingConfiguration.enableUnifiedPlanForChromiumBasedBrowsers
+});
+
+if (browserBehavior.isSimulcastSupported()) {
+  meetingConfiguration.videoUplinkBandwidthPolicy = new MySimulcastUplinkPolicy();
+}
+```

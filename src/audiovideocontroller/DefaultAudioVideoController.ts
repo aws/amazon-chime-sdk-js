@@ -486,23 +486,17 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
 
     if (this.enableSimulcast) {
-      let simulcastPolicy = this.meetingSessionContext.videoUplinkBandwidthPolicy;
-      //Make sure the simulcast policy passed in implement the SimulcastUplinkPolicy
-      if (simulcastPolicy && !(simulcastPolicy as SimulcastUplinkPolicy).addObserver) {
-        this.meetingSessionContext.logger.error(
-          'Video uplink bandwidth policy does not implement' +
-            ' SimulcastUplinkPolicy interface. Default to the default simulcast policy.'
-        );
-        simulcastPolicy = undefined;
-      }
+      let simulcastPolicy = this.meetingSessionContext
+        .videoUplinkBandwidthPolicy as SimulcastUplinkPolicy;
       if (!simulcastPolicy) {
         simulcastPolicy = new DefaultSimulcastUplinkPolicy(
           this.configuration.credentials.attendeeId,
           this.meetingSessionContext.logger
         );
+        this.meetingSessionContext.videoUplinkBandwidthPolicy = simulcastPolicy;
       }
-      (simulcastPolicy as SimulcastUplinkPolicy).addObserver(this);
-      this.meetingSessionContext.videoUplinkBandwidthPolicy = simulcastPolicy;
+
+      simulcastPolicy.addObserver(this);
 
       if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
         this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(

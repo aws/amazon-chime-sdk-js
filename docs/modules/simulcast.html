@@ -232,6 +232,23 @@ configuration.videoDownlinkBandwidthPolicy = <span class="hljs-keyword">new</spa
 
 meetingSession.audioVideo.addObserver(observer);
 </code></pre>
+					<a href="#custom-simulcast-policy" id="custom-simulcast-policy" style="color: inherit; text-decoration: none;">
+						<h3>Custom Simulcast Policy</h3>
+					</a>
+					<p>If the default simulcast uplink policy does not work for you, you can create your own simulcast video uplink policy
+						by implementing <a href="https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html">SimulcastUplinkPolicy</a>
+					and set the video uplink policy via <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videouplinkbandwidthpolicy">MeetingSessionConfiguration.videoUplinkBandwidthPolicy</a>.</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySimulcastUplinkPolicy</span> <span class="hljs-title">implements</span> <span class="hljs-title">SimulcastUplinkPolicy</span> </span>{
+}
+
+<span class="hljs-keyword">const</span> browserBehavior = <span class="hljs-keyword">new</span> DefaultBrowserBehavior({
+  <span class="hljs-attr">enableUnifiedPlanForChromiumBasedBrowsers</span>: meetingConfiguration.enableUnifiedPlanForChromiumBasedBrowsers
+});
+
+<span class="hljs-keyword">if</span> (browserBehavior.isSimulcastSupported()) {
+  meetingConfiguration.videoUplinkBandwidthPolicy = <span class="hljs-keyword">new</span> MySimulcastUplinkPolicy();
+}
+</code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Simulcast%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
