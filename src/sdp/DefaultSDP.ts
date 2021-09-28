@@ -291,8 +291,9 @@ export default class DefaultSDP implements SDP {
     return previousId === 14 ? -1 : previousId + 1;
   }
 
+  // negotiate with the back end to determine whether to use layers allocation header extension
+  // to avoid resubscribing to preemptively turn off simulcast streams or to switch layers
   // this will not add the packet overhead unless negotiated to avoid waste
-  // it is tested against local Tincan
   withVideoLayersAllocationRtpHeaderExtension(): DefaultSDP {
     const sections = DefaultSDP.splitSections(this.sdp);
 
