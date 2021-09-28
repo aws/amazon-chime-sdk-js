@@ -572,7 +572,7 @@ class AppPage {
   async videoCheckByAttendeeName(stepInfo, attendeeName, expectedState = 'video') {
     const startTime = Date.now();
     let videos = await this.driver.findElements(By.css('video[id^="video-"]'));
-    console.log(`Looping through ${videos && videos.length} videos`);
+    console.log(`Looping through ${videos && videos.length}`);
     for (let i = 0; i < videos.length; i++) {
       const videoElementId = await videos[i].getAttribute('id');
       const seperatorIndex = videoElementId.lastIndexOf("-");
@@ -580,6 +580,7 @@ class AppPage {
         const tileIndex = parseInt(videoElementId.slice(seperatorIndex+1))
         if (tileIndex != NaN && tileIndex >= 0) {
           const nameplate = await this.driver.findElement(By.id(`nameplate-${tileIndex}`));
+          console.log(`nameplate: ${nameplate}`);
           const nameplateText = await nameplate.getText();
           console.log(`nameplate: ${nameplateText}`);
           if (nameplate && nameplateText === attendeeName) {
