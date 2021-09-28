@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Add safeguard in `ReceivedVideoInputTask` to prevent crashing when video input stream does not contain any video
   track.
+- Add missing captureOutputPrefix param for SDK demo app in release script.
   
 ## [2.18.0] - 2021-09-22
 
