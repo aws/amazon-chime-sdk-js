@@ -11,6 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isOldChrome = exports.supportsWASMStreaming = exports.supportsSharedArrayBuffer = exports.supportsWASM = exports.supportsAudioWorklet = exports.supportsWorker = exports.supportsVoiceFocusWorker = exports.supportsWASMPostMessage = exports.isSafari = void 0;
 const loader_js_1 = require("./loader.js");
+const isChrome = (global = globalThis) => {
+    const ua = global.navigator.userAgent;
+    return !!ua.match(/Chrom(?:e|ium)\/([0-9]+)/);
+};
 const isSafari = (global = globalThis) => {
     const ua = global.navigator.userAgent;
     const hasSafari = ua.match(/Safari\//);
@@ -19,7 +23,14 @@ const isSafari = (global = globalThis) => {
 };
 exports.isSafari = isSafari;
 const supportsWASMPostMessage = (global = globalThis) => {
-    return !exports.isSafari(global);
+    if (exports.isSafari(global)) {
+        return false;
+    }
+    if (isChrome(global)) {
+        const version = chromeVersion(global) || 0;
+        return version < 95;
+    }
+    return true;
 };
 exports.supportsWASMPostMessage = supportsWASMPostMessage;
 const supportsVoiceFocusWorker = (scope = globalThis, fetchConfig, logger) => __awaiter(void 0, void 0, void 0, function* () {
@@ -95,21 +106,27 @@ const supportsWASMStreaming = (scope = globalThis, logger) => {
 };
 exports.supportsWASMStreaming = supportsWASMStreaming;
 const SUPPORTED_CHROME_VERSION = 90;
-const isOldChrome = (global = globalThis, logger) => {
+const chromeVersion = (global = globalThis) => {
     try {
         if (!global.chrome) {
-            return false;
+            return undefined;
         }
     }
     catch (e) {
     }
     const versionCheck = global.navigator.userAgent.match(/Chrom(?:e|ium)\/([0-9]+)/);
     if (!versionCheck) {
-        logger === null || logger === void 0 ? void 0 : logger.debug('Unknown Chrome version.');
-        return true;
+        return undefined;
     }
-    if (parseInt(versionCheck[1], 10) < SUPPORTED_CHROME_VERSION) {
-        logger === null || logger === void 0 ? void 0 : logger.debug(`Chrome ${versionCheck[1]} has incomplete SIMD support.`);
+    return parseInt(versionCheck[1], 10);
+};
+const isOldChrome = (global = globalThis, logger) => {
+    const version = chromeVersion(global);
+    if (!version) {
+        return false;
+    }
+    if (version < SUPPORTED_CHROME_VERSION) {
+        logger === null || logger === void 0 ? void 0 : logger.debug(`Chrome ${version} has incomplete SIMD support.`);
         return true;
     }
     return false;
