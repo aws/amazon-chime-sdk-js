@@ -1307,7 +1307,10 @@ export default class DOMMockBuilder {
 
       pause(): void {}
 
-      play(): void {
+      play(): Promise<void> {
+        if (mockBehavior.videoElementShouldFail) {
+          return Promise.reject();
+        }
         if (this.refSrcObject) {
           new TimeoutScheduler(mockBehavior.videoElementStartPlayDelay).start(() => {
             this.dispatchEvent(new Event('timeupdate'));
@@ -1318,6 +1321,7 @@ export default class DOMMockBuilder {
             this.videoHeight = 720;
           });
         }
+        return Promise.resolve();
       }
       fired = false;
       load(): void {
