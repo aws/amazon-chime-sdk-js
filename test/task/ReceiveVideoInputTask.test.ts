@@ -165,6 +165,19 @@ describe('ReceiveVideoInputTask', () => {
       await task.run();
       expect(context.activeVideoInput).to.be.null;
     });
+
+    it('will fail gracefully if a video input does not contain media stream track', async () => {
+      context.videoTileController.startLocalVideoTile();
+      class MockEmptyMediaStreamBroker extends NoOpMediaStreamBroker {
+        acquireVideoInputStream(): Promise<MediaStream> {
+          return Promise.resolve(new MediaStream());
+        }
+      }
+      context.mediaStreamBroker = new MockEmptyMediaStreamBroker();
+      const task = new ReceiveVideoInputTask(context);
+      await task.run();
+      expect(context.activeVideoInput.getVideoTracks()).to.be.empty;
+    });
   });
 
   describe('run with simulcast enabled', () => {
