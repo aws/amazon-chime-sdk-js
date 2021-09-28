@@ -83,7 +83,15 @@ const getChromeCapabilities = capabilities => {
   cap.setLoggingPrefs(prefs);
   cap.setBrowserVersion(capabilities.version);
   cap.set('goog:chromeOptions', {
-    args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
+    args: [
+      '--use-fake-ui-for-media-stream',
+      '--use-fake-device-for-media-stream',
+      'start-maximized',
+      'disable-infobars',
+      'ignore-gpu-blacklist',
+      'test-type',
+      'disable-gpu',
+    ],
   });
   cap.set('resolution', '1920x1080');
   cap.set('sauce:options', getSauceLabsConfig(capabilities));

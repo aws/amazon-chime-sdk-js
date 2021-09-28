@@ -217,15 +217,10 @@ class DemoVideoTile extends HTMLElement {
     for (const ssrc of streams) {
       for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
         if (keyStatstoShow[metricName]) {
-          const rowElement = document.getElementById(
-            `${metricName}`
-          ) as HTMLTableRowElement;
-          const row = rowElement ? rowElement : statsInfoTable.insertRow(-1);
-          if (!rowElement) {
-            row.setAttribute('id', `${metricName}`);
-            cell = row.insertCell(-1);
-            cell.innerHTML = keyStatstoShow[metricName];
-          }
+          const row = statsInfoTable.insertRow(-1);
+          row.setAttribute('id', `${metricName}`);
+          cell = row.insertCell(-1);
+          cell.innerHTML = keyStatstoShow[metricName];
           cell = row.insertCell(-1);
           cell.innerHTML = `${value}`;
         }
@@ -265,7 +260,7 @@ class DemoVideoTile extends HTMLElement {
   public get videoPriorityRadioElement(): HTMLFormElement {
     return this.querySelector('.video-priority-toggle');
   }
-  
+
   connectedCallback() {
     const template = document.getElementById('video-tile-template') as HTMLTemplateElement;
     const node = document.importNode(template.content, true);
@@ -724,12 +719,6 @@ export class DemoMeetingApp
       this.region = (document.getElementById('inputRegion') as HTMLInputElement).value;
       this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
       this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
-      if (this.enableSimulcast) {
-        const videoInputQuality = document.getElementById(
-          'video-input-quality'
-        ) as HTMLSelectElement;
-        videoInputQuality.value = '720p';
-      }
       this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
       // js sdk default to enable unified plan, equivalent to "Disable Unified Plan" default unchecked
       this.enableUnifiedPlanForChromiumBasedBrowsers = !(document.getElementById(
@@ -803,6 +792,13 @@ export class DemoMeetingApp
           await this.populateAllDeviceLists();
           await this.populateVideoFilterInputList(false);
           await this.populateVideoFilterInputList(true);
+          if (this.enableSimulcast) {
+            const videoInputQuality = document.getElementById(
+              'video-input-quality'
+            ) as HTMLSelectElement;
+            videoInputQuality.value = '720p';
+            this.audioVideo.chooseVideoInputQuality(1280, 720, 15, 1400);
+          }
 
           this.switchToFlow('flow-devices');
           await this.openAudioInputFromSelectionAndPreview();
@@ -1725,9 +1721,6 @@ export class DemoMeetingApp
       this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
     }
     this.audioVideo = this.meetingSession.audioVideo;
-    if (this.enableSimulcast) {
-      this.audioVideo.chooseVideoInputQuality(1280, 720, 15, 1400);
-    }
     this.audioVideo.addDeviceChangeObserver(this);
     this.setupDeviceLabelTrigger();
     this.setupMuteHandler();
@@ -1957,49 +1950,6 @@ export class DemoMeetingApp
       scoreHandler,
       this.showActiveSpeakerScores ? 100 : 0
     );
-  }
-
-  async getStatsForOutbound(id: string): Promise<void> {
-    const videoElement = document.getElementById(id) as HTMLVideoElement;
-    const stream = videoElement.srcObject as MediaStream;
-    const track = stream.getVideoTracks()[0];
-    const basicReports: { [id: string]: number } = {};
-
-    const reports = await this.audioVideo.getRTCPeerConnectionStats(track);
-    let duration: number;
-
-    reports.forEach(report => {
-      if (report.type === 'outbound-rtp') {
-        // remained to be calculated
-        this.log(`${id} is bound to ssrc ${report.ssrc}`);
-        basicReports['bitrate'] = report.bytesSent;
-        basicReports['width'] = report.frameWidth;
-        basicReports['height'] = report.frameHeight;
-        basicReports['fps'] = report.framesEncoded;
-        duration = report.timestamp;
-      }
-    });
-
-    await new TimeoutScheduler(1000).start(() => {
-      this.audioVideo.getRTCPeerConnectionStats(track).then(reports => {
-        reports.forEach(report => {
-          if (report.type === 'outbound-rtp') {
-            duration = report.timestamp - duration;
-            duration = duration / 1000;
-            // remained to be calculated
-            basicReports['bitrate'] = Math.trunc(
-              ((report.bytesSent - basicReports['bitrate']) * 8) / duration
-            );
-            basicReports['width'] = report.frameWidth;
-            basicReports['height'] = report.frameHeight;
-            basicReports['fps'] = Math.trunc(
-              (report.framesEncoded - basicReports['fps']) / duration
-            );
-            this.log(JSON.stringify(basicReports));
-          }
-        });
-      });
-    });
   }
 
   dataMessageHandler(dataMessage: DataMessage): void {
@@ -2371,7 +2321,7 @@ export class DemoMeetingApp
       option.text = filters[i] || `${genericName} ${i + 1}`;
       option.value = filters[i];
     }
-    
+
     if (!list.firstElementChild) {
       const option = document.createElement('option');
       option.text = 'Filter selection unavailable';
@@ -3551,7 +3501,7 @@ export class DemoMeetingApp
         tile.showConfigDropdown = false;
         tile.showRemoteVideoPreferences = false;
       }
-  
+
       this.tileIndexToDemoVideoTile.set(i, tile);
 
       // Setup tile element resizer

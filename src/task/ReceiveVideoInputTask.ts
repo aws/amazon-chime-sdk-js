@@ -56,6 +56,13 @@ export default class ReceiveVideoInputTask extends BaseTask {
     this.context.activeVideoInput = videoInput;
     if (videoInput) {
       const videoTracks = videoInput.getVideoTracks();
+      // There can be a race condition when there are several audioVideo.update calls (e.g., calling
+      // startLocalVideoTile and stopLocalVideoTile at the same time)
+      // that causes the video stream to not contain any video track.
+      // This should recovers in the next update call.
+      if (!videoTracks || videoTracks.length === 0) {
+        return;
+      }
       const attendeeId = this.context.meetingSessionConfiguration.credentials.attendeeId;
       const trackSettings = videoTracks[0].getSettings();
       if (this.context.enableSimulcast) {
