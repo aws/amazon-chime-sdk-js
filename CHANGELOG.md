@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+### Removed
+
+### Fixed
+
+- Add safeguard in `ReceivedVideoInputTask` to prevent crashing when video input stream does not contain any video track.
+- Add missing `captureOutputPrefix` param for SDK demo app in release script.
+- Amazon Voice Focus now works in Chrome 95 or later: WebAssembly policy changes required a change in how modules were loaded.
+- Add opt-in region `eu-south-1` to meetings demo in deploy-canary-demo script to support media capture canary
+
+
+### Changed
+
+  
+## [2.18.0] - 2021-09-22
+
+### Added
+
 - Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events. Currently, these events were only included in the meeting history attribute when a meeting event is published. 
 - Added support for skipping full SDP renegotiations when switching simulcast streams.  This will result in less freezing when switching between layers in response to a network event as done in `VideoPriorityBasedPolicy`.  This will have no impact if not using simulcast.
 - Add link to SIP Media Application examples in README.
@@ -15,9 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
 - Add safeguard for Nscale policy in case we increase to more than 25 videos.
 
 ### Changed
+
 - Move `toLowerCasePropertyNames` inside `Utils.ts` and add test coverage.
 - Reduced uplink resubscription when only stream encoding is changed by adding bypassing path.
 - The browser demo now offers a configuration menu on each video tile. This menu replaces the 'Pin' button, which previously set the priority of the corresponding remote video to 1, and then rest to 2. The new configuration menu allows the user to specify the desired video quality and priority, which will be respected by simulcast and priority downlink policies. This is useful for testing or to demonstrate the behavior of those policies.
