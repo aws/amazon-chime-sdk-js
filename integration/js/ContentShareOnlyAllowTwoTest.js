@@ -56,7 +56,7 @@ class ContentShareOnlyAllowTwoTest extends SdkBaseTest {
     await test_window_1.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
     await test_window_3.runCommands(async () => await RosterCheck.executeStep(this, session, 5));
     await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
-    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_1));
+    await test_window_3.runCommands(async () => await ContentShareVideoCheck.executeStep(this, session, "ON", test_attendee_id_2));
 
     //Turn on Content Share for third participant
     await test_window_3.runCommands(async () => await ClickContentShareButton.executeStep(this, session, "ON"));
