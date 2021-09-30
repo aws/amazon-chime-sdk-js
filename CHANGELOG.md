@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
+- Add API `isSimulcastSupported` so applications can check whether simulcast can be enabled and pass corresponding
+  policy.
+  
 ### Removed
 
 ### Fixed
@@ -20,7 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix bug: DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22
 
 ### Changed
-
+- Allow passing in custom video simulcast uplink policy that implements the `SimulcastUplinkPolicy` interface.
+- Change the default video downlink policy to `VideoAdaptiveProbePolicy` to match with documentation.
+- Move configuration default from meeting session configuration to audio video controller.
   
 ## [2.18.0] - 2021-09-22
 
@@ -42,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reduced uplink resubscription when only stream encoding is changed by adding bypassing path.
 - The browser demo now offers a configuration menu on each video tile. This menu replaces the 'Pin' button, which previously set the priority of the corresponding remote video to 1, and then rest to 2. The new configuration menu allows the user to specify the desired video quality and priority, which will be respected by simulcast and priority downlink policies. This is useful for testing or to demonstrate the behavior of those policies.
 - Switched to using Web Components for video tiles in the browser demo.
-- Migrate SauceLabs mobile tests to new api. 
+- Migrate SauceLabs mobile tests to new api.
 
 ## [2.17.0] - 2021-09-08
 
