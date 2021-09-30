@@ -4,8 +4,7 @@
 
 **Testing:**
 
-*Please specify whether these changes can be tested using a demo application and step-by-step instructions on how 
-you test them*
+*Can these tested using a demo application? Please provide reproducible step-by-step instructions.*
 
 
 **Checklist:**

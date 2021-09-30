@@ -3,9 +3,7 @@
 
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import { toLowerCasePropertyNames } from '../utils/Utils';
-import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
-import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import MeetingSessionCredentials from './MeetingSessionCredentials';
 import MeetingSessionURLs from './MeetingSessionURLs';
@@ -180,13 +178,5 @@ export default class MeetingSessionConfiguration {
       this.credentials.externalUserId = createAttendeeResponse.externaluserid;
       this.credentials.joinToken = createAttendeeResponse.jointoken;
     }
-
-    // simulcast feature flag will override the following policies when DefaultAudioVideoController is created
-    this.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
-      this.credentials ? this.credentials.attendeeId : null
-    );
-    this.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
-      this.credentials ? this.credentials.attendeeId : null
-    );
   }
 }
