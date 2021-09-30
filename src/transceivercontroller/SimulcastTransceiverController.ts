@@ -53,6 +53,9 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
           oldParam.encodings[i].maxBitrate = encodingParamMap.get(
             SimulcastTransceiverController.LOW_LEVEL_NAME
           ).maxBitrate;
+          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
+            SimulcastTransceiverController.LOW_LEVEL_NAME
+          ).scaleResolutionDownBy;
           oldParam.encodings[i].active = encodingParamMap.get(
             SimulcastTransceiverController.LOW_LEVEL_NAME
           ).active;
@@ -64,6 +67,9 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
           oldParam.encodings[i].maxBitrate = encodingParamMap.get(
             SimulcastTransceiverController.MID_LEVEL_NAME
           ).maxBitrate;
+          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
+            SimulcastTransceiverController.MID_LEVEL_NAME
+          ).scaleResolutionDownBy;
           oldParam.encodings[i].active = encodingParamMap.get(
             SimulcastTransceiverController.MID_LEVEL_NAME
           ).active;
@@ -75,6 +81,9 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
           oldParam.encodings[i].maxBitrate = encodingParamMap.get(
             SimulcastTransceiverController.HIGH_LEVEL_NAME
           ).maxBitrate;
+          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
+            SimulcastTransceiverController.HIGH_LEVEL_NAME
+          ).scaleResolutionDownBy;
           oldParam.encodings[i].active = encodingParamMap.get(
             SimulcastTransceiverController.HIGH_LEVEL_NAME
           ).active;
