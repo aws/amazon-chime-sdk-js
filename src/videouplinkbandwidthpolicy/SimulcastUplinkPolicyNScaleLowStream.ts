@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
-import Maybe from '../maybe/Maybe';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
+import { Maybe } from '../utils/Types';
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
@@ -16,7 +16,7 @@ import SimulcastUplinkPolicy from './SimulcastUplinkPolicy';
 type EncodingParams = {
   maxBitrateKbps: number;
   scaleResolutionDownBy: number;
-}
+};
 
 /**
  * [[SimulcastUplinkPolicyNScaleLowStream]] determines capture and encode
@@ -39,7 +39,8 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
   private currentQualityMap = new Map<string, RTCRtpEncodingParameters>();
   private newActiveStreams: SimulcastLayers = SimulcastLayers.LowAndHigh;
   private currentActiveStreams: SimulcastLayers = SimulcastLayers.LowAndHigh;
-  private lastUplinkBandwidthKbps: number = SimulcastUplinkPolicyNScaleLowStream.defaultUplinkBandwidthKbps;
+  private lastUplinkBandwidthKbps: number =
+    SimulcastUplinkPolicyNScaleLowStream.defaultUplinkBandwidthKbps;
   private startTimeMs: number = 0;
   private lastUpdatedMs: number = Date.now();
   private videoIndex: VideoStreamIndex | null = null;
@@ -52,20 +53,19 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, true);
     this.lastUplinkBandwidthKbps = SimulcastUplinkPolicyNScaleLowStream.defaultUplinkBandwidthKbps;
     this.currentQualityMap = this.fillEncodingParamWithBitrates([
-        {
-          maxBitrateKbps: 300,
-          scaleResolutionDownBy: 4
-        },
-        {
-          maxBitrateKbps: 0,
-          scaleResolutionDownBy: 2
-        },
-        {
-          maxBitrateKbps: 1200,
-          scaleResolutionDownBy: 1
-        },
-      ]
-    );
+      {
+        maxBitrateKbps: 300,
+        scaleResolutionDownBy: 4,
+      },
+      {
+        maxBitrateKbps: 0,
+        scaleResolutionDownBy: 2,
+      },
+      {
+        maxBitrateKbps: 1200,
+        scaleResolutionDownBy: 1,
+      },
+    ]);
     this.newQualityMap = this.currentQualityMap;
   }
 
@@ -80,7 +80,8 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       this.startTimeMs = Date.now();
     }
     if (Date.now() - this.startTimeMs < SimulcastUplinkPolicyNScaleLowStream.startupDurationMs) {
-      this.lastUplinkBandwidthKbps = SimulcastUplinkPolicyNScaleLowStream.defaultUplinkBandwidthKbps;
+      this.lastUplinkBandwidthKbps =
+        SimulcastUplinkPolicyNScaleLowStream.defaultUplinkBandwidthKbps;
     } else {
       this.lastUplinkBandwidthKbps = uplinkKbps;
     }
@@ -88,14 +89,12 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       return `simulcast: uplink policy update metrics ${this.lastUplinkBandwidthKbps}`;
     });
 
-
     let holdTime = SimulcastUplinkPolicyNScaleLowStream.holdDownDurationMs;
     if (this.currentActiveStreams === SimulcastLayers.Low) {
       holdTime = SimulcastUplinkPolicyNScaleLowStream.holdDownDurationMs * 2;
     } else if (
-      (this.currentActiveStreams === SimulcastLayers.LowAndHigh &&
-        uplinkKbps <= SimulcastUplinkPolicyNScaleLowStream.kHiDisabledRate
-      )
+      this.currentActiveStreams === SimulcastLayers.LowAndHigh &&
+      uplinkKbps <= SimulcastUplinkPolicyNScaleLowStream.kHiDisabledRate
     ) {
       holdTime = SimulcastUplinkPolicyNScaleLowStream.holdDownDurationMs / 2;
     }
@@ -110,15 +109,15 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
     const newEncodingParameters: EncodingParams[] = [
       {
         maxBitrateKbps: 0,
-        scaleResolutionDownBy: 4
+        scaleResolutionDownBy: 4,
       },
       {
         maxBitrateKbps: 0,
-        scaleResolutionDownBy: 2
+        scaleResolutionDownBy: 2,
       },
       {
         maxBitrateKbps: 0,
-        scaleResolutionDownBy: 1
+        scaleResolutionDownBy: 1,
       },
     ];
 
@@ -127,12 +126,16 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       this.newActiveStreams = SimulcastLayers.High;
       newEncodingParameters[0].maxBitrateKbps = 0;
       newEncodingParameters[2].maxBitrateKbps = 1200;
-    } else if (this.lastUplinkBandwidthKbps >= SimulcastUplinkPolicyNScaleLowStream.kHiDisabledRate) {
+    } else if (
+      this.lastUplinkBandwidthKbps >= SimulcastUplinkPolicyNScaleLowStream.kHiDisabledRate
+    ) {
       // 320x192 + 1280x768
       this.newActiveStreams = SimulcastLayers.LowAndHigh;
       newEncodingParameters[0].maxBitrateKbps = this.calculateBitRateKpsForLowResolutionStream();
       newEncodingParameters[2].maxBitrateKbps = 1200;
-    } else if (this.lastUplinkBandwidthKbps >= SimulcastUplinkPolicyNScaleLowStream.kMidDisabledRate) {
+    } else if (
+      this.lastUplinkBandwidthKbps >= SimulcastUplinkPolicyNScaleLowStream.kMidDisabledRate
+    ) {
       // 320x192 + 640x384
       this.newActiveStreams = SimulcastLayers.LowAndHigh;
       newEncodingParameters[0].maxBitrateKbps = this.calculateBitRateKpsForLowResolutionStream();
@@ -328,17 +331,16 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
   }
 
   private calculateBitRateKpsForLowResolutionStream(): number {
-    switch (this.numSenders) {
-      case 1-4:
-        return 300;
-      case 5-8:
-        return 250;
-      case 7-12:
-        return 200;
-      case 13-16:
-        return 150;
-      case 16-20:
-        return 100;
+    if (this.numSenders <= 4) {
+      return 300;
+    } else if (this.numSenders <= 8) {
+      return 250;
+    } else if (this.numSenders <= 12) {
+      return 200;
+    } else if (this.numSenders <= 16) {
+      return 150;
+    } else {
+      return 100;
     }
   }
 
