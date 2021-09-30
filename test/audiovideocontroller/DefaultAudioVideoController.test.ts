@@ -55,6 +55,7 @@ import { wait as delay } from '../../src/utils/Utils';
 import AllHighestVideoBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoSource from '../../src/videosource/VideoSource';
+import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NoVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../../src/videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
@@ -722,6 +723,58 @@ describe('DefaultAudioVideoController', () => {
       await delay(defaultDelay);
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+
+      // @ts-ignore
+      const uplink = audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy;
+      expect(uplink instanceof DefaultSimulcastUplinkPolicy).to.be.true;
+      // @ts-ignore
+      const downlink = audioVideoController.meetingSessionContext.videoDownlinkBandwidthPolicy;
+      expect(downlink instanceof VideoAdaptiveProbePolicy).to.be.true;
+
+      await sendICEEventAndSubscribeAckFrame();
+      await delay(defaultDelay);
+      await stop();
+    });
+
+    it('can be started with customized video simulcast uplink policy', async () => {
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      const logger = new NoOpDebugLogger();
+      const myUplinkPolicy = new DefaultSimulcastUplinkPolicy('test', logger);
+      configuration.videoUplinkBandwidthPolicy = myUplinkPolicy;
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+
+      let sessionStarted = false;
+      let sessionConnecting = false;
+      class TestObserver implements AudioVideoObserver {
+        audioVideoDidStart(): void {
+          sessionStarted = true;
+        }
+        audioVideoDidStartConnecting(): void {
+          sessionConnecting = true;
+        }
+      }
+      audioVideoController.addObserver(new TestObserver());
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
+      await start();
+      await delay(defaultDelay);
+      expect(sessionStarted).to.be.true;
+      expect(sessionConnecting).to.be.true;
+
+      // @ts-ignore
+      expect(audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy).to.equal(
+        myUplinkPolicy
+      );
 
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);

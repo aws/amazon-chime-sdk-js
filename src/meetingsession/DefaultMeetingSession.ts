@@ -20,6 +20,8 @@ import MeetingEventsClientConfiguration from '../eventsclientconfiguration/Meeti
 import Logger from '../logger/Logger';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import DefaultReconnectController from '../reconnectcontroller/DefaultReconnectController';
+import SimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
+import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../websocketadapter/DefaultWebSocketAdapter';
 import MeetingSession from './MeetingSession';
 import MeetingSessionConfiguration from './MeetingSessionConfiguration';
@@ -191,6 +193,23 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       }
     }
 
+    // Validation if a custom video uplink policy is specified
+    if (this._configuration.videoUplinkBandwidthPolicy) {
+      if (this.isSimulcastUplinkPolicy(this._configuration.videoUplinkBandwidthPolicy)) {
+        if (!this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
+          throw new Error(
+            'Simulcast requires enabling WebRTC Unified Plan for Chromium-based browsers'
+          );
+        }
+        if (!browserBehavior.hasChromiumWebRTC()) {
+          throw new Error('Simulcast is only supported on Chromium-based browsers');
+        }
+        this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      } else {
+        this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
+      }
+    }
+
     if (this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers) {
       if (!this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
         this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
@@ -206,5 +225,9 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
         );
       }
     }
+  }
+
+  private isSimulcastUplinkPolicy(policy: VideoUplinkBandwidthPolicy | undefined): boolean {
+    return !!(policy && (policy as SimulcastUplinkPolicy).addObserver);
   }
 }
