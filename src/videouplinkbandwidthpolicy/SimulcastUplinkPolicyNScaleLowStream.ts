@@ -31,8 +31,6 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
   static readonly kHiDisabledRate = 700;
   static readonly kMidDisabledRate = 240;
 
-  static readonly kHiAndMidDisableRate = SimulcastUplinkPolicyNScaleLowStream.kHiDisabledRate + SimulcastUplinkPolicyNScaleLowStream.kMidDisabledRate;
-
   private numSenders: number = 0;
   private numParticipants: number = -1;
   private optimalParameters: DefaultVideoAndEncodeParameter;
@@ -96,7 +94,7 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       holdTime = SimulcastUplinkPolicyNScaleLowStream.holdDownDurationMs * 2;
     } else if (
       (this.currentActiveStreams === SimulcastLayers.LowAndHigh &&
-        uplinkKbps <= SimulcastUplinkPolicyNScaleLowStream.kHiAndMidDisableRate
+        uplinkKbps <= SimulcastUplinkPolicyNScaleLowStream.kHiDisabledRate
       )
     ) {
       holdTime = SimulcastUplinkPolicyNScaleLowStream.holdDownDurationMs / 2;
@@ -128,39 +126,22 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       // Simulcast disabled for 2 attendee calls
       this.newActiveStreams = SimulcastLayers.High;
       newEncodingParameters[0].maxBitrateKbps = 0;
-      newEncodingParameters[1].maxBitrateKbps = 0;
       newEncodingParameters[2].maxBitrateKbps = 1200;
-    } else if (
-        this.numSenders <= 6 &&
-        this.lastUplinkBandwidthKbps >= 1600
-    ) {
-      // 640x384 + 1280x768
-      this.newActiveStreams = SimulcastLayers.LowAndHigh;
-      newEncodingParameters[0].maxBitrateKbps = 600;
-      newEncodingParameters[0].scaleResolutionDownBy = 2;
-      newEncodingParameters[1].maxBitrateKbps = 0;
-      newEncodingParameters[2].maxBitrateKbps = 1200;
-    } else if (this.lastUplinkBandwidthKbps >= 1000) {
+    } else if (this.lastUplinkBandwidthKbps >= SimulcastUplinkPolicyNScaleLowStream.kHiDisabledRate) {
       // 320x192 + 1280x768
       this.newActiveStreams = SimulcastLayers.LowAndHigh;
-      newEncodingParameters[0].maxBitrateKbps = 300;
-      newEncodingParameters[0].scaleResolutionDownBy = 4;
-      newEncodingParameters[1].maxBitrateKbps = 0;
+      newEncodingParameters[0].maxBitrateKbps = this.calculateBitRateKpsForLowResolutionStream();
       newEncodingParameters[2].maxBitrateKbps = 1200;
-    } else if (this.lastUplinkBandwidthKbps >= 300) {
+    } else if (this.lastUplinkBandwidthKbps >= SimulcastUplinkPolicyNScaleLowStream.kMidDisabledRate) {
       // 320x192 + 640x384
       this.newActiveStreams = SimulcastLayers.LowAndHigh;
-      newEncodingParameters[0].maxBitrateKbps = 300;
-      newEncodingParameters[0].scaleResolutionDownBy = 4;
-      newEncodingParameters[1].maxBitrateKbps = 0;
+      newEncodingParameters[0].maxBitrateKbps = this.calculateBitRateKpsForLowResolutionStream();
       newEncodingParameters[2].maxBitrateKbps = 600;
-      newEncodingParameters[0].scaleResolutionDownBy = 2;
+      newEncodingParameters[2].scaleResolutionDownBy = 2;
     } else {
       // 320x192
       this.newActiveStreams = SimulcastLayers.Low;
-      newEncodingParameters[0].maxBitrateKbps = 300;
-      newEncodingParameters[0].scaleResolutionDownBy = 4;
-      newEncodingParameters[1].maxBitrateKbps = 0;
+      newEncodingParameters[0].maxBitrateKbps = this.calculateBitRateKpsForLowResolutionStream();
       newEncodingParameters[2].maxBitrateKbps = 0;
     }
 
@@ -344,6 +325,21 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       });
     }
     return qualityString;
+  }
+
+  private calculateBitRateKpsForLowResolutionStream(): number {
+    switch (this.numSenders) {
+      case 1-4:
+        return 300;
+      case 5-8:
+        return 250;
+      case 7-12:
+        return 200;
+      case 13-16:
+        return 150;
+      case 16-20:
+        return 100;
+    }
   }
 
   private publishEncodingSimulcastLayer(): void {
