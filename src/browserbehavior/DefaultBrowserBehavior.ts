@@ -231,6 +231,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return true;
   }
 
+  isSimulcastSupported(): boolean {
+    return this.hasChromiumWebRTC() && this.enableUnifiedPlanForChromiumBasedBrowsers;
+  }
+
   supportString(): string {
     if (this.isAndroid()) {
       return `${this.browserName['chrome']} ${this.browserSupport['chrome']}+, ${this.browserName['samsung']} ${this.browserSupport['samsung']}+`;
