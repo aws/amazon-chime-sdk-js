@@ -205,20 +205,40 @@ describe('VideoPriorityBasedPolicy', () => {
   describe('default preference', () => {
     it('use default preference', () => {
       const policy = new VideoPriorityBasedPolicy(logger);
-      updateIndexFrame(videoStreamIndex, 1, 0, 600);
+      updateIndexFrame(videoStreamIndex, 1, 0, 1200);
       policy.updateIndex(videoStreamIndex);
       let resub = policy.wantsResubscribe();
       expect(resub).to.equal(true);
       let received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2]);
 
+      // After startup period which is 6000 ms
       incrementTime(6100);
-      updateIndexFrame(videoStreamIndex, 2, 0, 600);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3000 * 1000;
+      policy.updateMetrics(metricReport);
+
+      updateIndexFrame(videoStreamIndex, 2, 300, 1200);
       policy.updateIndex(videoStreamIndex);
       resub = policy.wantsResubscribe();
       expect(resub).to.equal(true);
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2, 4]);
+
+      updateIndexFrame(videoStreamIndex, 6, 300, 1200);
+      policy.updateIndex(videoStreamIndex);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1, 3, 5, 7, 9, 11]);
+
+      updateIndexFrame(videoStreamIndex, 10, 300, 1200);
+      policy.updateIndex(videoStreamIndex);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([1, 3, 5, 7, 9, 11, 13, 15, 17, 19]);
     });
   });
 

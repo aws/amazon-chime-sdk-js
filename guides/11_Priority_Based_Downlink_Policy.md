@@ -35,9 +35,15 @@ Once you are connected to the meeting, builders will be notified of available re
 
 * _*attendeeId:*_  The attendee ID this video tile belongs to. Note that screen share video will have a suffix of #content
 * _*priority:*_ Provides relative priority of this attendee from 1 to x, where 1 is the highest priority. Remote videos are allowed to have the same priority signifying equal priority between them.
-* *_targetSize:_* Optional parameter to control maximum simulcast layer to receive. Default value is High.
+* *_targetSize:_* Optional parameter to control maximum simulcast layer to receive.
+
+The default preference set the same priority 1 for all attendees. The target size will be:
+- High if there are 1-4 videos.
+- Medium if there are 5-8 videos.
+- Low otherwise.
 
 **Configuring the receipt and priority of remote video sources** 
+
 The main API being used is:
 
 ```
