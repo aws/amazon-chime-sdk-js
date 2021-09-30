@@ -140,7 +140,7 @@ export default class ReceiveVideoStreamIndexTask
         this.context.videoCaptureAndEncodeParameter
       )}`
     );
-    this.context.audioVideoController.update();
+    this.context.audioVideoController.update({ needsRenegotiation: false });
   }
 
   private updateVideoAvailability(indexFrame: SdkIndexFrame): void {

@@ -525,11 +525,25 @@ Resources:
                 {
                     "type": "text",
                     "x": 0,
-                    "y": 36,
+                    "y": 42,
                     "width": 24,
                     "height": 12,
                     "properties": {
                         "markdown": "\n## How to search events for a specific attendee?\n\nThe Chime SDK serverless demo uses Amazon CloudWatch Logs Insights to search and analyze SDK events. You can view trends in the types of failures and identify where your attendees drop off.\n\n1. Click on the row number (▶) to expand a row.\n2. You can see detailed failure information.\n  - **attributes.meetingErrorMessage** explains the reason for the meeting failure.\n  - **attributes.audioInputErrorMessage** and **attributes.videoInputErrorMessage** indicate problems with the microphone and camera.\n  - **attributes.meetingHistory** shows up to last 15 attendee actions and events.\n3. To view a specific attendee's events, take note of **attributes.attendeeId** and choose **Insights** in the navigation pane.\n4. Select your ChimeBrowserMeetingEventLogs log group that starts with your stack name.\n  ```\n  __your_stack_name__ChimeBrowserMeetingEventLogs-...\n  ```\n5. In the query editor, delete the current contents, enter the following filter function, and then choose **Run query**.\n  ```\n  filter attributes.attendeeId = \"__your_attendee_id__\"\n  ```\n\n  The results show the number of SDK events from device selection to meeting end.\n\n  You can use CloudWatch Logs Insights to count device input errors for platforms, calculate the average value of the signaling connection time, and visualize trends over time. For more information, see [Analyzing Log Data with CloudWatch Logs Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html) in the *AWS CloudWatch Logs User Guide*.\n"
+                    }
+                },
+                {
+                    "type": "log",
+                    "x": 0,
+                    "y": 36,
+                    "width": 24,
+                    "height": 6,
+                    "properties": {
+                        "query": "SOURCE \"${Source}\" | filter name in [\"signalingDropped\"]\n| fields fromMillis(@timestamp) as timestamp,\nconcat(attributes.osName, \" \", attributes.osVersion) as operatingSystem,\nconcat(attributes.browserName, \" \", attributes.browserMajorVersion) as browser,\nconcat(attributes.signalingOpenDurationMs / 1000, \"s\")  as signalingOpenDurationMs,\nattributes.retryCount as retryCount\n| sort @timestamp desc\n",
+                        "region": "us-east-1",
+                        "stacked": false,
+                        "title": "WebSocket signaling failures",
+                        "view": "table"
                     }
                 },
                 {

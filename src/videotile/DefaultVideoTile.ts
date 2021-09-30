@@ -267,6 +267,13 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     return ctx.getImageData(0, 0, canvas.width, canvas.height);
   }
 
+  setStreamId(id: number): void {
+    this.tileState.streamId = id;
+    // `streamId` is not likely used by builders but we can't
+    // be sure so send a tile state update just in case.
+    this.tileController.sendTileStateUpdate(this.state());
+  }
+
   private sendTileStateUpdate(): void {
     this.updateActiveState();
     this.updateVideoStreamOnVideoElement();

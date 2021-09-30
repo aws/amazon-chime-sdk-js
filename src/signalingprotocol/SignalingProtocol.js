@@ -34,6 +34,7 @@ $root.SdkSignalFrame = (function() {
      * @property {ISdkAudioStatusFrame|null} [audioStatus] SdkSignalFrame audioStatus
      * @property {ISdkClientMetricFrame|null} [clientMetric] SdkSignalFrame clientMetric
      * @property {ISdkDataMessageFrame|null} [dataMessage] SdkSignalFrame dataMessage
+     * @property {ISdkRemoteVideoUpdateFrame|null} [remoteVideoUpdate] SdkSignalFrame remoteVideoUpdate
      */
 
     /**
@@ -204,6 +205,14 @@ $root.SdkSignalFrame = (function() {
     SdkSignalFrame.prototype.dataMessage = null;
 
     /**
+     * SdkSignalFrame remoteVideoUpdate.
+     * @member {ISdkRemoteVideoUpdateFrame|null|undefined} remoteVideoUpdate
+     * @memberof SdkSignalFrame
+     * @instance
+     */
+    SdkSignalFrame.prototype.remoteVideoUpdate = null;
+
+    /**
      * Creates a new SdkSignalFrame instance using the specified properties.
      * @function create
      * @memberof SdkSignalFrame
@@ -263,6 +272,8 @@ $root.SdkSignalFrame = (function() {
             $root.SdkClientMetricFrame.encode(message.clientMetric, writer.uint32(/* id 22, wireType 2 =*/178).fork()).ldelim();
         if (message.dataMessage != null && message.hasOwnProperty("dataMessage"))
             $root.SdkDataMessageFrame.encode(message.dataMessage, writer.uint32(/* id 23, wireType 2 =*/186).fork()).ldelim();
+        if (message.remoteVideoUpdate != null && message.hasOwnProperty("remoteVideoUpdate"))
+            $root.SdkRemoteVideoUpdateFrame.encode(message.remoteVideoUpdate, writer.uint32(/* id 25, wireType 2 =*/202).fork()).ldelim();
         return writer;
     };
 
@@ -354,6 +365,9 @@ $root.SdkSignalFrame = (function() {
             case 23:
                 message.dataMessage = $root.SdkDataMessageFrame.decode(reader, reader.uint32());
                 break;
+            case 25:
+                message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.decode(reader, reader.uint32());
+                break;
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -415,6 +429,7 @@ $root.SdkSignalFrame = (function() {
         case 20:
         case 21:
         case 22:
+        case 24:
             break;
         }
         if (message.error != null && message.hasOwnProperty("error")) {
@@ -501,6 +516,11 @@ $root.SdkSignalFrame = (function() {
             var error = $root.SdkDataMessageFrame.verify(message.dataMessage);
             if (error)
                 return "dataMessage." + error;
+        }
+        if (message.remoteVideoUpdate != null && message.hasOwnProperty("remoteVideoUpdate")) {
+            var error = $root.SdkRemoteVideoUpdateFrame.verify(message.remoteVideoUpdate);
+            if (error)
+                return "remoteVideoUpdate." + error;
         }
         return null;
     };
@@ -595,6 +615,10 @@ $root.SdkSignalFrame = (function() {
         case 22:
             message.type = 22;
             break;
+        case "REMOTE_VIDEO_UPDATE":
+        case 24:
+            message.type = 24;
+            break;
         }
         if (object.error != null) {
             if (typeof object.error !== "object")
@@ -681,6 +705,11 @@ $root.SdkSignalFrame = (function() {
                 throw TypeError(".SdkSignalFrame.dataMessage: object expected");
             message.dataMessage = $root.SdkDataMessageFrame.fromObject(object.dataMessage);
         }
+        if (object.remoteVideoUpdate != null) {
+            if (typeof object.remoteVideoUpdate !== "object")
+                throw TypeError(".SdkSignalFrame.remoteVideoUpdate: object expected");
+            message.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.fromObject(object.remoteVideoUpdate);
+        }
         return message;
     };
 
@@ -721,6 +750,7 @@ $root.SdkSignalFrame = (function() {
             object.audioStatus = null;
             object.clientMetric = null;
             object.dataMessage = null;
+            object.remoteVideoUpdate = null;
         }
         if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
             if (typeof message.timestampMs === "number")
@@ -763,6 +793,8 @@ $root.SdkSignalFrame = (function() {
             object.clientMetric = $root.SdkClientMetricFrame.toObject(message.clientMetric, options);
         if (message.dataMessage != null && message.hasOwnProperty("dataMessage"))
             object.dataMessage = $root.SdkDataMessageFrame.toObject(message.dataMessage, options);
+        if (message.remoteVideoUpdate != null && message.hasOwnProperty("remoteVideoUpdate"))
+            object.remoteVideoUpdate = $root.SdkRemoteVideoUpdateFrame.toObject(message.remoteVideoUpdate, options);
         return object;
     };
 
@@ -798,6 +830,7 @@ $root.SdkSignalFrame = (function() {
      * @property {number} AUDIO_STATUS=20 AUDIO_STATUS value
      * @property {number} CLIENT_METRIC=21 CLIENT_METRIC value
      * @property {number} DATA_MESSAGE=22 DATA_MESSAGE value
+     * @property {number} REMOTE_VIDEO_UPDATE=24 REMOTE_VIDEO_UPDATE value
      */
     SdkSignalFrame.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -818,6 +851,7 @@ $root.SdkSignalFrame = (function() {
         values[valuesById[20] = "AUDIO_STATUS"] = 20;
         values[valuesById[21] = "CLIENT_METRIC"] = 21;
         values[valuesById[22] = "DATA_MESSAGE"] = 22;
+        values[valuesById[24] = "REMOTE_VIDEO_UPDATE"] = 24;
         return values;
     })();
 
@@ -8243,7 +8277,7 @@ $root.SdkTranscriptItem = (function() {
      * @memberof SdkTranscriptItem
      * @instance
      */
-    SdkTranscriptItem.prototype.type = 0;
+    SdkTranscriptItem.prototype.type = 1;
 
     /**
      * SdkTranscriptItem vocabularyFilterMatch.
@@ -8400,7 +8434,6 @@ $root.SdkTranscriptItem = (function() {
             switch (message.type) {
             default:
                 return "type: enum value expected";
-            case 0:
             case 1:
             case 2:
                 break;
@@ -8448,10 +8481,6 @@ $root.SdkTranscriptItem = (function() {
             else if (typeof object.startTime === "object")
                 message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
         switch (object.type) {
-        case "UNKNOWN":
-        case 0:
-            message.type = 0;
-            break;
         case "PRONUNCIATION":
         case 1:
             message.type = 1;
@@ -8493,7 +8522,7 @@ $root.SdkTranscriptItem = (function() {
                 object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
             } else
                 object.startTime = options.longs === String ? "0" : 0;
-            object.type = options.enums === String ? "UNKNOWN" : 0;
+            object.type = options.enums === String ? "PRONUNCIATION" : 1;
             object.vocabularyFilterMatch = false;
         }
         if (message.content != null && message.hasOwnProperty("content"))
@@ -8534,13 +8563,11 @@ $root.SdkTranscriptItem = (function() {
      * Type enum.
      * @name SdkTranscriptItem.Type
      * @enum {string}
-     * @property {number} UNKNOWN=0 UNKNOWN value
      * @property {number} PRONUNCIATION=1 PRONUNCIATION value
      * @property {number} PUNCTUATION=2 PUNCTUATION value
      */
     SdkTranscriptItem.Type = (function() {
         var valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "UNKNOWN"] = 0;
         values[valuesById[1] = "PRONUNCIATION"] = 1;
         values[valuesById[2] = "PUNCTUATION"] = 2;
         return values;
@@ -10125,6 +10152,485 @@ $root.SdkTranscriptFrame = (function() {
     };
 
     return SdkTranscriptFrame;
+})();
+
+$root.SdkRemoteVideoUpdateFrame = (function() {
+
+    /**
+     * Properties of a SdkRemoteVideoUpdateFrame.
+     * @exports ISdkRemoteVideoUpdateFrame
+     * @interface ISdkRemoteVideoUpdateFrame
+     * @property {Array.<ISdkVideoSubscriptionConfiguration>|null} [addedOrUpdatedVideoSubscriptions] SdkRemoteVideoUpdateFrame addedOrUpdatedVideoSubscriptions
+     * @property {Array.<string>|null} [removedVideoSubscriptionMids] SdkRemoteVideoUpdateFrame removedVideoSubscriptionMids
+     */
+
+    /**
+     * Constructs a new SdkRemoteVideoUpdateFrame.
+     * @exports SdkRemoteVideoUpdateFrame
+     * @classdesc Represents a SdkRemoteVideoUpdateFrame.
+     * @implements ISdkRemoteVideoUpdateFrame
+     * @constructor
+     * @param {ISdkRemoteVideoUpdateFrame=} [properties] Properties to set
+     */
+    function SdkRemoteVideoUpdateFrame(properties) {
+        this.addedOrUpdatedVideoSubscriptions = [];
+        this.removedVideoSubscriptionMids = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkRemoteVideoUpdateFrame addedOrUpdatedVideoSubscriptions.
+     * @member {Array.<ISdkVideoSubscriptionConfiguration>} addedOrUpdatedVideoSubscriptions
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @instance
+     */
+    SdkRemoteVideoUpdateFrame.prototype.addedOrUpdatedVideoSubscriptions = $util.emptyArray;
+
+    /**
+     * SdkRemoteVideoUpdateFrame removedVideoSubscriptionMids.
+     * @member {Array.<string>} removedVideoSubscriptionMids
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @instance
+     */
+    SdkRemoteVideoUpdateFrame.prototype.removedVideoSubscriptionMids = $util.emptyArray;
+
+    /**
+     * Creates a new SdkRemoteVideoUpdateFrame instance using the specified properties.
+     * @function create
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {ISdkRemoteVideoUpdateFrame=} [properties] Properties to set
+     * @returns {SdkRemoteVideoUpdateFrame} SdkRemoteVideoUpdateFrame instance
+     */
+    SdkRemoteVideoUpdateFrame.create = function create(properties) {
+        return new SdkRemoteVideoUpdateFrame(properties);
+    };
+
+    /**
+     * Encodes the specified SdkRemoteVideoUpdateFrame message. Does not implicitly {@link SdkRemoteVideoUpdateFrame.verify|verify} messages.
+     * @function encode
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {ISdkRemoteVideoUpdateFrame} message SdkRemoteVideoUpdateFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkRemoteVideoUpdateFrame.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.addedOrUpdatedVideoSubscriptions != null && message.addedOrUpdatedVideoSubscriptions.length)
+            for (var i = 0; i < message.addedOrUpdatedVideoSubscriptions.length; ++i)
+                $root.SdkVideoSubscriptionConfiguration.encode(message.addedOrUpdatedVideoSubscriptions[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.removedVideoSubscriptionMids != null && message.removedVideoSubscriptionMids.length)
+            for (var i = 0; i < message.removedVideoSubscriptionMids.length; ++i)
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.removedVideoSubscriptionMids[i]);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkRemoteVideoUpdateFrame message, length delimited. Does not implicitly {@link SdkRemoteVideoUpdateFrame.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {ISdkRemoteVideoUpdateFrame} message SdkRemoteVideoUpdateFrame message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkRemoteVideoUpdateFrame.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkRemoteVideoUpdateFrame message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkRemoteVideoUpdateFrame} SdkRemoteVideoUpdateFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkRemoteVideoUpdateFrame.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkRemoteVideoUpdateFrame();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                if (!(message.addedOrUpdatedVideoSubscriptions && message.addedOrUpdatedVideoSubscriptions.length))
+                    message.addedOrUpdatedVideoSubscriptions = [];
+                message.addedOrUpdatedVideoSubscriptions.push($root.SdkVideoSubscriptionConfiguration.decode(reader, reader.uint32()));
+                break;
+            case 2:
+                if (!(message.removedVideoSubscriptionMids && message.removedVideoSubscriptionMids.length))
+                    message.removedVideoSubscriptionMids = [];
+                message.removedVideoSubscriptionMids.push(reader.string());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkRemoteVideoUpdateFrame message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkRemoteVideoUpdateFrame} SdkRemoteVideoUpdateFrame
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkRemoteVideoUpdateFrame.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkRemoteVideoUpdateFrame message.
+     * @function verify
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkRemoteVideoUpdateFrame.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.addedOrUpdatedVideoSubscriptions != null && message.hasOwnProperty("addedOrUpdatedVideoSubscriptions")) {
+            if (!Array.isArray(message.addedOrUpdatedVideoSubscriptions))
+                return "addedOrUpdatedVideoSubscriptions: array expected";
+            for (var i = 0; i < message.addedOrUpdatedVideoSubscriptions.length; ++i) {
+                var error = $root.SdkVideoSubscriptionConfiguration.verify(message.addedOrUpdatedVideoSubscriptions[i]);
+                if (error)
+                    return "addedOrUpdatedVideoSubscriptions." + error;
+            }
+        }
+        if (message.removedVideoSubscriptionMids != null && message.hasOwnProperty("removedVideoSubscriptionMids")) {
+            if (!Array.isArray(message.removedVideoSubscriptionMids))
+                return "removedVideoSubscriptionMids: array expected";
+            for (var i = 0; i < message.removedVideoSubscriptionMids.length; ++i)
+                if (!$util.isString(message.removedVideoSubscriptionMids[i]))
+                    return "removedVideoSubscriptionMids: string[] expected";
+        }
+        return null;
+    };
+
+    /**
+     * Creates a SdkRemoteVideoUpdateFrame message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkRemoteVideoUpdateFrame} SdkRemoteVideoUpdateFrame
+     */
+    SdkRemoteVideoUpdateFrame.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkRemoteVideoUpdateFrame)
+            return object;
+        var message = new $root.SdkRemoteVideoUpdateFrame();
+        if (object.addedOrUpdatedVideoSubscriptions) {
+            if (!Array.isArray(object.addedOrUpdatedVideoSubscriptions))
+                throw TypeError(".SdkRemoteVideoUpdateFrame.addedOrUpdatedVideoSubscriptions: array expected");
+            message.addedOrUpdatedVideoSubscriptions = [];
+            for (var i = 0; i < object.addedOrUpdatedVideoSubscriptions.length; ++i) {
+                if (typeof object.addedOrUpdatedVideoSubscriptions[i] !== "object")
+                    throw TypeError(".SdkRemoteVideoUpdateFrame.addedOrUpdatedVideoSubscriptions: object expected");
+                message.addedOrUpdatedVideoSubscriptions[i] = $root.SdkVideoSubscriptionConfiguration.fromObject(object.addedOrUpdatedVideoSubscriptions[i]);
+            }
+        }
+        if (object.removedVideoSubscriptionMids) {
+            if (!Array.isArray(object.removedVideoSubscriptionMids))
+                throw TypeError(".SdkRemoteVideoUpdateFrame.removedVideoSubscriptionMids: array expected");
+            message.removedVideoSubscriptionMids = [];
+            for (var i = 0; i < object.removedVideoSubscriptionMids.length; ++i)
+                message.removedVideoSubscriptionMids[i] = String(object.removedVideoSubscriptionMids[i]);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkRemoteVideoUpdateFrame message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @static
+     * @param {SdkRemoteVideoUpdateFrame} message SdkRemoteVideoUpdateFrame
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkRemoteVideoUpdateFrame.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults) {
+            object.addedOrUpdatedVideoSubscriptions = [];
+            object.removedVideoSubscriptionMids = [];
+        }
+        if (message.addedOrUpdatedVideoSubscriptions && message.addedOrUpdatedVideoSubscriptions.length) {
+            object.addedOrUpdatedVideoSubscriptions = [];
+            for (var j = 0; j < message.addedOrUpdatedVideoSubscriptions.length; ++j)
+                object.addedOrUpdatedVideoSubscriptions[j] = $root.SdkVideoSubscriptionConfiguration.toObject(message.addedOrUpdatedVideoSubscriptions[j], options);
+        }
+        if (message.removedVideoSubscriptionMids && message.removedVideoSubscriptionMids.length) {
+            object.removedVideoSubscriptionMids = [];
+            for (var j = 0; j < message.removedVideoSubscriptionMids.length; ++j)
+                object.removedVideoSubscriptionMids[j] = message.removedVideoSubscriptionMids[j];
+        }
+        return object;
+    };
+
+    /**
+     * Converts this SdkRemoteVideoUpdateFrame to JSON.
+     * @function toJSON
+     * @memberof SdkRemoteVideoUpdateFrame
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkRemoteVideoUpdateFrame.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkRemoteVideoUpdateFrame;
+})();
+
+$root.SdkVideoSubscriptionConfiguration = (function() {
+
+    /**
+     * Properties of a SdkVideoSubscriptionConfiguration.
+     * @exports ISdkVideoSubscriptionConfiguration
+     * @interface ISdkVideoSubscriptionConfiguration
+     * @property {string} mid SdkVideoSubscriptionConfiguration mid
+     * @property {string|null} [attendeeId] SdkVideoSubscriptionConfiguration attendeeId
+     * @property {number|null} [streamId] SdkVideoSubscriptionConfiguration streamId
+     */
+
+    /**
+     * Constructs a new SdkVideoSubscriptionConfiguration.
+     * @exports SdkVideoSubscriptionConfiguration
+     * @classdesc Represents a SdkVideoSubscriptionConfiguration.
+     * @implements ISdkVideoSubscriptionConfiguration
+     * @constructor
+     * @param {ISdkVideoSubscriptionConfiguration=} [properties] Properties to set
+     */
+    function SdkVideoSubscriptionConfiguration(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkVideoSubscriptionConfiguration mid.
+     * @member {string} mid
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.mid = "";
+
+    /**
+     * SdkVideoSubscriptionConfiguration attendeeId.
+     * @member {string} attendeeId
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.attendeeId = "";
+
+    /**
+     * SdkVideoSubscriptionConfiguration streamId.
+     * @member {number} streamId
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     */
+    SdkVideoSubscriptionConfiguration.prototype.streamId = 0;
+
+    /**
+     * Creates a new SdkVideoSubscriptionConfiguration instance using the specified properties.
+     * @function create
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {ISdkVideoSubscriptionConfiguration=} [properties] Properties to set
+     * @returns {SdkVideoSubscriptionConfiguration} SdkVideoSubscriptionConfiguration instance
+     */
+    SdkVideoSubscriptionConfiguration.create = function create(properties) {
+        return new SdkVideoSubscriptionConfiguration(properties);
+    };
+
+    /**
+     * Encodes the specified SdkVideoSubscriptionConfiguration message. Does not implicitly {@link SdkVideoSubscriptionConfiguration.verify|verify} messages.
+     * @function encode
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {ISdkVideoSubscriptionConfiguration} message SdkVideoSubscriptionConfiguration message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkVideoSubscriptionConfiguration.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        writer.uint32(/* id 1, wireType 2 =*/10).string(message.mid);
+        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.attendeeId);
+        if (message.streamId != null && message.hasOwnProperty("streamId"))
+            writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.streamId);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkVideoSubscriptionConfiguration message, length delimited. Does not implicitly {@link SdkVideoSubscriptionConfiguration.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {ISdkVideoSubscriptionConfiguration} message SdkVideoSubscriptionConfiguration message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkVideoSubscriptionConfiguration.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkVideoSubscriptionConfiguration message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkVideoSubscriptionConfiguration} SdkVideoSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkVideoSubscriptionConfiguration.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkVideoSubscriptionConfiguration();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.mid = reader.string();
+                break;
+            case 2:
+                message.attendeeId = reader.string();
+                break;
+            case 3:
+                message.streamId = reader.uint32();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        if (!message.hasOwnProperty("mid"))
+            throw $util.ProtocolError("missing required 'mid'", { instance: message });
+        return message;
+    };
+
+    /**
+     * Decodes a SdkVideoSubscriptionConfiguration message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkVideoSubscriptionConfiguration} SdkVideoSubscriptionConfiguration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkVideoSubscriptionConfiguration.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkVideoSubscriptionConfiguration message.
+     * @function verify
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkVideoSubscriptionConfiguration.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (!$util.isString(message.mid))
+            return "mid: string expected";
+        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+            if (!$util.isString(message.attendeeId))
+                return "attendeeId: string expected";
+        if (message.streamId != null && message.hasOwnProperty("streamId"))
+            if (!$util.isInteger(message.streamId))
+                return "streamId: integer expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkVideoSubscriptionConfiguration message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkVideoSubscriptionConfiguration} SdkVideoSubscriptionConfiguration
+     */
+    SdkVideoSubscriptionConfiguration.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkVideoSubscriptionConfiguration)
+            return object;
+        var message = new $root.SdkVideoSubscriptionConfiguration();
+        if (object.mid != null)
+            message.mid = String(object.mid);
+        if (object.attendeeId != null)
+            message.attendeeId = String(object.attendeeId);
+        if (object.streamId != null)
+            message.streamId = object.streamId >>> 0;
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkVideoSubscriptionConfiguration message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @static
+     * @param {SdkVideoSubscriptionConfiguration} message SdkVideoSubscriptionConfiguration
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkVideoSubscriptionConfiguration.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.mid = "";
+            object.attendeeId = "";
+            object.streamId = 0;
+        }
+        if (message.mid != null && message.hasOwnProperty("mid"))
+            object.mid = message.mid;
+        if (message.attendeeId != null && message.hasOwnProperty("attendeeId"))
+            object.attendeeId = message.attendeeId;
+        if (message.streamId != null && message.hasOwnProperty("streamId"))
+            object.streamId = message.streamId;
+        return object;
+    };
+
+    /**
+     * Converts this SdkVideoSubscriptionConfiguration to JSON.
+     * @function toJSON
+     * @memberof SdkVideoSubscriptionConfiguration
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkVideoSubscriptionConfiguration.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkVideoSubscriptionConfiguration;
 })();
 
 module.exports = $root;

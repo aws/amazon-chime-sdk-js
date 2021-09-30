@@ -10,6 +10,7 @@ import {
 import SignalingClientConnectionRequest from './SignalingClientConnectionRequest';
 import SignalingClientJoin from './SignalingClientJoin';
 import SignalingClientSubscribe from './SignalingClientSubscribe';
+import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVideoSubscriptionConfiguration';
 
 /**
  * [[SignalingClient]] is the top-level interface for opening a signaling connection over WebSocket.
@@ -63,6 +64,22 @@ export default interface SignalingClient {
    * @param settings How to configure the Subscribe frame.
    */
   subscribe(settings: SignalingClientSubscribe): void;
+
+  /**
+   * Sends a remote video update frame with the given configurations and removed streams.  These can be
+   * sent in parallel to `subscribe` without issue, but note that `subscribe` will overwrite any configuration
+   * set here.
+   *
+   * Note that the `addedOrUpdated` is basically a flattened map with `SignalingClientVideoSubscriptionConfiguration.mid`
+   * being the key, which is why we only need to pass the mid when removing.
+   *
+   * @param addedOrUpdated Added or updated configurations, see note above.
+   * @param removedMids List of MIDs to remove
+   */
+  remoteVideoUpdate?(
+    addedOrUpdated: SignalingClientVideoSubscriptionConfiguration[],
+    removedMids: string[]
+  ): void;
 
   /**
    * Sends a leave frame.

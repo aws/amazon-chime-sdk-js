@@ -13,6 +13,7 @@ function findAllElements() {
     attendeeNameInput: By.id('inputName'),
     authenticateButton: By.id('authenticate'),
     localVideoButton: By.id('button-camera'),
+    mediaCaptureButton: By.id('button-record-cloud'),
     addVoiceFocusInput: By.id('add-voice-focus'),        // Checkbox.
     joinButton: By.id('joinButton'),
     meetingEndButtom: By.id('button-meeting-end'),
@@ -102,6 +103,10 @@ class AppPage {
     await attendeeNameInputBox.sendKeys(attendeeName);
   }
 
+  async selectRegion(region) {
+    await this.driver.findElement(By.css(`option[value=${region}]`)).click();
+  }
+
   async authenticate() {
     let authenticateButton = await this.driver.findElement(elements.authenticateButton);
     await authenticateButton.click();
@@ -181,6 +186,11 @@ class AppPage {
   async clickCameraButton() {
     let localVideoButton = await this.driver.findElement(elements.localVideoButton);
     await localVideoButton.click();
+  }
+
+  async clickMediaCaptureButton() {
+    let mediaCaptureButton = await this.driver.findElement(elements.mediaCaptureButton);
+    await mediaCaptureButton.click();
   }
 
   async clickMicrophoneButton() {
@@ -559,8 +569,10 @@ class AppPage {
   }
 
   async videoCheckByAttendeeName(stepInfo, attendeeName, expectedState = 'video') {
+    const startTime = Date.now();
     let checked;
     let videos = await this.driver.findElements(By.css('video[id^="video-"]'));
+    console.log(`Looping through ${videos && videos.length} videos`);
     for (let i = 0; i < videos.length; i++) {
       const videoElementId = await videos[i].getAttribute('id');
       const seperatorIndex = videoElementId.lastIndexOf("-");
@@ -569,20 +581,25 @@ class AppPage {
         if (tileIndex != NaN && tileIndex >= 0) {
           const nameplate = await this.driver.findElement(By.id(`nameplate-${tileIndex}`));
           const nameplateText = await nameplate.getText();
+          console.log(`nameplate: ${nameplateText}`);
           if (nameplate && nameplateText === attendeeName) {
             let numRetries = 10;
             let retry = 0;
+            console.log(`Start verifying video display by video element ID:${videoElementId}, attendeeName=${attendeeName}, tileIndex=${tileIndex}`);
             let checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
             while ((checked.result !== expectedState) && retry < numRetries) {
+              console.log(`video check not yet complete, retrying again, retry count: ${retry}`);
               checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
               retry++;
               await TestUtils.waitAround(1000);
             }
+            console.log(`videoCheckByAttendeeName completed in: ${Date.now()-startTime}ms`);
             return checked.result;
           }
         }
       }
     }
+    console.log(`videoCheckByAttendeeName completed in: ${Date.now()-startTime}ms`);
     return 'blank';
   }
 

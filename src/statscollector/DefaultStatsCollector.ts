@@ -247,7 +247,10 @@ export default class DefaultStatsCollector implements StatsCollector {
     for (const rawMetricReport of rawMetricReports) {
       const isStream = this.isStreamRawMetricReport(rawMetricReport.type);
       if (isStream) {
-        if (!this.clientMetricReport.streamMetricReports[Number(rawMetricReport.ssrc)]) {
+        const existingStreamMetricReport = this.clientMetricReport.streamMetricReports[
+          Number(rawMetricReport.ssrc)
+        ];
+        if (!existingStreamMetricReport) {
           const streamMetricReport = new StreamMetricReport();
           streamMetricReport.mediaType = this.getMediaType(rawMetricReport);
           streamMetricReport.direction = this.getDirectionType(rawMetricReport);
@@ -259,6 +262,12 @@ export default class DefaultStatsCollector implements StatsCollector {
           this.clientMetricReport.streamMetricReports[
             Number(rawMetricReport.ssrc)
           ] = streamMetricReport;
+        } else {
+          // Update stream ID in case we have overriden it locally in the case of remote video
+          // updates completed without a negotiation
+          existingStreamMetricReport.streamId = this.videoStreamIndex.streamIdForSSRC(
+            Number(rawMetricReport.ssrc)
+          );
         }
         this.clientMetricReport.currentSsrcs[Number(rawMetricReport.ssrc)] = 1;
       }

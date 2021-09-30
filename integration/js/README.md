@@ -9,6 +9,7 @@ To run integration tests you will need:
 - Node 10 or higher. Node 14 is supported.
 - npm 6.11 or higher. 6.14.8 is supported.
 - [KITE](https://github.com/webrtc/KITE).
+- Java runtime installed on the machine.
 
 ### Installing KITE on macOS
 
@@ -34,6 +35,10 @@ chmod +x configureMac.sh
 ```
 
 Choose 'y'.
+
+Note: If the `./configureMac.sh` script fails then make sure you are using Maven 3.6.3 or earlier. The KITE version in use does not work with the latest version of maven.
+For example, you can install maven 3.5 by calling `brew install maven@3.5`. If the issue persists, make sure the symlink is pointing to the right version of maven. Use `mvn -v` to check your maven version.
+If you have multiple installations of maven in homebrew then use `brew unlink maven` to unlink the latest version of maven and use `brew link maven@3.5` to use an older version.
 
 Now find the Terminal window that opened and complete interactive setup. A good configuration is:
 

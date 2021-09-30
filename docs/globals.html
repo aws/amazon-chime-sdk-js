@@ -257,6 +257,7 @@
 								<li class="tsd-kind-class"><a href="classes/signalingclientevent.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Event</a></li>
 								<li class="tsd-kind-class"><a href="classes/signalingclientjoin.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Join</a></li>
 								<li class="tsd-kind-class"><a href="classes/signalingclientsubscribe.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Subscribe</a></li>
+								<li class="tsd-kind-class"><a href="classes/signalingclientvideosubscriptionconfiguration.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Video<wbr>Subscription<wbr>Configuration</a></li>
 								<li class="tsd-kind-class"><a href="classes/simulcasttransceivercontroller.html" class="tsd-kind-icon">Simulcast<wbr>Transceiver<wbr>Controller</a></li>
 								<li class="tsd-kind-class"><a href="classes/simulcastvideostreamindex.html" class="tsd-kind-icon">Simulcast<wbr>Video<wbr>Stream<wbr>Index</a></li>
 								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/singlenodeaudiotransformdevice.html" class="tsd-kind-icon">Single<wbr>Node<wbr>Audio<wbr>Transform<wbr>Device</a></li>
@@ -542,7 +543,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="eventname" class="tsd-anchor"></a>
 					<h3>Event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">Event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"meetingStartRequested"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartSucceeded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingEnded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"attendeePresenceReceived"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputFailed"</span></div>
+					<div class="tsd-signature tsd-kind-icon">Event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"meetingStartRequested"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartSucceeded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingReconnected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingEnded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"attendeePresenceReceived"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"signalingDropped"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"receivingAudioDropped"</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/eventcontroller/EventName.ts#L4">src/eventcontroller/EventName.ts:4</a></li>
@@ -589,7 +590,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="meetinghistorystate" class="tsd-anchor"></a>
 					<h3>Meeting<wbr>History<wbr>State</h3>
-					<div class="tsd-signature tsd-kind-icon">Meeting<wbr>History<wbr>State<span class="tsd-signature-symbol">:</span> <a href="globals.html#eventname" class="tsd-signature-type">EventName</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingReconnected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"signalingDropped"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"receivingAudioDropped"</span></div>
+					<div class="tsd-signature tsd-kind-icon">Meeting<wbr>History<wbr>State<span class="tsd-signature-symbol">:</span> <a href="globals.html#eventname" class="tsd-signature-type">EventName</a></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/eventcontroller/MeetingHistoryState.ts#L10">src/eventcontroller/MeetingHistoryState.ts:10</a></li>
@@ -1005,7 +1006,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1920">src/devicecontroller/DefaultDeviceController.ts:1920</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1919">src/devicecontroller/DefaultDeviceController.ts:1919</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1687,6 +1688,9 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/signalingclientsubscribe.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Subscribe</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/signalingclientvideosubscriptionconfiguration.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Video<wbr>Subscription<wbr>Configuration</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/simulcasttransceivercontroller.html" class="tsd-kind-icon">Simulcast<wbr>Transceiver<wbr>Controller</a>

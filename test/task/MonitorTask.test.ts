@@ -20,6 +20,7 @@ import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport'
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import ConnectionMonitor from '../../src/connectionmonitor/ConnectionMonitor';
+import AudioVideoEventAttributes from '../../src/eventcontroller/AudioVideoEventAttributes';
 import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
 import EventName from '../../src/eventcontroller/EventName';
@@ -48,6 +49,7 @@ import VideoLogEvent from '../../src/statscollector/VideoLogEvent';
 import MonitorTask from '../../src/task/MonitorTask';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
+import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStreamIndex';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
@@ -694,12 +696,15 @@ describe('MonitorTask', () => {
     });
 
     it('notifies the connection is poor', done => {
-      const spy = sinon.spy(context.eventController, 'pushMeetingState');
+      const spy = sinon.spy(context.eventController, 'publishEvent');
 
       class TestObserver implements AudioVideoObserver {
         connectionDidBecomePoor(): void {
           expect(context.poorConnectionCount).to.eq(1);
-          expect(spy.calledWith('receivingAudioDropped')).to.be.true;
+          const args = spy.getCalls()[0].args;
+          const additionalArgs = <AudioVideoEventAttributes>args[1];
+          assert.equal(args[0], 'receivingAudioDropped');
+          assert.equal(additionalArgs.poorConnectionCount, 1);
           done();
         }
       }
@@ -893,7 +898,7 @@ describe('MonitorTask', () => {
           done();
         }
       }
-      context.videoSubscriptions = [streamIdTestValue];
+      context.videosToReceive = new DefaultVideoStreamIdSet([streamIdTestValue]);
       context.videoStreamIndex = new DefaultVideoStreamIndex(logger);
       context.audioVideoController.addObserver(new TestObserver());
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
@@ -956,6 +961,45 @@ describe('MonitorTask', () => {
         )
       );
       expect(spy.called).to.be.false;
+    });
+
+    it('publish event for Signalling Dropped when Web Socket Failed', () => {
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketFailed,
+          null
+        )
+      );
+      expect(spy.calledWith('signalingDropped')).to.be.true;
+    });
+
+    it('publish event for Signalling Dropped when Web Socket Error', () => {
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      task.handleSignalingClientEvent(
+        new SignalingClientEvent(
+          new DefaultSignalingClient(webSocketAdapter, logger),
+          SignalingClientEventType.WebSocketError,
+          null
+        )
+      );
+      expect(spy.calledWith('signalingDropped')).to.be.true;
+    });
+
+    it('publish event for Signalling Dropped when Web Socket Closed', () => {
+      const spy = sinon.spy(context.eventController, 'publishEvent');
+      const webSocketAdapter = new DefaultWebSocketAdapter(logger);
+      const currentEvent = new SignalingClientEvent(
+        new DefaultSignalingClient(webSocketAdapter, logger),
+        SignalingClientEventType.WebSocketError,
+        null
+      );
+      currentEvent.closeCode = 4410;
+      task.handleSignalingClientEvent(currentEvent);
+      expect(spy.calledWith('signalingDropped')).to.be.true;
     });
 
     it('does not handle the non-OK status code', () => {

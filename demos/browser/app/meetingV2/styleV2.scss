@@ -428,24 +428,17 @@ svg {
     height: auto !important;
   }
 
-  #tile-area > div.video-tile {
+  #tile-area > video-tile {
     width: 50% !important;
     padding-bottom: 33% !important;
   }
 
-  #tile-area > div.content-share-tile {
-    order: -1;
-    width: 100% !important;
-    padding-bottom: 66% !important;
-    margin-bottom: 2rem;
-  }
-
-  #tile-area > div > video {
+  #tile-area > video-tile > video {
     object-fit: cover;
   }
 
-  #tile-area > div > div,
-  #tile-area > div > button {
+  #tile-area > video-tile > div,
+  #tile-area > video-tile > button {
     display: none !important;
   }
 
@@ -881,34 +874,15 @@ a.markdown:active {
   letter-spacing: 0.1em;
 }
 
-.video-tile-pause {
+.button-video-tile-config {
   position: absolute;
   display: inline-block;
-  bottom: 10px;
+  top: 10px;
   right: 10px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  color: #fff;
-  text-shadow: 0px 0px 5px black;
-  letter-spacing: 0.1em;
-  outline: none;
-  background: none;
 }
 
-.video-tile-pin {
-  position: absolute;
-  display: inline-block;
-  bottom: 10px;
-  right: 100px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  color: #fff;
-  text-shadow: 0px 0px 5px black;
-  letter-spacing: 0.1em;
-  outline: none;
-  background: none;
+.video-tile-config-toggle {
+  padding: 0.5rem;
 }
 
 .stats-info {
@@ -931,18 +905,18 @@ a.markdown:active {
   }
 }
 
-#tile-area video[id^='video-']:hover + .stats-info {
+#tile-area .video-tile.active:hover > .stats-info {
   display: block;
 }
 
-.video-tile-attendeeid {
+.video-tile-attendee-id {
   display: none;
   position: absolute;
   color: $white;
   padding: 1rem;
 }
 
-.video-tile.active:hover .video-tile-attendeeid {
+.video-tile.active:hover > .video-tile-attendee-id {
   display: block;
 }
 
