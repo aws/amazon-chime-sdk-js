@@ -101,10 +101,16 @@
 					<ul>
 						<li><em><em>attendeeId:</em></em>  The attendee ID this video tile belongs to. Note that screen share video will have a suffix of #content</li>
 						<li><em><em>priority:</em></em> Provides relative priority of this attendee from 1 to x, where 1 is the highest priority. Remote videos are allowed to have the same priority signifying equal priority between them.</li>
-						<li><em><em>targetSize:</em></em> Optional parameter to control maximum simulcast layer to receive. Default value is High.</li>
+						<li><em><em>targetSize:</em></em> Optional parameter to control maximum simulcast layer to receive.</li>
 					</ul>
-					<p><strong>Configuring the receipt and priority of remote video sources</strong>
-					The main API being used is:</p>
+					<p>The default preference set the same priority 1 for all attendees. The target size will be:</p>
+					<ul>
+						<li>High if there are 1-4 videos.</li>
+						<li>Medium if there are 5-8 videos.</li>
+						<li>Low otherwise.</li>
+					</ul>
+					<p><strong>Configuring the receipt and priority of remote video sources</strong></p>
+					<p>The main API being used is:</p>
 					<pre><code><span class="hljs-function"><span class="hljs-title">chooseRemoteVideoSources</span><span class="hljs-params">(sources: VideoPreference[])</span></span>: void
 </code></pre>
 					<p>An array of <code>VideoPreference</code> is passed in to specify preference for each remote video.
