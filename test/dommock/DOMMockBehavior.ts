@@ -81,6 +81,7 @@ export default class DOMMockBehavior {
   isUnifiedPlanSupported: boolean = true;
 
   videoElementStartPlayDelay = 25;
+  videoElementShouldFail = false;
   videoElementSetWidthHeightAttributeDelay = 100;
   beaconQueuedSuccess: boolean = true;
   documentVisibilityState = 'visible';
