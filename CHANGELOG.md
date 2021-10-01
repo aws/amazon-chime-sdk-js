@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow passing in custom video simulcast uplink policy that implements the `SimulcastUplinkPolicy` interface.
 - Change the default video downlink policy to `VideoAdaptiveProbePolicy` to match with documentation.
 - Move configuration default from meeting session configuration to audio video controller.
+- Update the default priority-based video downlink policy to adjust target size based on number of videos in the 
+  meeting.
   
 ## [2.18.0] - 2021-09-22
 
