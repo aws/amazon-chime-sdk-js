@@ -18,8 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add safeguard in `ReceivedVideoInputTask` to prevent crashing when video input stream does not contain any video track.
 - Add missing `captureOutputPrefix` param for SDK demo app in release script.
 - Amazon Voice Focus now works in Chrome 95 or later: WebAssembly policy changes required a change in how modules were loaded.
-- Add opt-in region `eu-south-1` to meetings demo in deploy-canary-demo script to support media capture canary
-- Fix bug: DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22
+- Add opt-in region `eu-south-1` to meetings demo in deploy-canary-demo script to support media capture canary.
+- Fix bug: DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22.
+- Fix `removeObserver` function in `DefaultVideoTransformDevice`.
 
 ### Changed
 - Allow passing in custom video simulcast uplink policy that implements the `SimulcastUplinkPolicy` interface.
