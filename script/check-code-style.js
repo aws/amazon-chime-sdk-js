@@ -140,37 +140,6 @@ components().forEach(component => {
     return;
   }
 
-  if (component === 'voicefocus') {
-    // This rule does not make sense for Voice Focus.
-    return;
-  }
-
-  let hasMatchingInterface = false;
-  const componentDir = path.join('src', component);
-  walk(componentDir).forEach(file => {
-    if (
-      path.basename(file, '.ts').toLowerCase() === path.basename(componentDir) ||
-      path.basename(file, 'ComponentFactory.ts').toLowerCase() === path.basename(componentDir) ||
-      path.basename(file, '.d.ts').toLowerCase() === path.basename(componentDir)
-    ) {
-      hasMatchingInterface = true;
-    }
-  });
-
-  if (!hasMatchingInterface) {
-    failed(
-      componentDir,
-      'component does not have matching interface',
-      'Ensure that each component directory has an interface of the same name. \nFor example, src/foobar will have an interface src/foobar/FooBar.ts.'
-    );
-  }
-});
-
-components().forEach(component => {
-  if (isIgnored(component)) {
-    return;
-  }
-
   const componentDir = path.join('src', component);
   fs.readdirSync(componentDir).forEach(file => {
     let filePath = path.join(componentDir, file);
