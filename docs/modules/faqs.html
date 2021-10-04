@@ -118,6 +118,14 @@
 					<p>You can find the complete list of browsers in this link: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">Supported Browsers</a>. <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API">WebRTC</a> support in a browser is a prerequisite for Amazon Chime SDK to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.</p>
 					<p>The SDK is built to target ES2015, both syntax and features. If you need your built application bundle to target legacy browsers that do not support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code using a transpiler like Babel, split your application bundle into multiple files that can be built with different targets and conditionally loaded, or generate multiple versions of your application to target specific browsers.</p>
 					<p>Note that due to limitations in transpilers, requirements of the web platform might result in transpiled ES5 code that raises an error when run, such as &quot;Please use the &#39;new&#39; operator, this DOM object constructor cannot be called as a function&quot;. Prefer using ES2015 code on supported platforms.</p>
+					<a href="#known-browser-issues" id="browser-support" style="color: inherit; text-decoration: none;">
+						<h2>Known Browser Issues</h2>
+					</a>
+					<p>Please refer <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059/">https://github.com/aws/amazon-chime-sdk-js/issues/1059/</a> for all the known Browser Issues.
+					<a href="#i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" id="i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>In Safari Browser Audio stops playing as browser is minimized or move to background, is this a known issue?</h3>
+					</a>
+					<p>In <a href="https://bugs.webkit.org/show_bug.cgi?id=231105">Safari</a> macOS Browser, Audio stops playing in background if audio source is binded to AudioContext API. To remediate this Issue please disable the WebAudio.</p>
 					<a href="#i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" id="i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I am unable to select an audio output device in some browsers, is this a known issue?</h3>
 					</a>
