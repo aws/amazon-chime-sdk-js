@@ -53,6 +53,12 @@ The SDK is built to target ES2015, both syntax and features. If you need your bu
 
 Note that due to limitations in transpilers, requirements of the web platform might result in transpiled ES5 code that raises an error when run, such as "Please use the 'new' operator, this DOM object constructor cannot be called as a function". Prefer using ES2015 code on supported platforms.
 
+## Known Browser Issues
+Please refer https://github.com/aws/amazon-chime-sdk-js/issues/1059/ for all the known Browser Issues.
+
+### In Safari Audio stops playing as browser is minimized or move to background, is this a known issue?
+In [Safari](https://bugs.webkit.org/show_bug.cgi?id=231105) macOS Browser, Audio stops playing in background if audio source is binded to AudioContext API. To remediate this Issue please disable the WebAudio.
+
 ### I am unable to select an audio output device in some browsers, is this a known issue?
 
 [Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1152401) and [Safari](https://bugs.webkit.org/show_bug.cgi?id=179415) have known issues disallowing them from listing audio output devices on these browsers. While clients can continue the meeting using the default device, they will not be able to select devices in meetings. [Chrome and Firefox on iOS](https://bugs.webkit.org/show_bug.cgi?id=179415) also have the same issue.
