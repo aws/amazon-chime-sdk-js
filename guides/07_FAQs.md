@@ -53,11 +53,22 @@ The SDK is built to target ES2015, both syntax and features. If you need your bu
 
 Note that due to limitations in transpilers, requirements of the web platform might result in transpiled ES5 code that raises an error when run, such as "Please use the 'new' operator, this DOM object constructor cannot be called as a function". Prefer using ES2015 code on supported platforms.
 
-## Known Browser Issues
-Please refer https://github.com/aws/amazon-chime-sdk-js/issues/1059/ for all the known Browser Issues.
 
-### In Safari Audio stops playing as browser is minimized or move to background, is this a known issue?
-In [Safari](https://bugs.webkit.org/show_bug.cgi?id=231105) macOS Browser, Audio stops playing in background if audio source is binded to AudioContext API. To remediate this Issue please disable the WebAudio.
+### Is the Amazon Chime SDK supported on mobile browsers?
+
+Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
+
+Amazon Chime SDK for iOS https://github.com/aws/amazon-chime-sdk-ios
+
+Amazon Chime SDK for Android https://github.com/aws/amazon-chime-sdk-android
+
+
+## Known browser issues
+Please refer [Known Browser and Compatibility Issues](https://github.com/aws/amazon-chime-sdk-js/issues/1059/) for more information.
+
+### In macOS Safari, audio stops playing when I minimize or move the window to the background. Is this a known issue?
+
+macOS Safari has a [known Web Audio issue](https://bugs.webkit.org/show_bug.cgi?id=231105) that a [MediaStreamAudioDestinationNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioDestinationNode) stops working when you minimize the window. The bug also occurs when you activate the full-screen mode and switch to another window. To remediate the issue, disable Web Audio by passing the { enableWebAudio: false } argument, or no argument, to new DefaultDeviceController.
 
 ### I am unable to select an audio output device in some browsers, is this a known issue?
 
@@ -85,15 +96,6 @@ If the page itself is loaded via a different network interface than the one that
 
 Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.
  
-
-### Is the Amazon Chime SDK supported on mobile browsers?
-
-Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
-
-Amazon Chime SDK for iOS https://github.com/aws/amazon-chime-sdk-ios
-
-Amazon Chime SDK for Android https://github.com/aws/amazon-chime-sdk-android
-
 ## Meetings
 
 ### How do users authenticate into a meeting?

@@ -118,14 +118,20 @@
 					<p>You can find the complete list of browsers in this link: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">Supported Browsers</a>. <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API">WebRTC</a> support in a browser is a prerequisite for Amazon Chime SDK to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.</p>
 					<p>The SDK is built to target ES2015, both syntax and features. If you need your built application bundle to target legacy browsers that do not support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code using a transpiler like Babel, split your application bundle into multiple files that can be built with different targets and conditionally loaded, or generate multiple versions of your application to target specific browsers.</p>
 					<p>Note that due to limitations in transpilers, requirements of the web platform might result in transpiled ES5 code that raises an error when run, such as &quot;Please use the &#39;new&#39; operator, this DOM object constructor cannot be called as a function&quot;. Prefer using ES2015 code on supported platforms.</p>
+					<a href="#is-the-amazon-chime-sdk-supported-on-mobile-browsers" id="is-the-amazon-chime-sdk-supported-on-mobile-browsers" style="color: inherit; text-decoration: none;">
+						<h3>Is the Amazon Chime SDK supported on mobile browsers?</h3>
+					</a>
+					<p>Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers</a>. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).</p>
+					<p>Amazon Chime SDK for iOS <a href="https://github.com/aws/amazon-chime-sdk-ios">https://github.com/aws/amazon-chime-sdk-ios</a></p>
+					<p>Amazon Chime SDK for Android <a href="https://github.com/aws/amazon-chime-sdk-android">https://github.com/aws/amazon-chime-sdk-android</a></p>
 					<a href="#known-browser-issues" id="known-browser-issues" style="color: inherit; text-decoration: none;">
-						<h2>Known Browser Issues</h2>
+						<h2>Known browser issues</h2>
 					</a>
-					<p>Please refer <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059/">https://github.com/aws/amazon-chime-sdk-js/issues/1059/</a> for all the known Browser Issues.</p>
-					<a href="#in-safari-audio-stops-playing-as-browser-is-minimized-or-move-to-background-is-this-a-known-issue" id="in-safari-audio-stops-playing-as-browser-is-minimized-or-move-to-background-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
-						<h3>In Safari Audio stops playing as browser is minimized or move to background, is this a known issue?</h3>
+					<p>Please refer <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059/">Known Browser and Compatibility Issues</a> for more information.</p>
+					<a href="#in-macos-safari-audio-stops-playing-when-i-minimize-or-move-the-window-to-the-background-is-this-a-known-issue" id="in-macos-safari-audio-stops-playing-when-i-minimize-or-move-the-window-to-the-background-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
+						<h3>In macOS Safari, audio stops playing when I minimize or move the window to the background. Is this a known issue?</h3>
 					</a>
-					<p>In <a href="https://bugs.webkit.org/show_bug.cgi?id=231105">Safari</a> macOS Browser, Audio stops playing in background if audio source is binded to AudioContext API. To remediate this Issue please disable the WebAudio.</p>
+					<p>macOS Safari has a <a href="https://bugs.webkit.org/show_bug.cgi?id=231105">known Web Audio issue</a> that a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioDestinationNode">MediaStreamAudioDestinationNode</a> stops working when you minimize the window. The bug also occurs when you activate the full-screen mode and switch to another window. To remediate the issue, disable Web Audio by passing the { enableWebAudio: false } argument, or no argument, to new DefaultDeviceController.</p>
 					<a href="#i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" id="i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I am unable to select an audio output device in some browsers, is this a known issue?</h3>
 					</a>
@@ -148,12 +154,6 @@
 					<p>In Firefox, if access to camera or microphone has been granted to the site — either by currently having a video or audio input, or as a result of the user choosing to always allow access — and the profile has not been configured with media.peerconnection.ice.default_address_only, then ICE will gather all interface addresses. If the user has not granted the appropriate permissions, or if that preference has been set, then the ICE stack will limit ICE candidates to a default interface only. The default interface is the one that was used to load the page. This is a privacy mechanism in Firefox to stop sites from de-anonymizing VPN users via WebRTC leakage.</p>
 					<p>If the page itself is loaded via a different network interface than the one that is intended to be used by the Chime SDK to connect to Chime media resources, e.g., in a split-tunneling VPN where browser traffic uses the VPN interface but Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.</p>
 					<p>Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.</p>
-					<a href="#is-the-amazon-chime-sdk-supported-on-mobile-browsers" id="is-the-amazon-chime-sdk-supported-on-mobile-browsers" style="color: inherit; text-decoration: none;">
-						<h3>Is the Amazon Chime SDK supported on mobile browsers?</h3>
-					</a>
-					<p>Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: <a href="https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers">https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers</a>. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).</p>
-					<p>Amazon Chime SDK for iOS <a href="https://github.com/aws/amazon-chime-sdk-ios">https://github.com/aws/amazon-chime-sdk-ios</a></p>
-					<p>Amazon Chime SDK for Android <a href="https://github.com/aws/amazon-chime-sdk-android">https://github.com/aws/amazon-chime-sdk-android</a></p>
 					<a href="#meetings" id="meetings" style="color: inherit; text-decoration: none;">
 						<h2>Meetings</h2>
 					</a>
