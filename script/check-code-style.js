@@ -63,7 +63,8 @@ const components = () => {
         !path.basename(dir).startsWith('.') &&
         !path.basename(dir).includes('signalingprotocol') &&
         !path.basename(dir).includes('screensignalingprotocol') &&
-        !path.basename(dir).includes('utils')
+        !path.basename(dir).includes('utils') && 
+        !path.basename(dir).includes('cspmonitor')
     );
 };
 

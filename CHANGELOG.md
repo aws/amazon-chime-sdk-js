@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events. Currently, these events were only included in the meeting history attribute when a meeting event is published. 
 - Added support for skipping full SDP renegotiations when switching simulcast streams.  This will result in less freezing when switching between layers in response to a network event as done in `VideoPriorityBasedPolicy`.  This will have no impact if not using simulcast.
 - Add link to SIP Media Application examples in README.
+- Add [Content Security Policy](https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html) setup guide for customers who want to secure their application and add CSP headers.
+- Add `securitypolicyviolation` event listener to listen for CSP violations. If customers have set up CSP for their app, the event listener will detect violations and print warnings.
 
 ### Removed
 
