@@ -127,11 +127,11 @@
 					<a href="#known-browser-issues" id="known-browser-issues" style="color: inherit; text-decoration: none;">
 						<h2>Known browser issues</h2>
 					</a>
-					<p>Please refer <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059/">Known Browser and Compatibility Issues</a> for more information.</p>
+					<p>Please refer to <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059/">Known Browser and Compatibility Issues</a> for more information.</p>
 					<a href="#in-macos-safari-audio-stops-playing-when-i-minimize-or-move-the-window-to-the-background-is-this-a-known-issue" id="in-macos-safari-audio-stops-playing-when-i-minimize-or-move-the-window-to-the-background-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>In macOS Safari, audio stops playing when I minimize or move the window to the background. Is this a known issue?</h3>
 					</a>
-					<p>macOS Safari has a <a href="https://bugs.webkit.org/show_bug.cgi?id=231105">known Web Audio issue</a> that a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioDestinationNode">MediaStreamAudioDestinationNode</a> stops working when you minimize the window. The bug also occurs when you activate the full-screen mode and switch to another window. To remediate the issue, disable Web Audio by passing the { enableWebAudio: false } argument, or no argument, to new DefaultDeviceController.</p>
+					<p>macOS Safari has a <a href="https://bugs.webkit.org/show_bug.cgi?id=231105">known Web Audio issue</a> that a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioDestinationNode">MediaStreamAudioDestinationNode</a> stops working when you minimize the window. The bug also occurs when you activate the full-screen mode and switch to another window. To remediate the issue, disable Web Audio by passing the <code>{ enableWebAudio: false }</code> argument, or no argument, to <code>new DefaultDeviceController</code>.</p>
 					<a href="#i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" id="i-am-unable-to-select-an-audio-output-device-in-some-browsers-is-this-a-known-issue" style="color: inherit; text-decoration: none;">
 						<h3>I am unable to select an audio output device in some browsers, is this a known issue?</h3>
 					</a>

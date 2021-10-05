@@ -64,11 +64,11 @@ Amazon Chime SDK for Android https://github.com/aws/amazon-chime-sdk-android
 
 
 ## Known browser issues
-Please refer [Known Browser and Compatibility Issues](https://github.com/aws/amazon-chime-sdk-js/issues/1059/) for more information.
+Please refer to [Known Browser and Compatibility Issues](https://github.com/aws/amazon-chime-sdk-js/issues/1059/) for more information.
 
 ### In macOS Safari, audio stops playing when I minimize or move the window to the background. Is this a known issue?
 
-macOS Safari has a [known Web Audio issue](https://bugs.webkit.org/show_bug.cgi?id=231105) that a [MediaStreamAudioDestinationNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioDestinationNode) stops working when you minimize the window. The bug also occurs when you activate the full-screen mode and switch to another window. To remediate the issue, disable Web Audio by passing the { enableWebAudio: false } argument, or no argument, to new DefaultDeviceController.
+macOS Safari has a [known Web Audio issue](https://bugs.webkit.org/show_bug.cgi?id=231105) that a [MediaStreamAudioDestinationNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioDestinationNode) stops working when you minimize the window. The bug also occurs when you activate the full-screen mode and switch to another window. To remediate the issue, disable Web Audio by passing the `{ enableWebAudio: false }` argument, or no argument, to `new DefaultDeviceController`.
 
 ### I am unable to select an audio output device in some browsers, is this a known issue?
 
