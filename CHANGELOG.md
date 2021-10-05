@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add opt-in region `eu-south-1` to meetings demo in deploy-canary-demo script to support media capture canary.
 - Fix bug: DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22.
 - Fix `removeObserver` function in `DefaultVideoTransformDevice`.
+- Fix handling pausing when using default preference for priority-based video bandwidth policy.
 
 ### Changed
 - Allow passing in custom video simulcast uplink policy that implements the `SimulcastUplinkPolicy` interface.
