@@ -661,6 +661,10 @@ describe('DefaultAudioVideoController', () => {
         new NoOpMediaStreamBroker(),
         reconnectController
       );
+      const bindTileControllerSpy = sinon.spy(
+        configuration.videoDownlinkBandwidthPolicy,
+        'bindToTileController'
+      );
 
       let sessionStarted = false;
       let sessionConnecting = false;
@@ -685,9 +689,14 @@ describe('DefaultAudioVideoController', () => {
         myDownlinkPolicy
       );
 
+      expect(bindTileControllerSpy.calledOnce).to.be.true;
+
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
       await stop();
+
+      expect(bindTileControllerSpy.calledTwice).to.be.true;
+      bindTileControllerSpy.restore();
     });
 
     it('can be started with default simulcast uplink and downlink policy', async () => {

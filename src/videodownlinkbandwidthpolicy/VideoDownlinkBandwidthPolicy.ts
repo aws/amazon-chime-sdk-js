@@ -4,6 +4,7 @@
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
+import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoDownlinkObserver from './VideoDownlinkObserver';
 
 /**
@@ -51,4 +52,13 @@ export default interface VideoDownlinkBandwidthPolicy {
    * (Optional) Removes the VideoDownlinkObserver.
    */
   removeObserver?(observer: VideoDownlinkObserver): void;
+
+  /**
+   * (Optional) Bind the video tile controller to the policy to allow it to control the video tiles such as pause
+   * and unpause.
+   * The audio video controller should call this method to pass down a transceiver controller to the policy
+   * when the meeting starts and set it to undefined when the meeting ends.
+   * @param tileController the video tile controller
+   */
+  bindToTileController?(tileController: VideoTileController | undefined): void;
 }
