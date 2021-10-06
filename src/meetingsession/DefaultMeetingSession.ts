@@ -10,6 +10,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ContentShareController from '../contentsharecontroller/ContentShareController';
 import ContentShareMediaStreamBroker from '../contentsharecontroller/ContentShareMediaStreamBroker';
 import DefaultContentShareController from '../contentsharecontroller/DefaultContentShareController';
+import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Destroyable, { isDestroyable } from '../destroyable/Destroyable';
 import DeviceController from '../devicecontroller/DeviceController';
 import EventIngestionConfiguration from '../eventingestionconfiguration/EventIngestionConfiguration';
@@ -20,6 +21,8 @@ import MeetingEventsClientConfiguration from '../eventsclientconfiguration/Meeti
 import Logger from '../logger/Logger';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import DefaultReconnectController from '../reconnectcontroller/DefaultReconnectController';
+import SimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
+import VideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/VideoUplinkBandwidthPolicy';
 import DefaultWebSocketAdapter from '../websocketadapter/DefaultWebSocketAdapter';
 import MeetingSession from './MeetingSession';
 import MeetingSessionConfiguration from './MeetingSessionConfiguration';
@@ -43,6 +46,9 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     this._logger = logger;
 
     this.checkBrowserSupportAndFeatureConfiguration();
+
+    CSPMonitor.addLogger(this._logger);
+    CSPMonitor.register();
 
     this.setupEventReporter(configuration, logger, eventReporter);
     this._deviceController = deviceController;
@@ -133,6 +139,8 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       await this.eventReporter.destroy();
     }
 
+    CSPMonitor.removeLogger(this._logger);
+
     this._logger = undefined;
     this._configuration = undefined;
     this._deviceController = undefined;
@@ -191,6 +199,23 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       }
     }
 
+    // Validation if a custom video uplink policy is specified
+    if (this._configuration.videoUplinkBandwidthPolicy) {
+      if (this.isSimulcastUplinkPolicy(this._configuration.videoUplinkBandwidthPolicy)) {
+        if (!this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
+          throw new Error(
+            'Simulcast requires enabling WebRTC Unified Plan for Chromium-based browsers'
+          );
+        }
+        if (!browserBehavior.hasChromiumWebRTC()) {
+          throw new Error('Simulcast is only supported on Chromium-based browsers');
+        }
+        this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      } else {
+        this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
+      }
+    }
+
     if (this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers) {
       if (!this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
         this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
@@ -206,5 +231,9 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
         );
       }
     }
+  }
+
+  private isSimulcastUplinkPolicy(policy: VideoUplinkBandwidthPolicy | undefined): boolean {
+    return !!(policy && (policy as SimulcastUplinkPolicy).addObserver);
   }
 }

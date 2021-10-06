@@ -168,14 +168,24 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     }
 
     const prefs = VideoPreferences.prepare();
+
+    const numAttendees = attendeeIds.size;
+    let targetDisplaySize = TargetDisplaySize.High;
+
+    if (numAttendees > 8) {
+      targetDisplaySize = TargetDisplaySize.Low;
+    } else if (numAttendees > 4) {
+      targetDisplaySize = TargetDisplaySize.Medium;
+    }
+
     for (const attendeeId of attendeeIds) {
-      prefs.add(new VideoPreference(attendeeId, 1, TargetDisplaySize.High));
+      prefs.add(new VideoPreference(attendeeId, 1, targetDisplaySize));
     }
     this.defaultVideoPreferences = prefs.build();
   }
 
   updateMetrics(clientMetricReport: ClientMetricReport): void {
-    if (this.videoIndex.allStreams().empty()) {
+    if (!this.videoIndex || this.videoIndex.allStreams().empty()) {
       return;
     }
     this.prevDownlinkStats = this.downlinkStats;
@@ -732,9 +742,10 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       this.logger.warn('tileController not found!');
       return;
     }
-    if (this.videoPreferences && this.shouldPauseTiles) {
+    const preferences = this.getCurrentVideoPreferences();
+    if (preferences && this.shouldPauseTiles) {
       const videoTiles = this.tileController.getAllVideoTiles();
-      for (const preference of this.videoPreferences) {
+      for (const preference of preferences) {
         const videoTile = this.getVideoTileForAttendeeId(
           preference.attendeeId,
           videoTiles
@@ -792,6 +803,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       return;
     }
     const tiles = this.tileController.getAllRemoteVideoTiles();
+    const preferences = this.getCurrentVideoPreferences();
     for (const tile of tiles) {
       const state = tile.state();
       if (!state.boundVideoStream) {
@@ -801,8 +813,8 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
             `bwe: Removed video tile ${state.tileId} for bw paused attendee ${state.boundAttendeeId}`
           );
         } else if (
-          this.videoPreferences !== undefined &&
-          !this.videoPreferences.some(pref => pref.attendeeId === state.boundAttendeeId)
+          preferences !== undefined &&
+          !preferences.some(pref => pref.attendeeId === state.boundAttendeeId)
         ) {
           this.tileController.removeVideoTile(state.tileId);
         }
@@ -816,8 +828,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     chosenStreams: VideoStreamDescription[]
   ): VideoStreamDescription {
     let upgradeStream: VideoStreamDescription;
-    const videoPreferences: VideoPreferences =
-      this.videoPreferences || this.defaultVideoPreferences;
+    const videoPreferences: VideoPreferences = this.getCurrentVideoPreferences();
 
     const highestPriority = videoPreferences.highestPriority();
     let nextPriority;
@@ -1017,7 +1028,13 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
     if (this.videoPreferences) {
       logString += `bwe:   preferences: ${JSON.stringify(this.videoPreferences)}`;
+    } else {
+      logString += `bwe:   default preferences: ${JSON.stringify(this.defaultVideoPreferences)}`;
     }
     return logString;
+  }
+
+  private getCurrentVideoPreferences(): VideoPreferences {
+    return this.videoPreferences || this.defaultVideoPreferences;
   }
 }

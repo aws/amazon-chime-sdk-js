@@ -81,6 +81,12 @@ describe('DefaultVideoFrameProcessorPipeline', () => {
       await pipe.setInputMediaStream(null);
     });
 
+    it('catches the failure if videoInput play() fails due to load() being called before play() is finished', async () => {
+      domMockBehavior.videoElementShouldFail = true;
+      await pipe.setInputMediaStream(mockVideoStream);
+      await pipe.setInputMediaStream(null);
+    });
+
     it('can only set MediaStream with video tracks', async () => {
       const emptyStream = new MediaStream();
       await pipe.setInputMediaStream(emptyStream);

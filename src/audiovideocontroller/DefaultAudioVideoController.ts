@@ -71,6 +71,7 @@ import SimulcastTransceiverController from '../transceivercontroller/SimulcastTr
 import VideoOnlyTransceiverController from '../transceivercontroller/VideoOnlyTransceiverController';
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
+import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoPriorityBasedPolicy from '../videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
@@ -82,6 +83,7 @@ import DefaultVideoTileFactory from '../videotilefactory/DefaultVideoTileFactory
 import DefaultSimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import NScaleVideoUplinkBandwidthPolicy from '../videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
 import SimulcastUplinkObserver from '../videouplinkbandwidthpolicy/SimulcastUplinkObserver';
+import SimulcastUplinkPolicy from '../videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import DefaultVolumeIndicatorAdapter from '../volumeindicatoradapter/DefaultVolumeIndicatorAdapter';
 import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
@@ -484,27 +486,40 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.enableSimulcast = this.enableSimulcast;
 
     if (this.enableSimulcast) {
-      const simulcastPolicy = new DefaultSimulcastUplinkPolicy(
-        this.configuration.credentials.attendeeId,
-        this.meetingSessionContext.logger
-      );
+      let simulcastPolicy = this.meetingSessionContext
+        .videoUplinkBandwidthPolicy as SimulcastUplinkPolicy;
+      if (!simulcastPolicy) {
+        simulcastPolicy = new DefaultSimulcastUplinkPolicy(
+          this.configuration.credentials.attendeeId,
+          this.meetingSessionContext.logger
+        );
+        this.meetingSessionContext.videoUplinkBandwidthPolicy = simulcastPolicy;
+      }
+
       simulcastPolicy.addObserver(this);
-      this.meetingSessionContext.videoUplinkBandwidthPolicy = simulcastPolicy;
+
+      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
+        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(
+          this.meetingSessionContext.logger
+        );
+      }
 
       this.meetingSessionContext.videoStreamIndex = new SimulcastVideoStreamIndex(this.logger);
     } else {
       this.meetingSessionContext.enableSimulcast = false;
       this.meetingSessionContext.videoStreamIndex = new DefaultVideoStreamIndex(this.logger);
-      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
-        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
-          this.configuration.credentials.attendeeId
-        );
-      }
+
       if (!this.meetingSessionContext.videoUplinkBandwidthPolicy) {
         this.meetingSessionContext.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
           this.configuration.credentials.attendeeId
         );
       }
+      if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
+        this.meetingSessionContext.videoDownlinkBandwidthPolicy = new AllHighestVideoBandwidthPolicy(
+          this.configuration.credentials.attendeeId
+        );
+      }
+
       if (
         this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController &&
         this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController &&

@@ -159,7 +159,7 @@ export default class DefaultVideoTransformDevice
    * Remove an existing observer. If the observer has not been previously. this method call has no effect.
    */
   removeObserver(observer: DefaultVideoTransformDeviceObserver): void {
-    this.observers.add(observer);
+    this.observers.delete(observer);
   }
 
   processingDidStart(): void {

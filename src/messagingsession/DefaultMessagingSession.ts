@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
+import CSPMonitor from '../cspmonitor/CSPMonitor';
 import Logger from '../logger/Logger';
 import Message from '../message/Message';
 import MessagingSessionObserver from '../messagingsessionobserver/MessagingSessionObserver';
@@ -44,6 +45,9 @@ export default class DefaultMessagingSession implements MessagingSession {
     if (!this.sigV4) {
       this.sigV4 = new DefaultSigV4(this.configuration.chimeClient, this.configuration.awsClient);
     }
+
+    CSPMonitor.addLogger(this.logger);
+    CSPMonitor.register();
   }
 
   addObserver(observer: MessagingSessionObserver): void {
@@ -68,6 +72,7 @@ export default class DefaultMessagingSession implements MessagingSession {
     if (!this.isClosed()) {
       this.isClosing = true;
       this.webSocket.close();
+      CSPMonitor.removeLogger(this.logger);
     } else {
       this.logger.info('no existing connection needs closing');
     }
