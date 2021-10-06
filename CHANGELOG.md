@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move configuration default from meeting session configuration to audio video controller.
 - Update the default priority-based video downlink policy to adjust target size based on number of videos in the 
   meeting.
+- Add a new section "Known Browser Issues" in FAQ.html.
   
 ## [2.18.0] - 2021-09-22
 
