@@ -7,11 +7,11 @@ import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior'
 import type { Destroyable } from '../destroyable/Destroyable';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import Logger from '../logger/Logger';
-import Maybe from '../maybe/Maybe';
 import DefaultMediaDeviceFactory from '../mediadevicefactory/DefaultMediaDeviceFactory';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
+import { Maybe } from '../utils/Types';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import AudioInputDevice from './AudioInputDevice';
 import AudioNodeSubgraph from './AudioNodeSubgraph';

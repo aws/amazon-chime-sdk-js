@@ -3,7 +3,7 @@
 
 import * as chai from 'chai';
 
-import Maybe from '../../src/maybe/Maybe';
+import { Maybe } from '../../src/utils/Types';
 
 describe('Maybe', () => {
   describe('::of', () => {

@@ -13,12 +13,12 @@ import ContentShareMediaStreamBroker from '../../src/contentsharecontroller/Cont
 import DefaultContentShareController from '../../src/contentsharecontroller/DefaultContentShareController';
 import ContentShareObserver from '../../src/contentshareobserver/ContentShareObserver';
 import NoOpLogger from '../../src/logger/NoOpLogger';
-import Maybe from '../../src/maybe/Maybe';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
+import { Maybe } from '../../src/utils/Types';
 import { wait as delay } from '../../src/utils/Utils';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder, { StoppableMediaStreamTrack } from '../dommock/DOMMockBuilder';

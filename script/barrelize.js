@@ -44,7 +44,7 @@ const ignoredTypes = [
   'flattenEventAttributes',
 
   // Ignore utils
-  'Utils'
+  'Utils',
 ];
 
 walk('src')
@@ -59,37 +59,52 @@ walk('src')
       return;
     }
 
+    // Starting to move away from one-class-per-file, resolving circular dependencies.
+    if (typeToImport === 'Types') {
+      importStrings.push(`import { Some, None, Maybe, MaybeProvider, Eq, PartialOrd } from '${pathToImport}/Types';`);
+      Array.prototype.push.apply(exportStrings, [
+        'Eq',
+        'Maybe',
+        'MaybeProvider',
+        'None',
+        'PartialOrd',
+        'Some',
+      ]);
+      return;
+    }
+
     const importLine = `import ${typeToImport} from '${pathToImport}/${typeToImport}';`;
-    const exportLine = `  ${typeToImport},`;
+    const exportLine = typeToImport;
     importStrings.push(importLine);
     exportStrings.push(exportLine);
 
     // Because these two types are very intertwined.
     if (typeToImport === 'VideoPreferences') {
       importStrings.push(`import { MutableVideoPreferences } from '${pathToImport}/VideoPreferences';`);
-      exportStrings.push(`  MutableVideoPreferences,`);
+      exportStrings.push(`MutableVideoPreferences`);
     }
 
     // It's hard to add type guard functions to this Java-ish class model, so
     // forgive the hack.
     if (typeToImport === 'AudioTransformDevice') {
       importStrings.push(`import { isAudioTransformDevice } from '${pathToImport}/AudioTransformDevice';`);
-      exportStrings.push(`  isAudioTransformDevice,`);
+      exportStrings.push(`isAudioTransformDevice`);
     }
 
     if (typeToImport === 'VideoTransformDevice') {
       importStrings.push(`import { isVideoTransformDevice } from '${pathToImport}/VideoTransformDevice';`);
-      exportStrings.push(`  isVideoTransformDevice,`);
+      exportStrings.push(`isVideoTransformDevice`);
     }
 
     if (typeToImport === 'Destroyable') {
       importStrings.push(`import { isDestroyable } from '${pathToImport}/Destroyable';`);
-      exportStrings.push(`  isDestroyable,`);
+      exportStrings.push(`isDestroyable`);
     }
   });
 
 importStrings.sort();
 exportStrings.sort();
 
-const indexFile = importStrings.join('\n') + '\n\nexport {\n' + exportStrings.join('\n') + '\n}\n';
+const compiledExports = exportStrings.map(s => `  ${s},`).join('\n');
+const indexFile = importStrings.join('\n') + '\n\nexport {\n' + compiledExports + '\n}\n';
 fs.writeFileSync('src/index.ts', indexFile);

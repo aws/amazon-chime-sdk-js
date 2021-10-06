@@ -108,7 +108,6 @@ import DevicePixelRatioObserver from './devicepixelratioobserver/DevicePixelRati
 import DevicePixelRatioSource from './devicepixelratiosource/DevicePixelRatioSource';
 import DevicePixelRatioWindowSource from './devicepixelratiosource/DevicePixelRatioWindowSource';
 import DeviceSelection from './devicecontroller/DeviceSelection';
-import Eq from './videodownlinkbandwidthpolicy/Eq';
 import EventAttributes from './eventcontroller/EventAttributes';
 import EventBuffer from './eventbuffer/EventBuffer';
 import EventBufferConfiguration from './eventbufferconfiguration/EventBufferConfiguration';
@@ -134,8 +133,6 @@ import ListenForVolumeIndicatorsTask from './task/ListenForVolumeIndicatorsTask'
 import Log from './logger/Log';
 import LogLevel from './logger/LogLevel';
 import Logger from './logger/Logger';
-import Maybe from './maybe/Maybe';
-import MaybeProvider from './maybe/MaybeProvider';
 import MediaDeviceFactory from './mediadevicefactory/MediaDeviceFactory';
 import MediaDeviceProxyHandler from './mediadevicefactory/MediaDeviceProxyHandler';
 import MediaStreamBroker from './mediastreambroker/MediaStreamBroker';
@@ -174,14 +171,12 @@ import NoOpVideoElementFactory from './videoelementfactory/NoOpVideoElementFacto
 import NoOpVideoFrameProcessor from './videoframeprocessor/NoOpVideoFrameProcessor';
 import NoVideoDownlinkBandwidthPolicy from './videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
 import NoVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/NoVideoUplinkBandwidthPolicy';
-import None from './maybe/None';
 import NotFoundError from './devicecontroller/NotFoundError';
 import NotReadableError from './devicecontroller/NotReadableError';
 import OnceTask from './task/OnceTask';
 import OpenSignalingConnectionTask from './task/OpenSignalingConnectionTask';
 import OverconstrainedError from './devicecontroller/OverconstrainedError';
 import ParallelGroupTask from './task/ParallelGroupTask';
-import PartialOrd from './videodownlinkbandwidthpolicy/PartialOrd';
 import PermissionDeniedError from './devicecontroller/PermissionDeniedError';
 import PingPong from './pingpong/PingPong';
 import PingPongObserver from './pingpongobserver/PingPongObserver';
@@ -229,7 +224,6 @@ import SimulcastUplinkObserver from './videouplinkbandwidthpolicy/SimulcastUplin
 import SimulcastUplinkPolicy from './videouplinkbandwidthpolicy/SimulcastUplinkPolicy';
 import SimulcastVideoStreamIndex from './videostreamindex/SimulcastVideoStreamIndex';
 import SingleNodeAudioTransformDevice from './devicecontroller/SingleNodeAudioTransformDevice';
-import Some from './maybe/Some';
 import StatsCollector from './statscollector/StatsCollector';
 import StreamMetricReport from './clientmetricreport/StreamMetricReport';
 import SubscribeAndReceiveSubscribeAckTask from './task/SubscribeAndReceiveSubscribeAckTask';
@@ -295,6 +289,7 @@ import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
 import { MutableVideoPreferences } from './videodownlinkbandwidthpolicy/VideoPreferences';
+import { Some, None, Maybe, MaybeProvider, Eq, PartialOrd } from './utils/Types';
 import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
 import { isDestroyable } from './destroyable/Destroyable';
 import { isVideoTransformDevice } from './devicecontroller/VideoTransformDevice';

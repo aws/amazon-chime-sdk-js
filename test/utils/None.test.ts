@@ -3,8 +3,7 @@
 
 import * as chai from 'chai';
 
-import Maybe from '../../src/maybe/Maybe';
-import None from '../../src/maybe/None';
+import { Maybe, None } from '../../src/utils/Types';
 
 describe('None', () => {
   const subject = None.of();

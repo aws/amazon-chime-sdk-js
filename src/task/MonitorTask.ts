@@ -14,7 +14,6 @@ import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/Conne
 import ReconnectionHealthPolicy from '../connectionhealthpolicy/ReconnectionHealthPolicy';
 import UnusableAudioWarningConnectionHealthPolicy from '../connectionhealthpolicy/UnusableAudioWarningConnectionHealthPolicy';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
-import Maybe from '../maybe/Maybe';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import RemovableObserver from '../removableobserver/RemovableObserver';
@@ -24,6 +23,7 @@ import SignalingClientObserver from '../signalingclientobserver/SignalingClientO
 import { ISdkBitrateFrame } from '../signalingprotocol/SignalingProtocol';
 import AudioLogEvent from '../statscollector/AudioLogEvent';
 import VideoLogEvent from '../statscollector/VideoLogEvent';
+import { Maybe } from '../utils/Types';
 import VideoTileState from '../videotile/VideoTileState';
 import BaseTask from './BaseTask';
 

@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
-import Maybe from '../maybe/Maybe';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
+import { Maybe } from '../utils/Types';
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamDescription from '../videostreamindex/VideoStreamDescription';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';

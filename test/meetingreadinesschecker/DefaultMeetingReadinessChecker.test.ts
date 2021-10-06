@@ -15,7 +15,6 @@ import DeviceController from '../../src/devicecontroller/DeviceController';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
 import Logger from '../../src/logger/Logger';
 import NoOpLogger from '../../src/logger/NoOpLogger';
-import Maybe from '../../src/maybe/Maybe';
 import DeviceControllerBasedMediaStreamBroker from '../../src/mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import CheckAudioConnectivityFeedback from '../../src/meetingreadinesschecker/CheckAudioConnectivityFeedback';
 import CheckAudioInputFeedback from '../../src/meetingreadinesschecker/CheckAudioInputFeedback';
@@ -34,6 +33,7 @@ import MeetingSessionCredentials from '../../src/meetingsession/MeetingSessionCr
 import MeetingSessionStatus from '../../src/meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../../src/meetingsession/MeetingSessionStatusCode';
 import MeetingSessionURLs from '../../src/meetingsession/MeetingSessionURLs';
+import { Maybe } from '../../src/utils/Types';
 import { wait as delay } from '../../src/utils/Utils';
 import DisplayMediaState from '../dommock/DisplayMediaState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
