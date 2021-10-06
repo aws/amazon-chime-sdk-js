@@ -24,6 +24,7 @@ import Task from '../../src/task/Task';
 import DefaultTransceiverController from '../../src/transceivercontroller/DefaultTransceiverController';
 import { wait as delay } from '../../src/utils/Utils';
 import NoVideoDownlinkBandwidthPolicy from '../../src/videodownlinkbandwidthpolicy/NoVideoDownlinkBandwidthPolicy';
+import VideoAdaptiveProbePolicy from '../../src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
 import VideoTile from '../../src/videotile/VideoTile';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
@@ -212,6 +213,23 @@ describe('CleanStoppedSessionTask', () => {
       context.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('');
       context.videoUplinkBandwidthPolicy.setTransceiverController(context.transceiverController);
       const spy = sinon.spy(context.videoUplinkBandwidthPolicy, 'setTransceiverController');
+
+      task.run().then(() => {
+        expect(spy.calledOnceWith(undefined)).to.be.true;
+        done();
+      });
+    });
+
+    it('clear tile controller from video downlink bandwidth if needed', done => {
+      context.videoDownlinkBandwidthPolicy = new VideoAdaptiveProbePolicy(context.logger);
+      context.videoDownlinkBandwidthPolicy.bindToTileController(
+        new DefaultVideoTileController(
+          new DefaultVideoTileFactory(),
+          context.audioVideoController,
+          context.logger
+        )
+      );
+      const spy = sinon.spy(context.videoDownlinkBandwidthPolicy, 'bindToTileController');
 
       task.run().then(() => {
         expect(spy.calledOnceWith(undefined)).to.be.true;

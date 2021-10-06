@@ -72,7 +72,6 @@ import VideoOnlyTransceiverController from '../transceivercontroller/VideoOnlyTr
 import DefaultVideoCaptureAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import AllHighestVideoBandwidthPolicy from '../videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
 import VideoAdaptiveProbePolicy from '../videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy';
-import VideoPriorityBasedPolicy from '../videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
 import DefaultVideoStreamIndex from '../videostreamindex/DefaultVideoStreamIndex';
@@ -157,9 +156,6 @@ export default class DefaultAudioVideoController
     this._audioMixController = new DefaultAudioMixController(this._logger);
     this.meetingSessionContext.logger = this._logger;
     this._eventController = new DefaultEventController(this, eventReporter);
-    if (configuration.videoDownlinkBandwidthPolicy instanceof VideoPriorityBasedPolicy) {
-      configuration.videoDownlinkBandwidthPolicy.bindToTileController(this._videoTileController);
-    }
   }
 
   async destroy(): Promise<void> {
@@ -531,6 +527,12 @@ export default class DefaultAudioVideoController
         );
       }
       this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+
+    if (this.meetingSessionContext.videoDownlinkBandwidthPolicy.bindToTileController) {
+      this.meetingSessionContext.videoDownlinkBandwidthPolicy.bindToTileController(
+        this._videoTileController
+      );
     }
 
     this.meetingSessionContext.lastKnownVideoAvailability = new MeetingSessionVideoAvailability();
