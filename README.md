@@ -325,7 +325,7 @@ const observer = {
   },
 
   audioInputMuteStateChanged: (device, muted) => {
-    console.log('Device', device, muted ? 'is muted in hardware' : 'is not muted);
+    console.log('Device', device, muted ? 'is muted in hardware' : 'is not muted');
   },
 };
 
