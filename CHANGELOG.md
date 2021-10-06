@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add API `isSimulcastSupported` so applications can check whether simulcast can be enabled and pass corresponding
   policy.
+- Add `bindToTileController` optional method to `VideoDownlinkBandwidthPolicy`.
   
 ### Removed
 
@@ -22,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix bug: DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22.
 - Fix `removeObserver` function in `DefaultVideoTransformDevice`.
 - Fix handling pausing when using default preference for priority-based video bandwidth policy.
+- Bind tile controller for any downlink policy that implements `bindToTileController` such as 
+  `VideoAdaptiveProbePolicy`.
 
 ### Changed
 - Allow passing in custom video simulcast uplink policy that implements the `SimulcastUplinkPolicy` interface.
