@@ -6,7 +6,6 @@ import * as sinon from 'sinon';
 
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
-import Maybe from '../../src/maybe/Maybe';
 import DefaultPingPong from '../../src/pingpong/DefaultPingPong';
 import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -18,6 +17,7 @@ import {
   SdkPingPongType,
   SdkSignalFrame,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import { Maybe } from '../../src/utils/Types';
 import { wait as delay } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';

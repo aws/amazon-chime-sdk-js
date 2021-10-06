@@ -8,7 +8,6 @@ import MediaType from '../clientmetricreport/ClientMetricReportMediaType';
 import DefaultClientMetricReport from '../clientmetricreport/DefaultClientMetricReport';
 import StreamMetricReport from '../clientmetricreport/StreamMetricReport';
 import Logger from '../logger/Logger';
-import Maybe from '../maybe/Maybe';
 import MeetingSessionLifecycleEvent from '../meetingsession/MeetingSessionLifecycleEvent';
 import MeetingSessionLifecycleEventCondition from '../meetingsession/MeetingSessionLifecycleEventCondition';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
@@ -19,6 +18,7 @@ import {
   SdkMetric,
   SdkStreamMetricFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
+import { Maybe } from '../utils/Types';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
 import AudioLogEvent from './AudioLogEvent';
 import StatsCollector from './StatsCollector';

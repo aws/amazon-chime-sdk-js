@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
-import Maybe from '../maybe/Maybe';
 import PingPongObserver from '../pingpongobserver/PingPongObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
 import IntervalScheduler from '../scheduler/IntervalScheduler';
@@ -15,6 +14,7 @@ import {
   SdkPingPongType,
   SdkSignalFrame,
 } from '../signalingprotocol/SignalingProtocol.js';
+import { Maybe } from '../utils/Types';
 import PingPong from './PingPong';
 
 /**

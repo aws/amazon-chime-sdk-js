@@ -5,11 +5,11 @@ import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
-import Maybe from '../maybe/Maybe';
 import PingPong from '../pingpong/PingPong';
 import PingPongObserver from '../pingpongobserver/PingPongObserver';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import StatsCollector from '../statscollector/StatsCollector';
+import { Maybe } from '../utils/Types';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import ConnectionMonitor from './ConnectionMonitor';
 

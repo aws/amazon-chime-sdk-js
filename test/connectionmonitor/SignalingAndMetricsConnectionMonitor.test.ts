@@ -11,11 +11,11 @@ import ClientMetricReport from '../../src/clientmetricreport/ClientMetricReport'
 import ConnectionHealthData from '../../src/connectionhealthpolicy/ConnectionHealthData';
 import SignalingAndMetricsConnectionMonitor from '../../src/connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
-import Maybe from '../../src/maybe/Maybe';
 import PingPong from '../../src/pingpong/PingPong';
 import PingPongObserver from '../../src/pingpongobserver/PingPongObserver';
 import DefaultRealtimeController from '../../src/realtimecontroller/DefaultRealtimeController';
 import DefaultStatsCollector from '../../src/statscollector/DefaultStatsCollector';
+import { Maybe } from '../../src/utils/Types';
 import DefaultVideoTileController from '../../src/videotilecontroller/DefaultVideoTileController';
 import DefaultVideoTileFactory from '../../src/videotilefactory/DefaultVideoTileFactory';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';

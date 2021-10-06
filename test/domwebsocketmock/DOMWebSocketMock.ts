@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DOMWebSocket from '../../src/domwebsocket/DOMWebSocket';
-import Maybe from '../../src/maybe/Maybe';
+import { Maybe } from '../../src/utils/Types';
 
 export default class DOMWebSocketMock implements DOMWebSocket {
   get url(): string {

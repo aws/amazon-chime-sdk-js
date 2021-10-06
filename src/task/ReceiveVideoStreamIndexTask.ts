@@ -3,7 +3,6 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
-import Maybe from '../maybe/Maybe';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
 import DefaultModality from '../modality/DefaultModality';
 import RemovableObserver from '../removableobserver/RemovableObserver';
@@ -15,6 +14,7 @@ import {
   SdkSignalFrame,
   SdkStreamServiceType,
 } from '../signalingprotocol/SignalingProtocol.js';
+import { Maybe } from '../utils/Types';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
 import VideoSource from '../videosource/VideoSource';
 import VideoStreamIdSet from '../videostreamidset/VideoStreamIdSet';

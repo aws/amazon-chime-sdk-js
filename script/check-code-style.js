@@ -103,17 +103,6 @@ tests().forEach(file => {
     );
   }
 
-  const srcFile = file.replace(/^test/, 'src').replace('.test.ts', '.ts');
-  if (!fs.existsSync(srcFile)) {
-    const errorString = 'Ensure that a test file has a corresponding source file.';
-    failed(
-      file,
-      'does not have a corresponding source file',
-      errorString +
-        `\nFor example, the test file (${file}) should test the corresponding source file (${srcFile})`
-    );
-  }
-
   const basename = path.basename(file, '.test.ts');
   let describeCount = 0;
 
@@ -126,13 +115,6 @@ tests().forEach(file => {
   if (describeCount !== 1) {
     const errorString = 'Ensure that each test file has one top-level describe';
     failed(file, 'has more than one top-level describe', errorString);
-  } else if (!fileText.includes(`describe\(\'${basename}\'`)) {
-    console.log(`^describe\(\'${basename}\'`);
-    failed(
-      file,
-      'has an invalid top-level describe name',
-      `Ensure that the top-level describe name matches the filename excluding .test.ts.\nFor example, it should be ""`
-    );
   }
 });
 

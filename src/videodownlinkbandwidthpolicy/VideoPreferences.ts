@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import type Eq from './Eq';
-import type PartialOrd from './PartialOrd';
+import type { Eq, PartialOrd } from '../utils/Types';
 import VideoPreference from './VideoPreference';
 
 class ObjectSet<T extends Eq & PartialOrd> implements Iterable<T> {

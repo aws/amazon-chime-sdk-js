@@ -3,8 +3,7 @@
 
 import * as chai from 'chai';
 
-import Maybe from '../../src/maybe/Maybe';
-import Some from '../../src/maybe/Some';
+import { Maybe, Some } from '../../src/utils/Types';
 
 describe('Some', () => {
   const value = 'string';
