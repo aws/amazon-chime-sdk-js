@@ -752,7 +752,13 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
         ) as DefaultVideoTile;
         const paused = videoTile?.state().paused || false;
         if (!chosenStreams.some(stream => stream.attendeeId === preference.attendeeId)) {
-          if (videoTile) {
+          // We cannot rely on the existance of video tile to indicate that the source exists in the call
+          // because tiles will not be added or removed until after a full renegotiation (i.e. it will
+          // be behind the state provided by the index)
+          const streamExists = remoteInfos.some(
+            stream => stream.attendeeId === preference.attendeeId
+          );
+          if (videoTile && streamExists) {
             const info = this.optimalReceiveStreams.find(
               stream => stream.attendeeId === preference.attendeeId
             );
@@ -769,7 +775,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
               chosenStreams.push(info);
             }
             this.pausedBwAttendeeIds.add(preference.attendeeId);
-          } else if (remoteInfos.some(stream => stream.attendeeId === preference.attendeeId)) {
+          } else if (streamExists) {
             // Create a tile for this participant if one doesn't already exist and mark it as paused
             // Don't include it in the chosen streams because we don't want to subscribe for it then have to pause it.
             const newTile = this.tileController.addVideoTile();
