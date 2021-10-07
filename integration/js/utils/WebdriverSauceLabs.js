@@ -104,8 +104,8 @@ const getSauceLabsConfig = (capabilities) => {
     tags: [capabilities.name],
     seleniumVersion: '3.141.59',
     tunnelIdentifier: process.env.JOB_ID,
-    ...(capabilities.platform.toUpperCase() !== 'LINUX' && 
-      (capabilities.name).includes('ContentShare') && {
+    ...((capabilities.platform.toUpperCase() !== 'LINUX' &&
+      !((capabilities.name).includes('ContentShare'))) && {
         extendedDebugging: true
       }),
   }
@@ -115,7 +115,7 @@ const getSauceLabsDomain = (platform)  => {
   const platformUpperCase = platform.toUpperCase();
   if (platformUpperCase === 'LINUX') {
     return 'us-east-1.saucelabs.com';
-  } 
+  }
   return 'us-west-1.saucelabs.com';
 };
 
