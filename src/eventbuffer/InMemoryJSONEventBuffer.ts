@@ -23,7 +23,7 @@ import JSONIngestionRecord from './JSONIngestionRecord';
  * sending events. It buffers events based on number of events and its size whichever reaches
  * first. Events are sent out at an scheduled interval where important events are sent immediately.
  * It also retries sending events if failed upto the retry count limit. It implements
- * beaconing mechanism based on 'pagehide' and 'visilitychange' to beacon all events as a last attempt.
+ * beaconing mechanism based on 'pagehide' and 'visibilitychange' to beacon all events as a last attempt.
  */
 export default class InMemoryJSONEventBuffer implements EventBuffer<EventData>, Destroyable {
   private static readonly SENDING_FAILURE_CODES = new Set([

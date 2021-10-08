@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bind tile controller for any downlink policy that implements `bindToTileController` such as 
   `VideoAdaptiveProbePolicy`.
 - Do not pause streams that do not exist in conference in `VideoPriorityBasedPolicy`.
+- Fix a typo in `InMemoryJSONEventBuffer`.
 
 ### Changed
 
