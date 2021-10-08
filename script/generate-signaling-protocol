@@ -7,7 +7,7 @@ def verbose command
   system(command) || fail("Failed: #{command}")
 end
 
-['SignalingProtocol', 'ScreenSignalingProtocol'].each do |protocol|
+['SignalingProtocol'].each do |protocol|
   dir = protocol.downcase
 
   verbose "rm -rf src/#{dir}"

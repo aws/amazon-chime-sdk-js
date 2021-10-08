@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix handling pausing when using default preference for priority-based video bandwidth policy.
 - Bind tile controller for any downlink policy that implements `bindToTileController` such as 
   `VideoAdaptiveProbePolicy`.
+- Do not pause streams that do not exist in conference in `VideoPriorityBasedPolicy`.
 
 ### Changed
 

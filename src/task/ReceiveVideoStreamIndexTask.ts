@@ -84,6 +84,8 @@ export default class ReceiveVideoStreamIndexTask
     this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy);
     this.updateVideoAvailability(indexFrame);
     this.handleIndexVideosPausedAtSource();
+    // `forEachObserver`is asynchronous anyways so it doesn't matter (for better or worse) whether we
+    // trigger it before or after the policy update + possible resubscribe kickoff
     const newVideoSources = videoStreamIndex.allVideoSendingSourcesExcludingSelf(selfAttendeeId);
     if (!this.areVideoSourcesEqual(oldVideoSources, newVideoSources)) {
       this.context.audioVideoController.forEachObserver((observer: AudioVideoObserver) => {
