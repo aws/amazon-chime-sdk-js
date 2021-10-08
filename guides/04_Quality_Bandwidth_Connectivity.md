@@ -87,7 +87,7 @@ When possible, profile on devices that have similar performance characteristics 
 
 #### Choose a lower local video quality
 
-Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call [chooseVideoInputQuality](https://github.com/aws/amazon-chime-sdk-js/blob/2fd1027ecf23ac67421078293337d1788bbbf6c8/src/audiovideofacade/DefaultAudioVideoFacade.ts#L372)(width, height, frameRate, maxBandwidthKbps) and lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for `chooseVideoInputQuality`.
+Sometimes it is better to sacrifice video quality in order to prioritize audio. You can call [chooseVideoInputQuality](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade.ts#L391)(width, height, frameRate, maxBandwidthKbps) and lower the maximum bandwidth in real-time. You can also adjust the resolution and frame rate if you call the method before starting local video (or stop and then restart the local video). See the section below on values you can use for `chooseVideoInputQuality`.
 
 #### Pause remote videos
 

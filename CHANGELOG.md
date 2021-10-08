@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   
 ### Removed
 
+- Remove Getting Started documentation guide and use [API overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html) to cover the development in more details.
+- Remove interface matching rule for all the components so that it is not required to have an interface of the same name for each component directory.
+
 ### Fixed
 
 - Add safeguard in `ReceivedVideoInputTask` to prevent crashing when video input stream does not contain any video track.
