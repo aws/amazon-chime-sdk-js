@@ -51,7 +51,6 @@ Here is a list of all blog posts about the Amazon Chime SDK](https://aws.amazon.
 
 The following developer guides cover specific topics for a technical audience.
 
-- [Getting Started](https://aws.github.io/amazon-chime-sdk-js/modules/gettingstarted.html)
 - [API Overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html)
 - [Frequently Asked Questions (FAQ)](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
 - [Content Share](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html)

@@ -22,7 +22,11 @@ Create a [DefaultDeviceController](https://aws.github.io/amazon-chime-sdk-js/cla
 const deviceController = new DefaultDeviceController(logger);
 ```
 
-### 1c. Create a meeting session configuration
+### 1c. Create a meeting from your server application
+
+Use AWS SDK to create the Chime object. Use the Chime object to get meeting and attendee objects from [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) and [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) Chime APIs. See [Getting responses from your server application](https://github.com/aws/amazon-chime-sdk-js#getting-responses-from-your-server-application) for more information.
+
+### 1d. Create a meeting session configuration
 
 Create a [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#constructor) object with the responses to [chime:CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) and [chime:CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html). Your server application should make these API calls and securely pass the meeting and attendee responses to the browser client application.
 
@@ -30,7 +34,7 @@ Create a [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js
 const configuration = new MeetingSessionConfiguration(meetingResponse, attendeeResponse);
 ```
 
-### 1d. Create a meeting session
+### 1e. Create a meeting session
 
 Using the above objects, create a [DefaultMeetingSession](https://aws.github.io/amazon-chime-sdk-js/classes/defaultmeetingsession.html#constructor).
 
@@ -183,9 +187,9 @@ You may optionally listen to the following callbacks to monitor aspects of conne
 
 ## 4. Start and stop the session
 
-After completing configuration of audio and video (see previous sections) call `meetingSession.audioVideo.[start()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start)`. This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.
+After completing configuration of audio and video (see previous sections) call meetingSession.audioVideo.[start()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#start). This method will initialize all underlying components, set up connections, and immediately start sending and receiving audio.
 
-To stop the meeting session, call `meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop)`.
+To stop the meeting session, call meetingSession.audioVideo.[stop()](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#stop).
 
 The `stop()` method does not clean up observers. You can start and stop a session multiple times using the same observers. In other words observers are not tied to the lifecycle of the session.
 

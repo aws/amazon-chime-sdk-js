@@ -98,7 +98,7 @@
 					<p>If you want to disable the error for security policy violation events, you can do the following in your application:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { CSPMonitor } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
-CSPMonitor.disableCSPMonitor();
+CSPMonitor.disable();
 
 <span class="hljs-keyword">const</span> meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(...);
 meetingSession.audioVideo.start()

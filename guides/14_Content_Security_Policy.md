@@ -37,7 +37,7 @@ If you want to disable the error for security policy violation events, you can d
 ```typescript
 import { CSPMonitor } from 'amazon-chime-sdk-js';
 
-CSPMonitor.disableCSPMonitor();
+CSPMonitor.disable();
 
 const meetingSession = new DefaultMeetingSession(...);
 meetingSession.audioVideo.start()
