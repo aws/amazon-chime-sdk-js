@@ -475,7 +475,6 @@ export class DemoMeetingApp
   // feature flags
   enableWebAudio = false;
   logLevel = LogLevel.INFO;
-  enableUnifiedPlanForChromiumBasedBrowsers = true;
   enableSimulcast = false;
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
@@ -678,7 +677,6 @@ export class DemoMeetingApp
   initEventListeners(): void {
     if (!this.defaultBrowserBehaviour.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
-      (document.getElementById('planB') as HTMLInputElement).disabled = true;
     }
 
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
@@ -719,10 +717,6 @@ export class DemoMeetingApp
       this.enableSimulcast = (document.getElementById('simulcast') as HTMLInputElement).checked;
       this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
       this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
-      // js sdk default to enable unified plan, equivalent to "Disable Unified Plan" default unchecked
-      this.enableUnifiedPlanForChromiumBasedBrowsers = !(document.getElementById(
-        'planB'
-      ) as HTMLInputElement).checked;
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
 
       const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
@@ -1688,7 +1682,6 @@ export class DemoMeetingApp
     const deviceController = new DefaultDeviceController(this.meetingLogger, {
       enableWebAudio: this.enableWebAudio,
     });
-    configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     const urlParameters = new URL(window.location.href).searchParams;
     const timeoutMs = Number(urlParameters.get('attendee-presence-timeout-ms'));
     if (!isNaN(timeoutMs)) {
@@ -2505,7 +2498,7 @@ export class DemoMeetingApp
   }
 
   private areVideoFiltersSupported(): boolean {
-    return this.defaultBrowserBehaviour.supportsCanvasCapturedStreamPlayback() && this.enableUnifiedPlanForChromiumBasedBrowsers;
+    return this.defaultBrowserBehaviour.supportsCanvasCapturedStreamPlayback();
   }
 
   private isVoiceFocusActive(): boolean {

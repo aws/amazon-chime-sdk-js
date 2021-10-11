@@ -125,12 +125,12 @@ describe('DefaultBrowserBehavior', () => {
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
         }).requiresUnifiedPlan()
-      ).to.be.false;
+      ).to.be.true;
       expect(
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
         }).requiresUnifiedPlanMunging()
-      ).to.be.false;
+      ).to.be.true;
     });
 
     it('can detect Edge Chromium', () => {
@@ -168,12 +168,12 @@ describe('DefaultBrowserBehavior', () => {
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
         }).requiresUnifiedPlan()
-      ).to.be.false;
+      ).to.be.true;
       expect(
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
         }).requiresUnifiedPlanMunging()
-      ).to.be.false;
+      ).to.be.true;
     });
 
     it('can detect Samsung Internet', () => {
@@ -205,12 +205,12 @@ describe('DefaultBrowserBehavior', () => {
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
         }).requiresUnifiedPlan()
-      ).to.be.false;
+      ).to.be.true;
       expect(
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
         }).requiresUnifiedPlanMunging()
-      ).to.be.false;
+      ).to.be.true;
     });
 
     it('can detect Safari', () => {
@@ -298,12 +298,12 @@ describe('DefaultBrowserBehavior', () => {
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
         }).requiresUnifiedPlan()
-      ).to.be.false;
+      ).to.be.true;
       expect(
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
         }).requiresUnifiedPlanMunging()
-      ).to.be.false;
+      ).to.be.true;
     });
 
     it('can test Safari version 12', () => {
@@ -453,21 +453,31 @@ describe('DefaultBrowserBehavior', () => {
   });
 
   describe('support Simulcast', () => {
-    it('Supports for Chrome and unified plan', () => {
+    it('Supports for Chrome and unified plan (always enabled and not configurable)', () => {
       setUserAgent(CHROME_MAC_USER_AGENT);
       expect(
         new DefaultBrowserBehavior({
           enableUnifiedPlanForChromiumBasedBrowsers: true,
         }).isSimulcastSupported()
       ).to.be.true;
+
+      expect(
+        new DefaultBrowserBehavior({
+          enableUnifiedPlanForChromiumBasedBrowsers: false,
+        }).isSimulcastSupported()
+      ).to.be.true;
     });
 
-    it('Does not support for Chrome plan-b', () => {
-      setUserAgent(CHROME_MAC_USER_AGENT);
+    it('Does not support for browsers using Plan B', () => {
+      setUserAgent(SAFARI_USER_AGENT);
+      domMockBehavior = new DOMMockBehavior();
+      domMockBehavior.isUnifiedPlanSupported = false;
+      domMockBehavior.browserName = 'ios12.0';
+      mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().isSimulcastSupported()).to.be.false;
     });
 
-    it('Does not support for other non-Chrome browsers', () => {
+    it('Does not support for non-Chrome browsers', () => {
       setUserAgent(FIREFOX_MAC_USER_AGENT);
       expect(new DefaultBrowserBehavior().isSimulcastSupported()).to.be.false;
     });

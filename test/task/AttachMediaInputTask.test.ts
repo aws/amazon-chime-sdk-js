@@ -23,6 +23,9 @@ import DOMMockBuilder from '../dommock/DOMMockBuilder';
 describe('AttachMediaInputTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
+  const SAFARI_12_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.2 Safari/605.1.15';
+
   const logger = new NoOpDebugLogger();
   const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
   let context: AudioVideoControllerState;
@@ -198,7 +201,10 @@ describe('AttachMediaInputTask', () => {
   describe('Plan B', () => {
     beforeEach(() => {
       // @ts-ignore
-      navigator.userAgent = 'Chrome/77.0.3865.75';
+      navigator.userAgent = SAFARI_12_USER_AGENT;
+      domMockBehavior.isUnifiedPlanSupported = false;
+      domMockBehavior.browserName = 'safari12';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.browserBehavior = new DefaultBrowserBehavior();
       context.transceiverController = new DefaultTransceiverController(
         logger,

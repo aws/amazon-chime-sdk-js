@@ -191,22 +191,19 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       );
     }
 
-    if (this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
-      if (browserBehavior.hasChromiumWebRTC()) {
-        this.logger.info('WebRTC unified plan for Chromium-based browsers is enabled');
-      } else {
-        this.logger.info(`WebRTC unified plan is required for ${browserBehavior.name()}`);
-      }
+    if (
+      browserBehavior.hasChromiumWebRTC() &&
+      !this._configuration.enableUnifiedPlanForChromiumBasedBrowsers
+    ) {
+      this.logger.error(
+        'Plan B SDP has been deprecated on Chromium-based browsers. ' +
+          `Overriding configured value of 'enableUnifiedPlanForChromiumBasedBrowsers' to be true`
+      );
     }
 
     // Validation if a custom video uplink policy is specified
     if (this._configuration.videoUplinkBandwidthPolicy) {
       if (this.isSimulcastUplinkPolicy(this._configuration.videoUplinkBandwidthPolicy)) {
-        if (!this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
-          throw new Error(
-            'Simulcast requires enabling WebRTC Unified Plan for Chromium-based browsers'
-          );
-        }
         if (!browserBehavior.hasChromiumWebRTC()) {
           throw new Error('Simulcast is only supported on Chromium-based browsers');
         }
@@ -217,18 +214,11 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
     }
 
     if (this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers) {
-      if (!this._configuration.enableUnifiedPlanForChromiumBasedBrowsers) {
-        this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
-        this.logger.info(
-          'Simulcast requires enabling WebRTC Unified Plan for Chromium-based browsers'
-        );
-      } else if (browserBehavior.hasChromiumWebRTC()) {
+      if (browserBehavior.hasChromiumWebRTC()) {
         this.logger.info(`Simulcast is enabled for ${browserBehavior.name()}`);
       } else {
         this._configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
-        this.logger.info(
-          'Simulcast requires WebRTC Unified Plan and is only supported on Chromium-based browsers'
-        );
+        this.logger.info('Simulcast is only supported on Chromium-based browsers');
       }
     }
   }
