@@ -74,9 +74,29 @@
 						</a>
 					</div>
 					<p>Modern web applications use <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">Content Security Policy</a> to protect users from certain classes of attacks. You can add a security policy by configuring your web server to return the Content-Security-Policy HTTP header or using a <code>&lt;meta&gt;</code> element to configure a policy. You can add security headers using <a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html">Lambda@Edge</a> and Amazon <a href="https://aws.amazon.com/cloudfront/">CloudFront</a>. For more information, see <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/">Adding HTTP Security Headers Using Lambda@Edge and Amazon CloudFront</a>.</p>
-					<p>Include the following in your policy to allow the Amazon Chime SDK access to the meeting, messaging, and Amazon Voice Focus resources:</p>
-					<pre><code>Content-Security-Policy: connect-<span class="hljs-attribute">src</span> <span class="hljs-string">&#x27;self&#x27;</span> <span class="hljs-string">&#x27;*.chime.aws&#x27;</span> <span class="hljs-string">&#x27;wss://*.chime.aws&#x27;</span> <span class="hljs-string">&#x27;*.amazonaws.com&#x27;</span> <span class="hljs-string">&#x27;https://*.sdkassets.chime.aws&#x27;</span>; script-<span class="hljs-attribute">src</span> <span class="hljs-string">&#x27;https://*.sdkassets.chime.aws&#x27;</span>; script-<span class="hljs-attribute">src</span>-elem <span class="hljs-string">&#x27;https://*.sdkassets.chime.aws&#x27;</span>; worker-<span class="hljs-attribute">src</span> <span class="hljs-string">&#x27;blob:&#x27;</span>; child-<span class="hljs-attribute">src</span> <span class="hljs-string">&#x27;blob:&#x27;</span>
+					<p>Include the following in your policy to allow the Amazon Chime SDK access to the meeting, messaging, and Amazon Voice Focus resources.</p>
+					<p>You can do so via an HTTP header:</p>
+					<pre><code><span class="hljs-attribute">Content-Security-Policy</span>: content=&quot;<span class="hljs-keyword">connect-src</span> <span class="hljs-string">&#x27;self&#x27;</span> https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws; <span class="hljs-keyword">script-src</span> <span class="hljs-string">&#x27;self&#x27;</span> https://*.sdkassets.chime.aws; script-src-elem <span class="hljs-string">&#x27;self&#x27;</span> https://*.sdkassets.chime.aws <span class="hljs-string">&#x27;wasm-unsafe-eval&#x27;</span>; worker-src <span class="hljs-string">&#x27;blob:&#x27;</span>; <span class="hljs-keyword">child-src</span> <span class="hljs-string">&#x27;blob:&#x27;</span>
 </code></pre>
+					<p>a <code>&lt;meta&gt;</code> tag:</p>
+					<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">&quot;Content-Security-Policy&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;connect-src &#x27;self&#x27; https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws; script-src &#x27;self&#x27; https://*.sdkassets.chime.aws &#x27;wasm-eval&#x27; &#x27;wasm-unsafe-eval&#x27; &#x27;unsafe-eval&#x27;; script-src-elem &#x27;self&#x27; https://*.sdkassets.chime.aws; worker-src blob:; child-src blob:&quot;</span>&gt;</span>
+</code></pre>
+					<p>or by using a bundling tool like <code>csp-html-webpack-plugin</code> with input like:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">new</span> CspHtmlWebpackPlugin({
+  <span class="hljs-string">&#x27;connect-src&#x27;</span>: <span class="hljs-string">&quot;&#x27;self&#x27; https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws&quot;</span>,
+
+  <span class="hljs-comment">// &#x27;wasm-unsafe-eval&#x27; is to allow Amazon Voice Focus to work in Chrome 95+.</span>
+  <span class="hljs-comment">// Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless</span>
+  <span class="hljs-comment">// &#x27;unsafe-eval&#x27; is also present.</span>
+  <span class="hljs-string">&#x27;script-src&#x27;</span>: <span class="hljs-string">&quot;&#x27;self&#x27; https://*.sdkassets.chime.aws &#x27;wasm-eval&#x27; &#x27;wasm-unsafe-eval&#x27; &#x27;unsafe-eval&#x27;&quot;</span>,
+
+  <span class="hljs-comment">// Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.</span>
+  <span class="hljs-string">&#x27;script-src-elem&#x27;</span>: <span class="hljs-string">&quot;&#x27;self&#x27; https://*.sdkassets.chime.aws &#x27;unsafe-inline&#x27;&quot;</span>,
+  <span class="hljs-string">&#x27;worker-src&#x27;</span>: <span class="hljs-string">&quot;blob:&quot;</span>,
+  <span class="hljs-string">&#x27;child-src&#x27;</span>: <span class="hljs-string">&quot;blob:&quot;</span>,
+}),
+</code></pre>
+					<p><code>csp-html-webpack-plugin</code> will automatically generate hashes and nonces for your inline script and style tags.</p>
 					<p>Note that <code>script-src-elem</code> is not supported in Safari and Firefox. <code>worker-src</code> is not supported in Safari.</p>
 					<p>You will need to add your own entries to this policy to allow for making connections and downloading scripts and assets required by your own application.</p>
 					<a href="#meeting" id="meeting" style="color: inherit; text-decoration: none;">
