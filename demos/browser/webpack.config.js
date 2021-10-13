@@ -17,24 +17,27 @@ const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
  * This is exactly what we document in the CSP guide.
  */
 const csp = {
-  'connect-src': "'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws",
+  'connect-src': "'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com",
 
   // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+.
   // Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless
   // 'unsafe-eval' is also present.
-  'script-src': "'self' https://*.sdkassets.chime.aws 'unsafe-eval' 'wasm-eval' 'wasm-unsafe-eval'",
+  'script-src': "'self' 'unsafe-eval' 'wasm-eval' 'wasm-unsafe-eval'",
 
   // Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.
-  'script-src-elem': "'self' https://*.sdkassets.chime.aws 'unsafe-inline'",
+  'script-src-elem': "'self' 'unsafe-inline'",
   'worker-src': "'self' blob:",
   'child-src': "'self' blob:",
 };
 
 // Modify our basic CSP to allow several things:
-// 1. Access to gamma assets for testing.
-csp['connect-src'] += ' https://*.sdkassets.gchime.aws';
-csp['script-src'] += ' https://*.sdkassets.gchime.aws';
-csp['script-src-elem'] += ' https://*.sdkassets.gchime.aws';
+// 1. Access to assets in all stages for testing and canaries.
+for (const stage of ['a', 'b', 'g', '']) {
+  const host = ` https://*.sdkassets.${stage}chime.aws`;
+  csp['connect-src'] += host;
+  csp['script-src'] += host;
+  csp['script-src-elem'] += host;
+}
 
 // 2. Access to jsdelivr for TensorFlow for background blur.
 csp['script-src'] += ' https://cdn.jsdelivr.net';
