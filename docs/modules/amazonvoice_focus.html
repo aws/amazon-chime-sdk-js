@@ -182,6 +182,10 @@
 						<li><code>worker-src</code>: add <code>blob:</code> to load worker JavaScript across origins.</li>
 						<li><code>child-src</code>: add <code>blob:</code> to load worker JavaScript across origins (only in Safari).</li>
 					</ul>
+					<p>In Chrome 95 and later, compiled WebAssembly modules cannot be passed across module boundaries, and the Amazon Voice Focus worker needs additional policy entries to allow it to compile its own estimation code. You must add:</p>
+					<ul>
+						<li><code>script-src</code>: <code>&#39;wasm-eval&#39;</code> and <code>&#39;wasm-unsafe-eval&#39;</code> to compile fetched WebAssembly, and <code>&#39;unsafe-eval&#39;</code> to allow the worker to compile.</li>
+					</ul>
 					<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then Amazon Voice Focus will not be able to initialize, and will either appear to be unsupported or will fail to create a suppressed audio device. You will see errors in your browser console like:</p>
 					<pre><code>Refused <span class="hljs-built_in">to</span> connect <span class="hljs-built_in">to</span>
 <span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/workers/worker-v1.js…&#x27;</span>

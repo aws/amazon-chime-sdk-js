@@ -2,11 +2,39 @@
 
 Modern web applications use [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) to protect users from certain classes of attacks. You can add a security policy by configuring your web server to return the Content-Security-Policy HTTP header or using a `<meta>` element to configure a policy. You can add security headers using [Lambda@Edge](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html) and Amazon [CloudFront](https://aws.amazon.com/cloudfront/). For more information, see [Adding HTTP Security Headers Using Lambda@Edge and Amazon CloudFront](https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/).
 
-Include the following in your policy to allow the Amazon Chime SDK access to the meeting, messaging, and Amazon Voice Focus resources:
+Include the following in your policy to allow the Amazon Chime SDK access to the meeting, messaging, and Amazon Voice Focus resources.
+
+You can do so via an HTTP header:
 
 ```
-Content-Security-Policy: connect-src 'self' '*.chime.aws' 'wss://*.chime.aws' '*.amazonaws.com' 'https://*.sdkassets.chime.aws'; script-src 'https://*.sdkassets.chime.aws'; script-src-elem 'https://*.sdkassets.chime.aws'; worker-src 'blob:'; child-src 'blob:'
+Content-Security-Policy: content="connect-src 'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws; script-src 'self' https://*.sdkassets.chime.aws; script-src-elem 'self' https://*.sdkassets.chime.aws 'wasm-unsafe-eval'; worker-src 'blob:'; child-src 'blob:'
 ```
+
+a `<meta>` tag:
+
+```html
+<meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws; script-src 'self' https://*.sdkassets.chime.aws 'wasm-eval' 'wasm-unsafe-eval' 'unsafe-eval'; script-src-elem 'self' https://*.sdkassets.chime.aws; worker-src blob:; child-src blob:">
+```
+
+or by using a bundling tool like `csp-html-webpack-plugin` with input like:
+
+```javascript
+new CspHtmlWebpackPlugin({
+  'connect-src': "'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws",
+
+  // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+.
+  // Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless
+  // 'unsafe-eval' is also present.
+  'script-src': "'self' https://*.sdkassets.chime.aws 'wasm-eval' 'wasm-unsafe-eval' 'unsafe-eval'",
+
+  // Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.
+  'script-src-elem': "'self' https://*.sdkassets.chime.aws 'unsafe-inline'",
+  'worker-src': "blob:",
+  'child-src': "blob:",
+}),
+```
+
+`csp-html-webpack-plugin` will automatically generate hashes and nonces for your inline script and style tags.
 
 Note that `script-src-elem` is not supported in Safari and Firefox. `worker-src` is not supported in Safari.
 
