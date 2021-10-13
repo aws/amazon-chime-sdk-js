@@ -2,48 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * See also webpack.config.hot.js, which is a fork of this file.
- * Please make changes in both places if applicable.
+ * This file is a fork of webpack.config.js. 
+ * My apologies. Please make changes in both places if applicable.
+ * 
+ * It's a fork because they need separate dev/source-map properties so that we can test CSP.
+ * 
+ * TODO: use tooling to share a base config.
  */
 
 /* eslint-disable */
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 /* eslint-enable */
-
-/**
- * This is exactly what we document in the CSP guide.
- */
-const csp = {
-  'connect-src': "'self' https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://*.sdkassets.chime.aws",
-
-  // 'wasm-unsafe-eval' is to allow Amazon Voice Focus to work in Chrome 95+.
-  // Strictly speaking, this should be enough, but the worker cannot compile WebAssembly unless
-  // 'unsafe-eval' is also present.
-  'script-src': "'self' https://*.sdkassets.chime.aws 'unsafe-eval' 'wasm-eval' 'wasm-unsafe-eval'",
-
-  // Script hashes/nonces are not emitted for script-src-elem, so just add unsafe-inline.
-  'script-src-elem': "'self' https://*.sdkassets.chime.aws 'unsafe-inline'",
-  'worker-src': "'self' blob:",
-  'child-src': "'self' blob:",
-};
-
-// Modify our basic CSP to allow several things:
-// 1. Access to gamma assets for testing.
-csp['connect-src'] += ' https://*.sdkassets.gchime.aws';
-csp['script-src'] += ' https://*.sdkassets.gchime.aws';
-csp['script-src-elem'] += ' https://*.sdkassets.gchime.aws';
-
-// 2. Access to jsdelivr for TensorFlow for background blur.
-csp['script-src'] += ' https://cdn.jsdelivr.net';
-csp['script-src-elem'] += ' https://cdn.jsdelivr.net';
-
-// 3. Add 'unsafe-eval' because TensorFlow needs it.
-if (!csp['script-src'].includes("'unsafe-eval'")) {
-  csp['script-src'] += " 'unsafe-eval'";
-}
 
 module.exports = env => {
   console.info('Env:', JSON.stringify(env, null, 2));
@@ -52,6 +23,7 @@ module.exports = env => {
   console.info('Using app', app);
   return {
     devServer: {
+      hot: true,
       devMiddleware: {
         index: `${app}.html`
       },
@@ -73,7 +45,6 @@ module.exports = env => {
       }
     },
     plugins: [
-      new CspHtmlWebpackPlugin(csp),
       new HtmlWebpackPlugin({
         inlineSource: '.(js|css)$',
         template: __dirname + `/app/${app}/${app}.html`,
@@ -130,7 +101,7 @@ module.exports = env => {
         },
       ],
     },
-    mode: 'production',
+    mode: 'development',
     performance: {
       hints: false,
     },
