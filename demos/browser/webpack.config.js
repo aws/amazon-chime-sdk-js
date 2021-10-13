@@ -34,7 +34,8 @@ const csp = {
 // 1. Access to assets in all stages for testing and canaries.
 for (const stage of ['a', 'b', 'g', '']) {
   const host = ` https://*.sdkassets.${stage}chime.aws`;
-  csp['connect-src'] += host;
+  const media = ` wss://*.${stage}chime.aws`;
+  csp['connect-src'] += host + media;
   csp['script-src'] += host;
   csp['script-src-elem'] += host;
 }
