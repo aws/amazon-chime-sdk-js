@@ -82,9 +82,15 @@ Modern web applications use [Content Security Policy](https://developer.mozilla.
 * `worker-src`: add `blob:` to load worker JavaScript across origins.
 * `child-src`: add `blob:` to load worker JavaScript across origins (only in Safari).
 
-In Chrome 95 and later, compiled WebAssembly modules cannot be passed across module boundaries, and the Amazon Voice Focus worker needs additional policy entries to allow it to compile its own estimation code. You must add:
+In Chrome 95 and later, compiled WebAssembly modules cannot be passed across module boundaries, so your application must be permitted to evaluate those modules. You must add the following to `script-src` and `script-src-elem`:
 
-* `script-src`: `'wasm-eval'` and `'wasm-unsafe-eval'` to compile fetched WebAssembly, and `'unsafe-eval'` to allow the worker to compile.
+* `'wasm-eval'` and `'wasm-unsafe-eval'` to compile fetched WebAssembly in your application.
+
+In Chrome 96 and later, the Amazon Voice Focus worker needs an additional policy entry to allow it to compile WebAssembly. If your application does not specify a fixed `variant` in its model spec, or uses a worker-based execution mode, then you must add the following to `script-src` and `script-src-elem`:
+
+* `'unsafe-eval'` to allow the worker to compile the estimator and/or noise suppression code.
+
+This might be an unintentional regression in Chrome; an [issue has been filed](https://bugs.chromium.org/p/chromium/issues/detail?id=1259726).
 
 If you omit any of these entries, or if you use both HTTP headers and `http-equiv` `meta` tags to specify policy and inadvertently exclude any of these by intersection, then Amazon Voice Focus will not be able to initialize, and will either appear to be unsupported or will fail to create a suppressed audio device. You will see errors in your browser console like:
 
