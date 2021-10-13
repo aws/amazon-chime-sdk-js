@@ -8,12 +8,13 @@
     "build:fast": "npm run copy-assets && node script/webpack-wrapper.js",
     "build": "npm run deps && npm install && tsc && npm run build:fast",
     "start:fast": "npm run copy-assets && node script/webpack-wrapper.js --serve",
-    "start:hot": "npm run copy-assets && webpack serve --config ./webpack.config.js",
+    "start:hot": "npm run copy-assets && webpack serve --config ./webpack.config.hot.js",
     "start": "npm run deps && npm install && npm run start:fast"
   },
   "devDependencies": {
     "autoprefixer": "^10.2.6",
     "cross-spawn": "^7.0.3",
+    "csp-html-webpack-plugin": "^5.1.0",
     "css-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.2",
     "markdown-it": "^11.0.1",
@@ -31,12 +32,13 @@
   },
   "dependencies": {
     "amazon-chime-sdk-js": "file:../..",
-    "aws-sdk": "^2.957.0",
+    "aws-sdk": "^2.1006.0",
     "bootstrap": "^4.5.2",
     "compression": "^1.7.4",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
-    "popper.js": "^1.15.0"
+    "popper.js": "^1.15.0",
+    "util": "^0.12.4"
   },
   "license": "Apache-2.0",
   "repository": {
