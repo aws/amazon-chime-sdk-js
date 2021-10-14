@@ -23,7 +23,7 @@ type EncodingParams = {
  *  parameters that reacts to estimated uplink bandwidth
  */
 export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUplinkPolicy {
-  static readonly defaultUplinkBandwidthKbps: number = 1200;
+  static readonly defaultUplinkBandwidthKbps: number = 1600;
   static readonly startupDurationMs: number = 6000;
   static readonly holdDownDurationMs: number = 4000;
   static readonly defaultMaxFrameRate = 15;
@@ -134,7 +134,7 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       },
       {
         maxBitrateKbps: 0,
-        scaleResolutionDownBy: 1,
+        scaleResolutionDownBy: 2,
       },
       {
         maxBitrateKbps: 0,
@@ -152,7 +152,7 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       // 320x192 + 1280x768
       if (this.numSenders <= 8) {
         this.newActiveStreams = SimulcastLayers.MediumAndHigh;
-        newEncodingParameters[0].maxBitrateKbps = 350;
+        newEncodingParameters[0].maxBitrateKbps = 500;
         newEncodingParameters[0].scaleResolutionDownBy = 2;
       } else {
         this.newActiveStreams = SimulcastLayers.LowAndHigh;
@@ -355,20 +355,6 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
     }
     return qualityString;
   }
-
-  // private calculateBitRateKpsForLowResolutionStream(): number {
-  //   if (this.numSenders <= 4) {
-  //     return 300;
-  //   } else if (this.numSenders <= 8) {
-  //     return 250;
-  //   } else if (this.numSenders <= 12) {
-  //     return 200;
-  //   } else if (this.numSenders <= 16) {
-  //     return 150;
-  //   } else {
-  //     return 100;
-  //   }
-  // }
 
   private publishEncodingSimulcastLayer(): void {
     this.forEachObserver(observer => {

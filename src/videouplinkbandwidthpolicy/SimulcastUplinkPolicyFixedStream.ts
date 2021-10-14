@@ -91,7 +91,7 @@ export default class SimulcastUplinkPolicyFixedStream implements SimulcastUplink
       newEncodingParameters[2].maxBitrateKbps = 1200;
     } else {
       this.newActiveStreams = SimulcastLayers.LowAndHigh;
-      newEncodingParameters[0].maxBitrateKbps = 100;
+      newEncodingParameters[0].maxBitrateKbps = 150;
       newEncodingParameters[2].maxBitrateKbps = 1200;
     }
 
