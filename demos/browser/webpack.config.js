@@ -42,8 +42,6 @@ for (const stage of ['a', 'b', 'g', '']) {
 
 // 2. Access to googleapis for the Segmentation filter 
 csp['connect-src'] += ' https://storage.googleapis.com';
-csp['script-src'] += ' https://storage.googleapis.com';
-csp['script-src-elem'] += ' https://storage.googleapis.com';
 
 // 3. Access to jsdelivr for TensorFlow for background blur.
 csp['script-src'] += ' https://cdn.jsdelivr.net';
