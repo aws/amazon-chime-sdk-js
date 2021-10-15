@@ -73,8 +73,10 @@ jobs:
         run: npm run test:integration-audio
       - name: Run Video Integ Test
         run: npm run test:integration-video
-      - name: Run Content Share Integration Test
-        run: npm run test:integration-content-share
+      - name: Run Content Share Integration Test Job One
+        run: npm run test:integration-content-share-test-suite-one
+      - name: Run Content Share Integration Test Job Two
+        run: npm run test:integration-content-share-test-suite-two
       - name: Run Data Message Integration Test
         run: npm run test:integration-data-message
       - name: Run Meeting Readiness Checker Integration Test
