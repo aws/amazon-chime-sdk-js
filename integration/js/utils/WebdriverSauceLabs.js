@@ -3,7 +3,6 @@ const safari = require('../node_modules/selenium-webdriver/safari');
 const axios = require('axios');
 const Base64 = require('js-base64').Base64;
 const { AppPage, MeetingReadinessCheckerPage, MessagingSessionPage, TestAppPage } = require('../pages');
-
 const getPlatformName = capabilities => {
   const { browserName, version, platform } = capabilities;
   switch (platform) {
@@ -72,6 +71,37 @@ const getSafariCapabilities = capabilities => {
   return cap
 };
 
+const getChromeOptions = capabilities => {
+  let chromeOptions = {};
+  if (capabilities.useFakeMedia) {
+    chromeOptions['args'] = ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'];
+    if (capabilities.video) {
+      chromeOptions['args'].push('--use-file-for-fake-video-capture=' + fetchMediaPath(capabilities.video, capabilities.browserName));
+    }
+    if (capabilities.audio) {
+      chromeOptions['args'].push('--use-file-for-fake-audio-capture=' + fetchMediaPath(capabilities.audio, capabilities.browserName));
+    }
+  }
+  return chromeOptions;
+}
+
+const fetchMediaPath = function(media, browserName) {
+  let extension;
+  if (media.type === 'Video') {
+    if (browserName === 'chrome') {
+      extension = '.y4m';
+    } else {
+      extension = '.mp4';
+    }
+  } else {
+    extension = '.wav';
+  }
+  return media.directory + media.filename + extension;
+}
+
+const getPrerunScript = (capabilities) =>{
+  return capabilities.name.includes("Background Blur Test") ? 'storage:cf5a00cc-2a0d-40bb-9f2e-f721f2eec1f4' : "";
+}
 const getChromeCapabilities = capabilities => {
   let cap = Capabilities.chrome();
   var prefs = new logging.Preferences();
@@ -82,23 +112,14 @@ const getChromeCapabilities = capabilities => {
   cap.set('platformName', getPlatformName(capabilities));
   cap.setLoggingPrefs(prefs);
   cap.setBrowserVersion(capabilities.version);
-  cap.set('goog:chromeOptions', {
-    args: [
-      '--use-fake-ui-for-media-stream',
-      '--use-fake-device-for-media-stream',
-      'start-maximized',
-      'disable-infobars',
-      'ignore-gpu-blacklist',
-      'test-type',
-      'disable-gpu',
-    ],
-  });
+  cap.set('goog:chromeOptions', getChromeOptions(capabilities));
   cap.set('resolution', '1920x1080');
   cap.set('sauce:options', getSauceLabsConfig(capabilities));
-  return cap
+  return cap;
 };
 
 const getSauceLabsConfig = (capabilities) => {
+  const prerunScript  = getPrerunScript(capabilities);
   return {
     name: capabilities.name,
     tags: [capabilities.name],
@@ -108,6 +129,7 @@ const getSauceLabsConfig = (capabilities) => {
       !((capabilities.name).includes('ContentShare'))) && {
         extendedDebugging: true
       }),
+      prerun : prerunScript
   }
 };
 
@@ -178,7 +200,6 @@ class SaucelabsSession {
       .build();
     return new SaucelabsSession(driver, domain, appName);
   }
-
   constructor(inDriver, domain, appName) {
     this.driver = inDriver;
     this.domain = domain;
@@ -251,7 +272,8 @@ class SaucelabsSession {
       }
     }
   }
-
+  
+ 
   async updateTestResults(passed) {
     const sessionId = await this.getSessionId();
     console.log(`Publishing test results to saucelabs for session: ${sessionId} status: ${passed ? 'passed' : 'failed'}`);

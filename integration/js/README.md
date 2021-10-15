@@ -142,3 +142,12 @@ Run the test:
 ```shell
 $KITE_HOME/scripts/mac/path/r configs/<test_name>.config.json
 ```
+Steps to add test file to Sauce Labs virtual machine
+To create a fake video or audio stream you need the media file on Sauce Labs virtual machine before running your test. For that you can use a pre-run executable script to download file from a public storage to the virtual machine running your tests. 
+- Create a pre-run script by following the steps given on this link: https://docs.saucelabs.com/web-apps/automated-testing/selenium/pre-run-executables/#downloading-files-to-a-vm-prior-to-testing. 
+    On sauce labs virtual machines files are stored in the below folder locations
+    Windows = C:\Users\Administrator\Downloads
+    Mac = /Users/chef/Downloads
+    Linux = /home/chef/Downloads
+- Upload the pre-run executable to Sauce Labs storage by using Sauce Labs API methods: https://docs.saucelabs.com/dev/api/storage/
+- Add the pre-run to Sauce configs in your code like this prerun: 'storage:filename=filename.ext'. You can also use storage id of the file location. 

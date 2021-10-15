@@ -11,6 +11,7 @@ import {
   AudioProfile,
   AudioVideoFacade,
   AudioVideoObserver,
+  BackgroundBlurVideoFrameProcessor,
   ClientMetricReport,
   ClientVideoStreamReceivingReport,
   ConsoleLogger,
@@ -70,6 +71,9 @@ import {
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
   isDestroyable,
+  BackgroundFilterSpec,
+  BackgroundFilterPaths,
+  ModelSpecBuilder,
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -292,7 +296,25 @@ const VOICE_FOCUS_SPEC = {
 
 const MAX_VOICE_FOCUS_COMPLEXITY: VoiceFocusModelComplexity | undefined = undefined;
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'None';
+const BACKGROUND_BLUR_CDN = search.get('blurCDN') || undefined;
+const BACKGROUND_BLUR_ASSET_GROUP = search.get('blurAssetGroup') || undefined;
+const BACKGROUND_BLUR_REVISION_ID = search.get('blurRevisionID') || undefined;
+
+const BACKGROUND_BLUR_PATHS: BackgroundFilterPaths = BACKGROUND_BLUR_CDN && {
+  worker: `${BACKGROUND_BLUR_CDN}/bgblur/workers/worker.js`,
+  wasm: `${BACKGROUND_BLUR_CDN}/bgblur/wasm/_cwt-wasm.wasm`,
+  simd: `${BACKGROUND_BLUR_CDN}/bgblur/wasm/_cwt-wasm-simd.wasm`,
+};
+const BACKGROUND_BLUR_MODEL = BACKGROUND_BLUR_CDN && ModelSpecBuilder.builder()
+    .withSelfieSegmentationDefaults()
+    .withPath(`${BACKGROUND_BLUR_CDN}/bgblur/models/selfie_segmentation_landscape.tflite`)
+    .build();
+const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BLUR_REVISION_ID) && {
+  assetGroup: BACKGROUND_BLUR_ASSET_GROUP,
+  revisionID: BACKGROUND_BLUR_REVISION_ID,
+}
+
+type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'BackgroundBlur' | 'None';
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
@@ -2416,6 +2438,14 @@ export class DemoMeetingApp
     this.chosenVideoTransformDevice?.stop();
   }
 
+  private getBackgroundBlurSpec(): BackgroundFilterSpec {
+    return {
+      paths: BACKGROUND_BLUR_PATHS,
+      model: BACKGROUND_BLUR_MODEL,
+      ...BACKGROUND_BLUR_ASSET_SPEC
+    };
+  }
+
   private async populateVideoFilterInputList(isPreviewWindow: boolean): Promise<void> {
     const genericName = 'Filter';
     let filters: VideoFilterName[] = ['None'];
@@ -2433,6 +2463,11 @@ export class DemoMeetingApp
         }).catch(err => {
           this.log('Could not load BodyPix dependency', err);
         });
+      }
+
+      const isBlurSupported = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
+      if (isBlurSupported) {
+        filters.push('BackgroundBlur');
       }
     }
 
@@ -2939,7 +2974,7 @@ export class DemoMeetingApp
     return value;
   }
 
-  private videoFilterToProcessor(videoFilter: VideoFilterName): VideoFrameProcessor | null {
+  private async videoFilterToProcessor(videoFilter: VideoFilterName): Promise<VideoFrameProcessor | null> {
     this.log(`Choosing video filter ${videoFilter}`);
 
     if (videoFilter === 'Emojify') {
@@ -2960,6 +2995,17 @@ export class DemoMeetingApp
 
     if (videoFilter === 'Resize (9/16)') {
       return new ResizeProcessor(0.5625);  // 16/9 Aspect Ratio
+    }
+
+    if (videoFilter === 'BackgroundBlur') {
+      console.log("background blur - create called from videoFilterToProcessor!")
+      const bbprocessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec());
+      bbprocessor.addObserver({
+        filterFrameDurationHigh: (event) => {
+          this.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
+        }
+      });
+      return bbprocessor;
     }
 
     return null;
@@ -2990,7 +3036,7 @@ export class DemoMeetingApp
       await this.chosenVideoTransformDevice.stop();
     }
 
-    const proc = this.videoFilterToProcessor(this.selectedVideoFilterItem);
+    const proc = await this.videoFilterToProcessor(this.selectedVideoFilterItem);
     this.chosenVideoFilter = this.selectedVideoFilterItem;
     this.chosenVideoTransformDevice = new DefaultVideoTransformDevice(
       this.meetingLogger,

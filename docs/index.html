@@ -128,6 +128,7 @@
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html">Meeting events</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html">Integrating Amazon Voice Focus into your application</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/videoprocessor.html">Adding frame-by-frame processing to an outgoing video stream</a></li>
+					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html">Adding background filtering to an outgoing video stream</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html">Adapting video to limited bandwidth using a priority-based video downlink policy</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/clientevent_ingestion.html">Client event ingestion</a></li>
 					<li><a href="https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html">Content Security Policy</a></li>
@@ -1122,8 +1123,8 @@ messagingSession.start();
 				<a href="#notice" id="notice" style="color: inherit; text-decoration: none;">
 					<h2>Notice</h2>
 				</a>
-				<p>The use of Amazon Voice Focus via this SDK involves the downloading and execution of code at runtime by end users.</p>
-				<p>The use of Amazon Voice Focus runtime code is subject to additional notices. See <a href="https://static.sdkassets.chime.aws/workers/NOTICES.txt">this NOTICES file</a> for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus runtime code via this SDK.</p>
+				<p>The use of Amazon Voice Focus and background blur via this SDK involves the downloading and execution of code at runtime by end users.</p>
+				<p>The use of Amazon Voice Focus and background blur runtime code is subject to additional notices. See <a href="https://static.sdkassets.chime.aws/workers/NOTICES.txt">this Amazon Voice Focus NOTICES file</a> and <a href="https://static.sdkassets.chime.aws/bgblur/workers/NOTICES.txt">background blur NOTICES file</a> for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus and background blur runtime code via this SDK.</p>
 				<p>The browser demo applications in the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos">demos directory</a> use <a href="https://github.com/tensorflow/tfjs">TensorFlow.js</a> and pre-trained <a href="https://github.com/tensorflow/tfjs-models">TensorFlow.js models</a> for image segmentation. Use of these third party models involves downloading and execution of code at runtime from <a href="https://www.jsdelivr.com/">jsDelivr</a> by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this <a href="https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net">link</a>.</p>
 				<p>The use of TensorFlow runtime code referenced above may be subject to additional license requirements. See the licenses page for TensorFlow.js <a href="https://github.com/tensorflow/tfjs/blob/master/LICENSE">here</a> and TensorFlow.js models <a href="https://github.com/tensorflow/tfjs-models/blob/master/LICENSE">here</a> for details.</p>
 				<p>Live transcription using the Amazon Chime SDK for JavaScript is powered by Amazon Transcribe. Use of Amazon Transcribe is subject to the <a href="https://aws.amazon.com/service-terms/">AWS Service Terms</a>, including the terms specific to the AWS Machine Learning and Artificial Intelligence Services. Standard charges for Amazon Transcribe and Amazon Transcribe Medical will apply.</p>
@@ -1252,6 +1253,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/audiovideocontrollerstate.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Controller<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/backgroundblurvideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/baseconnectionhealthpolicy.html" class="tsd-kind-icon">Base<wbr>Connection<wbr>Health<wbr>Policy</a>
@@ -1504,6 +1508,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/messagingsessionconfiguration.html" class="tsd-kind-icon">Messaging<wbr>Session<wbr>Configuration</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/modelspecbuilder.html" class="tsd-kind-icon">Model<wbr>Spec<wbr>Builder</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/monitortask.html" class="tsd-kind-icon">Monitor<wbr>Task</a>
@@ -1767,6 +1774,21 @@ messagingSession.start();
 						<a href="interfaces/audiovideoobserver.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundbluroptions.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundblurprocessor.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundblurvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundfilterpaths.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Paths</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundfilterspec.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Spec</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/backoff.html" class="tsd-kind-icon">Backoff</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1890,6 +1912,12 @@ messagingSession.start();
 						<a href="interfaces/modality.html" class="tsd-kind-icon">Modality</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/modelshape.html" class="tsd-kind-icon">Model<wbr>Shape</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/modelspec.html" class="tsd-kind-icon">Model<wbr>Spec</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/partialord.html" class="tsd-kind-icon">Partial<wbr>Ord</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -1918,6 +1946,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/scheduler.html" class="tsd-kind-icon">Scheduler</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/semver.html" class="tsd-kind-icon">Sem<wbr>Ver</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/sessionstatecontroller.html" class="tsd-kind-icon">Session<wbr>State<wbr>Controller</a>
@@ -2061,6 +2092,9 @@ messagingSession.start();
 						<a href="globals.html#default_framerate" class="tsd-kind-icon">DEFAULT_<wbr>FRAMERATE</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#filter_duration_factor" class="tsd-kind-icon">FILTER_<wbr>DURATION_<wbr>FACTOR</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#transcription_data_message_topic" class="tsd-kind-icon">TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC</a>
 					</li>
 					<li class=" tsd-kind-function">
@@ -2095,6 +2129,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#wait" class="tsd-kind-icon">wait</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#blurstrength" class="tsd-kind-icon">Blur<wbr>Strength</a>
 					</li>
 					<li class=" tsd-kind-object-literal">
 						<a href="globals.html#transcriptionstatustypes" class="tsd-kind-icon">Transcription<wbr>Status<wbr>Types</a>

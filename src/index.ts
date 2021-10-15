@@ -20,6 +20,13 @@ import AudioVideoControllerState from './audiovideocontroller/AudioVideoControll
 import AudioVideoEventAttributes from './eventcontroller/AudioVideoEventAttributes';
 import AudioVideoFacade from './audiovideofacade/AudioVideoFacade';
 import AudioVideoObserver from './audiovideoobserver/AudioVideoObserver';
+import BackgroundBlurOptions from './backgroundblurvideoframeprocessor/BackgroundBlurOptions';
+import BackgroundBlurProcessor from './backgroundblurvideoframeprocessor/BackgroundBlurProcessor';
+import BackgroundBlurStrength from './backgroundblurvideoframeprocessor/BackgroundBlurStrength';
+import BackgroundBlurVideoFrameProcessor from './backgroundblurvideoframeprocessor/BackgroundBlurVideoFrameProcessor';
+import BackgroundBlurVideoFrameProcessorObserver from './backgroundblurvideoframeprocessor/BackgroundBlurVideoFrameProcessorObserver';
+import BackgroundFilterPaths from './backgroundblurvideoframeprocessor/BackgroundFilterPaths';
+import BackgroundFilterSpec from './backgroundblurvideoframeprocessor/BackgroundFilterSpec';
 import Backoff from './backoff/Backoff';
 import BackoffFactory from './backoff/BackoffFactory';
 import BaseConnectionHealthPolicy from './connectionhealthpolicy/BaseConnectionHealthPolicy';
@@ -157,6 +164,9 @@ import MessagingSession from './messagingsession/MessagingSession';
 import MessagingSessionConfiguration from './messagingsession/MessagingSessionConfiguration';
 import MessagingSessionObserver from './messagingsessionobserver/MessagingSessionObserver';
 import Modality from './modality/Modality';
+import ModelShape from './modelspec/ModelShape';
+import ModelSpec from './modelspec/ModelSpec';
+import ModelSpecBuilder from './backgroundblurvideoframeprocessor/ModelSpecBuilder';
 import MonitorTask from './task/MonitorTask';
 import MultiLogger from './logger/MultiLogger';
 import NScaleVideoUplinkBandwidthPolicy from './videouplinkbandwidthpolicy/NScaleVideoUplinkBandwidthPolicy';
@@ -317,6 +327,13 @@ export {
   AudioVideoEventAttributes,
   AudioVideoFacade,
   AudioVideoObserver,
+  BackgroundBlurOptions,
+  BackgroundBlurProcessor,
+  BackgroundBlurStrength,
+  BackgroundBlurVideoFrameProcessor,
+  BackgroundBlurVideoFrameProcessorObserver,
+  BackgroundFilterPaths,
+  BackgroundFilterSpec,
   Backoff,
   BackoffFactory,
   BaseConnectionHealthPolicy,
@@ -457,6 +474,9 @@ export {
   MessagingSessionConfiguration,
   MessagingSessionObserver,
   Modality,
+  ModelShape,
+  ModelSpec,
+  ModelSpecBuilder,
   MonitorTask,
   MultiLogger,
   MutableVideoPreferences,

@@ -28,6 +28,12 @@ const ignoredTypes = [
   'VoiceFocusTransformDeviceDelegate',
   'LoggerAdapter',
 
+  // These are @internal background blur types
+  'BackgroundBlurVideoFrameProcessorDelegate',
+  'BackgroundFilterFrameCounter',
+  'BackgroundBlurProcessorBuiltIn',
+  'BackgroundBlurProcessorProvided',
+
   // Generated versioning data.
   'version',
 
