@@ -60,8 +60,8 @@ enum SdkJoinFlags {
 }
 
 message SdkClientDetails {
-    optional string app_version_name = 1;
-    optional string app_version_code = 2;
+    optional string app_name = 1;
+    optional string app_version = 2;
     optional string device_model = 3;
     optional string device_make = 4;
     optional string platform_name = 5;

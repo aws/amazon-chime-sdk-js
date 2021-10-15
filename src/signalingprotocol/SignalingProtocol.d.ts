@@ -337,11 +337,11 @@ export enum SdkJoinFlags {
 /** Properties of a SdkClientDetails. */
 export interface ISdkClientDetails {
 
-    /** SdkClientDetails appVersionName */
-    appVersionName?: (string|null);
+    /** SdkClientDetails appName */
+    appName?: (string|null);
 
-    /** SdkClientDetails appVersionCode */
-    appVersionCode?: (string|null);
+    /** SdkClientDetails appVersion */
+    appVersion?: (string|null);
 
     /** SdkClientDetails deviceModel */
     deviceModel?: (string|null);
@@ -371,11 +371,11 @@ export class SdkClientDetails implements ISdkClientDetails {
      */
     constructor(properties?: ISdkClientDetails);
 
-    /** SdkClientDetails appVersionName. */
-    public appVersionName: string;
+    /** SdkClientDetails appName. */
+    public appName: string;
 
-    /** SdkClientDetails appVersionCode. */
-    public appVersionCode: string;
+    /** SdkClientDetails appVersion. */
+    public appVersion: string;
 
     /** SdkClientDetails deviceModel. */
     public deviceModel: string;
