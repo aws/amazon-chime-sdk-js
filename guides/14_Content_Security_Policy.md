@@ -74,11 +74,4 @@ meetingSession.audioVideo.start()
 
 ## Amazon Voice Focus
 
-To use [Amazon Voice Focus](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html), ensure that your policy includes the following:
-
-* `script-src` and `script-src-elem`: `https://*.sdkassets.chime.aws` to load audio processing code to run in the browser’s audio renderer thread.
-* `connect-src`: `https://*.sdkassets.chime.aws` to load model files via `fetch`.
-* `worker-src`: `blob:` to load worker JavaScript across origins.
-* `child-src`: `blob:` to load worker JavaScript across origins (only in Safari).
-
-See the [Amazon Voice Focus guide](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html#content-security-policy) for more information.
+To use [Amazon Voice Focus](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html), see the [Amazon Voice Focus guide](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html#content-security-policy).
