@@ -40,11 +40,14 @@ for (const stage of ['a', 'b', 'g', '']) {
   csp['script-src-elem'] += host;
 }
 
-// 2. Access to jsdelivr for TensorFlow for background blur.
+// 2. Access to googleapis for the Segmentation filter 
+csp['connect-src'] += ' https://storage.googleapis.com';
+
+// 3. Access to jsdelivr for TensorFlow for background blur.
 csp['script-src'] += ' https://cdn.jsdelivr.net';
 csp['script-src-elem'] += ' https://cdn.jsdelivr.net';
 
-// 3. Add 'unsafe-eval' because TensorFlow needs it.
+// 4. Add 'unsafe-eval' because TensorFlow needs it.
 if (!csp['script-src'].includes("'unsafe-eval'")) {
   csp['script-src'] += " 'unsafe-eval'";
 }
