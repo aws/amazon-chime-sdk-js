@@ -20,11 +20,6 @@
       "browserName": "chrome",
       "version": "latest",
       "platform": "MAC"
-    },
-    {
-      "browserName": "firefox",
-      "version": "86",
-      "platform": "MAC"
     }
   ]
 }
