@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Add background blur video frame processor to enable background blur on streaming video. 
+
+### Removed
+
+### Fixed
+
+### Changed
+
 ## [2.19.0] - 2021-10-14
 
 ### Added
@@ -13,7 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `bindToTileController` optional method to `VideoDownlinkBandwidthPolicy`.
 - Add [Content Security Policy](https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html) setup guide for customers who want to secure their application and add CSP headers.
 - Add `securitypolicyviolation` event listener to listen for CSP violations. If customers have set up CSP for their app, the event listener will detect violations and print warnings.
-- Add background blur API to enable background blur on streaming video. 
   
 ### Removed
 
