@@ -236,7 +236,7 @@ class SaucelabsSession {
   }
 
   async getDeviceName() {
-    if (isMobileDomain(this.domain) && this.deviceName === undefined) {
+    if (this.deviceName === undefined) {
       const session = await this.driver.getSession();
       this.deviceName = session.getCapability('testobject_device_name');
     }
@@ -244,7 +244,7 @@ class SaucelabsSession {
   }
 
   async getMobileTestRunURL() {
-    if (isMobileDomain(this.domain) && this.mobileTestRunURL === undefined) {
+    if (this.mobileTestRunURL === undefined) {
       const session = await this.driver.getSession();
       this.mobileTestRunURL = session.getCapability('testobject_test_report_url');
     }
