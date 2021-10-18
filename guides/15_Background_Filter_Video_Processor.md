@@ -4,7 +4,7 @@
 
 The background blur API allows builders to enable background blur on a video stream. To add a background blur to a video stream the builder needs to create a `VideoFrameProcessor` using `BackgroundBlurVideoFrameProcessor` and then insert that processor into a `VideoTransformDevice`. The video frame processor uses a TensorFlow Lite (TFLite) machine learning (ML) model along with JavaScript Web Workers and WebAssembly (WASM) to apply blur to the background of each frame in the video stream. These assets are downloaded at runtime when the video frame processor is created and not provided in the source directly.
 
-Background blur is integrated into the `browser` demo application. To try it out, launch the demo with `npm run start`, join the meeting, click on the camera icon to enable video, then select the filter drop down and select `Background Blur`.
+Background blur is integrated into the [browser demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser) application. To try it out, launch the demo with `npm run start`, join the meeting, click on the camera icon to enable video, then select the video filter drop down and select `Background Blur`.
 
 ## Background blur on the web
 
@@ -19,17 +19,6 @@ Background blur is available as part of the Amazon Chime SDK for JavaScript from
 Background blur in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and iOS operating systems, and Safari 14.1 and later on macOS and some iOS devices. A full compatibility table is below.
 
 There is a known issue with `VideoFrameProcessor` in Safari 15: see [github issue 1059](https://github.com/aws/amazon-chime-sdk-js/issues/1059)
-
-|Browser                                                                |Minimum supported version  |Preferred version  |Notes               |
-|---                                                                    |---                        |---                |---                 |
-|Firefox                                                                |76                         |83+                |                    |
-|Chromium-based browsers and environments, including Edge and Electron  |78                         |87+                |                    |
-|Safari                                                                 |14.1                       |-                  |                    |
-|Android browser                                                        |78*                        |87*                |Typically too slow. |
-|iOS Safari                                                             |iOS 14                     |-                  |                    |
-|iOS Chrome                                                             |iOS 14                     |-                  |                    |
-|iOS Firefox                                                            |iOS 14                     |-                  |                    |
-
 
 Background blur can be CPU-intensive and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use background blur while also supporting multiple video streams and rich application functionality.
 
@@ -63,7 +52,7 @@ Modern web applications use [Content Security Policy](https://developer.mozilla.
 * `worker-src`: add `blob:` to load worker JavaScript across origins.
 * `child-src`: add `blob:` to load worker JavaScript across origins (only in Safari).
 
-If you omit any of these entries, or if you use both HTTP headers and `http-equiv` `meta` tags to specify policy and inadvertently exclude any of these by intersection, then background blur will not be able to initialize, and will either appear to be unsupported or will create a no-op vide frame processor. You will see errors in your browser console like:
+If you omit any of these entries, or if you use both HTTP headers and `http-equiv` `meta` tags to specify policy and inadvertently exclude any of these by intersection, then background blur will not be able to initialize, and will either appear to be unsupported or will create a no-op video frame processor. You will see errors in your browser console like:
 
 ```
 Refused to connect to
@@ -105,7 +94,7 @@ if (BackgroundBlurVideoFrameProcessor.isSupported()) {
 }
 ```
 
-The create method will pre-load the model file and prepare background blur for use. Failure to load necessary resources will result in `isSupported` returning `false`. 
+The create method will pre-load the model file and prepare background blur for use. Failure to load necessary resources will result in `isSupported` returning `false`. In the event that the builder creates the processor and it is not supported a no-op video frame processor will be returned and background blur will not be applied.
 
 
 ## Adding background blur to your application
@@ -125,7 +114,8 @@ let transformDevice = new DefaultVideoTransformDevice(logger, device, processors
 
 ## Configuration
 
-Both `isSupported` and `create` accept _specifications_ — `BackgroundFilterSpec` structures — as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.
+Both `isSupported` and `create` accept _specifications_ — `BackgroundFilterSpec` and `BackgroundBlurOptions` structures — as input. These `BackgroundFilterSpec` allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The `BackgroundBlurOptions` allows you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.
+
 
 Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. 
 
@@ -136,10 +126,17 @@ You can optionally implement the `BackgroundBlurVideoFrameProcessorObserver` int
 * `filterFrameDurationHigh`:  This event occurs when the amount of time it takes to apply the background blur is longer than expected. The measurement is taken from the time the process method starts to when it returns. For example, if the video is running at 15 frames per seconds and we are averaging more than 67 ms (1000 ms reporting period / 15 fps) to apply background blur, then a very large portion of each frame's maximum processing time is taken up by processing background blur.
 
 ```typescript
-processor.addObserver({
+// create a reference to the observer
+const blurObserver: BackgroundBlurVideoFrameProcessorObserver = {
   filterFrameDurationHigh: (event) => {
     console.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
   }
-});
+}
+
+// add the observer to the processor
+processor.addObserver(blurObserver);
+
+// remove the observer using the reference. for e.g, on meeting leave or turning the bgblur feature/filter off.
+processor.removeObserver(blurObserver);
 ```
 

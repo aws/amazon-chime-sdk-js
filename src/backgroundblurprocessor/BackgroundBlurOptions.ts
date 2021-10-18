@@ -9,8 +9,10 @@ import Logger from '../logger/Logger';
 export default interface BackgroundBlurOptions {
   /** A {@link Logger|Logger} to which log output will be written. */
   logger?: Logger;
-  /** The amount of blur that will be applied to a video stream */
+
+  /** The amount of blur that will be applied to a video stream. */
   blurStrength?: number;
-  /** How often the video frame processor will report observed events*/
+
+  /** How often the video frame processor will report observed events. */
   reportingPeriodMillis?: number;
 }

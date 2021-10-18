@@ -754,8 +754,8 @@ class AppPage {
 
   async backgroundBlurCheck(attendeeId) {
     await TestUtils.waitAround(4000);
-    const expectedSumMin = 15977000;
-    const expectedSumMax = 15979000;
+    const expectedSumMin = 15805042;
+    const expectedSumMax = 15940657;
     const videoElement = this.driver.findElement(By.xpath(`//*[contains(@class,'video-tile-nameplate') and contains(text(),'${attendeeId}')]`));
     const videoElementId = await videoElement.getAttribute('id');
     const seperatorIndex = videoElementId.lastIndexOf("-");
@@ -764,7 +764,8 @@ class AppPage {
       if (tileIndex != NaN && tileIndex >= 0) {
         const videoImgSum = await this.driver.executeScript(this.getVideoImageSum(tileIndex));
         if(videoImgSum < expectedSumMin || videoImgSum > expectedSumMax){
-            return false;
+          console.log(`videoImgSum ${videoImgSum}`);
+          return false;
         }
       }
     }

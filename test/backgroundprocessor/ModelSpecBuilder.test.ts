@@ -4,7 +4,7 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
 
-import ModelSpecBuilder from '../../src/backgroundblurvideoframeprocessor/ModelSpecBuilder';
+import ModelSpecBuilder from '../../src/backgroundblurprocessor/ModelSpecBuilder';
 import ModelSpec from '../../src/modelspec/ModelSpec';
 
 function expectDefaultInput(spec: ModelSpec): void {

@@ -77,7 +77,7 @@
 						<h2>What is background blur?</h2>
 					</a>
 					<p>The background blur API allows builders to enable background blur on a video stream. To add a background blur to a video stream the builder needs to create a <code>VideoFrameProcessor</code> using <code>BackgroundBlurVideoFrameProcessor</code> and then insert that processor into a <code>VideoTransformDevice</code>. The video frame processor uses a TensorFlow Lite (TFLite) machine learning (ML) model along with JavaScript Web Workers and WebAssembly (WASM) to apply blur to the background of each frame in the video stream. These assets are downloaded at runtime when the video frame processor is created and not provided in the source directly.</p>
-					<p>Background blur is integrated into the <code>browser</code> demo application. To try it out, launch the demo with <code>npm run start</code>, join the meeting, click on the camera icon to enable video, then select the filter drop down and select <code>Background Blur</code>.</p>
+					<p>Background blur is integrated into the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser">browser demo</a> application. To try it out, launch the demo with <code>npm run start</code>, join the meeting, click on the camera icon to enable video, then select the video filter drop down and select <code>Background Blur</code>.</p>
 					<a href="#background-blur-on-the-web" id="background-blur-on-the-web" style="color: inherit; text-decoration: none;">
 						<h2>Background blur on the web</h2>
 					</a>
@@ -91,58 +91,6 @@
 					</a>
 					<p>Background blur in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and iOS operating systems, and Safari 14.1 and later on macOS and some iOS devices. A full compatibility table is below.</p>
 					<p>There is a known issue with <code>VideoFrameProcessor</code> in Safari 15: see <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059">github issue 1059</a></p>
-					<table>
-						<thead>
-							<tr>
-								<th>Browser</th>
-								<th>Minimum supported version</th>
-								<th>Preferred version</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody><tr>
-								<td>Firefox</td>
-								<td>76</td>
-								<td>83+</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>Chromium-based browsers and environments, including Edge and Electron</td>
-								<td>78</td>
-								<td>87+</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>Safari</td>
-								<td>14.1</td>
-								<td>-</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>Android browser</td>
-								<td>78*</td>
-								<td>87*</td>
-								<td>Typically too slow.</td>
-							</tr>
-							<tr>
-								<td>iOS Safari</td>
-								<td>iOS 14</td>
-								<td>-</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>iOS Chrome</td>
-								<td>iOS 14</td>
-								<td>-</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>iOS Firefox</td>
-								<td>iOS 14</td>
-								<td>-</td>
-								<td></td>
-							</tr>
-					</tbody></table>
 					<p>Background blur can be CPU-intensive and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use background blur while also supporting multiple video streams and rich application functionality.</p>
 					<p>See the sections “<a href="#checking-for-support-before-offering-background-blur">Checking for support before offering background blur</a>” for more details about checking for support.</p>
 					<a href="#simd-support" id="simd-support" style="color: inherit; text-decoration: none;">
@@ -170,7 +118,7 @@
 						<li><code>worker-src</code>: add <code>blob:</code> to load worker JavaScript across origins.</li>
 						<li><code>child-src</code>: add <code>blob:</code> to load worker JavaScript across origins (only in Safari).</li>
 					</ul>
-					<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then background blur will not be able to initialize, and will either appear to be unsupported or will create a no-op vide frame processor. You will see errors in your browser console like:</p>
+					<p>If you omit any of these entries, or if you use both HTTP headers and <code>http-equiv</code> <code>meta</code> tags to specify policy and inadvertently exclude any of these by intersection, then background blur will not be able to initialize, and will either appear to be unsupported or will create a no-op video frame processor. You will see errors in your browser console like:</p>
 					<pre><code>Refused <span class="hljs-built_in">to</span> connect <span class="hljs-built_in">to</span>
 <span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/bgblur/workers/worker.js…&#x27;</span>
 because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> document<span class="hljs-string">&#x27;s Content Security Policy.</span>
@@ -199,7 +147,7 @@ BackgroundBlurVideoFrameProcessor.isSupported();
     processors.push(blurProcessor);
 }
 </code></pre>
-					<p>The create method will pre-load the model file and prepare background blur for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>.</p>
+					<p>The create method will pre-load the model file and prepare background blur for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. In the event that the builder creates the processor and it is not supported a no-op video frame processor will be returned and background blur will not be applied.</p>
 					<a href="#adding-background-blur-to-your-application" id="adding-background-blur-to-your-application" style="color: inherit; text-decoration: none;">
 						<h2>Adding background blur to your application</h2>
 					</a>
@@ -215,7 +163,7 @@ BackgroundBlurVideoFrameProcessor.isSupported();
 					<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
 						<h2>Configuration</h2>
 					</a>
-					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>BackgroundFilterSpec</code> structures — as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.</p>
+					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>BackgroundFilterSpec</code> and <code>BackgroundBlurOptions</code> structures — as input. These <code>BackgroundFilterSpec</code> allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The <code>BackgroundBlurOptions</code> allows you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.</p>
 					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints.</p>
 					<a href="#observer-notifications" id="observer-notifications" style="color: inherit; text-decoration: none;">
 						<h2>Observer notifications</h2>
@@ -224,11 +172,18 @@ BackgroundBlurVideoFrameProcessor.isSupported();
 					<ul>
 						<li><code>filterFrameDurationHigh</code>:  This event occurs when the amount of time it takes to apply the background blur is longer than expected. The measurement is taken from the time the process method starts to when it returns. For example, if the video is running at 15 frames per seconds and we are averaging more than 67 ms (1000 ms reporting period / 15 fps) to apply background blur, then a very large portion of each frame&#39;s maximum processing time is taken up by processing background blur.</li>
 					</ul>
-					<pre><code class="language-typescript">processor.addObserver({
+					<pre><code class="language-typescript"><span class="hljs-comment">// create a reference to the observer</span>
+<span class="hljs-keyword">const</span> blurObserver: BackgroundBlurVideoFrameProcessorObserver = {
   <span class="hljs-attr">filterFrameDurationHigh</span>: <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter duration high: framed dropped - <span class="hljs-subst">${event.framesDropped}</span>, avg - <span class="hljs-subst">${event.avgFilterDurationMillis}</span> ms, frame rate - <span class="hljs-subst">${event.framerate}</span>, period - <span class="hljs-subst">${event.periodMillis}</span> ms`</span>);
   }
-});
+}
+
+<span class="hljs-comment">// add the observer to the processor</span>
+processor.addObserver(blurObserver);
+
+<span class="hljs-comment">// remove the observer using the reference. for e.g, on meeting leave or turning the bgblur feature/filter off.</span>
+processor.removeObserver(blurObserver);
 </code></pre>
 					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Background%20Filter_Video_Processor%20feedback">Give feedback on this guide</a></p>
 				</div>

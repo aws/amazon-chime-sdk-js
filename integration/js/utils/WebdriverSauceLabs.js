@@ -3,6 +3,7 @@ const safari = require('../node_modules/selenium-webdriver/safari');
 const axios = require('axios');
 const Base64 = require('js-base64').Base64;
 const { AppPage, MeetingReadinessCheckerPage, MessagingSessionPage, TestAppPage } = require('../pages');
+
 const getPlatformName = capabilities => {
   const { browserName, version, platform } = capabilities;
   switch (platform) {

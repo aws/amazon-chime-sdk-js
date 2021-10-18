@@ -67,7 +67,7 @@ class NoOpBackgroundBlurProcessor
 }
 
 /**
- * [[BackgroundBlurProcessorFactory]]
+ * [[BackgroundBlurVideoFrameProcessor]]
  * Creates a background blur processor which identifies the foreground person and blurs the background.
  */
 export default class BackgroundBlurVideoFrameProcessor {
@@ -88,10 +88,10 @@ export default class BackgroundBlurVideoFrameProcessor {
     const { logger } = options;
 
     const supported = await BackgroundBlurVideoFrameProcessor.isSupported(spec, options);
-    // if blur is not supported do not initialize. The processor will become a no op if not supported
+    // if blur is not supported do not initialize. The processor will become a no op if not supported.
     logger.info(`processor is ${supported ? '' : 'not'} supported`);
     if (!supported) {
-      logger.info('Using no-op processor because background blur is not supported');
+      logger.warn('Using no-op processor because background blur is not supported');
       return new NoOpBackgroundBlurProcessor();
     }
 

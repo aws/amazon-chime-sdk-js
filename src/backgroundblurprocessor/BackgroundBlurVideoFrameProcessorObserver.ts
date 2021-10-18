@@ -4,7 +4,7 @@
 /**
  * An observer for the background blur video frame processor.
  *
- * Use {@link BackgroundBlurVideoFrameProcessor.addObserver|addObserver} to register an
+ * Use {@link BackgroundBlurVideoFrameProcessor.addObserver} to register an
  * observer with the processor.
  */
 export default interface BackgroundBlurVideoFrameProcessorObserver {

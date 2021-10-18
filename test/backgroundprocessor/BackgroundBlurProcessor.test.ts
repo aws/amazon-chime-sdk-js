@@ -6,14 +6,14 @@ import * as sinon from 'sinon';
 
 import * as loader from '../../libs/voicefocus/loader';
 import * as support from '../../libs/voicefocus/support';
-import BackgroundBlurOptions from '../../src/backgroundblurvideoframeprocessor/BackgroundBlurOptions';
-import BackgroundBlurProcessorBuiltIn from '../../src/backgroundblurvideoframeprocessor/BackgroundBlurProcessorBuiltIn';
-import BackgroundBlurProcessorProvided from '../../src/backgroundblurvideoframeprocessor/BackgroundBlurProcessorProvided';
-import BlurStrength from '../../src/backgroundblurvideoframeprocessor/BackgroundBlurStrength';
-import BackgroundBlurVideoFrameProcessor from '../../src/backgroundblurvideoframeprocessor/BackgroundBlurVideoFrameProcessor';
-import BackgroundBlurVideoFrameProcessorObserver from '../../src/backgroundblurvideoframeprocessor/BackgroundBlurVideoFrameProcessorObserver';
-import BackgroundFilterFrameCounter from '../../src/backgroundblurvideoframeprocessor/BackgroundFilterFrameCounter';
-import ModelSpecBuilder from '../../src/backgroundblurvideoframeprocessor/ModelSpecBuilder';
+import BackgroundBlurOptions from '../../src/backgroundblurprocessor/BackgroundBlurOptions';
+import BackgroundBlurProcessorBuiltIn from '../../src/backgroundblurprocessor/BackgroundBlurProcessorBuiltIn';
+import BackgroundBlurProcessorProvided from '../../src/backgroundblurprocessor/BackgroundBlurProcessorProvided';
+import BlurStrength from '../../src/backgroundblurprocessor/BackgroundBlurStrength';
+import BackgroundBlurVideoFrameProcessor from '../../src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor';
+import BackgroundBlurVideoFrameProcessorObserver from '../../src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver';
+import BackgroundFilterFrameCounter from '../../src/backgroundblurprocessor/BackgroundFilterFrameCounter';
+import ModelSpecBuilder from '../../src/backgroundblurprocessor/ModelSpecBuilder';
 import ConsoleLogger from '../../src/logger/ConsoleLogger';
 import LogLevel from '../../src/logger/LogLevel';
 import CanvasVideoFrameBuffer from '../../src/videoframeprocessor/CanvasVideoFrameBuffer';
@@ -22,7 +22,7 @@ import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
-describe('BackgroundBlurVideoFrameProcessor', () => {
+describe('BackgroundBlurProcessor', () => {
   let expect: Chai.ExpectStatic;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;

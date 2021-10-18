@@ -1,6 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+/**
+ * The numbers below indicate the amount of blur to apply. Larger numbers will produce
+ * more blur.
+ */
 const BlurStrength = {
   LOW: 7,
   MEDIUM: 15,

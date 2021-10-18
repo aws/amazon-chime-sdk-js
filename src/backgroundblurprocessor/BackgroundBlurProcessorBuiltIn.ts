@@ -7,8 +7,11 @@ import { BlurStrengthMapper } from './BackgroundBlurStrength';
 import BackgroundFilterSpec from './BackgroundFilterSpec';
 
 /**
- * [[BackgroundBlurProcessorBuiltIn]] extends [[BackgroundBlurProcessorProvided]].
+ * The [[BackgroundBlurProcessorBuiltIn]] uses the browser's built-in capability to apply blurring to
+ * the background image as apposed to [[BackgroundBlurProcessorProvided]] that uses WASM and
+ * TensorFlow Lite to apply the blur.
  */
+
 /** @internal */
 export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProcessorProvided {
   private blurredImage: ImageData;
@@ -19,8 +22,8 @@ export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProces
    * A constructor that will apply default values if spec and strength are not provided.
    * If no spec is provided the selfie segmentation model is used with default paths to CDN for the
    * worker and wasm files used to process each frame.
-   * @param spec The spec defines the assets that will be used for adding background blur to a frame
-   * @param options How much blur to apply to a frame
+   * @param spec The spec defines the assets that will be used for adding background blur to a frame.
+   * @param options How much blur to apply to a frame.
    */
   constructor(spec?: BackgroundFilterSpec, options?: BackgroundBlurOptions) {
     super(spec, options);
@@ -63,10 +66,6 @@ export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProces
     canvasCtx.restore();
   }
 
-  /**
-   * This setter will allow setting the blur strength mid stream. The process method will use this
-   * setting on the next frame that is processed.
-   */
   setBlurStrength(blurStrength: number): void {
     super.setBlurStrength(blurStrength);
 

@@ -5,17 +5,19 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import VERSION from './version';
 
 /**
- * The components of a SemVer version, separated so they can used individually.
+ * The components of a SemVer version, separated so they can be used individually.
  */
 export interface SemVer {
   /**
    * The major version.
    */
   major: string;
+
   /**
    * The minor version.
    */
   minor: string;
+
   /**
    * The patch version.
    */

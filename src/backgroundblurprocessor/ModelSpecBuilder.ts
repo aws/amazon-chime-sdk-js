@@ -16,20 +16,20 @@ export default class ModelSpecBuilder {
   }
 
   /**
-   * Set up the builder to use the default model implementation
+   * Set up the builder to use the default model implementation.
    *
    * Members of this interface can change without a major version bump to accommodate new browser
    * bugs and capabilities. If you extend this type, you might need to rework your code for new minor
    * versions of this library.
-   * @returns a reference to the current builder
+   * @returns a reference to the current builder.
    */
   withDefaultModel(): ModelSpecBuilder {
     return this.withSelfieSegmentationDefaults();
   }
 
   /**
-   * Set up the builder to use the defaults for selfie segmentation model
-   * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.withSelfieSegmentationDefaults().build())
+   * Set up the builder to use the defaults for selfie segmentation model.
+   * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.withSelfieSegmentationDefaults().build()).
    */
   withSelfieSegmentationDefaults(): ModelSpecBuilder {
     const SELFIE_MODEL_INPUT_SHAPE: ModelShape = {
@@ -56,9 +56,9 @@ export default class ModelSpecBuilder {
   }
 
   /**
-   * A method to override the path to the segmentation model
-   * @param path A function that returns the path to the segmentation model
-   * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.builder().withPath("some path").build())
+   * A method to override the path to the segmentation model.
+   * @param path A function that returns the path to the segmentation model.
+   * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.builder().withPath("some path").build()).
    */
   withPath(path: string): ModelSpecBuilder {
     this.path = path;
@@ -66,9 +66,9 @@ export default class ModelSpecBuilder {
   }
 
   /**
-   * A method to override the input shape to the segmentation model
-   * @param input An object that defines input shape of the segmentation model
-   * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.builder().withInput({}).build())
+   * A method to override the input shape to the segmentation model.
+   * @param input An object that defines input shape of the segmentation model.
+   * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.builder().withInput({}).build()).
    */
   withInput(input: ModelShape): ModelSpecBuilder {
     this.input = input;
@@ -76,9 +76,9 @@ export default class ModelSpecBuilder {
   }
 
   /**
-   * A method to override the output shape to the segmentation model
-   * @param input An object that defines input shape of the segmentation model
-   * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.builder().withOutput({}).build())
+   * A method to override the output shape to the segmentation model.
+   * @param input An object that defines input shape of the segmentation model.
+   * @returns the builder to allow for fluent API (e.g., ModelSpecBuilder.builder().withOutput({}).build()).
    */
   withOutput(output: ModelShape): ModelSpecBuilder {
     this.output = output;
@@ -86,7 +86,7 @@ export default class ModelSpecBuilder {
   }
 
   /**
-   * validate that inputs to the model spec are valid
+   * Validate that inputs to the model spec are valid.
    */
   private validate(): void {
     if (!this.path) {
@@ -105,7 +105,7 @@ export default class ModelSpecBuilder {
   /**
    * A method that returns an instantiated object that implements the ModelSpec interface with values set for
    * the use of the selfie segmentation model.
-   * @returns a object that implements the ModelSpec interface
+   * @returns an object that implements the ModelSpec interface.
    */
   build(): ModelSpec {
     this.validate();

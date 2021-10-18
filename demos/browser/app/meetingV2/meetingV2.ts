@@ -11,7 +11,9 @@ import {
   AudioProfile,
   AudioVideoFacade,
   AudioVideoObserver,
+  BackgroundBlurProcessor,
   BackgroundBlurVideoFrameProcessor,
+  BackgroundBlurVideoFrameProcessorObserver,
   ClientMetricReport,
   ClientVideoStreamReceivingReport,
   ConsoleLogger,
@@ -448,6 +450,7 @@ export class DemoMeetingApp
 
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
+  blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver ) = undefined;
 
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
@@ -507,6 +510,8 @@ export class DemoMeetingApp
   enableVoiceFocus = false;
   voiceFocusIsActive = false;
 
+  supportsBackgroundBlur = false;
+
   enableLiveTranscription = false;
   noWordSeparatorForTranscription = false;
 
@@ -520,6 +525,8 @@ export class DemoMeetingApp
 
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
+
+  bbprocessor: BackgroundBlurProcessor | undefined;
 
   // This is an extremely minimal reactive programming approach: these elements
   // will be updated when the Amazon Voice Focus display state changes.
@@ -692,6 +699,17 @@ export class DemoMeetingApp
     document.getElementById('voice-focus-setting').classList.toggle('hidden', true);
   }
 
+  async initBackgroundBlur(): Promise<void> {
+      const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+      try {
+        this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
+      }
+      catch (e) {
+      logger.warn(`[DEMO] Does not support background blur: ${e.message}`);
+        this.supportsBackgroundBlur = false;
+      }
+  }
+
   private async onVoiceFocusSettingChanged(): Promise<void> {
     this.log('[DEMO] Amazon Voice Focus setting toggled to', this.enableVoiceFocus);
     this.openAudioInputFromSelectionAndPreview();
@@ -810,6 +828,7 @@ export class DemoMeetingApp
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
 
           await this.initVoiceFocus();
+          await this.initBackgroundBlur();
           await this.populateAllDeviceLists();
           await this.populateVideoFilterInputList(false);
           await this.populateVideoFilterInputList(true);
@@ -2465,8 +2484,7 @@ export class DemoMeetingApp
         });
       }
 
-      const isBlurSupported = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
-      if (isBlurSupported) {
+      if (this.supportsBackgroundBlur) {
         filters.push('BackgroundBlur');
       }
     }
@@ -2999,13 +3017,17 @@ export class DemoMeetingApp
 
     if (videoFilter === 'BackgroundBlur') {
       console.log("background blur - create called from videoFilterToProcessor!")
-      const bbprocessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec());
-      bbprocessor.addObserver({
+
+      // In the event that frames start being dropped we should take some action to remove the background blur.
+      this.blurObserver = {
         filterFrameDurationHigh: (event) => {
           this.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
         }
-      });
-      return bbprocessor;
+      };
+
+      this.bbprocessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec());
+      this.bbprocessor.addObserver(this.blurObserver);
+      return this.bbprocessor;
     }
 
     return null;
@@ -3249,6 +3271,9 @@ export class DemoMeetingApp
       await this.audioVideo.chooseAudioOutputDevice(null);
       this.audioVideo.unbindAudioElement();
 
+      // remove blur event observer
+      this.bbprocessor?.removeObserver(this.blurObserver);
+
       // Stop any video processor.
       await this.chosenVideoTransformDevice?.stop();
 
@@ -3274,6 +3299,7 @@ export class DemoMeetingApp
       this.activeSpeakerHandler = undefined;
       this.currentAudioInputDevice = undefined;
       this.eventReporter = undefined;
+      this.bbprocessor = undefined;
     };
 
     const onLeftMeeting = async () => {

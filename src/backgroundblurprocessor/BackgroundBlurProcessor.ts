@@ -27,9 +27,9 @@ export default interface BackgroundBlurProcessor extends VideoFrameProcessor {
    */
   setBlurStrength(blurStrength: number): void;
 
-  /**
-   * internal method to load assets like WASM files, web workers, and ML models
-   */
   /** @internal */
+  /**
+   * internal method to load assets like WASM files, web workers, and ML models.
+   */
   loadAssets(): Promise<void>;
 }

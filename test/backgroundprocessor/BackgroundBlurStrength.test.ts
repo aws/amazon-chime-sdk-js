@@ -5,7 +5,7 @@ import * as chai from 'chai';
 
 import BlurStrength, {
   BlurStrengthMapper,
-} from '../../src/backgroundblurvideoframeprocessor/BackgroundBlurStrength';
+} from '../../src/backgroundblurprocessor/BackgroundBlurStrength';
 
 describe('BackgroundBlurStrength', () => {
   let expect: Chai.ExpectStatic;

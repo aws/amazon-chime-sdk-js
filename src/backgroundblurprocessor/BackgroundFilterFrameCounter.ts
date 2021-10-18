@@ -7,7 +7,7 @@ import BackgroundBlurVideoFrameProcessorDelegate from './BackgroundBlurVideoFram
 const FILTER_DURATION_FACTOR = 0.8;
 
 /**
- * The frame counter tracks frame rates of video and segmentation
+ * The frame counter tracks frame rates of video and segmentation.
  */
 /** @internal */
 export default class BackgroundFilterFrameCounter {
@@ -30,7 +30,7 @@ export default class BackgroundFilterFrameCounter {
   }
 
   /**
-   * report events once per period
+   * Report events once per period.
    */
   private reportEvent(timestamp: number): void {
     const timeDiff = timestamp - this.lastReportedEventTimestamp;
@@ -43,7 +43,7 @@ export default class BackgroundFilterFrameCounter {
         this.filterTotalMillis = 0;
         this.lastReportedEventTimestamp = timestamp;
 
-        // do not send notification unless a valid framerate or segment count is set
+        // Do not send notification unless a valid framerate or segment count is set.
         if (this.framerate === 0 || currentSegmentCount === 0) {
           return;
         }

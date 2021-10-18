@@ -47,7 +47,8 @@
     "test:integration-meeting-readiness-checker": "cd ./integration/js && npm run test -- meeting_readiness_checker ",
     "test:integration-messaging": "cd ./integration/js && npm run test -- messaging ",
     "test:integration-video-test-app": "cd ./integration/js && npm run test -- video_test_app ",
-    "test:integration-transcription": "cd ./integration/js && npm run test -- transcription "
+    "test:integration-transcription": "cd ./integration/js && npm run test -- transcription ",
+    "test:integration-background-blur": "cd ./integration/js && npm run test -- background_blur "
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.89.0",

@@ -43,9 +43,13 @@ class DeferredObservable<T> {
 }
 
 /**
- * [[BackgroundBlurVideoFrameProcessor]] implements [[VideoFrameProcessor]].
+ * [[BackgroundBlurProcessorProvided]] implements [[BackgroundBlurProcessor]].
  * It's a background blur processor and input is passed into a worker that will apply a segmentation
  * to separate the foreground from the background. Then the background will have a blur applied.
+ *
+ * The [[BackgroundBlurProcessorProvided]] uses WASM and TensorFlow Lite to apply the blurring of the
+ * background image as apposed to [[BackgroundBlurProcessorBuiltIn]] that uses the browser's built-in
+ * capability to apply the blur.
  */
 /** @internal */
 export default class BackgroundBlurProcessorProvided implements BackgroundBlurProcessor {
@@ -253,7 +257,7 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
   /**
    * Processes the VideoFrameBuffer by applying a segmentation mask and blurring the background.
    * @param buffers object that contains the canvas element that will be used to obtain the image data to process
-   * @returns
+   * @returns the updated buffer that contains the image with the background blurred.
    */
   async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
     this.frameCounter.frameReceived(buffers[0].framerate);
