@@ -11,6 +11,9 @@ import {
   AudioProfile,
   AudioVideoFacade,
   AudioVideoObserver,
+  BackgroundBlurProcessor,
+  BackgroundBlurVideoFrameProcessor,
+  BackgroundBlurVideoFrameProcessorObserver,
   ClientMetricReport,
   ClientVideoStreamReceivingReport,
   ConsoleLogger,
@@ -70,6 +73,9 @@ import {
   VoiceFocusTransformDevice,
   isAudioTransformDevice,
   isDestroyable,
+  BackgroundFilterSpec,
+  BackgroundFilterPaths,
+  ModelSpecBuilder,
 } from 'amazon-chime-sdk-js';
 
 import CircularCut from './videofilter/CircularCut';
@@ -292,7 +298,25 @@ const VOICE_FOCUS_SPEC = {
 
 const MAX_VOICE_FOCUS_COMPLEXITY: VoiceFocusModelComplexity | undefined = undefined;
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'None';
+const BACKGROUND_BLUR_CDN = search.get('blurCDN') || undefined;
+const BACKGROUND_BLUR_ASSET_GROUP = search.get('blurAssetGroup') || undefined;
+const BACKGROUND_BLUR_REVISION_ID = search.get('blurRevisionID') || undefined;
+
+const BACKGROUND_BLUR_PATHS: BackgroundFilterPaths = BACKGROUND_BLUR_CDN && {
+  worker: `${BACKGROUND_BLUR_CDN}/bgblur/workers/worker.js`,
+  wasm: `${BACKGROUND_BLUR_CDN}/bgblur/wasm/_cwt-wasm.wasm`,
+  simd: `${BACKGROUND_BLUR_CDN}/bgblur/wasm/_cwt-wasm-simd.wasm`,
+};
+const BACKGROUND_BLUR_MODEL = BACKGROUND_BLUR_CDN && ModelSpecBuilder.builder()
+    .withSelfieSegmentationDefaults()
+    .withPath(`${BACKGROUND_BLUR_CDN}/bgblur/models/selfie_segmentation_landscape.tflite`)
+    .build();
+const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BLUR_REVISION_ID) && {
+  assetGroup: BACKGROUND_BLUR_ASSET_GROUP,
+  revisionID: BACKGROUND_BLUR_REVISION_ID,
+}
+
+type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'BackgroundBlur' | 'None';
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
@@ -426,6 +450,7 @@ export class DemoMeetingApp
 
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
+  blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver ) = undefined;
 
   showActiveSpeakerScores = false;
   activeSpeakerLayout = true;
@@ -485,6 +510,8 @@ export class DemoMeetingApp
   enableVoiceFocus = false;
   voiceFocusIsActive = false;
 
+  supportsBackgroundBlur = false;
+
   enableLiveTranscription = false;
   noWordSeparatorForTranscription = false;
 
@@ -498,6 +525,8 @@ export class DemoMeetingApp
 
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
+
+  bbprocessor: BackgroundBlurProcessor | undefined;
 
   // This is an extremely minimal reactive programming approach: these elements
   // will be updated when the Amazon Voice Focus display state changes.
@@ -670,6 +699,17 @@ export class DemoMeetingApp
     document.getElementById('voice-focus-setting').classList.toggle('hidden', true);
   }
 
+  async initBackgroundBlur(): Promise<void> {
+      const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+      try {
+        this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
+      }
+      catch (e) {
+      logger.warn(`[DEMO] Does not support background blur: ${e.message}`);
+        this.supportsBackgroundBlur = false;
+      }
+  }
+
   private async onVoiceFocusSettingChanged(): Promise<void> {
     this.log('[DEMO] Amazon Voice Focus setting toggled to', this.enableVoiceFocus);
     this.openAudioInputFromSelectionAndPreview();
@@ -788,6 +828,7 @@ export class DemoMeetingApp
           (document.getElementById('info-name') as HTMLSpanElement).innerText = this.name;
 
           await this.initVoiceFocus();
+          await this.initBackgroundBlur();
           await this.populateAllDeviceLists();
           await this.populateVideoFilterInputList(false);
           await this.populateVideoFilterInputList(true);
@@ -2416,6 +2457,14 @@ export class DemoMeetingApp
     this.chosenVideoTransformDevice?.stop();
   }
 
+  private getBackgroundBlurSpec(): BackgroundFilterSpec {
+    return {
+      paths: BACKGROUND_BLUR_PATHS,
+      model: BACKGROUND_BLUR_MODEL,
+      ...BACKGROUND_BLUR_ASSET_SPEC
+    };
+  }
+
   private async populateVideoFilterInputList(isPreviewWindow: boolean): Promise<void> {
     const genericName = 'Filter';
     let filters: VideoFilterName[] = ['None'];
@@ -2433,6 +2482,10 @@ export class DemoMeetingApp
         }).catch(err => {
           this.log('Could not load BodyPix dependency', err);
         });
+      }
+
+      if (this.supportsBackgroundBlur) {
+        filters.push('BackgroundBlur');
       }
     }
 
@@ -2939,7 +2992,7 @@ export class DemoMeetingApp
     return value;
   }
 
-  private videoFilterToProcessor(videoFilter: VideoFilterName): VideoFrameProcessor | null {
+  private async videoFilterToProcessor(videoFilter: VideoFilterName): Promise<VideoFrameProcessor | null> {
     this.log(`Choosing video filter ${videoFilter}`);
 
     if (videoFilter === 'Emojify') {
@@ -2960,6 +3013,21 @@ export class DemoMeetingApp
 
     if (videoFilter === 'Resize (9/16)') {
       return new ResizeProcessor(0.5625);  // 16/9 Aspect Ratio
+    }
+
+    if (videoFilter === 'BackgroundBlur') {
+      console.log("background blur - create called from videoFilterToProcessor!")
+
+      // In the event that frames start being dropped we should take some action to remove the background blur.
+      this.blurObserver = {
+        filterFrameDurationHigh: (event) => {
+          this.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
+        }
+      };
+
+      this.bbprocessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec());
+      this.bbprocessor.addObserver(this.blurObserver);
+      return this.bbprocessor;
     }
 
     return null;
@@ -2990,7 +3058,7 @@ export class DemoMeetingApp
       await this.chosenVideoTransformDevice.stop();
     }
 
-    const proc = this.videoFilterToProcessor(this.selectedVideoFilterItem);
+    const proc = await this.videoFilterToProcessor(this.selectedVideoFilterItem);
     this.chosenVideoFilter = this.selectedVideoFilterItem;
     this.chosenVideoTransformDevice = new DefaultVideoTransformDevice(
       this.meetingLogger,
@@ -3203,6 +3271,9 @@ export class DemoMeetingApp
       await this.audioVideo.chooseAudioOutputDevice(null);
       this.audioVideo.unbindAudioElement();
 
+      // remove blur event observer
+      this.bbprocessor?.removeObserver(this.blurObserver);
+
       // Stop any video processor.
       await this.chosenVideoTransformDevice?.stop();
 
@@ -3228,6 +3299,7 @@ export class DemoMeetingApp
       this.activeSpeakerHandler = undefined;
       this.currentAudioInputDevice = undefined;
       this.eventReporter = undefined;
+      this.bbprocessor = undefined;
     };
 
     const onLeftMeeting = async () => {

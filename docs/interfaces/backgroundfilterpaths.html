@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VoiceFocusDeviceOptions | amazon-chime-sdk-js</title>
+	<title>BackgroundFilterPaths | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="voicefocusdeviceoptions.html">VoiceFocusDeviceOptions</a>
+					<a href="backgroundfilterpaths.html">BackgroundFilterPaths</a>
 				</li>
 			</ul>
-			<h1>Interface VoiceFocusDeviceOptions</h1>
+			<h1>Interface BackgroundFilterPaths</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A set of options that can be supplied when creating an Amazon Voice Focus device.</p>
+						<p>Paths to assets that will be loaded from CDN</p>
 					</div>
 				</div>
 			</section>
@@ -77,12 +77,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">AssetSpec</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">VoiceFocusDeviceOptions</span>
-							</li>
-						</ul>
+						<span class="target">BackgroundFilterPaths</span>
 					</li>
 				</ul>
 			</section>
@@ -93,10 +88,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="voicefocusdeviceoptions.html#assetgroup" class="tsd-kind-icon">asset<wbr>Group</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voicefocusdeviceoptions.html#logger" class="tsd-kind-icon">logger</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voicefocusdeviceoptions.html#preload" class="tsd-kind-icon">preload</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="voicefocusdeviceoptions.html#revisionid" class="tsd-kind-icon">revisionID</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfilterpaths.html#simd" class="tsd-kind-icon">simd</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfilterpaths.html#wasm" class="tsd-kind-icon">wasm</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfilterpaths.html#worker" class="tsd-kind-icon">worker</a></li>
 							</ul>
 						</section>
 					</div>
@@ -104,58 +98,50 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="assetgroup" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> asset<wbr>Group</h3>
-					<div class="tsd-signature tsd-kind-icon">asset<wbr>Group<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="backgroundfilterspec.html">BackgroundFilterSpec</a>.<a href="backgroundfilterspec.html#assetgroup">assetGroup</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/libs/voicefocus/voicefocus.d.ts#L4">libs/voicefocus/voicefocus.d.ts:4</a></li>
-						</ul>
-					</aside>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="logger" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> logger</h3>
-					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logger.html" class="tsd-signature-type">Logger</a></div>
+					<a name="simd" class="tsd-anchor"></a>
+					<h3>simd</h3>
+					<div class="tsd-signature tsd-kind-icon">simd<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceOptions.ts#L13">src/voicefocus/VoiceFocusDeviceOptions.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundFilterPaths.ts#L21">src/backgroundblurprocessor/BackgroundFilterPaths.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A <a href="logger.html">Logger</a> to which log output will be written.</p>
+							<p>Path to the WASM file compiled with SIMD support for processing background segmentation</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="preload" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> preload</h3>
-					<div class="tsd-signature tsd-kind-icon">preload<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="wasm" class="tsd-anchor"></a>
+					<h3>wasm</h3>
+					<div class="tsd-signature tsd-kind-icon">wasm<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusDeviceOptions.ts#L16">src/voicefocus/VoiceFocusDeviceOptions.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundFilterPaths.ts#L16">src/backgroundblurprocessor/BackgroundFilterPaths.ts:16</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>If <code>true</code>, Amazon Voice Focus assets will be loaded from the network as soon as possible.
-							If <code>false</code>, load will be delayed until the device is used to create an input stream.</p>
+							<p>Path to the WASM file for processing background segmentation.</p>
 						</div>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="revisionid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> revisionID</h3>
-					<div class="tsd-signature tsd-kind-icon">revisionID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="worker" class="tsd-anchor"></a>
+					<h3>worker</h3>
+					<div class="tsd-signature tsd-kind-icon">worker<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="backgroundfilterspec.html">BackgroundFilterSpec</a>.<a href="backgroundfilterspec.html#revisionid">revisionID</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/libs/voicefocus/voicefocus.d.ts#L5">libs/voicefocus/voicefocus.d.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundFilterPaths.ts#L11">src/backgroundblurprocessor/BackgroundFilterPaths.ts:11</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Path to the web worker that will processing background segmentation.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -172,19 +158,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="voicefocusdeviceoptions.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Device<wbr>Options</a>
+						<a href="backgroundfilterpaths.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Paths</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="voicefocusdeviceoptions.html#assetgroup" class="tsd-kind-icon">asset<wbr>Group</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="backgroundfilterpaths.html#simd" class="tsd-kind-icon">simd</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voicefocusdeviceoptions.html#logger" class="tsd-kind-icon">logger</a>
+								<a href="backgroundfilterpaths.html#wasm" class="tsd-kind-icon">wasm</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voicefocusdeviceoptions.html#preload" class="tsd-kind-icon">preload</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="voicefocusdeviceoptions.html#revisionid" class="tsd-kind-icon">revisionID</a>
+								<a href="backgroundfilterpaths.html#worker" class="tsd-kind-icon">worker</a>
 							</li>
 						</ul>
 					</li>
