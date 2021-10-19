@@ -573,29 +573,21 @@ class AppPage {
     const startTime = Date.now();
     let videos = await this.driver.findElements(By.css('video[id^="video-"]'));
     console.log(`Looping through ${videos && videos.length} videos`);
-    for (let i = 0; i < videos.length; i++) {
-      const videoElementId = await videos[i].getAttribute('id');
-      const seperatorIndex = videoElementId.lastIndexOf("-");
-      if (seperatorIndex >= -1) {
-        const tileIndex = parseInt(videoElementId.slice(seperatorIndex+1))
-        if (tileIndex != NaN && tileIndex >= 0) {
-          const nameplate = await this.driver.findElement(By.id(`nameplate-${tileIndex}`));
-          const nameplateText = await nameplate.getText();
-          console.log(`nameplate: ${nameplateText}`);
-          if (nameplate && nameplateText === attendeeName) {
-            let numRetries = 10;
-            let retry = 0;
-            console.log(`Start verifying video display by video element ID:${videoElementId}, attendeeName=${attendeeName}, tileIndex=${tileIndex}`);
-            let checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
-            while ((checked.result !== expectedState) && retry < numRetries) {
-              console.log(`video check not yet complete, retrying again, retry count: ${retry}`);
-              checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
-              retry++;
-              await TestUtils.waitAround(1000);
-            }
-            console.log(`videoCheckByAttendeeName completed in: ${Date.now()-startTime}ms`);
-            return checked.result;
-          }
+    for (let i = 0; i < videos.length-1; i++) {
+      const tileIndex = i;
+      const nameplate = await this.driver.findElement(By.id(`nameplate-${tileIndex}`));
+      const nameplateText = await nameplate.getText();
+      console.log(`nameplate: ${nameplateText}`);
+      if (nameplate && nameplateText === attendeeName) {
+        let numRetries = 10;
+        let retry = 0;
+        console.log(`Start verifying video display by attendeeName=${attendeeName}, tileIndex=${tileIndex}`);
+        let checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
+        while ((checked.result !== expectedState) && retry < numRetries) {
+          console.log(`video check not yet complete, retrying again, retry count: ${retry}`);
+          checked = await TestUtils.verifyVideoDisplayById(stepInfo.driver, `video-${tileIndex}`);
+          retry++;
+          await TestUtils.waitAround(1000);
         }
         console.log(`videoCheckByAttendeeName completed in: ${Date.now()-startTime}ms`);
         return checked.result;
