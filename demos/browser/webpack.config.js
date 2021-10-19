@@ -52,6 +52,9 @@ if (!csp['script-src'].includes("'unsafe-eval'")) {
   csp['script-src'] += " 'unsafe-eval'";
 }
 
+// 5. Access to event ingestion gamma endpoint for testing and canaries.
+csp['connect-src'] += ' https://*.ingest.gchime.aws';
+
 module.exports = env => {
   console.info('Env:', JSON.stringify(env, null, 2));
   console.info('App:', process.env.npm_config_app);
