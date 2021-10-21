@@ -120,6 +120,9 @@ case $1 in
    transcription)
       r transcription_test.config.json
       ;;
+   background_blur)
+      r background_blur_test.config.json
+      ;;
    *)
       r audio_test.config.json
       r video_test.config.json

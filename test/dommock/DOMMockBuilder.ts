@@ -1378,9 +1378,15 @@ export default class DOMMockBuilder {
             return {
               width: sw,
               height: sh,
+              data: new Uint8ClampedArray(),
             };
           },
           fillRect(_x: number, _y: number, _w: number, _h: number): void {},
+          save(): void {},
+          scale(): void {},
+          restore(): void {},
+          putImageData(): void {},
+          clearRect(): void {},
         };
         // @ts-ignore
         return context;
@@ -1389,6 +1395,8 @@ export default class DOMMockBuilder {
       captureStream(_frameRate: number): MediaStream {
         return mockBehavior.createElementCaptureStream;
       }
+
+      remove(): void {}
     };
 
     GlobalAny.performance = Date;

@@ -61,7 +61,8 @@ function findAllElements() {
     transcriptContainer: By.id('transcript-container'),
 
     eventReportingCheckBox: By.id('event-reporting'),
-    eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]')
+    eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
+    backgroundBlurFilterButton: By.id('dropdown-menu-filter-BackgroundBlur')
   };
 }
 
@@ -744,6 +745,46 @@ class AppPage {
     const dataMessageSpan = await this.driver.findElement(By.xpath(`//div[@id='receive-message']//*[text() = '${message}']`));
     return dataMessageSpan? true: false;
   }
+
+  async clickBackgroundBlurFilterFromDropDownMenu() {
+    await TestUtils.waitAround(1000);
+    const backgroundBlurButton = await this.driver.findElement(elements.backgroundBlurFilterButton);
+    await backgroundBlurButton.click();
+  }
+
+  async backgroundBlurCheck(attendeeId) {
+    await TestUtils.waitAround(4000);
+    const expectedSumMin = 15805042;
+    const expectedSumMax = 15940657;
+    const videoElement = this.driver.findElement(By.xpath(`//*[contains(@class,'video-tile-nameplate') and contains(text(),'${attendeeId}')]`));
+    const videoElementId = await videoElement.getAttribute('id');
+    const seperatorIndex = videoElementId.lastIndexOf("-");
+    if (seperatorIndex >= -1) {
+      const tileIndex = parseInt(videoElementId.slice(seperatorIndex+1))
+      if (tileIndex != NaN && tileIndex >= 0) {
+        const videoImgSum = await this.driver.executeScript(this.getVideoImageSum(tileIndex));
+        if(videoImgSum < expectedSumMin || videoImgSum > expectedSumMax){
+          console.log(`videoImgSum ${videoImgSum}`);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  getVideoImageSum(videoId) {
+    return "function getSum(total, num) {return total + num;};"
+        + "const canvas = document.createElement('canvas');"
+        + "const ctx = canvas.getContext('2d');"
+        + "const video = document.getElementById('video-"+videoId+"');"
+        + "canvas.width = video.videoWidth/3;"
+        + "canvas.height = video.videoHeight/3;"
+        + "ctx.drawImage(video,0,0, canvas.width,canvas.height);"
+        + "var imageData = ctx.getImageData(0,0,video.videoHeight-1,video.videoWidth-1).data;"
+        + "var sum = imageData.reduce(getSum);"
+        + "return sum;"
+  }
 }
+
 
 module.exports = AppPage;

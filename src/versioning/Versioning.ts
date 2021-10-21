@@ -4,6 +4,26 @@
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import VERSION from './version';
 
+/**
+ * The components of a SemVer version, separated so they can be used individually.
+ */
+export interface SemVer {
+  /**
+   * The major version.
+   */
+  major: string;
+
+  /**
+   * The minor version.
+   */
+  minor: string;
+
+  /**
+   * The patch version.
+   */
+  patch: string;
+}
+
 export default class Versioning {
   static X_AMZN_VERSION = 'X-Amzn-Version';
   static X_AMZN_USER_AGENT = 'X-Amzn-User-Agent';
@@ -22,6 +42,20 @@ export default class Versioning {
     return VERSION.semverString;
   }
 
+  /**
+   * Returns the parts of the semver, so major/minor/patch can be extracted individually.
+   */
+  static get sdkVersionSemVer(): SemVer {
+    const v = VERSION.semverString.match(
+      /^(?<major>[0-9]+)\.(?<minor>[0-9]+)(?:\.(?<patch>[0-9]+))?/
+    );
+
+    return {
+      major: v?.groups?.major,
+      minor: v?.groups?.minor,
+      patch: v?.groups?.patch,
+    };
+  }
   /**
    * Return the SHA-1 of the Git commit from which this build was created.
    */
