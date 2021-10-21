@@ -59,6 +59,8 @@ After stopping the video processing, the inner `Device` will be released by devi
 
 After `DefaultVideoTransformDevice` is no longer used by device controller, call `DefaultVideoTransformDevice.stop` to release the `VideoProcessor`s and underlying pipeline. After `stop` is called, users must discard the `DefaultVideoTransformDevice`.`DefaultVideoTransformDevice.stop` is necessary to release the internal resources.
 
+Users would also need to call `DefaultVideoTransformDevice.stop` and construct a new `DefaultVideoTransformDevice` when they want to change video processors or change the video input quality.
+
 #### Receiving lifecycle notifications with an observer
 
 To receive notifications of lifecycle events, `DefaultVideoTransformDeviceObserver` can be added to the `DefaultVideoTransformDevice`. 
