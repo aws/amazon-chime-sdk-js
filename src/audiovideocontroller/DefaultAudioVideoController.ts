@@ -135,7 +135,6 @@ export default class DefaultAudioVideoController
     this.sessionStateController = new DefaultSessionStateController(this._logger);
     this._configuration = configuration;
     this.enableSimulcast =
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers &&
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
@@ -247,10 +246,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext = new AudioVideoControllerState();
     this.meetingSessionContext.logger = this.logger;
     this.meetingSessionContext.eventController = this.eventController;
-    this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior({
-      enableUnifiedPlanForChromiumBasedBrowsers: this.configuration
-        .enableUnifiedPlanForChromiumBasedBrowsers,
-    });
+    this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(

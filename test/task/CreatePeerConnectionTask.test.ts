@@ -28,6 +28,8 @@ import SDPMock from '../sdp/SDPMock';
 
 describe('CreatePeerConnectionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
+  const SAFARI_12_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.2 Safari/605.1.15';
   const logger = new NoOpLogger();
   const videoRemoteDescription: RTCSessionDescription = {
     type: 'answer',
@@ -605,7 +607,10 @@ describe('CreatePeerConnectionTask', () => {
 
       it('uses a track ID for Plan B', async () => {
         // @ts-ignore
-        navigator.userAgent = 'Chrome/77.0.3865.75';
+        navigator.userAgent = SAFARI_12_USER_AGENT;
+        domMockBehavior.isUnifiedPlanSupported = false;
+        domMockBehavior.browserName = 'safari12';
+        domMockBuilder = new DOMMockBuilder(domMockBehavior);
         context.browserBehavior = new DefaultBrowserBehavior();
         let called1 = false;
         let called2 = false;
@@ -723,7 +728,10 @@ describe('CreatePeerConnectionTask', () => {
 
       it('uses a track for handling the "ended" event in Plan B and removing stream ID from the paused video stream ID set', done => {
         // @ts-ignore
-        navigator.userAgent = 'Chrome/77.0.3865.75';
+        navigator.userAgent = SAFARI_12_USER_AGENT;
+        domMockBehavior.isUnifiedPlanSupported = false;
+        domMockBehavior.browserName = 'safari12';
+        domMockBuilder = new DOMMockBuilder(domMockBehavior);
         context.browserBehavior = new DefaultBrowserBehavior();
         let tile: VideoTile;
         class TestVideoTileController extends DefaultVideoTileController {
