@@ -88,7 +88,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   hasWebKitWebRTC(): boolean {
     for (const browser of this.webkitBrowsers) {
-      if (browser === this.browser.name) {
+      if (browser == this.browser.name) {
         return true;
       }
     }
