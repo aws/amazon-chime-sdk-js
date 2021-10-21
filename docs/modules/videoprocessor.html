@@ -153,6 +153,7 @@
 					<p>To stop video processing for the chosen <code>DefaultVideoTransformDevice</code>, call <code>meetingSession.audioVideo.chooseVideoInputDevice</code> with a different <code>DefaultVideoTransformDevice</code> or <code>null</code> to stop using previous <code>DefaultVideoTransformDevice</code>.  The method <code>meetingSession.audioVideo.stopLocalVideoTile</code> can also be used to stop the streaming.</p>
 					<p>After stopping the video processing, the inner <code>Device</code> will be released by device controller unless the inner <code>Device</code> is a <code>MediaStream</code> provided by users where it is their responsibility of users to handle the lifecycle.</p>
 					<p>After <code>DefaultVideoTransformDevice</code> is no longer used by device controller, call <code>DefaultVideoTransformDevice.stop</code> to release the <code>VideoProcessor</code>s and underlying pipeline. After <code>stop</code> is called, users must discard the <code>DefaultVideoTransformDevice</code>.<code>DefaultVideoTransformDevice.stop</code> is necessary to release the internal resources.</p>
+					<p>Users would also need to call <code>DefaultVideoTransformDevice.stop</code> and construct a new <code>DefaultVideoTransformDevice</code> when they want to change video processors or change the video input quality.</p>
 					<a href="#receiving-lifecycle-notifications-with-an-observer" id="receiving-lifecycle-notifications-with-an-observer" style="color: inherit; text-decoration: none;">
 						<h4>Receiving lifecycle notifications with an observer</h4>
 					</a>
