@@ -72,7 +72,7 @@
     "fs-extra": "^8.1.0",
     "git-rev-sync": "^3.0.1",
     "longjohn": "^0.2.12",
-    "mocha": "^8.3.2",
+    "mocha": "^9.1.2",
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
     "prettier": "^2.1.2",
