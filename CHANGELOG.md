@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a new section "Known Browser Issues" in FAQ.html.
 - Refactor some types to avoid a circular dependency (#1565).
 - Update package.json to include npm 8.
+- Update mocha to version 9.
   
 ## [2.18.0] - 2021-09-22
 
