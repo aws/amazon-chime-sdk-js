@@ -77,18 +77,18 @@ when serving your application HTML. These headers are optional but advised: they
 
 Some browsers support the Amazon Chime SDK but do not support background blur. Additionally, some devices are not fast enough to keep up with real-time video while blurring the background.
 
-The SDK provides a static method to allow you to cheaply check for the required browser features:
+The SDK provides an async static method to allow you to cheaply check for the required browser features:
 
 ```typescript
 import { BackgroundBlurVideoFrameProcessor } from 'amazon-chime-sdk-js';
-BackgroundBlurVideoFrameProcessor.isSupported();
+await BackgroundBlurVideoFrameProcessor.isSupported();
 ```
 
-If `isSupported` returns `true`, you can instantiate the blur video frame processor.
+If `isSupported` resolves to `true`, you can instantiate the blur video frame processor.
 
 ```typescript
 const processors = [];
-if (BackgroundBlurVideoFrameProcessor.isSupported()) {
+if (await BackgroundBlurVideoFrameProcessor.isSupported()) {
     const blurProcessor = await BackgroundBlurVideoFrameProcessor.create();
     processors.push(blurProcessor);
 }
@@ -105,7 +105,7 @@ Once you have checked for support and created a blur processor, you add the proc
 
 ```typescript
 const processors = [];
-if (BackgroundBlurVideoFrameProcessor.isSupported()) {
+if (await BackgroundBlurVideoFrameProcessor.isSupported()) {
     const blurProcessor = await BackgroundBlurVideoFrameProcessor.create();
     processors.push(blurProcessor);
 }
