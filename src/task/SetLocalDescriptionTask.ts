@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import DefaultSDP from '../sdp/DefaultSDP';
 import BaseTask from './BaseTask';
 
 /*
@@ -28,10 +29,24 @@ export default class SetLocalDescriptionTask extends BaseTask {
 
   async run(): Promise<void> {
     const peer = this.context.peer;
-    const sdpOffer = this.context.sdpOfferInit;
+    const sdpOfferInit = this.context.sdpOfferInit;
+    let sdp = sdpOfferInit.sdp;
+
+    if (this.context.browserBehavior.hasChromiumWebRTC()) {
+      // This will be negotiatiated with backend, and we will only use it to skip resubscribes
+      // if we confirm support/negotiation via `RTCRtpTranceiver.sender.getParams`
+      sdp = new DefaultSDP(sdp).withVideoLayersAllocationRtpHeaderExtension().sdp;
+    }
+
     this.logger.debug(() => {
-      return `local description is >>>${sdpOffer.sdp}<<<`;
+      return `local description is >>>${sdp}<<<`;
     });
+
+    const sdpOffer: RTCSessionDescription = {
+      type: 'offer',
+      sdp: sdp,
+      toJSON: null,
+    };
 
     await new Promise<void>(async (resolve, reject) => {
       this.cancelPromise = (error: Error) => {

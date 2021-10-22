@@ -161,6 +161,20 @@ describe('DefaultSDP', () => {
     });
   });
 
+  describe('withVideoLayersAllocationRtpHeaderExtension', () => {
+    it('does not add layers allocation line if no id is available', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
+    });
+
+    it('adds layers allocation line if available', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITHOUT_HEADER_EXTENSIONS);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_HEADER_EXTENSIONS);
+    });
+  });
+
   describe('withoutSDPMock.SERVER_REFLEXIVE_CANDIDATES', () => {
     it('removes server reflexive candidate', () => {
       const candidates = [

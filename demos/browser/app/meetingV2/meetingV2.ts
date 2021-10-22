@@ -986,6 +986,10 @@ export class DemoMeetingApp
           break;
       }
       try {
+        if (this.chosenVideoTransformDevice) {
+          await this.chosenVideoTransformDevice.stop();
+          this.chosenVideoTransformDevice = null;
+        }
         await this.openVideoInputFromSelection(videoInput.value, true);
       } catch (err) {
         fatal(err);
