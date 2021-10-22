@@ -70,6 +70,27 @@ describe('DefaultMeetingSession', () => {
       mockBuilder.cleanup();
     });
 
+    describe('construct with Unified Plan', function () {
+      it('can be constructed with Unified Plan regardless of if configured enableUnifiedPlanForChromiumBasedBrowsers', () => {
+        const domBehavior = new DOMMockBehavior();
+        domBehavior.browserName = 'chrome';
+        const mockBuilder = new DOMMockBuilder(domBehavior);
+        const config = new NoOpAudioVideoController().configuration;
+        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
+        let session = new DefaultMeetingSession(
+          config,
+          new NoOpLogger(),
+          new NoOpDeviceController()
+        );
+        expect(session).to.exist;
+
+        config.enableUnifiedPlanForChromiumBasedBrowsers = false;
+        session = new DefaultMeetingSession(config, new NoOpLogger(), new NoOpDeviceController());
+        expect(session).to.exist;
+        mockBuilder.cleanup();
+      });
+    });
+
     describe('construct with simulcast', function () {
       it('can be constructed with simulcast feature for chromium-based browsers', () => {
         const domBehavior = new DOMMockBehavior();
@@ -79,7 +100,7 @@ describe('DefaultMeetingSession', () => {
 
         config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-        let session = new DefaultMeetingSession(
+        const session = new DefaultMeetingSession(
           config,
           new NoOpLogger(),
           new NoOpDeviceController()
@@ -89,15 +110,25 @@ describe('DefaultMeetingSession', () => {
           true
         );
         expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
+        mockBuilder.cleanup();
+      });
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = false;
+      it('can be constructed with simulcast feature switched off when configured on Plan B', () => {
+        const domBehavior = new DOMMockBehavior();
+        domBehavior.browserName = 'safari12';
+        domBehavior.isUnifiedPlanSupported = false;
+        const mockBuilder = new DOMMockBuilder(domBehavior);
+        const config = new NoOpAudioVideoController().configuration;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-        session = new DefaultMeetingSession(config, new NoOpLogger(), new NoOpDeviceController());
+        const session = new DefaultMeetingSession(
+          config,
+          new NoOpLogger(),
+          new NoOpDeviceController()
+        );
         expect(session).to.exist;
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           false
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(false);
         mockBuilder.cleanup();
       });
 
@@ -178,24 +209,6 @@ describe('DefaultMeetingSession', () => {
         mockBuilder.cleanup();
       });
 
-      it('throw error if passing simulcast uplink policy but disable unified plan', () => {
-        const domBehavior = new DOMMockBehavior();
-        domBehavior.browserName = 'chrome';
-        const mockBuilder = new DOMMockBuilder(domBehavior);
-        const config = new NoOpAudioVideoController().configuration;
-
-        config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = false;
-        config.enableUnifiedPlanForChromiumBasedBrowsers = false;
-        config.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
-          'test',
-          new NoOpLogger()
-        );
-        expect(() => {
-          new DefaultMeetingSession(config, new NoOpLogger(), new NoOpDeviceController());
-        }).to.throw('Simulcast requires enabling WebRTC Unified Plan for Chromium-based browsers');
-        mockBuilder.cleanup();
-      });
-
       it('throw error if passing simulcast uplink policy for firefox', () => {
         const domBehavior = new DOMMockBehavior();
         domBehavior.browserName = 'firefox';
@@ -241,7 +254,7 @@ describe('DefaultMeetingSession', () => {
         mockBuilder.cleanup();
       });
 
-      it('can pass in custom policy when simulcast is not enable', () => {
+      it('can pass in custom policy when simulcast is not enabled', () => {
         const domBehavior = new DOMMockBehavior();
         domBehavior.browserName = 'firefox';
         const mockBuilder = new DOMMockBuilder(domBehavior);

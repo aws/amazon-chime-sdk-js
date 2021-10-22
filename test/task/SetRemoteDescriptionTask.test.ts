@@ -19,7 +19,8 @@ import { delay } from '../utils';
 
 describe('SetRemoteDescriptionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
-
+  const SAFARI_12_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.2 Safari/605.1.15';
   let context: AudioVideoControllerState;
   let domMockBehavior: DOMMockBehavior | null = null;
   let domMockBuilder: DOMMockBuilder | null = null;
@@ -146,7 +147,10 @@ describe('SetRemoteDescriptionTask', () => {
   describe('run in Plan B', () => {
     beforeEach(() => {
       // @ts-ignore
-      navigator.userAgent = 'Chrome/77.0.3865.75';
+      navigator.userAgent = SAFARI_12_USER_AGENT;
+      domMockBehavior.isUnifiedPlanSupported = false;
+      domMockBehavior.browserName = 'safari12';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
       context.browserBehavior = new DefaultBrowserBehavior();
     });
 
