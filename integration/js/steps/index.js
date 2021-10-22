@@ -10,6 +10,7 @@ exports.ClickUnpinVideoTileButton = require('./ClickUnpinVideoTileButton');
 exports.ClickStartLocalVideoButton = require('./ClickStartLocalVideoButton');
 exports.ClickStopLocalVideoButton = require('./ClickStopLocalVideoButton');
 exports.ClickVideoFilterButton = require('./ClickVideoFilterButton');
+exports.ClickBackgroundBlurButton = require('./ClickBackgroundBlurButton');
 exports.AuthenticateUserStep = require('./AuthenticateUserStep');
 exports.PlayRandomToneStep = require('./PlayRandomToneStep');
 exports.ClickMicrophoneButton = require('./ClickMicrophoneButton');

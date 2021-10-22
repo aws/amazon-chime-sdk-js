@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "2.19.0",
+  "version": "2.20.0",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -47,7 +47,8 @@
     "test:integration-meeting-readiness-checker": "cd ./integration/js && npm run test -- meeting_readiness_checker ",
     "test:integration-messaging": "cd ./integration/js && npm run test -- messaging ",
     "test:integration-video-test-app": "cd ./integration/js && npm run test -- video_test_app ",
-    "test:integration-transcription": "cd ./integration/js && npm run test -- transcription "
+    "test:integration-transcription": "cd ./integration/js && npm run test -- transcription ",
+    "test:integration-background-blur": "cd ./integration/js && npm run test -- background_blur "
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.89.0",
@@ -71,7 +72,7 @@
     "fs-extra": "^8.1.0",
     "git-rev-sync": "^3.0.1",
     "longjohn": "^0.2.12",
-    "mocha": "^8.3.2",
+    "mocha": "^9.1.2",
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
     "prettier": "^2.1.2",

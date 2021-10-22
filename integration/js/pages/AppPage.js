@@ -1,6 +1,7 @@
 const {By, Key, until} = require('selenium-webdriver');
 const {TestUtils} = require('kite-common');
 const {performance} = require('perf_hooks');
+const {clickElement} = require('../utils/PageUtil');
 
 let elements;
 
@@ -61,7 +62,8 @@ function findAllElements() {
     transcriptContainer: By.id('transcript-container'),
 
     eventReportingCheckBox: By.id('event-reporting'),
-    eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]')
+    eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
+    backgroundBlurFilterButton: By.id('dropdown-menu-filter-BackgroundBlur')
   };
 }
 
@@ -104,12 +106,12 @@ class AppPage {
   }
 
   async selectRegion(region) {
-    await this.driver.findElement(By.css(`option[value=${region}]`)).click();
+    await clickElement(this.driver, this.driver.findElement(By.css(`option[value=${region}]`)));
   }
 
   async authenticate() {
     let authenticateButton = await this.driver.findElement(elements.authenticateButton);
-    await authenticateButton.click();
+    await clickElement(this.driver, authenticateButton);
   }
 
   async chooseUseWebAudio() {
@@ -120,7 +122,7 @@ class AppPage {
     if (await webAudioFeature.isSelected()) {
       console.log('Web Audio is selected');
     } else {
-      await webAudioFeatureLabel.click();
+      await clickElement(this.driver, webAudioFeatureLabel);
     }
   }
 
@@ -132,7 +134,7 @@ class AppPage {
     if (await simulcastFeature.isSelected()) {
       this.logger('simulcast is selected');
     } else {
-      await simulcastFeatureLabel.click();
+      await clickElement(this.driver, simulcastFeatureLabel);
     }
   }
 
@@ -144,23 +146,23 @@ class AppPage {
     if (await eventReportingCheck.isSelected()) {
       this.logger('event reporting is enabled');
     } else {
-      await eventReportingCheckLabel.click();
+      await clickElement(this.driver, eventReportingCheckLabel);
     }
   }
 
   async joinMeeting() {
     let joinButton = await this.driver.findElement(elements.joinButton);
-    await joinButton.click();
+    await clickElement(this.driver, joinButton);
   }
 
   async endTheMeeting() {
     let meetingEndButtom = await this.driver.findElement(elements.meetingEndButtom);
-    await meetingEndButtom.click();
+    await clickElement(this.driver, meetingEndButtom);
   }
 
   async leaveTheMeeting() {
     let meetingLeaveButton = await this.driver.findElement(elements.meetingLeaveButton);
-    await meetingLeaveButton.click();
+    await clickElement(this.driver, meetingLeaveButton);
   }
 
   async clickContentShareButton() {
@@ -185,48 +187,48 @@ class AppPage {
 
   async clickCameraButton() {
     let localVideoButton = await this.driver.findElement(elements.localVideoButton);
-    await localVideoButton.click();
+    await clickElement(this.driver, localVideoButton);
   }
 
   async clickMediaCaptureButton() {
     let mediaCaptureButton = await this.driver.findElement(elements.mediaCaptureButton);
-    await mediaCaptureButton.click();
+    await clickElement(this.driver, mediaCaptureButton);
   }
 
   async clickMicrophoneButton() {
     let microphoneButton = await this.driver.findElement(elements.microphoneButton);
-    await microphoneButton.click();
+    await clickElement(this.driver, microphoneButton);
   }
 
   async clickVideoFilterDropButton() {
     const videoFilterDropButton = await this.driver.findElement(elements.videoFilterDropButton);
     this.logger(`video filter button is ${videoFilterDropButton}`);
-    await videoFilterDropButton.click();
+    await clickElement(this.driver, videoFilterDropButton);
   }
 
   async clickVideoFilterFromDropDownMenu() {
     const emojiFilter = await this.driver.findElement(elements.emojiFilterButton);
-    await emojiFilter.click();
+    await clickElement(this.driver, emojiFilter);
   }
 
   async playRandomTone() {
     let tone = await this.driver.findElement(elements.microphoneDropDown440HzButton);
-    await tone.click();
+    await clickElement(this.driver, tone);
   }
 
   async playPrerecordedSpeech() {
     let precordedSpeech = await this.driver.findElement(elements.microphoneDropDownPrecordedSpeechButton);
-    await precordedSpeech.click();
+    await clickElement(this.driver, precordedSpeech);
   }
 
   async selectNoneAudioInput() {
     let noneButton = await this.driver.findElement(elements.microphoneDropDownNoneButton);
-    await noneButton.click();
+    await clickElement(this.driver, noneButton);
   }
 
   async clickOnMicrophoneDropDownButton() {
     let microphoneDropDown = await this.driver.findElement(elements.microphoneDropDownButton);
-    await microphoneDropDown.click();
+    await clickElement(this.driver, microphoneDropDown);
   }
 
   async getNumberOfParticipantsOnRoster() {
@@ -256,12 +258,12 @@ class AppPage {
     await voiceConnectorIdInput.sendKeys(voiceConnectorId);
 
     let sipAuthenticateButton = await this.driver.findElement(elements.sipAuthenticateButton);
-    await sipAuthenticateButton.click();
+    await clickElement(this.driver, sipAuthenticateButton);
   }
 
   async switchToSipCallFlow() {
     let switchToSipFlow = await this.driver.findElement(elements.switchToSipFlow);
-    await switchToSipFlow.click();
+    await clickElement(this.driver, switchToSipFlow);
   }
 
   async waitingToEndMeeting() {
@@ -341,22 +343,22 @@ class AppPage {
 
   async clickLiveTranscriptionMenuButton() {
     const liveTranscriptionMenuButton = await this.driver.findElement(elements.microphoneDropDownLiveTranscriptionButton);
-    await liveTranscriptionMenuButton.click();
+    await clickElement(this.driver, liveTranscriptionMenuButton);
   }
 
   async clickTranscribeEngineOption() {
     const transcribeEngineOption = await this.driver.findElement(elements.transcriptionModalTranscribeEngine);
-    await transcribeEngineOption.click();
+    await clickElement(this.driver, transcribeEngineOption);
   }
 
   async clickTranscribeMedicalEngineOption() {
     const transcribeMedicalEngineOption = await this.driver.findElement(elements.transcriptionModalTranscribeMedicalEngine);
-    await transcribeMedicalEngineOption.click();
+    await clickElement(this.driver, transcribeMedicalEngineOption);
   }
 
   async clickStartTranscriptionButton() {
     const startTranscriptionButton = await this.driver.findElement(elements.startTranscriptionButton);
-    await startTranscriptionButton.click();
+    await clickElement(this.driver, startTranscriptionButton);
   }
 
   async checkIfTranscriptionVisible() {
@@ -503,7 +505,7 @@ class AppPage {
 
   async enableVoiceFocusInLobby() {
     const elem = await this.driver.findElement(elements.addVoiceFocusInput);
-    return elem.click();
+    return clickElement(this.driver, elem);
   }
 
   async isJoiningMeeting() {
@@ -744,6 +746,46 @@ class AppPage {
     const dataMessageSpan = await this.driver.findElement(By.xpath(`//div[@id='receive-message']//*[text() = '${message}']`));
     return dataMessageSpan? true: false;
   }
+
+  async clickBackgroundBlurFilterFromDropDownMenu() {
+    await TestUtils.waitAround(1000);
+    const backgroundBlurButton = await this.driver.findElement(elements.backgroundBlurFilterButton);
+    await backgroundBlurButton.click();
+  }
+
+  async backgroundBlurCheck(attendeeId) {
+    await TestUtils.waitAround(4000);
+    const expectedSumMin = 15805042;
+    const expectedSumMax = 15940657;
+    const videoElement = this.driver.findElement(By.xpath(`//*[contains(@class,'video-tile-nameplate') and contains(text(),'${attendeeId}')]`));
+    const videoElementId = await videoElement.getAttribute('id');
+    const seperatorIndex = videoElementId.lastIndexOf("-");
+    if (seperatorIndex >= -1) {
+      const tileIndex = parseInt(videoElementId.slice(seperatorIndex+1))
+      if (tileIndex != NaN && tileIndex >= 0) {
+        const videoImgSum = await this.driver.executeScript(this.getVideoImageSum(tileIndex));
+        if(videoImgSum < expectedSumMin || videoImgSum > expectedSumMax){
+          console.log(`videoImgSum ${videoImgSum}`);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  getVideoImageSum(videoId) {
+    return "function getSum(total, num) {return total + num;};"
+        + "const canvas = document.createElement('canvas');"
+        + "const ctx = canvas.getContext('2d');"
+        + "const video = document.getElementById('video-"+videoId+"');"
+        + "canvas.width = video.videoWidth/3;"
+        + "canvas.height = video.videoHeight/3;"
+        + "ctx.drawImage(video,0,0, canvas.width,canvas.height);"
+        + "var imageData = ctx.getImageData(0,0,video.videoHeight-1,video.videoWidth-1).data;"
+        + "var sum = imageData.reduce(getSum);"
+        + "return sum;"
+  }
 }
+
 
 module.exports = AppPage;

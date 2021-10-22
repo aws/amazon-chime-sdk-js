@@ -33,6 +33,10 @@ export default class ReceiveVideoInputTask extends BaseTask {
       this.context.logger.info('has not started local video tile');
       if (this.context.activeVideoInput) {
         this.stopVideoInput();
+        // Indicate to the stream index that we are no longer sending video.  We will
+        // no longer be tracking irrelevant local sending bitrates sent via received Bitrate message, nor will
+        // we track any spurious allocated stream IDs from the backend.
+        this.context.videoStreamIndex.integrateUplinkPolicyDecision([]);
       }
       return;
     }

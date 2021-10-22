@@ -135,7 +135,6 @@ export default class DefaultAudioVideoController
     this.sessionStateController = new DefaultSessionStateController(this._logger);
     this._configuration = configuration;
     this.enableSimulcast =
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers &&
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers &&
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
@@ -247,10 +246,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext = new AudioVideoControllerState();
     this.meetingSessionContext.logger = this.logger;
     this.meetingSessionContext.eventController = this.eventController;
-    this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior({
-      enableUnifiedPlanForChromiumBasedBrowsers: this.configuration
-        .enableUnifiedPlanForChromiumBasedBrowsers,
-    });
+    this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
@@ -894,7 +890,10 @@ export default class DefaultAudioVideoController
   }
 
   updateLocalVideoFromPolicy(): boolean {
-    if (this.mayNeedRenegotiationForSimulcastLayerChange) {
+    if (
+      this.mayNeedRenegotiationForSimulcastLayerChange &&
+      !this.negotiatedBitrateLayersAllocationRtpHeaderExtension()
+    ) {
       this.logger.info('Needs regenotiation for local video simulcast layer change');
       this.mayNeedRenegotiationForSimulcastLayerChange = false;
       return false;
@@ -911,6 +910,22 @@ export default class DefaultAudioVideoController
       new ReceiveVideoInputTask(this.meetingSessionContext).run();
     }
     return true;
+  }
+
+  private negotiatedBitrateLayersAllocationRtpHeaderExtension(): boolean {
+    if (!this.meetingSessionContext.transceiverController.localVideoTransceiver()) {
+      return false;
+    }
+    const parameters = this.meetingSessionContext.transceiverController
+      .localVideoTransceiver()
+      .sender.getParameters();
+    if (!parameters || !parameters.headerExtensions) {
+      return false;
+    }
+    return parameters.headerExtensions.some(
+      extension =>
+        extension.uri === 'http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00'
+    );
   }
 
   restartLocalVideo(callback: () => void): boolean {

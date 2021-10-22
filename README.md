@@ -59,6 +59,7 @@ The following developer guides cover specific topics for a technical audience.
 - [Meeting events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html)
 - [Integrating Amazon Voice Focus into your application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
 - [Adding frame-by-frame processing to an outgoing video stream](https://aws.github.io/amazon-chime-sdk-js/modules/videoprocessor.html)
+- [Adding background filtering to an outgoing video stream](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html)
 - [Adapting video to limited bandwidth using a priority-based video downlink policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html)
 - [Client event ingestion](https://aws.github.io/amazon-chime-sdk-js/modules/clientevent_ingestion.html)
 - [Content Security Policy](https://aws.github.io/amazon-chime-sdk-js/modules/contentsecurity_policy.html)
@@ -1144,10 +1145,9 @@ messagingSession.start();
 
 ## Notice
 
-The use of Amazon Voice Focus via this SDK involves the downloading and execution of code at runtime by end users.
+The use of Amazon Voice Focus and background blur via this SDK involves the downloading and execution of code at runtime by end users.
 
-The use of Amazon Voice Focus runtime code is subject to additional notices. See [this NOTICES file](https://static.sdkassets.chime.aws/workers/NOTICES.txt) for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus runtime code via this SDK.
-
+The use of Amazon Voice Focus and background blur runtime code is subject to additional notices. See [this Amazon Voice Focus NOTICES file](https://static.sdkassets.chime.aws/workers/NOTICES.txt) and [background blur NOTICES file](https://static.sdkassets.chime.aws/bgblur/workers/NOTICES.txt) for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus and background blur runtime code via this SDK.
 
 The browser demo applications in the [demos directory](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos) use [TensorFlow.js](https://github.com/tensorflow/tfjs) and pre-trained [TensorFlow.js models](https://github.com/tensorflow/tfjs-models) for image segmentation. Use of these third party models involves downloading and execution of code at runtime from [jsDelivr](https://www.jsdelivr.com/) by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this [link](https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net).
 

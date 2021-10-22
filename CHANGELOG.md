@@ -9,13 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add support for layers allocation negotiation in Chromium based browsers to avoid resubscribing to preemptively turn off simulcast streams or to switch layers. 
+- Update browser compatibility doc for background blur
+
+### Removed
+
+### Fixed
+
+- Fixed disabling of send streams when local video was not enabled by integrating empty encoder params into `VideoStreamIndex` when sending is disabled.
+
+### Changed
+
+- Ignore `enableUnifiedPlanForChromiumBasedBrowsers` value (i.e. treat as always equaling the current default value of `true`) in `MeetingSesstionConfiguration`.  Chrome is [in the processing](https://groups.google.com/g/discuss-webrtc/c/UBtZfawdIAA/m/m-4wnVHXBgAJ) of deprecating and removing Plan-B which would cause breakage in applications still trying to use it.  This will have no effect on SDK behavior` and has been the default since 1.17.0.
+- Change appVersionName and appVersionCode fields to appName and appVersion
+
+## [2.20.0] - 2021-10-18
+
+### Added
+
+- Add background blur video frame processor to enable background blur on streaming video. See [guide](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html)
+
 ### Removed
 
 ### Fixed
 
 ### Changed
-
-- Change appVersionName and appVersionCode fields to appName and appVersion
 
 ## [2.19.0] - 2021-10-14
 
@@ -53,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a new section "Known Browser Issues" in FAQ.html.
 - Refactor some types to avoid a circular dependency (#1565).
 - Update package.json to include npm 8.
+- Update mocha to version 9.
   
 ## [2.18.0] - 2021-09-22
 

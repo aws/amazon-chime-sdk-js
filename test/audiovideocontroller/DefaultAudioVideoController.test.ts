@@ -76,6 +76,11 @@ describe('DefaultAudioVideoController', () => {
   const rtpCandidateMock =
     'candidate:MOCK9004 1 udp 2122260223 10.88.178.121 52788 typ host generation 0 ufrag PWwO network-id 2 network-cost 50';
 
+  const SAFARI_12_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.2 Safari/605.1.15';
+  const SAFARI_13_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
+
   let audioVideoController: DefaultAudioVideoController;
   let webSocketAdapter: DefaultWebSocketAdapter;
   let configuration: MeetingSessionConfiguration;
@@ -929,9 +934,7 @@ describe('DefaultAudioVideoController', () => {
     });
 
     it('can be started even when the stats collector has an issue starting due to an unsupported browser', async () => {
-      setUserAgent(
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15'
-      );
+      setUserAgent(SAFARI_13_USER_AGENT);
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -1192,8 +1195,10 @@ describe('DefaultAudioVideoController', () => {
 
   describe('update', () => {
     it('can be started and then start and stop a local video tile for plan-b', async () => {
-      setUserAgent('Chrome/77.0.3865.75');
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
+      setUserAgent(SAFARI_12_USER_AGENT);
+      domMockBehavior.isUnifiedPlanSupported = false;
+      domMockBehavior.browserName = 'safari12';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
       audioVideoController = new DefaultAudioVideoController(
         configuration,
         new NoOpDebugLogger(),
@@ -1548,6 +1553,92 @@ describe('DefaultAudioVideoController', () => {
       // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
       expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
         .true;
+    });
+
+    it('will skip renegotiation if we are updating simulcast layer change with header extension', async () => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'info');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+
+      // @ts-ignore
+      class MockRTCRtpSender implements RTCRtpSender {
+        getParameters(): RTCRtpSendParameters {
+          // @ts-ignore
+          return {
+            headerExtensions: [
+              {
+                id: 12,
+                uri: 'http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00',
+              },
+            ],
+          };
+        }
+      }
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.transceiverController.localVideoTransceiver().sender = new MockRTCRtpSender();
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
+        1,
+      ]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([1]);
+
+      // @ts-ignore
+      audioVideoController.mayNeedRenegotiationForSimulcastLayerChange = true;
+      audioVideoController.update({ needsRenegotiation: false });
+
+      // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
+      expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
+        .true;
+    });
+
+    it('will not skip renegotiation if we are updating simulcast layer change without header extension', async () => {
+      const logger = new NoOpDebugLogger();
+      const loggerSpy = sinon.spy(logger, 'info');
+      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
+      configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
+      domMockBehavior.browserName = 'chrome';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      audioVideoController = new DefaultAudioVideoController(
+        configuration,
+        logger,
+        webSocketAdapter,
+        new NoOpMediaStreamBroker(),
+        reconnectController
+      );
+      await start();
+
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.transceiverController.localVideoTransceiver().sender = new RTCRtpSender();
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
+        1,
+      ]);
+      // @ts-ignore
+      audioVideoController.meetingSessionContext.videosToReceive = new DefaultVideoStreamIdSet([1]);
+
+      // @ts-ignore
+      audioVideoController.mayNeedRenegotiationForSimulcastLayerChange = true;
+      audioVideoController.update({ needsRenegotiation: false });
+
+      await stop();
+
+      // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
+      expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
+        .false;
     });
 
     it('will skip renegotiation if we are only completing simulcast stream switches', async () => {
@@ -2100,8 +2191,10 @@ describe('DefaultAudioVideoController', () => {
     });
 
     it('fails to replace local video for Plan B', async () => {
-      setUserAgent('Chrome/77.0.3865.75');
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
+      setUserAgent(SAFARI_12_USER_AGENT);
+      domMockBehavior.isUnifiedPlanSupported = false;
+      domMockBehavior.browserName = 'safari12';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
       class TestDeviceController extends NoOpDeviceController {
         async acquireVideoInputStream(): Promise<MediaStream> {
           const mediaStream = new MediaStream();
@@ -2326,8 +2419,10 @@ describe('DefaultAudioVideoController', () => {
     });
 
     it('replaces audio track for Plan-B', async () => {
-      setUserAgent('Chrome/77.0.3865.75');
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
+      setUserAgent(SAFARI_12_USER_AGENT);
+      domMockBehavior.isUnifiedPlanSupported = false;
+      domMockBehavior.browserName = 'safari12';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
       class TestDeviceController extends NoOpDeviceController {
         async acquireAudioInputStream(): Promise<MediaStream> {
           const mediaStream = new MediaStream();
@@ -2489,8 +2584,10 @@ describe('DefaultAudioVideoController', () => {
     });
 
     it('can reconnect in Plan B', async () => {
-      setUserAgent('Chrome/77.0.3865.75');
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = false;
+      setUserAgent(SAFARI_12_USER_AGENT);
+      domMockBehavior.isUnifiedPlanSupported = false;
+      domMockBehavior.browserName = 'safari12';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
       let startConnectingCalled = 0;
       let startCalled = 0;
       let stopCalled = 0;

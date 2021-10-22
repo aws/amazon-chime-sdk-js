@@ -17,4 +17,5 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
   requiresGroupIdMediaStreamConstraints(): boolean;
   requiresContextRecreationForAudioWorklet(): boolean;
   isSimulcastSupported(): boolean;
+  supportsBackgroundFilter(): boolean;
 }

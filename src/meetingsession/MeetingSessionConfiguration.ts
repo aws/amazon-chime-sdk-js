@@ -81,7 +81,10 @@ export default class MeetingSessionConfiguration {
   reconnectLongBackOffMs = 5 * 1000;
 
   /**
-   * Feature flag to enable Chromium-based browsers
+   * Feature flag to enable Chromium-based browsers.
+   *
+   * This field is deprecated and will be removed in future version. Right now it will always be regarded as true,
+   * since Plan B is not supported for Chromium-based browsers any more.
    */
   enableUnifiedPlanForChromiumBasedBrowsers: boolean = true;
 

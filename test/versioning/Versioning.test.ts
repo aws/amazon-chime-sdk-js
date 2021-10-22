@@ -3,6 +3,7 @@
 
 import { expect } from 'chai';
 
+import VERSION from '../../src/versioning/version';
 import Versioning from '../../src/versioning/Versioning';
 
 // Matches short Git commit hashes: abcdefff.
@@ -22,9 +23,45 @@ describe('Versioning', () => {
     });
   });
 
+  const semverString = VERSION.semverString;
+
+  afterEach(() => {
+    VERSION.semverString = semverString;
+  });
+
   describe('#sdkVersion', () => {
     it('is semver', () => {
       expect(Versioning.sdkVersion).to.match(VERSION_RE);
+    });
+  });
+
+  describe('#sdkVersionSemVer', () => {
+    it('matches major minor patch', () => {
+      VERSION.semverString = '1.22.33';
+      expect(Versioning.sdkVersionSemVer.major).to.be.eq('1');
+      expect(Versioning.sdkVersionSemVer.minor).to.be.eq('22');
+      expect(Versioning.sdkVersionSemVer.patch).to.be.eq('33');
+    });
+
+    it('matches major minor', () => {
+      VERSION.semverString = '1.22';
+      expect(Versioning.sdkVersionSemVer.major).to.be.eq('1');
+      expect(Versioning.sdkVersionSemVer.minor).to.be.eq('22');
+      expect(Versioning.sdkVersionSemVer.patch).to.be.undefined;
+    });
+
+    it('is undefined when empty', () => {
+      VERSION.semverString = '';
+      expect(Versioning.sdkVersionSemVer.major).to.be.undefined;
+      expect(Versioning.sdkVersionSemVer.minor).to.be.undefined;
+      expect(Versioning.sdkVersionSemVer.patch).to.be.undefined;
+    });
+
+    it('does not include build', () => {
+      VERSION.semverString = '1.19.14+2.abcdefff.dirty';
+      expect(Versioning.sdkVersionSemVer.major).to.be.eq('1');
+      expect(Versioning.sdkVersionSemVer.minor).to.be.eq('19');
+      expect(Versioning.sdkVersionSemVer.patch).to.be.eq('14');
     });
   });
 

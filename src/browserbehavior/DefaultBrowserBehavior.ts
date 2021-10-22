@@ -49,19 +49,15 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   private webkitBrowsers: string[] = ['crios', 'fxios', 'safari', 'ios', 'ios-webview'];
 
-  private enableUnifiedPlanForChromiumBasedBrowsers: boolean;
   private recreateAudioContextIfNeeded: boolean;
 
   constructor({
-    enableUnifiedPlanForChromiumBasedBrowsers = false,
-
     // Temporarily disable this workaround while we work out the kinks.
     recreateAudioContextIfNeeded = false,
   }: {
     enableUnifiedPlanForChromiumBasedBrowsers?: boolean;
     recreateAudioContextIfNeeded?: boolean;
   } = {}) {
-    this.enableUnifiedPlanForChromiumBasedBrowsers = enableUnifiedPlanForChromiumBasedBrowsers;
     this.recreateAudioContextIfNeeded = recreateAudioContextIfNeeded;
   }
 
@@ -103,13 +99,26 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return !this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox();
   }
 
-  requiresUnifiedPlan(): boolean {
-    let shouldEnable =
-      this.isFirefox() || (this.hasWebKitWebRTC() && this.isUnifiedPlanSupported());
-    if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
-      shouldEnable = shouldEnable || this.hasChromiumWebRTC();
+  supportsBackgroundFilter(): boolean {
+    // disable Safari 15
+    // see: https://github.com/aws/amazon-chime-sdk-js/issues/1059
+    if (this.name() === 'safari' && this.majorVersion() === 15) {
+      return false;
     }
-    return shouldEnable;
+
+    if (!this.supportsCanvasCapturedStreamPlayback()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  requiresUnifiedPlan(): boolean {
+    return (
+      this.isFirefox() ||
+      this.hasChromiumWebRTC() ||
+      (this.hasWebKitWebRTC() && this.isUnifiedPlanSupported())
+    );
   }
 
   requiresResolutionAlignment(width: number, height: number): [number, number] {
@@ -128,11 +137,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   requiresUnifiedPlanMunging(): boolean {
-    let shouldRequire = this.hasWebKitWebRTC() && this.isUnifiedPlanSupported();
-    if (this.enableUnifiedPlanForChromiumBasedBrowsers) {
-      shouldRequire = shouldRequire || this.hasChromiumWebRTC();
-    }
-    return shouldRequire;
+    return this.hasChromiumWebRTC() || (this.hasWebKitWebRTC() && this.isUnifiedPlanSupported());
   }
 
   requiresSortCodecPreferencesForSdpAnswer(): boolean {
@@ -232,7 +237,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   }
 
   isSimulcastSupported(): boolean {
-    return this.hasChromiumWebRTC() && this.enableUnifiedPlanForChromiumBasedBrowsers;
+    return this.hasChromiumWebRTC();
   }
 
   supportString(): string {

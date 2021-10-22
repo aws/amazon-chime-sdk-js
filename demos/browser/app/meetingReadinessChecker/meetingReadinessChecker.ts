@@ -89,7 +89,6 @@ export class DemoMeetingApp {
 
   // feature flags
   enableWebAudio = false;
-  enableUnifiedPlanForChromiumBasedBrowsers = false;
   enableSimulcast = false;
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -437,7 +436,6 @@ export class DemoMeetingApp {
 
   async initializeMeetingSession(configuration: MeetingSessionConfiguration): Promise<void> {
     await this.initializeLogger(configuration);
-    configuration.enableUnifiedPlanForChromiumBasedBrowsers = this.enableUnifiedPlanForChromiumBasedBrowsers;
     configuration.attendeePresenceTimeoutMs = 15000;
     configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = this.enableSimulcast;
     this.meetingSession = new DefaultMeetingSession(
