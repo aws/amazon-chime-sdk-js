@@ -21,8 +21,8 @@ import {
   ContentShareObserver,
   DataMessage,
   DefaultActiveSpeakerPolicy,
-  DefaultAudioVideoController,
   DefaultAudioMixController,
+  DefaultAudioVideoController,
   DefaultBrowserBehavior,
   DefaultDeviceController,
   DefaultMeetingEventReporter,
@@ -163,9 +163,9 @@ const BACKGROUND_BLUR_PATHS: BackgroundFilterPaths = BACKGROUND_BLUR_CDN && {
   simd: `${BACKGROUND_BLUR_CDN}/bgblur/wasm/_cwt-wasm-simd.wasm`,
 };
 const BACKGROUND_BLUR_MODEL = BACKGROUND_BLUR_CDN && ModelSpecBuilder.builder()
-    .withSelfieSegmentationDefaults()
-    .withPath(`${BACKGROUND_BLUR_CDN}/bgblur/models/selfie_segmentation_landscape.tflite`)
-    .build();
+  .withSelfieSegmentationDefaults()
+  .withPath(`${BACKGROUND_BLUR_CDN}/bgblur/models/selfie_segmentation_landscape.tflite`)
+  .build();
 const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BLUR_REVISION_ID) && {
   assetGroup: BACKGROUND_BLUR_ASSET_GROUP,
   revisionID: BACKGROUND_BLUR_REVISION_ID,
@@ -468,14 +468,14 @@ export class DemoMeetingApp
   }
 
   async initBackgroundBlur(): Promise<void> {
-      const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
-      try {
-        this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
-      }
-      catch (e) {
+    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
+    try {
+      this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
+    }
+    catch (e) {
       logger.warn(`[DEMO] Does not support background blur: ${e.message}`);
-        this.supportsBackgroundBlur = false;
-      }
+      this.supportsBackgroundBlur = false;
+    }
   }
 
   private async onVoiceFocusSettingChanged(): Promise<void> {
@@ -487,7 +487,6 @@ export class DemoMeetingApp
     if (!this.defaultBrowserBehaviour.hasChromiumWebRTC()) {
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
     }
-
 
     if (!this.defaultBrowserBehaviour.supportDownlinkBandwidthEstimation()) {
       (document.getElementById('priority-downlink-policy') as HTMLInputElement).disabled = true;
@@ -895,12 +894,12 @@ export class DemoMeetingApp
           mixed.addTrack(localTile.state().boundVideoStream.getVideoTracks()[0]);
         }
 
-        // // We need to get access to the media stream broker, which requires knowing
-        // // the exact implementation. Sorry!
-        // /* @ts-ignore */
-        // const av: DefaultAudioVideoController = this.audioVideo.audioVideoController;
-        // const input = await av.mediaStreamBroker.acquireAudioInputStream();
-        // mixed.addTrack(input.getAudioTracks()[0]);
+        // We need to get access to the media stream broker, which requires knowing
+        // the exact implementation. Sorry!
+        /* @ts-ignore */
+        const av: DefaultAudioVideoController = this.audioVideo.audioVideoController;
+        const input = await av.mediaStreamBroker.acquireAudioInputStream();
+        mixed.addTrack(input.getAudioTracks()[0]);
 
         recorder = new MediaRecorder(mixed, { mimeType: 'video/webm; codecs=vp9' });
         console.info('Setting recorder to', recorder);
@@ -1020,7 +1019,7 @@ export class DemoMeetingApp
         const contentIdentificationChecked = (document.getElementById('content-identification-checkbox') as HTMLInputElement).checked;
         const contentRedactionChecked = (document.getElementById('content-redaction-checkbox') as HTMLInputElement).checked;
         document.getElementById('engine-transcribe-language').classList.toggle('hidden', !engineTranscribeChecked);
-		    document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-region').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-region').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-content-identification').classList.toggle('hidden', engineTranscribeChecked);
@@ -1584,11 +1583,8 @@ export class DemoMeetingApp
       const policy = (document.getElementById('simulcast-policy') as HTMLSelectElement).value;
       if (policy === 'nscale-lower') {
         configuration.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicyNScaleLowStream(configuration.credentials.attendeeId, this.meetingLogger);
-      } else if (policy === 'fixed-stream') {
-        configuration.videoUplinkBandwidthPolicy = new SimulcastUplinkPolicyFixedStream(configuration.credentials.attendeeId, this.meetingLogger);
       }
     }
-
     if (this.usePriorityBasedDownlinkPolicy) {
       this.priorityBasedDownlinkPolicy = new VideoPriorityBasedPolicy(this.meetingLogger, this.videoPriorityBasedPolicyConfig);
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
@@ -1639,6 +1635,7 @@ export class DemoMeetingApp
         this.meetingLogger,
         this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
         (document.getElementById('enable-pagination') as HTMLInputElement).checked ? DemoMeetingApp.REDUCED_REMOTE_VIDEO_PAGE_SIZE : DemoMeetingApp.REMOTE_VIDEO_PAGE_SIZE)
+
     this.audioVideo.addObserver(this.videoTileCollection);
 
     this.initContentShareDropDownItems();
@@ -2214,7 +2211,7 @@ export class DemoMeetingApp
           this.switchToFlow('flow-devices');
           return stream;
         }
-    );
+      );
     }
   }
 
@@ -3231,7 +3228,7 @@ export class DemoMeetingApp
   audioVideoDidStartConnecting(reconnecting: boolean): void {
     this.log(`session connecting. reconnecting: ${reconnecting}`);
     if (reconnecting && this.isAbortingOnReconnect()) {
-        fatal(Error('reconnect occured with abort-on-reconnect set to true'));
+      fatal(Error('reconnect occured with abort-on-reconnect set to true'));
     }
   }
 
