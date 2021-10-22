@@ -8,5 +8,6 @@
     "src/signalingprotocol/ScreenSignalingProtocol.js",
     "src/signalingprotocol/ScreenSignalingProtocol.d.ts"
   ],
-  "mode": "file"
+  "mode": "file",
+  "media": "./guides/media"
 }
