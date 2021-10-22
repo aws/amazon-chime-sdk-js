@@ -627,26 +627,29 @@ describe('BackgroundBlurProcessor', () => {
         stubFineGrainSupport({});
         const logger = new ConsoleLogger('BackgroundBlurProcessor', LogLevel.INFO);
 
-        setUserAgent(
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36'
-        );
-        await expect(
-          await BackgroundBlurVideoFrameProcessor.isSupported(null, { logger })
-        ).to.be.equal(true);
+        const supportedUserAgents = [
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36',
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15',
+        ];
+        for (const supportedUserAgent of supportedUserAgents) {
+          setUserAgent(supportedUserAgent);
+          await expect(
+            await BackgroundBlurVideoFrameProcessor.isSupported(null, { logger })
+          ).to.be.equal(true);
+        }
 
-        setUserAgent(
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
-        );
-        await expect(
-          await BackgroundBlurVideoFrameProcessor.isSupported(null, { logger })
-        ).to.be.equal(true);
-
-        setUserAgent(
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1.2 Safari/605.1.15'
-        );
-        await expect(
-          await BackgroundBlurVideoFrameProcessor.isSupported(null, { logger })
-        ).to.be.equal(false);
+        const notSupportedUserAgents = [
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1.2 Safari/605.1.15',
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/88.0.4324.152 Mobile/14E5239e Safari/602.1',
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/29.1.0 Mobile/16B91 Safari/605.1.15',
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+        ];
+        for (const notSupportedUserAgent of notSupportedUserAgents) {
+          setUserAgent(notSupportedUserAgent);
+          await expect(
+            await BackgroundBlurVideoFrameProcessor.isSupported(null, { logger })
+          ).to.be.equal(false);
+        }
       });
     });
 

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add support for layers allocation negotiation in Chromium based browsers to avoid resubscribing to preemptively turn off simulcast streams or to switch layers. 
+- Update browser compatibility doc for background blur
 
 ### Removed
 
