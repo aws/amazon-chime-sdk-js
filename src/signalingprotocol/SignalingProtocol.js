@@ -1094,8 +1094,8 @@ $root.SdkClientDetails = (function() {
      * Properties of a SdkClientDetails.
      * @exports ISdkClientDetails
      * @interface ISdkClientDetails
-     * @property {string|null} [appVersionName] SdkClientDetails appVersionName
-     * @property {string|null} [appVersionCode] SdkClientDetails appVersionCode
+     * @property {string|null} [appName] SdkClientDetails appName
+     * @property {string|null} [appVersion] SdkClientDetails appVersion
      * @property {string|null} [deviceModel] SdkClientDetails deviceModel
      * @property {string|null} [deviceMake] SdkClientDetails deviceMake
      * @property {string|null} [platformName] SdkClientDetails platformName
@@ -1120,20 +1120,20 @@ $root.SdkClientDetails = (function() {
     }
 
     /**
-     * SdkClientDetails appVersionName.
-     * @member {string} appVersionName
+     * SdkClientDetails appName.
+     * @member {string} appName
      * @memberof SdkClientDetails
      * @instance
      */
-    SdkClientDetails.prototype.appVersionName = "";
+    SdkClientDetails.prototype.appName = "";
 
     /**
-     * SdkClientDetails appVersionCode.
-     * @member {string} appVersionCode
+     * SdkClientDetails appVersion.
+     * @member {string} appVersion
      * @memberof SdkClientDetails
      * @instance
      */
-    SdkClientDetails.prototype.appVersionCode = "";
+    SdkClientDetails.prototype.appVersion = "";
 
     /**
      * SdkClientDetails deviceModel.
@@ -1207,10 +1207,10 @@ $root.SdkClientDetails = (function() {
     SdkClientDetails.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.appVersionName != null && message.hasOwnProperty("appVersionName"))
-            writer.uint32(/* id 1, wireType 2 =*/10).string(message.appVersionName);
-        if (message.appVersionCode != null && message.hasOwnProperty("appVersionCode"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.appVersionCode);
+        if (message.appName != null && message.hasOwnProperty("appName"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.appName);
+        if (message.appVersion != null && message.hasOwnProperty("appVersion"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.appVersion);
         if (message.deviceModel != null && message.hasOwnProperty("deviceModel"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.deviceModel);
         if (message.deviceMake != null && message.hasOwnProperty("deviceMake"))
@@ -1258,10 +1258,10 @@ $root.SdkClientDetails = (function() {
             var tag = reader.uint32();
             switch (tag >>> 3) {
             case 1:
-                message.appVersionName = reader.string();
+                message.appName = reader.string();
                 break;
             case 2:
-                message.appVersionCode = reader.string();
+                message.appVersion = reader.string();
                 break;
             case 3:
                 message.deviceModel = reader.string();
@@ -1316,12 +1316,12 @@ $root.SdkClientDetails = (function() {
     SdkClientDetails.verify = function verify(message) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.appVersionName != null && message.hasOwnProperty("appVersionName"))
-            if (!$util.isString(message.appVersionName))
-                return "appVersionName: string expected";
-        if (message.appVersionCode != null && message.hasOwnProperty("appVersionCode"))
-            if (!$util.isString(message.appVersionCode))
-                return "appVersionCode: string expected";
+        if (message.appName != null && message.hasOwnProperty("appName"))
+            if (!$util.isString(message.appName))
+                return "appName: string expected";
+        if (message.appVersion != null && message.hasOwnProperty("appVersion"))
+            if (!$util.isString(message.appVersion))
+                return "appVersion: string expected";
         if (message.deviceModel != null && message.hasOwnProperty("deviceModel"))
             if (!$util.isString(message.deviceModel))
                 return "deviceModel: string expected";
@@ -1355,10 +1355,10 @@ $root.SdkClientDetails = (function() {
         if (object instanceof $root.SdkClientDetails)
             return object;
         var message = new $root.SdkClientDetails();
-        if (object.appVersionName != null)
-            message.appVersionName = String(object.appVersionName);
-        if (object.appVersionCode != null)
-            message.appVersionCode = String(object.appVersionCode);
+        if (object.appName != null)
+            message.appName = String(object.appName);
+        if (object.appVersion != null)
+            message.appVersion = String(object.appVersion);
         if (object.deviceModel != null)
             message.deviceModel = String(object.deviceModel);
         if (object.deviceMake != null)
@@ -1388,8 +1388,8 @@ $root.SdkClientDetails = (function() {
             options = {};
         var object = {};
         if (options.defaults) {
-            object.appVersionName = "";
-            object.appVersionCode = "";
+            object.appName = "";
+            object.appVersion = "";
             object.deviceModel = "";
             object.deviceMake = "";
             object.platformName = "";
@@ -1397,10 +1397,10 @@ $root.SdkClientDetails = (function() {
             object.clientSource = "";
             object.chimeSdkVersion = "";
         }
-        if (message.appVersionName != null && message.hasOwnProperty("appVersionName"))
-            object.appVersionName = message.appVersionName;
-        if (message.appVersionCode != null && message.hasOwnProperty("appVersionCode"))
-            object.appVersionCode = message.appVersionCode;
+        if (message.appName != null && message.hasOwnProperty("appName"))
+            object.appName = message.appName;
+        if (message.appVersion != null && message.hasOwnProperty("appVersion"))
+            object.appVersion = message.appVersion;
         if (message.deviceModel != null && message.hasOwnProperty("deviceModel"))
             object.deviceModel = message.deviceModel;
         if (message.deviceMake != null && message.hasOwnProperty("deviceMake"))
