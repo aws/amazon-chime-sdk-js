@@ -24,7 +24,7 @@ jobs:
 
       - name: Run XCUITest Locally
         run: |
-          xcodebuild test -project apps/iOS-WKWebView-sample/WkWebView\ Demo.xcodeproj -scheme WkWebView\ Demo  -sdk iphonesimulator -destination "platform=iOS Simulator,OS=14.5,name=iPhone 11 Pro"
+          xcodebuild test -project apps/iOS-WKWebView-sample/WkWebView\ Demo.xcodeproj -scheme WkWebView\ Demo  -sdk iphonesimulator -destination "platform=iOS Simulator,OS=15.0,name=iPhone 11 Pro"
   androidtest:
     runs-on: macos-11
     defaults:
