@@ -16,7 +16,7 @@ Background blur is available as part of the Amazon Chime SDK for JavaScript from
 
 ### Browser compatibility
 
-Background blur in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and iOS operating systems, and Safari 14.1 and later on macOS and some iOS devices. A full compatibility table is below.
+Background blur in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and Safari 14.1 and later on macOS. 
 
 There is a known issue with `VideoFrameProcessor` in Safari 15: see [github issue 1059](https://github.com/aws/amazon-chime-sdk-js/issues/1059)
 

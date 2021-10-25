@@ -216,8 +216,8 @@ export default class BackgroundBlurVideoFrameProcessor {
     }
 
     const browser = new DefaultBrowserBehavior();
-    if (browser.name() === 'safari' && browser.majorVersion() === 15) {
-      logger.info('Safari 15 is not supported');
+    if (!browser.supportsBackgroundFilter()) {
+      logger.info('Browser is not supported.');
       return Promise.resolve(false);
     }
 

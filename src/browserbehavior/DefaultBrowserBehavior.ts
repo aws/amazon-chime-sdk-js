@@ -99,6 +99,20 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return !this.isIOSSafari() && !this.isIOSChrome() && !this.isIOSFirefox();
   }
 
+  supportsBackgroundFilter(): boolean {
+    // disable Safari 15
+    // see: https://github.com/aws/amazon-chime-sdk-js/issues/1059
+    if (this.name() === 'safari' && this.majorVersion() === 15) {
+      return false;
+    }
+
+    if (!this.supportsCanvasCapturedStreamPlayback()) {
+      return false;
+    }
+
+    return true;
+  }
+
   requiresUnifiedPlan(): boolean {
     return (
       this.isFirefox() ||

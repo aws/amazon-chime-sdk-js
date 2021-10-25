@@ -90,7 +90,7 @@
     "detect-browser": "^5.2.0",
     "protobufjs": "~6.8.8",
     "resize-observer": "^1.0.0",
-    "ua-parser-js": "^0.7.24"
+    "ua-parser-js": "^1.0.1"
   },
   "license": "Apache-2.0",
   "repository": {
