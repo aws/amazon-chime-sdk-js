@@ -7,7 +7,7 @@
 <a href="https://www.npmjs.com/package/amazon-chime-sdk-js"><img src="https://img.shields.io/npm/v/amazon-chime-sdk-js?style=flat-square"></a>
 <a href="https://github.com/aws/amazon-chime-sdk-js/actions?query=workflow%3A%22Deploy+Demo+App+Workflow%22"><img src="https://github.com/aws/amazon-chime-sdk-js/workflows/Deploy%20Demo%20App%20Workflow/badge.svg"></a>
 
-## Build video calling, audio calling, messaging, and screen sharing applications powered by Amazon Chime
+## Build video calling, audio calling, messaging, and screen sharing applications powered by the Amazon Chime SDK
 
 The Amazon Chime SDK is a set of real-time communications components that developers can
 use to quickly add messaging, audio, video, and screen sharing capabilities to their web or
@@ -19,12 +19,12 @@ health application so patients can consult remotely with doctors on health
 issues, or create customized audio prompts for integration with the public
 telephone network.
 
-This Amazon Chime SDK for JavaScript works by connecting to meeting session
-resources that you have created in your AWS account. The SDK has everything
+The Amazon Chime SDK for JavaScript works by connecting to meeting session
+resources that you create in your AWS account. The SDK has everything
 you need to build custom calling and collaboration experiences in your
-web application, including methods to: configure meeting sessions, list and
+web application, including methods to configure meeting sessions, list and
 select audio and video devices, start and stop screen share and screen share
-viewing, receive callbacks when media events occur such as volume changes, and
+viewing, receive callbacks when media events such as volume changes occur, and
 control meeting features such as audio mute and video tile bindings.
 
 If you are building a React application, consider using the [Amazon Chime SDK React Component Library](https://github.com/aws/amazon-chime-sdk-component-library-react) that supplies client-side state management and reusable UI components for common web interfaces used in audio and video conferencing applications. Amazon Chime also offers [Amazon Chime SDK for iOS](https://github.com/aws/amazon-chime-sdk-ios) and [Amazon Chime SDK for Android](https://github.com/aws/amazon-chime-sdk-android) for native mobile application development.
@@ -39,6 +39,7 @@ The [Amazon Chime SDK Project Board](https://github.com/orgs/aws/projects/12) ca
 - [Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html)
 - [PSTN Audio Developer Guide](https://docs.aws.amazon.com/chime/latest/dg/build-lambdas-for-sip-sdk.html)
 - [Control Plane API Reference](https://docs.aws.amazon.com/chime/latest/APIReference/Welcome.html)
+- [Frequently Asked Questions (FAQ)](https://aws.github.io/amazon-chime-sdk-js/modules/faqs.html)
 
 ## Blog posts
 
