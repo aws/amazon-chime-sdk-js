@@ -106,7 +106,7 @@ class AppPage {
   }
 
   async selectRegion(region) {
-    await clickElement(this.driver, this.driver.findElement(By.css(`option[value=${region}]`)));
+    await this.driver.findElement(By.css(`option[value=${region}]`)).click();
   }
 
   async authenticate() {
