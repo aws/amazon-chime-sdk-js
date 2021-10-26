@@ -4,9 +4,9 @@
 
 ### What is the Amazon Chime SDK?
 
-The [Amazon Chime SDK](https://aws.amazon.com/chime/chime-sdk) is a set of real-time communications components that developers can use to quickly add audio calling, video calling, and screen sharing capabilities to their own web or mobile applications. Developers can leverage the same communication infrastructure and services that power Amazon Chime, an online meetings service from AWS, and deliver engaging experiences in their applications.
+The [Amazon Chime SDK](https://aws.amazon.com/chime/chime-sdk) is a set of real-time communications components that developers can use to quickly add audio calling, video calling, messaging, and screen sharing capabilities to their own web or mobile applications.  Developers can build on AWS's global communications infrastructure to deliver engaging experiences in their applications.
 
-There are three client SDKs that can be used by applications based on the use case. Each of these repos have walkthroughs, and links to demos and sample code:
+There are three client SDKs that can be used by applications based on operating system or use case. Each of these repos have walkthroughs, and links to demos and sample code:
 
 Amazon Chime SDK for JavaScript https://github.com/aws/amazon-chime-sdk-js
 
@@ -32,11 +32,11 @@ If you have feature requests or feedback, please fill out the [customer question
 
 ### Can I use the Amazon Chime application to join an Amazon Chime SDK meeting?
 
-The meetings created by the Amazon Chime Application and the SDK are distinct. Amazon Chime SDK is meant for customers who would like to build the experience into their existing applications and it is **NOT** a means to create an Amazon Chime meeting (with a PIN) that can be joined using our client application. You cannot use the Amazon Chime SDK to build a custom client to join an Amazon Chime meeting with a PIN.
+The meetings created by the Amazon Chime meetings application and the SDK are distinct. The Amazon Chime SDK is meant for customers who would like to build the experience into their existing applications and it is **not** a means to create an Amazon Chime meeting (with a PIN) that can be joined using the Amazon Chime meetings application. You cannot use the Amazon Chime SDK to build a custom client to join an Amazon Chime meeting with a PIN.
 
 ### Does the MeetingsNotificationsConfiguration only support SQS queues in us-east-1?
 
-Yes, we currently support SNS topics or SQS queues located in us-east-1 region only. For more details, please refer
+Yes, we currently support SNS topics or SQS queues located in `us-east-1` region only. For more details, please refer
  to [Meeting Notification Configuration API](https://docs.aws.amazon.com/chime/latest/APIReference/API_MeetingNotificationConfiguration.html).
 
 ### How can I learn about interruptions to the Amazon Chime service?
@@ -47,7 +47,7 @@ You can be notified about Amazon Chime service interruptions at the https://stat
 
 ### What browsers are supported by the Amazon Chime SDK for JavaScript?
 
-You can find the complete list of browsers in this link: [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers). [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) support in a browser is a prerequisite for Amazon Chime SDK to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.
+You can find the complete list of browsers in this link: [Supported Browsers](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers). [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) support in a browser is a prerequisite for the Amazon Chime SDK for JavaScript to run. Browsers that do not offer WebRTC support, like Internet Explorer, are not supported.
 
 The SDK is built to target ES2015, both syntax and features. If you need your built application bundle to target legacy browsers that do not support ES2015 syntax, including Internet Explorer, you will need to transpile the SDK code using a transpiler like Babel, split your application bundle into multiple files that can be built with different targets and conditionally loaded, or generate multiple versions of your application to target specific browsers.
 
@@ -56,7 +56,7 @@ Note that due to limitations in transpilers, requirements of the web platform mi
 
 ### Is the Amazon Chime SDK supported on mobile browsers?
 
-Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
+The Amazon Chime SDK for JavaScript is supported on certain mobile browsers listed in the official Amazon Chime SDK documentation: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers. Developers can also build native mobile applications using the following SDKs (this option allows for meetings to continue when applications are sent to the background).
 
 Amazon Chime SDK for iOS https://github.com/aws/amazon-chime-sdk-ios
 
@@ -68,7 +68,7 @@ Please refer to [Known Browser and Compatibility Issues](https://github.com/aws/
 
 ### In macOS Safari, audio stops playing when I minimize or move the window to the background. Is this a known issue?
 
-macOS Safari has a [known Web Audio issue](https://bugs.webkit.org/show_bug.cgi?id=231105) that a [MediaStreamAudioDestinationNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioDestinationNode) stops working when you minimize the window. The bug also occurs when you activate the full-screen mode and switch to another window. To remediate the issue, disable Web Audio by passing the `{ enableWebAudio: false }` argument, or no argument, to `new DefaultDeviceController`.
+Safari on macOS has a [known Web Audio issue](https://bugs.webkit.org/show_bug.cgi?id=231105) that a [MediaStreamAudioDestinationNode](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamAudioDestinationNode) stops working when you minimize the window. The bug also occurs when you activate the full-screen mode and switch to another window. To remediate the issue, disable Web Audio by passing the `{ enableWebAudio: false }` argument, or no argument, to `new DefaultDeviceController`.
 
 ### I am unable to select an audio output device in some browsers, is this a known issue?
 
@@ -90,9 +90,9 @@ Make sure to close all other apps and tabs that are using the camera.
 
 ### I cannot join meeting in Firefox with no audio and video permission due to `no ice candidates were gathered` error, is this a known issue?
 
-In Firefox, if access to camera or microphone has been granted to the site — either by currently having a video or audio input, or as a result of the user choosing to always allow access — and the profile has not been configured with media.peerconnection.ice.default_address_only, then ICE will gather all interface addresses. If the user has not granted the appropriate permissions, or if that preference has been set, then the ICE stack will limit ICE candidates to a default interface only. The default interface is the one that was used to load the page. This is a privacy mechanism in Firefox to stop sites from de-anonymizing VPN users via WebRTC leakage.
+In Firefox, if access to camera or microphone has been granted to the site — either by currently having a video or audio input, or as a result of the user choosing to always allow access — and the profile has not been configured with `media.peerconnection.ice.default_address_only`, then ICE will gather all interface addresses. If the user has not granted the appropriate permissions, or if that preference has been set, then the ICE stack will limit ICE candidates to a default interface only. The default interface is the one that was used to load the page. This is a privacy mechanism in Firefox to stop sites from de-anonymizing VPN users via WebRTC leakage.
 
-If the page itself is loaded via a different network interface than the one that is intended to be used by the Chime SDK to connect to Chime media resources, e.g., in a split-tunneling VPN where browser traffic uses the VPN interface but Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.
+If the page itself is loaded via a different network interface than the one that is intended to be used by the Amazon Chime SDK to connect to Amazon Chime media resources, _e.g._, in a split-tunneling VPN where browser traffic uses the VPN interface but Amazon Chime video and audio does not, then ICE gathering will use the wrong interface, which can result in sub-optimal network routing or an inability to use audio or video functionality.
 
 Customers and end users must ensure that either (a) end users do not use SDK applications in these kinds of split-tunneling scenarios, or (b) the SDK application always requests microphone permissions prior to beginning ICE.
  
@@ -100,11 +100,11 @@ Customers and end users must ensure that either (a) end users do not use SDK app
 
 ### How do users authenticate into a meeting?
 
-Amazon Chime SDK uses join tokens to participate in Amazon Chime meetings that are obtained when each attendee is [created](https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-mtgs.html). The safe distribution of these tokens to the clients is the application developer’s responsibility. Amazon Chime SDK does not authenticate end users. Developers could use services such as [Amazon Cognito](https://aws.amazon.com/cognito/), Open ID connect, Active Directory, or Facebook to log in end users to their application. You can tie external identity management with Amazon Chime SDK attendees using externalUserId argument supplied at the attendee creation time.
+The Amazon Chime SDK uses join tokens to control access to meetings. These tokens are obtained when each attendee is [created](https://docs.aws.amazon.com/chime/latest/dg/mtgs-sdk-mtgs.html). The safe distribution of these tokens to the clients is the application developer’s responsibility. The Amazon Chime SDK does not authenticate end users. Developers can use services such as [Amazon Cognito](https://aws.amazon.com/cognito/), Open ID connect, Active Directory, or Facebook to log in end users to their application. You can tie external identity management to Amazon Chime SDK attendees by supplying an `externalUserId` when creating the attendee.
 
 ### When does an Amazon Chime SDK meeting end?
 
-An Amazon Chime SDK meeting ends when you run the [DeleteMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html) API action. Also, a meeting automatically ends after a period of inactivity, based on the following rules:
+An Amazon Chime SDK meeting ends when you invoke the [DeleteMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteMeeting.html) API action. Also, a meeting automatically ends after a period of inactivity, based on the following rules:
 
 * No audio connections are present in the meeting for more than five minutes.
 * Only one audio connection is present in the meeting for more than 30 minutes.
@@ -116,23 +116,23 @@ AWS accounts have a soft limit of [250 concurrent meetings](https://docs.aws.ama
 
 ### How many attendees can join an Amazon Chime SDK meeting? Can this limit be raised?
 
-Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and up to 25 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using DeleteAttendee API call. Attendee limits cannot be changed.
+Amazon Chime SDK limits are defined [here](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-limits). The service supports up to 250 attendees and up to 25 video participants in a meeting (video limit is enforced separately). An attendee is considered active unless it has been explicitly removed using `DeleteAttendee`. Attendee limits cannot be changed.
 
 If your use case requires more than 250 attendees, consider using a [broadcasting solution](https://github.com/aws-samples/amazon-chime-meeting-broadcast-demo).
 
 ### What happens to the subsequent participants who try to turn on the local video while 25 participants have already turned on the local video?
 
-Once the limit of 25 is reached in a meeting, for all the subsequent participants who try to turn on the local video, the SDK sets the Meeting Session status code to [VideoCallSwitchToViewOnly = 10](https://github.com/aws/amazon-chime-sdk-js/blob/bfc4c600fb7e68f2d358ecb6c7fd096d30b2d430/src/meetingsession/MeetingSessionStatusCode.ts#L73) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
+Once the limit of 25 video tiles is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://github.com/aws/amazon-chime-sdk-js/blob/bfc4c600fb7e68f2d358ecb6c7fd096d30b2d430/src/meetingsession/MeetingSessionStatusCode.ts#L73) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
 
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
 The Amazon Chime SDK does not support scheduling meetings ahead of time. The moment [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html) or 
 [CreateMeetingWithAttendees](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeetingWithAttendees.html) is invoked and the meeting is created, the auto end
- policies will kick in and if no one joins the meeting, it will close within 5 minutes. The application can create the meeting when drawing closer to the meeting start time or when the the first attendee is ready to join.
+ policies will apply. If no attendees join the meeting, it will end after 5 minutes. The application can create the meeting when drawing closer to the meeting start time or when the the first attendee is ready to join.
 
- ### What happens when I try to re-use same attendee response to join a meeting twice?
+### What happens when I try to re-use same attendee response to join a meeting twice?
  
- Suppose an attendee has joined a meeting, now if that same attendee tries to join the same meeting again using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API, then, the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. Reference issue: [#1290](https://github.com/aws/amazon-chime-sdk-js/issues/1290). The `AudioJoinFromAnotherDevice` meeting session status code is triggered by Amazon Chime backend and it is not triggered internally from the JS SDK.
+If two clients attempt to join the same meeting using the same `AttendeeId` or `ExternalUserId` response received from [CreateAttendee](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html) API then the first attendee will automatically leave the meeting with [`AudioJoinFromAnotherDevice`](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#audiojoinedfromanotherdevice) meeting session status code. Reference issue: [#1290](https://github.com/aws/amazon-chime-sdk-js/issues/1290). The `AudioJoinFromAnotherDevice` meeting session status code is triggered by the Amazon Chime backend.
 
 ### What does it mean when the Amazon Chime SDK for JavaScript throws an error with status code `SignalingBadRequest`, `MeetingEnded`, or `SignalingInternalServerError` while establishing a signaling connection to the Chime servers?
 
@@ -149,9 +149,9 @@ session will not be reconnected: SignalingBadRequest
 
 The possible reasons are as follows:
 
-1. If you attempt to join a Chime SDK meeting using the deleted attendee's response, the Chime SDK for JavaScript throws an error with the status code `SignalingBadRequest`. Note that you or someone can delete an attendee in the [DeleteAttendee API](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html) action.
-2. The close code `4410` from the Chime backend indicates that an attendee has attempted to join an already-ended meeting. The Chime SDK for JavaScript throws an error with the status code `MeetingEnded`.
-3. The close code between `4500` and `4599` (inclusive) indicates an internal server error in the Amazon Chime backend. In this case, the Chime SDK for JavaScript throws an error with the status code `SignalingInternalServerError`. Please create a GitHub issue including the Chime SDK browser logs.
+1. If you attempt to join a meeting using a deleted attendee's response, the Amazon Chime SDK for JavaScript throws an error with the status code `SignalingBadRequest`. Note that you or someone can delete an attendee in the [DeleteAttendee API](https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html) action.
+2. The close code `4410` from the Chime backend indicates that an attendee has attempted to join an already-ended meeting. The Amazon Chime SDK for JavaScript throws an error with the status code `MeetingEnded`.
+3. The close code between `4500` and `4599` (inclusive) indicates an internal server error in the Amazon Chime backend. In this case, the Amazon Chime SDK for JavaScript throws an error with the status code `SignalingInternalServerError`. Please [create a GitHub issue](https://github.com/aws/amazon-chime-sdk-js/issues/new/choose) including the Amazon Chime SDK browser logs.
 
 ### When does the Amazon Chime SDK retry the connection? Can I customize this retry behavior?
 
@@ -231,7 +231,7 @@ You can use the [AudioVideoFacade.startContentShare(MediaStream)](https://aws.gi
 
 The [AudioVideoFacade.startContentShare(MediaStream)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare) API uses the HTMLMediaElement.captureStream API to stream video content content to the meeting. Chrome 88 and above have a [known issue](https://bugs.chromium.org/p/chromium/issues/detail?id=1156408) that the captureStream API does not send any data.
 
-As a workaround, you can turn hardware acceleration off in Chrome (88.0.4324.146 and above) and then stream video. Go to Settings (`chrome://settings`), scroll down to the System, and turn "Use hardware acceleration when available" off.
+As a workaround, you can turn hardware acceleration off in Chrome (version 88.0.4324.146 and above) and then stream video. Go to Settings (`chrome://settings`), scroll down to System, and turn off "Use hardware acceleration when available".
 
 ### How do I broadcast an Amazon Chime SDK meeting?
 
@@ -243,7 +243,7 @@ See this [guide](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwi
 
 ### Does Amazon Chime SDK support simulcast?
 
-Amazon Chime SDK supports simulcast for Chromium-based browsers. See this [technical guide](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html) for more information.
+The Amazon Chime SDK supports simulcast for Chromium-based browsers. See this [technical guide](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html) for more information.
 
 ### Does the SDK support remote mute where one attendee can mute another?
 
@@ -279,11 +279,11 @@ See this [guide](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwi
 
 ### I want to build a React application that uses the Amazon Chime SDK. Do you have a sample application that I can reference?
 
-Amazon Chime has published a [blog post](https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/) and [demo](https://github.com/aws-samples/amazon-chime-sdk-classroom-demo) for a building a virtual classroom using the Amazon Chime SDK for JavaScript.
+See this [blog post](https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/) and [demo](https://github.com/aws-samples/amazon-chime-sdk-classroom-demo) for a building a virtual classroom using the Amazon Chime SDK for JavaScript.
 
 ### I want to build a React Native application that uses the Amazon Chime SDK. Do you have a sample application I can reference?
 
-Amazon Chime SDK has published a react native demo that can be accessed [here](https://github.com/aws-samples/amazon-chime-react-native-demo).
+There is a React Native demo [here](https://github.com/aws-samples/amazon-chime-react-native-demo).
 
 ### Do I get billed for using the demos?
 
@@ -291,13 +291,13 @@ Your account will get billed for attendee minutes and for any other AWS resource
 
 ### Does Amazon Chime SDK support recording functionality?
 
-No. Currently the Amazon Chime SDK does not support meeting recording out of the box. However, we have published a [blog post](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) and a [demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) demonstrating how to enable client-side recording using the Amazon Chime SDK.
+Yes. You can [record to Amazon S3 using media capture pipelines](https://docs.aws.amazon.com/chime/latest/dg/media-capture.html), or capture from a web browser. [This blog post](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) and [demo](https://github.com/aws-samples/amazon-chime-sdk-recording-demo) show how to enable client-side recording.
 
 ## Debugging
 
 ### How can I get Amazon Chime SDK logs for debugging?
 
-Applications can get logs from Chime SDK by passing instances of Logger when instantiating [the MeetingSession object](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L14). Amazon Chime SDK has some default implementations of logger that your application can use, such as [ConsoleLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/ConsoleLogger.ts) which logs into the browser console, [MeetingSessionPOSTLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/MeetingSessionPOSTLogger.ts) which logs in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [MultiLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/MultiLogger.ts) which logs in multiple destinations.
+Applications can get logs from Chime SDK by passing instances of `Logger` when instantiating [the MeetingSession object](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L14). Amazon Chime SDK has some default implementations of logger that your application can use, such as [ConsoleLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/ConsoleLogger.ts) which logs into the browser console, [MeetingSessionPOSTLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/MeetingSessionPOSTLogger.ts) which logs in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [MultiLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/MultiLogger.ts) which logs in multiple destinations.
 
 ### How do I file an issue for the Amazon Chime SDK for JavaScript?
 
@@ -307,15 +307,17 @@ You can use our [bug template](https://github.com/aws/amazon-chime-sdk-js/issues
 
 ### What are the subnets and ports used by an application using the AWS SDK?
 
-An application which calls Amazon Chime APIs via the [AWS SDK](https://aws.amazon.com/tools/), like [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html), connects to the global service endpoint in the us-east-1 region: [service.chime.aws.amazon.com](https://service.chime.aws.amazon.com/), or [service-fips.chime.aws.amazon.com](https://service-fips.chime.aws.amazon.com/) with TCP:443.
+An application which calls Amazon Chime APIs via the [AWS SDK](https://aws.amazon.com/tools/), like [CreateMeeting](https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateMeeting.html), connects to the global service endpoint in the `us-east-1` region: [service.chime.aws.amazon.com](https://service.chime.aws.amazon.com/), or [service-fips.chime.aws.amazon.com](https://service-fips.chime.aws.amazon.com/) with `TCP:443`.
 
-The URIs resolve to IP addresses in the AMAZON subnets for us-east-1, as published in the [AWS ip-ranges.json](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html).
+The URIs resolve to IP addresses in the `AMAZON` subnets for `us-east-1`, as published in the [AWS ip-ranges.json](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html).
 
 ### What are the subnets and ports used by a client running the Amazon Chime SDK?
 
-A client running the Amazon Chime SDK connects to the Amazon Chime service via URIs (never direct IP addresses) that are part of the *.chime.aws domain.  The URIs resolve to IP addresses in the CHIME_MEETINGS subnets, as published in the [AWS ip-ranges.json](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html), which is currently a single subnet: 99.77.128.0/18.
+A client running the Amazon Chime SDK connects to the Amazon Chime service via URIs (never direct IP addresses) that are part of the `*.chime.aws` domain.  The URIs resolve to IP addresses in the `CHIME_MEETINGS` subnets, as published in the [AWS ip-ranges.json](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html), which is currently a single subnet: `99.77.128.0/18`.
 
-The Amazon Chime SDK will use TCP:443 for https and websocket connectivity, and UDP:3478 for media.  If UDP:3478 is blocked, the SDK falls back to TCP, however the video experience will be poor, and audio will use a region specific subnet assigned by [Amazon Elastic Compute Cloud (Amazon EC2)](https://aws.amazon.com/ec2/).
+The Amazon Chime SDK will use `TCP:443` for https and websocket connectivity, and `UDP:3478` for media.  If `UDP:3478` is blocked, the SDK falls back to TCP. However the video experience will be poor, and audio will use a region specific subnet assigned by [Amazon Elastic Compute Cloud (Amazon EC2)](https://aws.amazon.com/ec2/).
+
+Some features such as Amazon Voice Focus require accessing Amazon CloudFront.
 
 ### Can a client running the Amazon Chime SDK connect to the service via a proxy?
 
@@ -329,7 +331,7 @@ Amazon Chime SDK for JavaScript applications do not support content sharing on m
 
 ### Will Amazon Chime SDK for JavaScript meetings work in Chrome and Firefox in iOS?
 
-Yes, the Chime JS SDK supports Chrome and Firefox on iOS. Refer to the official Amazon Chime SDK Documentation for more information: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers.
+Yes, the Amazon Chime JS SDK supports Chrome and Firefox on iOS. Refer to the official Amazon Chime SDK Documentation for more information: https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers.
 
 ### I notice that my clients lose audio and drop from the meeting if the Chrome browser on Android stays in background for several minutes, is that a known issue?
 
