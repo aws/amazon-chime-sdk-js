@@ -136,13 +136,13 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 						<h2>Checking for support before offering background blur</h2>
 					</a>
 					<p>Some browsers support the Amazon Chime SDK but do not support background blur. Additionally, some devices are not fast enough to keep up with real-time video while blurring the background.</p>
-					<p>The SDK provides a static method to allow you to cheaply check for the required browser features:</p>
+					<p>The SDK provides an async static method to allow you to cheaply check for the required browser features:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { BackgroundBlurVideoFrameProcessor } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
-BackgroundBlurVideoFrameProcessor.isSupported();
+<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported();
 </code></pre>
-					<p>If <code>isSupported</code> returns <code>true</code>, you can instantiate the blur video frame processor.</p>
+					<p>If <code>isSupported</code> resolves to <code>true</code>, you can instantiate the blur video frame processor.</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (BackgroundBlurVideoFrameProcessor.isSupported()) {
+<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported()) {
     <span class="hljs-keyword">const</span> blurProcessor = <span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.create();
     processors.push(blurProcessor);
 }
@@ -154,7 +154,7 @@ BackgroundBlurVideoFrameProcessor.isSupported();
 					<p>Background blur integrates with the SDK by providing a new implementation of the <code>VideoFrameProcessor</code></p>
 					<p>Once you have checked for support and created a blur processor, you add the processor to the transform device.</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> processors = [];
-<span class="hljs-keyword">if</span> (BackgroundBlurVideoFrameProcessor.isSupported()) {
+<span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported()) {
     <span class="hljs-keyword">const</span> blurProcessor = <span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.create();
     processors.push(blurProcessor);
 }

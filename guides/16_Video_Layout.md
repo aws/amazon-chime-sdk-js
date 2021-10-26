@@ -32,11 +32,11 @@ Uplink and downlink policies help builders configure the video strategies for se
 
 The video encoding parameters are determined by the uplink policy, which takes into consideration the number of video publishers on the call. If necessary, it may suggest encoding multiple “simulcast” layers (with different bitrates and resolutions). The JavaScript SDK currently provides two uplink policies:
 
-##### **NScaleVideoUplinkBandwidthPolicy (Default)**
+##### NScaleVideoUplinkBandwidthPolicy (Default)
 
 In this policy, an attendee encodes and sends one video layer upstream and scales the resolution and bitrate based on the number of video publishers. This is to ensure the receiving attendees who are subscribed to these videos do not experience excessive network or compute load, which may degrade the meeting quality.
 
-##### **SimulcastUplinkPolicy**
+##### SimulcastUplinkPolicy
 
 Each attendee may encode and send up to two layers of video with different bitrates and resolutions under this policy. It enables the recipient to switch between the two video layers to adapt to changing network conditions or different layouts (e.g., a featured video may desire a higher resolution than a gallery view video).
 
@@ -46,11 +46,11 @@ Each attendee may encode and send up to two layers of video with different bitra
 
 The downlink policy controls which remote video sources are received downstream based on the network condition, local resources (e.g., CPU), and other factors such as layout changes in the application. The JavaScript SDK currently provides two downlink policies:
 
-##### **AllHighestVideoBandwidthPolicy (Default)**
+##### AllHighestVideoBandwidthPolicy (Default)
 
 This policy subscribes to the highest quality video layer of all publishers. Under constrained network, some or all videos may freeze as packets are lost on the network, and they will recover automatically once network congestion is reduced.
 
-##### **VideoPriorityBasedPolicy**
+##### VideoPriorityBasedPolicy
 
 This policy allows builders to choose and configure which remote video sources to subscribe to, their relative priorities and preferences such as, `targetDisplaySize` . Under constrained network, the policy will automatically pause video tiles based on the priorities you set to these remote video sources until recovery. If used with the `SimulcastUplinkPolicy`, the policy may temporarily degrade to lower resolutions. For videos of the same priority, the policy first tries to allocate bandwidth to ensure as many videos can be displayed as possible before upgrading to higher quality if the bandwidth allows.
 
