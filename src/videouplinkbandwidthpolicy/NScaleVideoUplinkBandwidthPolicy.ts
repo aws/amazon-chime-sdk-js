@@ -190,7 +190,12 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private calculateEncodingParameters(setting: MediaTrackSettings): RTCRtpEncodingParameters {
     const maxBitrate = this.maxBandwidthKbps() * 1000;
     let scale = 1;
-    if (setting && this.scaleResolution && !this.hasBandwidthPriority && this.numParticipants > 2) {
+    if (
+      setting.height !== undefined &&
+      this.scaleResolution &&
+      !this.hasBandwidthPriority &&
+      this.numParticipants > 2
+    ) {
       const targetHeight =
         NScaleVideoUplinkBandwidthPolicy.targetHeightArray[
           Math.min(
