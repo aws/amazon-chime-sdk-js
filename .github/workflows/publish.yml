@@ -10,10 +10,12 @@ jobs:
     steps:
       - name: Checkout Package
         uses: actions/checkout@master
+        with:
+          ref: ${{ github.event.release.tag_name }}
       - name: Setup Node environment
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 16
           registry-url: https://registry.npmjs.org/
       - name: NPM Install
         run: npm install
