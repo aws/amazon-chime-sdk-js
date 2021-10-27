@@ -245,7 +245,7 @@ export default class DOMMockBuilder {
       listeners: { [type: string]: { once: boolean; listener: MockListener }[] } = {};
       readyState: MediaStreamTrackState = 'live';
 
-      streamDeviceID = mockBehavior.mediaStreamTrackSettings.deviceId || uuidv1();
+      streamDeviceID = mockBehavior.mediaStreamTrackSettings?.deviceId || uuidv1();
 
       readonly id: string;
       readonly kind: string = '';
