@@ -11,7 +11,10 @@ import BackgroundBlurProcessorBuiltIn from '../../src/backgroundblurprocessor/Ba
 import BackgroundBlurProcessorProvided from '../../src/backgroundblurprocessor/BackgroundBlurProcessorProvided';
 import BlurStrength from '../../src/backgroundblurprocessor/BackgroundBlurStrength';
 import BackgroundBlurVideoFrameProcessor from '../../src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor';
-import BackgroundBlurVideoFrameProcessorObserver from '../../src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver';
+import BackgroundBlurVideoFrameProcessorObserver, {
+  FilterCPUUtilizationHighEvent,
+  FilterFrameDurationHighEvent,
+} from '../../src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver';
 import BackgroundFilterFrameCounter from '../../src/backgroundblurprocessor/BackgroundFilterFrameCounter';
 import ModelSpecBuilder from '../../src/backgroundblurprocessor/ModelSpecBuilder';
 import ConsoleLogger from '../../src/logger/ConsoleLogger';
@@ -53,7 +56,7 @@ describe('BackgroundBlurProcessor', () => {
       predictPayload: null,
       callInvalidMessage: false,
     }
-  ): void => {
+  ): Worker => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let eventListener: (evt: MessageEvent<any>) => any = () => {
       console.error('eventListener is not set');
@@ -104,24 +107,26 @@ describe('BackgroundBlurProcessor', () => {
           break;
       }
     }
+    const workerObj = {
+      postMessage: handlePostMessage,
+      onmessage: () => {},
+      onmessageerror: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      addEventListener: (type: string, listener: (evt: MessageEvent<any>) => any) => {
+        eventListener = listener;
+      },
+      removeEventListener: () => {},
+      terminate: () => {},
+      dispatchEvent: () => true,
+      onerror: () => {},
+    };
 
     const workerPromise = new Promise<Worker>(resolve => {
-      resolve({
-        postMessage: handlePostMessage,
-        onmessage: () => {},
-        onmessageerror: () => {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        addEventListener: (type: string, listener: (evt: MessageEvent<any>) => any) => {
-          eventListener = listener;
-        },
-        removeEventListener: () => {},
-        terminate: () => {},
-        dispatchEvent: () => true,
-        onerror: () => {},
-      });
+      resolve(workerObj);
     });
 
     sandbox.stub(loader, 'loadWorker').returns(workerPromise);
+    return workerObj;
   };
 
   const stubSupported = (supported: boolean, providedSupported: boolean = true): void => {
@@ -208,6 +213,7 @@ describe('BackgroundBlurProcessor', () => {
           logger: new ConsoleLogger('test', LogLevel.INFO),
           reportingPeriodMillis: 1000,
           blurStrength: 10,
+          filterCPUUtilization: 1,
         };
 
         expect(() => new BackgroundBlurProcessorProvided(null, validOptions)).to.throw(
@@ -237,6 +243,13 @@ describe('BackgroundBlurProcessor', () => {
           () =>
             new BackgroundBlurProcessorProvided(validSpec, { ...validOptions, blurStrength: null })
         ).to.throw('processor has null options - blurStrength');
+        expect(
+          () =>
+            new BackgroundBlurProcessorProvided(validSpec, {
+              ...validOptions,
+              filterCPUUtilization: null,
+            })
+        ).to.throw('processor has null options - filterCPUUtilization');
       });
 
       it('can be destroyed when items are null', async () => {
@@ -548,6 +561,82 @@ describe('BackgroundBlurProcessor', () => {
         bbprocessor.drawImageWithMask(document.createElement('canvas'), new ImageData(10, 10));
       });
 
+      it('filter CPU sets defaults when out of range', async () => {
+        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        stubSupported(true);
+
+        let bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          filterCPUUtilization: 23,
+        })) as BackgroundBlurProcessorProvided;
+        expect(bbprocessor['frameCounter']['filterCPUUtilization'] === 23);
+
+        bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          filterCPUUtilization: -1,
+        })) as BackgroundBlurProcessorProvided;
+        expect(bbprocessor['frameCounter']['filterCPUUtilization'] === 40);
+
+        bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          filterCPUUtilization: 101,
+        })) as BackgroundBlurProcessorProvided;
+        expect(bbprocessor['frameCounter']['filterCPUUtilization'] === 40);
+      });
+
+      it('filter rate 1', async () => {
+        const worker = sandbox.spy(
+          stubInit({ initPayload: 2, loadModelPayload: 2 }),
+          'postMessage'
+        );
+        stubSupported(true);
+
+        const buffers: VideoFrameBuffer[] = [
+          new CanvasVideoFrameBuffer(document.createElement('canvas')),
+        ];
+
+        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          filterCPUUtilization: 100,
+        })) as BackgroundBlurProcessorProvided;
+        bbprocessor['videoFramesPerFilterUpdate'] = 1;
+
+        worker.resetHistory();
+        for (let i = 0; i < 5; i++) {
+          await bbprocessor.process(buffers);
+        }
+        expect(worker.callCount).to.be.equal(5);
+      });
+
+      it('filter rate 5', async () => {
+        const worker = sandbox.spy(
+          stubInit({ initPayload: 2, loadModelPayload: 2 }),
+          'postMessage'
+        );
+        stubSupported(true);
+
+        const buffers: VideoFrameBuffer[] = [
+          new CanvasVideoFrameBuffer(document.createElement('canvas')),
+        ];
+
+        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          filterCPUUtilization: 100,
+        })) as BackgroundBlurProcessorProvided;
+
+        const videoFramesPerFilterUpdate = 5;
+        bbprocessor['videoFramesPerFilterUpdate'] = videoFramesPerFilterUpdate;
+
+        worker.resetHistory();
+
+        await bbprocessor.process(buffers);
+        expect(worker.callCount).to.be.equal(1);
+
+        worker.resetHistory();
+        for (let i = 0; i < videoFramesPerFilterUpdate - 1; i++) {
+          await bbprocessor.process(buffers);
+          expect(worker.notCalled).to.be.true;
+        }
+
+        await bbprocessor.process(buffers);
+        expect(worker.callCount).to.be.equal(1);
+      });
+
       it('predict handles failures', async () => {
         stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
@@ -653,20 +742,19 @@ describe('BackgroundBlurProcessor', () => {
       });
     });
 
-    describe('processor filter duration observer', async () => {
+    describe('processor filter observer', async () => {
       let bbprocessor: BackgroundBlurProcessorProvided;
       let frameCounter: BackgroundFilterFrameCounter;
       let observer: BackgroundBlurVideoFrameProcessorObserver;
+      let cpuMonitor: { frameReceived: () => void };
 
       const framerate = 15;
 
-      let observedEvent: {
-        framesDropped: number;
-        avgFilterDurationMillis: number;
-        framerate: number;
-        periodMillis: number;
-      } = null;
-      let callCount = 0;
+      let observedDurationHighEvent: FilterFrameDurationHighEvent;
+      let durationHighCallCount = 0;
+
+      let observedCpuHighEvent: FilterCPUUtilizationHighEvent;
+      let cpuHighCallCount = 0;
 
       const expectSegmentCount = (): Chai.Assertion => {
         return expect(frameCounter['filterCount']);
@@ -676,21 +764,34 @@ describe('BackgroundBlurProcessor', () => {
         return expect(frameCounter['filterTotalMillis']);
       };
 
+      const expectRate = (): Chai.Assertion => {
+        return expect(bbprocessor['videoFramesPerFilterUpdate']);
+      };
+
       beforeEach(async () => {
         stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         clock.reset();
-        observedEvent = null;
-        callCount = 0;
+        observedDurationHighEvent = null;
+        durationHighCallCount = 0;
+        observedCpuHighEvent = null;
+        cpuHighCallCount = 0;
 
-        bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
+        bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          filterCPUUtilization: 50,
+        })) as BackgroundBlurProcessorProvided;
         frameCounter = bbprocessor['frameCounter'];
+        cpuMonitor = bbprocessor['cpuMonitor'];
 
         observer = {
           filterFrameDurationHigh: event => {
-            observedEvent = event;
-            callCount++;
+            observedDurationHighEvent = event;
+            durationHighCallCount++;
+          },
+          filterCPUUtilizationHigh: event => {
+            observedCpuHighEvent = event;
+            cpuHighCallCount++;
           },
         };
         bbprocessor.addObserver(observer);
@@ -705,15 +806,76 @@ describe('BackgroundBlurProcessor', () => {
         }
         frameCounter.frameReceived(framerate);
         frameCounter.frameReceived(framerate);
-        expect(observedEvent).to.be.deep.equal({
+        expect(observedDurationHighEvent).to.be.deep.equal({
           framesDropped: 2,
           avgFilterDurationMillis: 77,
           framerate: 15,
           periodMillis: 1073,
         });
-        expect(callCount).to.be.equal(1);
+        expect(durationHighCallCount).to.be.equal(1);
         expectSegmentCount().to.be.equal(0);
         expectSegmentTotalMillis().to.be.equal(0);
+      });
+
+      it('observer is not called when cpu utilization is low', async () => {
+        for (let i = 0; i < 10; i++) {
+          frameCounter.filterSubmitted();
+          clock.tick(49);
+          frameCounter.filterComplete();
+          clock.tick(51);
+          frameCounter.frameReceived(framerate);
+        }
+
+        expect(cpuHighCallCount).to.be.equal(0);
+        expect(observedCpuHighEvent).to.be.null;
+      });
+
+      it('observer is called when cpu utilization is high', async () => {
+        const processFrame = (filterTime: number, otherTime: number): void => {
+          cpuMonitor.frameReceived();
+          frameCounter.filterSubmitted();
+          clock.tick(filterTime);
+          frameCounter.filterComplete();
+          clock.tick(otherTime);
+          frameCounter.frameReceived(framerate);
+        };
+
+        // single period where observer fires but rate does not change
+        for (let i = 0; i < 10; i++) {
+          processFrame(50, 50);
+        }
+
+        expect(cpuHighCallCount).to.be.equal(1);
+        expect(observedCpuHighEvent).to.be.deep.equal({
+          cpuUtilization: 50,
+          filterMillis: 500,
+          periodMillis: 1000,
+        });
+        expectRate().to.be.equal(1);
+
+        const maxRate = 10;
+        // After 5 seconds of high CPU rate will change.
+        for (let i = 0; i < maxRate * 2; i++) {
+          processFrame(3000, 2000);
+        }
+
+        expect(cpuHighCallCount).to.be.equal(maxRate * 2 + 1);
+        expect(observedCpuHighEvent).to.be.deep.equal({
+          cpuUtilization: 60,
+          filterMillis: 3000,
+          periodMillis: 5000,
+        });
+
+        // max rate is 10
+        expectRate().to.be.equal(maxRate);
+
+        // after 10 seconds of low CPU rate will begin to recover
+        // and eventually go back to segmenting every frame.
+        for (let i = 0; i < maxRate; i++) {
+          processFrame(4000, 6000);
+        }
+        expect(cpuHighCallCount).to.be.equal(maxRate * 2 + 1);
+        expectRate().to.be.equal(1);
       });
 
       it('observer is not called when filtering duration is low', async () => {
@@ -723,8 +885,8 @@ describe('BackgroundBlurProcessor', () => {
         }
         clock.tick(1001);
         frameCounter.frameReceived(framerate);
-        expect(observedEvent).to.be.null;
-        expect(callCount).to.be.equal(0);
+        expect(observedDurationHighEvent).to.be.null;
+        expect(durationHighCallCount).to.be.equal(0);
         expectSegmentCount().to.be.equal(0);
         expectSegmentTotalMillis().to.be.equal(0);
       });
@@ -741,8 +903,8 @@ describe('BackgroundBlurProcessor', () => {
         }
         frameCounter.frameReceived(framerate);
         expect(filterDurationSpy.calledOnce).to.be.true;
-        expect(observedEvent).to.be.null;
-        expect(callCount).to.be.equal(0);
+        expect(observedDurationHighEvent).to.be.null;
+        expect(durationHighCallCount).to.be.equal(0);
         expectSegmentCount().to.be.equal(0);
         expectSegmentTotalMillis().to.be.equal(0);
       });

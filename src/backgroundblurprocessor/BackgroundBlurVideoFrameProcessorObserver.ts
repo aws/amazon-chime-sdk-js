@@ -1,6 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+export interface FilterCPUUtilizationHighEvent {
+  cpuUtilization: number;
+  filterMillis: number;
+  periodMillis: number;
+}
+
+export interface FilterFrameDurationHighEvent {
+  framesDropped: number;
+  avgFilterDurationMillis: number;
+  framerate: number;
+  periodMillis: number;
+}
+
 /**
  * An observer for the background blur video frame processor.
  *
@@ -24,10 +37,16 @@ export default interface BackgroundBlurVideoFrameProcessorObserver {
    * framerate: The video frame rate set by the SDK.
    * periodMillis: The duration of the reporting period in milliseconds.
    */
-  filterFrameDurationHigh?: (event: {
-    framesDropped: number;
-    avgFilterDurationMillis: number;
-    framerate: number;
-    periodMillis: number;
-  }) => void;
+  filterFrameDurationHigh?: (event: FilterFrameDurationHighEvent) => void;
+
+  /**
+   * This event occurs when the CPU utilization of background filtering exceeds the `filterCPUUtilization` defined
+   * in the `BackgroundBlurOptions`.
+   *
+   * @param event
+   * cpuUtilization: The percentage of time that was spent processing background filter divided by the total reporting period time;
+   * filterMillis: Total time spent processing the background filter in milliseconds;
+   * periodMillis: Total time in the reporting period in milliseconds;
+   */
+  filterCPUUtilizationHigh?: (event: FilterCPUUtilizationHighEvent) => void;
 }

@@ -63,7 +63,7 @@ function findAllElements() {
 
     eventReportingCheckBox: By.id('event-reporting'),
     eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
-    backgroundBlurFilterButton: By.id('dropdown-menu-filter-BackgroundBlur')
+    backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-10%-CPU')
   };
 }
 

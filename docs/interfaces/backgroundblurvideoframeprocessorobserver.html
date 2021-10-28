@@ -90,6 +90,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundblurvideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundblurvideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a></li>
 							</ul>
 						</section>
@@ -99,12 +100,56 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="filterframedurationhigh" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filter<wbr>Frame<wbr>Duration<wbr>High</h3>
-					<div class="tsd-signature tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>avgFilterDurationMillis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>framerate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>framesDropped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>periodMillis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<a name="filtercpuutilizationhigh" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filterCPUUtilization<wbr>High</h3>
+					<div class="tsd-signature tsd-kind-icon">filterCPUUtilization<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filtercpuutilizationhighevent.html" class="tsd-signature-type">FilterCPUUtilizationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts#L27">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts#L51">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts:51</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This event occurs when the CPU utilization of background filtering exceeds the <code>filterCPUUtilization</code> defined
+							in the <code>BackgroundBlurOptions</code>.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>cpuUtilization: The percentage of time that was spent processing background filter divided by the total reporting period time;
+									filterMillis: Total time spent processing the background filter in milliseconds;
+								periodMillis: Total time in the reporting period in milliseconds;</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filtercpuutilizationhighevent.html" class="tsd-signature-type">FilterCPUUtilizationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>event: <a href="filtercpuutilizationhighevent.html" class="tsd-signature-type">FilterCPUUtilizationHighEvent</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="filterframedurationhigh" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filter<wbr>Frame<wbr>Duration<wbr>High</h3>
+					<div class="tsd-signature tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filterframedurationhighevent.html" class="tsd-signature-type">FilterFrameDurationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts#L40">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -115,7 +160,7 @@
 								to apply background blur, then a very large portion of each frame&#39;s maximum processing time is taken up by
 							processing background blur.</p>
 						</div>
-						<p>The observer will be called a maximum of once per {@link periodMillis}. In the event that the {@link avgFilterDurationMillis}
+						<p>The observer will be called a maximum of once per <a href="filtercpuutilizationhighevent.html#periodmillis">periodMillis</a>. In the event that the <a href="filterframedurationhighevent.html#avgfilterdurationmillis">avgFilterDurationMillis</a>
 						is larger than expected the builder can use this event as a trigger to disable the background blur.</p>
 						<dl class="tsd-comment-tags">
 							<dt>param</dt>
@@ -131,28 +176,14 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>avgFilterDurationMillis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>framerate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>framesDropped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>periodMillis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filterframedurationhighevent.html" class="tsd-signature-type">FilterFrameDurationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>event: <span class="tsd-signature-symbol">{ </span>avgFilterDurationMillis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>framerate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>framesDropped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>periodMillis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-												<ul class="tsd-parameters">
-													<li class="tsd-parameter">
-														<h5>avg<wbr>Filter<wbr>Duration<wbr>Millis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-													</li>
-													<li class="tsd-parameter">
-														<h5>framerate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-													</li>
-													<li class="tsd-parameter">
-														<h5>frames<wbr>Dropped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-													</li>
-													<li class="tsd-parameter">
-														<h5>period<wbr>Millis<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-													</li>
-												</ul>
+												<h5>event: <a href="filterframedurationhighevent.html" class="tsd-signature-type">FilterFrameDurationHighEvent</a></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -179,6 +210,9 @@
 					<li class="current tsd-kind-interface">
 						<a href="backgroundblurvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
 						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="backgroundblurvideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="backgroundblurvideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a>
 							</li>

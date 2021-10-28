@@ -23,7 +23,8 @@ export default class BackgroundFilterFrameCounter {
 
   constructor(
     private delegate: BackgroundBlurVideoFrameProcessorDelegate,
-    private skippedFramePeriodMillis: number,
+    private reportingPeriodMillis: number,
+    private filterCPUUtilization: number,
     private logger: Logger
   ) {
     this.setSegmentationDuration();
@@ -34,31 +35,40 @@ export default class BackgroundFilterFrameCounter {
    */
   private reportEvent(timestamp: number): void {
     const timeDiff = timestamp - this.lastReportedEventTimestamp;
-    if (timeDiff)
-      if (timeDiff >= this.skippedFramePeriodMillis) {
-        const currentSegmentCount = this.filterCount;
-        const currentSegmentTotalMillis = this.filterTotalMillis;
+    if (timeDiff >= this.reportingPeriodMillis) {
+      const currentFilterCount = this.filterCount;
+      const currentFilterTotalMillis = this.filterTotalMillis;
 
-        this.filterCount = 0;
-        this.filterTotalMillis = 0;
-        this.lastReportedEventTimestamp = timestamp;
+      this.filterCount = 0;
+      this.filterTotalMillis = 0;
+      this.lastReportedEventTimestamp = timestamp;
 
-        // Do not send notification unless a valid framerate or segment count is set.
-        if (this.framerate === 0 || currentSegmentCount === 0) {
-          return;
-        }
-
-        const avgFilterDurationMillis = Math.round(currentSegmentTotalMillis / currentSegmentCount);
-        const framesDropped = Math.round(this.framerate * (timeDiff / 1000)) - currentSegmentCount;
-        if (avgFilterDurationMillis >= this.filterDurationNotifyMillis) {
-          this.delegate.filterFrameDurationHigh({
-            framesDropped,
-            avgFilterDurationMillis,
-            framerate: this.framerate,
-            periodMillis: timeDiff,
-          });
-        }
+      // Do not send notification unless a valid framerate or segment count is set.
+      if (this.framerate === 0 || currentFilterCount === 0) {
+        return;
       }
+
+      const avgFilterDurationMillis = Math.round(currentFilterTotalMillis / currentFilterCount);
+      const framesDropped = Math.round(this.framerate * (timeDiff / 1000)) - currentFilterCount;
+      const cpuUtilization = Math.round((100 * currentFilterTotalMillis) / timeDiff);
+
+      if (avgFilterDurationMillis >= this.filterDurationNotifyMillis) {
+        this.delegate.filterFrameDurationHigh({
+          framesDropped,
+          avgFilterDurationMillis,
+          framerate: this.framerate,
+          periodMillis: timeDiff,
+        });
+      }
+
+      if (cpuUtilization >= this.filterCPUUtilization) {
+        this.delegate.filterCPUUtilizationHigh({
+          cpuUtilization,
+          filterMillis: currentFilterTotalMillis,
+          periodMillis: timeDiff,
+        });
+      }
+    }
   }
 
   private setSegmentationDuration(): void {
