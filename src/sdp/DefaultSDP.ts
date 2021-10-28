@@ -480,4 +480,83 @@ export default class DefaultSDP implements SDP {
     }
     return true;
   }
+
+  removeH264SupportFromSendSection(): DefaultSDP {
+    const srcSDP: string = this.sdp;
+    const sections = DefaultSDP.splitSections(srcSDP);
+    const cameraLineIndex: number = DefaultSDP.findActiveCameraSection(sections);
+    if (cameraLineIndex === -1) {
+      return new DefaultSDP(this.sdp);
+    }
+    const cameraSection = sections[cameraLineIndex];
+    const cameraSectionLines = DefaultSDP.splitLines(cameraSection);
+    const payloadTypesForH264: number[] = [];
+    const primaryPayloadTypeToFeedbackPayloadTypes: Map<number, number[]> = new Map();
+    // Loop through camera section (m=video)
+    cameraSectionLines.forEach(attribute => {
+      // Find the payload type with H264 codec line (e.g., a=rtpmap:<payload> H264/90000)
+      if (/^a=rtpmap:/.test(attribute)) {
+        const payloadMatch = /^a=rtpmap:([0-9]+)\s/.exec(attribute);
+        if (payloadMatch && attribute.toLowerCase().includes('h264')) {
+          payloadTypesForH264.push(parseInt(payloadMatch[1], 10));
+        }
+      }
+
+      // Loop through the rtx payload and create a mapping between it and the primary payload.
+      // a=fmtp:<rtx payload> apt=<primary payload>
+      if (/^a=fmtp:/.test(attribute)) {
+        const feedbackMatches = /^a=fmtp:([0-9]+) apt=([0-9]+)/.exec(attribute);
+        if (feedbackMatches && feedbackMatches.length === 3) {
+          const feedbackPayloadType = parseInt(feedbackMatches[1], 10);
+          const primaryPayloadType = parseInt(feedbackMatches[2], 10);
+          if (primaryPayloadTypeToFeedbackPayloadTypes.has(primaryPayloadType)) {
+            primaryPayloadTypeToFeedbackPayloadTypes
+              .get(primaryPayloadType)
+              .push(feedbackPayloadType);
+          } else {
+            primaryPayloadTypeToFeedbackPayloadTypes.set(primaryPayloadType, [feedbackPayloadType]);
+          }
+        }
+      }
+    });
+
+    // Add the rtx payloads corresponding to the H264 codec to the remove list
+    const payloadTypesToRemove: Set<Number> = new Set();
+    for (const type of payloadTypesForH264) {
+      payloadTypesToRemove.add(type);
+
+      const feedbackTypes = primaryPayloadTypeToFeedbackPayloadTypes.get(type);
+      if (feedbackTypes) {
+        for (const feedbackType of feedbackTypes) {
+          payloadTypesToRemove.add(feedbackType);
+        }
+      }
+    }
+
+    // Remove H264 payload from the media line. m=video 9 UDP/+++ <payload> <payload> <payload>
+    if (payloadTypesForH264.length > 0) {
+      const mline = cameraSectionLines[0].split(' ');
+      cameraSectionLines[0] = mline
+        .filter((text: string) => !payloadTypesToRemove.has(parseInt(text)))
+        .join(' ');
+    }
+
+    // Filter out lines with H264 payload
+    const filteredLines = cameraSectionLines.filter((line: string) => {
+      if (!line.includes('rtpmap') && !line.includes('rtcp-fb') && !line.includes('fmtp')) {
+        return true;
+      }
+      for (const type of payloadTypesToRemove) {
+        if (line.includes(type.toString())) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    sections[cameraLineIndex] = filteredLines.join(DefaultSDP.CRLF) + DefaultSDP.CRLF;
+
+    const newSDP = sections.join('');
+    return new DefaultSDP(newSDP);
+  }
 }

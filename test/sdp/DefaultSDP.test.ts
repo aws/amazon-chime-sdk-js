@@ -405,4 +405,32 @@ describe('DefaultSDP', () => {
       );
     });
   });
+
+  describe('removeH264SupportFromSendSection', () => {
+    it('Remove H264 codec from video section', () => {
+      const sdpObj = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING);
+      expect(sdpObj.removeH264SupportFromSendSection().sdp).to.deep.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY
+      );
+
+      const sdpObj2 = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_MULTIPLE_FMTP);
+      expect(sdpObj2.removeH264SupportFromSendSection().sdp).to.deep.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY
+      );
+    });
+
+    it('Does not do anything if no video', () => {
+      const sdpObj = new DefaultSDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      expect(sdpObj.removeH264SupportFromSendSection().sdp).to.deep.equal(
+        SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE
+      );
+    });
+
+    it('Does not do anything if VP8 only', () => {
+      const sdpObj = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY);
+      expect(sdpObj.removeH264SupportFromSendSection().sdp).to.deep.equal(
+        SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY
+      );
+    });
+  });
 });
