@@ -6,7 +6,9 @@
   "types": "build/index.d.ts",
   "files": [
     "libs",
-    "build"
+    "build",
+    "CHANGELOG.md",
+    "NOTICE"
   ],
   "engines": {
     "node": "^12 || ^14 || ^15 || ^16",
