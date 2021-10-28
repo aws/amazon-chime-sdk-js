@@ -60,9 +60,9 @@ x = STDIN.gets
 exit(1) unless x.strip == 'yes'
 puts
 
-verbose('git fetch origin')
-verbose('git reset --hard origin/master') if release_option != "5"
-verbose('git clean -ffxd .')
+# verbose('git fetch origin')
+# verbose('git reset --hard origin/master') if release_option != "5"
+# verbose('git clean -ffxd .')
 
 File.write(changelog_file, File.read(changelog_file).gsub(/\[Unreleased\]/, "[#{version_string}] - #{Date.today}"))
 verbose("npm version #{version_string} --no-git-tag-version")
@@ -87,4 +87,4 @@ else
 end
 
 Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '../demos/serverless')))
-verbose("npm run deploy -- -b chime-sdk-demo-#{formatted_version} -s chime-sdk-demo-#{formatted_version} -o chime-sdk-demo-#{formatted_version}")
+verbose("npm run deploy -- -b chime-sdk-demo-#{formatted_version} -s chime-sdk-demo-#{formatted_version}")
