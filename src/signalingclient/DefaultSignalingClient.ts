@@ -208,7 +208,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       this.webSocket.close();
       this.deactivatePageUnloadHandler();
     } else {
-      this.logger.info('no existing connection needs closing');
+      this.logger.info('no existing signaling client connection needs closing');
       this.serviceConnectionRequestQueue();
     }
   }
