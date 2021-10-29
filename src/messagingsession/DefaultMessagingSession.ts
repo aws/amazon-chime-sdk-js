@@ -74,7 +74,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       this.webSocket.close();
       CSPMonitor.removeLogger(this.logger);
     } else {
-      this.logger.info('no existing connection needs closing');
+      this.logger.info('no existing messaging session needs closing');
     }
   }
 
