@@ -67,6 +67,21 @@ These script will create an S3 bucket and CloudFormation stack
 with Lambda and API Gateway resources required to run the demo. After the script
 finishes, it will output a URL that can be opened in a browser.
 
+### Updating deployed application
+Over time JS SDK will push new features, improvements, and bug fixes etc. It is important for the deployed application to maintain a recent version of the SDK. Updating the deployed application is easy to do with the help of the deploy script. 
+
+First you need to make sure you have the version of JS SDK that you want to deploy on your local machine. The deploy script will check whether there is a recent build of browser demo available. So, you want to delete the `dist` folder under browser demo. This will trigger the deploy script to rebuild the demo with the new version of JS SDK. Now that you have the build ready you need to deploy it again.
+
+> NOTE: When you deploy the demo, make sure the params (for ex. my-bucket and my-stack-name) passed to the deploy script are the same as your original deployment. This is will cause the exisiting resources to be updated rather than creating new ones. If you change the name of resources you will end up with a new cloudformation stack and that might cause unintended billing charges.
+
+```
+cd demos/browser
+rm -rf dist
+
+cd demos/serverless
+node ./deploy.js -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
+```
+
 ### Cleaning up
 To avoid incurring any unintended charges as a result of deploying the serverless demo, it is important to delete the AWS CloudFormation stack after you are finished using it. You can delete the provisioned CloudFormation stack using the [AWS CloudFormation console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-delete-stack.html) or the [AWS CLI](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-cli-deleting-stack.html) as well as [delete the S3 buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/delete-bucket.html) that were created.
 
