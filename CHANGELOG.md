@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for layers allocation negotiation in Chromium based browsers to avoid resubscribing to preemptively turn off simulcast streams or to switch layers.
 - Update browser compatibility doc for background blur
 - Add a doc to guide builders on managing video quality for different video layouts. See [guide](https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html).
+- Add documentation on how to update a deployment of the serverless demo.
 
 ### Removed
 
@@ -24,7 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ignore `enableUnifiedPlanForChromiumBasedBrowsers` value (i.e. treat as always equaling the current default value of `true`) in `MeetingSesstionConfiguration`.  Chrome is [in the processing](https://groups.google.com/g/discuss-webrtc/c/UBtZfawdIAA/m/m-4wnVHXBgAJ) of deprecating and removing Plan-B which would cause breakage in applications still trying to use it.  This will have no effect on SDK behavior` and has been the default since 1.17.0.
 - Change `appVersionName` and `appVersionCode` fields to `appName` and `appVersion` respectively.
-- Update similar log messages in `DefaultMessagingSession` and `DefaultSignalingClient`. 
+- Update similar log messages in `DefaultMessagingSession` and `DefaultSignalingClient`.
+- Change the serverless demo's `deploy.js` script to rebuild the demo on each run. This should remove a manual step of rebuilding the demo.
 
 ## [2.20.1] - 2021-10-27
 
