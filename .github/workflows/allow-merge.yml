@@ -1,0 +1,32 @@
+# This workflow will just make sure that the PR cannot be merged during release by check if there is a release PR opened.
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Allow Merge
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  can-merge:
+    name: Check If Can Merge
+    if: ${{ github.head_ref != 'release' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if there is a release PR
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const prs = await github.rest.pulls.list({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          head: 'aws:release'
+                        })
+            if (prs.data.length !== 0) {
+              throw "There is a release PR opened. This PR cannot be merged at this time."
+            }
+            return "This PR can be merged."
+
+
