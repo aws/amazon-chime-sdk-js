@@ -68,7 +68,7 @@ File.write(changelog_file, File.read(changelog_file).gsub(/\[Unreleased\]/, "[#{
 verbose("npm version #{version_string} --no-git-tag-version")
 
 verbose('git add -A')
-verbose("git commit -m 'Publish #{tag}'")
+verbose("git commit -m 'Version bump for #{tag} release candidate'")
 
 verbose('npm run build:release')
 verbose('npm pack --dry-run')
