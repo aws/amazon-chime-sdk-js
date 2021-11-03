@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import Logger from '../logger/Logger';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
 import VideoStreamIndex from '../videostreamindex/VideoStreamIndex';
@@ -51,7 +52,11 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   private encodingParamMap = new Map<string, RTCRtpEncodingParameters>();
   private transceiverController: TransceiverController;
 
-  constructor(private selfAttendeeId: string, private scaleResolution: boolean = true) {
+  constructor(
+    private selfAttendeeId: string,
+    private scaleResolution: boolean = true,
+    private logger: Logger | undefined = undefined
+  ) {
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, {
@@ -192,6 +197,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     let scale = 1;
     if (
       setting.height !== undefined &&
+      setting.width !== undefined &&
       this.scaleResolution &&
       !this.hasBandwidthPriority &&
       this.numParticipants > 2
@@ -203,7 +209,12 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
             NScaleVideoUplinkBandwidthPolicy.targetHeightArray.length - 1
           )
         ];
-      scale = Math.max(setting.height / targetHeight, 1);
+      scale = Math.max(Math.min(setting.height, setting.width) / targetHeight, 1);
+      this.logger?.info(
+        `Resolution scale factor is ${scale} for capture resolution ${setting.width}x${
+          setting.height
+        }. New dimension is ${setting.width / scale}x${setting.height / scale}`
+      );
     }
     return {
       scaleResolutionDownBy: scale,

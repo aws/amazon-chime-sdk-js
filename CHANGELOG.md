@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix disabling of send streams when local video was not enabled by integrating empty encoder params into `VideoStreamIndex` when sending is disabled.
 - Fix `visibilitychange` typo in `InMemoryJSONEventBuffer`.
+- Take into account portrait video dimension when calculating resolution scaling for nscale video bandwidth uplink 
+  policy.
   
 ### Changed
 
@@ -27,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change `appVersionName` and `appVersionCode` fields to `appName` and `appVersion` respectively.
 - Update similar log messages in `DefaultMessagingSession` and `DefaultSignalingClient`.
 - Change the serverless demo's `deploy.js` script to rebuild the demo on each run. This should remove a manual step of rebuilding the demo.
+- Disable nscale resolution scaling for Android device due to Android H.264 encoding.
 
 ## [2.20.1] - 2021-10-27
 

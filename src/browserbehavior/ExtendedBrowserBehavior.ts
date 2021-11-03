@@ -18,4 +18,5 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
   requiresContextRecreationForAudioWorklet(): boolean;
   isSimulcastSupported(): boolean;
   supportsBackgroundFilter(): boolean;
+  disableResolutionScaleDown(): boolean;
 }

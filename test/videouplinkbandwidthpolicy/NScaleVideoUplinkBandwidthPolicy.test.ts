@@ -36,7 +36,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
   }
 
   beforeEach(() => {
-    policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId);
+    policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId, true, new NoOpLogger());
     policy.setIdealMaxBandwidthKbps(600);
     domMockBehavior = new DOMMockBehavior();
     domMockBehavior.mediaStreamTrackSettings = {
@@ -358,6 +358,98 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       policy.setTransceiverController(transceiverController);
       transceiverController.setVideoInput(new MediaStreamTrack());
       for (const entry of expectedNumParticipantsToParametersWithNoResolutionScaling) {
+        const numParticipants = entry[0];
+        const expectedParams = entry[1];
+        const sources: SdkStreamDescriptor[] = [];
+        for (let i = 0; i < numParticipants; i++) {
+          const attendee = i === 0 ? selfAttendeeId : `attendee-${i}`;
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i,
+              groupId: i,
+              maxBitrateKbps: 100,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i * 2,
+              groupId: i,
+              maxBitrateKbps: 200,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+        }
+        const index = new DefaultVideoStreamIndex(logger);
+        index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
+        policy.updateIndex(index);
+        const actualParams = policy.chooseCaptureAndEncodeParameters();
+        assert(
+          actualParams.equal(expectedParams),
+          `numParticipants: ${numParticipants} expected: ${JSON.stringify(
+            expectedParams
+          )} actual: ${JSON.stringify(actualParams)}`
+        );
+      }
+    });
+
+    it('Scale resolution with default value', () => {
+      domMockBehavior.mediaStreamTrackSettings = {
+        width: 540,
+        height: 960,
+        deviceId: '',
+      };
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId);
+      policy.setIdealMaxBandwidthKbps(600);
+      policy.setTransceiverController(transceiverController);
+      transceiverController.setVideoInput(new MediaStreamTrack());
+      for (const entry of expectedNumParticipantsToParameters) {
+        const numParticipants = entry[0];
+        const expectedParams = entry[1];
+        const sources: SdkStreamDescriptor[] = [];
+        for (let i = 0; i < numParticipants; i++) {
+          const attendee = i === 0 ? selfAttendeeId : `attendee-${i}`;
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i,
+              groupId: i,
+              maxBitrateKbps: 100,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+          sources.push(
+            new SdkStreamDescriptor({
+              streamId: i * 2,
+              groupId: i,
+              maxBitrateKbps: 200,
+              attendeeId: attendee,
+              mediaType: SdkStreamMediaType.VIDEO,
+            })
+          );
+        }
+        const index = new DefaultVideoStreamIndex(logger);
+        index.integrateIndexFrame(new SdkIndexFrame({ sources: sources }));
+        policy.updateIndex(index);
+        const actualParams = policy.chooseCaptureAndEncodeParameters();
+        assert(
+          actualParams.equal(expectedParams),
+          `numParticipants: ${numParticipants} expected: ${JSON.stringify(
+            expectedParams
+          )} actual: ${JSON.stringify(actualParams)}`
+        );
+      }
+    });
+
+    it('Scale resolution correctly with portrait mode', () => {
+      policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId);
+      policy.setIdealMaxBandwidthKbps(600);
+      policy.setTransceiverController(transceiverController);
+      transceiverController.setVideoInput(new MediaStreamTrack());
+      for (const entry of expectedNumParticipantsToParameters) {
         const numParticipants = entry[0];
         const expectedParams = entry[1];
         const sources: SdkStreamDescriptor[] = [];

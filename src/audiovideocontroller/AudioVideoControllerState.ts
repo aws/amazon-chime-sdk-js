@@ -4,7 +4,7 @@
 import AudioMixController from '../audiomixcontroller/AudioMixController';
 import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
-import BrowserBehavior from '../browserbehavior/BrowserBehavior';
+import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import ConnectionMonitor from '../connectionmonitor/ConnectionMonitor';
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
@@ -34,7 +34,7 @@ import VolumeIndicatorAdapter from '../volumeindicatoradapter/VolumeIndicatorAda
 export default class AudioVideoControllerState {
   logger: Logger | null = null;
 
-  browserBehavior: BrowserBehavior | null = null;
+  browserBehavior: ExtendedBrowserBehavior | null = null;
 
   signalingClient: SignalingClient | null = null;
 

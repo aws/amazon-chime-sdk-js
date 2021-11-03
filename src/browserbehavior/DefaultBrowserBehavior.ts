@@ -274,6 +274,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return 'setSinkId' in HTMLAudioElement.prototype;
   }
 
+  disableResolutionScaleDown(): boolean {
+    return this.isAndroid();
+  }
+
   // These helpers should be kept private to encourage
   // feature detection instead of browser detection.
   private isIOSSafari(): boolean {
