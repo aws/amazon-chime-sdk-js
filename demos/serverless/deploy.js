@@ -165,10 +165,8 @@ function ensureApp(appName) {
     console.log(`Application ${appName} does not exist. Did you specify correct name?`);
     process.exit(1);
   }
-  if (!fs.existsSync(appHtml(appName))) {
-    console.log(`Application ${appHtml(appName)} does not exist. Rebuilding demo apps`);
-    spawnOrFail('npm', ['run', 'build', `--app=${appName}`], {cwd: path.join(__dirname, '..', 'browser')});
-  }
+  console.log(`Rebuilding demo app`);
+  spawnOrFail('npm', ['run', 'build', `--app=${appName}`], {cwd: path.join(__dirname, '..', 'browser')});
 }
 
 function ensureTools() {
