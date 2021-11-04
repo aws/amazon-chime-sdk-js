@@ -22,11 +22,11 @@ const indexPage = fs.readFileSync(indexPagePath);
 // Create ans AWS SDK Chime object. Region 'us-east-1' is currently required.
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
-const chime = new AWS.Chime({ region: 'us-east-1' });
+const chime = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
 const sts = new AWS.STS({ region: 'us-east-1' })
 
-// Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
-const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
+// Set the AWS SDK Chime endpoint. The global endpoint is https://meetings-chime.{region}.amazonaws.com'.
+const endpoint = process.env.ENDPOINT || 'https://meetings-chime.us-east-1.amazonaws.com';
 console.info('Using endpoint', endpoint);
 
 chime.endpoint = new AWS.Endpoint(endpoint);
@@ -59,7 +59,7 @@ function serve(host = '127.0.0.1:8080') {
 
         // Look up the meeting by its title. If it does not exist, create the meeting.
         if (!meetingTable[requestUrl.query.title]) {
-          meetingTable[requestUrl.query.title] = await chime.createMeeting({
+          let request = {
             // Use a UUID for the client request token to ensure that any request retries
             // do not create multiple meetings.
             ClientRequestToken: uuidv4(),
@@ -69,7 +69,16 @@ function serve(host = '127.0.0.1:8080') {
             // Any meeting ID you wish to associate with the meeting.
             // For simplicity here, we use the meeting title.
             ExternalMeetingId: requestUrl.query.title.substring(0, 64),
-          }).promise();
+          };
+          if (requestUrl.query.ns_es === 'true') {
+            request.MeetingFeatures = {
+              Audio: {
+                // The VoiceFocusEchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+                VoiceFocusEchoReduction: 'AVAILABLE'
+              } 
+            };
+          }
+          meetingTable[requestUrl.query.title] = await chime.createMeeting(request).promise();
         }
 
         // Fetch the meeting info
@@ -86,7 +95,7 @@ function serve(host = '127.0.0.1:8080') {
           // be used to help build the roster.
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
         }).promise();
-
+        
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
         respond(response, 201, 'application/json', JSON.stringify({

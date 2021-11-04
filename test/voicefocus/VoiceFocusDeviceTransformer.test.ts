@@ -188,6 +188,27 @@ describe('VoiceFocusDeviceTransformer', () => {
           supported: true,
         };
 
+        const goodEsConfig: VoiceFocusConfig = {
+          fetchConfig: {
+            paths: {
+              processors: 'https://somewhere.chime.aws/processors/',
+              workers: 'https://somewhere.chime.aws/workers/',
+              wasm: 'https://somewhere.chime.aws/wasm/',
+              models: 'https://somewhere.chime.aws/wasm/',
+            },
+            escapedQueryString: 'sdk=2.5.0&ua=firefox-86&assetGroup=stable-v1',
+          },
+          model: {
+            category: 'voicefocus',
+            name: 'ns_es',
+            variant: 'c20',
+            simd: false,
+          },
+          processor: 'voicefocus-inline-processor',
+          executionQuanta: 3,
+          supported: true,
+        };
+
         const configWithURL: VoiceFocusConfig = {
           fetchConfig: {
             paths: {
@@ -293,6 +314,54 @@ describe('VoiceFocusDeviceTransformer', () => {
           }
           expect(theConfig.model.simd).to.be.false;
           expect(theConfig.model.variant).to.equal('c20');
+        });
+
+        it('runs through the error case if the JoinInfo allows echo suppression but the spec is default', async () => {
+          const logger = new MockLogger();
+          const joinInfo: any = {
+            Meeting: {
+              MeetingFeatures: {
+                Audio: {
+                  VoiceFocusEchoReduction: 'AVAILABLE'
+                }
+              }
+            },
+            Attendee: { Attendee: {} }
+          };
+          VoiceFocusDeviceTransformer.create({ name: 'default' }, {}, goodEsConfig, joinInfo);
+          expect(logger.error.calledWith('Echo Reduction requested but not enabled.'));
+        });
+
+        it('runs through the error case if the JoinInfo.Meeting allows echo suppression but the spec is default', async () => {
+          const logger = new MockLogger();
+          const joinInfo: any = {
+            Meeting: {
+              MeetingFeatures: {
+                Audio: {
+                  VoiceFocusEchoReduction: 'AVAILABLE'
+                }
+              }
+            },
+            Attendee: { Attendee: {} }
+          };
+          VoiceFocusDeviceTransformer.create({ name: 'default' }, {}, goodEsConfig, joinInfo.Meeting);
+          expect(logger.error.calledWith('Echo Reduction requested but not enabled.'));
+        });
+
+        it('runs through the error case if the spec allows echo suppression but the CCP flag is UNAVAILABLE', async () => {
+          const logger = new MockLogger();
+          const joinInfo: any = {
+            Meeting: {
+              MeetingFeatures: {
+                Audio: {
+                  VoiceFocusEchoReduction: 'UNAVAILABLE'
+                }
+              }
+            },
+            Attendee: {Attendee: {}}
+          };
+          VoiceFocusDeviceTransformer.create({ name: 'ns_es' }, {}, goodConfig, joinInfo);
+          expect(logger.error.calledWith('Echo Reduction requested but not enabled.'));
         });
       });
 
@@ -624,7 +693,18 @@ describe('VoiceFocusDeviceTransformer', () => {
       isSupported.callsFake(async () => true);
       configure.callsFake(async () => supportedConfig);
 
-      const transformer = await VoiceFocusDeviceTransformer.create({ name: 'ns_es' }, {});
+      const joinInfo: any = {
+        Meeting: {
+          MeetingFeatures: {
+            Audio: {
+              VoiceFocusEchoReduction: 'AVAILABLE'
+            }
+          }
+        },
+        Attendee: { Attendee: {} }
+      };
+      
+      const transformer = await VoiceFocusDeviceTransformer.create({ name: 'ns_es' }, {}, undefined, joinInfo);
       return transformer;
     }
 

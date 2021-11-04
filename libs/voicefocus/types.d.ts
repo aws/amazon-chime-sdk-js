@@ -130,4 +130,5 @@ export interface VoiceFocusFetchBehavior {
 export interface VoiceFocusFetchConfig extends VoiceFocusFetchBehavior {
     paths: VoiceFocusPaths;
 }
+
 export {};

@@ -133,8 +133,21 @@ export class VoiceFocusDeviceTransformer {
   static async create(
     spec: VoiceFocusSpec = {},
     options: VoiceFocusDeviceOptions = {},
-    config?: VoiceFocusConfig
+    config?: VoiceFocusConfig,
+    createMeetingResponse?: any,
+    createAttendeeResponse?: any
   ): Promise<VoiceFocusDeviceTransformer> {
+    if (createMeetingResponse) {
+      if (createMeetingResponse.Meeting) {
+        createMeetingResponse = createMeetingResponse.Meeting;
+      }
+    }
+    const meetingFeaturesAllowsES = createMeetingResponse?.MeetingFeatures?.Audio?.VoiceFocusEchoReduction === 'AVAILABLE';
+    const forbiddenConfig = config && config.supported === true && config.model.name === 'ns_es' && !meetingFeaturesAllowsES;
+    const forbiddenSpec = spec.name === 'ns_es' && !meetingFeaturesAllowsES;
+    if (forbiddenConfig || forbiddenSpec) {
+      throw new Error('Echo Reduction requested but not enabled.');
+    }
     const transformer = new VoiceFocusDeviceTransformer(spec, options, config);
 
     // This also preps the first `VoiceFocus` instance.

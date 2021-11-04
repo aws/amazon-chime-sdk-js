@@ -12,7 +12,7 @@ const ddb = new AWS.DynamoDB();
 // Create an AWS SDK Chime object. Region 'us-east-1' is currently required.
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
-const chime = new AWS.Chime({ region: 'us-east-1' });
+const chime = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
 
 // Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
 chime.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT);
@@ -44,28 +44,38 @@ exports.join = async(event, context) => {
 
   // Look up the meeting by its title. If it does not exist, create the meeting.
   let meeting = await getMeeting(query.title);
+  
   if (!meeting) {
-    const request = {
+    let request = {
       // Use a UUID for the client request token to ensure that any request retries
       // do not create multiple meetings.
       ClientRequestToken: uuidv4(),
-
+  
       // Specify the media region (where the meeting is hosted).
       // In this case, we use the region selected by the user.
       MediaRegion: query.region,
-
+  
       // Set up SQS notifications if being used
       NotificationsConfiguration: USE_EVENT_BRIDGE === 'false' ? { SqsQueueArn: SQS_QUEUE_ARN } : {},
-
+  
       // Any meeting ID you wish to associate with the meeting.
       // For simplicity here, we use the meeting title.
       ExternalMeetingId: query.title.substring(0, 64),
-
+  
       // Tags associated with the meeting. They can be used in cost allocation console
       Tags: [
         { Key: 'Department', Value: 'RND'}
       ]
     };
+    if (query.ns_es === 'true') {
+      request.MeetingFeatures = {
+        Audio: {
+          // The VoiceFocusEchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+          VoiceFocusEchoReduction: 'AVAILABLE'
+        }
+      };
+    } 
+  }
     console.info('Creating new meeting: ' + JSON.stringify(request));
     meeting = await chime.createMeeting(request).promise();
 
