@@ -39,18 +39,22 @@ class MessagingSessionPage {
     let i = 0;
     let connecting = true;
     while (connecting && i < timeout) {
+      await TestUtils.waitAround(1000);
       connecting = await this.isConnecting();
       if (connecting === false) {
         return 'done'
       }
       i++;
-      await TestUtils.waitAround(1000);
     }
     return 'failed'
   }
 
   async isConnecting() {
-    return await this.driver.findElement(elements.connectFlow).isDisplayed();
+    try {
+      return await this.driver.findElement(elements.connectFlow).isDisplayed();
+    } catch (e) { //Catch StaleElementReferenceError
+      return false;
+    }
   }
 
   async disconnect() {
@@ -63,18 +67,22 @@ class MessagingSessionPage {
     let i = 0;
     let isDisconnecting = true;
     while (isDisconnecting && i < timeout) {
+      await TestUtils.waitAround(1000);
       isDisconnecting = await this.isDisconnecting();
       if (isDisconnecting === false) {
         return 'done'
       }
       i++;
-      await TestUtils.waitAround(1000);
     }
     return 'failed'
   }
 
   async isDisconnecting() {
-    return await this.driver.findElement(elements.disconnectFlow).isDisplayed();
+    try {
+      return await this.driver.findElement(elements.disconnectFlow).isDisplayed();
+    } catch (e) { //Catch StaleElementReferenceError
+      return false;
+    }
   }
 
   async checkMessageTypeExist(messageType) {
