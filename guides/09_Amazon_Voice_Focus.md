@@ -144,9 +144,9 @@ Some browsers support the Amazon Chime SDK but do not support Amazon Voice Focus
 The SDK provides a static method to allow you to cheaply check for the required browser features:
 
 ```typescript
-`import { VoiceFocusDeviceTransformer } from 'amazon-chime-sdk-js';`
+import { VoiceFocusDeviceTransformer } from 'amazon-chime-sdk-js';
 …
-`const isVoiceFocusSupported = await VoiceFocusDeviceTransformer.isSupported();`
+const isVoiceFocusSupported = await VoiceFocusDeviceTransformer.isSupported();
 ```
 
 If `isSupported` returns `true`, you can instantiate a transformer. This will measure the runtime environment and perform some initialization, and so its `isSupported` method is more accurate.

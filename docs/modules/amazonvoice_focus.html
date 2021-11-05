@@ -230,9 +230,9 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					</a>
 					<p>Some browsers support the Amazon Chime SDK but do not support Amazon Voice Focus. Additionally, some devices are not fast enough to keep up with real-time audio while suppressing noise.</p>
 					<p>The SDK provides a static method to allow you to cheaply check for the required browser features:</p>
-					<pre><code class="language-typescript"><span class="hljs-string">`import { VoiceFocusDeviceTransformer } from &#x27;amazon-chime-sdk-js&#x27;;`</span>
+					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { VoiceFocusDeviceTransformer } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 …
-<span class="hljs-string">`const isVoiceFocusSupported = await VoiceFocusDeviceTransformer.isSupported();`</span>
+<span class="hljs-keyword">const</span> isVoiceFocusSupported = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer.isSupported();
 </code></pre>
 					<p>If <code>isSupported</code> returns <code>true</code>, you can instantiate a transformer. This will measure the runtime environment and perform some initialization, and so its <code>isSupported</code> method is more accurate.</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">let</span> transformer: VoiceFocusDeviceTransformer;
