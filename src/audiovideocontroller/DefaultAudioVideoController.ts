@@ -503,7 +503,9 @@ export default class DefaultAudioVideoController
 
       if (!this.meetingSessionContext.videoUplinkBandwidthPolicy) {
         this.meetingSessionContext.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
-          this.configuration.credentials.attendeeId
+          this.configuration.credentials.attendeeId,
+          !this.meetingSessionContext.browserBehavior.disableResolutionScaleDown(),
+          this.meetingSessionContext.logger
         );
       }
       if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
