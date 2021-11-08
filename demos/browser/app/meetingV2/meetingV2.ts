@@ -453,7 +453,6 @@ export class DemoMeetingApp
   blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver ) = undefined;
 
   showActiveSpeakerScores = false;
-  activeSpeakerLayout = true;
   meeting: string | null = null;
   name: string | null = null;
   voiceConnectorId: string | null = null;
