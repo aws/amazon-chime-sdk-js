@@ -17,44 +17,6 @@
   </div>
 </div>
 
-<template id="video-tile-template">
-  <video class="video-tile-video"></video>
-  <div class="video-tile-attendee-id"></div>
-  <div class="video-tile-nameplate"></div>
-  <div class="video-tile-pause-state"></div>
-  <div class="button-video-tile-config" role="group">
-    <button type="button" class="btn btn-success dropdown-toggle button-video-tile-config-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Video Tile Settings"><%= require('../../node_modules/open-iconic/svg/cog.svg') %></button>
-    <div class="dropdown-menu dropdown-menu-right dropdown-video-tile-config" aria-labelledby="button-video-tile-config-drop" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-      <a class="dropdown-item video-tile-pause">Pause</a>
-      <div class="dropdown-divider"></div>
-      <h6 class="dropdown-header target-resolution-header">Target Resolution</h6>
-      <form class="btn-group btn-group-toggle video-tile-config-toggle target-resolution-toggle" data-toggle="buttons">
-        <label class="btn btn-secondary">
-          <input type="radio" name="level" value="low" autocomplete="off">Low
-        </label>
-        <label class="btn btn-secondary">
-          <input type="radio" name="level" value="medium" autocomplete="off">Medium
-        </label>
-        <label class="btn btn-secondary active">
-          <input type="radio" name="level" value="high" autocomplete="off" checked>High
-        </label>
-      </form>
-      <h6 class="dropdown-header video-priority-header">Video Priority</h6>
-      <form class="btn-group btn-group-toggle video-tile-config-toggle video-priority-toggle" data-toggle="buttons">
-        <label class="btn btn-secondary">
-          <input type="radio" name="level" value="low" autocomplete="off">Low
-        </label>
-        <label class="btn btn-secondary active">
-          <input type="radio" name="level" value="medium" autocomplete="off" checked>Medium
-        </label>
-        <label class="btn btn-secondary">
-            <input type="radio" name="level" value="high" autocomplete="off">High
-        </label>
-      </form>
-    </div>
-  </div>
-</template>
-
 <!-- Initial meeting authentication screen with meeting and name inputs -->
 <div id="flow-authenticate" class="flow text-center p-2">
   <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
