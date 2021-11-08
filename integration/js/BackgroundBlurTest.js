@@ -22,6 +22,7 @@ class BackgroundBlurTest extends SdkBaseTest {
     await test_window_2.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, remote_attendee_id, session));
     await test_window_1.runCommands(async () => await ClickVideoButton.executeStep(this, session));
     await test_window_1.runCommands(async () => await ClickBackgroundBlurButton.executeStep(this, session));
+    await test_window_1.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON'));
     await test_window_1.runCommands(async () => await VideoBackgroundBlurCheck.executeStep(this, session, attendee_id));
     await test_window_2.runCommands(async () => await VideoBackgroundBlurCheck.executeStep(this, session, attendee_id));
     await test_window_2.runCommands(async () => await RemoteVideoCheck.executeStep(this, session, 'VIDEO_ON'));   

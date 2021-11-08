@@ -1,5 +1,5 @@
 const AppTestStep = require('../utils/AppTestStep');
-const {KiteTestError, Status} = require('kite-common');
+const { KiteTestError, Status, TestUtils } = require('kite-common');
 
 class VideoBackgroundBlurCheck extends AppTestStep {
   constructor(kiteBaseTest, sessionInfo, attendeeId) {
@@ -16,11 +16,19 @@ class VideoBackgroundBlurCheck extends AppTestStep {
   }
 
   async run() {
-      const videoBackgroundBlurcheck = await this.page.backgroundBlurCheck(this.attendeeId);
-      if (!videoBackgroundBlurcheck) {
-        throw new KiteTestError(Status.FAILED, `Video blur failed`);
-      }
-      this.finished("Video blur success");
+    let videoBackgroundBlurcheck; // Result of the verification
+    let i = 0; // iteration indicator
+    let timeout = 10;
+    videoBackgroundBlurcheck = await this.page.backgroundBlurCheck(this.attendeeId);
+    while ((!videoBackgroundBlurcheck) && i < timeout) {
+      videoBackgroundBlurcheck = await this.page.backgroundBlurCheck(this.attendeeId);
+      i++;
+      await TestUtils.waitAround(1000);
+    }
+    if (!videoBackgroundBlurcheck) {
+      throw new KiteTestError(Status.FAILED, `Video blur failed`);
+    }
+    this.finished("Video blur success");
   }
 }
 
