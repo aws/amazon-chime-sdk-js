@@ -1,0 +1,5 @@
+# These owners will be the default owners for everything in
+# amazon-chime-sdk-js repo.
+# Check below link for more information:
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+* @aws/amazon-chime-sdk
