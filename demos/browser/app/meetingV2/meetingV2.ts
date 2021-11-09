@@ -908,7 +908,7 @@ export class DemoMeetingApp
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
-        //   this.tileIndexToDemoVideoTile.get(DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX).hide(); TODO
+          // Tile will be removed in response to `videoTileWasRemoved` in `VideoTileCollection`
         }
       });
     });
@@ -1719,7 +1719,7 @@ export class DemoMeetingApp
     this.activeSpeakerHandler = (attendeeIds: string[]): void => {
       // First reset all roster active speaker information
       for (const attendeeId in this.roster) {
-          this.roster[attendeeId].active = false;
+        this.roster[attendeeId].active = false;
       }
 
       // Then re-update roster and tile collection with latest information
