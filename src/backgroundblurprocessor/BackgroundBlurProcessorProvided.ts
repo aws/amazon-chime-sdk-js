@@ -60,10 +60,13 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
   protected sourceWidth = 0;
   protected sourceHeight = 0;
   protected blurAmount = 0;
+  protected frameNumber = 0;
+  protected videoFramesPerFilterUpdate = 1;
 
   protected spec: BackgroundFilterSpec;
   protected _blurStrength: number;
   private delegate: BackgroundBlurVideoFrameProcessorDelegate;
+  private cpuMonitor: BackgroundFilterMonitor;
   protected worker: Worker;
   protected logger: Logger;
 
@@ -124,6 +127,10 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
     if (!options.reportingPeriodMillis) {
       throw new Error('processor has null options - reportingPeriodMillis');
     }
+
+    if (!options.filterCPUUtilization) {
+      throw new Error('processor has null options - filterCPUUtilization');
+    }
   }
 
   /**
@@ -139,14 +146,34 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
 
     this.spec = spec;
     this.logger = options.logger;
+    this.videoFramesPerFilterUpdate = 1;
 
     this.setBlurStrength(options.blurStrength);
     this.delegate = new BackgroundBlurVideoFrameProcessorDelegate();
     this.frameCounter = new BackgroundFilterFrameCounter(
       this.delegate,
       options.reportingPeriodMillis,
+      options.filterCPUUtilization,
       this.logger
     );
+
+    const CPU_MONITORING_PERIOD_MILLIS = 5000;
+    const MAX_SEGMENTATION_SKIP_RATE = 10;
+    const MIN_SEGMENTATION_SKIP_RATE = 1;
+
+    this.cpuMonitor = new BackgroundFilterMonitor(CPU_MONITORING_PERIOD_MILLIS, {
+      reduceCPUUtilization: () => {
+        this.updateVideoFramesPerFilterUpdate(
+          Math.min(this.videoFramesPerFilterUpdate + 1, MAX_SEGMENTATION_SKIP_RATE)
+        );
+      },
+      increaseCPUUtilization: () => {
+        this.updateVideoFramesPerFilterUpdate(
+          Math.max(this.videoFramesPerFilterUpdate - 1, MIN_SEGMENTATION_SKIP_RATE)
+        );
+      },
+    });
+    this.delegate.addObserver(this.cpuMonitor);
 
     this.logger.info('BackgroundBlur processor successfully created');
     this.logger.info(`BackgroundBlur spec: ${this.stringify(this.spec)}`);
@@ -158,7 +185,17 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
     return JSON.stringify(value, null, 2);
   }
 
-  handleInitialize(msg: { payload: number }): void {
+  protected updateVideoFramesPerFilterUpdate(newRate: number): void {
+    if (newRate !== this.videoFramesPerFilterUpdate) {
+      this.videoFramesPerFilterUpdate = newRate;
+      this.logger.info(
+        `Adjusting filter rate to compensate for CPU utilization. ` +
+          `Filter rate is ${this.videoFramesPerFilterUpdate} video frames per filter.`
+      );
+    }
+  }
+
+  protected handleInitialize(msg: { payload: number }): void {
     this.logger.info(`received initialize message: ${this.stringify(msg)}`);
     if (!msg.payload) {
       this.logger.error('failed to initialize module');
@@ -222,7 +259,7 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
   }
 
   /**
-   * This method initializes all of the resource necessary to processs background blur. It returns
+   * This method initializes all of the resource necessary to processes background blur. It returns
    * a promise and resolves or rejects the promise once the initialization is complete.
    * @returns
    * @throws An error will be thrown
@@ -261,6 +298,7 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
    */
   async process(buffers: VideoFrameBuffer[]): Promise<VideoFrameBuffer[]> {
     this.frameCounter.frameReceived(buffers[0].framerate);
+    this.cpuMonitor.frameReceived();
     const inputCanvas = buffers[0].asCanvasElement() as HTMLCanvasElement;
     if (!inputCanvas) {
       return buffers;
@@ -303,8 +341,8 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
 
       if (this.scaledCanvas === undefined) {
         this.scaledCanvas = document.createElement('canvas');
-        this.scaledCanvas.width = inputCanvas.width * hscale;
-        this.scaledCanvas.height = inputCanvas.height * vscale;
+        this.scaledCanvas.width = this.spec.model.input.width;
+        this.scaledCanvas.height = this.spec.model.input.height;
       }
 
       const scaledCtx = this.scaledCanvas.getContext('2d');
@@ -320,17 +358,20 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
         this.scaledCanvas.height
       );
 
-      // process frame...
-      const maskPromise = this.mask$.whenNext();
-      this.worker.postMessage({ msg: 'predict', payload: imageData }, [imageData.data.buffer]);
-
-      mask = await maskPromise;
+      // update the filter mask based on the filter update rate
+      if (this.frameNumber % this.videoFramesPerFilterUpdate === 0) {
+        // process frame...
+        const maskPromise = this.mask$.whenNext();
+        this.worker.postMessage({ msg: 'predict', payload: imageData }, [imageData.data.buffer]);
+        mask = await maskPromise;
+      }
       this.drawImageWithMask(inputCanvas, mask);
     } catch (error) {
       this.logger.error(`could not process background blur frame buffer due to ${error}`);
       return buffers;
     } finally {
       this.frameCounter.filterComplete();
+      this.frameNumber++;
     }
 
     buffers[0] = this.canvasVideoFrameBuffer;
@@ -389,6 +430,7 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
    * Clean up processor resources
    */
   async destroy(): Promise<void> {
+    this.delegate.removeObserver(this.cpuMonitor);
     this.canvasVideoFrameBuffer.destroy();
     this.worker?.postMessage({ msg: 'destroy' });
     this.worker?.postMessage({ msg: 'close' });
@@ -413,5 +455,35 @@ export default class BackgroundBlurProcessorProvided implements BackgroundBlurPr
     canvas.remove();
 
     return supportsBlurFilter;
+  }
+}
+
+/** @internal */
+interface MonitorCpuObserver {
+  reduceCPUUtilization: () => void;
+  increaseCPUUtilization: () => void;
+}
+
+/** @internal */
+class BackgroundFilterMonitor implements BackgroundBlurVideoFrameProcessorObserver {
+  private lastCPUChangeTimestamp: number = 0;
+  constructor(private monitoringPeriodMillis: number, private observer: MonitorCpuObserver) {}
+
+  filterCPUUtilizationHigh(): void {
+    const timestamp = Date.now();
+    // Allow some time to pass before we check CPU utilization.
+    if (timestamp - this.lastCPUChangeTimestamp >= this.monitoringPeriodMillis) {
+      this.lastCPUChangeTimestamp = timestamp;
+      this.observer.reduceCPUUtilization();
+    }
+  }
+
+  frameReceived(): void {
+    const timestamp = Date.now();
+    // If a enough time has passed, reset the processor and continue to monitor
+    if (timestamp - this.lastCPUChangeTimestamp >= this.monitoringPeriodMillis * 2) {
+      this.lastCPUChangeTimestamp = timestamp;
+      this.observer.increaseCPUUtilization();
+    }
   }
 }

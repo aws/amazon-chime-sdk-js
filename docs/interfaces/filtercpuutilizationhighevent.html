@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BackgroundBlurOptions | amazon-chime-sdk-js</title>
+	<title>FilterCPUUtilizationHighEvent | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,28 +56,21 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="backgroundbluroptions.html">BackgroundBlurOptions</a>
+					<a href="filtercpuutilizationhighevent.html">FilterCPUUtilizationHighEvent</a>
 				</li>
 			</ul>
-			<h1>Interface BackgroundBlurOptions</h1>
+			<h1>Interface FilterCPUUtilizationHighEvent</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>A set of options that can be supplied when creating a background blur video frame processor.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">BackgroundBlurOptions</span>
+						<span class="target">FilterCPUUtilizationHighEvent</span>
 					</li>
 				</ul>
 			</section>
@@ -88,10 +81,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundbluroptions.html#blurstrength" class="tsd-kind-icon">blur<wbr>Strength</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundbluroptions.html#filtercpuutilization" class="tsd-kind-icon">filterCPUUtilization</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundbluroptions.html#logger" class="tsd-kind-icon">logger</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundbluroptions.html#reportingperiodmillis" class="tsd-kind-icon">reporting<wbr>Period<wbr>Millis</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filtercpuutilizationhighevent.html#cpuutilization" class="tsd-kind-icon">cpu<wbr>Utilization</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filtercpuutilizationhighevent.html#filtermillis" class="tsd-kind-icon">filter<wbr>Millis</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filtercpuutilizationhighevent.html#periodmillis" class="tsd-kind-icon">period<wbr>Millis</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,68 +92,34 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="blurstrength" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> blur<wbr>Strength</h3>
-					<div class="tsd-signature tsd-kind-icon">blur<wbr>Strength<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="cpuutilization" class="tsd-anchor"></a>
+					<h3>cpu<wbr>Utilization</h3>
+					<div class="tsd-signature tsd-kind-icon">cpu<wbr>Utilization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurOptions.ts#L17">src/backgroundblurprocessor/BackgroundBlurOptions.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts#L5">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts:5</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The amount of blur that will be applied to a video stream.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="filtercpuutilization" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filterCPUUtilization</h3>
-					<div class="tsd-signature tsd-kind-icon">filterCPUUtilization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="filtermillis" class="tsd-anchor"></a>
+					<h3>filter<wbr>Millis</h3>
+					<div class="tsd-signature tsd-kind-icon">filter<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurOptions.ts#L28">src/backgroundblurprocessor/BackgroundBlurOptions.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts#L6">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts:6</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The threshold CPU utilization percentage to trigger skipping background filter updates which will reduce the amount of CPU
-							used by background filtering. The valid values for this field are 0-100.</p>
-						</div>
-						<p>For example, If the reporting period is set to 1000 ms and 500 ms was dedicated to processing the background filter, then
-							the CPU utilization for that reporting period is 50%. If <a href="backgroundbluroptions.html#filtercpuutilization">filterCPUUtilization</a> is set to 50 it will cause a
-						<code>filterCPUUtilizationHigh</code> event to be fired from the <code>BackgroundBlurVideoFrameProcessorObserver</code>.</p>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="logger" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> logger</h3>
-					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logger.html" class="tsd-signature-type">Logger</a></div>
+					<a name="periodmillis" class="tsd-anchor"></a>
+					<h3>period<wbr>Millis</h3>
+					<div class="tsd-signature tsd-kind-icon">period<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurOptions.ts#L11">src/backgroundblurprocessor/BackgroundBlurOptions.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts#L7">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts:7</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>A <a href="logger.html">Logger</a> to which log output will be written.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="reportingperiodmillis" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> reporting<wbr>Period<wbr>Millis</h3>
-					<div class="tsd-signature tsd-kind-icon">reporting<wbr>Period<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurOptions.ts#L14">src/backgroundblurprocessor/BackgroundBlurOptions.ts:14</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>How often the video frame processor will report observed events.</p>
-						</div>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -178,19 +136,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="backgroundbluroptions.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Options</a>
+						<a href="filtercpuutilizationhighevent.html" class="tsd-kind-icon">FilterCPUUtilization<wbr>High<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="backgroundbluroptions.html#blurstrength" class="tsd-kind-icon">blur<wbr>Strength</a>
+								<a href="filtercpuutilizationhighevent.html#cpuutilization" class="tsd-kind-icon">cpu<wbr>Utilization</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="backgroundbluroptions.html#filtercpuutilization" class="tsd-kind-icon">filterCPUUtilization</a>
+								<a href="filtercpuutilizationhighevent.html#filtermillis" class="tsd-kind-icon">filter<wbr>Millis</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="backgroundbluroptions.html#logger" class="tsd-kind-icon">logger</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="backgroundbluroptions.html#reportingperiodmillis" class="tsd-kind-icon">reporting<wbr>Period<wbr>Millis</a>
+								<a href="filtercpuutilizationhighevent.html#periodmillis" class="tsd-kind-icon">period<wbr>Millis</a>
 							</li>
 						</ul>
 					</li>

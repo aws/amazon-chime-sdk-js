@@ -165,18 +165,40 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					</a>
 					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>BackgroundFilterSpec</code> and <code>BackgroundBlurOptions</code> structures — as input. These <code>BackgroundFilterSpec</code> allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The <code>BackgroundBlurOptions</code> allows you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.</p>
 					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints.</p>
+					<p><strong>BackgroundBlurOptions</strong></p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> BackgroundBlurOptions {
+  logger?: Logger;
+  reportingPeriodMillis?: <span class="hljs-built_in">number</span>;
+  blurStrength?: <span class="hljs-built_in">number</span>;
+  filterCPUUtilization?: <span class="hljs-built_in">number</span>;
+}
+</code></pre>
+					<ul>
+						<li>logger: A logger to which log output will be written.</li>
+						<li>reportingPeriodMillis: How often the video frame processor will report observed events.</li>
+						<li>blurStrength: The amount of blur that will be applied to a video stream.</li>
+						<li>filterCPUUtilization: The threshold CPU utilization to trigger skipping background filter updates which will reduce the amount of CPU used by background filtering. For example, If the reporting period is set to 1000 ms and 500 ms was dedicated to processing the background filter, then the CPU utilization for that reporting period is 50%. If <code>filterCPUUtilization</code> is set to 50 it will cause a <code>filterCPUUtilizationHigh</code> event to be fired from the <code>BackgroundBlurVideoFrameProcessorObserver</code>.</li>
+					</ul>
+					<a href="#cpu-utilization-mitigation" id="cpu-utilization-mitigation" style="color: inherit; text-decoration: none;">
+						<h3>CPU Utilization mitigation</h3>
+					</a>
+					<p>The <code>BackgroundBlurOptions</code> interface has a <code>filterCPUUtilization</code> field that allows you to configure the amount of CPU utilized by the background blur processor. The JS SDK uses this field to determine when the <code>filterCPUUtilizationHigh</code> event will fire on the <code>BackgroundBlurVideoFrameProcessorObserver</code>. The JS SDK also uses the event internally to determine if the <code>filterCPUUtilization</code> is being exceeded. To mitigate excessive CPU usage, the SDK will begin to skip background segmentation until the CPU utilization is at or below the configured percentage set in the <code>filterCPUUtilization</code> field. A lower CPU utilization will increase amount of skipped background segmenting while maintaining the desired CPU levels. A higher CPU utilization will reduce skipped background segmenting, but increase CPU usage.</p>
 					<a href="#observer-notifications" id="observer-notifications" style="color: inherit; text-decoration: none;">
 						<h2>Observer notifications</h2>
 					</a>
 					<p>You can optionally implement the <code>BackgroundBlurVideoFrameProcessorObserver</code> interface and use <code>addObserver</code> to receive callbacks when an event occurs:</p>
 					<ul>
 						<li><code>filterFrameDurationHigh</code>:  This event occurs when the amount of time it takes to apply the background blur is longer than expected. The measurement is taken from the time the process method starts to when it returns. For example, if the video is running at 15 frames per seconds and we are averaging more than 67 ms (1000 ms reporting period / 15 fps) to apply background blur, then a very large portion of each frame&#39;s maximum processing time is taken up by processing background blur.</li>
+						<li><code>filterCPUUtilizationHigh</code>: This event occurs when the CPU utilization of background filtering exceeds the <code>filterCPUUtilization</code> defined in the <code>BackgroundBlurOptions</code>. This can be used as a trigger to disable background blur if CPU utilization is too high.</li>
 					</ul>
 					<pre><code class="language-typescript"><span class="hljs-comment">// create a reference to the observer</span>
 <span class="hljs-keyword">const</span> blurObserver: BackgroundBlurVideoFrameProcessorObserver = {
   <span class="hljs-attr">filterFrameDurationHigh</span>: <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter duration high: framed dropped - <span class="hljs-subst">${event.framesDropped}</span>, avg - <span class="hljs-subst">${event.avgFilterDurationMillis}</span> ms, frame rate - <span class="hljs-subst">${event.framerate}</span>, period - <span class="hljs-subst">${event.periodMillis}</span> ms`</span>);
-  }
+  },
+  <span class="hljs-attr">filterCPUUtilizationHigh</span>:<span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`background filter CPU high: CPU utilization is high <span class="hljs-subst">${event.cpuUtilization}</span>`</span>);
+  },
 }
 
 <span class="hljs-comment">// add the observer to the processor</span>

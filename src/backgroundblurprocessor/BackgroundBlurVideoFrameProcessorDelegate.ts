@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import BackgroundBlurVideoFrameProcessorObserver from './BackgroundBlurVideoFrameProcessorObserver';
+import BackgroundBlurVideoFrameProcessorObserver, {
+  FilterCPUUtilizationHighEvent,
+  FilterFrameDurationHighEvent,
+} from './BackgroundBlurVideoFrameProcessorObserver';
 
 /**
  * This class adds the functionality to allow for a set of unique observers to be added to the
@@ -32,14 +35,15 @@ export default class BackgroundBlurVideoFrameProcessorDelegate {
    * for detailed info on this event.
    * @param event
    */
-  filterFrameDurationHigh(event: {
-    framesDropped: number;
-    avgFilterDurationMillis: number;
-    framerate: number;
-    periodMillis: number;
-  }): void {
+  filterFrameDurationHigh(event: FilterFrameDurationHighEvent): void {
     for (const observer of this.observers) {
       observer.filterFrameDurationHigh?.call(observer, event);
+    }
+  }
+
+  filterCPUUtilizationHigh(event: FilterCPUUtilizationHighEvent): void {
+    for (const observer of this.observers) {
+      observer.filterCPUUtilizationHigh?.call(observer, event);
     }
   }
 }

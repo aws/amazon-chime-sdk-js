@@ -193,6 +193,16 @@ export default class BackgroundBlurVideoFrameProcessor {
     if (!options.reportingPeriodMillis) {
       options.reportingPeriodMillis = 1000;
     }
+
+    const DEFAULT_FILTER_CPU_UTILIZATION = 30;
+    if (!options.filterCPUUtilization) {
+      options.filterCPUUtilization = DEFAULT_FILTER_CPU_UTILIZATION;
+    } else if (options.filterCPUUtilization < 0 || options.filterCPUUtilization > 100) {
+      options.logger.warn(
+        'filterCPUUtilization must be set to a range between 0 and 100 percent. Falling back to default of 40 percent'
+      );
+      options.filterCPUUtilization = DEFAULT_FILTER_CPU_UTILIZATION;
+    }
     return options;
   }
 

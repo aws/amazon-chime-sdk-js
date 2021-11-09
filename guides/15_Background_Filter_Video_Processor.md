@@ -116,21 +116,44 @@ let transformDevice = new DefaultVideoTransformDevice(logger, device, processors
 
 Both `isSupported` and `create` accept _specifications_ — `BackgroundFilterSpec` and `BackgroundBlurOptions` structures — as input. These `BackgroundFilterSpec` allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The `BackgroundBlurOptions` allows you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.
 
-
 Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. 
+
+**BackgroundBlurOptions**
+
+```typescript
+interface BackgroundBlurOptions {
+  logger?: Logger;
+  reportingPeriodMillis?: number;
+  blurStrength?: number;
+  filterCPUUtilization?: number;
+}
+```
+
+* logger: A logger to which log output will be written.
+* reportingPeriodMillis: How often the video frame processor will report observed events. 
+* blurStrength: The amount of blur that will be applied to a video stream. 
+* filterCPUUtilization: The threshold CPU utilization to trigger skipping background filter updates which will reduce the amount of CPU used by background filtering. For example, If the reporting period is set to 1000 ms and 500 ms was dedicated to processing the background filter, then the CPU utilization for that reporting period is 50%. If `filterCPUUtilization` is set to 50 it will cause a `filterCPUUtilizationHigh` event to be fired from the `BackgroundBlurVideoFrameProcessorObserver`.
+
+### CPU Utilization mitigation 
+
+The `BackgroundBlurOptions` interface has a `filterCPUUtilization` field that allows you to configure the amount of CPU utilized by the background blur processor. The JS SDK uses this field to determine when the `filterCPUUtilizationHigh` event will fire on the `BackgroundBlurVideoFrameProcessorObserver`. The JS SDK also uses the event internally to determine if the `filterCPUUtilization` is being exceeded. To mitigate excessive CPU usage, the SDK will begin to skip background segmentation until the CPU utilization is at or below the configured percentage set in the `filterCPUUtilization` field. A lower CPU utilization will increase amount of skipped background segmenting while maintaining the desired CPU levels. A higher CPU utilization will reduce skipped background segmenting, but increase CPU usage. 
 
 ## Observer notifications
 
 You can optionally implement the `BackgroundBlurVideoFrameProcessorObserver` interface and use `addObserver` to receive callbacks when an event occurs:
 
 * `filterFrameDurationHigh`:  This event occurs when the amount of time it takes to apply the background blur is longer than expected. The measurement is taken from the time the process method starts to when it returns. For example, if the video is running at 15 frames per seconds and we are averaging more than 67 ms (1000 ms reporting period / 15 fps) to apply background blur, then a very large portion of each frame's maximum processing time is taken up by processing background blur.
+* `filterCPUUtilizationHigh`: This event occurs when the CPU utilization of background filtering exceeds the `filterCPUUtilization` defined in the `BackgroundBlurOptions`. This can be used as a trigger to disable background blur if CPU utilization is too high.
 
 ```typescript
 // create a reference to the observer
 const blurObserver: BackgroundBlurVideoFrameProcessorObserver = {
   filterFrameDurationHigh: (event) => {
     console.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
-  }
+  },
+  filterCPUUtilizationHigh:(event) => {
+    console.log(`background filter CPU high: CPU utilization is high ${event.cpuUtilization}`);
+  }, 
 }
 
 // add the observer to the processor

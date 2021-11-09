@@ -316,7 +316,7 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'BackgroundBlur' | 'None';
+type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'None';
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
@@ -2481,7 +2481,10 @@ export class DemoMeetingApp
       }
 
       if (this.supportsBackgroundBlur) {
-        filters.push('BackgroundBlur');
+        filters.push('Background Blur 10% CPU');
+        filters.push('Background Blur 20% CPU');
+        filters.push('Background Blur 30% CPU');
+        filters.push('Background Blur 40% CPU');
       }
     }
 
@@ -3011,17 +3014,22 @@ export class DemoMeetingApp
       return new ResizeProcessor(0.5625);  // 16/9 Aspect Ratio
     }
 
-    if (videoFilter === 'BackgroundBlur') {
+    if (videoFilter.startsWith('Background Blur')) {
       console.log("background blur - create called from videoFilterToProcessor!")
 
       // In the event that frames start being dropped we should take some action to remove the background blur.
       this.blurObserver = {
         filterFrameDurationHigh: (event) => {
           this.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
+        },
+        filterCPUUtilizationHigh: (event) => {
+          this.log(`background filter CPU utilization high: ${event.cpuUtilization}%`);
         }
       };
 
-      this.bbprocessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec());
+
+      const cpuUtilization: number = Number(videoFilter.match(/([0-9]{2})%/)[1]);
+      this.bbprocessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec(), {filterCPUUtilization: cpuUtilization});
       this.bbprocessor.addObserver(this.blurObserver);
       return this.bbprocessor;
     }
