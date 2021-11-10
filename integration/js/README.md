@@ -142,12 +142,33 @@ Run the test:
 ```shell
 $KITE_HOME/scripts/mac/path/r configs/<test_name>.config.json
 ```
-Steps to add test file to Sauce Labs virtual machine
-To create a fake video or audio stream you need the media file on Sauce Labs virtual machine before running your test. For that you can use a pre-run executable script to download file from a public storage to the virtual machine running your tests. 
-- Create a pre-run script by following the steps given on this link: https://docs.saucelabs.com/web-apps/automated-testing/selenium/pre-run-executables/#downloading-files-to-a-vm-prior-to-testing. 
-    On sauce labs virtual machines files are stored in the below folder locations
-    Windows = C:\Users\Administrator\Downloads
-    Mac = /Users/chef/Downloads
-    Linux = /home/chef/Downloads
-- Upload the pre-run executable to Sauce Labs storage by using Sauce Labs API methods: https://docs.saucelabs.com/dev/api/storage/
-- Add the pre-run to Sauce configs in your code like this prerun: 'storage:filename=filename.ext'. You can also use storage id of the file location. 
+## Testing against a custom audio/video stream in Sauce Labs
+Some tests might require testing against a custom audio/video stream. To test, you need the media file on Sauce Labs virtual machine before running your test. For that, you can use a pre-run executable script to download media file from public storage to the virtual machine before running your tests. 
+
+For our use case, a pre-run executable script is a minimal `bash` script that will use `curl` to install the resources on the Sauce Labs VM. Pre-run executable scripts can be used for several different use cases like changing VM configurations and browser settings. See [Using Pre-Run Executables](https://docs.saucelabs.com/web-apps/automated-testing/selenium/pre-run-executables/) for more information.
+
+1. Create a pre-run script by following the steps given in [downloading files to a VM prior to testing](https://docs.saucelabs.com/web-apps/automated-testing/selenium/pre-run-executables/#downloading-files-to-a-vm-prior-to-testing). Following is an example of a pre-run script that will download public assets and store them at the specified path.
+    ```shell
+    #!/bin/bash
+    curl -o /Users/chef/file.txt http://mywebsite.com/file.txt
+    ```
+
+2. Once the script is created, you should then upload the pre-run executable to Sauce Labs storage by using Sauce Labs API methods: [Saucelabs Storage CRUD API](https://docs.saucelabs.com/dev/api/storage/). You will need your Sauce Labs account username and access key for authorization. Upon successful upload you will get a storage id in the HTTP response. This id will be useful in step 4 for setting the config.
+
+3. In your test config, configure the directory where the audio/video assets will be downloaded to.
+
+    - Windows = `C:\Users\Administrator\`
+
+    - Mac = `/Users/chef/`
+
+    - Linux = `/home/chef/`
+
+> NOTE: The path specified in the test config should match the path specified in the `-o` option of the curl command in step 1.
+
+4. Add the pre-run script to Sauce Labs configs in your code like this prerun: `storage:filename=filename.ext`. You can also use the name of the pre-run script file but id is the better option. For reference,
+    ```js
+    // integration/js/utils/WebdriverSauceLabs.js
+    const getPrerunScript = (capabilities) => {
+      return capabilities.name.includes('Background Blur Test') ? 'storage:<storage_id>' : '';
+    }
+    ```
