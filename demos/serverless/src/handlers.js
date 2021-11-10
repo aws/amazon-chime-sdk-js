@@ -111,6 +111,7 @@ exports.start_transcription = async (event, context) => {
   const languageCode = event.queryStringParameters.language;
   const region = event.queryStringParameters.region;
   let transcriptionConfiguration = {};
+  const transcriptionStreamParams = JSON.parse(event.queryStringParameters.transcriptionStreamParams);
   if (event.queryStringParameters.engine === 'transcribe') {
     transcriptionConfiguration = {
       EngineTranscribeSettings: {
@@ -119,6 +120,24 @@ exports.start_transcription = async (event, context) => {
     };
     if (region) {
       transcriptionConfiguration.EngineTranscribeSettings.Region = region;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('contentIdentificationType')) {
+      transcriptionConfiguration.EngineTranscribeSettings.ContentIdentificationType = transcriptionStreamParams.contentIdentificationType;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('contentRedactionType')) {
+      transcriptionConfiguration.EngineTranscribeSettings.ContentRedactionType = transcriptionStreamParams.contentRedactionType;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('enablePartialResultsStability')) {
+      transcriptionConfiguration.EngineTranscribeSettings.EnablePartialResultsStabilization = transcriptionStreamParams.enablePartialResultsStability;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('partialResultsStability')) {
+      transcriptionConfiguration.EngineTranscribeSettings.PartialResultsStability = transcriptionStreamParams.partialResultsStability;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('piiEntityTypes')) {
+      transcriptionConfiguration.EngineTranscribeSettings.PiiEntityTypes = transcriptionStreamParams.piiEntityTypes;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('languageModelName')) {
+      transcriptionConfiguration.EngineTranscribeSettings.LanguageModelName = transcriptionStreamParams.languageModelName;
     }
   } else if (event.queryStringParameters.engine === 'transcribe_medical') {
     transcriptionConfiguration = {
@@ -130,6 +149,9 @@ exports.start_transcription = async (event, context) => {
     };
     if (region) {
       transcriptionConfiguration.EngineTranscribeMedicalSettings.Region = region;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('contentIdentificationType')) {
+      transcriptionConfiguration.EngineTranscribeMedicalSettings.ContentIdentificationType = transcriptionStreamParams.contentIdentificationType;
     }
   } else {
     return response(400, 'application/json', JSON.stringify({

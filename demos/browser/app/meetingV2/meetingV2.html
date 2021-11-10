@@ -354,6 +354,58 @@
           </select>
         </div>
       </div>
+      <div id="engine-transcribe-custom-language-model">
+        <div id="engine-transcribe-language-model" class="custom-control custom-checkbox" style="text-align: left;">
+          <input type="checkbox" id="custom-language-model-checkbox" class="custom-control-input">
+          <label for="custom-language-model-checkbox" class="custom-control-label">Enable Custom Language Model</label>
+        </div>
+        <div id="language-model" class="hidden">
+          <input type="text" id="language-model-input-text" style="text-align: left; width:100%">
+        </div>
+      </div>
+      <div id="engine-transcribe-stability">
+        <div id="engine-transcribe-partial-stabilization" class="custom-control custom-checkbox" style="text-align: left;">
+          <input type="checkbox" id="partial-stabilization-checkbox" class="custom-control-input">
+          <label for="partial-stabilization-checkbox" class="custom-control-label">Enable Partial Results Stabilization</label>
+        </div>
+        <div id="transcribe-partial-stability" class="hidden">
+          <label for="partial-stability" class="sr-only">Transcribe Entities</label>
+          <select id="partial-stability" class="custom-select"  style="width:100%">
+            <option value="" selected> -- DEFAULT (HIGH) -- </option>
+            <option value="low">LOW</option>
+            <option value="medium">MEDIUM</option>
+            <option value="high">HIGH</option>
+          </select>
+        </div>
+      </div>
+      <div id="engine-transcribe-content-identification" class="custom-control custom-checkbox" style="text-align: left;">
+        <input type="checkbox" id="content-identification-checkbox" class="custom-control-input">
+        <label for="content-identification-checkbox" class="custom-control-label">Enable PII Content Identification</label>
+      </div>
+      <div id="engine-transcribe-medical-content-identification" class="custom-control custom-checkbox hidden" style="text-align: left;">
+        <input type="checkbox" id="medical-content-identification-checkbox" class="custom-control-input">
+        <label for="medical-content-identification-checkbox" class="custom-control-label">Enable PHI Content Identification</label>
+      </div>
+      <div id="engine-transcribe-redaction" class="custom-control custom-checkbox" style="text-align: left;">
+        <input type="checkbox" id="content-redaction-checkbox" class="custom-control-input">
+        <label for="content-redaction-checkbox" class="custom-control-label">Enable PII Content Redaction</label>
+      </div>
+      <div id="transcribe-entity-types" class="hidden">
+        <label for="transcribe-entity" class="sr-only">Transcribe Entities</label>
+        <select id="transcribe-entity" class="custom-select"  style="width:100%" multiple>
+          <option selected value> -- DEFAULT (ALL) -- </option>
+          <option value="BANK_ROUTING">BANK ROUTING</option>
+          <option value="CREDIT_DEBIT_NUMBER">CREDIT/DEBIT NUMBER</option>
+          <option value="CREDIT_DEBIT_CVV">CREDIT/DEBIT CVV</option>
+          <option value="CREDIT_DEBIT_EXPIRY">CREDIT/DEBIT EXPIRTY</option>
+          <option value="PIN">PIN</option>
+          <option value="EMAIL">EMAIL</option>
+          <option value="ADDRESS">ADDRESS</option>
+          <option value="NAME">NAME</option>
+          <option value="PHONE">PHONE</option>
+          <option value="SSN">SSN</option>
+        </select>
+      </div>
       <button id="button-start-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2" title="Start" data-toggle="button" aria-pressed="false" autocomplete="off">
         <%= require('../../node_modules/open-iconic/svg/caret-right.svg') %>
       </button>

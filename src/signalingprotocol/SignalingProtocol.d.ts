@@ -3192,6 +3192,12 @@ export interface ISdkTranscriptItem {
 
     /** SdkTranscriptItem vocabularyFilterMatch */
     vocabularyFilterMatch?: (boolean|null);
+
+    /** SdkTranscriptItem confidence */
+    confidence?: (number|null);
+
+    /** SdkTranscriptItem stable */
+    stable?: (boolean|null);
 }
 
 /** Represents a SdkTranscriptItem. */
@@ -3223,6 +3229,12 @@ export class SdkTranscriptItem implements ISdkTranscriptItem {
 
     /** SdkTranscriptItem vocabularyFilterMatch. */
     public vocabularyFilterMatch: boolean;
+
+    /** SdkTranscriptItem confidence. */
+    public confidence: number;
+
+    /** SdkTranscriptItem stable. */
+    public stable: boolean;
 
     /**
      * Creates a new SdkTranscriptItem instance using the specified properties.
@@ -3304,6 +3316,126 @@ export namespace SdkTranscriptItem {
     }
 }
 
+/** Properties of a SdkTranscriptEntity. */
+export interface ISdkTranscriptEntity {
+
+    /** SdkTranscriptEntity category */
+    category?: (string|null);
+
+    /** SdkTranscriptEntity confidence */
+    confidence?: (number|null);
+
+    /** SdkTranscriptEntity content */
+    content?: (string|null);
+
+    /** SdkTranscriptEntity endTime */
+    endTime?: (number|Long|null);
+
+    /** SdkTranscriptEntity startTime */
+    startTime?: (number|Long|null);
+
+    /** SdkTranscriptEntity type */
+    type?: (string|null);
+}
+
+/** Represents a SdkTranscriptEntity. */
+export class SdkTranscriptEntity implements ISdkTranscriptEntity {
+
+    /**
+     * Constructs a new SdkTranscriptEntity.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscriptEntity);
+
+    /** SdkTranscriptEntity category. */
+    public category: string;
+
+    /** SdkTranscriptEntity confidence. */
+    public confidence: number;
+
+    /** SdkTranscriptEntity content. */
+    public content: string;
+
+    /** SdkTranscriptEntity endTime. */
+    public endTime: (number|Long);
+
+    /** SdkTranscriptEntity startTime. */
+    public startTime: (number|Long);
+
+    /** SdkTranscriptEntity type. */
+    public type: string;
+
+    /**
+     * Creates a new SdkTranscriptEntity instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscriptEntity instance
+     */
+    public static create(properties?: ISdkTranscriptEntity): SdkTranscriptEntity;
+
+    /**
+     * Encodes the specified SdkTranscriptEntity message. Does not implicitly {@link SdkTranscriptEntity.verify|verify} messages.
+     * @param message SdkTranscriptEntity message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscriptEntity, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscriptEntity message, length delimited. Does not implicitly {@link SdkTranscriptEntity.verify|verify} messages.
+     * @param message SdkTranscriptEntity message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscriptEntity, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscriptEntity message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscriptEntity
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscriptEntity;
+
+    /**
+     * Decodes a SdkTranscriptEntity message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscriptEntity
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscriptEntity;
+
+    /**
+     * Verifies a SdkTranscriptEntity message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscriptEntity message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscriptEntity
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscriptEntity;
+
+    /**
+     * Creates a plain object from a SdkTranscriptEntity message. Also converts values to other types if specified.
+     * @param message SdkTranscriptEntity
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscriptEntity, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscriptEntity to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
 /** Properties of a SdkTranscriptAlternative. */
 export interface ISdkTranscriptAlternative {
 
@@ -3312,6 +3444,9 @@ export interface ISdkTranscriptAlternative {
 
     /** SdkTranscriptAlternative transcript */
     transcript?: (string|null);
+
+    /** SdkTranscriptAlternative entities */
+    entities?: (ISdkTranscriptEntity[]|null);
 }
 
 /** Represents a SdkTranscriptAlternative. */
@@ -3328,6 +3463,9 @@ export class SdkTranscriptAlternative implements ISdkTranscriptAlternative {
 
     /** SdkTranscriptAlternative transcript. */
     public transcript: string;
+
+    /** SdkTranscriptAlternative entities. */
+    public entities: ISdkTranscriptEntity[];
 
     /**
      * Creates a new SdkTranscriptAlternative instance using the specified properties.

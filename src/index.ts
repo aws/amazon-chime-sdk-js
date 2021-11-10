@@ -246,6 +246,7 @@ import TimeoutTask from './task/TimeoutTask';
 import TransceiverController from './transceivercontroller/TransceiverController';
 import Transcript from './transcript/Transcript';
 import TranscriptAlternative from './transcript/TranscriptAlternative';
+import TranscriptEntity from './transcript/TranscriptEntity';
 import TranscriptEvent from './transcript/TranscriptEvent';
 import TranscriptItem from './transcript/TranscriptItem';
 import TranscriptItemType from './transcript/TranscriptItemType';
@@ -560,6 +561,7 @@ export {
   TransceiverController,
   Transcript,
   TranscriptAlternative,
+  TranscriptEntity,
   TranscriptEvent,
   TranscriptItem,
   TranscriptItemType,
