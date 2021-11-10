@@ -48,7 +48,6 @@ import {
   NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
   SimulcastLayers,
-  TargetDisplaySize,
   TimeoutScheduler,
   Transcript,
   TranscriptEvent,
@@ -60,12 +59,8 @@ import {
   VideoDownlinkObserver,
   VideoFrameProcessor,
   VideoInputDevice,
-  VideoPreference,
-  VideoPreferences,
   VideoPriorityBasedPolicy,
   VideoPriorityBasedPolicyConfig,
-  VideoSource,
-  VideoTileState,
   VoiceFocusDeviceTransformer,
   VoiceFocusModelComplexity,
   VoiceFocusPaths,
@@ -78,14 +73,17 @@ import {
   ModelSpecBuilder,
 } from 'amazon-chime-sdk-js';
 
-import CircularCut from './videofilter/CircularCut';
-import EmojifyVideoFrameProcessor from './videofilter/EmojifyVideoFrameProcessor';
-import SegmentationProcessor from './videofilter/SegmentationProcessor';
-import ResizeProcessor from './videofilter/ResizeProcessor';
+import CircularCut from './video/filters/CircularCut';
+import EmojifyVideoFrameProcessor from './video/filters/EmojifyVideoFrameProcessor';
+import SegmentationProcessor from './video/filters/SegmentationProcessor';
+import ResizeProcessor from './video/filters/ResizeProcessor';
 import {
   loadBodyPixDependency,
   platformCanSupportBodyPixWithoutDegradation,
-} from './videofilter/SegmentationUtil';
+} from './video/filters/SegmentationUtil';
+
+import VideoTileCollection from './video/VideoTileCollection'
+import VideoPreferenceManager from './video/VideoPreferenceManager';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -108,172 +106,6 @@ declare global {
     webkitAudioContext: typeof AudioContext
   }
 }
-
-class DemoTileOrganizer {
-  // this is index instead of length
-  static MAX_TILES = 27;
-  tiles: { [id: number]: number } = {};
-  tileStates: { [id: number]: boolean } = {};
-  remoteTileCount = 0;
-
-  acquireTileIndex(tileId: number): number {
-    for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
-      if (this.tiles[index] === tileId) {
-        return index;
-      }
-    }
-    for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
-      if (!(index in this.tiles)) {
-        this.tiles[index] = tileId;
-        this.remoteTileCount++;
-        return index;
-      }
-    }
-    throw new Error('no tiles are available');
-  }
-
-  releaseTileIndex(tileId: number): number {
-    for (let index = 0; index <= DemoTileOrganizer.MAX_TILES; index++) {
-      if (this.tiles[index] === tileId) {
-        this.remoteTileCount--;
-        delete this.tiles[index];
-        return index;
-      }
-    }
-    return DemoTileOrganizer.MAX_TILES;
-  }
-}
-
-class DemoVideoTile extends HTMLElement {
-  public set tileIndex(tileIndex: number) {
-    // Update IDs for integration tests which need them
-    this.querySelector('.video-tile-nameplate').id = `nameplate-${tileIndex}`;
-    this.querySelector('.video-tile-video').id = `video-${tileIndex}`;
-  }
-
-  public set showConfigDropdown(shouldShow: boolean) {
-    const display: string = shouldShow ? 'block' : 'none';
-    (this.querySelector('.button-video-tile-config-drop') as HTMLElement).style.display = display;
-    (this.querySelector('.video-tile-pause') as HTMLElement).style.display = display;
-  }
-
-  public set showRemoteVideoPreferences(shouldShow: boolean) {
-    const display: string = shouldShow? 'block' : 'none';
-    (this.querySelector('.target-resolution-header') as HTMLElement).style.display = display;
-    (this.querySelector('.target-resolution-toggle') as HTMLElement).style.display = display;
-    (this.querySelector('.video-priority-header') as HTMLElement).style.display = display;
-    (this.querySelector('.video-priority-toggle') as HTMLElement).style.display = display;
-  }
-
-  show(isContent: boolean) {
-    this.classList.add('active');
-    if (isContent) {
-      this.classList.add('content');
-    }
-  }
-
-  public set featured(featured: boolean) {
-    if (featured) {
-      this.classList.add('featured');
-    } else {
-      this.classList.remove('featured');
-    }
-  }
-
-  hide() {
-    this.classList.remove('active', 'featured', 'content');
-  }
-
-  showVideoStats(
-    keyStatstoShow: { [key: string]: string },
-    metricsData: { [id: string]: {[key: string]: number} },
-    streamDirection: string,
-  ): void {
-    const streams = metricsData ? Object.keys(metricsData) : [];
-    if (streams.length === 0) {
-      return;
-    }
-
-    let statsInfo: HTMLDivElement = this.querySelector('#stats-info') as HTMLDivElement;
-    if (!statsInfo) {
-      statsInfo = document.createElement('div');
-      statsInfo.setAttribute('id', 'stats-info');
-      statsInfo.setAttribute('class', 'stats-info');
-    }
-
-    let statsInfoTable = this.querySelector('#stats-table') as HTMLTableElement;
-    if (statsInfoTable) {
-      statsInfo.removeChild(statsInfoTable);
-    }
-    statsInfoTable = document.createElement('table') as HTMLTableElement;
-    statsInfoTable.setAttribute('id', 'stats-table');
-    statsInfoTable.setAttribute('class', 'stats-table');
-    statsInfo.appendChild(statsInfoTable);
-
-    this.videoElement.insertAdjacentElement('afterend', statsInfo);
-    const header = statsInfoTable.insertRow(-1);
-    let cell = header.insertCell(-1);
-    cell.innerHTML = 'Video statistics';
-    for (let cnt = 0; cnt < streams.length; cnt++) {
-      cell = header.insertCell(-1);
-      cell.innerHTML = `${streamDirection} ${cnt + 1}`;
-    }
-
-    for (const ssrc of streams) {
-      for (const [metricName, value] of Object.entries(metricsData[ssrc])) {
-        if (keyStatstoShow[metricName]) {
-          const row = statsInfoTable.insertRow(-1);
-          row.setAttribute('id', `${metricName}`);
-          cell = row.insertCell(-1);
-          cell.innerHTML = keyStatstoShow[metricName];
-          cell = row.insertCell(-1);
-          cell.innerHTML = `${value}`;
-        }
-      }
-    }
-  };
-
-  public get videoElement(): HTMLVideoElement {
-    return this.querySelector('.video-tile-video');
-  }
-
-  public set nameplate(nameplate: string) {
-    const nameplateElement = this.querySelector('.video-tile-nameplate');
-    console.log(`setting nameplate to ${nameplate}`);
-    nameplateElement.innerHTML = nameplate;
-  }
-
-  public set attendeeId(attendeeId: string) {
-    const attendeeIdElement = this.querySelector('.video-tile-attendee-id');
-    console.log(`setting attendeeId to ${attendeeId}`);
-    attendeeIdElement.innerHTML = attendeeId;
-  }
-
-  public set pauseState(state: string) {
-    const pauseState = this.querySelector('.video-tile-pause-state') ;
-    pauseState.innerHTML = state;
-  }
-
-  public get pauseButtonElement(): HTMLButtonElement {
-    return this.querySelector('.video-tile-pause');
-  }
-
-  public get targetResolutionRadioElement(): HTMLFormElement {
-    return this.querySelector('.target-resolution-toggle');
-  }
-
-  public get videoPriorityRadioElement(): HTMLFormElement {
-    return this.querySelector('.video-priority-toggle');
-  }
-
-  connectedCallback() {
-    const template = document.getElementById('video-tile-template') as HTMLTemplateElement;
-    const node = document.importNode(template.content, true);
-    this.appendChild(node);
-    this.className = 'video-tile';
-  }
-}
-customElements.define('video-tile', DemoVideoTile);
 
 // Support a set of query parameters to allow for testing pre-release versions of
 // Amazon Voice Focus. If none of these parameters are supplied, the SDK default
@@ -393,23 +225,6 @@ const LANGUAGES_NO_WORD_SEPARATOR = new Set([
   'zh-CN',
 ]);
 
-// We use the same config options for multiple settings when configuring
-// video tiles, regardless of what they map to internally
-type ConfigLevel = 'low' | 'medium' | 'high';
-
-const ConfigLevelToVideoPriority: {[Key in ConfigLevel]: number} = {
-  low: 10,
-  medium: 5,
-  high: 1,
-};
-
-
-const ConfigLevelToTargetDisplaySize: {[Key in ConfigLevel]: TargetDisplaySize} = {
-  low: TargetDisplaySize.Low,
-  medium: TargetDisplaySize.Medium,
-  high: TargetDisplaySize.High,
-};
-
 interface Toggle {
   name: string;
   oncreate: (elem: HTMLElement) => void;
@@ -439,10 +254,6 @@ export class DemoMeetingApp
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
-  // We reserve the last tile index for local video
-  static readonly LOCAL_VIDEO_TILE_INDEX: number = DemoTileOrganizer.MAX_TILES;
-  static readonly DEFAULT_VIDEO_TILE_PRIORITY: number = 5;
-  static readonly DEFAULT_VIDEO_TILE_TARGET_DISPLAY_SIZE: TargetDisplaySize = TargetDisplaySize.High;
 
   // Ideally we don't need to change this. Keep this configurable in case users have a super slow network.
   loadingBodyPixDependencyTimeoutMs: number = 10_000;
@@ -461,21 +272,13 @@ export class DemoMeetingApp
   meetingSession: MeetingSession | null = null;
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
   audioVideo: AudioVideoFacade | null = null;
-  tileOrganizer: DemoTileOrganizer = new DemoTileOrganizer();
   canStartLocalVideo: boolean = true;
   defaultBrowserBehaviour: DefaultBrowserBehavior = new DefaultBrowserBehavior();
+  videoTileCollection: VideoTileCollection | undefined = undefined;
+  videoPreferenceManager: VideoPreferenceManager | undefined = undefined;
 
   // eslint-disable-next-line
   roster: any = {};
-  tileIndexToTileId: { [id: number]: number } = {};
-  tileIdToTileIndex: { [id: number]: number } = {};
-  tileIdToAttendeeId: { [id: number]: string } = {};
-  tileIndexToPauseEventListener: { [id: number]: (event: Event) => void } = {};
-  tileIndexToTargetResolutionEventListener: { [id: number]: (event: Event) => void } = {};
-  tileIndexToPriorityEventListener: { [id: number]: (event: Event) => void } = {};
-  attendeeIdToVideoPreference = new Map<string, VideoPreference>();
-  tileArea = document.getElementById('tile-area') as HTMLDivElement;
-  tileIndexToDemoVideoTile = new Map<number, DemoVideoTile>();
 
   cameraDeviceIds: string[] = [];
   microphoneDeviceIds: string[] = [];
@@ -545,28 +348,6 @@ export class DemoMeetingApp
   // this to `halt`, which allows us to stop and measure memory leaks.
   behaviorAfterLeave: 'spa' | 'reload' | 'halt' = 'reload';
 
-  videoUpstreamMetricsKeyStats: { [key: string]: string } = {
-    videoUpstreamGoogFrameHeight: 'Frame Height',
-    videoUpstreamGoogFrameWidth: 'Frame Width',
-    videoUpstreamFrameHeight: 'Frame Height',
-    videoUpstreamFrameWidth: 'Frame Width',
-    videoUpstreamBitrate: 'Bitrate (bps)',
-    videoUpstreamPacketsSent: 'Packets Sent',
-    videoUpstreamPacketLossPercent: 'Packet Loss (%)',
-    videoUpstreamFramesEncodedPerSecond: 'Frame Rate',
-  };
-
-  videoDownstreamMetricsKeyStats: { [key: string]: string } = {
-    videoDownstreamGoogFrameHeight: 'Frame Height',
-    videoDownstreamGoogFrameWidth: 'Frame Width',
-    videoDownstreamFrameHeight: 'Frame Height',
-    videoDownstreamFrameWidth: 'Frame Width',
-    videoDownstreamBitrate: 'Bitrate (bps)',
-    videoDownstreamPacketLossPercent: 'Packet Loss (%)',
-    videoDownstreamPacketsReceived: 'Packet Received',
-    videoDownstreamFramesDecodedPerSecond: 'Frame Rate',
-  };
-
   videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
 
   removeFatalHandlers: () => void;
@@ -618,7 +399,6 @@ export class DemoMeetingApp
     this.initEventListeners();
     this.initParameters();
     this.setMediaRegion();
-    this.setupVideoTiles();
     if (this.isRecorder() || this.isBroadcaster()) {
       AsyncScheduler.nextTick(async () => {
         this.meeting = new URL(window.location.href).searchParams.get('m');
@@ -775,13 +555,6 @@ export class DemoMeetingApp
         default:
           this.logLevel = LogLevel.OFF;
           break;
-      }
-
-      if (!this.usePriorityBasedDownlinkPolicy) {
-        // Don't show priority related configuration if we don't support it
-        for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
-          this.tileIndexToDemoVideoTile.get(i).showRemoteVideoPreferences = false;
-        }
       }
 
       AsyncScheduler.nextTick(
@@ -1135,7 +908,7 @@ export class DemoMeetingApp
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
-          this.tileIndexToDemoVideoTile.get(DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX).hide();
+          // Tile will be removed in response to `videoTileWasRemoved` in `VideoTileCollection`
         }
       });
     });
@@ -1578,28 +1351,7 @@ export class DemoMeetingApp
         'Available Downlink Bandwidth: Unknown';
     }
 
-    this.isButtonOn('button-video-stats') && this.showVideoWebRTCStats(this.videoMetricReport);
-  }
-
-  showVideoWebRTCStats(videoMetricReport: { [id: string]: { [id: string]: {} } }): void {
-    const videoTiles = this.audioVideo.getAllVideoTiles();
-    if (videoTiles.length === 0) {
-      return;
-    }
-    for (const videoTile of videoTiles) {
-      const tileState = videoTile.state();
-      if (tileState.paused || tileState.isContent) {
-        continue;
-      }
-      const tileId = videoTile.id();
-      const tileIndex = this.tileIdToTileIndex[tileId];
-      const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
-      if (tileState.localTile) {
-        demoVideoTile.showVideoStats(this.videoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream');
-      } else {
-        demoVideoTile.showVideoStats(this.videoDownstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Downstream');
-      }
-    }
+    this.isButtonOn('button-video-stats') && this.videoTileCollection.showVideoWebRTCStats(this.videoMetricReport);
   }
 
   resetStats = (): void => {
@@ -1764,6 +1516,14 @@ export class DemoMeetingApp
     this.setupLiveTranscription();
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
+
+    if (this.usePriorityBasedDownlinkPolicy) {
+        this.videoPreferenceManager = new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy);
+        this.audioVideo.addObserver(this.videoPreferenceManager);
+    }
+    this.videoTileCollection = new VideoTileCollection(this.audioVideo, this.meetingLogger, this.videoPreferenceManager)
+    this.audioVideo.addObserver(this.videoTileCollection);
+
     this.initContentShareDropDownItems();
   }
 
@@ -1957,16 +1717,22 @@ export class DemoMeetingApp
 
     // Hang on to this so we can unsubscribe later.
     this.activeSpeakerHandler = (attendeeIds: string[]): void => {
+      // First reset all roster active speaker information
       for (const attendeeId in this.roster) {
         this.roster[attendeeId].active = false;
       }
+
+      // Then re-update roster and tile collection with latest information
+      //
+      // This will leave featured tiles up since this detector doesn't seem to clear
+      // the list.
       for (const attendeeId of attendeeIds) {
         if (this.roster[attendeeId]) {
           this.roster[attendeeId].active = true;
-          break; // only show the most active speaker
+          this.videoTileCollection.activeSpeakerAttendeeId = attendeeId
+          break; // Only show the most active speaker
         }
       }
-      this.layoutFeaturedTile();
     };
 
     const scoreHandler = (scores: { [attendeeId: string]: number }) => {
@@ -3324,274 +3090,9 @@ export class DemoMeetingApp
     }
   }
 
-  createPauseResumeListener(tileState: VideoTileState): (event: Event) => void {
-      return (event: Event): void => {
-        if (!tileState.paused) {
-            this.audioVideo.pauseVideoTile(tileState.tileId);
-            (event.target as HTMLButtonElement).innerText = 'Resume';
-          } else {
-            this.audioVideo.unpauseVideoTile(tileState.tileId);
-            (event.target as HTMLButtonElement).innerText = 'Pause';
-          }
-        }
-  }
-
-  createTargetResolutionListener(tileState: VideoTileState, form: HTMLFormElement): (event: Event) => void {
-    return (event: Event): void => {
-      if (!(event.target instanceof HTMLInputElement)) {
-        // Ignore the Label event which will have a stale value
-        return;
-      }
-      const attendeeId = tileState.boundAttendeeId;
-      const value = (form.elements.namedItem('level') as RadioNodeList).value;
-      this.log(`target resolution changed for: ${attendeeId} to ${value}`);
-      const targetDisplaySize = ConfigLevelToTargetDisplaySize[value as ConfigLevel];
-      if (this.attendeeIdToVideoPreference.has(attendeeId)) {
-        this.attendeeIdToVideoPreference.get(attendeeId).targetSize = targetDisplaySize;
-      } else {
-        this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(attendeeId, DemoMeetingApp.DEFAULT_VIDEO_TILE_PRIORITY, targetDisplaySize));
-      }
-      this.updateDownlinkPreference();
-    }
-  }
-
-  createVideoPriorityListener(tileState: VideoTileState, form: HTMLFormElement): (event: Event) => void {
-    return (event: Event): void => {
-      if (!(event.target instanceof HTMLInputElement)) {
-        // Ignore the Label event which will have a stale value
-        return;
-      }
-      const attendeeId = tileState.boundAttendeeId;
-      const value = (form.elements.namedItem('level') as RadioNodeList).value;
-      this.log(`priority changed for: ${attendeeId} to ${value}`);
-      const priority = ConfigLevelToVideoPriority[value as ConfigLevel];
-      if (this.attendeeIdToVideoPreference.has(attendeeId)) {
-        this.attendeeIdToVideoPreference.get(attendeeId).priority = priority
-      } else {
-        this.attendeeIdToVideoPreference.set(attendeeId, new VideoPreference(attendeeId, priority, DemoMeetingApp.DEFAULT_VIDEO_TILE_TARGET_DISPLAY_SIZE));
-      }
-      this.updateDownlinkPreference();
-    }
-  }
-
-  updateDownlinkPreference(): void {
-    if (this.attendeeIdToVideoPreference.size === 0) {
-      // Preserve default behavior if no preferences have been set yet
-      this.log('No video preferences set yet, not updating');
-      return;
-    }
-    if (!this.priorityBasedDownlinkPolicy) {
-      return;
-    }
-    const videoPreferences = VideoPreferences.prepare();
-    for (const attendeeId in this.roster) {
-      if (this.roster[attendeeId].hasVideo) {
-        if (this.attendeeIdToVideoPreference.has(attendeeId)) {
-          videoPreferences.add(this.attendeeIdToVideoPreference.get(attendeeId));
-        } else {
-          videoPreferences.add(new VideoPreference(attendeeId, DemoMeetingApp.DEFAULT_VIDEO_TILE_PRIORITY, DemoMeetingApp.DEFAULT_VIDEO_TILE_TARGET_DISPLAY_SIZE));
-        }
-      }
-    }
-    this.priorityBasedDownlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
-  }
-
-  isContentTile(tileIndex: number): boolean {
-    const tileId = this.tileIndexToTileId[tileIndex];
-    if (!tileId) {
-      return false;
-    }
-    const tile = this.audioVideo.getVideoTile(tileId);
-    if (!tile) {
-      return false;
-    }
-    return tile.state().isContent;
-  }
-
-  videoTileDidUpdate(tileState: VideoTileState): void {
-    this.log(`video tile updated: ${JSON.stringify(tileState, null, '  ')}`);
-    if (!tileState.boundAttendeeId) {
-      return;
-    }
-    const tileIndex = tileState.localTile
-      ? DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX
-      : this.tileOrganizer.acquireTileIndex(tileState.tileId);
-    const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
-
-    if (!tileState.localTile) { // Pausing local tile doesn't make sense
-        demoVideoTile.pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
-        this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
-        demoVideoTile.pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
-    }
-
-    if (this.usePriorityBasedDownlinkPolicy && !tileState.localTile) { // No current config possible on local tile
-      this.log('adding config listeners for tileIndex ' + tileIndex);
-      demoVideoTile.targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
-      this.tileIndexToTargetResolutionEventListener[tileIndex] = this.createTargetResolutionListener(tileState, demoVideoTile.targetResolutionRadioElement);
-      demoVideoTile.targetResolutionRadioElement.addEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
-
-      demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
-      this.tileIndexToPriorityEventListener[tileIndex] = this.createVideoPriorityListener(tileState, demoVideoTile.videoPriorityRadioElement);
-      demoVideoTile.videoPriorityRadioElement.addEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
-    }
-
-    const videoElement = demoVideoTile.videoElement;
-    this.log(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
-    this.audioVideo.bindVideoElement(tileState.tileId, this.tileIndexToDemoVideoTile.get(tileIndex).videoElement);
-
-    this.tileIndexToTileId[tileIndex] = tileState.tileId;
-    this.tileIdToTileIndex[tileState.tileId] = tileIndex;
-    this.tileIdToAttendeeId[tileState.tileId] = tileState.boundAttendeeId;
-    if (tileState.boundExternalUserId) {
-      demoVideoTile.nameplate = tileState.boundExternalUserId.split('#').slice(-1)[0];
-    }
-    demoVideoTile.attendeeId = tileState.boundAttendeeId;
-    if (tileState.paused && this.roster[tileState.boundAttendeeId].bandwidthConstrained) {
-      demoVideoTile.pauseState = '⚡';
-    } else {
-      demoVideoTile.pauseState = '';
-    }
-    demoVideoTile.show(tileState.isContent);
-    this.updateGridClasses();
-    this.layoutFeaturedTile();
-  }
-
-  videoTileWasRemoved(tileId: number): void {
-    const tileIndex = this.tileOrganizer.releaseTileIndex(tileId);
-    this.log(`video tileId removed: ${tileId} from tile-${tileIndex}`);
-    const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
-    demoVideoTile.pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
-    if (this.usePriorityBasedDownlinkPolicy) {
-      demoVideoTile.targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
-      demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
-    }
-    demoVideoTile.hide();
-    this.updateGridClasses();
-  }
-
   videoAvailabilityDidChange(availability: MeetingSessionVideoAvailability): void {
     this.canStartLocalVideo = availability.canStartLocalVideo;
     this.log(`video availability changed: canStartLocalVideo  ${availability.canStartLocalVideo}`);
-  }
-
-  tileIdForAttendeeId(attendeeId: string): number | null {
-    for (const tile of this.audioVideo.getAllVideoTiles()) {
-      const state = tile.state();
-      if (state.boundAttendeeId === attendeeId) {
-        return state.tileId;
-      }
-    }
-    return null;
-  }
-
-  findContentTileId(): number | null {
-    for (const tile of this.audioVideo.getAllVideoTiles()) {
-      const state = tile.state();
-      if (state.isContent) {
-        return state.tileId;
-      }
-    }
-    return null;
-  }
-
-  activeTileId(): number | null {
-    let contentTileId = this.findContentTileId();
-    if (contentTileId !== null) {
-      return contentTileId;
-    }
-    for (const attendeeId in this.roster) {
-      if (this.roster[attendeeId].active) {
-        return this.tileIdForAttendeeId(attendeeId);
-      }
-    }
-    return null;
-  }
-
-  layoutFeaturedTile(): void {
-    if (!this.meetingSession) {
-      return;
-    }
-    const tilesIndices = this.visibleTileIndices();
-    const localTileId = this.localTileId();
-    const activeTile = this.activeTileId();
-
-    for (let i = 0; i < tilesIndices.length; i++) {
-      const tileIndex = tilesIndices[i];
-      const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
-      const tileId = this.tileIndexToTileId[tileIndex];
-
-      if (tileId === activeTile && tileId !== localTileId) {
-        demoVideoTile.featured = true;
-      } else {
-        demoVideoTile.featured = false;
-      }
-    }
-
-    this.updateGridClasses();
-  }
-
-  updateGridClasses(): void {
-    const localTileId = this.localTileId();
-    const activeTile = this.activeTileId();
-
-    this.tileArea.className = `v-grid size-${this.videoTileCount()}`;
-
-    if (activeTile && activeTile !== localTileId) {
-      this.tileArea.classList.add('featured');
-    } else {
-      this.tileArea.classList.remove('featured');
-    }
-  }
-
-  videoTileCount(): number {
-    return (
-      this.tileOrganizer.remoteTileCount + (this.audioVideo.hasStartedLocalVideoTile() ? 1 : 0)
-    );
-  }
-
-  localTileId(): number | null {
-    return this.audioVideo.hasStartedLocalVideoTile()
-      ? this.audioVideo.getLocalVideoTile().state().tileId
-      : null;
-  }
-
-  visibleTileIndices(): number[] {
-    const tileKeys = Object.keys(this.tileOrganizer.tiles);
-    const tiles = tileKeys.map(tileId => parseInt(tileId));
-    return tiles;
-  }
-
-  setupVideoTiles(): void {
-    const tileArea = document.getElementById(`tile-area`);
-    for (let i = 0; i <= DemoTileOrganizer.MAX_TILES; i++) {
-      const tile = document.createElement('video-tile') as DemoVideoTile
-      // `DemoVideoTile` requires being added to DOM before calling any functions
-      tileArea.appendChild(tile);
-
-      tile.tileIndex = i;
-      if (i === DemoMeetingApp.LOCAL_VIDEO_TILE_INDEX) {
-        // Don't show config or pause on local video because they don't make sense there
-        tile.showConfigDropdown = false;
-        tile.showRemoteVideoPreferences = false;
-      }
-
-      this.tileIndexToDemoVideoTile.set(i, tile);
-
-      // Setup tile element resizer
-      const videoElem = tile.videoElement;
-      videoElem.onresize = () => {
-        if (videoElem.videoHeight > videoElem.videoWidth) {
-          // portrait mode
-          videoElem.style.objectFit = 'contain';
-          this.log(
-            `video-${i} changed to portrait mode resolution ${videoElem.videoWidth}x${videoElem.videoHeight}`
-          );
-        } else {
-          videoElem.style.objectFit = 'cover';
-        }
-      };
-    }
-
   }
 
   allowMaxContentShare(): boolean {
@@ -3644,24 +3145,6 @@ export class DemoMeetingApp
     this.log(
       `current active simulcast layers changed to: ${SimulcastLayerMapping[simulcastLayers]}`
     );
-  }
-
-  remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
-    this.log(`available remote video sources changed: ${JSON.stringify(videoSources)}`);
-    for (const attendeeId in this.roster) {
-      this.roster[attendeeId].hasVideo = false;
-    }
-    for (const source of videoSources) {
-      if (!(this.roster.hasOwnProperty(source.attendee.attendeeId))) {
-        this.roster[source.attendee.attendeeId] = {
-          hasVideo: true
-        };
-      }
-      else {
-        this.roster[source.attendee.attendeeId].hasVideo = true;
-      }
-    }
-    this.updateDownlinkPreference();
   }
 
   tileWillBePausedByDownlinkPolicy(tileId: number): void {
