@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "2.21.0",
+  "version": "2.21.1",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
