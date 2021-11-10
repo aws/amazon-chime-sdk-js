@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add documentation on how to update a deployment of the serverless demo.
 - Update background blur options to allow for skipping frames to improve CPU utilization.
+- Add PII identification and redaction, partial result stabilization support from Amazon Transcribe and Amazon Transcribe Medical for live transcription.
 
 ### Removed
 

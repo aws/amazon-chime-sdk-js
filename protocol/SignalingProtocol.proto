@@ -304,11 +304,23 @@ message SdkTranscriptItem {
     }
     optional Type type = 6;
     optional bool vocabulary_filter_match = 7;
+    optional double confidence = 8;
+    optional bool stable = 9;
+}
+
+message SdkTranscriptEntity {
+    optional string category = 1;
+    optional double confidence = 2;
+    optional string content = 3;
+    optional int64 end_time = 4;
+    optional int64 start_time = 5;
+    optional string type = 6;
 }
 
 message SdkTranscriptAlternative {
     repeated SdkTranscriptItem items = 1;
     optional string transcript = 2;
+    repeated SdkTranscriptEntity entities = 3;
 }
 
 message SdkTranscriptResult {

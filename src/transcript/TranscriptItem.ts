@@ -11,4 +11,6 @@ export default class TranscriptItem {
   attendee: Attendee;
   content: string;
   vocabularyFilterMatch?: boolean;
+  confidence?: number;
+  stable?: boolean;
 }

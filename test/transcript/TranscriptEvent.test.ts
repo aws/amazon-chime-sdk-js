@@ -20,6 +20,7 @@ import {
   makeSdkTranscript,
   makeSdkTranscriptFrame,
   makeSdkTranscriptionStatus,
+  makeSdkTranscriptWithEntities,
   TRANSCRIPT_EVENT_TEST_VECTORS,
 } from './TranscriptEventTestDataHelper';
 
@@ -226,5 +227,39 @@ describe('TranscriptEvent', () => {
     const actualEvents = TranscriptEventConverter.from(dataMessage);
 
     expect(actualEvents.length).to.equal(0);
+  });
+
+  it('handles one transcript event of transcript type with entities', async () => {
+    const event = makeSdkTranscriptWithEntities();
+    const data = SdkTranscriptFrame.encode(makeSdkTranscriptFrame([event])).finish();
+    logBase64FromUint8Array(data);
+    // The steps above generates data below passed directly as test input
+    const dataMessage = makeTranscriptDataMessageFrom(
+      TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPT_ENTITY
+    );
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
+    expect(actualEvents.length).to.equal(1);
+    if (!(actualEvents[0] instanceof Transcript)) {
+      assert.fail();
+      return;
+    }
+    expect(actualEvents[0].results.length).to.eql(1);
+    expect(actualEvents[0].results[0].alternatives[0].items.length).to.eql(3);
+    expect(actualEvents[0].results[0].alternatives[0].entities.length).to.eql(2);
+    expect(actualEvents[0].results[0].alternatives[0].items[0].confidence).to.eql(1);
+    expect(actualEvents[0].results[0].alternatives[0].items[0].stable).to.eql(true);
+    expect(actualEvents[0].results[0].alternatives[0].items[1].confidence).to.be.undefined;
+    expect(actualEvents[0].results[0].alternatives[0].items[1].stable).eql(false);
+    expect(actualEvents[0].results[0].alternatives[0].items[1].stable).eql(false);
+    expect(actualEvents[0].results[0].alternatives[0].items[2].stable).to.be.undefined;
+    expect(actualEvents[0].results[0].alternatives[0].items[2].confidence).to.eql(0);
+    expect(actualEvents[0].results[0].alternatives[0].entities[0].category).to.eql('PII');
+    expect(actualEvents[0].results[0].alternatives[0].entities[0].confidence).to.eql(1.0);
+    expect(actualEvents[0].results[0].alternatives[0].entities[0].content).to.eql(
+      'Content is a PII data'
+    );
+    expect(actualEvents[0].results[0].alternatives[0].entities[0].type).to.eql('Address');
+    expect(actualEvents[0].results[0].alternatives[0].entities[1].type).to.be.undefined;
+    expect(actualEvents[0].results[0].alternatives[0].entities[1].confidence).to.eql(0);
   });
 });
