@@ -133,7 +133,7 @@ export class TranscriptEventConverter {
               }
               transcriptAlternative.entities.push(transcriptEntity);
             }
-            
+
             transcriptResult.alternatives.push(transcriptAlternative);
           }
 

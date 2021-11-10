@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export default class TranscriptEntity {
-    category: string;
-    confidence: number;
-    content: string;
-    endTimeMs: number;
-    startTimeMs: number;
-    type?: string;
-  }
+  category: string;
+  confidence: number;
+  content: string;
+  endTimeMs: number;
+  startTimeMs: number;
+  type?: string;
+}
