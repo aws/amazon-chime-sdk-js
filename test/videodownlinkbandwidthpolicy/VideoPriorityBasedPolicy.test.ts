@@ -8,6 +8,7 @@ import { VideoPriorityBasedPolicyConfig } from '../../src';
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
+import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
 import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
@@ -132,18 +133,24 @@ describe('VideoPriorityBasedPolicy', () => {
   function setPacketLoss(
     metricReport: DefaultClientMetricReport,
     nackCnt: number,
-    packetsLost: number
+    packetsLost: number,
+    isGoogStat: boolean = true
   ): void {
     metricReport.currentTimestampMs = 2000;
     metricReport.previousTimestampMs = 1000;
     const streamReport1 = new StreamMetricReport();
     streamReport1.streamId = 1;
     streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
-    streamReport1.previousMetrics['googNacksSent'] = 0;
+    streamReport1.mediaType = ClientMetricReportMediaType.VIDEO;
+    if (isGoogStat) {
+      streamReport1.previousMetrics['googNacksSent'] = 0;
+      streamReport1.currentMetrics['googNacksSent'] = nackCnt;
+    } else {
+      streamReport1.previousMetrics['nackCount'] = 0;
+      streamReport1.currentMetrics['nackCount'] = nackCnt;
+    }
     streamReport1.previousMetrics['packetsLost'] = 0;
-    streamReport1.currentMetrics['googNacksSent'] = nackCnt;
     streamReport1.currentMetrics['packetsLost'] = packetsLost;
-    streamReport1.currentMetrics['googFrameRateReceived'] = 15;
     streamReport1.currentMetrics['bytesReceived'] = 200;
 
     metricReport.streamMetricReports[1] = streamReport1;
@@ -1228,6 +1235,84 @@ describe('VideoPriorityBasedPolicy', () => {
       expect(resub).to.equal(true);
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([2, 4, 5]);
+    });
+  });
+
+  describe('updateMetric', () => {
+    it('can be no-op if there are no streams available to subscribe', () => {
+      videoStreamIndex.integrateIndexFrame(new SdkIndexFrame());
+      policy.updateIndex(videoStreamIndex);
+      policy.updateMetrics(new DefaultClientMetricReport(logger));
+    });
+
+    it('can update metrics', () => {
+      updateIndexFrame(videoStreamIndex, 3, 300, 1200);
+      policy.updateIndex(videoStreamIndex);
+      const metricReport = new DefaultClientMetricReport(logger);
+      const streamReport1 = new StreamMetricReport();
+      streamReport1.streamId = 1;
+      streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
+      streamReport1.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamReport1.currentMetrics['googNacksSent'] = 20;
+      streamReport1.currentMetrics['packetsLost'] = 0;
+      streamReport1.currentMetrics['googFrameRateReceived'] = 30;
+      streamReport1.currentMetrics['bytesReceived'] = 20;
+
+      metricReport.streamMetricReports[123456] = streamReport1;
+
+      const streamReport2 = new StreamMetricReport();
+      streamReport2.streamId = 2;
+      streamReport2.direction = ClientMetricReportDirection.DOWNSTREAM;
+      streamReport2.mediaType = ClientMetricReportMediaType.VIDEO;
+      metricReport.streamMetricReports[234567] = streamReport2;
+
+      const streamReport3 = new StreamMetricReport();
+      streamReport3.streamId = 1;
+      streamReport3.direction = ClientMetricReportDirection.UPSTREAM;
+      streamReport3.mediaType = ClientMetricReportMediaType.VIDEO;
+      streamReport3.currentMetrics['bytesSent'] = 60;
+      metricReport.streamMetricReports[3123123] = streamReport3;
+
+      policy.updateMetrics(metricReport);
+
+      videoStreamIndex.integrateIndexFrame(
+        new SdkIndexFrame({
+          atCapacity: false,
+          sources: [
+            new SdkStreamDescriptor({ streamId: 7, groupId: 2 }),
+            new SdkStreamDescriptor({ streamId: 3, groupId: 2 }),
+          ],
+        })
+      );
+
+      policy.updateIndex(videoStreamIndex);
+      policy.wantsResubscribe();
+      policy.chooseSubscriptions();
+    });
+
+    it('works with non goog stats', () => {
+      const policy = new VideoPriorityBasedPolicy(logger);
+      updateIndexFrame(videoStreamIndex, 1, 0, 1200);
+      policy.updateIndex(videoStreamIndex);
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+
+      // After startup period which is 6000 ms
+      incrementTime(6100);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['availableIncomingBitrate'] = 3000 * 1000;
+      setPacketLoss(metricReport, 0, 0, false);
+      policy.updateMetrics(metricReport);
+
+      updateIndexFrame(videoStreamIndex, 2, 300, 1200);
+      policy.updateIndex(videoStreamIndex);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4]);
     });
   });
 });
