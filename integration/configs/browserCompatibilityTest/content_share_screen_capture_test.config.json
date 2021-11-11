@@ -1,0 +1,50 @@
+{
+  "`": 1,
+  "name": "content_share_screen_capture_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Content Share Screen Capture %ts",
+      "description": "Screen sharing using content share",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "ContentShareScreenCapture.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "WINDOWS"
+    }
+  ]
+}

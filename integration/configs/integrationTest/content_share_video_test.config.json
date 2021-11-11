@@ -1,0 +1,25 @@
+{
+  "`": 1,
+  "name": "content_share_video_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Content Share Video Test %ts",
+      "description": "Video sharing using content share",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "ContentShareVideoTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}

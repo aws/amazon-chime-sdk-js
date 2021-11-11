@@ -56,7 +56,7 @@ function wait_for_demo_to_start {
 echo `pwd`
 curr=`pwd`
 
-case $1 in
+case $2 in
   video_test_app)
     start_demo_meeting 'videoTestApp'
     ;;
@@ -77,64 +77,122 @@ cd ../
 . ~/.bashrc
 
 case $1 in
-   audio)
-      r audio_test.config.json
-      r app_quit_audio_test.config.json
-      r meeting_leave_audio_test.config.json
+   integration)
+   case $2 in
+      audio)
+         r configs/integrationTest/audio_test.config.json
+         r configs/integrationTest/app_quit_audio_test.config.json
+         r configs/integrationTest/meeting_leave_audio_test.config.json
+         ;;
+      video)
+         r configs/integrationTest/video_test.config.json
+         r configs/integrationTest/video_test_processor.config.json
+         #  TODO: Re-enable simulcast test after it has been fixed
+         # r configs/integrationTest/video_test_simulcast.config.json
+         r configs/integrationTest/app_quit_video_test.config.json
+         r configs/integrationTest/meeting_leave_video_test.config.json
+         r configs/integrationTest/reconnection_test.config.json
+         ;;
+      video_test_app)
+         r configs/integrationTest/test_app_video_test.config.json
+         r configs/integrationTest/test_app_video_pin_test.config.json
+         ;;
+      meeting_end)
+         r configs/integrationTest/meeting_end_test.config.json
+         ;;
+      content_share_test_suite_one)
+         r configs/integrationTest/content_share_screen_capture_test.config.json
+         r configs/integrationTest/meeting_leave_content_share_test.config.json
+         r configs/integrationTest/content_share_video_test.config.json
+         ;;
+      content_share_test_suite_two)
+         r configs/integrationTest/content_share_only_allow_two_test.config.json
+         r configs/integrationTest/content_share_join_later_test.config.json
+         r configs/integrationTest/app_quit_content_share_test.config.json
+         ;;
+      data_message)
+         r configs/integrationTest/data_message_test.config.json
+         ;;
+      meeting_readiness_checker)
+         r configs/integrationTest/meeting_readiness_checker_test.config.json
+         ;;
+      messaging)
+         r configs/integrationTest/messaging_session_test.config.json
+         ;;
+      transcription)
+         r configs/integrationTest/transcription_test.config.json
+         ;;
+      background_blur)
+         r configs/integrationTest/background_blur_test.config.json
+         ;;
+      *)
+         r configs/integrationTest/audio_test.config.json
+         r configs/integrationTest/video_test.config.json
+         r configs/integrationTest/meeting_end_test.config.json
+         r configs/integrationTest/app_quit_audio_test.config.json
+         r configs/integrationTest/app_quit_video_test.config.json
+         r configs/integrationTest/meeting_leave_audio_test.config.json
+         r configs/integrationTest/meeting_leave_video_test.config.json
+         ;;
+      esac
       ;;
-   video)
-      r video_test.config.json
-      r video_test_processor.config.json
-      #  TODO: Re-enable simulcast test after it has been fixed
-      # r video_test_simulcast.config.json
-      r app_quit_video_test.config.json
-      r meeting_leave_video_test.config.json
-      r reconnection_test.config.json
-      ;;
-   video_test_app)
-      r test_app_video_test.config.json
-      r test_app_video_pin_test.config.json
-      ;;
-   meeting_end)
-      r meeting_end_test.config.json
-      ;;
-   content_share_test_suite_one)
-      r content_share_screen_capture_test.config.json
-      r meeting_leave_content_share_test.config.json
-      r content_share_video_test.config.json
-      ;;
-   content_share_test_suite_two)
-      r content_share_only_allow_two_test.config.json
-      r content_share_join_later_test.config.json
-      r app_quit_content_share_test.config.json
-      ;;
-   data_message)
-      r data_message_test.config.json
-      ;;
-   meeting_readiness_checker)
-      r meeting_readiness_checker_test.config.json
-      ;;
-   messaging)
-      r messaging_session_test.config.json
-      ;;
-   transcription)
-      r transcription_test.config.json
-      ;;
-   background_blur)
-      r background_blur_test.config.json
-      ;;
-   *)
-      r audio_test.config.json
-      r video_test.config.json
-      r meeting_end_test.config.json
-      r app_quit_audio_test.config.json
-      r app_quit_video_test.config.json
-      r meeting_leave_audio_test.config.json
-      r meeting_leave_video_test.config.json
+   backwards_compatibility)
+   case $2 in
+      audio)
+         r configs/browserCompatibilityTest/audio_test.config.json
+         r configs/browserCompatibilityTest/app_quit_audio_test.config.json
+         r configs/browserCompatibilityTest/meeting_leave_audio_test.config.json
+         ;;
+      video)
+         r configs/browserCompatibilityTest/video_test.config.json
+         r configs/browserCompatibilityTest/video_test_processor.config.json
+         #  TODO: Re-enable simulcast test after it has been fixed
+         # r video_test_simulcast.config.json
+         r configs/browserCompatibilityTest/app_quit_video_test.config.json
+         r configs/browserCompatibilityTest/meeting_leave_video_test.config.json
+         r configs/browserCompatibilityTest/reconnection_test.config.json
+         ;;
+      video_test_app)
+         r configs/browserCompatibilityTest/test_app_video_test.config.json
+         r configs/browserCompatibilityTest/test_app_video_pin_test.config.json
+         ;;
+      content_share)
+         r configs/browserCompatibilityTest/content_share_screen_capture_test.config.json
+         r configs/browserCompatibilityTest/meeting_leave_content_share_test.config.json
+         r configs/browserCompatibilityTest/content_share_video_test.config.json
+         r configs/browserCompatibilityTest/content_share_only_allow_two_test.config.json
+         r configs/browserCompatibilityTest/content_share_join_later_test.config.json
+         r configs/browserCompatibilityTest/app_quit_content_share_test.config.json
+         ;;
+      data_message)
+         r configs/browserCompatibilityTest/data_message_test.config.json
+         ;;
+      meeting_readiness_checker)
+         r configs/browserCompatibilityTest/meeting_readiness_checker_test.config.json
+         ;;
+      messaging)
+         r configs/browserCompatibilityTest/messaging_session_test.config.json
+         ;;
+      background_blur)
+         r configs/browserCompatibilityTest/background_blur_test.config.json
+         ;;
+      voice_focus)
+         r configs/browserCompatibilityTest/voice_focus_test.config.json
+         ;;
+      *)
+         r configs/browserCompatibilityTest/audio_test.config.json
+         r configs/browserCompatibilityTest/video_test.config.json
+         r configs/browserCompatibilityTest/meeting_end_test.config.json
+         r configs/browserCompatibilityTest/app_quit_audio_test.config.json
+         r configs/browserCompatibilityTest/app_quit_video_test.config.json
+         r configs/browserCompatibilityTest/meeting_leave_audio_test.config.json
+         r configs/browserCompatibilityTest/meeting_leave_video_test.config.json
+         ;;
+      esac
       ;;
 esac
 
-#Kill the current local demo process
+# Kill the current local demo process
 kill -9 $(lsof -i:8080 | grep LISTEN | awk '{print $2}')
 
 ./js/script/failure-check

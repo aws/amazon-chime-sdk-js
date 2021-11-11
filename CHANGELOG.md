@@ -5,11 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.22.0] - 2021-11-18
+## [Unreleased]
+
 ### Added
 - Add documentation in video processor on how to add a customized professor with new image loading.
 
 - Adds support to live transcription for new features including PII content identification and redaction, partial results stabilization, and custom language models for Amazon Transcribe and PHI content identification for Amazon Transcribe Medical.
+
+- Add backwards compatibility test to GitHub workflows.
 
 ### Removed
 

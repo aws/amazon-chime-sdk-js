@@ -1,0 +1,56 @@
+{
+  "`": 1,
+  "name": "video_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Video Test %ts",
+      "description": "Video Test",
+      "tupleSize": 2,
+      "noOfThreads": 1,
+      "testImpl": "VideoTest.js",
+      "payload": {
+        "url": "http://localhost:8080/?earlyConnect=1",
+        "port": 30002,
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "safari",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}
