@@ -103,6 +103,8 @@ export default class VideoTileCollection implements AudioVideoObserver {
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
   tileIndexToDemoVideoTile = new Map<number, DemoVideoTile>();
 
+  bandwidthConstrainedTiles = new Set<number>();
+
   _activeSpeakerAttendeeId = "";
   public set activeSpeakerAttendeeId(id: string) {
     this.logger.info(`setting act spk to ${id}`)
@@ -110,7 +112,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
     this.layoutFeaturedTile();
   }
 
-  constructor(private videoTileController: VideoTileControllerFacade, 
+  constructor(private videoTileController: VideoTileControllerFacade,
     private logger: Logger,
     private videoPreferenceManager?: VideoPreferenceManager) {
     this.setupVideoTiles();
@@ -159,6 +161,11 @@ export default class VideoTileCollection implements AudioVideoObserver {
     this.tileIdToAttendeeId[tileState.tileId] = tileState.boundAttendeeId;
     if (tileState.boundExternalUserId) {
       demoVideoTile.nameplate = tileState.boundExternalUserId.split('#').slice(-1)[0];
+    }
+    if (tileState.paused && this.bandwidthConstrainedTiles.has(tileState.tileId)) {
+      demoVideoTile.pauseState = '⚡';
+    } else {
+      demoVideoTile.pauseState = '';
     }
     demoVideoTile.attendeeId = tileState.boundAttendeeId;
     demoVideoTile.show(tileState.isContent);

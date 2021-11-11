@@ -3149,14 +3149,12 @@ export class DemoMeetingApp
 
   tileWillBePausedByDownlinkPolicy(tileId: number): void {
     this.log(`Tile ${tileId} will be paused due to insufficient bandwidth`);
-    const attendeeId = this.audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
-    this.roster[attendeeId].bandwidthConstrained = true;
+    this.videoTileCollection.bandwidthConstrainedTiles.add(tileId);
   }
 
   tileWillBeUnpausedByDownlinkPolicy(tileId: number): void {
     this.log(`Tile ${tileId} will be resumed due to sufficient bandwidth`);
-    const attendeeId = this.audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
-    this.roster[attendeeId].bandwidthConstrained = false;
+    this.videoTileCollection.bandwidthConstrainedTiles.delete(tileId);
   }
 }
 
