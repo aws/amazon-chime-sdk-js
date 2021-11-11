@@ -1,0 +1,29 @@
+{
+  "`": 1,
+  "name": "app_quit_audio_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "App Quit Audio Test %ts",
+      "description": "App Quit Audio Test ",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "AppQuitAudioTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2,
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}

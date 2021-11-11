@@ -1,0 +1,469 @@
+name: Browser Compatibility Test
+
+on:
+  schedule:
+    # More information on cron https://crontab.guru/
+    - cron: '0 0 * * *'
+
+env:
+  SELENIUM_GRID_PROVIDER: saucelabs
+  CLOUD_WATCH_METRIC: false
+  TEST_TYPE: Browser-Compatibility-Test
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
+  SLACK_JS_SDK_DEV_CORE_WEBHOOK: ${{secrets.SLACK_JS_SDK_DEV_CORE_WEBHOOK}}
+
+jobs:
+  browser-compatibility-audio:
+    name: Audio Compatibility Test
+    runs-on: ubuntu-latest
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current-version
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run Audio Compatibility Test
+        run: npm run test:browser-compatibility-audio
+  browser-compatibility-video:
+    name: Video Compatibility Test
+    runs-on: ubuntu-latest
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current-version
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run Video Compatibility Test
+        run: npm run test:browser-compatibility-video
+  browser-compatibility-video-test-app:
+    name: Video Test App Compatibility Test
+    runs-on: ubuntu-latest
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current-version
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run Video Test App Compatibility Test
+        run: npm run test:browser-compatibility-video-test-app
+  browser-compatibility-content-share:
+    name: Content Share Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-video-test-app ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current-version
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run Content Share Compatibility Test
+        run: npm run test:browser-compatibility-content-share
+  browser-compatibility-data-message:
+    name: Data Message Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-content-share ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current-version
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run Data Message Compatibility Test
+        run: npm run test:browser-compatibility-data-message
+  browser-compatibility-meeting-readiness-checker:
+    name: Meeting Readiness Checker Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-data-message ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current-version
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run Meeting Readiness Checker Compatibility Test
+        run: npm run test:browser-compatibility-meeting-readiness-checker
+  browser-compatibility-messaging-session:
+    name: Messaging Session Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-meeting-readiness-checker ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current-version
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Setup userArn
+        run: integration/js/script/test-setup browserCompatibility
+      - name: Run Messaging Session Compatibility Test
+        run: npm run test:browser-compatibility-messaging
+  browser-compatibility-background-blur:
+    name: Background Blur Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-messaging-session ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Pack the Chime SDK and install the tarball into the Demo
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Packing current version:" $current-version
+          npm run build
+          npm pack
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      - name: Create a Job ID
+        id: create-job-id
+        uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+      - name: Set JOB_ID Env Variable
+        run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      - name: Echo Job ID
+        run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup Sauce Connect
+        uses: saucelabs/sauce-connect-action@v1
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          noSSLBumpDomains: all
+          tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install Kite
+        run: integration/js/script/install-kite
+      - name: Clean Install
+        run: npm ci
+      - name: Run Background Blur Compatibility Test
+        run: npm run test:browser-compatibility-background-blur
+  browser-compatibility-results-report:
+    name: Browser Compatibility Results Report
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-audio, browser-compatibility-video, browser-compatibility-video-test-app, browser-compatibility-content-share, browser-compatibility-data-message, 
+    browser-compatibility-meeting-readiness-checker, browser-compatibility-messaging-session, browser-compatibility-background-blur ]
+    if: always()
+    env:
+      WORKFLOW_JOBS_STATUS: success
+      WORKFLOW_URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js - 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Gather Job Status Data
+        run: >
+          if [[ 
+            "${{ needs.browser-compatibility-audio.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-video.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-video-test-app.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-content-share.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-data-message.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-meeting-readiness-checker.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-messaging-session.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-background-blur.outputs.job-status }}" != "success"
+           ]]; then
+            echo "Workflow Job Status is failure";
+            ${{ env.WORKFLOW_JOBS_STATUS }} = "failure";
+          else
+            echo "Workflow Job Status is success";
+          fi
+      - name: Install Axios
+        run: npm install axios
+      - name: Send Slack Message
+        run: node .github/script/send-slack-message.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }}

@@ -1,0 +1,25 @@
+{
+  "`": 1,
+  "name": "content_share_only_allow_two_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Content Share Only Allow Two Test %ts",
+      "description": "Only allow two content share at the same time",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "ContentShareOnlyAllowTwoTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}

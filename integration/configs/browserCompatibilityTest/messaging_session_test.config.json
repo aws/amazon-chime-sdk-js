@@ -1,0 +1,86 @@
+{
+  "`": 1,
+  "name": "messaging_session_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Messaging Session Test %ts",
+      "description": "Messaging Session Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "MessagingSessionTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 1,
+        "userArn": ""
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "safari",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}
