@@ -1,0 +1,25 @@
+{
+  "`": 1,
+  "name": "meeting_leave_content_share_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Meeting Leave Content Share Test %ts",
+      "description": "Meeting leave Content Share Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "MeetingLeaveContentShareTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}
