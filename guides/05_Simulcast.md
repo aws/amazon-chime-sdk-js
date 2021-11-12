@@ -3,9 +3,9 @@
 In multi-party video calls, attendees can enable the simulcast feature to enhance the overall video quality. Simulcast is a standardized technique where the video publishers create multiple renditions, or layers, of the same video source and video subscribers have the flexibility to choose the rendition that best fits their needs based on such factors as available bandwidth, compute and screen size.
 The uplink policy controls the configuration of the renditions through camera capture and encoding parameters. The simulcast-enabled uplink policy is [SimulcastUplinkPolicy](https://aws.github.io/amazon-chime-sdk-js/interfaces/simulcastuplinkpolicy.html).
 
-Simulcast is currently disabled by default. To enable it [MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers) must be set. Currently, only Chrome 76 and above is supported.
+Simulcast is currently disabled by default. To enable it [MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers) must be set.
 
-The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) downlink policy adaptively subscribes to the best simulcast layer and is automatically selected if [[MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers) is set to true.
+The [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) downlink policy adaptively subscribes to the best simulcast layer and is automatically selected if [MeetingSessionConfiguration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers) is set to true.
 
 If you want more fine-grained control of which simulcast layer to subscribe, please use [VideoPriorityBasedPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoprioritybasedpolicy). More details about priority-based downlink policy can be 
 found [here](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html).
@@ -18,7 +18,15 @@ Simulcast support is built into the WebRTC library in the majority of browsers. 
 
 The recommended resolution in JS SDK is 1280x720. This resolution will provide the most flexibility and allow subscribers to maintain smoother video quality transitions.  In certain circumstances, like mobile browsers, the input resolution may not be high enough to support all desired simulcast streams, so the logic will adapt appropriately to send as many as possible.
 
-The SimulcastUplinkPolicy configures RTCRtpSender to have three encoding layers, but only ever enables two of them.  Which two are enabled is based on a variety of factors.   Experiments show that configuring RTCRtpSender with three encoding layers up front and dynamically enabling and disabling layers provides a better experience and reduces the burden of having to dynamically  manage capture resolution and encoding parameters.
+The SimulcastUplinkPolicy configures RTCRtpSender to have three encoding layers, but only ever enables two of them.  Which two are enabled is based on a variety of factors. Experiments show that configuring RTCRtpSender with three encoding layers up front and dynamically enabling and disabling layers provides a better experience and reduces the burden of having to dynamically  manage capture resolution and encoding parameters.
+
+### Browser compatibility
+
+|Browser              |Supported versions  |
+|---                  |---                 |
+|Chrome               |76+                 |
+
+> Note: Simulcast in Amazon Chime SDK for JavaScript should also work in Chromium-based browsers on desktop like Chromium Edge and Opera; and Chromium-Webview and Samsung Internet browser on mobile.
 
 ### Simulcast resolutions and behavior
 
