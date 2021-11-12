@@ -26,7 +26,7 @@ The SimulcastUplinkPolicy configures RTCRtpSender to have three encoding layers,
 |---                  |---                 |
 |Chrome               |76+                 |
 
-> Note: Simulcast in Amazon Chime SDK for JavaScript should also work in Chromium-based browsers on desktop like Chromium Edge and Opera; and Chromium-Webview and Samsung Internet browser on mobile.
+> Note: Simulcast in Amazon Chime SDK for JavaScript should also work in Chromium-based browsers on desktop like Chromium Edge and Opera; and on mobile like Chromium-Webview and Samsung Internet.
 
 ### Simulcast resolutions and behavior
 
