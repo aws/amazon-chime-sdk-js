@@ -131,6 +131,10 @@
 						<h5>VideoPriorityBasedPolicy</h5>
 					</a>
 					<p>This policy allows builders to choose and configure which remote video sources to subscribe to, their relative priorities and preferences such as, <code>targetDisplaySize</code> . Under constrained network, the policy will automatically pause video tiles based on the priorities you set to these remote video sources until recovery. If used with the <code>SimulcastUplinkPolicy</code>, the policy may temporarily degrade to lower resolutions. For videos of the same priority, the policy first tries to allocate bandwidth to ensure as many videos can be displayed as possible before upgrading to higher quality if the bandwidth allows.</p>
+					<ul>
+						<li>Note: The <code>VideoPriorityBasedPolicy</code> uses webRTC&#39;s available downlink bandwidth estimate, which has not been
+						supported in Firefox yet, the policy should be only used in Chrome and Safari.</li>
+					</ul>
 					<a href="#recommendations-for-common-layouts" id="recommendations-for-common-layouts" style="color: inherit; text-decoration: none;">
 						<h2>Recommendations for Common Layouts</h2>
 					</a>
