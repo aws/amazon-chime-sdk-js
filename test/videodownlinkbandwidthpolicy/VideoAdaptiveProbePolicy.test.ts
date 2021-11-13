@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import AudioVideoTileController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoTileController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import ClientMetricReportDirection from '../../src/clientmetricreport/ClientMetricReportDirection';
+import ClientMetricReportMediaType from '../../src/clientmetricreport/ClientMetricReportMediaType';
 import DefaultClientMetricReport from '../../src/clientmetricreport/DefaultClientMetricReport';
 import GlobalMetricReport from '../../src/clientmetricreport/GlobalMetricReport';
 import StreamMetricReport from '../../src/clientmetricreport/StreamMetricReport';
@@ -141,6 +142,7 @@ describe('VideoAdaptiveProbePolicy', () => {
     const streamReport1 = new StreamMetricReport();
     streamReport1.streamId = 1;
     streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
+    streamReport1.mediaType = ClientMetricReportMediaType.VIDEO;
     streamReport1.previousMetrics['googNacksSent'] = 0;
     streamReport1.previousMetrics['packetsLost'] = 0;
     streamReport1.currentMetrics['googNacksSent'] = nackCnt;
@@ -193,60 +195,6 @@ describe('VideoAdaptiveProbePolicy', () => {
       policy.updateIndex(videoStreamIndex);
       // @ts-ignore
       expect(policy.videoIndex).to.deep.equal(videoStreamIndex);
-    });
-  });
-
-  describe('updateMetric', () => {
-    it('can be no-op if there are no streams available to subscribe', () => {
-      videoStreamIndex.integrateIndexFrame(new SdkIndexFrame());
-      policy.updateIndex(videoStreamIndex);
-      policy.updateMetrics(new DefaultClientMetricReport(logger));
-    });
-
-    it('can update metrics', () => {
-      prepareVideoStreamIndex(videoStreamIndex);
-      policy.updateIndex(videoStreamIndex);
-      const metricReport = new DefaultClientMetricReport(logger);
-      const streamReport1 = new StreamMetricReport();
-      streamReport1.streamId = 1;
-      streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
-      streamReport1.currentMetrics['googNacksSent'] = 20;
-      streamReport1.currentMetrics['packetsLost'] = 0;
-      streamReport1.currentMetrics['googFrameRateReceived'] = 30;
-      streamReport1.currentMetrics['bytesReceived'] = 20;
-
-      metricReport.streamMetricReports[123456] = streamReport1;
-
-      policy.updateMetrics(metricReport);
-
-      const streamReport2 = new StreamMetricReport();
-      streamReport2.streamId = 2;
-      streamReport2.direction = ClientMetricReportDirection.DOWNSTREAM;
-      streamReport2.currentMetrics['googNacksSent'] = 20;
-      streamReport2.currentMetrics['packetsLost'] = 0;
-      metricReport.streamMetricReports[234567] = streamReport2;
-
-      const streamReport3 = new StreamMetricReport();
-      streamReport3.streamId = 1;
-      streamReport3.direction = ClientMetricReportDirection.UPSTREAM;
-      streamReport3.currentMetrics['googNacksSent'] = 20;
-      streamReport3.currentMetrics['packetsLost'] = 0;
-      metricReport.streamMetricReports[3123123] = streamReport3;
-
-      videoStreamIndex.integrateIndexFrame(
-        new SdkIndexFrame({
-          atCapacity: false,
-          sources: [
-            new SdkStreamDescriptor({ streamId: 7, groupId: 2 }),
-            new SdkStreamDescriptor({ streamId: 3, groupId: 2 }),
-          ],
-        })
-      );
-
-      policy.updateIndex(videoStreamIndex);
-      policy.updateMetrics(metricReport);
-      policy.wantsResubscribe();
-      policy.chooseSubscriptions();
     });
   });
 
@@ -323,6 +271,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       const streamReport1 = new StreamMetricReport();
       streamReport1.streamId = 0;
       streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
+      streamReport1.mediaType = ClientMetricReportMediaType.VIDEO;
       streamReport1.currentMetrics['googNacksSent'] = 10;
       streamReport1.currentMetrics['googFrameRateReceived'] = 20;
       streamReport1.currentMetrics['packetsLost'] = 0;
@@ -333,6 +282,7 @@ describe('VideoAdaptiveProbePolicy', () => {
       const streamReport2 = new StreamMetricReport();
       streamReport2.streamId = 2;
       streamReport2.direction = ClientMetricReportDirection.DOWNSTREAM;
+      streamReport2.mediaType = ClientMetricReportMediaType.VIDEO;
       streamReport2.currentMetrics['googNacksSent'] = 10;
       streamReport2.currentMetrics['packetsLost'] = 0;
       streamReport2.currentMetrics['bytesReceived'] = 500 * 1000;

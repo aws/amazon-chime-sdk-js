@@ -54,6 +54,9 @@ This policy subscribes to the highest quality video layer of all publishers. Und
 
 This policy allows builders to choose and configure which remote video sources to subscribe to, their relative priorities and preferences such as, `targetDisplaySize` . Under constrained network, the policy will automatically pause video tiles based on the priorities you set to these remote video sources until recovery. If used with the `SimulcastUplinkPolicy`, the policy may temporarily degrade to lower resolutions. For videos of the same priority, the policy first tries to allocate bandwidth to ensure as many videos can be displayed as possible before upgrading to higher quality if the bandwidth allows.
 
+- Note: The `VideoPriorityBasedPolicy` uses webRTC's available downlink bandwidth estimate, which has not been 
+  supported in Firefox yet, the policy should be only used in Chrome and Safari.
+  
 ## Recommendations for Common Layouts
 
 ### Case 1: Small Grid Layout (up to 4 Videos) with Fixed Tile Size
