@@ -123,6 +123,9 @@ case $1 in
    background_blur)
       r background_blur_test.config.json
       ;;
+   echo_reduction)
+      r voice_focus_echo_reduction_test.config.json
+      ;;
    *)
       r audio_test.config.json
       r video_test.config.json
