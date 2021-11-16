@@ -46,8 +46,10 @@ class VoiceFocusEchoReductionEnabledTest extends SdkBaseTest {
 
   async addUserToMeeting(attendee_id, sessionInfo, useWebAudioFlag) {
     await OpenAppStep.executeStep(this, sessionInfo);
+    await sessionInfo.page.chooseEchoReduction();
     await AuthenticateUserStep.executeStep(this, sessionInfo, attendee_id, false, useWebAudioFlag);
     await UserAuthenticationCheck.executeStep(this, sessionInfo);
+    await sessionInfo.page.enableVoiceFocusInLobby();
     await JoinMeetingStep.executeStep(this, sessionInfo);
     await UserJoinedMeetingCheck.executeStep(this, sessionInfo, attendee_id);
   }

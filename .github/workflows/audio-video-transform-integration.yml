@@ -1,4 +1,4 @@
-  name: Voice Focus Echo Reduction and Background Blur Integration Workflow
+  name: Audio and Video Transforms Integration Workflow
 
   on:
     pull_request:
@@ -14,7 +14,7 @@
 
   jobs:
     integ-background-blur:
-      name: Voice Focus Echo Reduction and Background Blur Integration Test
+      name: Audio and Video Transforms Integration Test
       runs-on: ubuntu-latest
 
       steps:

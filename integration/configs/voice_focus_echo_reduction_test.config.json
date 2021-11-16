@@ -10,7 +10,7 @@
         "noOfThreads": 1,
         "testImpl": "VoiceFocusEchoReductionEnabledTest.js",
         "payload": {
-          "url": "http://localhost:8080/?voiceFocusName=ns_es&voiceFocusRevisionID=8pSGzfw47jwMmbLv531XF4&voiceFocusCDN=https://static.sdkassets.achime.aws/",
+          "url": "http://localhost:8080/?voiceFocusRevisionID=ptCWCoMSFmUNqs6JXcVamv",
           "port": 30002,
           "retry": 5
         }

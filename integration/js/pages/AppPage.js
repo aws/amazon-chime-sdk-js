@@ -64,7 +64,9 @@ function findAllElements() {
     eventReportingCheckBox: By.id('event-reporting'),
     eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
     backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-10%-CPU'),
-    microphoneDropEchoButton: By.id('dropdown-menu-microphone-Echo')
+    microphoneDropEchoButton: By.id('dropdown-menu-microphone-Echo'),
+    echoReductionFeature: By.id('echo-reduction-capability'),
+    echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]')
 
   };
 }
@@ -125,6 +127,19 @@ class AppPage {
       console.log('Web Audio is selected');
     } else {
       await clickElement(this.driver, webAudioFeatureLabel);
+    }
+  }
+
+  // selects echo reduction capability at the meeting level 
+  async chooseEchoReduction() {
+    const echoReductionFeature = await this.driver.findElement(elements.echoReductionFeature);
+    const echoReductionFeatureLabel = await this.driver.findElement(elements.echoReductionFeatureLabel);
+
+    // Click the label because it's on top.
+    if (await echoReductionFeature.isSelected()) {
+      console.log('Echo Reduction capability is selected');
+    } else {
+      await clickElement(this.driver, echoReductionFeatureLabel);
     }
   }
 
