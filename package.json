@@ -50,6 +50,7 @@
     "test:integration-messaging": "cd ./integration/js && npm run test -- integration messaging ",
     "test:integration-transcription": "cd ./integration/js && npm run test -- integration transcription ",
     "test:integration-background-blur": "cd ./integration/js && npm run test -- integration background_blur ",
+    "test:integration-background-replacement": "cd ./integration/js && npm run test -- background_replacement ",
     "test:integration-echo-reduction": "cd ./integration/js && npm run test -- integration echo_reduction",
     "test:browser-compatibility-audio": "cd ./integration/js && npm run test -- browser_compatibility audio ",
     "test:browser-compatibility-video": "cd ./integration/js && npm run test -- browser_compatibility video ",

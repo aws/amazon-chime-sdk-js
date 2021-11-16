@@ -8,4 +8,4 @@ import BackgroundFilterVideoFrameProcessorDelegate from '../backgroundfilter/Bac
  * video frame processor.
  */
 /** @internal */
-export default class BackgroundBlurVideoFrameProcessorDelegate extends BackgroundFilterVideoFrameProcessorDelegate {}
+export default class BackgroundReplacementVideoFrameProcessorDelegate extends BackgroundFilterVideoFrameProcessorDelegate {}

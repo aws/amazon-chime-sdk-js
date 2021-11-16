@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BackgroundFilterSpec | amazon-chime-sdk-js</title>
+	<title>BackgroundReplacementOptions | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="backgroundfilterspec.html">BackgroundFilterSpec</a>
+					<a href="backgroundreplacementoptions.html">BackgroundReplacementOptions</a>
 				</li>
 			</ul>
-			<h1>Interface BackgroundFilterSpec</h1>
+			<h1>Interface BackgroundReplacementOptions</h1>
 		</div>
 	</div>
 </header>
@@ -69,22 +69,18 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>An interface to define the paths to load the Web Worker JavaScript, WASM, and the definition and path of
-						the model to use to create the segmentation mask.</p>
+						<p>A set of options that can be supplied when creating a background replacement video frame processor.</p>
 					</div>
-					<p>Members of this interface can change without a major version bump to accommodate new browser
-						bugs and capabilities. If you extend this type, you might need to rework your code for new minor
-					versions of this library.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">AssetSpec</span>
+						<a href="backgroundfilteroptions.html" class="tsd-signature-type">BackgroundFilterOptions</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">BackgroundFilterSpec</span>
+								<span class="target">BackgroundReplacementOptions</span>
 							</li>
 						</ul>
 					</li>
@@ -97,10 +93,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundfilterspec.html#assetgroup" class="tsd-kind-icon">asset<wbr>Group</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfilterspec.html#model" class="tsd-kind-icon">model</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfilterspec.html#paths" class="tsd-kind-icon">paths</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundfilterspec.html#revisionid" class="tsd-kind-icon">revisionID</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundreplacementoptions.html#filtercpuutilization" class="tsd-kind-icon">filterCPUUtilization</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundreplacementoptions.html#imageblob" class="tsd-kind-icon">image<wbr>Blob</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundreplacementoptions.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundreplacementoptions.html#reportingperiodmillis" class="tsd-kind-icon">reporting<wbr>Period<wbr>Millis</a></li>
 							</ul>
 						</section>
 					</div>
@@ -109,57 +105,71 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="assetgroup" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> asset<wbr>Group</h3>
-					<div class="tsd-signature tsd-kind-icon">asset<wbr>Group<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="filtercpuutilization" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filterCPUUtilization</h3>
+					<div class="tsd-signature tsd-kind-icon">filterCPUUtilization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="backgroundfilterspec.html">BackgroundFilterSpec</a>.<a href="backgroundfilterspec.html#assetgroup">assetGroup</a></p>
+						<p>Inherited from <a href="backgroundfilteroptions.html">BackgroundFilterOptions</a>.<a href="backgroundfilteroptions.html#filtercpuutilization">filterCPUUtilization</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/libs/voicefocus/voicefocus.d.ts#L4">libs/voicefocus/voicefocus.d.ts:4</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="model" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> model</h3>
-					<div class="tsd-signature tsd-kind-icon">model<span class="tsd-signature-symbol">:</span> <a href="modelspec.html" class="tsd-signature-type">ModelSpec</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterSpec.ts#L26">src/backgroundfilter/BackgroundFilterSpec.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterOptions.ts#L25">src/backgroundfilter/BackgroundFilterOptions.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Specification to define the parameters for ML model that does the foreground and background
-							segmentation.</p>
+							<p>The threshold CPU utilization percentage to trigger skipping background filter updates which will reduce the amount of CPU
+							used by background filtering. The valid values for this field are 0-100.</p>
 						</div>
+						<p>For example, If the reporting period is set to 1000 ms and 500 ms was dedicated to processing the background filter, then
+							the CPU utilization for that reporting period is 50%. If <a href="backgroundreplacementoptions.html#filtercpuutilization">filterCPUUtilization</a> is set to 50 it will cause a
+						<code>filterCPUUtilizationHigh</code> event to be fired from the <code>BackgroundBlurVideoFrameProcessorObserver</code>.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="paths" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> paths</h3>
-					<div class="tsd-signature tsd-kind-icon">paths<span class="tsd-signature-symbol">:</span> <a href="backgroundfilterpaths.html" class="tsd-signature-type">BackgroundFilterPaths</a></div>
+					<a name="imageblob" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> image<wbr>Blob</h3>
+					<div class="tsd-signature tsd-kind-icon">image<wbr>Blob<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Blob</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterSpec.ts#L20">src/backgroundfilter/BackgroundFilterSpec.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundreplacementprocessor/BackgroundReplacementOptions.ts#L10">src/backgroundreplacementprocessor/BackgroundReplacementOptions.ts:10</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Paths to resources that need to be loaded for background filter.</p>
+							<p>The image to replace the background with</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="revisionid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> revisionID</h3>
-					<div class="tsd-signature tsd-kind-icon">revisionID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="logger" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> logger</h3>
+					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logger.html" class="tsd-signature-type">Logger</a></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="backgroundfilterspec.html">BackgroundFilterSpec</a>.<a href="backgroundfilterspec.html#revisionid">revisionID</a></p>
+						<p>Inherited from <a href="backgroundfilteroptions.html">BackgroundFilterOptions</a>.<a href="backgroundfilteroptions.html#logger">logger</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/libs/voicefocus/voicefocus.d.ts#L5">libs/voicefocus/voicefocus.d.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterOptions.ts#L11">src/backgroundfilter/BackgroundFilterOptions.ts:11</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A <a href="logger.html">Logger</a> to which log output will be written.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="reportingperiodmillis" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> reporting<wbr>Period<wbr>Millis</h3>
+					<div class="tsd-signature tsd-kind-icon">reporting<wbr>Period<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="backgroundfilteroptions.html">BackgroundFilterOptions</a>.<a href="backgroundfilteroptions.html#reportingperiodmillis">reportingPeriodMillis</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterOptions.ts#L14">src/backgroundfilter/BackgroundFilterOptions.ts:14</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>How often the video frame processor will report observed events.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -176,19 +186,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="backgroundfilterspec.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Spec</a>
+						<a href="backgroundreplacementoptions.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Options</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="backgroundfilterspec.html#assetgroup" class="tsd-kind-icon">asset<wbr>Group</a>
+								<a href="backgroundreplacementoptions.html#filtercpuutilization" class="tsd-kind-icon">filterCPUUtilization</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="backgroundfilterspec.html#model" class="tsd-kind-icon">model</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="backgroundfilterspec.html#paths" class="tsd-kind-icon">paths</a>
+								<a href="backgroundreplacementoptions.html#imageblob" class="tsd-kind-icon">image<wbr>Blob</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="backgroundfilterspec.html#revisionid" class="tsd-kind-icon">revisionID</a>
+								<a href="backgroundreplacementoptions.html#logger" class="tsd-kind-icon">logger</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="backgroundreplacementoptions.html#reportingperiodmillis" class="tsd-kind-icon">reporting<wbr>Period<wbr>Millis</a>
 							</li>
 						</ul>
 					</li>

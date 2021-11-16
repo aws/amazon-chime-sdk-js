@@ -125,6 +125,9 @@ case $1 in
       background_blur)
          r configs/integrationTest/background_blur_test.config.json
          ;;
+      background_replacement)
+         r background_replacement_test.config.json
+         ;;
       echo_reduction)
          r configs/integrationTest/echo_reduction_test.config.json
          ;;

@@ -65,12 +65,11 @@ function findAllElements() {
 
     eventReportingCheckBox: By.id('event-reporting'),
     eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
-    backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-10%-CPU'),
+    backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-40%-CPU'),
+    backgroundReplacementFilterButton: By.id('dropdown-menu-filter-Background-Replacement'),
     microphoneDropEchoButton: By.id('dropdown-menu-microphone-Echo'),
     echoReductionFeature: By.id('echo-reduction-capability'),
-    echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]'),
-    stereoMusicProfileCheckBox: By.id('fullband-music-stereo-quality'),
-    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]')
+    echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]')
   };
 }
 
@@ -810,15 +809,33 @@ class AppPage {
   }
 
   async clickBackgroundBlurFilterFromDropDownMenu() {
-    await TestUtils.waitAround(1000);
-    const backgroundBlurButton = await this.driver.findElement(elements.backgroundBlurFilterButton);
-    await backgroundBlurButton.click();
+    await this.clickBackgroundFilterFromDropDownMenu(elements.backgroundBlurFilterButton);
   }
 
   async backgroundBlurCheck(attendeeId) {
-    await TestUtils.waitAround(4000);
     const expectedSumMin = 15805042;
     const expectedSumMax = 15940657;
+    return await this.backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax);
+  }
+
+  async clickBackgroundReplacementFilterFromDropDownMenu() {
+    await this.clickBackgroundFilterFromDropDownMenu(elements.backgroundReplacementFilterButton);
+  }
+
+  async backgroundReplacementCheck(attendeeId) {
+    const expectedSumMin = 11000000;
+    const expectedSumMax = 11200000;
+    return await this.backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax);
+  }
+
+  async clickBackgroundFilterFromDropDownMenu(buttonID) {
+    await TestUtils.waitAround(1000);
+    const backgroundBlurButton = await this.driver.findElement(buttonID);
+    await backgroundBlurButton.click();
+  }
+
+  async backgroundFilterCheck(attendeeId, expectedSumMin, expectedSumMax) {
+    await TestUtils.waitAround(4000);
     const videoElement = this.driver.findElement(By.xpath(`//*[contains(@class,'video-tile-nameplate') and contains(text(),'${attendeeId}')]`));
     const videoElementId = await videoElement.getAttribute('id');
     const seperatorIndex = videoElementId.lastIndexOf("-");
@@ -826,6 +843,7 @@ class AppPage {
       const tileIndex = parseInt(videoElementId.slice(seperatorIndex+1))
       if (tileIndex != NaN && tileIndex >= 0) {
         const videoImgSum = await this.driver.executeScript(this.getVideoImageSum(tileIndex));
+        console.log(`videoImgSum ${videoImgSum}`);
         if(videoImgSum < expectedSumMin || videoImgSum > expectedSumMax){
           console.log(`videoImgSum ${videoImgSum}`);
           return false;
@@ -834,6 +852,7 @@ class AppPage {
     }
     return true;
   }
+
 
   getVideoImageSum(videoId) {
     return "function getSum(total, num) {return total + num;};"

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>FilterFrameDurationHighEvent | amazon-chime-sdk-js</title>
+	<title>BackgroundFilterOptions | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,21 +56,36 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="filterframedurationhighevent.html">FilterFrameDurationHighEvent</a>
+					<a href="backgroundfilteroptions.html">BackgroundFilterOptions</a>
 				</li>
 			</ul>
-			<h1>Interface FilterFrameDurationHighEvent</h1>
+			<h1>Interface BackgroundFilterOptions</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>A set of options that can be supplied when creating a background filter video frame processor.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">FilterFrameDurationHighEvent</span>
+						<span class="target">BackgroundFilterOptions</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="backgroundbluroptions.html" class="tsd-signature-type">BackgroundBlurOptions</a>
+							</li>
+							<li>
+								<a href="backgroundreplacementoptions.html" class="tsd-signature-type">BackgroundReplacementOptions</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -81,10 +96,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filterframedurationhighevent.html#avgfilterdurationmillis" class="tsd-kind-icon">avg<wbr>Filter<wbr>Duration<wbr>Millis</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filterframedurationhighevent.html#framerate" class="tsd-kind-icon">framerate</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filterframedurationhighevent.html#framesdropped" class="tsd-kind-icon">frames<wbr>Dropped</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="filterframedurationhighevent.html#periodmillis" class="tsd-kind-icon">period<wbr>Millis</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfilteroptions.html#filtercpuutilization" class="tsd-kind-icon">filterCPUUtilization</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfilteroptions.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfilteroptions.html#reportingperiodmillis" class="tsd-kind-icon">reporting<wbr>Period<wbr>Millis</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,44 +107,53 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="avgfilterdurationmillis" class="tsd-anchor"></a>
-					<h3>avg<wbr>Filter<wbr>Duration<wbr>Millis</h3>
-					<div class="tsd-signature tsd-kind-icon">avg<wbr>Filter<wbr>Duration<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="filtercpuutilization" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filterCPUUtilization</h3>
+					<div class="tsd-signature tsd-kind-icon">filterCPUUtilization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L12">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterOptions.ts#L25">src/backgroundfilter/BackgroundFilterOptions.ts:25</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The threshold CPU utilization percentage to trigger skipping background filter updates which will reduce the amount of CPU
+							used by background filtering. The valid values for this field are 0-100.</p>
+						</div>
+						<p>For example, If the reporting period is set to 1000 ms and 500 ms was dedicated to processing the background filter, then
+							the CPU utilization for that reporting period is 50%. If <a href="backgroundfilteroptions.html#filtercpuutilization">filterCPUUtilization</a> is set to 50 it will cause a
+						<code>filterCPUUtilizationHigh</code> event to be fired from the <code>BackgroundBlurVideoFrameProcessorObserver</code>.</p>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="framerate" class="tsd-anchor"></a>
-					<h3>framerate</h3>
-					<div class="tsd-signature tsd-kind-icon">framerate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="logger" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> logger</h3>
+					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logger.html" class="tsd-signature-type">Logger</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L13">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterOptions.ts#L11">src/backgroundfilter/BackgroundFilterOptions.ts:11</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A <a href="logger.html">Logger</a> to which log output will be written.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="framesdropped" class="tsd-anchor"></a>
-					<h3>frames<wbr>Dropped</h3>
-					<div class="tsd-signature tsd-kind-icon">frames<wbr>Dropped<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="reportingperiodmillis" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> reporting<wbr>Period<wbr>Millis</h3>
+					<div class="tsd-signature tsd-kind-icon">reporting<wbr>Period<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L11">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterOptions.ts#L14">src/backgroundfilter/BackgroundFilterOptions.ts:14</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="periodmillis" class="tsd-anchor"></a>
-					<h3>period<wbr>Millis</h3>
-					<div class="tsd-signature tsd-kind-icon">period<wbr>Millis<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L14">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:14</a></li>
-						</ul>
-					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>How often the video frame processor will report observed events.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -147,19 +170,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="filterframedurationhighevent.html" class="tsd-kind-icon">Filter<wbr>Frame<wbr>Duration<wbr>High<wbr>Event</a>
+						<a href="backgroundfilteroptions.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Options</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="filterframedurationhighevent.html#avgfilterdurationmillis" class="tsd-kind-icon">avg<wbr>Filter<wbr>Duration<wbr>Millis</a>
+								<a href="backgroundfilteroptions.html#filtercpuutilization" class="tsd-kind-icon">filterCPUUtilization</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="filterframedurationhighevent.html#framerate" class="tsd-kind-icon">framerate</a>
+								<a href="backgroundfilteroptions.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="filterframedurationhighevent.html#framesdropped" class="tsd-kind-icon">frames<wbr>Dropped</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="filterframedurationhighevent.html#periodmillis" class="tsd-kind-icon">period<wbr>Millis</a>
+								<a href="backgroundfilteroptions.html#reportingperiodmillis" class="tsd-kind-icon">reporting<wbr>Period<wbr>Millis</a>
 							</li>
 						</ul>
 					</li>
