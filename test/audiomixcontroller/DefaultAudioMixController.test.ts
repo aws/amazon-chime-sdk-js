@@ -5,7 +5,9 @@ import * as chai from 'chai';
 
 import { DefaultBrowserBehavior } from '../../src';
 import DefaultAudioMixController from '../../src/audiomixcontroller/DefaultAudioMixController';
+import AudioMixObserver from '../../src/audiomixobserver/AudioMixObserver';
 import NoOpLogger from '../../src/logger/NoOpLogger';
+import { wait as delay } from '../../src/utils/Utils';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
 
@@ -266,6 +268,7 @@ describe('DefaultAudioMixController', () => {
     await defaultAudioMixController.bindAudioElement(element);
     await defaultAudioMixController.bindAudioStream(stream);
     expect(element.srcObject).to.equal(stream);
+    expect(await defaultAudioMixController.getCurrentMeetingAudioStream()).to.equal(stream);
   });
 
   it('can execute 3 bind and unbind methods consecutively in Chromium based browser', async () => {
@@ -277,6 +280,61 @@ describe('DefaultAudioMixController', () => {
     await defaultAudioMixController.bindAudioStream(stream);
     defaultAudioMixController.unbindAudioElement();
     expect(element.srcObject).to.equal(null);
+  });
+
+  it('unbind null audio stream', async () => {
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    let audioMixCount = 0;
+    const observer: AudioMixObserver = {
+      meetingAudioStreamBecameActive: (_streamToAdd: MediaStream): void => {
+        audioMixCount += 1;
+      },
+      meetingAudioStreamBecameInactive: (_streamToRemove: MediaStream): void => {
+        audioMixCount -= 1;
+      },
+    };
+    await defaultAudioMixController.bindAudioDevice(device);
+    await defaultAudioMixController.addAudioMixObserver(observer);
+    await defaultAudioMixController.bindAudioElement(element);
+    defaultAudioMixController.unbindAudioElement();
+    await delay(100);
+    expect(audioMixCount).to.equal(0);
+  });
+
+  it('listens to bind unbind audio stream', async () => {
+    behavior.browserName = 'chrome';
+    domMockBuilder = new DOMMockBuilder(behavior);
+    defaultAudioMixController = new DefaultAudioMixController(logger);
+    await defaultAudioMixController.bindAudioDevice(device);
+    await defaultAudioMixController.bindAudioElement(element);
+
+    let audioMixCount = 0;
+    const observer: AudioMixObserver = {
+      meetingAudioStreamBecameActive: (_streamToAdd: MediaStream): void => {
+        audioMixCount += 1;
+      },
+      meetingAudioStreamBecameInactive: (_streamToRemove: MediaStream): void => {
+        audioMixCount -= 1;
+      },
+    };
+    expect(audioMixCount).to.equal(0);
+    await defaultAudioMixController.addAudioMixObserver(observer);
+    await defaultAudioMixController.bindAudioStream(stream);
+    await delay(100);
+    expect(audioMixCount).to.equal(1);
+
+    const stream2 = new MediaStream();
+    await defaultAudioMixController.bindAudioStream(stream2);
+    await delay(100);
+    expect(audioMixCount).to.equal(1);
+
+    defaultAudioMixController.unbindAudioElement();
+    await delay(100);
+    expect(audioMixCount).to.equal(0);
+
+    defaultAudioMixController.removeAudioMixObserver(observer);
   });
 
   it('can bind an audio element when sinkId does not exist but we do not try to set one', async () => {

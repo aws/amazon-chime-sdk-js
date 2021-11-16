@@ -58,3 +58,5 @@ exports.StartMeetingTranscriptionStep = require('./StartMeetingTranscriptionStep
 exports.StopMeetingTranscriptionStep = require('./StopMeetingTranscriptionStep');
 exports.PlayPrerecordedSpeechStep = require('./PlayPrerecordedSpeechStep');
 exports.SelectNoneAudioInputStep = require('./SelectNoneAudioInputStep');
+exports.StartAmazonVoiceFocus = require('./StartAmazonVoiceFocusStep');
+exports.PlayEcho = require('./PlayEchoStep');

@@ -9,15 +9,22 @@ import { SinonStub, spy, stub } from 'sinon';
 
 // For mocking.
 import { VoiceFocusAudioWorkletNode } from '../../libs/voicefocus/types';
+import { VoiceFocusNodeOptions } from '../../libs/voicefocus/types';
 import { NodeArguments, VoiceFocus, VoiceFocusConfig } from '../../libs/voicefocus/voicefocus';
 import { ConsoleLogger, LogLevel, VoiceFocusTransformDeviceObserver } from '../../src';
+import AudioMixObserver from '../../src/audiomixobserver/AudioMixObserver';
+import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
+import DefaultDeviceController from '../../src/devicecontroller/DefaultDeviceController';
 import Device from '../../src/devicecontroller/Device';
 import Logger from '../../src/logger/Logger';
+import { wait as delay } from '../../src/utils/Utils';
 import Versioning from '../../src/versioning/Versioning';
 import AGCOptions from '../../src/voicefocus/AGCOptions';
 import VoiceFocusDeviceTransformer from '../../src/voicefocus/VoiceFocusDeviceTransformer';
 import VoiceFocusSpec from '../../src/voicefocus/VoiceFocusSpec';
 import VoiceFocusTransformDevice from '../../src/voicefocus/VoiceFocusTransformDevice';
+import DOMMockBehavior from '../dommock/DOMMockBehavior';
+import DOMMockBuilder from '../dommock/DOMMockBuilder';
 import { MockLogger } from './MockLogger';
 
 chai.use(chaiAsPromised);
@@ -602,6 +609,25 @@ describe('VoiceFocusDeviceTransformer', () => {
       return transformer;
     }
 
+    async function getSupportedEsTransformer(): Promise<VoiceFocusDeviceTransformer> {
+      const vfEs = new MockVoiceFocus();
+      vfEs.nodeOptions = {
+        numberOfInputs: 2,
+        worker: undefined,
+        processor: undefined,
+        audioBufferURL: '',
+        resamplerURL: '',
+        modelURL: '',
+      };
+
+      init.callsFake(async () => vfEs);
+      isSupported.callsFake(async () => true);
+      configure.callsFake(async () => supportedConfig);
+
+      const transformer = await VoiceFocusDeviceTransformer.create({ name: 'ns_es' }, {});
+      return transformer;
+    }
+
     function getSupportedButFailingTransformer(): Promise<VoiceFocusDeviceTransformer> {
       const badVF = new MockVoiceFocus();
       badVF.throwInCreateNode = true;
@@ -611,9 +637,10 @@ describe('VoiceFocusDeviceTransformer', () => {
 
     async function getDevice(
       inner: Device,
-      options?: NodeArguments
+      options?: NodeArguments,
+      es = false
     ): Promise<VoiceFocusTransformDevice> {
-      const transformer = await getSupportedTransformer();
+      const transformer = es ? await getSupportedEsTransformer() : await getSupportedTransformer();
       return await transformer.createTransformDevice(inner, options);
     }
 
@@ -692,6 +719,44 @@ describe('VoiceFocusDeviceTransformer', () => {
       expect(fifthDefault).to.not.eq(sixthDefault);
     });
 
+    it('observe and unobserve MeetingAudio', async () => {
+      const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
+      const streamDefault = { id: 'default' } as MediaStream;
+      const audioVideo = ({
+        getCurrentMeetingAudioStream() {
+          return streamDefault;
+        },
+        addAudioMixObserver(_observer: AudioMixObserver) {
+          return;
+        },
+        removeAudioMixObserver(_observer: AudioMixObserver) {
+          return;
+        },
+      } as unknown) as AudioVideoFacade;
+      const device = await getDevice('foo', options, true);
+      await device.observeMeetingAudio(audioVideo);
+      await device.unObserveMeetingAudio(audioVideo);
+
+      const audioVideo2 = ({
+        getCurrentMeetingAudioStream() {
+          return null as unknown;
+        },
+        addAudioMixObserver(_observer: AudioMixObserver) {
+          return;
+        },
+        removeAudioMixObserver(_observer: AudioMixObserver) {
+          return;
+        },
+      } as unknown) as AudioVideoFacade;
+
+      await device.observeMeetingAudio(audioVideo2);
+      await device.unObserveMeetingAudio(audioVideo2);
+
+      const device2 = await getDevice('foo', options);
+      await device2.observeMeetingAudio(audioVideo);
+      await device2.unObserveMeetingAudio(audioVideo);
+    });
+
     it('reuses nodes if the context is reused', async () => {
       const device = await getDevice('foo');
 
@@ -716,6 +781,7 @@ describe('VoiceFocusDeviceTransformer', () => {
       expect(startA).to.not.eq(startC);
       expect(endA).to.not.eq(endC);
 
+      await device.meetingAudioStreamBecameActive(undefined);
       await device.stop();
     });
 
@@ -786,6 +852,27 @@ describe('VoiceFocusDeviceTransformer', () => {
       });
     });
 
+    it('gives you augumented constraints as Echo Suppression intrinsic device if it is constraints', async () => {
+      const stream = { video: true } as MediaTrackConstraints;
+      const device = await getDevice(stream, undefined, true);
+
+      const inner = await device.intrinsicDevice();
+
+      expect(inner).to.deep.equal({
+        autoGainControl: true,
+        echoCancellation: false,
+        googAutoGainControl: true,
+        googAutoGainControl2: true,
+        googEchoCancellation: false,
+        googEchoCancellation2: false,
+        googHighpassFilter: false,
+        googNoiseSuppression: false,
+        googNoiseSuppression2: false,
+        noiseSuppression: false,
+        video: true,
+      });
+    });
+
     it('gives you the inner device as intrinsic device if it is a stream', async () => {
       const stream = { id: 'i-am-a-stream' } as MediaStream;
       const device = await getDevice(stream);
@@ -830,6 +917,29 @@ describe('VoiceFocusDeviceTransformer', () => {
       });
     });
 
+    it('gives you an Echo Suppression intrinsic device with no built-in AGC', async () => {
+      const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: false } as AGCOptions };
+      const device = await getDevice('foo', options, true);
+
+      const inner = await device.intrinsicDevice();
+
+      expect(inner).to.deep.equal({
+        deviceId: {
+          exact: 'foo',
+        },
+        autoGainControl: false,
+        echoCancellation: false,
+        googAutoGainControl: false,
+        googAutoGainControl2: false,
+        googEchoCancellation: false,
+        googEchoCancellation2: false,
+        googHighpassFilter: false,
+        googNoiseSuppression: false,
+        googNoiseSuppression2: false,
+        noiseSuppression: false,
+      });
+    });
+
     it('gives you an intrinsic device with built-in AGC', async () => {
       const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
       const device = await getDevice('foo', options);
@@ -846,6 +956,29 @@ describe('VoiceFocusDeviceTransformer', () => {
         googAutoGainControl2: true,
         googEchoCancellation: true,
         googEchoCancellation2: true,
+        googHighpassFilter: false,
+        googNoiseSuppression: false,
+        googNoiseSuppression2: false,
+        noiseSuppression: false,
+      });
+    });
+
+    it('gives you an Echo Suppression intrinsic device with built-in AGC', async () => {
+      const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
+      const device = await getDevice('foo', options, true);
+
+      const inner = await device.intrinsicDevice();
+
+      expect(inner).to.deep.equal({
+        deviceId: {
+          exact: 'foo',
+        },
+        autoGainControl: true,
+        echoCancellation: false,
+        googAutoGainControl: true,
+        googAutoGainControl2: true,
+        googEchoCancellation: false,
+        googEchoCancellation2: false,
         googHighpassFilter: false,
         googNoiseSuppression: false,
         googNoiseSuppression2: false,
@@ -875,6 +1008,28 @@ describe('VoiceFocusDeviceTransformer', () => {
       });
     });
 
+    it('gives you an Echo Suppression intrinsic device with no options', async () => {
+      const device = await getDevice('foo', undefined, true);
+
+      const inner = await device.intrinsicDevice();
+
+      expect(inner).to.deep.equal({
+        deviceId: {
+          exact: 'foo',
+        },
+        autoGainControl: true,
+        echoCancellation: false,
+        googAutoGainControl: true,
+        googAutoGainControl2: true,
+        googEchoCancellation: false,
+        googEchoCancellation2: false,
+        googHighpassFilter: false,
+        googNoiseSuppression: false,
+        googNoiseSuppression2: false,
+        noiseSuppression: false,
+      });
+    });
+
     it('gives you an intrinsic device for null', async () => {
       const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
       const device = await getDevice(null, options);
@@ -893,6 +1048,80 @@ describe('VoiceFocusDeviceTransformer', () => {
         googNoiseSuppression2: false,
         noiseSuppression: false,
       });
+    });
+
+    it('gives you an Echo Suppression intrinsic device for null', async () => {
+      const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
+      const device = await getDevice(null, options, true);
+      const inner = await device.intrinsicDevice();
+
+      expect(inner).to.deep.equal({
+        autoGainControl: true,
+        echoCancellation: false,
+        googAutoGainControl: true,
+        googAutoGainControl2: true,
+        googEchoCancellation: false,
+        googEchoCancellation2: false,
+        googHighpassFilter: false,
+        googNoiseSuppression: false,
+        googNoiseSuppression2: false,
+        noiseSuppression: false,
+      });
+    });
+
+    it('adds and remove far-end stream before createAudioNode for an Echo Suppression device', async () => {
+      const domMockBehavior = new DOMMockBehavior();
+      const domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
+      const streamDefault = { id: 'default' } as MediaStream;
+      const streamDefault2 = { id: 'default2' } as MediaStream;
+      const context = ({
+        createMediaStreamDestination() {
+          return new MockMediaStreamNode();
+        },
+        createMediaStreamSource(_stream: MediaStream) {
+          return new MockMediaStreamNode();
+        },
+      } as unknown) as AudioContext;
+      const device = await getDevice('foo', options, true);
+      await device.meetingAudioStreamBecameActive(streamDefault);
+      await device.meetingAudioStreamBecameActive(undefined);
+      await device.createAudioNode(context);
+      await delay(100);
+      await device.meetingAudioStreamBecameInactive(streamDefault2);
+      await device.meetingAudioStreamBecameInactive(streamDefault);
+
+      DefaultDeviceController.closeAudioContext();
+      if (domMockBuilder) {
+        domMockBuilder.cleanup();
+      }
+    });
+
+    it('adds and remove far-end stream after createAudioNode for an Echo Suppression device', async () => {
+      const domMockBehavior = new DOMMockBehavior();
+      const domMockBuilder = new DOMMockBuilder(domMockBehavior);
+
+      const options = { agc: { useVoiceFocusAGC: false, useBuiltInAGC: true } as AGCOptions };
+      const streamDefault = { id: 'default' } as MediaStream;
+      const context = ({
+        createMediaStreamDestination() {
+          return new MockMediaStreamNode();
+        },
+        createMediaStreamSource(_stream: MediaStream) {
+          return new MockMediaStreamNode();
+        },
+      } as unknown) as AudioContext;
+      const device = await getDevice('foo', options, true);
+      await device.createAudioNode(context);
+
+      await device.meetingAudioStreamBecameActive(streamDefault);
+      await delay(100);
+      await device.meetingAudioStreamBecameInactive(streamDefault);
+      DefaultDeviceController.closeAudioContext();
+      if (domMockBuilder) {
+        domMockBuilder.cleanup();
+      }
     });
 
     it('runs through the error case if createAudioNode failed', async () => {
@@ -961,6 +1190,7 @@ describe('VoiceFocusDeviceTransformer', () => {
 
 class MockVoiceFocus {
   throwInCreateNode: boolean = false;
+  nodeOptions: VoiceFocusNodeOptions;
 
   async createNode(
     context: AudioContext,
@@ -1003,5 +1233,12 @@ class MockVoiceFocusNode {
   stop = spy();
 
   // AudioNode.
+  disconnect = spy();
+}
+
+class MockMediaStreamNode {
+  stream: MediaStream;
+
+  connect = spy();
   disconnect = spy();
 }

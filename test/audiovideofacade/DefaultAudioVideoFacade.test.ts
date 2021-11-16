@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 
 import DefaultActiveSpeakerPolicy from '../../src/activespeakerpolicy/DefaultActiveSpeakerPolicy';
+import AudioMixObserver from '../../src/audiomixobserver/AudioMixObserver';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import AudioVideoFacade from '../../src/audiovideofacade/AudioVideoFacade';
@@ -57,6 +58,11 @@ describe('DefaultAudioVideoFacade', () => {
 
   class NoOpContentShareObserver implements ContentShareObserver {
     contentShareDidStop(): void {}
+  }
+
+  class MockAudioMixObserver implements AudioMixObserver {
+    meetingAudioStreamBecameActive(_stream: MediaStream): void {}
+    meetingAudioStreamBecameInactive(_stream: MediaStream): void {}
   }
 
   function enableWebAudio(enabled = true): void {
@@ -240,6 +246,26 @@ describe('DefaultAudioVideoFacade', () => {
       const spy = sinon.spy(controller.audioMixController, 'unbindAudioElement');
       facade.unbindAudioElement();
       assert(spy.calledOnceWith());
+    });
+
+    it('will call getCurrentConferenceStream', () => {
+      const spy = sinon.spy(controller.audioMixController, 'getCurrentMeetingAudioStream');
+      facade.getCurrentMeetingAudioStream();
+      assert(spy.calledOnceWith());
+    });
+
+    it('will call addAudioMixObserver', () => {
+      const spy = sinon.spy(controller.audioMixController, 'addAudioMixObserver');
+      const arg1 = new MockAudioMixObserver();
+      facade.addAudioMixObserver(arg1);
+      assert(spy.calledOnceWith(arg1));
+    });
+
+    it('will call removeAudioMixObserver', () => {
+      const spy = sinon.spy(controller.audioMixController, 'removeAudioMixObserver');
+      const arg1 = new MockAudioMixObserver();
+      facade.removeAudioMixObserver(arg1);
+      assert(spy.calledOnceWith(arg1));
     });
 
     it('will call removeVideoTilesByAttendeeId', () => {

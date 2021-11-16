@@ -3,6 +3,8 @@
 
 import { AGCOptions, VoiceFocusAudioWorkletNode } from '../../libs/voicefocus/types';
 import { NodeArguments, VoiceFocus } from '../../libs/voicefocus/voicefocus';
+import AudioMixObserver from '../audiomixobserver/AudioMixObserver';
+import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import AudioNodeSubgraph from '../devicecontroller/AudioNodeSubgraph';
 import type AudioTransformDevice from '../devicecontroller/AudioTransformDevice';
@@ -14,7 +16,7 @@ import VoiceFocusTransformDeviceObserver from './VoiceFocusTransformDeviceObserv
  * A device that augments a {@link Device} to apply Amazon Voice Focus
  * noise suppression to an audio input.
  */
-class VoiceFocusTransformDevice implements AudioTransformDevice {
+class VoiceFocusTransformDevice implements AudioTransformDevice, AudioMixObserver {
   /** @internal */
   constructor(
     private device: Device,
@@ -23,7 +25,19 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
     private nodeOptions: NodeArguments,
     private failed: boolean = false,
     private node: VoiceFocusAudioWorkletNode | undefined = undefined,
-    private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior()
+    private browserBehavior: DefaultBrowserBehavior = new DefaultBrowserBehavior(),
+
+    /** farEndStreams` maps from a stream that could cause echo or interfere with double talkto an `AudioSourceNode` that we use to mix multiple such streams.*/
+    private farEndStreamToAudioSourceNode: Map<
+      MediaStream,
+      MediaStreamAudioSourceNode | null
+    > = new Map(),
+
+    /** mixDestNode is the Audio Destination Node where farEndStreams got mixed into one stream.*/
+    private mixDestNode: MediaStreamAudioDestinationNode | undefined = undefined,
+
+    /** mixSourceNode is the Audio Source Node where the stream out of mixDestNode got transfered into Audio Worklet Node for processing.*/
+    private mixSourceNode: MediaStreamAudioSourceNode | undefined = undefined
   ) {}
 
   /**
@@ -87,7 +101,10 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
       this.nodeOptions,
       this.failed,
       this.node,
-      this.browserBehavior
+      this.browserBehavior,
+      this.farEndStreamToAudioSourceNode,
+      this.mixDestNode,
+      this.mixSourceNode
     );
   }
 
@@ -95,14 +112,15 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
     if (this.failed) {
       return this.device;
     }
+    const isUsingES = this.nodeOptions.es;
 
     // Turn the Device into constraints with appropriate AGC settings.
     const trackConstraints: MediaTrackConstraints = {
-      echoCancellation: true,
+      echoCancellation: !isUsingES,
       // @ts-ignore
-      googEchoCancellation: true,
+      googEchoCancellation: !isUsingES,
       // @ts-ignore
-      googEchoCancellation2: true,
+      googEchoCancellation2: !isUsingES,
 
       noiseSuppression: false,
 
@@ -174,6 +192,16 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
     try {
       this.node?.disconnect();
       this.node = await this.voiceFocus.createNode(context, options);
+      if (this.nodeOptions.es) {
+        this.mixDestNode = new MediaStreamAudioDestinationNode(context, {
+          channelCount: 1,
+          channelCountMode: 'explicit',
+        });
+        for (const stream of this.farEndStreamToAudioSourceNode.keys()) {
+          this.assignFarEndStreamToAudioSourceNode(stream);
+        }
+        this.createMixSourceNode();
+      }
       const start = this.node;
       const end = this.node;
       return { start, end };
@@ -182,6 +210,28 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
       this.failed = true;
       this.delegate.onFallback(this, e);
       throw e;
+    }
+  }
+
+  async observeMeetingAudio(audioVideo: AudioVideoFacade): Promise<void> {
+    if (!this.nodeOptions.es) {
+      return;
+    }
+    audioVideo.addAudioMixObserver(this);
+    const stream = await audioVideo.getCurrentMeetingAudioStream();
+    if (stream) {
+      this.addFarEndStream(stream);
+    }
+  }
+
+  async unObserveMeetingAudio(audioVideo: AudioVideoFacade): Promise<void> {
+    if (!this.nodeOptions.es) {
+      return;
+    }
+    audioVideo.removeAudioMixObserver(this);
+    const stream = await audioVideo.getCurrentMeetingAudioStream();
+    if (stream) {
+      this.removeFarendStream(stream);
     }
   }
 
@@ -200,6 +250,53 @@ class VoiceFocusTransformDevice implements AudioTransformDevice {
    */
   removeObserver(observer: VoiceFocusTransformDeviceObserver): void {
     this.delegate.removeObserver(observer);
+  }
+
+  async addFarEndStream(activeStream: MediaStream | null): Promise<void> {
+    if (
+      !this.nodeOptions.es ||
+      !activeStream ||
+      this.farEndStreamToAudioSourceNode.has(activeStream)
+    ) {
+      return;
+    }
+    if (this.node) {
+      this.assignFarEndStreamToAudioSourceNode(activeStream);
+    } else {
+      this.farEndStreamToAudioSourceNode.set(activeStream, null);
+    }
+  }
+
+  async removeFarendStream(inactiveStream: MediaStream): Promise<void> {
+    this.farEndStreamToAudioSourceNode.get(inactiveStream)?.disconnect();
+    this.farEndStreamToAudioSourceNode.delete(inactiveStream);
+  }
+
+  async meetingAudioStreamBecameActive(activeStream: MediaStream | null): Promise<void> {
+    this.addFarEndStream(activeStream);
+  }
+
+  async meetingAudioStreamBecameInactive(inactiveStream: MediaStream): Promise<void> {
+    this.removeFarendStream(inactiveStream);
+  }
+
+  private assignFarEndStreamToAudioSourceNode(streamToAdd: MediaStream): void {
+    const streamNodeToAdd = (this.node.context as AudioContext).createMediaStreamSource(
+      streamToAdd
+    );
+    streamNodeToAdd.channelCount = 1;
+    streamNodeToAdd.channelCountMode = 'explicit';
+    this.farEndStreamToAudioSourceNode.set(streamToAdd, streamNodeToAdd);
+    streamNodeToAdd.connect(this.mixDestNode, 0);
+  }
+
+  private createMixSourceNode(): void {
+    this.mixSourceNode = (this.node.context as AudioContext).createMediaStreamSource(
+      this.mixDestNode.stream
+    );
+    this.mixSourceNode.channelCount = 1;
+    this.mixSourceNode.channelCountMode = 'explicit';
+    this.mixSourceNode.connect(this.node, 0, 1);
   }
 }
 

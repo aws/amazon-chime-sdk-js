@@ -63,6 +63,7 @@ import {
   VideoPriorityBasedPolicyConfig,
   VoiceFocusDeviceTransformer,
   VoiceFocusModelComplexity,
+  VoiceFocusModelName,
   VoiceFocusPaths,
   VoiceFocusSpec,
   VoiceFocusTransformDevice,
@@ -111,6 +112,7 @@ declare global {
 // Amazon Voice Focus. If none of these parameters are supplied, the SDK default
 // values will be used.
 const search = new URLSearchParams(document.location.search);
+const VOICE_FOCUS_NAME = search.get('voiceFocusName') || undefined;
 const VOICE_FOCUS_CDN = search.get('voiceFocusCDN') || undefined;
 const VOICE_FOCUS_ASSET_GROUP = search.get('voiceFocusAssetGroup') || undefined;
 const VOICE_FOCUS_REVISION_ID = search.get('voiceFocusRevisionID') || undefined;
@@ -122,7 +124,15 @@ const VOICE_FOCUS_PATHS: VoiceFocusPaths | undefined = VOICE_FOCUS_CDN && {
   models: `${VOICE_FOCUS_CDN}wasm/`,
 };
 
+function voiceFocusName(name: string | undefined = VOICE_FOCUS_NAME): VoiceFocusModelName | undefined {
+  if (name && ['default', 'ns_es'].includes(name)) {
+    return name as VoiceFocusModelName;
+  }
+  return undefined;
+}
+
 const VOICE_FOCUS_SPEC = {
+  name: voiceFocusName(),
   assetGroup: VOICE_FOCUS_ASSET_GROUP,
   revisionID: VOICE_FOCUS_REVISION_ID,
   paths: VOICE_FOCUS_PATHS,
@@ -2398,7 +2408,7 @@ export class DemoMeetingApp
 
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
-    const additionalDevices = ['None', '440 Hz', 'Prerecorded Speech'];
+    const additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Echo'];
     const additionalToggles = [];
 
     // This can't work unless Web Audio is enabled.
@@ -2763,7 +2773,7 @@ export class DemoMeetingApp
         const bytes = await resp.arrayBuffer();
         const audioData = new TextDecoder('utf8').decode(bytes);
         const audio = new Audio('data:audio/mpeg;base64,' + audioData);
-        audio.loop = false;
+        audio.loop = true;
         audio.crossOrigin = 'anonymous';
         audio.play();
         // @ts-ignore
@@ -2774,6 +2784,30 @@ export class DemoMeetingApp
         return streamDestination.stream;
       } catch (e) {
         this.log(`Error fetching audio from ${audioPath}: ${e}`);
+        return null;
+      }
+    }
+
+    // use the speaker output MediaStream with a 50ms delay and a 20% volume reduction as audio input
+    if (value == 'Echo') {
+      try {
+        const speakerStream = await this.audioVideo.getCurrentMeetingAudioStream();
+
+        const audioContext = DefaultDeviceController.getAudioContext();
+        const streamDestination = audioContext.createMediaStreamDestination();
+        const audioSourceNode = audioContext.createMediaStreamSource(speakerStream);
+        const delayNode = audioContext.createDelay(0.05);
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = 0.8;
+
+        // connect the AudioSourceNode, DelayNode and GainNode to the same output destination
+        audioSourceNode.connect(delayNode);
+        delayNode.connect(gainNode);
+        gainNode.connect(streamDestination);
+
+        return streamDestination.stream;
+      } catch (e) {
+        this.log(`Error creating Echo`);
         return null;
       }
     }
@@ -2828,7 +2862,8 @@ export class DemoMeetingApp
       const transformer = await this.getVoiceFocusDeviceTransformer(MAX_VOICE_FOCUS_COMPLEXITY);
       const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner);
       if (vf) {
-        return (this.voiceFocusDevice = vf);
+        await vf.observeMeetingAudio(this.audioVideo);
+        return this.voiceFocusDevice = vf;
       }
     } catch (e) {
       // Fall through.

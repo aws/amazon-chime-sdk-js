@@ -33,6 +33,7 @@ export interface NodeArguments {
     voiceFocusSampleRate?: number;
     enabled?: boolean;
     agc?: AGCOptions;
+    es?: boolean;
 }
 export interface AudioInputOptions {
     spec?: VoiceFocusSpec;

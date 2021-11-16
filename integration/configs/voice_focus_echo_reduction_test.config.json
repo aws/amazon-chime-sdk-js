@@ -1,0 +1,39 @@
+{
+    "`": 1,
+    "name": "voice_focus_echo_reduction_test.config.json %ts",
+    "grids": [],
+    "tests": [
+      {
+        "name": "Voice Focus Echo Reduction Enabled Test %ts",
+        "description": "Voice Focus Echo Reduction Enabled Test",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "VoiceFocusEchoReductionEnabledTest.js",
+        "payload": {
+          "url": "http://localhost:8080/?voiceFocusName=ns_es&voiceFocusRevisionID=8pSGzfw47jwMmbLv531XF4&voiceFocusCDN=https://static.sdkassets.achime.aws/",
+          "port": 30002,
+          "retry": 5
+        }
+      },
+      {
+        "name": "Voice Focus Echo Reduction Disabled Test %ts",
+        "description": "Voice Focus Echo Reduction Disabled Test",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "VoiceFocusEchoReductionDisabledTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "port": 30002,
+          "retry": 5
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "version": "latest",
+        "platform": "MAC"
+      }
+    ]
+  }
+  

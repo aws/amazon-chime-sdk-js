@@ -1243,7 +1243,7 @@ export default class DefaultDeviceController
     streamId = proposedConstraints?.video.streamId;
     /* istanbul ignore next */
     // @ts-ignore
-    return !!streamId && streamId === selection.constraints?.video?.streamId;
+    return !!streamId && streamId === selection?.constraints?.video?.streamId;
   }
 
   private hasSameGroupId(groupId: string, kind: string, device: Device): boolean {

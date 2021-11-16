@@ -129,7 +129,7 @@ const inlineScoreMultiplier = (executionQuanta, usagePreference) => {
     }
     return INTERACTIVITY_MULTIPLE_QUANTA_SCORE_MULTIPLIER * executionQuanta;
 };
-const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executionPreference = 'auto', simdPreference, variantPreference = 'auto', usagePreference, executionQuantaPreference = DEFAULT_EXECUTION_QUANTA, }, allThresholds = PERFORMANCE_THRESHOLDS, logger) => {
+const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executionPreference = 'auto', simdPreference, variantPreference = 'auto', namePreference = 'default', usagePreference, executionQuantaPreference = DEFAULT_EXECUTION_QUANTA, }, allThresholds = PERFORMANCE_THRESHOLDS, logger) => {
     const forceSIMD = (simdPreference === 'force');
     const useSIMD = forceSIMD || (simdPreference !== 'disable' && supportsSIMD);
     const checkScores = duration !== -1;
@@ -137,6 +137,7 @@ const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executio
     const thresholds = useSIMD ? allThresholds.simd : allThresholds.wasm;
     const inlineScore = checkScores ? inlineScoreMultiplier(executionQuantaPreference, usagePreference) * baseScore : 0;
     const workerScore = checkScores ? WORKER_SCORE_MULTIPLIER * baseScore : 0;
+    const name = namePreference;
     const unsupported = (reason) => {
         return {
             supported: false,
@@ -163,6 +164,7 @@ const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executio
             executionApproach,
             variant,
             executionQuanta: (executionApproach === 'inline' ? executionQuantaPreference : undefined),
+            name,
         };
     };
     const resolveVariant = (score, variant, lookup) => {
@@ -236,6 +238,12 @@ const decideExecutionApproach = ({ supportsSIMD, supportsSAB, duration, executio
                     return unsupported(`Performance score ${workerScore} not sufficient for worker use.`);
                 }
                 ;
+                if (name === 'ns_es') {
+                    const reason = 'Requested echo suppression but postMessage executor does not support it.';
+                    logger === null || logger === void 0 ? void 0 : logger.warn(reason);
+                    return { supported: false, reason };
+                }
+                ;
                 return succeed('voicefocus-worker-postMessage-processor', 'worker-postMessage', variant);
             }
         }
@@ -295,7 +303,7 @@ const estimateAndFeatureCheck = (forceSIMD, fetchConfig, estimatorBudget, logger
 });
 const measureAndDecideExecutionApproach = (spec, fetchConfig, logger, thresholds = PERFORMANCE_THRESHOLDS) => __awaiter(void 0, void 0, void 0, function* () {
     let executionPreference = spec.executionPreference;
-    const { usagePreference, variantPreference, simdPreference, estimatorBudget, executionQuantaPreference, } = spec;
+    const { usagePreference, variantPreference, namePreference, simdPreference, estimatorBudget, executionQuantaPreference, } = spec;
     if (usagePreference === 'interactivity' && executionPreference !== 'inline') {
         logger === null || logger === void 0 ? void 0 : logger.debug(`Overriding execution preference ${executionPreference} to reflect interactivity preference.`);
         executionPreference = 'inline';
@@ -319,6 +327,7 @@ const measureAndDecideExecutionApproach = (spec, fetchConfig, logger, thresholds
     return decideExecutionApproach(Object.assign(Object.assign({}, supports), { simdPreference,
         executionPreference,
         variantPreference,
+        namePreference,
         usagePreference,
         executionQuantaPreference }), thresholds, logger);
 });

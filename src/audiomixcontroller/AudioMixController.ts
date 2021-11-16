@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import AudioMixObserver from '../audiomixobserver/AudioMixObserver';
 import AudioMixControllerFacade from './AudioMixControllerFacade';
 
 /**
@@ -33,4 +34,21 @@ export default interface AudioMixController extends AudioMixControllerFacade {
    * use {@link BrowserBehavior.supportsSetSinkId} to check before calling this method.
    */
   bindAudioDevice(device: MediaDeviceInfo | null): Promise<void>;
+
+  /**
+   * Returns the meeting audio stream currently bound to a HTMLAudioElement, or `null` if
+   * there is no current audio stream. This method will typically never reject.
+   */
+  getCurrentMeetingAudioStream(): Promise<MediaStream | null>;
+
+  /**
+   * Add an observer to listen for changes to the current meeting audio stream. The observer
+   * will be notified when a stream is bound or unbound from an audio element in the page.
+   */
+  addAudioMixObserver(observer: AudioMixObserver): void;
+
+  /**
+   * Remove an observer to stop listening for changes to the current meeting audio stream.
+   */
+  removeAudioMixObserver(observer: AudioMixObserver): void;
 }

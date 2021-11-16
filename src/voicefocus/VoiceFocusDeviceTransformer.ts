@@ -199,7 +199,8 @@ export class VoiceFocusDeviceTransformer {
     try {
       const preload = true;
       const [vf, delegate] = await this.allocateVoiceFocus(preload);
-      return new VoiceFocusTransformDevice(device, vf, delegate, nodeOptions);
+      const options = { ...nodeOptions, es: this.spec.name === 'ns_es' };
+      return new VoiceFocusTransformDevice(device, vf, delegate, options);
     } catch (e) {
       // Fall back.
       /* istanbul ignore next */
