@@ -217,16 +217,19 @@ export default class DefaultTransceiverController implements TransceiverControll
     videosToReceive: VideoStreamIdSet
   ): void {
     const videosRemaining = videosToReceive.array();
-
+    // filter out local transceiver and audio transceivers
+    // updateTransceivers() is for video transceivers only
+    transceivers = transceivers.filter(
+      t => t !== this._localCameraTransceiver && this.transceiverIsVideo(t)
+    );
     // Start by handling existing videos
     // Begin counting out index in the the subscription array at 1 since the camera.
     // Always occupies position 0 (whether active or not).
     let n = 1;
     for (const transceiver of transceivers) {
-      if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
-        continue;
-      }
+      // set current subscription to 0, 0 means non exists
       this.videoSubscriptions[n] = 0;
+      // add all active streams to videoSubscriptions
       if (transceiver.direction !== 'inactive') {
         // See if we want this existing transceiver
         // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
@@ -243,40 +246,32 @@ export default class DefaultTransceiverController implements TransceiverControll
               videosRemaining.splice(index, 1);
               break;
             }
+            if (this.videoSubscriptions[n] === 0) {
+              transceiver.direction = 'inactive';
+            }
           }
         }
-      }
-      n += 1;
-    }
-
-    // Next fill in open slots and remove unused
-    n = 1;
-    for (const transceiver of transceivers) {
-      if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
-        continue;
-      }
-
-      if (transceiver.direction === 'inactive' && videosRemaining.length > 0) {
+      // toggle on all inactive transceivers if there are remaining videos
+      } else if (transceiver.direction === 'inactive' && videosRemaining.length > 0) {
         // Fill available slot
         transceiver.direction = 'recvonly';
         const streamId = videosRemaining.shift();
         this.videoSubscriptions[n] = streamId;
         this.streamIdToTransceiver.set(streamId, transceiver);
-      } else {
-        // Remove if no longer subscribed
-        if (this.videoSubscriptions[n] === 0) {
-          transceiver.direction = 'inactive';
-          for (const [streamId, previousTransceiver] of this.streamIdToTransceiver.entries()) {
-            if (transceiver === previousTransceiver) {
-              this.streamIdToTransceiver.delete(streamId);
-            }
+      }
+      // toggle off all remaining transceivers if there's no remaining videos
+      else if (videosRemaining.length === 0) {
+        transceiver.direction = 'inactive';
+        for (const [streamId, previousTransceiver] of this.streamIdToTransceiver.entries()) {
+          if (transceiver === previousTransceiver) {
+            this.streamIdToTransceiver.delete(streamId);
           }
         }
       }
       n += 1;
     }
 
-    // add transceivers for the remaining subscriptions
+    // create new transceivers for the remaining videos
     for (const index of videosRemaining) {
       // @ts-ignore
       const transceiver = this.peer.addTransceiver('video', {
