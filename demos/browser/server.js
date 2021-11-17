@@ -19,17 +19,17 @@ console.info('Using index path', indexPagePath);
 
 const indexPage = fs.readFileSync(indexPagePath);
 
-// Create ans AWS SDK Chime object. Region 'us-east-1' is currently required.
+// Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
 const chime = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
 const sts = new AWS.STS({ region: 'us-east-1' })
 
-// Set the AWS SDK Chime endpoint. The global endpoint is https://meetings-chime.{region}.amazonaws.com'.
-const endpoint = process.env.ENDPOINT || 'https://meetings-chime.us-east-1.amazonaws.com';
-console.info('Using endpoint', endpoint);
+if (process.env.ENDPOINT) {
+  console.info('Using endpoint', process.env.ENDPOINT);
+  chime.endpoint = new AWS.Endpoint(process.env.ENDPOINT);
+}
 
-chime.endpoint = new AWS.Endpoint(endpoint);
 
 const captureS3Destination = process.env.CAPTURE_S3_DESTINATION;
 if (captureS3Destination) {
