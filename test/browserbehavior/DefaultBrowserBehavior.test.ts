@@ -38,9 +38,9 @@ describe('DefaultBrowserBehavior', () => {
   const SAMSUNG_INTERNET_USER_AGENT =
     'Mozilla/5.0 (Linux; Android 11; Pixel 3a XL) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/13.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
   const CHROME_IOS_USER_AGENT =
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/88.0.4324.152 Mobile/14E5239e Safari/602.1';
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.50 (KHTML, like Gecko) CriOS/95.0.4638.50 Mobile/14E5239e Safari/604.1';
   const FIREFOX_IOS_USER_AGENT =
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/29.1.0 Mobile/16B91 Safari/605.1.15';
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/29.1.0 Mobile/16B91 Safari/605.1.15';
   const ELECTRON_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.9.0 Chrome/85.0.4183.93 Electron/10.1.1 Safari/537.36 Sonic Slack_SSB/4.9.0';
   const ELECTRON_WINDOWS_USER_AGENT =
@@ -49,10 +49,17 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (iPhone; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
   const CHROMIUM_WEBVIEW_USER_AGENT =
     'Mozilla/5.0 (Linux; Android 10; LM-G710 Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.115 Mobile Safari/537.36';
+  const IPAD_SAFARI_USER_AGENT =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15';
 
   const setUserAgent = (userAgent: string): void => {
     // @ts-ignore
     navigator.userAgent = userAgent;
+  };
+
+  const setMaxTouchPoint = (n: number): void => {
+    // @ts-ignore
+    navigator.maxTouchPoints = n;
   };
 
   const setHasGlobalChrome = (yes: boolean): void => {
@@ -227,6 +234,21 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
     });
 
+    it('can detect Ipad Safari', () => {
+      setUserAgent(IPAD_SAFARI_USER_AGENT);
+      setMaxTouchPoint(5);
+      expect(new DefaultBrowserBehavior().name()).to.eq('safari');
+      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(15);
+      expect(new DefaultBrowserBehavior().requiresDisablingH264Encoding()).to.be.true;
+      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
+      expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
+      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.true;
+      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
+    });
+
     it('can detect iOS Chrome', () => {
       setUserAgent(ELECTRON_WINDOWS_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.not.eq('crios');
@@ -235,7 +257,8 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('crios');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
-      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(88);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(95);
+      expect(new DefaultBrowserBehavior().requiresDisablingH264Encoding()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;

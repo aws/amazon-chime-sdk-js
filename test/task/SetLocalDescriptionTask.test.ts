@@ -54,6 +54,14 @@ describe('SetLocalDescriptionTask', () => {
       expect(peerLocalSDP).to.be.equal(sdpOffer.sdp);
     });
 
+    it('can be run and succeed in iOS 15.1', async () => {
+      domMockBehavior.browserName = 'ios15.1';
+      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+      await task.run();
+      const peerLocalSDP = context.peer.localDescription.sdp;
+      expect(peerLocalSDP).to.be.equal(sdpOffer.sdp);
+    });
+
     it('can be run and received parameters are correct', async () => {
       class TestPeerConnectionMock extends RTCPeerConnection {
         setLocalDescription(description: RTCSessionDescriptionInit): Promise<void> {
