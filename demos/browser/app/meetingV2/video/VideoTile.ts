@@ -36,6 +36,15 @@ export class DemoVideoTile extends HTMLElement {
             <input type="radio" name="level" value="high" autocomplete="off">High
         </label>
       </form>
+      <h6 class="dropdown-header video-priority-disable-pause-header">Pause for poor netowrk</h6>
+      <form class="btn-group btn-group-toggle video-tile-config-toggle video-priority-disable-pause-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary">
+          <input type="radio" name="level" value="off" autocomplete="off">Off
+        </label>
+        <label class="btn btn-secondary active">
+          <input type="radio" name="level" value="medium" autocomplete="off" checked>On
+        </label>
+      </form>
     </div>
   </div>
 `;
@@ -60,6 +69,8 @@ export class DemoVideoTile extends HTMLElement {
     (this.querySelector('.target-resolution-toggle') as HTMLElement).style.display = display;
     (this.querySelector('.video-priority-header') as HTMLElement).style.display = display;
     (this.querySelector('.video-priority-toggle') as HTMLElement).style.display = display;
+    (this.querySelector('.video-priority-disable-pause-header') as HTMLElement).style.display = display;
+    (this.querySelector('.video-priority-disable-pause-toggle') as HTMLElement).style.display = display;
   }
 
   show(isContent: boolean) {
@@ -161,6 +172,10 @@ export class DemoVideoTile extends HTMLElement {
 
   public get videoPriorityRadioElement(): HTMLFormElement {
     return this.querySelector('.video-priority-toggle');
+  }
+
+  public get videoPriorityPauseEnabledRadioElement(): HTMLFormElement {
+    return this.querySelector('.video-priority-disable-pause-toggle');
   }
 
   async connectedCallback() {

@@ -99,6 +99,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
   tileIndexToPauseEventListener: { [id: number]: (event: Event) => void } = {};
   tileIndexToTargetResolutionEventListener: { [id: number]: (event: Event) => void } = {};
   tileIndexToPriorityEventListener: { [id: number]: (event: Event) => void } = {};
+  tileIndexToPriorityPauseEnabledEventListener: { [id: number]: (event: Event) => void } = {};
 
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
   tileIndexToDemoVideoTile = new Map<number, DemoVideoTile>();
@@ -150,6 +151,10 @@ export default class VideoTileCollection implements AudioVideoObserver {
       demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
       this.tileIndexToPriorityEventListener[tileIndex] = this.createVideoPriorityListener(tileState, demoVideoTile.videoPriorityRadioElement);
       demoVideoTile.videoPriorityRadioElement.addEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
+
+      demoVideoTile.videoPriorityPauseEnabledRadioElement.removeEventListener('click', this.tileIndexToPriorityPauseEnabledEventListener[tileIndex]);
+      this.tileIndexToPriorityPauseEnabledEventListener[tileIndex] = this.createVideoPriorityPauseEnabledListener(tileState, demoVideoTile.videoPriorityPauseEnabledRadioElement);
+      demoVideoTile.videoPriorityPauseEnabledRadioElement.addEventListener('click', this.tileIndexToPriorityPauseEnabledEventListener[tileIndex]);
     }
 
     const videoElement = demoVideoTile.videoElement;
@@ -345,6 +350,19 @@ export default class VideoTileCollection implements AudioVideoObserver {
       this.logger.info(`priority changed for: ${attendeeId} to ${value}`);
       const priority = ConfigLevelToVideoPriority[value as ConfigLevel];
       this.videoPreferenceManager.setAttendeePriority(attendeeId, priority);
+    }
+  }
+
+  private createVideoPriorityPauseEnabledListener(tileState: VideoTileState, form: HTMLFormElement): (event: Event) => void {
+    return (event: Event): void => {
+      if (!(event.target instanceof HTMLInputElement)) {
+        // Ignore the Label event which will have a stale value
+        return;
+      }
+      const attendeeId = tileState.boundAttendeeId;
+      const value = (form.elements.namedItem('level') as RadioNodeList).value;
+      this.logger.info(`downlink policy enabled for: ${attendeeId} changed to ${value}`);
+      this.videoPreferenceManager.setAttendeeDisableDownlinkPolicyPause(attendeeId, value === 'off');
     }
   }
 

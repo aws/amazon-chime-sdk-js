@@ -10,6 +10,14 @@ export default class VideoPreference implements Eq, PartialOrd {
    */
   targetSize: TargetDisplaySize;
 
+  /**
+   * Do not pause videos, and only allow switching between simulcast streams.
+   *
+   * WARNING: Excessive setting to `true` for multiple videos may lead to video freezes
+   * across more sources then if not done so.
+   */
+  disableDownlinkPolicyPause: boolean = false;
+
   /** Initializes a [[VideoPreference]] with the given properties.
    *
    * @param attendeeId Attendee ID of the client

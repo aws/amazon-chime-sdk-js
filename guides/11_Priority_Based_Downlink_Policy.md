@@ -39,6 +39,7 @@ Once you are connected to the meeting, builders will be notified of available re
 * _*attendeeId:*_  The attendee ID this video tile belongs to. Note that screen share video will have a suffix of #content
 * _*priority:*_ Provides relative priority of this attendee from 1 to x, where 1 is the highest priority. Remote videos are allowed to have the same priority signifying equal priority between them.
 * *_targetSize:_* Optional parameter to control maximum simulcast layer to receive.
+* *_disableDownlinkPolicyPause:_* Optional parameter to disable the ability to pause videos, and only allow switching between simulcast streams. WARNING: Excessive setting to `true` for multiple videos may lead to video freezes across more sources then if not done so.
 
 The default preference set the same priority 1 for all attendees. The target size will be:
 - High if there are 1-4 videos.

@@ -104,6 +104,7 @@
 						<li><em><em>attendeeId:</em></em>  The attendee ID this video tile belongs to. Note that screen share video will have a suffix of #content</li>
 						<li><em><em>priority:</em></em> Provides relative priority of this attendee from 1 to x, where 1 is the highest priority. Remote videos are allowed to have the same priority signifying equal priority between them.</li>
 						<li><em><em>targetSize:</em></em> Optional parameter to control maximum simulcast layer to receive.</li>
+						<li><em><em>disableDownlinkPolicyPause:</em></em> Optional parameter to disable the ability to pause videos, and only allow switching between simulcast streams. WARNING: Excessive setting to <code>true</code> for multiple videos may lead to video freezes across more sources then if not done so.</li>
 					</ul>
 					<p>The default preference set the same priority 1 for all attendees. The target size will be:</p>
 					<ul>

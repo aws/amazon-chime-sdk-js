@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add error name for custom device controller error.
+- Added configuration to `VideoPreference` to disable network pauses for a given video source.
 
 ### Removed
 
@@ -37,10 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix priority downlink policy bandwidth estimation metrics to work with Safari.
-- Add a workaround to switch to VP8 for iOS 15.1 due to [Safari bug](https://bugs.webkit.org/show_bug.cgi?id=232416) that causes crash with H.264 encoding.
-- Add a workaround to switch to VP8 for iOS 15.1 due to [Safari bug](https://bugs.webkit.org/show_bug.cgi?id=232416) 
-  for iOS WebView that causes crash with H.264 encoding.  
-- Make `tileWillBePausedByDownlinkPolicy` observer update synchronous without `setTimeout`.
 
 ### Changed
 

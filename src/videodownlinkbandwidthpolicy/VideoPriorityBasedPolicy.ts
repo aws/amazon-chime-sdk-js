@@ -847,7 +847,10 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
           for (const info of remoteInfos) {
             if (info.attendeeId === preference.attendeeId) {
               if (!chosenStreams.some(stream => stream.groupId === info.groupId)) {
-                if (rates.chosenTotalBitrate + info.avgBitrateKbps <= rates.targetDownlinkBitrate) {
+                if (
+                  preference.disableDownlinkPolicyPause ||
+                  rates.chosenTotalBitrate + info.avgBitrateKbps <= rates.targetDownlinkBitrate
+                ) {
                   chosenStreams.push(info);
                   rates.chosenTotalBitrate += info.avgBitrateKbps;
                 } else if (rates.deltaToNextUpgrade === 0) {

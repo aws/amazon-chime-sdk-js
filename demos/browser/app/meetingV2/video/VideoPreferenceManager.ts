@@ -50,6 +50,17 @@ export default class VideoPreferenceManager implements AudioVideoObserver {
     this.updateDownlinkPreference();
   }
 
+  setAttendeeDisableDownlinkPolicyPause(attendeeId: string, disable: boolean) {
+    if (this.attendeeIdToVideoPreference.has(attendeeId)) {
+      this.attendeeIdToVideoPreference.get(attendeeId).disableDownlinkPolicyPause = disable
+    } else {
+      let newPreference = new VideoPreference(attendeeId, VideoPreferenceManager.DefaultVideoTilePriority, VideoPreferenceManager.DefaultVideoTileTargetDisplaySize);
+      newPreference.disableDownlinkPolicyPause = true;
+      this.attendeeIdToVideoPreference.set(attendeeId, newPreference);
+    }
+    this.updateDownlinkPreference();
+  }
+
   private updateDownlinkPreference(): void {
     if (this.attendeeIdToVideoPreference.size === 0) {
       // Preserve default behavior if no preferences have been set yet
