@@ -320,9 +320,11 @@ describe('VoiceFocusDeviceTransformer', () => {
           const logger = new MockLogger();
           const joinInfo: any = {
             Meeting: {
-              MeetingFeatures: {
-                Audio: {
-                  VoiceFocusEchoReduction: 'AVAILABLE'
+              Meeting: {
+                MeetingFeatures: {
+                  Audio: {
+                    VoiceFocusEchoReduction: 'AVAILABLE'
+                  }
                 }
               }
             },
@@ -336,9 +338,11 @@ describe('VoiceFocusDeviceTransformer', () => {
           const logger = new MockLogger();
           const joinInfo: any = {
             Meeting: {
-              MeetingFeatures: {
-                Audio: {
-                  VoiceFocusEchoReduction: 'AVAILABLE'
+              Meeting: {
+                MeetingFeatures: {
+                  Audio: {
+                    VoiceFocusEchoReduction: 'AVAILABLE'
+                  }
                 }
               }
             },
@@ -695,9 +699,11 @@ describe('VoiceFocusDeviceTransformer', () => {
 
       const joinInfo: any = {
         Meeting: {
-          MeetingFeatures: {
-            Audio: {
-              VoiceFocusEchoReduction: 'AVAILABLE'
+          Meeting: {
+            MeetingFeatures: {
+              Audio: {
+                VoiceFocusEchoReduction: 'AVAILABLE'
+              }
             }
           }
         },

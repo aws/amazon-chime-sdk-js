@@ -75,7 +75,6 @@ exports.join = async(event, context) => {
         }
       };
     } 
-  }
     console.info('Creating new meeting: ' + JSON.stringify(request));
     meeting = await chime.createMeeting(request).promise();
 

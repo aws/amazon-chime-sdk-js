@@ -138,11 +138,11 @@ export class VoiceFocusDeviceTransformer {
     createAttendeeResponse?: any
   ): Promise<VoiceFocusDeviceTransformer> {
     if (createMeetingResponse) {
-      if (createMeetingResponse.Meeting) {
+      if (createMeetingResponse.Meeting.Meeting) {
         createMeetingResponse = createMeetingResponse.Meeting;
       }
     }
-    const meetingFeaturesAllowsES = createMeetingResponse?.MeetingFeatures?.Audio?.VoiceFocusEchoReduction === 'AVAILABLE';
+    const meetingFeaturesAllowsES = createMeetingResponse?.Meeting?.MeetingFeatures?.Audio?.VoiceFocusEchoReduction === 'AVAILABLE';
     const forbiddenConfig = config && config.supported === true && config.model.name === 'ns_es' && !meetingFeaturesAllowsES;
     const forbiddenSpec = spec.name === 'ns_es' && !meetingFeaturesAllowsES;
     if (forbiddenConfig || forbiddenSpec) {
