@@ -323,7 +323,7 @@ describe('VoiceFocusDeviceTransformer', () => {
               Meeting: {
                 MeetingFeatures: {
                   Audio: {
-                    VoiceFocusEchoReduction: 'AVAILABLE'
+                    EchoReduction: 'AVAILABLE'
                   }
                 }
               }
@@ -341,7 +341,7 @@ describe('VoiceFocusDeviceTransformer', () => {
               Meeting: {
                 MeetingFeatures: {
                   Audio: {
-                    VoiceFocusEchoReduction: 'AVAILABLE'
+                    EchoReduction: 'AVAILABLE'
                   }
                 }
               }
@@ -358,7 +358,7 @@ describe('VoiceFocusDeviceTransformer', () => {
             Meeting: {
               MeetingFeatures: {
                 Audio: {
-                  VoiceFocusEchoReduction: 'UNAVAILABLE'
+                  EchoReduction: 'UNAVAILABLE'
                 }
               }
             },
@@ -702,7 +702,7 @@ describe('VoiceFocusDeviceTransformer', () => {
           Meeting: {
             MeetingFeatures: {
               Audio: {
-                VoiceFocusEchoReduction: 'AVAILABLE'
+                EchoReduction: 'AVAILABLE'
               }
             }
           }

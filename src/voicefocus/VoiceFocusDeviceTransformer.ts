@@ -142,7 +142,7 @@ export class VoiceFocusDeviceTransformer {
         createMeetingResponse = createMeetingResponse.Meeting;
       }
     }
-    const meetingFeaturesAllowsES = createMeetingResponse?.Meeting?.MeetingFeatures?.Audio?.VoiceFocusEchoReduction === 'AVAILABLE';
+    const meetingFeaturesAllowsES = createMeetingResponse?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE';
     const forbiddenConfig = config && config.supported === true && config.model.name === 'ns_es' && !meetingFeaturesAllowsES;
     const forbiddenSpec = spec.name === 'ns_es' && !meetingFeaturesAllowsES;
     if (forbiddenConfig || forbiddenSpec) {

@@ -139,7 +139,7 @@ const VOICE_FOCUS_SPEC = {
 };
 
 function getVoiceFocusSpec(joinInfo: any): VoiceFocusSpec {
-  const es = joinInfo.Meeting.Meeting?.MeetingFeatures?.Audio?.VoiceFocusEchoReduction === 'AVAILABLE';
+  const es = joinInfo.Meeting.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE';
   let spec: VoiceFocusSpec = VOICE_FOCUS_SPEC;
   if (!spec.name) {
     spec.name =  es ? voiceFocusName('ns_es') : voiceFocusName('default');

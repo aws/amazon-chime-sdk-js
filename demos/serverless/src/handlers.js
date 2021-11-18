@@ -70,8 +70,8 @@ exports.join = async(event, context) => {
     if (query.ns_es === 'true') {
       request.MeetingFeatures = {
         Audio: {
-          // The VoiceFocusEchoReduction parameter helps the user enable and use Amazon Echo Reduction.
-          VoiceFocusEchoReduction: 'AVAILABLE'
+          // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+          EchoReduction: 'AVAILABLE'
         }
       };
     } 
