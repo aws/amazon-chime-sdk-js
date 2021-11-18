@@ -23,8 +23,8 @@ const javaScriptPage = fs.readFileSync(`dist/${javaScriptFileName}`);
 // the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
 
-// Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
-chime.endpoint = new AWS.Endpoint(process.env.ENDPOINT || 'https://service.chime.aws.amazon.com');
+// Set the AWS SDK Chime endpoint. The global endpoint is https://meetings-chime.us-east-1.amazonaws.com .
+chime.endpoint = new AWS.Endpoint(process.env.ENDPOINT || 'https://meetings-chime.us-east-1.amazonaws.com ');
 
 // Start an HTTP server to serve the index page and handle meeting actions
 http.createServer({}, async (request, response) => {

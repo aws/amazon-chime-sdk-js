@@ -14,7 +14,7 @@ const ddb = new AWS.DynamoDB();
 // the meeting is hosted in.
 const chime = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
 
-// Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
+// Set the AWS SDK Chime endpoint. The global endpoint is https://meetings-chime.us-east-1.amazonaws.com .
 chime.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT);
 
 // Read resource names from the environment
@@ -61,11 +61,6 @@ exports.join = async(event, context) => {
       // Any meeting ID you wish to associate with the meeting.
       // For simplicity here, we use the meeting title.
       ExternalMeetingId: query.title.substring(0, 64),
-  
-      // Tags associated with the meeting. They can be used in cost allocation console
-      Tags: [
-        { Key: 'Department', Value: 'RND'}
-      ]
     };
     if (query.ns_es === 'true') {
       request.MeetingFeatures = {
