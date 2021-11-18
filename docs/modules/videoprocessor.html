@@ -231,6 +231,48 @@
   <span class="hljs-keyword">return</span> buffers;
 }
 </code></pre>
+					<a href="#building-an-overlay-processor" id="building-an-overlay-processor" style="color: inherit; text-decoration: none;">
+						<h3>Building an overlay processor</h3>
+					</a>
+					<p>An overlay processor can be a customized processor for loading an external image:</p>
+					<pre><code class="language-typescript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">VideoLoadImageProcessor</span> <span class="hljs-title">implements</span> <span class="hljs-title">VideoFrameProcessor</span> </span>{
+  <span class="hljs-comment">// Create a HTMLCanvasElement</span>
+  <span class="hljs-keyword">private</span> targetCanvas: HTMLCanvasElement = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&#x27;canvas&#x27;</span>) <span class="hljs-keyword">as</span> HTMLCanvasElement;
+  <span class="hljs-comment">// Create a HTMLImageElement</span>
+  <span class="hljs-keyword">private</span> image = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&quot;img&quot;</span>) <span class="hljs-keyword">as</span> HTMLImageElement;
+
+  <span class="hljs-comment">// Load the image from source</span>
+  loadImage(<span class="hljs-string">&quot;https://someurl.any/page/bg.jpg&quot;</span>, image);
+
+  <span class="hljs-keyword">private</span> targetCanvasCtx: CanvasRenderingContext2D = <span class="hljs-built_in">this</span>.targetCanvas.getContext(<span class="hljs-string">&#x27;2d&#x27;</span>) <span class="hljs-keyword">as</span> CanvasRenderingContext2D;
+
+  <span class="hljs-comment">// Render the image on the canvas</span>
+  <span class="hljs-built_in">this</span>.targetCanvasCtx.drawImage(image, image.width, image.height);
+
+  <span class="hljs-keyword">private</span> canvasVideoFrameBuffer = <span class="hljs-keyword">new</span> CanvasVideoFrameBuffer(<span class="hljs-built_in">this</span>.targetCanvas);
+
+  <span class="hljs-comment">// Function to load an image from an external source (absolute URL) and configure CORS to make sure the image is successfully loaded</span>
+  <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadImage</span>(<span class="hljs-params">url: <span class="hljs-built_in">string</span>, elem: HTMLImageElement</span>): <span class="hljs-title">Promise</span>&lt;<span class="hljs-title">HTMLImageElement</span>&gt; </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
+      elem.onload = (): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> resolve(elem);
+      elem.onerror = reject;
+      elem.src = url;
+      <span class="hljs-comment">// to configure CORS access for the fetch of the new image if it is not hosted on the same server</span>
+      elem.crossOrigin = <span class="hljs-string">&quot;anonymous&quot;</span>;
+    });
+  }
+
+  <span class="hljs-keyword">async</span> process(buffers: VideoFrameBuffer[]): <span class="hljs-built_in">Promise</span>&lt;VideoFrameBuffer[]&gt; {
+    <span class="hljs-keyword">const</span> canvas = buffers[<span class="hljs-number">0</span>].asCanvasElement();
+    <span class="hljs-comment">// copy the frame to the intermediate canvas</span>
+    <span class="hljs-built_in">this</span>.targetCanvasCtx.drawImage(canvas, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>));
+
+    <span class="hljs-comment">// replace the video frame with the external image one for subsequent processor</span>
+    buffers[<span class="hljs-number">0</span>] = <span class="hljs-built_in">this</span>.canvasVideoFrameBuffer;
+    <span class="hljs-keyword">return</span> buffers;
+  }
+}
+</code></pre>
 					<a href="#video-processing-usage" id="video-processing-usage" style="color: inherit; text-decoration: none;">
 						<h2>Video Processing Usage</h2>
 					</a>
