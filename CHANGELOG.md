@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add documentation in video processor on how to add a customized professor with new image loading.
 
 ### Removed
 
