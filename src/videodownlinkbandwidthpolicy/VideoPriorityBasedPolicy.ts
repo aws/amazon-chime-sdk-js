@@ -247,11 +247,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   forEachObserver(observerFunc: (observer: VideoDownlinkObserver) => void): void {
     for (const observer of this.observerQueue) {
-      setTimeout(() => {
-        if (this.observerQueue.has(observer)) {
-          observerFunc(observer);
-        }
-      }, 0);
+      observerFunc(observer);
     }
   }
 
