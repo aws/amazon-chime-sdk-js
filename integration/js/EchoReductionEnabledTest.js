@@ -6,9 +6,9 @@ const { v4: uuidv4 } = require('uuid');
 const {Window} = require('./utils/Window');
 const { waitAround } = require('kite-common/util/TestUtils');
 
-class VoiceFocusEchoReductionEnabledTest extends SdkBaseTest {
+class EchoReductionEnabledTest extends SdkBaseTest {
   constructor(name, kiteConfig) {
-    super(name, kiteConfig, "Voice Focus Echo Reduction Enabled Test");
+    super(name, kiteConfig, "Echo Reduction Enabled Test");
   }
 
   async runIntegrationTest() {
@@ -55,10 +55,10 @@ class VoiceFocusEchoReductionEnabledTest extends SdkBaseTest {
   }
 }
 
-module.exports = VoiceFocusEchoReductionEnabledTest;
+module.exports = EchoReductionEnabledTest;
 
 (async () => {
   const kiteConfig = await TestUtils.getKiteConfig(__dirname);
-  let test = new VoiceFocusEchoReductionEnabledTest('Voice Focus Echo Reduction Enabled Test', kiteConfig);
+  let test = new EchoReductionEnabledTest('Echo Reduction Enabled Test', kiteConfig);
   await test.run();
 })();

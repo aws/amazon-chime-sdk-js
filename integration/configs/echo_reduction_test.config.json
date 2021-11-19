@@ -1,14 +1,14 @@
 {
     "`": 1,
-    "name": "voice_focus_echo_reduction_test.config.json %ts",
+    "name": "echo_reduction_test.config.json %ts",
     "grids": [],
     "tests": [
       {
-        "name": "Voice Focus Echo Reduction Enabled Test %ts",
-        "description": "Voice Focus Echo Reduction Enabled Test",
+        "name": "Echo Reduction Enabled Test %ts",
+        "description": "Echo Reduction Enabled Test",
         "tupleSize": 1,
         "noOfThreads": 1,
-        "testImpl": "VoiceFocusEchoReductionEnabledTest.js",
+        "testImpl": "EchoReductionEnabledTest.js",
         "payload": {
           "url": "http://localhost:8080/?voiceFocusRevisionID=ptCWCoMSFmUNqs6JXcVamv",
           "port": 30002,
@@ -16,11 +16,11 @@
         }
       },
       {
-        "name": "Voice Focus Echo Reduction Disabled Test %ts",
-        "description": "Voice Focus Echo Reduction Disabled Test",
+        "name": "Echo Reduction Disabled Test %ts",
+        "description": "Echo Reduction Disabled Test",
         "tupleSize": 1,
         "noOfThreads": 1,
-        "testImpl": "VoiceFocusEchoReductionDisabledTest.js",
+        "testImpl": "EchoReductionDisabledTest.js",
         "payload": {
           "url": "http://localhost:8080/",
           "port": 30002,
