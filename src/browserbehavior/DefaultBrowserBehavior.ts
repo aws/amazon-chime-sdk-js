@@ -280,8 +280,8 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   requiresDisablingH264Encoding(): boolean {
     return (
-      (this.isIOSSafari() && this.version() === '15.1.0') ||
-      ((this.isIOSChrome() || this.isIOSFirefox()) && /( OS 15_1 )/i.test(navigator.userAgent))
+      (this.isIOSSafari() || this.isIOSChrome() || this.isIOSFirefox()) &&
+      (this.version() === '15.1.0' || /( OS 15_1)/i.test(navigator.userAgent))
     );
   }
 
