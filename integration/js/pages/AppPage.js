@@ -530,9 +530,20 @@ class AppPage {
     return classes.includes('vf-active');
   }
 
+  // enable voice focus in lobby if not enabled
   async enableVoiceFocusInLobby() {
     const elem = await this.driver.findElement(elements.addVoiceFocusInput);
-    return clickElement(this.driver, elem);
+    if ( !elem.isSelected() ){
+      return clickElement(this.driver, elem);
+    }
+  }
+
+  // disable voice focus in lobby if enabled
+  async disableVoiceFocusInLobby() {
+    const elem = await this.driver.findElement(elements.addVoiceFocusInput);
+    if ( elem.isSelected() ){
+      return clickElement(this.driver, elem);
+    }
   }
 
   async isJoiningMeeting() {
