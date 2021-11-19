@@ -145,6 +145,9 @@ function serve(host = '127.0.0.1:8080') {
         const languageCode = requestUrl.query.language;
         const region = requestUrl.query.region;
         let transcriptionConfiguration = {};
+        const transcriptionStreamParams = JSON.parse(requestUrl.query.transcriptionStreamParams);
+        const contentIdentification = requestUrl.query.contentIdentification;
+        const piiEntityTypes = requestUrl.query.piiEntityTypes;
         if (requestUrl.query.engine === 'transcribe') {
           transcriptionConfiguration = {
             EngineTranscribeSettings: {
@@ -153,6 +156,24 @@ function serve(host = '127.0.0.1:8080') {
           };
           if (region) {
             transcriptionConfiguration.EngineTranscribeSettings.Region = region;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('contentIdentificationType')) {
+            transcriptionConfiguration.EngineTranscribeSettings.ContentIdentificationType = transcriptionStreamParams.contentIdentificationType;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('contentRedactionType')) {
+            transcriptionConfiguration.EngineTranscribeSettings.ContentRedactionType = transcriptionStreamParams.contentRedactionType;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('enablePartialResultsStability')) {
+            transcriptionConfiguration.EngineTranscribeSettings.EnablePartialResultsStabilization = transcriptionStreamParams.enablePartialResultsStability;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('partialResultsStability')) {
+            transcriptionConfiguration.EngineTranscribeSettings.PartialResultsStability = transcriptionStreamParams.partialResultsStability;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('piiEntityTypes')) {
+            transcriptionConfiguration.EngineTranscribeSettings.PiiEntityTypes = transcriptionStreamParams.piiEntityTypes;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('languageModelName')) {
+            transcriptionConfiguration.EngineTranscribeSettings.LanguageModelName = transcriptionStreamParams.languageModelName;
           }
         } else if (requestUrl.query.engine === 'transcribe_medical') {
           transcriptionConfiguration = {
@@ -164,6 +185,9 @@ function serve(host = '127.0.0.1:8080') {
           };
           if (region) {
             transcriptionConfiguration.EngineTranscribeMedicalSettings.Region = region;
+          }
+          if (transcriptionStreamParams.hasOwnProperty('contentIdentificationType')) {
+            transcriptionConfiguration.EngineTranscribeMedicalSettings.ContentIdentificationType = transcriptionStreamParams.contentIdentificationType;
           }
         } else {
           return response(400, 'application/json', JSON.stringify({

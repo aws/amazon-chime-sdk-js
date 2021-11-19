@@ -9,6 +9,7 @@ import {
 } from '../signalingprotocol/SignalingProtocol';
 import Transcript from './Transcript';
 import TranscriptAlternative from './TranscriptAlternative';
+import TranscriptEntity from './TranscriptEntity';
 import TranscriptionStatus from './TranscriptionStatus';
 import TranscriptionStatusType from './TranscriptionStatusType';
 import TranscriptItem from './TranscriptItem';
@@ -95,6 +96,14 @@ export class TranscriptEventConverter {
                 transcriptItem.vocabularyFilterMatch = item.vocabularyFilterMatch;
               }
 
+              if (item.hasOwnProperty('stable')) {
+                transcriptItem.stable = item.stable;
+              }
+
+              if (item.hasOwnProperty('confidence')) {
+                transcriptItem.confidence = item.confidence;
+              }
+
               switch (item.type) {
                 case SdkTranscriptItem.Type.PRONUNCIATION:
                   transcriptItem.type = TranscriptItemType.PRONUNCIATION;
@@ -105,6 +114,24 @@ export class TranscriptEventConverter {
               }
 
               transcriptAlternative.items.push(transcriptItem);
+            }
+
+            for (const entity of alternative.entities) {
+              if (!transcriptAlternative.entities) {
+                transcriptAlternative.entities = [];
+              }
+              const transcriptEntity: TranscriptEntity = {
+                category: entity.category,
+                confidence: entity.confidence,
+                content: entity.content,
+                startTimeMs: entity.startTime as number,
+                endTimeMs: entity.endTime as number,
+              };
+
+              if (entity.type) {
+                transcriptEntity.type = entity.type;
+              }
+              transcriptAlternative.entities.push(transcriptEntity);
             }
 
             transcriptResult.alternatives.push(transcriptAlternative);
