@@ -318,17 +318,18 @@ describe('VoiceFocusDeviceTransformer', () => {
 
         it('runs through the error case if the JoinInfo allows echo suppression but the spec is default', async () => {
           const logger = new MockLogger();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const joinInfo: any = {
             Meeting: {
               Meeting: {
                 MeetingFeatures: {
                   Audio: {
-                    EchoReduction: 'AVAILABLE'
-                  }
-                }
-              }
+                    EchoReduction: 'AVAILABLE',
+                  },
+                },
+              },
             },
-            Attendee: { Attendee: {} }
+            Attendee: { Attendee: {} },
           };
           VoiceFocusDeviceTransformer.create({ name: 'default' }, {}, goodEsConfig, joinInfo);
           expect(logger.error.calledWith('Echo Reduction requested but not enabled.'));
@@ -336,33 +337,40 @@ describe('VoiceFocusDeviceTransformer', () => {
 
         it('runs through the error case if the JoinInfo.Meeting allows echo suppression but the spec is default', async () => {
           const logger = new MockLogger();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const joinInfo: any = {
             Meeting: {
               Meeting: {
                 MeetingFeatures: {
                   Audio: {
-                    EchoReduction: 'AVAILABLE'
-                  }
-                }
-              }
+                    EchoReduction: 'AVAILABLE',
+                  },
+                },
+              },
             },
-            Attendee: { Attendee: {} }
+            Attendee: { Attendee: {} },
           };
-          VoiceFocusDeviceTransformer.create({ name: 'default' }, {}, goodEsConfig, joinInfo.Meeting);
+          VoiceFocusDeviceTransformer.create(
+            { name: 'default' },
+            {},
+            goodEsConfig,
+            joinInfo.Meeting
+          );
           expect(logger.error.calledWith('Echo Reduction requested but not enabled.'));
         });
 
         it('runs through the error case if the spec allows echo suppression but the CCP flag is UNAVAILABLE', async () => {
           const logger = new MockLogger();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const joinInfo: any = {
             Meeting: {
               MeetingFeatures: {
                 Audio: {
-                  EchoReduction: 'UNAVAILABLE'
-                }
-              }
+                  EchoReduction: 'UNAVAILABLE',
+                },
+              },
             },
-            Attendee: {Attendee: {}}
+            Attendee: { Attendee: {} },
           };
           VoiceFocusDeviceTransformer.create({ name: 'ns_es' }, {}, goodConfig, joinInfo);
           expect(logger.error.calledWith('Echo Reduction requested but not enabled.'));
@@ -697,20 +705,26 @@ describe('VoiceFocusDeviceTransformer', () => {
       isSupported.callsFake(async () => true);
       configure.callsFake(async () => supportedConfig);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const joinInfo: any = {
         Meeting: {
           Meeting: {
             MeetingFeatures: {
               Audio: {
-                EchoReduction: 'AVAILABLE'
-              }
-            }
-          }
+                EchoReduction: 'AVAILABLE',
+              },
+            },
+          },
         },
-        Attendee: { Attendee: {} }
+        Attendee: { Attendee: {} },
       };
-      
-      const transformer = await VoiceFocusDeviceTransformer.create({ name: 'ns_es' }, {}, undefined, joinInfo);
+
+      const transformer = await VoiceFocusDeviceTransformer.create(
+        { name: 'ns_es' },
+        {},
+        undefined,
+        joinInfo
+      );
       return transformer;
     }
 

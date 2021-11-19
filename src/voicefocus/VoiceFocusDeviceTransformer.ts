@@ -134,7 +134,9 @@ export class VoiceFocusDeviceTransformer {
     spec: VoiceFocusSpec = {},
     options: VoiceFocusDeviceOptions = {},
     config?: VoiceFocusConfig,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createMeetingResponse?: any,
+    // eslint-disable-next-line
     createAttendeeResponse?: any
   ): Promise<VoiceFocusDeviceTransformer> {
     if (createMeetingResponse) {
@@ -142,8 +144,13 @@ export class VoiceFocusDeviceTransformer {
         createMeetingResponse = createMeetingResponse.Meeting;
       }
     }
-    const meetingFeaturesAllowsES = createMeetingResponse?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE';
-    const forbiddenConfig = config && config.supported === true && config.model.name === 'ns_es' && !meetingFeaturesAllowsES;
+    const meetingFeaturesAllowsES =
+      createMeetingResponse?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE';
+    const forbiddenConfig =
+      config &&
+      config.supported === true &&
+      config.model.name === 'ns_es' &&
+      !meetingFeaturesAllowsES;
     const forbiddenSpec = spec.name === 'ns_es' && !meetingFeaturesAllowsES;
     if (forbiddenConfig || forbiddenSpec) {
       throw new Error('Echo Reduction requested but not enabled.');
