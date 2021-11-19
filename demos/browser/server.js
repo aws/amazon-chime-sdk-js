@@ -145,7 +145,10 @@ function serve(host = '127.0.0.1:8080') {
         const languageCode = requestUrl.query.language;
         const region = requestUrl.query.region;
         let transcriptionConfiguration = {};
-        const transcriptionStreamParams = JSON.parse(requestUrl.query.transcriptionStreamParams);
+        let transcriptionStreamParams = {};
+        if (requestUrl.query.transcriptionStreamParams){
+          transcriptionStreamParams = JSON.parse(requestUrl.query.transcriptionStreamParams);
+        } 
         const contentIdentification = requestUrl.query.contentIdentification;
         const piiEntityTypes = requestUrl.query.piiEntityTypes;
         if (requestUrl.query.engine === 'transcribe') {

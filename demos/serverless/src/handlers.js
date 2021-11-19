@@ -111,7 +111,10 @@ exports.start_transcription = async (event, context) => {
   const languageCode = event.queryStringParameters.language;
   const region = event.queryStringParameters.region;
   let transcriptionConfiguration = {};
-  const transcriptionStreamParams = JSON.parse(event.queryStringParameters.transcriptionStreamParams);
+  let transcriptionStreamParams = {};
+  if (event.queryStringParameters.transcriptionStreamParams) {
+    transcriptionStreamParams = JSON.parse(event.queryStringParameters.transcriptionStreamParams);
+  }
   if (event.queryStringParameters.engine === 'transcribe') {
     transcriptionConfiguration = {
       EngineTranscribeSettings: {
