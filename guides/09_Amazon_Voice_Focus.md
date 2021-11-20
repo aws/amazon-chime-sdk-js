@@ -286,7 +286,7 @@ Enabling Voice Focus with Echo Reduction is a two step process:
 Create your meeting by calling the CreateMeeting API and specifying the Echo Reduction flag as `'AVAILABLE'`.
 
 ```typescript
-/* Create meeting */
+// Create meeting 
 const meetingInfo = await chime.createMeeting({
   ...
   MeetingFeatures: {
@@ -296,7 +296,7 @@ const meetingInfo = await chime.createMeeting({
   } 
 }).promise();
 
-/* Add attendee */
+// Add attendee 
 const attendeeInfo = await chime.createAttendee({...});
 const joinInfo = { 
   JoinInfo: {
@@ -311,19 +311,19 @@ const joinInfo = {
 Once you have created the meeting with the correct flags, you can pass in the `joinInfo` when creating the Voice Focus device. Please note the usage of the `ns_es` as the spec name for Echo Reduction. Use `default` if you would like to use Voice Focus without Echo Reduction.
 
 ```typescript
-/* Select the Echo Reduction model */
+// Select the Echo Reduction model
 const spec: VoiceFocusSpec = {
   name: 'ns_es',
   ...
 };
 
-/* Create the Voice Focus device */
+// Create the Voice Focus device
 const transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, joinInfo);
 
 this.audioVideo = this.meetingSession.audioVideo;
 const vfDevice = await transformer.createTransformDevice(chosenAudioInput);
 
-/* Enable Echo Reduction on this client */
+// Enable Echo Reduction on this client
 await vfDevice.observeMeetingAudio(this.audioVideo);
 ```
 

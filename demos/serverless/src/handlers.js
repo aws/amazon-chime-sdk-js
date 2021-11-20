@@ -12,10 +12,25 @@ const ddb = new AWS.DynamoDB();
 // Create an AWS SDK Chime object. Region 'us-east-1' is currently required.
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
-const chime = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
+const chime = new AWS.Chime({ region: 'us-east-1' });
+const chimeRegional = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
 
-// Set the AWS SDK Chime endpoint. The global endpoint is https://meetings-chime.us-east-1.amazonaws.com .
+// Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
 chime.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT);
+
+if (process.env.CHIME_ENDPOINT) {
+  console.info('Using regional endpoint', process.env.CHIME_ENDPOINT);
+  chimeRegional.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT);
+}
+
+// return regional API just for Echo Reduction for now.
+function getClientForMeeting(meeting) {
+  if (meeting && meeting.Meeting && meeting.Meeting.MeetingFeatures && meeting.Meeting.MeetingFeatures.Audio &&
+    meeting.Meeting.MeetingFeatures.Audio.EchoReduction === 'AVAILABLE') {
+      return chimeRegional;
+  }
+  return chime;
+}
 
 // Read resource names from the environment
 const {
@@ -45,6 +60,8 @@ exports.join = async(event, context) => {
   // Look up the meeting by its title. If it does not exist, create the meeting.
   let meeting = await getMeeting(query.title);
   
+  let client = getClientForMeeting(meeting);
+
   if (!meeting) {
     let request = {
       // Use a UUID for the client request token to ensure that any request retries
@@ -63,6 +80,7 @@ exports.join = async(event, context) => {
       ExternalMeetingId: query.title.substring(0, 64),
     };
     if (query.ns_es === 'true') {
+      client = chimeRegional;
       request.MeetingFeatures = {
         Audio: {
           // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
@@ -71,7 +89,7 @@ exports.join = async(event, context) => {
       };
     } 
     console.info('Creating new meeting: ' + JSON.stringify(request));
-    meeting = await chime.createMeeting(request).promise();
+    meeting = await client.createMeeting(request).promise();
 
     // Store the meeting in the table using the meeting title as the key.
     await putMeeting(query.title, meeting);
@@ -79,7 +97,7 @@ exports.join = async(event, context) => {
 
   // Create new attendee for the meeting
   console.info('Adding new attendee');
-  const attendee = (await chime.createAttendee({
+  const attendee = (await client.createAttendee({
     // The meeting ID of the created meeting to add the attendee to
     MeetingId: meeting.Meeting.MeetingId,
 
@@ -103,15 +121,18 @@ exports.join = async(event, context) => {
 exports.end = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
+  let client = getClientForMeeting(meeting);
 
   // End the meeting. All attendee connections will hang up.
-  await chime.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId }).promise();
+  await client.deleteMeeting({ MeetingId: meeting.Meeting.MeetingId }).promise();
   return response(200, 'application/json', JSON.stringify({}));
 };
 
 exports.start_transcription = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
+  let client = getClientForMeeting(meeting);
+
   const languageCode = event.queryStringParameters.language;
   const region = event.queryStringParameters.region;
   let transcriptionConfiguration = {};
@@ -167,7 +188,7 @@ exports.start_transcription = async (event, context) => {
   }
 
   // start transcription for the meeting
-  await chime.startMeetingTranscription({
+  await client.startMeetingTranscription({
     MeetingId: meeting.Meeting.MeetingId,
     TranscriptionConfiguration: transcriptionConfiguration
   }).promise();
@@ -177,9 +198,10 @@ exports.start_transcription = async (event, context) => {
 exports.stop_transcription = async (event, context) => {
   // Fetch the meeting by title
   const meeting = await getMeeting(event.queryStringParameters.title);
+  let client = getClientForMeeting(meeting);
 
   // stop transcription for the meeting
-  await chime.stopMeetingTranscription({
+  await client.stopMeetingTranscription({
     MeetingId: meeting.Meeting.MeetingId
   }).promise();
   return response(200, 'application/json', JSON.stringify({}));

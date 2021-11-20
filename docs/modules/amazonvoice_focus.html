@@ -69,8 +69,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<a href="#integrating-amazon-voice-focus-into-your-amazon-chime-sdk-for-javascript-application" id="integrating-amazon-voice-focus-into-your-amazon-chime-sdk-for-javascript-application" style="color: inherit; text-decoration: none;">
-							<h1>Integrating Amazon Voice Focus into your Amazon Chime SDK for JavaScript application</h1>
+						<a href="#integrating-amazon-voice-focus-and-echo-reduction-into-your-amazon-chime-sdk-for-javascript-application" id="integrating-amazon-voice-focus-and-echo-reduction-into-your-amazon-chime-sdk-for-javascript-application" style="color: inherit; text-decoration: none;">
+							<h1>Integrating Amazon Voice Focus and Echo Reduction into your Amazon Chime SDK for JavaScript application</h1>
 						</a>
 					</div>
 					<a href="#what-is-amazon-voice-focus" id="what-is-amazon-voice-focus" style="color: inherit; text-decoration: none;">
@@ -79,6 +79,11 @@
 					<p>Amazon Voice Focus is a noise suppressor that uses machine learning to reduce unwanted background noise in your users’ microphone input. Unlike conventional noise suppressors, Amazon Voice Focus reduces fan noise, road noise, typing, rustling paper, lawnmowers, barking dogs, and other kinds of non-speech input, allowing your users to focus on the human voice.</p>
 					<p>Amazon Voice Focus offers multiple complexity levels, allowing you to trade some quality to support a wider range of devices. The Amazon Chime SDK will by default automatically choose the right complexity level at runtime based on device performance.</p>
 					<p>Amazon Voice Focus is integrated into the <code>browser</code> demo application. To try it out, launch the demo with <code>npm run start</code>, choose “Web Audio” on the first screen, then either check the “Voice Focus” box in the lobby view, or click “Voice Focus” in the device picker after joining the meeting.</p>
+					<a href="#what-is-echo-reduction" id="what-is-echo-reduction" style="color: inherit; text-decoration: none;">
+						<h2>What is Echo Reduction?</h2>
+					</a>
+					<p>Echo reduction helps keep echoes—sounds from a user’s loudspeaker that get picked up by their microphone—from circulating back into meeting audio and bringing discussions to a standstill. The echo reduction feature is available in conjunction with the noise reduction provided by Amazon Voice Focus.</p>
+					<p>Echo reduction is enabled at the meeting level when you call the CreateMeeting or CreateMeetingWithAttendees APIs. Enabling the feature this way allows others who join the meeting to enable echo reduction as desired.</p>
 					<a href="#amazon-voice-focus-on-the-web" id="amazon-voice-focus-on-the-web" style="color: inherit; text-decoration: none;">
 						<h2>Amazon Voice Focus on the web</h2>
 					</a>
@@ -94,13 +99,19 @@
 					<p>Additionally, situations in which multiple human speakers might overlap at different volume levels, as might be the case with several participants in a room with a single laptop, might exhibit unwanted suppression of the quietest participants.</p>
 					<p>Applications with demanding CPU utilization, like games, might not leave enough compute resources for Amazon Voice Focus to work smoothly, particularly on resource-constrained devices.</p>
 					<p>If you think your application might be used in these scenarios, take care to test your application with Amazon Voice Focus, and give your users the ability to control whether to enable noise suppression, as well as to turn it off during a meeting.</p>
-					<a href="#can-i-use-amazon-voice-focus-in-my-application" id="can-i-use-amazon-voice-focus-in-my-application" style="color: inherit; text-decoration: none;">
-						<h2>Can I use Amazon Voice Focus in my application?</h2>
+					<a href="#when-should-i-use-echo-reduction" id="when-should-i-use-echo-reduction" style="color: inherit; text-decoration: none;">
+						<h2>When should I use Echo Reduction?</h2>
 					</a>
+					<p>Echo Reduction is ideal for situations in which a user&#39;s loudspeaker will be the primary output device for meeting audio.  When multiple users are attending a meeting from the same device as in a conference room or when an individual remote attendee is not wearing headphones, Echo Reduction can enhance the meeting experience by reducing the echo caused due to the loudspeaker output feeding back into the microphone.</p>
+					<p>If you think your application might be used in these scenarios, take care to test your application with Echo Reduction, and give your users the ability to control whether to enable echo reduction, as well as to turn it off during a meeting.</p>
+					<a href="#can-i-use-amazon-voice-focus-and-echo-reduction-in-my-application" id="can-i-use-amazon-voice-focus-and-echo-reduction-in-my-application" style="color: inherit; text-decoration: none;">
+						<h2>Can I use Amazon Voice Focus and Echo Reduction in my application?</h2>
+					</a>
+					<p>Echo Reduction is built over Amazon Voice Focus and hence all the prerequisites and constraints applied to Amazon Voice Focus hold true for Echo Reduction as well.</p>
 					<a href="#browser-compatibility" id="browser-compatibility" style="color: inherit; text-decoration: none;">
 						<h3>Browser compatibility</h3>
 					</a>
-					<p>Amazon Voice Focus in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and iOS operating systems, and Safari 14.1 and later on macOS and some iOS devices. A full compatibility table is below.</p>
+					<p>Amazon Voice Focus and Echo Reduction in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and iOS operating systems, and Safari 14.1 and later on macOS and some iOS devices. A full compatibility table is below.</p>
 					<table>
 						<thead>
 							<tr>
@@ -153,22 +164,22 @@
 								<td></td>
 							</tr>
 					</tbody></table>
-					<p>Amazon Voice Focus is more CPU-intensive than conventional noise suppression systems, and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use Amazon Voice Focus while also supporting multiple video streams and rich application functionality.</p>
+					<p>Amazon Voice Focus and Echo Reduction are more CPU-intensive than conventional noise suppression systems, and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use Amazon Voice Focus and Echo Reduction while also supporting multiple video streams and rich application functionality.</p>
 					<p>The default configuration will adapt to available processor power and adjust quality accordingly, but some browsers and devices will simply be unable to enable the feature. Android browsers are theoretically compatible, but typically cannot meet the performance requirements. iOS 14 ships Safari 14, and relatively modern iPhones (<em>e.g.</em>, iPhone X) have been found to be fast enough.</p>
 					<p>See the sections “<a href="#checking-for-support-before-offering-noise-suppression">Checking for support before offering noise suppression</a>” and “<a href="#adapting-to-performance-constraints">Adapting to performance constraints</a>” for more details about checking for support and adapting to capabilities.</p>
 					<a href="#simd-support" id="simd-support" style="color: inherit; text-decoration: none;">
 						<h3>SIMD support</h3>
 					</a>
-					<p>Amazon Voice Focus is more efficient in environments that support Single Instruction, Multiple Data (SIMD), and will use less CPU for a given complexity level when it is enabled. Low-powered devices running browsers without SIMD support might be unable to use any complexity level of Amazon Voice Focus.</p>
+					<p>Amazon Voice Focus and Echo Reduction are more efficient in environments that support Single Instruction, Multiple Data (SIMD), and will use less CPU for a given complexity level when it is enabled. Low-powered devices running browsers without SIMD support might be unable to use any complexity level of Amazon Voice Focus and Echo Reduction.</p>
 					<p>See the section “<a href="#configuring-simd">Configuring SIMD</a>” for more details about controlling SIMD usage.</p>
 					<a href="#content-delivery-caching-and-bandwidth" id="content-delivery-caching-and-bandwidth" style="color: inherit; text-decoration: none;">
 						<h3>Content delivery, caching and bandwidth</h3>
 					</a>
-					<p>Amazon Voice Focus model files are loaded from an Amazon Content Delivery Network (CDN) at runtime. This provides low-latency global distribution without the need to serve a full suite of files as part of your application.</p>
+					<p>Amazon Voice Focus and Echo Reduction model files are loaded from an Amazon Content Delivery Network (CDN) at runtime. This provides low-latency global distribution without the need to serve a full suite of files as part of your application.</p>
 					<p>Model files range in size from 200KB up to 8MB, depending on the complexity level selected by you or by the SDK’s own performance estimator, and depending on the capabilities of the user’s browser. Model files will be cached indefinitely by end users’ browsers, so that subsequent uses of Amazon Voice Focus on the same device will take less time to initialize.</p>
-					<p>In addition to having network connectivity to <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-components.html">Amazon Chime’s media services, as described in the documentation</a>, the use of Amazon Voice Focus requires access to Amazon CloudFront via HTTPS (port 443). All requests will be to subdomains of <code>sdkassets.chime.aws</code>. End users whose network configurations prevent access to this CDN, or applications that do not include the correct domain in Content Security Policy (see below), will fail support checks and be unable to use Amazon Voice Focus.</p>
+					<p>In addition to having network connectivity to <a href="https://docs.aws.amazon.com/chime/latest/dg/chime-components.html">Amazon Chime’s media services, as described in the documentation</a>, the use of Amazon Voice Focus and Echo Reduction requires access to Amazon CloudFront via HTTPS (port 443). All requests will be to subdomains of <code>sdkassets.chime.aws</code>. End users whose network configurations prevent access to this CDN, or applications that do not include the correct domain in Content Security Policy (see below), will fail support checks and be unable to use Amazon Voice Focus and Echo Reduction.</p>
 					<p>CloudFront’s IP address ranges are documented in the <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html">Amazon CloudFront Developer Guide</a>.</p>
-					<p>The overhead of loading model files can add latency to parts of your application. A browser loading the <code>c20</code> model over a residential broadband connection will typically download and compile the model in around 500ms, but global internet speeds and latencies can vary. The browser cache will make subsequent loads significantly faster. Check for support and create Amazon Voice Focus resources at appropriate times to minimize the impact of this latency: for example, during a lobby or device picker interaction.</p>
+					<p>The overhead of loading model files can add latency to parts of your application. A browser loading the <code>c20</code> model over a residential broadband connection will typically download and compile the model in around 500ms, but global internet speeds and latencies can vary. The browser cache will make subsequent loads significantly faster. Check for support and create Amazon Voice Focus and Echo Reduction resources at appropriate times to minimize the impact of this latency: for example, during a lobby or device picker interaction.</p>
 					<a href="#preparing-your-application" id="preparing-your-application" style="color: inherit; text-decoration: none;">
 						<h2>Preparing your application</h2>
 					</a>
@@ -201,7 +212,7 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 <span class="hljs-string">&#x27;https://static.sdkassets.chime.aws/processors/worklet-inline-processor…&#x27;</span>
 because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> following Content Security Policy directive…
 </code></pre>
-					<p>If you need guidance with correct CSP configuration to use Amazon Voice Focus, contact AWS Support.</p>
+					<p>If you need guidance with correct CSP configuration to use Amazon Voice Focus and Echo Reduction, contact AWS Support.</p>
 					<a href="#cross-origin-opener-policy" id="cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
 						<h3>Cross-Origin Opener Policy</h3>
 					</a>
@@ -213,7 +224,7 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					<a href="#frames" id="frames" style="color: inherit; text-decoration: none;">
 						<h2>Frames</h2>
 					</a>
-					<p>Before attempting to use Amazon Voice Focus, make sure that your application is not running in an iframe. Browsers, particularly Chromium-based browsers like Chrome, Electron, and Edge, can restrict use of real-time scheduling in iframes (called &quot;subframes&quot; in Chromium). This results in choppy and unintelligible audio.</p>
+					<p>Before attempting to use Amazon Voice Focus and Echo Reduction, make sure that your application is not running in an iframe. Browsers, particularly Chromium-based browsers like Chrome, Electron, and Edge, can restrict use of real-time scheduling in iframes (called &quot;subframes&quot; in Chromium). This results in choppy and unintelligible audio.</p>
 					<p>You can check whether your page or application is running in a subframe by using Chromium&#39;s <code>about:tracing</code> page.</p>
 					<ol>
 						<li>Load your application as normal.</li>
@@ -224,11 +235,11 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 						<li>Expand the &quot;Renderer&quot; row for your page in the main part of the window. Make sure you see &quot;Realtime AudioWorklet thread&quot;.</li>
 						<li>Click <strong>Processes</strong> in the top right. Make sure the one that shows your page title <em>does not</em> say &quot;Subframe&quot;.</li>
 					</ol>
-					<p>The Amazon Voice Focus support check in <code>VoiceFocusDeviceTransformer.isSupported</code> will warn to its provided logger if run in an iframe, and will report no support if <code>{ allowIFrame: false }</code> is provided as part of its options argument.</p>
-					<a href="#checking-for-support-before-offering-noise-suppression" id="checking-for-support-before-offering-noise-suppression" style="color: inherit; text-decoration: none;">
-						<h2>Checking for support before offering noise suppression</h2>
+					<p>The Amazon Voice Focus and Echo Reduction support check in <code>VoiceFocusDeviceTransformer.isSupported</code> will warn to its provided logger if run in an iframe, and will report no support if <code>{ allowIFrame: false }</code> is provided as part of its options argument.</p>
+					<a href="#checking-for-support-before-offering-noise-suppression-and-echo-reduction" id="checking-for-support-before-offering-noise-suppression-and-echo-reduction" style="color: inherit; text-decoration: none;">
+						<h2>Checking for support before offering noise suppression and echo reduction</h2>
 					</a>
-					<p>Some browsers support the Amazon Chime SDK but do not support Amazon Voice Focus. Additionally, some devices are not fast enough to keep up with real-time audio while suppressing noise.</p>
+					<p>Some browsers support the Amazon Chime SDK but do not support Amazon Voice Focus and Echo Reduction. Additionally, some devices are not fast enough to keep up with real-time audio while suppressing noise.</p>
 					<p>The SDK provides a static method to allow you to cheaply check for the required browser features:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { VoiceFocusDeviceTransformer } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 …
@@ -244,7 +255,7 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
   isVoiceFocusSupported = <span class="hljs-literal">false</span>;
 }
 </code></pre>
-					<p>By default this will also pre-load the model file and prepare Amazon Voice Focus for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. If you do not want to pre-load resources — <em>e.g.</em>, if you would rather the download occur later, or you are not sure if the user will use noise suppression — pass the optional <code>preload</code> argument:</p>
+					<p>By default this will also pre-load the model file and prepare Amazon Voice Focus and Echo Reduction for use. Failure to load necessary resources will result in <code>isSupported</code> returning <code>false</code>. If you do not want to pre-load resources — <em>e.g.</em>, if you would rather the download occur later, or you are not sure if the user will use noise suppression — pass the optional <code>preload</code> argument:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> spec = {};
 <span class="hljs-keyword">const</span> options = {
   <span class="hljs-attr">preload</span>: <span class="hljs-literal">false</span>,
@@ -253,8 +264,8 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 
 transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransformer(spec, options);
 </code></pre>
-					<p>Check for both of these kinds of support prior to offering noise suppression to users. The ideal time to do so is during pre-meeting setup.</p>
-					<p>Your device controller must support Web Audio to use Amazon Voice Focus. If you do not wish to enable Web Audio universally, you can use your support check as a condition:</p>
+					<p>Check for both of these kinds of support prior to offering noise suppression and echo reduction to users. The ideal time to do so is during pre-meeting setup.</p>
+					<p>Your device controller must support Web Audio to use Amazon Voice Focus and Echo Reduction. If you do not wish to enable Web Audio universally, you can use your support check as a condition:</p>
 					<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController({
   <span class="hljs-attr">enableWebAudio</span>: isVoiceFocusSupported
 });
@@ -263,11 +274,41 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 						<h2>Adding Amazon Voice Focus to your application</h2>
 					</a>
 					<p>Amazon Voice Focus integrates with the SDK by providing a new kind of audio input device: one that wraps another audio input and applies noise suppression to it.</p>
+					<a href="#adding-echo-reduction-to-your-application" id="adding-echo-reduction-to-your-application" style="color: inherit; text-decoration: none;">
+						<h2>Adding Echo Reduction to your application</h2>
+					</a>
+					<p>Echo Reduction integrates with the SDK by providing a new kind of audio input device: one that wraps another audio input and applies echo reduction to it. There is another input node which takes the speaker output as input and feeds this to the model to perform echo reduction.</p>
+					<p>The Echo Reduction capability is enabled at the meeting level when <code>CreateMeeting</code> or <code>CreateMeetingWithAttendees</code> is called. This allows others who join the meeting to enable Echo Reduction (not enabled automatically).</p>
+					<a href="#request" id="request" style="color: inherit; text-decoration: none;">
+						<h3>Request</h3>
+					</a>
+					<pre><code class="language-typescript">POST /meetings HTTP/<span class="hljs-number">1.1</span>
+Content-<span class="hljs-keyword">type</span>: application/json
+{
+   <span class="hljs-attr">ClientRequestToken</span>: <span class="hljs-string">&quot;string&quot;</span>,
+   <span class="hljs-attr">ExternalMeetingId</span>: <span class="hljs-string">&quot;string&quot;</span>,
+   <span class="hljs-attr">MediaRegion</span>: <span class="hljs-string">&quot;string&quot;</span>,
+   <span class="hljs-attr">MeetingHostId</span>: <span class="hljs-string">&quot;string&quot;</span>,
+   <span class="hljs-attr">NotificationsConfiguration</span>: {
+      <span class="hljs-attr">SnsTopicArn</span>: <span class="hljs-string">&quot;string&quot;</span>,
+      <span class="hljs-attr">SqsQueueArn</span>: <span class="hljs-string">&quot;string&quot;</span>
+   },
+   <span class="hljs-attr">MeetingFeatures</span>: {
+     <span class="hljs-attr">Audio</span>: {
+       <span class="hljs-attr">EchoReduction</span>: <span class="hljs-string">&quot;AVAILABLE&quot;</span>
+     }
+   }
+}
+</code></pre>
+					<p>Where <code>MeetingFeatures</code> is an optional parameter which contains a list of audio and video features that are enabled at the meeting level. The <code>Audio</code> sub-element is an optional category of meeting features which contains audio-specific configurations, such as operating parameters for Voice Focus. The <code>EchoReduction</code> configuration makes Echo Reduction available to clients who wish to connect to the meeting. It is an optional parameter which accepts the string <code>&#39;AVAILABLE&#39;</code>.</p>
+					<a href="#check-for-support" id="check-for-support" style="color: inherit; text-decoration: none;">
+						<h1>Check for support</h1>
+					</a>
 					<p>Once you have checked for support and created a transformer, you create a <code>VoiceFocusTransformDevice</code> from a user’s selected audio input as follows:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> chosenAudioInput = <span class="hljs-string">&#x27;abcdef&#x27;</span>;    <span class="hljs-comment">// Device ID, stream, or constraints</span>
 <span class="hljs-keyword">const</span> vfDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
 </code></pre>
-					<p>If the transformer returned that Amazon Voice Focus is not supported, or it failed to initialize, this method returns <code>undefined</code>. In that case, fall back to the user&#39;s chosen audio input and indicate to the user that noise suppression is not enabled.</p>
+					<p>If the transformer returned that Amazon Voice Focus/Echo Reduction is not supported, or it failed to initialize, this method returns <code>undefined</code>. In that case, fall back to the user&#39;s chosen audio input and indicate to the user that noise suppression is not enabled.</p>
 					<p>The returned <code>VoiceFocusTransformDevice</code> can be supplied to a <code>chooseAudioInputDevice</code> call in the usual way:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> deviceToUse = vfDevice || chosenAudioInput;
 <span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(deviceToUse);
@@ -280,17 +321,73 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 						<h2>Configuration</h2>
 					</a>
 					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>VoiceFocusSpec</code> structures — as input. These allow you to describe the model attributes, execution approach, and other configuration options that define how the feature should operate.</p>
+					<p>To use Amazon Voice Focus, the name section of the specification should be set to <code>&#39;default&#39;</code> whereas to use Echo Reduction, the name section of the specification should be set to <code>&#39;ns_es&#39;</code>. Echo Reduction can only be enabled while creating the meeting.</p>
+					<pre><code class="language-typescript">spec = { ...
+   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;default&#x27;</span> <span class="hljs-comment">// for Amazon Voice Focus</span>
+   ...
+}
+spec = { ...
+   <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;ns_es&#x27;</span> <span class="hljs-comment">// for Echo Reduction</span>
+   ...
+}
+</code></pre>
 					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. Some options are described in the section “<a href="#adapting-to-performance-constraints">Adapting to performance constraints</a>”.</p>
 					<p>A specification is used to derive a runtime <em>configuration</em> when a transformer is created. A configuration is an opaque blob derived within a particular runtime context. The configuration drives exactly how noise suppression will be applied to an input stream. Applications can access these configurations in order to support unusual interaction patterns; see “<a href="#accessing-and-using-configurations">Accessing and using configurations</a>”.</p>
-					<a href="#disabling-amazon-voice-focus-and-switching-devices" id="disabling-amazon-voice-focus-and-switching-devices" style="color: inherit; text-decoration: none;">
-						<h2>Disabling Amazon Voice Focus and switching devices</h2>
+					<a href="#enabling-voice-focus-with-echo-reduction" id="enabling-voice-focus-with-echo-reduction" style="color: inherit; text-decoration: none;">
+						<h2>Enabling Voice Focus with Echo Reduction</h2>
 					</a>
-					<p>In some cases you might wish to temporarily or permanently disable noise suppression during a call: perhaps to reduce CPU utilization or to allow background noise to be heard.</p>
+					<p>Enabling Voice Focus with Echo Reduction is a two step process:</p>
+					<a href="#1-creating-a-meeting-with-support-for-echo-reduction" id="1-creating-a-meeting-with-support-for-echo-reduction" style="color: inherit; text-decoration: none;">
+						<h3>1. Creating a meeting with support for Echo Reduction</h3>
+					</a>
+					<p>Create your meeting by calling the CreateMeeting API and specifying the Echo Reduction flag as <code>&#39;AVAILABLE&#39;</code>.</p>
+					<pre><code class="language-typescript"><span class="hljs-comment">// Create meeting</span>
+<span class="hljs-keyword">const</span> meetingInfo = <span class="hljs-keyword">await</span> chime.createMeeting({
+  ...
+  <span class="hljs-attr">MeetingFeatures</span>: {
+    <span class="hljs-attr">Audio</span>: {
+      <span class="hljs-attr">EchoReduction</span>: <span class="hljs-string">&#x27;AVAILABLE&#x27;</span>
+    }
+  }
+}).promise();
+
+<span class="hljs-comment">// Add attendee</span>
+<span class="hljs-keyword">const</span> attendeeInfo = <span class="hljs-keyword">await</span> chime.createAttendee({...});
+<span class="hljs-keyword">const</span> joinInfo = {
+  <span class="hljs-attr">JoinInfo</span>: {
+    <span class="hljs-attr">Meeting</span>: meetingInfo,
+    <span class="hljs-attr">Attendee</span>: attendeeInfo,
+  }
+}
+</code></pre>
+					<a href="#2-enabling-echo-reduction-at-the-client-level" id="2-enabling-echo-reduction-at-the-client-level" style="color: inherit; text-decoration: none;">
+						<h3>2. Enabling Echo Reduction at the client level</h3>
+					</a>
+					<p>Once you have created the meeting with the correct flags, you can pass in the <code>joinInfo</code> when creating the Voice Focus device. Please note the usage of the <code>ns_es</code> as the spec name for Echo Reduction. Use <code>default</code> if you would like to use Voice Focus without Echo Reduction.</p>
+					<pre><code class="language-typescript"><span class="hljs-comment">// Select the Echo Reduction model</span>
+<span class="hljs-keyword">const</span> spec: VoiceFocusSpec = {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;ns_es&#x27;</span>,
+  ...
+};
+
+<span class="hljs-comment">// Create the Voice Focus device</span>
+<span class="hljs-keyword">const</span> transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, joinInfo);
+
+<span class="hljs-built_in">this</span>.audioVideo = <span class="hljs-built_in">this</span>.meetingSession.audioVideo;
+<span class="hljs-keyword">const</span> vfDevice = <span class="hljs-keyword">await</span> transformer.createTransformDevice(chosenAudioInput);
+
+<span class="hljs-comment">// Enable Echo Reduction on this client</span>
+<span class="hljs-keyword">await</span> vfDevice.observeMeetingAudio(<span class="hljs-built_in">this</span>.audioVideo);
+</code></pre>
+					<a href="#disabling-amazon-voice-focus-and-echo-reduction-and-switching-devices" id="disabling-amazon-voice-focus-and-echo-reduction-and-switching-devices" style="color: inherit; text-decoration: none;">
+						<h2>Disabling Amazon Voice Focus and Echo Reduction and switching devices</h2>
+					</a>
+					<p>In some cases you might wish to temporarily or permanently disable  noise suppression and echo reduction during a call: perhaps to reduce CPU utilization or to allow background noise to be heard.</p>
 					<p>You can do so by simply selecting the inner device without Amazon Voice Focus, which will fall back to the browser’s own simple noise suppressor:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(chosenAudioInput);
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus disabled&#x27;</span>);
 </code></pre>
-					<p>You can re-enable Amazon Voice Focus again by reselecting the transform device:</p>
+					<p>You can re-enable Amazon Voice Focus and Echo Reduction again by reselecting the transform device:</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(vfDevice);
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus re-enabled&#x27;</span>);
 </code></pre>
@@ -301,6 +398,12 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 <span class="hljs-built_in">this</span>.voiceFocusDevice = <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.voiceFocusDevice.chooseNewInnerDevice(newDevice);
 <span class="hljs-keyword">await</span> deviceController.chooseAudioInputDevice(<span class="hljs-built_in">this</span>.voiceFocusDevice);
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Amazon Voice Focus switched to new device&#x27;</span>, newDevice);
+</code></pre>
+					<a href="#disabling-echo-reduction-from-your-application" id="disabling-echo-reduction-from-your-application" style="color: inherit; text-decoration: none;">
+						<h2>Disabling Echo Reduction from your application</h2>
+					</a>
+					<p>During the meeting, you can disable Echo Reduction using the following code. This will just disable the Echo Reduction part of Voice Focus, while maintaining the Noise Reduction:</p>
+					<pre><code class="language-typecript">await vfDevice.unObserveMeetingAudio(this.audioVideo);
 </code></pre>
 					<a href="#adapting-to-performance-constraints" id="adapting-to-performance-constraints" style="color: inherit; text-decoration: none;">
 						<h2>Adapting to performance constraints</h2>
@@ -321,10 +424,14 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 					</a>
 					<p>If you have precise control over your runtime environment, you can specify the execution approach that the SDK will use. The allowed values are <code>auto</code>, <code>inline,</code> and <code>worker</code>. Use the <code>executionPreference</code> specifier to define these.</p>
 					<p>In general, use <code>auto</code>. If you think you need control over the execution approach, contact AWS Support.</p>
+					<a href="#name" id="name" style="color: inherit; text-decoration: none;">
+						<h3>Name</h3>
+					</a>
+					<p>To use Amazon Voice Focus, the name section of the specification should be set to <code>&#39;default&#39;</code> whereas to use Echo Reduction, the name section of the specification should be set to <code>&#39;ns_es&#39;</code>. Echo Reduction can only be enabled while creating the meeting.</p>
 					<a href="#configuring-simd" id="configuring-simd" style="color: inherit; text-decoration: none;">
 						<h3>Configuring SIMD</h3>
 					</a>
-					<p>SIMD dramatically accelerates Amazon Voice Focus, reducing CPU load and/or allowing higher quality models to be used.</p>
+					<p>SIMD dramatically accelerates Amazon Voice Focus and Echo Reduction, reducing CPU load and/or allowing higher quality models to be used.</p>
 					<p>Release versions of Firefox and Chrome do not enable SIMD support by default. If you have control over the browser environment of your end users, you can set Firefox’s <code>javascript.options.wasm_simd</code> preference to <code>true</code> in <code>about:config</code>, or toggle <code>[chrome://flags/#enable-webassembly-simd](http://chrome//flags/#enable-webassembly-simd)</code> in Chrome.</p>
 					<p>You can enable SIMD in an Electron application by adding <code>--enable-features=WebAssemblySimd</code> to your startup flags, then supplying <code>{ simd: &#39;force&#39; }</code> as part of your specification.</p>
 					<p>Until SIMD support stabilizes, compatibility is subject to change. In particular you will need to explicitly opt in to the use of SIMD in Chrome, because detection is unreliable; as with Electron, specify <code>{ simd: &#39;force&#39; }</code> when configuring the device transformer. Detection of SIMD capability is automatic in Firefox.</p>
@@ -357,20 +464,20 @@ transformer = <span class="hljs-keyword">await</span> VoiceFocusDeviceTransforme
 					</a>
 					<p>You can optionally implement the <code>VoiceFocusTransformDeviceObserver</code> interface and use <code>addObserver</code> to receive callbacks when one of two things occur:</p>
 					<ul>
-						<li><code>voiceFocusFellBackToInnerStream</code>: if applying noise suppression to an audio device failed, causing the SDK to fall back to using the inner device with the browser’s own noise suppression, this will be called. This should be uncommon, but this allows you to adapt your UI to failure.</li>
-						<li><code>voiceFocusInsufficientResources</code>: if the noise suppressor is unable to keep up with input audio, and the execution mode is able to determine this, then <code>voiceFocusInsufficientResources</code> will be invoked approximately every 15 milliseconds. The user will not themselves hear any audio glitching: bad audio will be heard by <em>other participants in the meeting</em>. Disabling noise suppression or other application features might be necessary to avoid continued disruption of the user experience.</li>
+						<li><code>voiceFocusFellBackToInnerStream</code>: if applying noise suppression or echo reduction to an audio device failed, causing the SDK to fall back to using the inner device with the browser’s own noise suppression, this will be called. This should be uncommon, but this allows you to adapt your UI to failure.</li>
+						<li><code>voiceFocusInsufficientResources</code>: if the noise suppressor or the echo reducer is unable to keep up with input audio, and the execution mode is able to determine this, then <code>voiceFocusInsufficientResources</code> will be invoked approximately every 15 milliseconds. The user will not themselves hear any audio glitching: bad audio will be heard by <em>other participants in the meeting</em>. Disabling noise suppression or other application features might be necessary to avoid continued disruption of the user experience.</li>
 					</ul>
 					<a href="#automatic-gain-control" id="automatic-gain-control" style="color: inherit; text-decoration: none;">
 						<h2>Automatic gain control</h2>
 					</a>
 					<p>Web browsers include mechanisms for automatically adjusting input volume, termed Automatic Gain Control (AGC).</p>
 					<p>AGC in mainstream browsers is fairly simplistic: it periodically adjusts your device input volume to improve the situation when your microphone is too quiet or too loud. As a developer you can control this with <code>[MediaTrackConstraints.autoGainControl](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/autoGainControl)</code>. This is enabled by default when your application asks for a microphone input.</p>
-					<p>Amazon Voice enables the built-in AGC by default. If you need additional control of the user’s volume, you can apply a <a href="https://developer.mozilla.org/en-US/docs/Web/API/GainNode"><code>GainNode</code></a> in a custom <code>AudioTransformDevice</code> in series <em>after</em> the Amazon Voice Focus node.</p>
-					<p>If the interaction of the built-in AGC with Amazon Voice Focus produces undesirable effects, you can disable it by passing <code>{ agc: { useBuiltInAGC: false } }</code> when constructing the transform device.</p>
+					<p>Amazon Voice Focus and Echo Reduction the built-in AGC by default. If you need additional control of the user’s volume, you can apply a <a href="https://developer.mozilla.org/en-US/docs/Web/API/GainNode"><code>GainNode</code></a> in a custom <code>AudioTransformDevice</code> in series <em>after</em> the Amazon Voice Focus node.</p>
+					<p>If the interaction of the built-in AGC with Amazon Voice Focus or Echo Reduction produces undesirable effects, you can disable it by passing <code>{ agc: { useBuiltInAGC: false } }</code> when constructing the transform device.</p>
 					<a href="#accessing-and-using-configurations" id="accessing-and-using-configurations" style="color: inherit; text-decoration: none;">
 						<h2>Accessing and using configurations</h2>
 					</a>
-					<p>Configurations — instances of <code>VoiceFocusConfig</code> — are opaque blobs derived by resolving a specification against a runtime environment. They are exact descriptions of exactly how Amazon Voice Focus will operate. As such, they are extremely specific to a point in time, hardware capabilities, browser version, and SDK version. They should not be persisted, transferred between browsers, or mutated.</p>
+					<p>Configurations — instances of <code>VoiceFocusConfig</code> — are opaque blobs derived by resolving a specification against a runtime environment. They are exact descriptions of exactly how Amazon Voice Focus and Echo Reduction will operate. As such, they are extremely specific to a point in time, hardware capabilities, browser version, and SDK version. They should not be persisted, transferred between browsers, or mutated.</p>
 					<p>You can retrieve the configuration of a <code>VoiceFocusDeviceTransformer</code> with the <code>getConfiguration</code> method, and you can retrieve a configuration without instantiating a transformer by calling the <code>VoiceFocusDeviceTransformer.configure</code> static method instead of <code>VoiceFocusDeviceTransformer.create</code>. The latter accepts a configuration as a third argument to instantiate a transformer with an existing configuration.</p>
 					<p>These functions allow the work of creating a transformer to be split or reused across execution contexts. For example, you might compute a configuration from a spec each time your app launches, making subsequent initialization faster, or you might reuse a configuration in a second window by sending an existing transformer&#39;s configuration via <code>postMessage</code>.</p>
 					<p>Creating a configuration via <code>VoiceFocusDeviceTransformer.configure</code> also supports pre-resolving model URLs, which can be useful when a new browser execution context needs to be rapidly built in order to join a meeting, and saving even a single HTTP request is worthwhile.</p>
