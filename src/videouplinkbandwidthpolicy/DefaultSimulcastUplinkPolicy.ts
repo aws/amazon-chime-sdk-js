@@ -35,7 +35,9 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
   static readonly kMidDisabledRate = 240;
 
   private numSenders: number = 0;
-  private numParticipants: number = -1;
+  // Simulcast is disabled when there are only 2 or fewer attendees, because in that case the backend will forward REMBs from
+  // receiver to sender. Therefore there is no need for simulcast based adaption.
+  private shouldDisableSimulcast: boolean = false;
   private optimalParameters: DefaultVideoAndEncodeParameter;
   private parametersInEffect: DefaultVideoAndEncodeParameter;
   private newQualityMap = new Map<string, RTCRtpEncodingParameters>();
@@ -128,12 +130,24 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
       this.lastUplinkBandwidthKbps >= hysteresisIncrease ||
       this.lastUplinkBandwidthKbps <= hysteresisDecrease
     ) {
-      if (this.numParticipants >= 0 && this.numParticipants <= 2) {
-        // Simulcast disabled
+      if (this.shouldDisableSimulcast) {
+        // See comment above `shouldDisableSimulcast` for usage.
+        //
+        // The value of `newActiveStreams` is somewhat irrelevant since this single
+        // stream will adapt based on both sender and receiver network conditions.
+        //
+        // We use the middle stream here to work around a bug in Chromium where
+        // it seems when a transceiver is created when BWE is low (e.g. on a reconnection),
+        // it will never reset the encoder even when `setParameters` is called.  WebRTC bug
+        // #12788 seems to call a similar issue out as fixed for VP8, it's not clear if this
+        // is the same issue for H.264. Additionally we are not able to force a keyframe
+        // request from the backend since it will only be sending padding (which also
+        // don't have MID due to #10822). Since we don't scale when simulcast is disabled
+        // this doesn't have any end-user effect.
         this.newActiveStreams = ActiveStreams.kHi;
         newBitrates[0].maxBitrateKbps = 0;
-        newBitrates[1].maxBitrateKbps = 0;
-        newBitrates[2].maxBitrateKbps = 1200;
+        newBitrates[1].maxBitrateKbps = 1200;
+        newBitrates[2].maxBitrateKbps = 0;
       } else if (
         this.numSenders <= 4 &&
         this.lastUplinkBandwidthKbps >= DefaultSimulcastUplinkPolicy.kHiDisabledRate
@@ -165,8 +179,8 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
         this.logger.info(
           `simulcast: policy:calculateEncodingParameters bw:${
             this.lastUplinkBandwidthKbps
-          } numSources:${this.numSenders} numClients:${
-            this.numParticipants
+          } numSources:${this.numSenders} shouldDisableSimulcast:${
+            this.shouldDisableSimulcast
           } newQualityMap: ${this.getQualityMapString(this.newQualityMap)}`
         );
       }
@@ -200,13 +214,15 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
     // the context here is VideoUplinkBandwidthPolicy
     const numSenders =
       videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) + 1;
-    const numParticipants = videoIndex.numberOfParticipants();
     const numSendersChanged = numSenders !== this.numSenders;
-    const numParticipantsChanged =
-      (numParticipants > 2 && this.numParticipants <= 2) ||
-      (numParticipants <= 2 && this.numParticipants > 2);
+
+    // See comment above `shouldDisableSimulcast`
+    const numParticipants = videoIndex.numberOfParticipants();
+    const newShouldDisableSimulcast = numParticipants >= 0 && numParticipants <= 2;
+    const shouldDisableSimulcastChanged = this.shouldDisableSimulcast !== newShouldDisableSimulcast;
+
     this.numSenders = numSenders;
-    this.numParticipants = numParticipants;
+    this.shouldDisableSimulcast = newShouldDisableSimulcast;
     this.optimalParameters = new DefaultVideoAndEncodeParameter(
       this.captureWidth(),
       this.captureHeight(),
@@ -216,7 +232,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
     );
     this.videoIndex = videoIndex;
     this.newQualityMap = this.calculateEncodingParameters(
-      numSendersChanged || numParticipantsChanged
+      numSendersChanged || shouldDisableSimulcastChanged
     );
   }
 
@@ -316,14 +332,14 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
     const toBps = 1000;
     const nameArr = SimulcastTransceiverController.NAME_ARR_ASCENDING;
     const bitrateArr = bitratesKbps;
-
-    let scale = 4;
+    // Don't scale the single simulcast stream regardless of its layer.å
+    let scale = this.shouldDisableSimulcast ? 1 : 4;
     for (let i = 0; i < nameArr.length; i++) {
       const ridName = nameArr[i];
       newMap.set(ridName, {
         rid: ridName,
         active: bitrateArr[i] > 0 ? true : false,
-        scaleResolutionDownBy: scale,
+        scaleResolutionDownBy: Math.max(scale, 1),
         maxBitrate: bitrateArr[i] * toBps,
       });
       scale = scale / 2;

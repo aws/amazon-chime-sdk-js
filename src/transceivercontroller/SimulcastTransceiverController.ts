@@ -30,6 +30,7 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     }
   }
 
+  // Note: `scaleResolutionDownBy` has only been tested with values 1, 2, and 4.
   async setEncodingParameters(
     encodingParamMap: Map<string, RTCRtpEncodingParameters>
   ): Promise<void> {
@@ -55,6 +56,9 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
           oldParam.encodings[i].active = encodingParamMap.get(
             SimulcastTransceiverController.LOW_LEVEL_NAME
           ).active;
+          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
+            SimulcastTransceiverController.LOW_LEVEL_NAME
+          ).scaleResolutionDownBy;
         }
         if (oldParam.encodings[i].rid === SimulcastTransceiverController.MID_LEVEL_NAME) {
           oldParam.encodings[i].maxBitrate = encodingParamMap.get(
@@ -63,6 +67,9 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
           oldParam.encodings[i].active = encodingParamMap.get(
             SimulcastTransceiverController.MID_LEVEL_NAME
           ).active;
+          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
+            SimulcastTransceiverController.MID_LEVEL_NAME
+          ).scaleResolutionDownBy;
         }
         if (oldParam.encodings[i].rid === SimulcastTransceiverController.HIGH_LEVEL_NAME) {
           oldParam.encodings[i].maxBitrate = encodingParamMap.get(
@@ -71,6 +78,9 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
           oldParam.encodings[i].active = encodingParamMap.get(
             SimulcastTransceiverController.HIGH_LEVEL_NAME
           ).active;
+          oldParam.encodings[i].scaleResolutionDownBy = encodingParamMap.get(
+            SimulcastTransceiverController.HIGH_LEVEL_NAME
+          ).scaleResolutionDownBy;
         }
       }
     }
@@ -127,7 +137,7 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     const encodings = params.encodings;
     let msg = 'simulcast: current encoding parameters \n';
     for (const encodingParam of encodings) {
-      msg += `rid=${encodingParam.rid} maxBitrate=${encodingParam.maxBitrate} active=${encodingParam.active} \n`;
+      msg += `rid=${encodingParam.rid} maxBitrate=${encodingParam.maxBitrate} active=${encodingParam.active} scaleDownBy=${encodingParam.scaleResolutionDownBy} \n`;
     }
     this.logger.info(msg);
   }
