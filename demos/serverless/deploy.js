@@ -11,8 +11,8 @@ let app = `meetingV2`;
 let useEventBridge = false;
 let enableTerminationProtection = false;
 let disablePrintingLogs = false;
-let chimeEndpoint = 'https://meetings-chime.us-east-1.amazonaws.com ';
-let chimeServicePrincipal = 'meetings.chime.amazonaws.com'
+let chimeEndpoint = 'https://service.chime.aws.amazon.com';
+let chimeServicePrincipal = 'chime.amazonaws.com'
 let captureOutputPrefix = ''
 let mediaCaptureRegions = [
     "ap-northeast-1",

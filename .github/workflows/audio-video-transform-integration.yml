@@ -76,6 +76,7 @@
         - name: Run Background Blur Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-background-blur
-        - name: Run Echo Reduction Integration Test
-          if:  steps.test_needed.outputs.integ_test_required == 'true'
-          run: npm run test:integration-echo-reduction
+# Temporarily Disabling until ER is launched
+#        - name: Run Echo Reduction Integration Test
+#          if:  steps.test_needed.outputs.integ_test_required == 'true'
+#          run: npm run test:integration-echo-reduction
