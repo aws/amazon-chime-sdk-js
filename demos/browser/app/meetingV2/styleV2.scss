@@ -1001,6 +1001,16 @@ a.markdown:active {
   cursor: pointer;
 }
 
+.confidence-style {
+  text-decoration: underline;
+  text-decoration-color: red;
+}
+
+.entity-color {
+  color: green;
+  font-weight: bold;
+}
+
 #live-transcription-modal-content > * {
   margin: 8px 0;
 }

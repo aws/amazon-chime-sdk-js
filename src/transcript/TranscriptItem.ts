@@ -11,4 +11,6 @@ export default class TranscriptItem {
   attendee: Attendee;
   content: string;
   vocabularyFilterMatch?: boolean;
+  confidence?: number; // confidence level of the predicted word ranging from 0 - 1 inclusive.
+  stable?: boolean;
 }

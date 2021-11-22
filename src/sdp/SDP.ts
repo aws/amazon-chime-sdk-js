@@ -79,4 +79,9 @@ export default interface SDP {
    * Sorts the codec preferences in video section.
    */
   preferH264IfExists(): SDP;
+
+  /**
+   * Removes H.264 from the send section.
+   */
+  removeH264SupportFromSendSection(): SDP;
 }

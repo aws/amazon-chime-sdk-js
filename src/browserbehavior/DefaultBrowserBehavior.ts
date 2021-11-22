@@ -278,10 +278,23 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return this.isAndroid();
   }
 
+  requiresDisablingH264Encoding(): boolean {
+    return (
+      (this.isIOSSafari() || this.isIOSChrome() || this.isIOSFirefox()) &&
+      (this.version() === '15.1.0' || /( OS 15_1)/i.test(navigator.userAgent))
+    );
+  }
+
   // These helpers should be kept private to encourage
   // feature detection instead of browser detection.
   private isIOSSafari(): boolean {
-    return this.browser.name === 'ios' || this.browser.name === 'ios-webview';
+    return (
+      this.browser.name === 'ios' ||
+      this.browser.name === 'ios-webview' ||
+      (this.browser.name === 'safari' &&
+        /( Mac )/i.test(navigator.userAgent) &&
+        navigator.maxTouchPoints > 1) //Ipad
+    );
   }
 
   private isSafari(): boolean {

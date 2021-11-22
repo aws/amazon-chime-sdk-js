@@ -232,10 +232,19 @@ interface Toggle {
 }
 
 interface TranscriptSegment {
-  content: string;
+  contentSpan: HTMLSpanElement,
   attendee: Attendee;
   startTimeMs: number;
   endTimeMs: number;
+}
+
+interface TranscriptionStreamParams {
+  contentIdentificationType?: 'PII' | 'PHI';
+  contentRedactionType?: 'PII';
+  enablePartialResultsStability?: boolean;
+  partialResultsStability?: string;
+  piiEntityTypes?: string;
+  languageModelName?: string;
 }
 
 export class DemoMeetingApp
@@ -356,6 +365,7 @@ export class DemoMeetingApp
   partialTranscriptDiv: HTMLDivElement | undefined;
   partialTranscriptResultTimeMap = new Map<string, number>();
   partialTranscriptResultMap = new Map<string, TranscriptResult>();
+  transcriptEntitySet = new Set<string>();
 
   addFatalHandlers(): void {
     fatal = this.fatal.bind(this);
@@ -979,11 +989,45 @@ export class DemoMeetingApp
     document.getElementsByName('transcription-engine').forEach(e => {
       e.addEventListener('change', () => {
         const engineTranscribeChecked = (document.getElementById('engine-transcribe') as HTMLInputElement).checked;
+        const contentIdentificationChecked = (document.getElementById('content-identification-checkbox') as HTMLInputElement).checked;
+        const contentRedactionChecked = (document.getElementById('content-redaction-checkbox') as HTMLInputElement).checked;
         document.getElementById('engine-transcribe-language').classList.toggle('hidden', !engineTranscribeChecked);
 		    document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-region').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-region').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-medical-content-identification').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-content-identification').classList.toggle('hidden', !engineTranscribeChecked);
+        document.getElementById('engine-transcribe-redaction').classList.toggle('hidden', !engineTranscribeChecked);
+        document.getElementById('engine-transcribe-partial-stabilization').classList.toggle('hidden', !engineTranscribeChecked);
+        document.getElementById('engine-transcribe-custom-language-model').classList.toggle('hidden', !engineTranscribeChecked);
+        if (!engineTranscribeChecked) {
+          document.getElementById('transcribe-entity-types').classList.toggle('hidden', true);
+        } else if (engineTranscribeChecked && (contentIdentificationChecked || contentRedactionChecked)) {
+          document.getElementById('transcribe-entity-types').classList.toggle('hidden', false);
+        }
       });
+    });
+
+    const contentIdentificationCb = document.getElementById('content-identification-checkbox') as HTMLInputElement;
+    contentIdentificationCb.addEventListener('click', () => {
+      (document.getElementById('content-redaction-checkbox') as HTMLInputElement).disabled = contentIdentificationCb.checked;
+      (document.getElementById('transcribe-entity-types') as HTMLInputElement).classList.toggle('hidden', !contentIdentificationCb.checked);
+    });
+
+    const contentRedactionCb = document.getElementById('content-redaction-checkbox') as HTMLInputElement;
+    contentRedactionCb.addEventListener('click', () => {
+      (document.getElementById('content-identification-checkbox') as HTMLInputElement).disabled = contentRedactionCb.checked;
+      (document.getElementById('transcribe-entity-types') as HTMLInputElement).classList.toggle('hidden', !contentRedactionCb.checked);
+    });
+
+    const partialResultsStabilityCb = document.getElementById('partial-stabilization-checkbox') as HTMLInputElement;
+    partialResultsStabilityCb.addEventListener('click', () => {
+      (document.getElementById('transcribe-partial-stability').classList.toggle('hidden', !partialResultsStabilityCb.checked));
+    });
+
+    const languageModelCb = document.getElementById('custom-language-model-checkbox') as HTMLInputElement;
+    languageModelCb.addEventListener('click', () => {
+      (document.getElementById('language-model').classList.toggle('hidden', !languageModelCb.checked));
     });
 
     const buttonStartTranscription = document.getElementById('button-start-transcription');
@@ -991,29 +1035,71 @@ export class DemoMeetingApp
       let engine = '';
       let languageCode = '';
       let region = '';
+      const transcriptionStreamParams: TranscriptionStreamParams = {};
       if ((document.getElementById('engine-transcribe') as HTMLInputElement).checked) {
         engine = 'transcribe';
         languageCode = (document.getElementById('transcribe-language') as HTMLInputElement).value;
         region = (document.getElementById('transcribe-region') as HTMLInputElement).value;
+
+        if (isChecked('content-identification-checkbox')) {
+          transcriptionStreamParams.contentIdentificationType = 'PII';
+        }
+        
+        if (isChecked('content-redaction-checkbox')) {
+          transcriptionStreamParams.contentRedactionType = 'PII';
+        }
+        
+        if (isChecked('partial-stabilization-checkbox')) {
+          transcriptionStreamParams.enablePartialResultsStability = true;
+        }
+        
+        let partialResultsStability = (document.getElementById('partial-stability') as HTMLInputElement).value;
+        if (partialResultsStability) {
+          transcriptionStreamParams.partialResultsStability = partialResultsStability;
+        }
+        if (isChecked('content-identification-checkbox') || isChecked('content-redaction-checkbox')) {
+          const selected = document.querySelectorAll('#transcribe-entity option:checked');
+          let values = '';
+          if (selected.length > 0) {
+            values = Array.from(selected).filter(node => (node as HTMLInputElement).value !== '').map(el => (el as HTMLInputElement).value).join(',');
+          } 
+          if (values !== '') {
+            transcriptionStreamParams.piiEntityTypes = values;
+          }
+        }
+
+        if (isChecked('custom-language-model-checkbox')) {
+          let languageModelName = (document.getElementById('language-model-input-text') as HTMLInputElement).value;
+          if (languageModelName) {
+            transcriptionStreamParams.languageModelName = languageModelName;
+          }
+        }
       } else if ((document.getElementById('engine-transcribe-medical') as HTMLInputElement).checked) {
         engine = 'transcribe_medical';
         languageCode = (document.getElementById('transcribe-medical-language') as HTMLInputElement).value;
         region = (document.getElementById('transcribe-medical-region') as HTMLInputElement).value;
+        if (isChecked('medical-content-identification-checkbox')) {
+          transcriptionStreamParams.contentIdentificationType = 'PHI';
+        }
       } else {
         throw new Error('Unknown transcription engine');
       }
-      await startLiveTranscription(engine, languageCode, region);
+      await startLiveTranscription(engine, languageCode, region, transcriptionStreamParams);
     });
 
-    const startLiveTranscription = async (engine: string, languageCode: string, region: string) => {
-      const response = await fetch(`${DemoMeetingApp.BASE_URL}start_transcription?title=${encodeURIComponent(this.meeting)}&engine=${encodeURIComponent(engine)}&language=${encodeURIComponent(languageCode)}&region=${encodeURIComponent(region)}`, {
+    function isChecked(id: string): boolean {
+      return (document.getElementById(id) as HTMLInputElement).checked;
+    }
+
+    const startLiveTranscription = async (engine: string, languageCode: string, region: string, transcriptionStreamParams: TranscriptionStreamParams) => {
+      const transcriptionAdditionalParams = JSON.stringify(transcriptionStreamParams);
+      const response = await fetch(`${DemoMeetingApp.BASE_URL}start_transcription?title=${encodeURIComponent(this.meeting)}&engine=${encodeURIComponent(engine)}&language=${encodeURIComponent(languageCode)}&region=${encodeURIComponent(region)}&transcriptionStreamParams=${encodeURIComponent(transcriptionAdditionalParams)}`, {
         method: 'POST',
       });
       const json = await response.json();
       if (json.error) {
         throw new Error(`Server error: ${json.error}`);
       }
-
       document.getElementById('live-transcription-modal').style.display = 'none';
     };
 
@@ -1826,7 +1912,7 @@ export class DemoMeetingApp
         if (languageCode && LANGUAGES_NO_WORD_SEPARATOR.has(languageCode)) {
           this.noWordSeparatorForTranscription = true;
         }
-      } else if (transcriptEvent.type === TranscriptionStatusType.STOPPED && this.enableLiveTranscription) {
+      } else if ((transcriptEvent.type === TranscriptionStatusType.STOPPED || transcriptEvent.type === TranscriptionStatusType.FAILED) && this.enableLiveTranscription) {
         // When we receive a STOPPED status event:
         // 1. toggle enabled 'Live Transcription' button to disabled
         this.enableLiveTranscription = false;
@@ -1842,7 +1928,17 @@ export class DemoMeetingApp
       for (const result of transcriptEvent.results) {
         const resultId = result.resultId;
         const isPartial = result.isPartial;
-
+        if (!isPartial) {
+          if (result.alternatives[0].entities?.length > 0) {
+            for (const entity of result.alternatives[0].entities) {
+              //split the entity based on space
+              let contentArray = entity.content.split(' ');
+              for (const content of contentArray) {
+                this.transcriptEntitySet.add(content);
+              }
+            }
+          }
+        }
         this.partialTranscriptResultMap.set(resultId, result);
         this.partialTranscriptResultTimeMap.set(resultId, result.endTimeMs);
         this.renderPartialTranscriptResults();
@@ -1861,6 +1957,7 @@ export class DemoMeetingApp
         }
 
         this.partialTranscriptResultTimeMap.delete(resultId);
+        this.transcriptEntitySet.clear();
 
         if (this.partialTranscriptResultTimeMap.size === 0) {
           // No more partial results in current batch, reset current batch
@@ -1907,7 +2004,8 @@ export class DemoMeetingApp
           this.appendNewSpeakerTranscriptDiv(segment, speakerToTranscriptSpanMap);
         } else {
           const transcriptSpan = speakerToTranscriptSpanMap.get(newSpeakerId);
-          transcriptSpan.innerText = transcriptSpan.innerText + '\u00a0' + segment.content;
+          transcriptSpan.appendChild(this.createSpaceSpan());
+          transcriptSpan.appendChild(segment.contentSpan);
         }
       }
     }
@@ -1915,29 +2013,44 @@ export class DemoMeetingApp
 
   populatePartialTranscriptSegmentsFromResult = (segments: TranscriptSegment[], result: TranscriptResult) => {
     let startTimeMs: number = null;
-    let content = '';
     let attendee: Attendee = null;
+    let contentSpan;
     for (const item of result.alternatives[0].items) {
+      const itemContentSpan = document.createElement('span') as HTMLSpanElement;
+      itemContentSpan.innerText = item.content;
+      itemContentSpan.classList.add('transcript-content');
+      // underline the word with red to show confidence level of predicted word being less than 0.3
+      // for redaction, words are represented as '[Name]' and has a confidence of 0. Redacted words are only shown with highlighting.
+      if (item.hasOwnProperty('confidence') && !item.content.startsWith("[") && item.confidence < 0.3) {
+        itemContentSpan.classList.add('confidence-style');
+      }
+
+      // highlight the word in green to show the predicted word is a PII/PHI entity
+      if (this.transcriptEntitySet.size > 0 && this.transcriptEntitySet.has(item.content)) {
+        itemContentSpan.classList.add('entity-color');
+      }
+
       if (!startTimeMs) {
-        content = item.content;
+        contentSpan = document.createElement('span') as HTMLSpanElement;
+        contentSpan.appendChild(itemContentSpan);
         attendee = item.attendee;
         startTimeMs = item.startTimeMs;
       } else if (item.type === TranscriptItemType.PUNCTUATION) {
-        content = content + item.content;
+        contentSpan.appendChild(itemContentSpan);
         segments.push({
-          content: content,
+          contentSpan,
           attendee: attendee,
           startTimeMs: startTimeMs,
           endTimeMs: item.endTimeMs
         });
-        content = '';
         startTimeMs = null;
         attendee = null;
       } else {
         if (this.noWordSeparatorForTranscription) {
-          content = content + item.content;
+          contentSpan.appendChild(itemContentSpan);
         } else {
-          content = content + ' ' + item.content;
+          contentSpan.appendChild(this.createSpaceSpan());
+          contentSpan.appendChild(itemContentSpan);
         }
       }
     }
@@ -1945,12 +2058,19 @@ export class DemoMeetingApp
     // Reached end of the result but there is no closing punctuation
     if (startTimeMs) {
       segments.push({
-        content: content,
+        contentSpan: contentSpan,
         attendee: attendee,
         startTimeMs: startTimeMs,
         endTimeMs: result.endTimeMs,
       });
     }
+  };
+
+  createSpaceSpan(): HTMLSpanElement {
+    const spaceSpan = document.createElement('span') as HTMLSpanElement;
+    spaceSpan.classList.add('transcript-content');
+    spaceSpan.innerText = '\u00a0';
+    return spaceSpan;
   };
 
   appendNewSpeakerTranscriptDiv = (
@@ -1965,14 +2085,11 @@ export class DemoMeetingApp
     speakerSpan.innerText = segment.attendee.externalUserId.split('#').slice(-1)[0] + ': ';
     speakerTranscriptDiv.appendChild(speakerSpan);
 
-    const transcriptSpan = document.createElement('span') as HTMLSpanElement;
-    transcriptSpan.classList.add('transcript-content');
-    transcriptSpan.innerText = segment.content;
-    speakerTranscriptDiv.appendChild(transcriptSpan);
+    speakerTranscriptDiv.appendChild(segment.contentSpan);
 
     this.partialTranscriptDiv.appendChild(speakerTranscriptDiv);
 
-    speakerToTranscriptSpanMap.set(segment.attendee.attendeeId, transcriptSpan);
+    speakerToTranscriptSpanMap.set(segment.attendee.attendeeId, segment.contentSpan);
   };
 
   appendStatusDiv = (status: TranscriptionStatus) => {

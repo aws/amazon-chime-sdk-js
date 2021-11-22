@@ -19,4 +19,5 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
   isSimulcastSupported(): boolean;
   supportsBackgroundFilter(): boolean;
   disableResolutionScaleDown(): boolean;
+  requiresDisablingH264Encoding(): boolean;
 }

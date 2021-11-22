@@ -578,6 +578,8 @@ export default class DOMMockBuilder {
       'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1';
     const IOS_SAFARI12_1_USERAGENT =
       'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1';
+    const IOS_SAFARI15_1_USERAGENT =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Mobile/15E148 Safari/604.1';
     const SAMSUNG_INTERNET_USERAGENT =
       'Mozilla/5.0 (Linux; Android 11; Pixel 3a XL) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/13.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
 
@@ -589,6 +591,7 @@ export default class DOMMockBuilder {
     USER_AGENTS.set('safari11', SAFARI11_USERAGENT);
     USER_AGENTS.set('ios12.0', IOS_SAFARI12_0_USERAGENT);
     USER_AGENTS.set('ios12.1', IOS_SAFARI12_1_USERAGENT);
+    USER_AGENTS.set('ios15.1', IOS_SAFARI15_1_USERAGENT);
     USER_AGENTS.set('samsung', SAMSUNG_INTERNET_USERAGENT);
 
     GlobalAny.navigator = {

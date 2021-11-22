@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
+import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DefaultSDP from '../sdp/DefaultSDP';
 import BaseTask from './BaseTask';
 
@@ -36,6 +37,9 @@ export default class SetLocalDescriptionTask extends BaseTask {
       // This will be negotiatiated with backend, and we will only use it to skip resubscribes
       // if we confirm support/negotiation via `RTCRtpTranceiver.sender.getParams`
       sdp = new DefaultSDP(sdp).withVideoLayersAllocationRtpHeaderExtension().sdp;
+    }
+    if (new DefaultBrowserBehavior().requiresDisablingH264Encoding()) {
+      sdp = new DefaultSDP(sdp).removeH264SupportFromSendSection().sdp;
     }
 
     this.logger.debug(() => {
