@@ -897,8 +897,8 @@ export class DemoMeetingApp
       AsyncScheduler.nextTick(async () => {
         if (this.toggleButton('button-camera') && this.canStartLocalVideo) {
           try {
-            let camera: string = videoInput.value;
-            if (videoInput.value === 'None') {
+            let camera: string | null = this.selectedVideoInput;
+            if (camera === null || camera === 'None') {
               camera = this.cameraDeviceIds.length ? this.cameraDeviceIds[0] : 'None';
             }
             await this.openVideoInputFromSelection(camera, false);
