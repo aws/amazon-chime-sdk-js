@@ -136,7 +136,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
         // The value of `newActiveStreams` is somewhat irrelevant since this single
         // stream will adapt based on both sender and receiver network conditions.
         //
-        // We use the middle stream here to work around a bug in Chromium where
+        // We don't use top layer (middle vs. low doesn't matter) here to work around a bug in Chromium where
         // it seems when a transceiver is created when BWE is low (e.g. on a reconnection),
         // it will never reset the encoder even when `setParameters` is called.  WebRTC bug
         // #12788 seems to call a similar issue out as fixed for VP8, it's not clear if this
@@ -332,7 +332,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
     const toBps = 1000;
     const nameArr = SimulcastTransceiverController.NAME_ARR_ASCENDING;
     const bitrateArr = bitratesKbps;
-    // Don't scale the single simulcast stream regardless of its layer.å
+    // Don't scale the single simulcast stream regardless of its layer.
     let scale = this.shouldDisableSimulcast ? 1 : 4;
     for (let i = 0; i < nameArr.length; i++) {
       const ridName = nameArr[i];
