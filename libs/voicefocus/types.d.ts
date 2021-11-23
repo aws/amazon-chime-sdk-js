@@ -5,7 +5,7 @@ export interface Logger {
     error: (...args: any[]) => void;
 }
 export declare type ModelCategory = 'voicefocus';
-export declare type ModelName = 'default';
+export declare type ModelName = 'default' | 'ns_es';
 export declare type ModelVariant = 'c100' | 'c50' | 'c20' | 'c10';
 export declare type SIMDPreference = 'force' | 'disable' | 'detect';
 export declare type ExecutionApproach = 'inline' | 'worker-sab' | 'worker-postMessage';
@@ -22,6 +22,7 @@ export interface ModelConfig {
 }
 export interface VoiceFocusExecutionSpec {
     variantPreference: ModelVariant | 'auto';
+    namePreference: ModelName;
     simdPreference: SIMDPreference;
     executionPreference: ExecutionPreference;
     usagePreference: UsagePreference;
@@ -91,6 +92,7 @@ export interface ProcessorOptions {
     prefill: number;
     agc: AGCOptions;
     executionQuanta?: ExecutionQuanta;
+    supportFarendStream?: boolean;
 }
 export interface ProcessorMessageData {
     message: 'data' | 'cpu' | 'prepare-for-frames';
@@ -128,4 +130,5 @@ export interface VoiceFocusFetchBehavior {
 export interface VoiceFocusFetchConfig extends VoiceFocusFetchBehavior {
     paths: VoiceFocusPaths;
 }
+
 export {};

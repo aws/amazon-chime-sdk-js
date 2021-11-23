@@ -21,14 +21,16 @@ class VoiceFocusWorkerPostMessageNode extends types_js_1.VoiceFocusAudioWorkletN
         this.worker = worker;
         this.worker.onmessage = this.onWorkerMessage.bind(this);
         this.port.onmessage = this.onProcessorMessage.bind(this);
+        const { enabled, agc, supportFarendStream } = options.processorOptions;
         this.worker.postMessage({
             message: 'init',
             approach: 'postMessage',
             frames: context.sampleRate === 16000 ? 160 : 480,
-            enabled: options.processorOptions.enabled,
-            agc: options.processorOptions.agc,
+            enabled,
+            agc,
             fetchBehavior,
             model: modelURL,
+            supportFarendStream,
         });
         const message = support_js_1.supportsWASMPostMessage(globalThis) ? 'get-module' : 'get-module-buffer';
         this.worker.postMessage({

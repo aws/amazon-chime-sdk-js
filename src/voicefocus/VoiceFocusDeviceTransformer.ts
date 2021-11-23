@@ -133,8 +133,28 @@ export class VoiceFocusDeviceTransformer {
   static async create(
     spec: VoiceFocusSpec = {},
     options: VoiceFocusDeviceOptions = {},
-    config?: VoiceFocusConfig
+    config?: VoiceFocusConfig,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    createMeetingResponse?: any,
+    // eslint-disable-next-line
+    createAttendeeResponse?: any
   ): Promise<VoiceFocusDeviceTransformer> {
+    if (createMeetingResponse) {
+      if (createMeetingResponse.Meeting.Meeting) {
+        createMeetingResponse = createMeetingResponse.Meeting;
+      }
+    }
+    const meetingFeaturesAllowsES =
+      createMeetingResponse?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE';
+    const forbiddenConfig =
+      config &&
+      config.supported === true &&
+      config.model.name === 'ns_es' &&
+      !meetingFeaturesAllowsES;
+    const forbiddenSpec = spec.name === 'ns_es' && !meetingFeaturesAllowsES;
+    if (forbiddenConfig || forbiddenSpec) {
+      throw new Error('Echo Reduction requested but not enabled.');
+    }
     const transformer = new VoiceFocusDeviceTransformer(spec, options, config);
 
     // This also preps the first `VoiceFocus` instance.
@@ -199,7 +219,8 @@ export class VoiceFocusDeviceTransformer {
     try {
       const preload = true;
       const [vf, delegate] = await this.allocateVoiceFocus(preload);
-      return new VoiceFocusTransformDevice(device, vf, delegate, nodeOptions);
+      const options = { ...nodeOptions, es: this.spec.name === 'ns_es' };
+      return new VoiceFocusTransformDevice(device, vf, delegate, options);
     } catch (e) {
       // Fall back.
       /* istanbul ignore next */

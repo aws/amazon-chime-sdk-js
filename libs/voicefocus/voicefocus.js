@@ -146,7 +146,7 @@ class VoiceFocus {
             if (category !== undefined && category !== 'voicefocus') {
                 throw new Error(`Unrecognized category ${category}`);
             }
-            if (name !== undefined && name !== 'default') {
+            if (name !== undefined && name !== 'default' && name !== 'ns_es') {
                 throw new Error(`Unrecognized feature name ${name}`);
             }
             if (variantPreference !== undefined && !['auto', 'c100', 'c50', 'c20', 'c10'].includes(variantPreference)) {
@@ -170,6 +170,7 @@ class VoiceFocus {
                 usagePreference,
                 executionQuantaPreference,
                 variantPreference,
+                namePreference: name,
                 simdPreference: simd,
                 estimatorBudget,
             };
@@ -207,7 +208,7 @@ class VoiceFocus {
                 throw new Error('Voice Focus not supported. Reason: ' + configuration.reason);
             }
             const { model, processor, fetchConfig, executionQuanta, } = configuration;
-            const { simd } = model;
+            const { simd, name } = model;
             const { paths } = fetchConfig;
             if (processor !== 'voicefocus-inline-processor' &&
                 processor !== 'voicefocus-worker-postMessage-processor' &&
@@ -233,6 +234,7 @@ class VoiceFocus {
                     path: modelURL,
                 });
             }
+            const numberOfInputs = (name === 'ns_es') ? 2 : 1;
             const nodeOptions = {
                 processor,
                 worker,
@@ -242,6 +244,7 @@ class VoiceFocus {
                 modelURL,
                 delegate,
                 logger,
+                numberOfInputs,
             };
             const factory = new VoiceFocus(worker, processorURL, node, nodeOptions, executionQuanta);
             return Promise.resolve(factory);
@@ -250,6 +253,7 @@ class VoiceFocus {
     createNode(context, options) {
         var _a;
         const { voiceFocusSampleRate = (context.sampleRate === 16000 ? 16000 : 48000), enabled = true, agc = DEFAULT_AGC_SETTING, } = options || {};
+        const supportFarendStream = options === null || options === void 0 ? void 0 : options.es;
         const processorOptions = {
             voiceFocusSampleRate,
             enabled,
@@ -257,6 +261,7 @@ class VoiceFocus {
             prefill: 6,
             agc,
             executionQuanta: this.executionQuanta,
+            supportFarendStream,
         };
         const url = fetch_js_1.withQueryString(this.processorURL, (_a = this.nodeOptions) === null || _a === void 0 ? void 0 : _a.fetchBehavior);
         return context.audioWorklet

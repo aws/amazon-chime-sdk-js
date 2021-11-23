@@ -63,7 +63,11 @@ function findAllElements() {
 
     eventReportingCheckBox: By.id('event-reporting'),
     eventReportingCheckBoxLabel: By.css('label[for="event-reporting"]'),
-    backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-10%-CPU')
+    backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-10%-CPU'),
+    microphoneDropEchoButton: By.id('dropdown-menu-microphone-Echo'),
+    echoReductionFeature: By.id('echo-reduction-capability'),
+    echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]')
+
   };
 }
 
@@ -123,6 +127,19 @@ class AppPage {
       console.log('Web Audio is selected');
     } else {
       await clickElement(this.driver, webAudioFeatureLabel);
+    }
+  }
+
+  // selects echo reduction capability at the meeting level 
+  async chooseEchoReduction() {
+    const echoReductionFeature = await this.driver.findElement(elements.echoReductionFeature);
+    const echoReductionFeatureLabel = await this.driver.findElement(elements.echoReductionFeatureLabel);
+
+    // Click the label because it's on top.
+    if (await echoReductionFeature.isSelected()) {
+      console.log('Echo Reduction capability is selected');
+    } else {
+      await clickElement(this.driver, echoReductionFeatureLabel);
     }
   }
 
@@ -221,6 +238,11 @@ class AppPage {
     await clickElement(this.driver, precordedSpeech);
   }
 
+  async playEcho() {
+    const echoButton = await this.driver.findElement(elements.microphoneDropEchoButton);
+    await echoButton.click();
+  }
+
   async selectNoneAudioInput() {
     let noneButton = await this.driver.findElement(elements.microphoneDropDownNoneButton);
     await clickElement(this.driver, noneButton);
@@ -229,6 +251,11 @@ class AppPage {
   async clickOnMicrophoneDropDownButton() {
     let microphoneDropDown = await this.driver.findElement(elements.microphoneDropDownButton);
     await clickElement(this.driver, microphoneDropDown);
+  }
+
+  async clickStartAmazonVoiceFocus() {
+    const startAmazonVoiceFocus = await this.driver.findElement(elements.microphoneDropDownVoiceFocusButton);
+    await startAmazonVoiceFocus.click();    
   }
 
   async getNumberOfParticipantsOnRoster() {
@@ -503,9 +530,20 @@ class AppPage {
     return classes.includes('vf-active');
   }
 
+  // enable voice focus in lobby if not enabled
   async enableVoiceFocusInLobby() {
     const elem = await this.driver.findElement(elements.addVoiceFocusInput);
-    return clickElement(this.driver, elem);
+    if ( !elem.isSelected() ){
+      return clickElement(this.driver, elem);
+    }
+  }
+
+  // disable voice focus in lobby if enabled
+  async disableVoiceFocusInLobby() {
+    const elem = await this.driver.findElement(elements.addVoiceFocusInput);
+    if ( elem.isSelected() ){
+      return clickElement(this.driver, elem);
+    }
   }
 
   async isJoiningMeeting() {
@@ -784,6 +822,87 @@ class AppPage {
         + "var imageData = ctx.getImageData(0,0,video.videoHeight-1,video.videoWidth-1).data;"
         + "var sum = imageData.reduce(getSum);"
         + "return sum;"
+  }
+  
+  async echoAudioCheck(stepInfo, expectedState){
+    let res = undefined;
+    try {
+      res = await this.driver.executeAsyncScript(async (expectedState) => {
+        const logs = [];
+        const callback = arguments[arguments.length - 1];
+
+        const sleep = (milliseconds) => {
+          return new Promise(resolve => setTimeout(resolve, milliseconds));
+        };
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let successfulChecks = 0;
+        let totalChecks = 0;
+        try {
+          const stream = document.getElementById('meeting-audio').srcObject;
+          const source = audioContext.createMediaStreamSource(stream);
+          const analyser = audioContext.createAnalyser();
+          source.connect(analyser);
+          let byteFrequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+          await sleep(5000);
+
+          // get the average volume from the frequency data
+          const getAverageVolume = () => {
+            analyser.getByteFrequencyData(byteFrequencyData);
+
+            let values = 0;
+            let average = 0;
+            const length = byteFrequencyData.length;
+            for (const value of byteFrequencyData) {
+              values += value;
+            }
+            average = values / length;
+            return average;
+          };
+
+          // check the volume for runCount times
+          const checkVolumeFor = async (runCount) => {
+            for (let i = 0; i < runCount; ++i){
+              totalChecks++;
+              const avgTestVolume = getAverageVolume();
+              logs.push(`Resulting volume ${avgTestVolume}`);
+              if (
+                (expectedState === 'AUDIO_ON' && avgTestVolume > 0) ||
+                (expectedState === 'AUDIO_OFF' && avgTestVolume === 0)
+              ) {
+                successfulChecks++;
+              }
+              await sleep(100);
+            }
+          };
+
+          await checkVolumeFor(25);
+        } catch (e) {
+          logs.push(`${e}`);
+        } finally {
+          logs.push(`Echo test completed`);
+          await audioContext.close();
+          callback({
+            percentage: successfulChecks / totalChecks,
+            logs
+          });
+        }
+      }, expectedState);
+    } catch (e) {
+      this.logger(`Echo Audio Check Failed ${e}`);
+    } finally {
+      if (res) {
+        res.logs.forEach(l => {
+          this.logger(l);
+        })
+      }
+    }
+    this.logger(`Echo Audio check success rate: ${res.percentage * 100}%`);
+    if (res.percentage >= 0.75) {
+      return true;
+    }
+    return false;
   }
 }
 

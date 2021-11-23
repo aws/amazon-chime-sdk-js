@@ -100,9 +100,12 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="audiomixcontroller.html#addaudiomixobserver" class="tsd-kind-icon">add<wbr>Audio<wbr>Mix<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiomixcontroller.html#bindaudiodevice" class="tsd-kind-icon">bind<wbr>Audio<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="audiomixcontroller.html#bindaudioelement" class="tsd-kind-icon">bind<wbr>Audio<wbr>Element</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="audiomixcontroller.html#bindaudiostream" class="tsd-kind-icon">bind<wbr>Audio<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="audiomixcontroller.html#getcurrentmeetingaudiostream" class="tsd-kind-icon">get<wbr>Current<wbr>Meeting<wbr>Audio<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="audiomixcontroller.html#removeaudiomixobserver" class="tsd-kind-icon">remove<wbr>Audio<wbr>Mix<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="audiomixcontroller.html#unbindaudioelement" class="tsd-kind-icon">unbind<wbr>Audio<wbr>Element</a></li>
 							</ul>
 						</section>
@@ -111,6 +114,36 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+					<a name="addaudiomixobserver" class="tsd-anchor"></a>
+					<h3>add<wbr>Audio<wbr>Mix<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Audio<wbr>Mix<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="audiomixcontrollerfacade.html">AudioMixControllerFacade</a>.<a href="audiomixcontrollerfacade.html#addaudiomixobserver">addAudioMixObserver</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L48">src/audiomixcontroller/AudioMixController.ts:48</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Add an observer to listen for changes to the current meeting audio stream. The observer
+									will be notified when a stream is bound or unbound from an audio element in the page.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="bindaudiodevice" class="tsd-anchor"></a>
 					<h3>bind<wbr>Audio<wbr>Device</h3>
@@ -121,7 +154,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L35">src/audiomixcontroller/AudioMixController.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L36">src/audiomixcontroller/AudioMixController.ts:36</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -152,7 +185,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="audiomixcontrollerfacade.html">AudioMixControllerFacade</a>.<a href="audiomixcontrollerfacade.html#bindaudioelement">bindAudioElement</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L14">src/audiomixcontroller/AudioMixController.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L15">src/audiomixcontroller/AudioMixController.ts:15</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -180,7 +213,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L27">src/audiomixcontroller/AudioMixController.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L28">src/audiomixcontroller/AudioMixController.ts:28</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -201,6 +234,59 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+					<a name="getcurrentmeetingaudiostream" class="tsd-anchor"></a>
+					<h3>get<wbr>Current<wbr>Meeting<wbr>Audio<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Current<wbr>Meeting<wbr>Audio<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="audiomixcontrollerfacade.html">AudioMixControllerFacade</a>.<a href="audiomixcontrollerfacade.html#getcurrentmeetingaudiostream">getCurrentMeetingAudioStream</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L42">src/audiomixcontroller/AudioMixController.ts:42</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the meeting audio stream currently bound to a HTMLAudioElement, or <code>null</code> if
+									there is no current audio stream. This method will typically never reject.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+					<a name="removeaudiomixobserver" class="tsd-anchor"></a>
+					<h3>remove<wbr>Audio<wbr>Mix<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Audio<wbr>Mix<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="audiomixcontrollerfacade.html">AudioMixControllerFacade</a>.<a href="audiomixcontrollerfacade.html#removeaudiomixobserver">removeAudioMixObserver</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L53">src/audiomixcontroller/AudioMixController.ts:53</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Remove an observer to stop listening for changes to the current meeting audio stream.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
 					<a name="unbindaudioelement" class="tsd-anchor"></a>
 					<h3>unbind<wbr>Audio<wbr>Element</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
@@ -211,7 +297,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="audiomixcontrollerfacade.html">AudioMixControllerFacade</a>.<a href="audiomixcontrollerfacade.html#unbindaudioelement">unbindAudioElement</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L19">src/audiomixcontroller/AudioMixController.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiomixcontroller/AudioMixController.ts#L20">src/audiomixcontroller/AudioMixController.ts:20</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -240,6 +326,9 @@
 					<li class="current tsd-kind-interface">
 						<a href="audiomixcontroller.html" class="tsd-kind-icon">Audio<wbr>Mix<wbr>Controller</a>
 						<ul>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+								<a href="audiomixcontroller.html#addaudiomixobserver" class="tsd-kind-icon">add<wbr>Audio<wbr>Mix<wbr>Observer</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="audiomixcontroller.html#bindaudiodevice" class="tsd-kind-icon">bind<wbr>Audio<wbr>Device</a>
 							</li>
@@ -248,6 +337,12 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="audiomixcontroller.html#bindaudiostream" class="tsd-kind-icon">bind<wbr>Audio<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+								<a href="audiomixcontroller.html#getcurrentmeetingaudiostream" class="tsd-kind-icon">get<wbr>Current<wbr>Meeting<wbr>Audio<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+								<a href="audiomixcontroller.html#removeaudiomixobserver" class="tsd-kind-icon">remove<wbr>Audio<wbr>Mix<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
 								<a href="audiomixcontroller.html#unbindaudioelement" class="tsd-kind-icon">unbind<wbr>Audio<wbr>Element</a>

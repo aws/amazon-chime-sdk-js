@@ -30,12 +30,14 @@ class VoiceFocusWorkerBufferNode extends types_js_1.VoiceFocusAudioWorkletNode {
         this.worker = worker;
         this.worker.onmessage = this.onWorkerMessage.bind(this);
         this.port.onmessage = this.onProcessorMessage.bind(this);
+        const { enabled, supportFarendStream } = options.processorOptions;
         this.worker.postMessage({
             message: 'init',
             approach: 'sab',
             frames: context.sampleRate === 16000 ? 160 : 480,
-            enabled: options.processorOptions.enabled,
+            enabled,
             model: modelURL,
+            supportFarendStream,
         });
         const message = support_js_1.supportsWASMPostMessage(globalThis) ? 'get-module' : 'get-module-buffer';
         this.worker.postMessage({
