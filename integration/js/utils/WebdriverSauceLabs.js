@@ -147,6 +147,7 @@ const getSafariIOSConfig = (capabilities) => {
     platformName: capabilities.platform,
     platformVersion: capabilities.version,
     deviceOrientation: 'portrait',
+    autoAcceptAlerts: "true",
     name: capabilities.name,
   };
 };
