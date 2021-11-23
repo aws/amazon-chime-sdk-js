@@ -571,10 +571,6 @@ export class DemoMeetingApp
       this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
       this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
-      if (this.echoReductionCapability) {
-        (document.getElementById('add-voice-focus') as HTMLInputElement).checked = true;
-        this.enableVoiceFocus = (document.getElementById('add-voice-focus') as HTMLInputElement).checked;
-      }
 
       const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
       switch (chosenLogLevel) {
