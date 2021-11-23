@@ -1,0 +1,39 @@
+{
+    "`": 1,
+    "name": "echo_reduction_test.config.json %ts",
+    "grids": [],
+    "tests": [
+      {
+        "name": "Echo Reduction Enabled Test %ts",
+        "description": "Echo Reduction Enabled Test",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "EchoReductionEnabledTest.js",
+        "payload": {
+          "url": "http://localhost:8080/?voiceFocusRevisionID=ptCWCoMSFmUNqs6JXcVamv",
+          "port": 30002,
+          "retry": 5
+        }
+      },
+      {
+        "name": "Echo Reduction Disabled Test %ts",
+        "description": "Echo Reduction Disabled Test",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "EchoReductionDisabledTest.js",
+        "payload": {
+          "url": "http://localhost:8080/",
+          "port": 30002,
+          "retry": 5
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "version": "latest",
+        "platform": "MAC"
+      }
+    ]
+  }
+  

@@ -1,9 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import AudioMixObserver from '../audiomixobserver/AudioMixObserver';
 import BrowserBehavior from '../browserbehavior/BrowserBehavior';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
+import AsyncScheduler from '../scheduler/AsyncScheduler';
 import AudioMixController from './AudioMixController';
 
 /** @internal */
@@ -17,6 +19,7 @@ export default class DefaultAudioMixController implements AudioMixController {
   private audioElement: HTMLAudioElement | null = null;
   private audioStream: MediaStream | null = null;
   private browserBehavior: BrowserBehavior = new DefaultBrowserBehavior();
+  private observers: Set<AudioMixObserver> = new Set<AudioMixObserver>();
 
   constructor(private logger?: Logger) {}
 
@@ -35,6 +38,11 @@ export default class DefaultAudioMixController implements AudioMixController {
     }
     this.audioElement.srcObject = null;
     this.audioElement = null;
+    this.forEachObserver((observer: AudioMixObserver) => {
+      if (this.audioStream) {
+        observer.meetingAudioStreamBecameInactive(this.audioStream);
+      }
+    });
   }
 
   async bindAudioStream(stream: MediaStream): Promise<void> {
@@ -43,6 +51,7 @@ export default class DefaultAudioMixController implements AudioMixController {
     }
 
     this.audioStream = stream;
+
     try {
       await this.bindAudioMix();
     } catch (error) {
@@ -71,13 +80,34 @@ export default class DefaultAudioMixController implements AudioMixController {
     return this.bindAudioMix();
   }
 
+  private forEachObserver(observerFunc: (observer: AudioMixObserver) => void): void {
+    for (const observer of this.observers) {
+      AsyncScheduler.nextTick(() => {
+        observerFunc(observer);
+      });
+    }
+  }
+
   private async bindAudioMix(): Promise<void> {
     if (!this.audioElement) {
       return;
     }
 
+    const previousStream = this.audioElement.srcObject as MediaStream;
+
     if (this.audioStream) {
       this.audioElement.srcObject = this.audioStream;
+    }
+
+    if (previousStream !== this.audioStream) {
+      this.forEachObserver((observer: AudioMixObserver) => {
+        if (previousStream) {
+          observer.meetingAudioStreamBecameInactive(previousStream);
+        }
+        if (this.audioStream) {
+          observer.meetingAudioStreamBecameActive(this.audioStream);
+        }
+      });
     }
 
     // In usual operation, the output device is undefined, and so is the element
@@ -123,5 +153,17 @@ export default class DefaultAudioMixController implements AudioMixController {
     if (this.browserBehavior.hasChromiumWebRTC()) {
       existingAudioElement.srcObject = existingStream;
     }
+  }
+
+  async getCurrentMeetingAudioStream(): Promise<MediaStream | null> {
+    return this.audioStream;
+  }
+
+  async addAudioMixObserver(observer: AudioMixObserver): Promise<void> {
+    this.observers.add(observer);
+  }
+
+  async removeAudioMixObserver(observer: AudioMixObserver): Promise<void> {
+    this.observers.delete(observer);
   }
 }

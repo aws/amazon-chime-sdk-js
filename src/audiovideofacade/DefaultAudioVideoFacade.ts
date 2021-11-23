@@ -3,6 +3,7 @@
 
 import ActiveSpeakerPolicy from '../activespeakerpolicy/ActiveSpeakerPolicy';
 import AudioMixController from '../audiomixcontroller/AudioMixController';
+import AudioMixObserver from '../audiomixobserver/AudioMixObserver';
 import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import AudioVideoFacade from '../audiovideofacade/AudioVideoFacade';
@@ -73,6 +74,21 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade {
   unbindAudioElement(): void {
     this.audioMixController.unbindAudioElement();
     this.trace('unbindAudioElement');
+  }
+
+  getCurrentMeetingAudioStream(): Promise<MediaStream | null> {
+    this.trace('getCurrentConferenceStream');
+    return this.audioMixController.getCurrentMeetingAudioStream();
+  }
+
+  addAudioMixObserver(observer: AudioMixObserver): void {
+    this.trace('addAudioMixObserver');
+    this.audioMixController.addAudioMixObserver(observer);
+  }
+
+  removeAudioMixObserver(observer: AudioMixObserver): void {
+    this.trace('removeAudioMixObserver');
+    this.audioMixController.removeAudioMixObserver(observer);
   }
 
   bindVideoElement(tileId: number, videoElement: HTMLVideoElement): void {

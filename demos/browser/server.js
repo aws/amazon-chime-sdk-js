@@ -19,23 +19,38 @@ console.info('Using index path', indexPagePath);
 
 const indexPage = fs.readFileSync(indexPagePath);
 
-// Create ans AWS SDK Chime object. Region 'us-east-1' is currently required.
+// Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
-const sts = new AWS.STS({ region: 'us-east-1' })
-
 // Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
 const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
-console.info('Using endpoint', endpoint);
 
+const chimeRegional = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
+const chimeRegionalEndpoint = process.env.REGIONAL_ENDPOINT || 'https://meetings-chime.us-east-1.amazonaws.com';
+
+const sts = new AWS.STS({ region: 'us-east-1' })
+
+console.info('Using global endpoint', endpoint);
 chime.endpoint = new AWS.Endpoint(endpoint);
+
+console.info('Using regional endpoint', chimeRegionalEndpoint);
+chimeRegional.endpoint = new AWS.Endpoint(chimeRegionalEndpoint);
 
 const captureS3Destination = process.env.CAPTURE_S3_DESTINATION;
 if (captureS3Destination) {
   console.info(`S3 destination for capture is ${captureS3Destination}`)
 } else {
   console.info(`S3 destination for capture not set.  Cloud media capture will not be available.`)
+}
+
+// return regional API just for Echo Reduction for now.
+function getClientForMeeting(meeting) {
+  if (meeting && meeting.Meeting && meeting.Meeting.MeetingFeatures && meeting.Meeting.MeetingFeatures.Audio &&
+    meeting.Meeting.MeetingFeatures.Audio.EchoReduction === 'AVAILABLE') {
+      return chimeRegional;
+  }
+  return chime;
 }
 
 function serve(host = '127.0.0.1:8080') {
@@ -56,10 +71,11 @@ function serve(host = '127.0.0.1:8080') {
         if (!requestUrl.query.title || !requestUrl.query.name || !requestUrl.query.region) {
           throw new Error('Need parameters: title, name, region');
         }
+        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
 
         // Look up the meeting by its title. If it does not exist, create the meeting.
         if (!meetingTable[requestUrl.query.title]) {
-          meetingTable[requestUrl.query.title] = await chime.createMeeting({
+          let request = {
             // Use a UUID for the client request token to ensure that any request retries
             // do not create multiple meetings.
             ClientRequestToken: uuidv4(),
@@ -69,14 +85,25 @@ function serve(host = '127.0.0.1:8080') {
             // Any meeting ID you wish to associate with the meeting.
             // For simplicity here, we use the meeting title.
             ExternalMeetingId: requestUrl.query.title.substring(0, 64),
-          }).promise();
+          };
+          
+          if (requestUrl.query.ns_es === 'true') {
+            client = chimeRegional;
+            request.MeetingFeatures = {
+              Audio: {
+                // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
+                EchoReduction: 'AVAILABLE'
+              } 
+            };
+          }
+          meetingTable[requestUrl.query.title] = await client.createMeeting(request).promise();
         }
 
         // Fetch the meeting info
         const meeting = meetingTable[requestUrl.query.title];
 
         // Create new attendee for the meeting
-        const attendee = await chime.createAttendee({
+        const attendee = await client.createAttendee({
           // The meeting ID of the created meeting to add the attendee to
           MeetingId: meeting.Meeting.MeetingId,
 
@@ -86,7 +113,7 @@ function serve(host = '127.0.0.1:8080') {
           // be used to help build the roster.
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
         }).promise();
-
+        
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
         respond(response, 201, 'application/json', JSON.stringify({
@@ -97,7 +124,9 @@ function serve(host = '127.0.0.1:8080') {
         }, null, 2));
       } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
         // End the meeting. All attendee connections will hang up.
-        await chime.deleteMeeting({
+        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+
+        await client.deleteMeeting({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
         }).promise();
         respond(response, 200, 'application/json', JSON.stringify({}));
@@ -137,7 +166,9 @@ function serve(host = '127.0.0.1:8080') {
         respond(response, 200, 'application/json', JSON.stringify(awsCredentials), true);
       } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
         // End the meeting. All attendee connections will hang up.
-        await chime.deleteMeeting({
+        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+
+        await client.deleteMeeting({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
         }).promise();
         respond(response, 200, 'application/json', JSON.stringify({}));
@@ -197,14 +228,17 @@ function serve(host = '127.0.0.1:8080') {
             error: 'Unknown transcription engine'
           }));
         }
+        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
 
-        await chime.startMeetingTranscription({
+        await client.startMeetingTranscription({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId,
           TranscriptionConfiguration: transcriptionConfiguration
         }).promise();
         respond(response, 200, 'application/json', JSON.stringify({}));
       } else if (request.method === 'POST' && requestUrl.pathname === '/stop_transcription') {
-        await chime.stopMeetingTranscription({
+        let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
+
+        await client.stopMeetingTranscription({
           MeetingId: meetingTable[requestUrl.query.title].Meeting.MeetingId
         }).promise();
         respond(response, 200, 'application/json', JSON.stringify({}));

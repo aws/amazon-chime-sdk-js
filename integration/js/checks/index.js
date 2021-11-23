@@ -29,3 +29,4 @@ exports.TranscriptionStartedCheck = require('./TranscriptionStartedCheck');
 exports.TranscriptionStoppedCheck = require('./TranscriptionStoppedCheck');
 exports.TranscriptsReceivedCheck = require('./TranscriptsReceivedCheck');
 exports.VideoBackgroundBlurCheck = require('./VideoBackgroundBlurCheck');
+exports.EchoAudioCheck = require('./EchoAudioCheck');

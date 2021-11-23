@@ -11,6 +11,7 @@ import AudioInputDevice from './devicecontroller/AudioInputDevice';
 import AudioLogEvent from './statscollector/AudioLogEvent';
 import AudioMixController from './audiomixcontroller/AudioMixController';
 import AudioMixControllerFacade from './audiomixcontroller/AudioMixControllerFacade';
+import AudioMixObserver from './audiomixobserver/AudioMixObserver';
 import AudioNodeSubgraph from './devicecontroller/AudioNodeSubgraph';
 import AudioProfile from './audioprofile/AudioProfile';
 import AudioTransformDevice from './devicecontroller/AudioTransformDevice';
@@ -290,6 +291,7 @@ import VoiceFocusConfig from './voicefocus/VoiceFocusConfig';
 import VoiceFocusDeviceOptions from './voicefocus/VoiceFocusDeviceOptions';
 import VoiceFocusDeviceTransformer from './voicefocus/VoiceFocusDeviceTransformer';
 import VoiceFocusModelComplexity from './voicefocus/VoiceFocusModelComplexity';
+import VoiceFocusModelName from './voicefocus/VoiceFocusModelName';
 import VoiceFocusPaths from './voicefocus/VoiceFocusPaths';
 import VoiceFocusSpec from './voicefocus/VoiceFocusSpec';
 import VoiceFocusTransformDevice from './voicefocus/VoiceFocusTransformDevice';
@@ -319,6 +321,7 @@ export {
   AudioLogEvent,
   AudioMixController,
   AudioMixControllerFacade,
+  AudioMixObserver,
   AudioNodeSubgraph,
   AudioProfile,
   AudioTransformDevice,
@@ -605,6 +608,7 @@ export {
   VoiceFocusDeviceOptions,
   VoiceFocusDeviceTransformer,
   VoiceFocusModelComplexity,
+  VoiceFocusModelName,
   VoiceFocusPaths,
   VoiceFocusSpec,
   VoiceFocusTransformDevice,

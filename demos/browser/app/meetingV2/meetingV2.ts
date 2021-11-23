@@ -63,6 +63,7 @@ import {
   VideoPriorityBasedPolicyConfig,
   VoiceFocusDeviceTransformer,
   VoiceFocusModelComplexity,
+  VoiceFocusModelName,
   VoiceFocusPaths,
   VoiceFocusSpec,
   VoiceFocusTransformDevice,
@@ -111,6 +112,7 @@ declare global {
 // Amazon Voice Focus. If none of these parameters are supplied, the SDK default
 // values will be used.
 const search = new URLSearchParams(document.location.search);
+const VOICE_FOCUS_NAME = search.get('voiceFocusName') || undefined;
 const VOICE_FOCUS_CDN = search.get('voiceFocusCDN') || undefined;
 const VOICE_FOCUS_ASSET_GROUP = search.get('voiceFocusAssetGroup') || undefined;
 const VOICE_FOCUS_REVISION_ID = search.get('voiceFocusRevisionID') || undefined;
@@ -122,10 +124,27 @@ const VOICE_FOCUS_PATHS: VoiceFocusPaths | undefined = VOICE_FOCUS_CDN && {
   models: `${VOICE_FOCUS_CDN}wasm/`,
 };
 
+function voiceFocusName(name: string | undefined = VOICE_FOCUS_NAME): VoiceFocusModelName | undefined {
+  if (name && ['default', 'ns_es'].includes(name)) {
+    return name as VoiceFocusModelName;
+  }
+  return undefined;
+}
+
 const VOICE_FOCUS_SPEC = {
+  name: voiceFocusName(),
   assetGroup: VOICE_FOCUS_ASSET_GROUP,
   revisionID: VOICE_FOCUS_REVISION_ID,
   paths: VOICE_FOCUS_PATHS,
+};
+
+function getVoiceFocusSpec(joinInfo: any): VoiceFocusSpec {
+  const es = joinInfo.Meeting.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE';
+  let spec: VoiceFocusSpec = VOICE_FOCUS_SPEC;
+  if (!spec.name) {
+    spec.name =  es ? voiceFocusName('ns_es') : voiceFocusName('default');
+  }
+  return spec;
 };
 
 const MAX_VOICE_FOCUS_COMPLEXITY: VoiceFocusModelComplexity | undefined = undefined;
@@ -315,6 +334,7 @@ export class DemoMeetingApp
   usePriorityBasedDownlinkPolicy = false;
   videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
   enablePin = false;
+  echoReductionCapability = false;
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
@@ -335,6 +355,7 @@ export class DemoMeetingApp
 
   voiceFocusTransformer: VoiceFocusDeviceTransformer | undefined;
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
+  joinInfo: any | undefined;
 
   bbprocessor: BackgroundBlurProcessor | undefined;
 
@@ -464,8 +485,10 @@ export class DemoMeetingApp
       return;
     }
 
+    const spec: VoiceFocusSpec = getVoiceFocusSpec(this.joinInfo);
+
     try {
-      this.supportsVoiceFocus = await VoiceFocusDeviceTransformer.isSupported(VOICE_FOCUS_SPEC, {
+      this.supportsVoiceFocus = await VoiceFocusDeviceTransformer.isSupported(spec, {
         logger,
       });
       if (this.supportsVoiceFocus) {
@@ -547,6 +570,11 @@ export class DemoMeetingApp
       this.enableEventReporting = (document.getElementById('event-reporting') as HTMLInputElement).checked;
       this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
+      this.echoReductionCapability = (document.getElementById('echo-reduction-capability') as HTMLInputElement).checked;
+      if (this.echoReductionCapability) {
+        (document.getElementById('add-voice-focus') as HTMLInputElement).checked = true;
+        this.enableVoiceFocus = (document.getElementById('add-voice-focus') as HTMLInputElement).checked;
+      }
 
       const chosenLogLevel = (document.getElementById('logLevelSelect') as HTMLSelectElement).value;
       switch (chosenLogLevel) {
@@ -2109,7 +2137,7 @@ export class DemoMeetingApp
     const response = await fetch(
       `${DemoMeetingApp.BASE_URL}join?title=${encodeURIComponent(
         this.meeting
-      )}&name=${encodeURIComponent(this.name)}&region=${encodeURIComponent(this.region)}`,
+      )}&name=${encodeURIComponent(this.name)}&region=${encodeURIComponent(this.region)}&ns_es=${this.echoReductionCapability}`,
       {
         method: 'POST',
       }
@@ -2398,7 +2426,7 @@ export class DemoMeetingApp
 
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
-    const additionalDevices = ['None', '440 Hz', 'Prerecorded Speech'];
+    const additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Echo'];
     const additionalToggles = [];
 
     // This can't work unless Web Audio is enabled.
@@ -2763,7 +2791,7 @@ export class DemoMeetingApp
         const bytes = await resp.arrayBuffer();
         const audioData = new TextDecoder('utf8').decode(bytes);
         const audio = new Audio('data:audio/mpeg;base64,' + audioData);
-        audio.loop = false;
+        audio.loop = true;
         audio.crossOrigin = 'anonymous';
         audio.play();
         // @ts-ignore
@@ -2774,6 +2802,30 @@ export class DemoMeetingApp
         return streamDestination.stream;
       } catch (e) {
         this.log(`Error fetching audio from ${audioPath}: ${e}`);
+        return null;
+      }
+    }
+
+    // use the speaker output MediaStream with a 50ms delay and a 20% volume reduction as audio input
+    if (value == 'Echo') {
+      try {
+        const speakerStream = await this.audioVideo.getCurrentMeetingAudioStream();
+
+        const audioContext = DefaultDeviceController.getAudioContext();
+        const streamDestination = audioContext.createMediaStreamDestination();
+        const audioSourceNode = audioContext.createMediaStreamSource(speakerStream);
+        const delayNode = audioContext.createDelay(0.05);
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = 0.8;
+
+        // connect the AudioSourceNode, DelayNode and GainNode to the same output destination
+        audioSourceNode.connect(delayNode);
+        delayNode.connect(gainNode);
+        gainNode.connect(streamDestination);
+
+        return streamDestination.stream;
+      } catch (e) {
+        this.log(`Error creating Echo`);
         return null;
       }
     }
@@ -2799,16 +2851,16 @@ export class DemoMeetingApp
     const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
 
     // Find out what it will actually execute, and cap it if needed.
-    const spec: VoiceFocusSpec = { ...VOICE_FOCUS_SPEC };
+    const spec: VoiceFocusSpec = getVoiceFocusSpec(this.joinInfo);
     const config = await VoiceFocusDeviceTransformer.configure(spec, { logger });
 
     let transformer;
     if (maxComplexity && config.supported && exceeds(config.model.variant)) {
       logger.info(`Downgrading VF to ${maxComplexity}`);
       spec.variant = maxComplexity;
-      transformer = VoiceFocusDeviceTransformer.create(spec, { logger });
+      transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, undefined, this.joinInfo);
     } else {
-      transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, config);
+      transformer = VoiceFocusDeviceTransformer.create(spec, { logger }, config, this.joinInfo);
     }
 
     return this.voiceFocusTransformer = await transformer;
@@ -2828,7 +2880,8 @@ export class DemoMeetingApp
       const transformer = await this.getVoiceFocusDeviceTransformer(MAX_VOICE_FOCUS_COMPLEXITY);
       const vf: VoiceFocusTransformDevice = await transformer.createTransformDevice(inner);
       if (vf) {
-        return (this.voiceFocusDevice = vf);
+        await vf.observeMeetingAudio(this.audioVideo);
+        return this.voiceFocusDevice = vf;
       }
     } catch (e) {
       // Fall through.
@@ -3074,8 +3127,8 @@ export class DemoMeetingApp
   }
 
   async authenticate(): Promise<string> {
-    const joinInfo = (await this.joinMeeting()).JoinInfo;
-    const configuration = new MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
+    this.joinInfo = (await this.joinMeeting()).JoinInfo;
+    const configuration = new MeetingSessionConfiguration(this.joinInfo.Meeting, this.joinInfo.Attendee);
     await this.initializeMeetingSession(configuration);
     const url = new URL(window.location.href);
     url.searchParams.set('m', this.meeting);

@@ -86,6 +86,7 @@
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
 					<li><a href="../interfaces/audiotransformdevice.html" class="tsd-signature-type">AudioTransformDevice</a></li>
+					<li><a href="../interfaces/audiomixobserver.html" class="tsd-signature-type">AudioMixObserver</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -95,14 +96,20 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#addfarendstream" class="tsd-kind-icon">add<wbr>Far<wbr>End<wbr>Stream</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#choosenewinnerdevice" class="tsd-kind-icon">choose<wbr>New<wbr>Inner<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#createaudionode" class="tsd-kind-icon">create<wbr>Audio<wbr>Node</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#getinnerdevice" class="tsd-kind-icon">get<wbr>Inner<wbr>Device</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#intrinsicdevice" class="tsd-kind-icon">intrinsic<wbr>Device</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#meetingaudiostreambecameactive" class="tsd-kind-icon">meeting<wbr>Audio<wbr>Stream<wbr>Became<wbr>Active</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#meetingaudiostreambecameinactive" class="tsd-kind-icon">meeting<wbr>Audio<wbr>Stream<wbr>Became<wbr>Inactive</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#mute" class="tsd-kind-icon">mute</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#observemeetingaudio" class="tsd-kind-icon">observe<wbr>Meeting<wbr>Audio</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#removefarendstream" class="tsd-kind-icon">remove<wbr>Farend<wbr>Stream</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#stop" class="tsd-kind-icon">stop</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicefocustransformdevice.html#unobservemeetingaudio" class="tsd-kind-icon">un<wbr>Observe<wbr>Meeting<wbr>Audio</a></li>
 							</ul>
 						</section>
 					</div>
@@ -110,6 +117,29 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="addfarendstream" class="tsd-anchor"></a>
+					<h3>add<wbr>Far<wbr>End<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Far<wbr>End<wbr>Stream<span class="tsd-signature-symbol">(</span>activeStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L255">src/voicefocus/VoiceFocusTransformDevice.ts:255</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>activeStream: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="addobserver" class="tsd-anchor"></a>
 					<h3>add<wbr>Observer</h3>
@@ -120,7 +150,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L193">src/voicefocus/VoiceFocusTransformDevice.ts:193</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L243">src/voicefocus/VoiceFocusTransformDevice.ts:243</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -150,7 +180,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L76">src/voicefocus/VoiceFocusTransformDevice.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L90">src/voicefocus/VoiceFocusTransformDevice.ts:90</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -186,7 +216,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiotransformdevice.html">AudioTransformDevice</a>.<a href="../interfaces/audiotransformdevice.html#createaudionode">createAudioNode</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L159">src/voicefocus/VoiceFocusTransformDevice.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L177">src/voicefocus/VoiceFocusTransformDevice.ts:177</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -209,7 +239,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L34">src/voicefocus/VoiceFocusTransformDevice.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L48">src/voicefocus/VoiceFocusTransformDevice.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -234,10 +264,57 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiotransformdevice.html">AudioTransformDevice</a>.<a href="../interfaces/audiotransformdevice.html#intrinsicdevice">intrinsicDevice</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L94">src/voicefocus/VoiceFocusTransformDevice.ts:94</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L111">src/voicefocus/VoiceFocusTransformDevice.ts:111</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="meetingaudiostreambecameactive" class="tsd-anchor"></a>
+					<h3>meeting<wbr>Audio<wbr>Stream<wbr>Became<wbr>Active</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">meeting<wbr>Audio<wbr>Stream<wbr>Became<wbr>Active<span class="tsd-signature-symbol">(</span>activeStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L275">src/voicefocus/VoiceFocusTransformDevice.ts:275</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>activeStream: <span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="meetingaudiostreambecameinactive" class="tsd-anchor"></a>
+					<h3>meeting<wbr>Audio<wbr>Stream<wbr>Became<wbr>Inactive</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">meeting<wbr>Audio<wbr>Stream<wbr>Became<wbr>Inactive<span class="tsd-signature-symbol">(</span>inactiveStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/audiomixobserver.html">AudioMixObserver</a>.<a href="../interfaces/audiomixobserver.html#meetingaudiostreambecameinactive">meetingAudioStreamBecameInactive</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L279">src/voicefocus/VoiceFocusTransformDevice.ts:279</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>inactiveStream: <span class="tsd-signature-type">MediaStream</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -252,7 +329,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiotransformdevice.html">AudioTransformDevice</a>.<a href="../interfaces/audiotransformdevice.html#mute">mute</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L43">src/voicefocus/VoiceFocusTransformDevice.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L57">src/voicefocus/VoiceFocusTransformDevice.ts:57</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -274,6 +351,52 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="observemeetingaudio" class="tsd-anchor"></a>
+					<h3>observe<wbr>Meeting<wbr>Audio</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Meeting<wbr>Audio<span class="tsd-signature-symbol">(</span>audioVideo<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L216">src/voicefocus/VoiceFocusTransformDevice.ts:216</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>audioVideo: <a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="removefarendstream" class="tsd-anchor"></a>
+					<h3>remove<wbr>Farend<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Farend<wbr>Stream<span class="tsd-signature-symbol">(</span>inactiveStream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L270">src/voicefocus/VoiceFocusTransformDevice.ts:270</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>inactiveStream: <span class="tsd-signature-type">MediaStream</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="removeobserver" class="tsd-anchor"></a>
 					<h3>remove<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -283,7 +406,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L201">src/voicefocus/VoiceFocusTransformDevice.ts:201</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L251">src/voicefocus/VoiceFocusTransformDevice.ts:251</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -312,7 +435,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/audiotransformdevice.html">AudioTransformDevice</a>.<a href="../interfaces/audiotransformdevice.html#stop">stop</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L58">src/voicefocus/VoiceFocusTransformDevice.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L72">src/voicefocus/VoiceFocusTransformDevice.ts:72</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -321,6 +444,29 @@
 									you will need to create a new device to use Amazon Voice Focus again.</p>
 								</div>
 							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="unobservemeetingaudio" class="tsd-anchor"></a>
+					<h3>un<wbr>Observe<wbr>Meeting<wbr>Audio</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">un<wbr>Observe<wbr>Meeting<wbr>Audio<span class="tsd-signature-symbol">(</span>audioVideo<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L227">src/voicefocus/VoiceFocusTransformDevice.ts:227</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>audioVideo: <a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -343,6 +489,9 @@
 						<a href="voicefocustransformdevice.html" class="tsd-kind-icon">Voice<wbr>Focus<wbr>Transform<wbr>Device</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="voicefocustransformdevice.html#addfarendstream" class="tsd-kind-icon">add<wbr>Far<wbr>End<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="voicefocustransformdevice.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -358,13 +507,28 @@
 								<a href="voicefocustransformdevice.html#intrinsicdevice" class="tsd-kind-icon">intrinsic<wbr>Device</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="voicefocustransformdevice.html#meetingaudiostreambecameactive" class="tsd-kind-icon">meeting<wbr>Audio<wbr>Stream<wbr>Became<wbr>Active</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="voicefocustransformdevice.html#meetingaudiostreambecameinactive" class="tsd-kind-icon">meeting<wbr>Audio<wbr>Stream<wbr>Became<wbr>Inactive</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="voicefocustransformdevice.html#mute" class="tsd-kind-icon">mute</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="voicefocustransformdevice.html#observemeetingaudio" class="tsd-kind-icon">observe<wbr>Meeting<wbr>Audio</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="voicefocustransformdevice.html#removefarendstream" class="tsd-kind-icon">remove<wbr>Farend<wbr>Stream</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="voicefocustransformdevice.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="voicefocustransformdevice.html#stop" class="tsd-kind-icon">stop</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="voicefocustransformdevice.html#unobservemeetingaudio" class="tsd-kind-icon">un<wbr>Observe<wbr>Meeting<wbr>Audio</a>
 							</li>
 						</ul>
 					</li>
