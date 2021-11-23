@@ -8,10 +8,8 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "aws-sdk": "^2.559.0"
-  },
   "dependencies": {
+    "aws-sdk": "^2.1035.0",
     "axios": "^0.21.2",
     "express": "^4.17.1",
     "js-base64": "^2.5.1",
