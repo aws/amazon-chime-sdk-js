@@ -9,7 +9,7 @@ Parameters:
     AllowedValues: [true, false]
   ChimeEndpoint:
     Description: The AWS SDK Chime endpoint
-    Default: "https://meetings-chime.us-east-1.amazonaws.com "
+    Default: "https://service.chime.aws.amazon.com"
     Type: String
   ChimeServicePrincipal:
     Description: "The principal that will capture to the S3 bucket"

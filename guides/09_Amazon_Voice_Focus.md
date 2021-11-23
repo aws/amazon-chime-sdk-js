@@ -14,6 +14,8 @@ Echo reduction helps keep echoes—sounds from a user’s loudspeaker that get p
 
 Echo reduction is enabled at the meeting level when you call the CreateMeeting or CreateMeetingWithAttendees APIs. Enabling the feature this way allows others who join the meeting to enable echo reduction as desired.
 
+Amazon Chime Echo Reduction is a premium feature, please refer to the [Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_) page for details.
+
 ## Amazon Voice Focus on the web
 
 Amazon Voice Focus runs in the end user’s web browser, leveraging modern web platform features including Web Audio, Audio Worklet, and WebAssembly. See the section “[Can I use Amazon Voice Focus in my application?](#can-i-use-amazon-voice-focus-in-my-application)” for browser version requirements.

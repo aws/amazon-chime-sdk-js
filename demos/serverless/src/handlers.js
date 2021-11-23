@@ -18,10 +18,6 @@ const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT);
 
 const chimeRegional = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
-if (process.env.CHIME_ENDPOINT_REGIONAL) {
-  console.info('Using regional endpoint', process.env.CHIME_ENDPOINT_REGIONAL);
-  chimeRegional.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT_REGIONAL);
-}
 
 // return regional API just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
