@@ -201,9 +201,9 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       let param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(0);
       param = encodingParams.get(SimulcastTransceiverController.MID_LEVEL_NAME);
-      expect(param.maxBitrate).to.equal(0);
-      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(1200000);
+      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(0);
     });
 
     it('encoding for 3 to 4', () => {
@@ -275,9 +275,9 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       let param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(0);
       param = encodingParams.get(SimulcastTransceiverController.MID_LEVEL_NAME);
-      expect(param.maxBitrate).to.equal(0);
-      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(1200000);
+      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(0);
       index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
       updateIndexFrame(index, 2);
       policy.updateIndex(index);
@@ -308,9 +308,9 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       let param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(0);
       param = encodingParams.get(SimulcastTransceiverController.MID_LEVEL_NAME);
-      expect(param.maxBitrate).to.equal(0);
-      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(1200000);
+      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(0);
       index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
       incrementTime(8100);
       policy.updateConnectionMetric({ uplinkKbps: 500 });
@@ -347,9 +347,9 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       param = encodingParams.get(SimulcastTransceiverController.LOW_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(0);
       param = encodingParams.get(SimulcastTransceiverController.MID_LEVEL_NAME);
-      expect(param.maxBitrate).to.equal(0);
-      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
       expect(param.maxBitrate).to.equal(1200000);
+      param = encodingParams.get(SimulcastTransceiverController.HIGH_LEVEL_NAME);
+      expect(param.maxBitrate).to.equal(0);
     });
   });
 

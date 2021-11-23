@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Switched `DefaultSimulcastUplinkPolicy` non-simulcast mode's enabled stream to mitigate Chromium not reconfiguring encoder on reconnect when using the top stream. This impacts only the non-simulcast mode of the simulcast policy when is when there are 2 or less participants (not 2 or less senders).
+
 ### Changed
 
 ## [2.22.0] - 2021-11-18

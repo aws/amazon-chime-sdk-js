@@ -147,6 +147,7 @@
 							</tr>
 					</tbody></table>
 					<p>The table entries represent the maximum configuration.  When CPU and bandwidth consumption is overused, WebRTC will dynamically adjust bitrate, disable a layer or scale down resolution. The SimulcastUplinkPolicy has a monitoring mechanism which tracks the sending status and automatically adjusts without need for application intervention.</p>
+					<p>Note that simulcast is disabled when there are only 2 or fewer attendees.  This is because WebRTC has additional functionality to request lower bitrates from the remote end, and we will forward these requests if there are no competing receivers (i.e. if the receiving estimates it has 200kbps downlink bandwidth available, this will be sent and relayed in a message to the sending client).  Therefore there is no need for simulcast based adaption.</p>
 					<a href="#downlink--bandwidth-policy" id="downlink--bandwidth-policy" style="color: inherit; text-decoration: none;">
 						<h3>Downlink  Bandwidth Policy</h3>
 					</a>
