@@ -14,6 +14,8 @@ Echo reduction helps keep echoes—sounds from a user’s loudspeaker that get p
 
 Echo reduction is enabled at the meeting level when you call the CreateMeeting or CreateMeetingWithAttendees APIs. Enabling the feature this way allows others who join the meeting to enable echo reduction as desired.
 
+The feature is integrated into the `browser` demo application. To try it out, launch the demo with `npm run start`, choose “Web Audio” and “Use Echo Reduction (new meetings only)” on the first screen, then either check the “Voice Focus” box in the lobby view, or click “Voice Focus” in the device picker after joining the meeting.
+
 Amazon Chime Echo Reduction is a premium feature, please refer to the [Pricing](https://aws.amazon.com/chime/pricing/#Chime_SDK_) page for details.
 
 ## Amazon Voice Focus on the web
