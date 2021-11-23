@@ -36,7 +36,7 @@ class JoinVideoTestMeetingStep extends AppTestStep {
     await this.page.enterMeetingTitle(this.meeting_title);
     this.logger("waiting to authenticate");
     this.test.numRemoteJoined =  this.numberOfParticipant ;
-    let authenticationState = await this.page.waitForAuthentication();
+    let authenticationState = await this.page.waitForDeviceFlow();
     if (authenticationState === 'failed') {
       throw new KiteTestError(Status.FAILED, 'Authentication timeout');
     }

@@ -89,7 +89,7 @@ class TestAppPage {
     await joinMeetingButton.click();
   }
 
-  async waitForAuthentication() {
+  async waitForDeviceFlow() {
     await TestUtils.waitAround(5000);
   }
 

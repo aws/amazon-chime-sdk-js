@@ -33,6 +33,7 @@ function findAllElements() {
     switchToSipFlow: By.id('to-sip-flow'),
 
     authenticationFlow: By.id('flow-authenticate'),
+    permisssionsFlow: By.id('flow-need-permission'),
     deviceFlow: By.id('flow-devices'),
     meetingFlow: By.id('flow-meeting'),
     sipAuthenticateFlow: By.id('flow-sip-authenticate'),
@@ -91,6 +92,7 @@ class AppPage {
 
   async open(stepInfo) {
     await TestUtils.open(stepInfo);
+    await this.waitForBrowserDemoToLoad();
   }
 
   async close(stepInfo) {
@@ -312,20 +314,37 @@ class AppPage {
     }
     return 'failed'
   }
-
-  async waitForAuthentication() {
-    let timeout = 10;
-    let i = 0;
-    let authenticating = true;
-    while (authenticating && i < timeout) {
-      authenticating = await this.isAuthenticating();
-      if (authenticating === false) {
-        return 'done'
-      }
-      i++;
-      await TestUtils.waitAround(1000);
+  
+  async waitForElement(element, timeout = 10000) {
+    try {
+      await this.driver.wait(until.elementLocated(element), timeout);
+      await this.driver.wait(until.elementIsVisible(this.driver.findElement(element)), timeout);
+      return 'done';
     }
-    return 'failed'
+    catch(e) {
+      return 'failed';
+    }
+  }
+
+  async waitForElementToNotBeVisible(element, timeout = 10000) {
+    try {
+      await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(element)), timeout);
+      return 'done';
+    }
+    catch(e) {
+      return 'failed';
+    }
+  }
+
+  async waitForDeviceFlow() {
+    if(await this.waitForElementToNotBeVisible(elements.authenticationFlow) === 'failed') {
+      return 'failed';
+    }
+    return await this.waitForElementToNotBeVisible(elements.permisssionsFlow);
+  }
+
+  async waitForBrowserDemoToLoad() {
+    return await this.waitForElement(elements.authenticationFlow, 30000)
   }
 
   async waitForSipAuthentication() {
@@ -344,18 +363,7 @@ class AppPage {
   }
 
   async waitToJoinTheMeeting() {
-    let timeout = 20;
-    let i = 0;
-    let joining = true;
-    while (joining && i < timeout) {
-      joining = await this.isJoiningMeeting();
-      if (joining === false) {
-        return 'done'
-      }
-      i++;
-      await TestUtils.waitAround(1000);
-    }
-    return 'failed'
+    return await this.waitForElement(elements.meetingFlow, 20000)
   }
 
   async isLiveTranscriptionPresentInDeviceMenu() {
@@ -517,14 +525,6 @@ class AppPage {
   async enableVoiceFocusInLobby() {
     const elem = await this.driver.findElement(elements.addVoiceFocusInput);
     return clickElement(this.driver, elem);
-  }
-
-  async isJoiningMeeting() {
-    return await this.driver.findElement(elements.deviceFlow).isDisplayed();
-  }
-
-  async isAuthenticating() {
-    return await this.driver.findElement(elements.authenticationFlow).isDisplayed();
   }
 
   async isMeetingEnding() {
