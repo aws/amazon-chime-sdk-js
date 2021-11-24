@@ -4,5 +4,6 @@
 export default class GetUserMediaError extends Error {
   constructor(public cause?: Error, message?: string) {
     super(message || 'Error fetching device.');
+    this.name = 'GetUserMediaError';
   }
 }
