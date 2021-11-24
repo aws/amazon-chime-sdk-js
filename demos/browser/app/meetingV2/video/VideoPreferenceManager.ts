@@ -11,7 +11,7 @@ import {
   VideoSource
 } from 'amazon-chime-sdk-js';
 
-export default class VideoPreferenceManager implements AudioVideoObserver {
+export default class VideoPreferenceManager {
   static readonly DefaultVideoTilePriority: number = 5;
   static readonly DefaultVideoTileTargetDisplaySize: TargetDisplaySize = TargetDisplaySize.High;
 
@@ -26,7 +26,7 @@ export default class VideoPreferenceManager implements AudioVideoObserver {
 
   constructor(private logger: Logger, private downlinkPolicy: VideoPriorityBasedPolicy) {}
 
-  remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
+  ensureDefaultPreferences(videoSources: VideoSource[]): void {
     this.logger.info(`Available remote video sources changed: ${JSON.stringify(videoSources)}`);
     for (const source of videoSources) {
         if (!this.attendeeIdToVideoPreference.has(source.attendee.attendeeId)) {

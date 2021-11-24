@@ -105,7 +105,6 @@ export default class VideoTileCollection implements AudioVideoObserver {
 
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
   tileIndexToDemoVideoTile = new Map<number, DemoVideoTile>();
-  pausedDemoVideoTiles = new Array<DemoVideoTile>();
 
   bandwidthConstrainedTiles = new Set<number>();
 
@@ -151,9 +150,8 @@ export default class VideoTileCollection implements AudioVideoObserver {
       return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value)
     });
 
-    // Update the preference manager explicitly in case it wasn't called first
-    // as it needs to add default preferences
-    this.videoPreferenceManager.remoteVideoSourcesDidChange(videoSources);
+    // Update the preference manager explicitly as it needs to add default preferences
+    this.videoPreferenceManager.ensureDefaultPreferences(videoSources);
     this.updatePaginatedVisibleTiles();
   }
 
