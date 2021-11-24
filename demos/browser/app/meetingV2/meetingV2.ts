@@ -229,10 +229,11 @@ export class DemoMeetingApp
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
 
-  // Currently this is the same amount as max send videos so we label the check box 'enable'
-  // rather then 'reduce', but technically pagination is always enabled.
+  // Currently this is the same as the maximum number of clients that can enable video (25)
+  // so we id the check box 'enable-pagination' rather then 'reduce-pagionation', but technically pagination is always enabled.
   static readonly REMOTE_VIDEO_PAGE_SIZE: number = 25;
-  static readonly REDUCED_REMOTE_VIDEO_PAGE_SIZE: number = 5;
+  // Enabled on authentication screen by 'enable-pagination' checkbox.
+  static readonly REDUCED_REMOTE_VIDEO_PAGE_SIZE: number = 2;
 
   // Ideally we don't need to change this. Keep this configurable in case users have a super slow network.
   loadingBodyPixDependencyTimeoutMs: number = 10_000;

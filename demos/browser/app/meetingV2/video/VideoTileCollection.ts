@@ -216,6 +216,10 @@ export default class VideoTileCollection implements AudioVideoObserver {
       demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
     }
     demoVideoTile.hide();
+    // Clear values
+    demoVideoTile.attendeeId = "";
+    demoVideoTile.nameplate = "";
+    demoVideoTile.pauseState = "";
     this.updateLayout();
   }
 

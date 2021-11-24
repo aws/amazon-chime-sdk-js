@@ -8,6 +8,7 @@ import {
   TimeoutScheduler,
 } from 'amazon-chime-sdk-js';
 
+// This logic should be eventually moved to its own utilities class
 import { fatal } from '../meetingV2'
 
 export default class TestSound {

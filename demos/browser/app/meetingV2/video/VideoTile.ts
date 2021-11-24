@@ -135,24 +135,23 @@ export class DemoVideoTile extends HTMLElement {
   }
 
   public set nameplate(nameplate: string) {
-    const nameplateElement = this.querySelector('.video-tile-nameplate');
+    const nameplateElement = this.querySelector('.video-tile-nameplate') as HTMLElement;
     console.log(`setting nameplate to ${nameplate}`);
-    nameplateElement.innerHTML = nameplate;
+    nameplateElement.innerText = nameplate;
   }
 
   public set attendeeId(attendeeId: string) {
-    const attendeeIdElement = this.querySelector('.video-tile-attendee-id');
+    const attendeeIdElement = this.querySelector('.video-tile-attendee-id') as HTMLElement;
     console.log(`setting attendeeId to ${attendeeId}`);
-    attendeeIdElement.innerHTML = attendeeId;
+    attendeeIdElement.innerText = attendeeId;
   }
   public get attendeeId() {
-    const attendeeIdElement = this.querySelector('.video-tile-attendee-id');
-    return attendeeIdElement.innerHTML;
+    return (this.querySelector('.video-tile-attendee-id') as HTMLElement).innerText;
   }
 
   public set pauseState(state: string) {
-    const pauseState = this.querySelector('.video-tile-pause-state');
-    pauseState.innerHTML = state;
+    const pauseState = this.querySelector('.video-tile-pause-state') as HTMLElement;
+    pauseState.innerText = state;
   }
 
   public get pauseButtonElement(): HTMLButtonElement {
