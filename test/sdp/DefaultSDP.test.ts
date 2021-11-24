@@ -457,4 +457,17 @@ describe('DefaultSDP', () => {
       );
     });
   });
+
+  describe('videoSectionDirections', () => {
+    it('Returns correct list', () => {
+      const sdpObj = new DefaultSDP(FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE);
+      expect(sdpObj.videoSectionDirections()).to.deep.equal([
+        'sendrecv',
+        'sendrecv',
+        'recvonly',
+        'sendonly',
+        'inactive',
+      ]);
+    });
+  });
 });

@@ -619,4 +619,29 @@ export default class DefaultSDP implements SDP {
     const newSDP = sections.join('');
     return new DefaultSDP(newSDP);
   }
+
+  videoSectionDirections(): RTCRtpTransceiverDirection[] {
+    const sections = DefaultSDP.splitSections(this.sdp);
+    const directions: RTCRtpTransceiverDirection[] = [];
+    for (let i = 0; i < sections.length; i++) {
+      if (/^m=video/.test(sections[i])) {
+        const lines = DefaultSDP.splitLines(sections[i]);
+        for (const line of lines) {
+          if (line.startsWith('a=inactive')) {
+            directions.push('inactive');
+          } else if (line.startsWith('a=sendonly')) {
+            directions.push('sendonly');
+          } else if (line.startsWith('a=recvonly')) {
+            directions.push('recvonly');
+          } else if (line.startsWith('a=sendrecv')) {
+            directions.push('sendrecv');
+          } else {
+            continue;
+          }
+          break;
+        }
+      }
+    }
+    return directions;
+  }
 }
