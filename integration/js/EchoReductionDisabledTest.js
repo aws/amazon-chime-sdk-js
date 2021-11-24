@@ -48,7 +48,6 @@ class EchoReductionDisabledTest extends SdkBaseTest {
     await OpenAppStep.executeStep(this, sessionInfo);
     await AuthenticateUserStep.executeStep(this, sessionInfo, attendee_id, false, useWebAudioFlag);
     await UserAuthenticationCheck.executeStep(this, sessionInfo);
-    await sessionInfo.page.disableVoiceFocusInLobby();
     await JoinMeetingStep.executeStep(this, sessionInfo);
     await UserJoinedMeetingCheck.executeStep(this, sessionInfo, attendee_id);
   }
