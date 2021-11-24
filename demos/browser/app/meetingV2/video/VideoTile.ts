@@ -145,6 +145,10 @@ export class DemoVideoTile extends HTMLElement {
     console.log(`setting attendeeId to ${attendeeId}`);
     attendeeIdElement.innerHTML = attendeeId;
   }
+  public get attendeeId() {
+    const attendeeIdElement = this.querySelector('.video-tile-attendee-id');
+    return attendeeIdElement.innerHTML;
+  }
 
   public set pauseState(state: string) {
     const pauseState = this.querySelector('.video-tile-pause-state');

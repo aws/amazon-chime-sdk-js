@@ -5,24 +5,26 @@ import {
   AudioVideoObserver,
   Logger,
   TargetDisplaySize,
+  VideoSource,
   VideoTileControllerFacade,
   VideoTileState,
 } from 'amazon-chime-sdk-js';
 
 import VideoPreferenceManager from './VideoPreferenceManager';
+import PaginationManager from './PaginationManager';
 import { DemoVideoTile } from './VideoTile'; DemoVideoTile; // Make sure this file is included
 
 // We use the same config options for multiple settings when configuring
 // video tiles, regardless of what they map to internally
 type ConfigLevel = 'low' | 'medium' | 'high';
 
-const ConfigLevelToVideoPriority: {[Key in ConfigLevel]: number} = {
+const ConfigLevelToVideoPriority: { [Key in ConfigLevel]: number } = {
   low: 10,
   medium: 5,
   high: 1,
 };
 
-const ConfigLevelToTargetDisplaySize: {[Key in ConfigLevel]: TargetDisplaySize} = {
+const ConfigLevelToTargetDisplaySize: { [Key in ConfigLevel]: TargetDisplaySize } = {
   low: TargetDisplaySize.Low,
   medium: TargetDisplaySize.Medium,
   high: TargetDisplaySize.High,
@@ -85,6 +87,7 @@ class TileOrganizer {
   }
 }
 
+// TODO: Implement this as Custom HTML element
 export default class VideoTileCollection implements AudioVideoObserver {
   // We reserve the last tile index for local video
   static readonly LocalVideoTileIndex: number = TileOrganizer.MaxTiles;
@@ -102,6 +105,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
 
   tileArea = document.getElementById('tile-area') as HTMLDivElement;
   tileIndexToDemoVideoTile = new Map<number, DemoVideoTile>();
+  pausedDemoVideoTiles = new Array<DemoVideoTile>();
 
   bandwidthConstrainedTiles = new Set<number>();
 
@@ -112,9 +116,12 @@ export default class VideoTileCollection implements AudioVideoObserver {
     this.layoutFeaturedTile();
   }
 
+  pagination: PaginationManager<string>;
+
   constructor(private videoTileController: VideoTileControllerFacade,
     private logger: Logger,
-    private videoPreferenceManager?: VideoPreferenceManager) {
+    private videoPreferenceManager?: VideoPreferenceManager,
+    pageSize?: number) {
     this.setupVideoTiles();
 
     if (this.videoPreferenceManager === undefined) {
@@ -122,7 +129,32 @@ export default class VideoTileCollection implements AudioVideoObserver {
       for (let i = 0; i <= TileOrganizer.MaxTiles; i++) {
         this.tileIndexToDemoVideoTile.get(i).showRemoteVideoPreferences = false;
       }
+    } else {
+        // Pagination is only possible with priority based policy
+        this.pagination = new PaginationManager<string>(pageSize);
+        document.getElementById('video-paginate-left').addEventListener('click', (event: Event) => { this.paginateLeft() });
+        document.getElementById('video-paginate-right').addEventListener('click', (event: Event) => { this.paginateRight() });
+        this.updatePaginatedVisibleTiles();
     }
+  }
+
+  remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
+    if (this.videoPreferenceManager === undefined) {
+      return;
+    }
+    
+    // Add these sources to the pagination list
+    for (const source of videoSources) {
+        this.pagination.add(source.attendee.attendeeId);
+    }
+    this.pagination.removeIf((value: string) => {
+      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value)
+    });
+
+    // Update the preference manager explicitly in case it wasn't called first
+    // as it needs to add default preferences
+    this.videoPreferenceManager.remoteVideoSourcesDidChange(videoSources);
+    this.updatePaginatedVisibleTiles();
   }
 
   videoTileDidUpdate(tileState: VideoTileState): void {
@@ -168,8 +200,9 @@ export default class VideoTileCollection implements AudioVideoObserver {
       demoVideoTile.pauseState = '';
     }
     demoVideoTile.attendeeId = tileState.boundAttendeeId;
+
     demoVideoTile.show(tileState.isContent);
-    this.updateGridClasses();
+    this.updateLayout();
     this.layoutFeaturedTile();
   }
 
@@ -183,7 +216,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
       demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
     }
     demoVideoTile.hide();
-    this.updateGridClasses();
+    this.updateLayout();
   }
 
   showVideoWebRTCStats(videoMetricReport: { [id: string]: { [id: string]: {} } }): void {
@@ -286,15 +319,14 @@ export default class VideoTileCollection implements AudioVideoObserver {
       }
     }
 
-    this.updateGridClasses();
+    this.updateLayout();
   }
 
-  private updateGridClasses(): void {
-    const localTileId = this.localTileId();
-    const activeTile = this.activeTileId();
-
+  private updateLayout(): void {
     this.tileArea.className = `v-grid size-${this.videoTileCount()}`;
 
+    const localTileId = this.localTileId();
+    const activeTile = this.activeTileId();
     if (activeTile && activeTile !== localTileId) {
       this.tileArea.classList.add('featured');
     } else {
@@ -318,6 +350,39 @@ export default class VideoTileCollection implements AudioVideoObserver {
     const tileKeys = Object.keys(this.tileOrganizer.tiles);
     const tiles = tileKeys.map(tileId => parseInt(tileId));
     return tiles;
+  }
+
+  private paginateLeft() {
+    this.pagination.previousPage();
+    this.updatePaginatedVisibleTiles();
+  }
+
+  private paginateRight() {
+    this.pagination.nextPage();
+    this.updatePaginatedVisibleTiles();
+  }
+
+  private updatePaginatedVisibleTiles() {
+    // Refresh visible attendees incase ones have been added
+    let attendeesToShow = this.pagination.currentPage();
+    this.logger.info(`Showing current page ${JSON.stringify(attendeesToShow)}`)
+    this.videoPreferenceManager.visibleAttendees = attendeesToShow;
+
+    // We need to manually control visibility of paused tiles anyways so we just do
+    // everything here, even though the preference manager adding/removing will
+    // result in tile callbacks as well.
+    for (let [index, videoTile] of this.tileIndexToDemoVideoTile.entries()) {
+        if (attendeesToShow.includes(videoTile.attendeeId)) {
+            videoTile.show(false);
+        } else if (index !== VideoTileCollection.LocalVideoTileIndex
+            && this.tileIndexToTileId[index] !== this.findContentTileId()) { // Always show local tile and content
+            videoTile.hide();
+        }
+    }
+
+    const display = (should: boolean): string => { return should ? 'block' : 'none' };
+    document.getElementById('video-paginate-left').style.display = display(this.pagination.hasPreviousPage());
+    document.getElementById('video-paginate-right').style.display = display(this.pagination.hasNextPage());
   }
 
   private createTargetResolutionListener(tileState: VideoTileState, form: HTMLFormElement): (event: Event) => void {

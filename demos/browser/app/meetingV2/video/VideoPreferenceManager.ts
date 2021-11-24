@@ -18,6 +18,12 @@ export default class VideoPreferenceManager implements AudioVideoObserver {
   attendeeIdToVideoPreference = new Map<string, VideoPreference>();
   priorityBasedDownlinkPolicy: VideoPriorityBasedPolicy | null = null;
 
+  _visibleAttendees = new Array<string>();
+  public set visibleAttendees(value: Array<string>) {
+      this._visibleAttendees = value;
+      this.updateDownlinkPreference();
+  }
+
   constructor(private logger: Logger, private downlinkPolicy: VideoPriorityBasedPolicy) {}
 
   remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
@@ -29,7 +35,6 @@ export default class VideoPreferenceManager implements AudioVideoObserver {
             new VideoPreference(source.attendee.attendeeId, VideoPreferenceManager.DefaultVideoTilePriority, VideoPreferenceManager.DefaultVideoTileTargetDisplaySize))
         }
     }
-    this.updateDownlinkPreference();
   }
 
   setAttendeeTargetDisplaySize(attendeeId: string, targetDisplaySize: TargetDisplaySize) {
@@ -58,8 +63,10 @@ export default class VideoPreferenceManager implements AudioVideoObserver {
     }
 
     const videoPreferences = VideoPreferences.prepare();
-    for (const preference of this.attendeeIdToVideoPreference.values()) {
-      videoPreferences.add(preference);
+    for (const [attendeeId, preference] of this.attendeeIdToVideoPreference.entries()) {
+      if (this._visibleAttendees.includes(attendeeId)) {
+          videoPreferences.add(preference);
+      }
     }
     this.downlinkPolicy.chooseRemoteVideoSources(videoPreferences.build());
   }
