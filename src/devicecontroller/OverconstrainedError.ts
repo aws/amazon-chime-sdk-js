@@ -6,5 +6,6 @@ import GetUserMediaError from './GetUserMediaError';
 export default class OverconstrainedError extends GetUserMediaError {
   constructor(cause?: Error, public constraint?: string) {
     super(cause);
+    this.name = 'OverconstrainedError';
   }
 }

@@ -1303,6 +1303,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(NotReadableError);
+        expect(e.name).to.be.equal('NotReadableError');
       }
     });
 
@@ -1315,6 +1316,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(NotReadableError);
+        expect(e.name).to.be.equal('NotReadableError');
       }
     });
 
@@ -1327,6 +1329,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(NotFoundError);
+        expect(e.name).to.be.equal('NotFoundError');
         expect(e.message).to.not.equal('This line should not be reached');
       }
     });
@@ -1340,6 +1343,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(NotFoundError);
+        expect(e.name).to.be.equal('NotFoundError');
         expect(e.message).to.not.equal('This line should not be reached');
       }
     });
@@ -1353,6 +1357,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(NotReadableError);
+        expect(e.name).to.be.equal('NotReadableError');
         expect(e.message).to.not.equal('This line should not be reached');
       }
     });
@@ -1366,6 +1371,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(OverconstrainedError);
+        expect(e.name).to.be.equal('OverconstrainedError');
         expect(e.message).to.not.equal('This line should not be reached');
       }
     });
@@ -1379,6 +1385,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(OverconstrainedError);
+        expect(e.name).to.be.equal('OverconstrainedError');
         expect(e.message).to.not.equal('This line should not be reached');
       }
     });
@@ -1392,6 +1399,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(TypeError);
+        expect(e.name).to.be.equal('TypeError');
         expect(e.message).to.not.equal('This line should not be reached');
       }
     });
@@ -1405,6 +1413,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(GetUserMediaError);
+        expect(e.name).to.be.equal('GetUserMediaError');
         expect(e.message).to.not.equal('This line should not be reached');
       }
     });
@@ -1417,6 +1426,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(GetUserMediaError);
+        expect(e.name).to.be.equal('GetUserMediaError');
         expect(e.message).to.not.equal('This line should not be reached');
       }
     });
@@ -1429,6 +1439,7 @@ describe('DefaultDeviceController', () => {
         throw new Error('This line should not be reached');
       } catch (e) {
         expect(e).to.be.instanceof(GetUserMediaError);
+        expect(e.name).to.be.equal('GetUserMediaError');
         expect(e.message).to.include('Error fetching device.');
       }
     });
