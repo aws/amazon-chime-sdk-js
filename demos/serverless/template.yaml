@@ -399,10 +399,16 @@ Resources:
         - Ref: MeetingNotificationsQueue
   ChimeBrowserLogs:
     Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
   ChimeBrowserMeetingEventLogs:
     Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
   ChimeBrowserEventIngestionLogs:
     Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
   ChimeSdkBrowserMeetingEventDashboard:
     Type: AWS::CloudWatch::Dashboard
     Properties:
