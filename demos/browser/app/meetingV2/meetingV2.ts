@@ -20,7 +20,6 @@ import {
   ContentShareObserver,
   DataMessage,
   DefaultActiveSpeakerPolicy,
-  DefaultAudioMixController,
   DefaultAudioVideoController,
   DefaultBrowserBehavior,
   DefaultDeviceController,
@@ -48,7 +47,6 @@ import {
   NoOpVideoFrameProcessor,
   RemovableAnalyserNode,
   SimulcastLayers,
-  TimeoutScheduler,
   Transcript,
   TranscriptEvent,
   TranscriptionStatus,
@@ -74,6 +72,11 @@ import {
   ModelSpecBuilder,
 } from 'amazon-chime-sdk-js';
 
+import TestSound from './audio/TestSound';
+
+import VideoTileCollection from './video/VideoTileCollection'
+import VideoPreferenceManager from './video/VideoPreferenceManager';
+
 import CircularCut from './video/filters/CircularCut';
 import EmojifyVideoFrameProcessor from './video/filters/EmojifyVideoFrameProcessor';
 import SegmentationProcessor from './video/filters/SegmentationProcessor';
@@ -82,9 +85,6 @@ import {
   loadBodyPixDependency,
   platformCanSupportBodyPixWithoutDegradation,
 } from './video/filters/SegmentationUtil';
-
-import VideoTileCollection from './video/VideoTileCollection'
-import VideoPreferenceManager from './video/VideoPreferenceManager';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -99,7 +99,7 @@ let SHOULD_DIE_ON_FATALS = (() => {
 
 let DEBUG_LOG_PPS = true;
 
-let fatal: (e: Error) => void;
+export let fatal: (e: Error) => void;
 
 // This shim is needed to avoid warnings when supporting Safari.
 declare global {
@@ -171,60 +171,6 @@ type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Re
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
-class TestSound {
-  static testAudioElement = new Audio();
-
-  constructor(
-    private logger: Logger,
-    private sinkId: string | null,
-    private frequency: number = 440,
-    private durationSec: number = 1,
-    private rampSec: number = 0.1,
-    private maxGainValue: number = 0.1
-  ) {}
-
-  async init(): Promise<void> {
-    const audioContext: AudioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0;
-    const oscillatorNode = audioContext.createOscillator();
-    oscillatorNode.frequency.value = this.frequency;
-    oscillatorNode.connect(gainNode);
-    const destinationStream = audioContext.createMediaStreamDestination();
-    gainNode.connect(destinationStream);
-    const currentTime = audioContext.currentTime;
-    const startTime = currentTime + 0.1;
-    gainNode.gain.linearRampToValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(this.maxGainValue, startTime + this.rampSec);
-    gainNode.gain.linearRampToValueAtTime(
-      this.maxGainValue,
-      startTime + this.rampSec + this.durationSec
-    );
-    gainNode.gain.linearRampToValueAtTime(0, startTime + this.rampSec * 2 + this.durationSec);
-    oscillatorNode.start();
-    const audioMixController = new DefaultAudioMixController(this.logger);
-    if (new DefaultBrowserBehavior().supportsSetSinkId()) {
-      try {
-        // @ts-ignore
-        await audioMixController.bindAudioDevice({ deviceId: this.sinkId });
-      } catch (e) {
-        fatal(e);
-        this.logger?.error(`Failed to bind audio device: ${e}`);
-      }
-    }
-    try {
-      await audioMixController.bindAudioElement(TestSound.testAudioElement);
-    } catch (e) {
-      fatal(e);
-      this.logger?.error(`Failed to bind audio element: ${e}`);
-    }
-    await audioMixController.bindAudioStream(destinationStream.stream);
-    new TimeoutScheduler((this.rampSec * 2 + this.durationSec + 1) * 1000).start(() => {
-      audioContext.close();
-    });
-  }
-}
-
 export enum ContentShareType {
   ScreenCapture,
   VideoFile,
@@ -282,6 +228,12 @@ export class DemoMeetingApp
   static readonly MAX_MEETING_HISTORY_MS: number = 5 * 60 * 1000;
   static readonly DATA_MESSAGE_TOPIC: string = 'chat';
   static readonly DATA_MESSAGE_LIFETIME_MS: number = 300_000;
+
+  // Currently this is the same as the maximum number of clients that can enable video (25)
+  // so we id the check box 'enable-pagination' rather then 'reduce-pagionation', but technically pagination is always enabled.
+  static readonly REMOTE_VIDEO_PAGE_SIZE: number = 25;
+  // Enabled on authentication screen by 'enable-pagination' checkbox.
+  static readonly REDUCED_REMOTE_VIDEO_PAGE_SIZE: number = 2;
 
   // Ideally we don't need to change this. Keep this configurable in case users have a super slow network.
   loadingBodyPixDependencyTimeoutMs: number = 10_000;
@@ -537,11 +489,17 @@ export class DemoMeetingApp
       const priorityBasedDownlinkPolicyConfig = document.getElementById(
         'priority-downlink-policy-preset'
       ) as HTMLSelectElement;
+      const enablePaginationCheckbox = document.getElementById(
+        'enable-pagination-checkbox'
+      ) as HTMLSelectElement;
+
 
       if (this.usePriorityBasedDownlinkPolicy) {
         priorityBasedDownlinkPolicyConfig.style.display = 'block';
+        enablePaginationCheckbox.style.display = 'block';
       } else {
         priorityBasedDownlinkPolicyConfig.style.display = 'none';
+        enablePaginationCheckbox.style.display = 'none';
       }
     });
 
@@ -1627,11 +1585,10 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
 
-    if (this.usePriorityBasedDownlinkPolicy) {
-        this.videoPreferenceManager = new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy);
-        this.audioVideo.addObserver(this.videoPreferenceManager);
-    }
-    this.videoTileCollection = new VideoTileCollection(this.audioVideo, this.meetingLogger, this.videoPreferenceManager)
+    this.videoTileCollection = new VideoTileCollection(this.audioVideo, 
+        this.meetingLogger, 
+        this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
+        (document.getElementById('enable-pagination') as HTMLInputElement).checked ? DemoMeetingApp.REDUCED_REMOTE_VIDEO_PAGE_SIZE : DemoMeetingApp.REMOTE_VIDEO_PAGE_SIZE)
     this.audioVideo.addObserver(this.videoTileCollection);
 
     this.initContentShareDropDownItems();

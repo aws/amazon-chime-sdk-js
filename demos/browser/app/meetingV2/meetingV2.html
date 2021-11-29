@@ -96,6 +96,10 @@
                 <option value="stable">Stable Network</option>
                 <option value="unstable">Unstable Network</option>
               </select>
+              <div class="custom-control custom-checkbox"  id="enable-pagination-checkbox" style="text-align: left; display: none;">
+                <input type="checkbox" id="enable-pagination" class="custom-control-input">
+                <label for="enable-pagination" class="custom-control-label">Paginate displayed video tiles</label>
+              </div>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" checked id="preconnect" class="custom-control-input">
@@ -420,6 +424,12 @@
       <div class="col">
         <div id="chime-meeting-id" class="text-muted"></div>
         <div id="desktop-attendee-id" class="text-muted"></div>
+      </div>
+      <div class="col">
+        <div class="btn-group" role="group" style="width: 100%;">
+          <button type="button" id="video-paginate-left" class="btn btn-secondary" style="display: none;"><%= require('../../node_modules/open-iconic/svg/caret-left.svg') %></button>
+          <button type="button" id="video-paginate-right" class="btn btn-secondary" style="display: none;"><%= require('../../node_modules/open-iconic/svg/caret-right.svg') %></button>
+        </div>
       </div>
       <div class="col d-none d-lg-block">
         <div id="video-uplink-bandwidth" class="text-muted text-right"></div>
