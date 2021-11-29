@@ -140,13 +140,16 @@ export class DemoVideoTile extends HTMLElement {
     nameplateElement.innerText = nameplate;
   }
 
+  // Attendee ID is meant to be used as a unique identifier, hence we have a getter here as well
+  _attendeeId: string = "";
   public set attendeeId(attendeeId: string) {
-    const attendeeIdElement = this.querySelector('.video-tile-attendee-id') as HTMLElement;
     console.log(`setting attendeeId to ${attendeeId}`);
-    attendeeIdElement.innerText = attendeeId;
+    this._attendeeId = attendeeId;
+    const attendeeIdElement = this.querySelector('.video-tile-attendee-id') as HTMLElement;
+    attendeeIdElement.innerText = this._attendeeId ;
   }
   public get attendeeId() {
-    return (this.querySelector('.video-tile-attendee-id') as HTMLElement).innerText;
+    return this._attendeeId;
   }
 
   public set pauseState(state: string) {
