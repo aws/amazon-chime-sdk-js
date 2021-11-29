@@ -136,7 +136,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
         // The value of `newActiveStreams` is somewhat irrelevant since this single
         // stream will adapt based on both sender and receiver network conditions.
         //
-        // We don't use top layer (middle vs. low doesn't matter) here to work around a bug in Chromium where
+        // We use middle layer here to work around a bug in Chromium where
         // it seems when a transceiver is created when BWE is low (e.g. on a reconnection),
         // it will never reset the encoder even when `setParameters` is called.  WebRTC bug
         // #12788 seems to call a similar issue out as fixed for VP8, it's not clear if this
@@ -144,6 +144,13 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
         // request from the backend since it will only be sending padding (which also
         // don't have MID due to #10822). Since we don't scale when simulcast is disabled
         // this doesn't have any end-user effect.
+        //
+        // Note that this still relies on a little bit (5-6 packets) of padding on reconnect
+        // and that technically the browser will still eventually try to send all 3 streams.
+        //
+        // Also note that due to some uninvestigated logic in bitrate allocation, Chromium
+        // will skip the bottom layer if we try setting it to 1200 kbps instead so it will still take a while to
+        // recover (as it needs to send padding until it reaches around 1000 kbps).
         this.newActiveStreams = ActiveStreams.kHi;
         newBitrates[0].maxBitrateKbps = 0;
         newBitrates[1].maxBitrateKbps = 1200;
