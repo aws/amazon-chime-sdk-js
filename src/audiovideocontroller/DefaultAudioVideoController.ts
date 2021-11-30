@@ -118,6 +118,9 @@ export default class DefaultAudioVideoController
   private preStartObserver: SignalingClientObserver | undefined;
   private mayNeedRenegotiationForSimulcastLayerChange: boolean = false;
 
+  private receiveIndexTask: ReceiveVideoStreamIndexTask | undefined = undefined;
+  private monitorTask: MonitorTask | undefined = undefined;
+
   destroyed = false;
 
   /** @internal */
@@ -330,14 +333,16 @@ export default class DefaultAudioVideoController
     };
 
     // First layer.
-    const monitor = new MonitorTask(
+    this.monitorTask = new MonitorTask(
       context,
       this.configuration.connectionHealthPolicyConfiguration,
       this.connectionHealthData
-    ).once();
+    );
+    const monitor = this.monitorTask.once();
 
     // Second layer.
     const receiveAudioInput = new ReceiveAudioInputTask(context).once();
+    this.receiveIndexTask = new ReceiveVideoStreamIndexTask(context);
     const signaling = new SerialGroupTask(this.logger, 'Signaling', [
       // If pre-connecting, this will be an existing task that has already been run.
       this.createOrReuseSignalingTask(),
@@ -345,8 +350,7 @@ export default class DefaultAudioVideoController
       new SendAndReceiveDataMessagesTask(context),
       new JoinAndReceiveIndexTask(context),
       new ReceiveTURNCredentialsTask(context),
-      // TODO: ensure index handler does not race with incoming index update
-      new ReceiveVideoStreamIndexTask(context),
+      this.receiveIndexTask,
     ]).once();
 
     // Third layer.
@@ -388,12 +392,15 @@ export default class DefaultAudioVideoController
   }
 
   private connectWithTasks(needsToWaitForAttendeePresence: boolean): Task {
+    this.receiveIndexTask = new ReceiveVideoStreamIndexTask(this.meetingSessionContext);
+    this.monitorTask = new MonitorTask(
+      this.meetingSessionContext,
+      this.configuration.connectionHealthPolicyConfiguration,
+      this.connectionHealthData
+    );
+
     return new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStart'), [
-      new MonitorTask(
-        this.meetingSessionContext,
-        this.configuration.connectionHealthPolicyConfiguration,
-        this.connectionHealthData
-      ),
+      this.monitorTask,
       new ReceiveAudioInputTask(this.meetingSessionContext),
       new TimeoutTask(
         this.logger,
@@ -404,8 +411,7 @@ export default class DefaultAudioVideoController
             new SendAndReceiveDataMessagesTask(this.meetingSessionContext),
             new JoinAndReceiveIndexTask(this.meetingSessionContext),
             new ReceiveTURNCredentialsTask(this.meetingSessionContext),
-            // TODO: ensure index handler does not race with incoming index update
-            new ReceiveVideoStreamIndexTask(this.meetingSessionContext),
+            this.receiveIndexTask,
           ]),
           new SerialGroupTask(this.logger, 'Peer', [
             new CreatePeerConnectionTask(this.meetingSessionContext),
@@ -1040,6 +1046,13 @@ export default class DefaultAudioVideoController
   }
 
   private async actionUpdateWithRenegotiation(notify: boolean): Promise<void> {
+    // `actionUpdateWithRenegotiation` contains a significant portion of asynchronous tasks, so we need
+    // to explicitly defer any task operation which may be performed on the event queue that may modify
+    // mutable state needed to be consistent over the course of the update. The operations above do not
+    // need this protection because they are synchronous.
+    this.monitorTask.pauseResubscribeCheck();
+    this.receiveIndexTask.pauseIngestion();
+
     // TODO: do not block other updates while waiting for video input
     try {
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoUpdate'), [
@@ -1129,6 +1142,10 @@ export default class DefaultAudioVideoController
         this.enforceBandwidthLimitationForSender(maxBitrateKbps);
       }
     }
+
+    this.monitorTask.resumeResubscribeCheck();
+    this.receiveIndexTask.resumeIngestion();
+
     this.logger.info('updated audio-video session');
   }
 

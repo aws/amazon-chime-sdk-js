@@ -602,6 +602,190 @@ describe('MonitorTask', () => {
     });
   });
 
+  it('will not trigger resubscription if paused', done => {
+    // eslint-disable-next-line
+    type RawMetrics = any;
+    class TestClientMetricReport extends DefaultClientMetricReport {
+      packetsReceived: RawMetrics = null;
+      fractionLoss: RawMetrics = null;
+      videoPacketSentPerSecond: RawMetrics = 1000;
+      videoUpstreamBitrate: RawMetrics = 100;
+      availableSendBandwidth: RawMetrics = 1200 * 1000;
+      availableReceiveBandwidth: RawMetrics = 1000 * 1000;
+
+      getObservableMetrics(): { [id: string]: number } {
+        return {
+          audioPacketsReceived: this.packetsReceived,
+          audioPacketsReceivedFractionLoss: this.fractionLoss,
+          videoPacketSentPerSecond: this.videoPacketSentPerSecond,
+          videoUpstreamBitrate: this.videoUpstreamBitrate,
+          availableSendBandwidth: this.availableSendBandwidth,
+          availableReceiveBandwidth: this.availableReceiveBandwidth,
+        };
+      }
+    }
+    let firstTimeUplink = 0;
+    let firstTimeDownlink = 0;
+    class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
+      updateMetrics(_metricReport: ClientMetricReport): void {
+        return;
+      }
+
+      wantsResubscribe(): boolean {
+        firstTimeDownlink += 1;
+        if (firstTimeDownlink % 2 === 0) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    class TestVideoUplinkPolicy extends DefaultSimulcastUplinkPolicy {
+      wantsResubscribe(): boolean {
+        if (firstTimeUplink < 4) {
+          firstTimeUplink += 1;
+          return false;
+        } else {
+          firstTimeUplink += 1;
+          return true;
+        }
+      }
+    }
+    context.videoTileController.startLocalVideoTile();
+    context.videoStreamIndex = new SimulcastVideoStreamIndex(logger);
+
+    context.videoUplinkBandwidthPolicy = new TestVideoUplinkPolicy('self', logger);
+    context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger);
+    const spy = sinon.spy(context.audioVideoController, 'update');
+    // task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
+    const metric = 'bytesReceived';
+    const streamMetricReport = new StreamMetricReport();
+    streamMetricReport.previousMetrics[metric] = 30 * 1000;
+    streamMetricReport.currentMetrics[metric] = 80 * 1000;
+    streamMetricReport.streamId = 1;
+    streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+    streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+
+    const streamMetricReportAudio = new StreamMetricReport();
+    streamMetricReportAudio.previousMetrics[metric] = 10 * 1000;
+    streamMetricReportAudio.currentMetrics[metric] = 100 * 1000;
+    streamMetricReportAudio.streamId = 0;
+    streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
+    streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
+
+    const clientMetricReport = new TestClientMetricReport(logger);
+    clientMetricReport.streamMetricReports[1] = streamMetricReport;
+    clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
+
+    task.resumeResubscribeCheck();
+    task.pauseResubscribeCheck();
+    task.resumeResubscribeCheck();
+    task.pauseResubscribeCheck();
+
+    task.metricsDidReceive(clientMetricReport);
+    task.metricsDidReceive(clientMetricReport);
+    task.metricsDidReceive(clientMetricReport);
+    task.metricsDidReceive(clientMetricReport);
+    task.metricsDidReceive(clientMetricReport);
+    new TimeoutScheduler(100).start(() => {
+      expect(spy.called).to.be.false;
+      done();
+    });
+  });
+
+  it('will trigger resubscription if paused and resumed', done => {
+    // eslint-disable-next-line
+    type RawMetrics = any;
+    class TestClientMetricReport extends DefaultClientMetricReport {
+      packetsReceived: RawMetrics = null;
+      fractionLoss: RawMetrics = null;
+      videoPacketSentPerSecond: RawMetrics = 1000;
+      videoUpstreamBitrate: RawMetrics = 100;
+      availableSendBandwidth: RawMetrics = 1200 * 1000;
+      availableReceiveBandwidth: RawMetrics = 1000 * 1000;
+
+      getObservableMetrics(): { [id: string]: number } {
+        return {
+          audioPacketsReceived: this.packetsReceived,
+          audioPacketsReceivedFractionLoss: this.fractionLoss,
+          videoPacketSentPerSecond: this.videoPacketSentPerSecond,
+          videoUpstreamBitrate: this.videoUpstreamBitrate,
+          availableSendBandwidth: this.availableSendBandwidth,
+          availableReceiveBandwidth: this.availableReceiveBandwidth,
+        };
+      }
+    }
+    let firstTimeUplink = 0;
+    let firstTimeDownlink = 0;
+    class TestDownlinkPolicy extends VideoAdaptiveProbePolicy {
+      updateMetrics(_metricReport: ClientMetricReport): void {
+        return;
+      }
+
+      wantsResubscribe(): boolean {
+        firstTimeDownlink += 1;
+        if (firstTimeDownlink % 2 === 0) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    class TestVideoUplinkPolicy extends DefaultSimulcastUplinkPolicy {
+      wantsResubscribe(): boolean {
+        if (firstTimeUplink < 4) {
+          firstTimeUplink += 1;
+          return false;
+        } else {
+          firstTimeUplink += 1;
+          return true;
+        }
+      }
+    }
+    context.videoTileController.startLocalVideoTile();
+    context.videoStreamIndex = new SimulcastVideoStreamIndex(logger);
+
+    context.videoUplinkBandwidthPolicy = new TestVideoUplinkPolicy('self', logger);
+    context.videoDownlinkBandwidthPolicy = new TestDownlinkPolicy(logger);
+    const spy = sinon.spy(context.audioVideoController, 'update');
+    // task.handleSignalingClientEvent(createSignalingEventForBitrateFrame(logger));
+    const metric = 'bytesReceived';
+    const streamMetricReport = new StreamMetricReport();
+    streamMetricReport.previousMetrics[metric] = 30 * 1000;
+    streamMetricReport.currentMetrics[metric] = 80 * 1000;
+    streamMetricReport.streamId = 1;
+    streamMetricReport.mediaType = ClientMetricReportMediaType.VIDEO;
+    streamMetricReport.direction = ClientMetricReportDirection.DOWNSTREAM;
+
+    const streamMetricReportAudio = new StreamMetricReport();
+    streamMetricReportAudio.previousMetrics[metric] = 10 * 1000;
+    streamMetricReportAudio.currentMetrics[metric] = 100 * 1000;
+    streamMetricReportAudio.streamId = 0;
+    streamMetricReportAudio.mediaType = ClientMetricReportMediaType.VIDEO;
+    streamMetricReportAudio.direction = ClientMetricReportDirection.UPSTREAM;
+
+    const clientMetricReport = new TestClientMetricReport(logger);
+    clientMetricReport.streamMetricReports[1] = streamMetricReport;
+    clientMetricReport.streamMetricReports[56789] = streamMetricReportAudio;
+
+    task.metricsDidReceive(clientMetricReport);
+    task.metricsDidReceive(clientMetricReport);
+    task.metricsDidReceive(clientMetricReport);
+    task.metricsDidReceive(clientMetricReport);
+    task.pauseResubscribeCheck();
+    task.metricsDidReceive(clientMetricReport);
+    new TimeoutScheduler(100).start(() => {
+      task.resumeResubscribeCheck();
+
+      task.pauseResubscribeCheck();
+      task.metricsDidReceive(clientMetricReport);
+      task.resumeResubscribeCheck();
+
+      expect(spy.called).to.be.true;
+      done();
+    });
+  });
+
   describe('videoSendHealthDidChange', () => {
     beforeEach(() => {
       context.videoInputAttachedTimestampMs = Date.now() - 5000;
