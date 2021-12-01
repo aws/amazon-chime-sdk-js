@@ -2744,7 +2744,7 @@ export class DemoMeetingApp
         const bytes = await resp.arrayBuffer();
         const audioData = new TextDecoder('utf8').decode(bytes);
         const audio = new Audio('data:audio/mpeg;base64,' + audioData);
-        audio.loop = true;
+        audio.loop = false;
         audio.crossOrigin = 'anonymous';
         audio.play();
         // @ts-ignore

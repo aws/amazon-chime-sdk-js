@@ -20,7 +20,7 @@ class SdkBaseTest extends KiteBaseTest {
       this.userArn = this.payload.userArn;
     }
 
-    if (testName === 'MediaCapture') {
+    if (testName === 'MediaCapture' || testName === 'Transcription') {
       this.region = this.payload.region;
     }
 
@@ -204,7 +204,7 @@ class SdkBaseTest extends KiteBaseTest {
       }
       try {
         if (!await this.initializeSeleniumSession(numberOfSeleniumSessions)) {
-          if (this.testName === 'MediaCapture') {
+          if (this.testName === 'MediaCapture' || this.testName === 'Transcription') {
             await emitMetric(this.testName, this.capabilities, 'E2E_' + this.region, 0);
           } else {
             await emitMetric(this.testName, this.capabilities, 'E2E', 0);
@@ -290,7 +290,7 @@ class SdkBaseTest extends KiteBaseTest {
   async closeCurrentTest(testResult) {
     try {
       await this.updateSeleniumTestResult(testResult);
-      if (this.testName === 'MediaCapture') {
+      if (this.testName === 'MediaCapture' || this.testName === 'Transcription') {
         await emitMetric(this.testName, this.capabilities, 'E2E_' + this.region, testResult? 1 : 0);
       } else {
         await emitMetric(this.testName, this.capabilities, 'E2E', testResult? 1 : 0);

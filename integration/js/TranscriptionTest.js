@@ -1,7 +1,9 @@
-const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, StartMeetingTranscriptionStep, StopMeetingTranscriptionStep, PlayPrerecordedSpeechStep, SelectNoneAudioInputStep} = require('./steps');
-const {UserJoinedMeetingCheck, UserAuthenticationCheck, RosterCheck, TranscriptionStartedCheck, TranscriptionStoppedCheck, TranscriptsReceivedCheck} = require('./checks');
+const {StartMeetingTranscriptionStep, StopMeetingTranscriptionStep, PlayPrerecordedSpeechStep, SelectNoneAudioInputStep} = require('./steps');
+const {RosterCheck, TranscriptionStartedCheck, TranscriptionStoppedCheck, TranscriptsReceivedCheck} = require('./checks');
 const {TestUtils} = require('kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
+const {SdkTestUtils} = require('./utils/SdkTestUtils');
+const {Window} = require('./utils/Window');
 const { v4: uuidv4 } = require('uuid');
 
 class TranscriptionTest extends SdkBaseTest {
@@ -12,17 +14,22 @@ class TranscriptionTest extends SdkBaseTest {
   async runIntegrationTest() {
     this.numberOfParticipant = 2;
 
-    const session1 = this.seleniumSessions[0];
-    const session2 = this.seleniumSessions[1];
+    const session = this.seleniumSessions[0];
 
     const attendeeId1 = uuidv4();
     const attendeeId2 = uuidv4();
 
-    await this.addUserToMeeting(attendeeId1, session1);
-    await this.addUserToMeeting(attendeeId2, session2);
-    await this.checkRoster(session1, session2, 2);
+    const testWindow1 = await Window.existing(session.driver, "TEST1");
+    const testWindow2 = await Window.openNew(session.driver, "TEST2");
 
-    await this.selectNoneAudioInput(session1, session2);
+    await testWindow1.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, attendeeId1, session));
+    await testWindow1.runCommands(async () => await RosterCheck.executeStep(this, session, 1));
+
+    await testWindow2.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, attendeeId2, session));
+    await testWindow2.runCommands(async () => await RosterCheck.executeStep(this, session, 2));
+
+    await testWindow1.runCommands(async () => SelectNoneAudioInputStep.executeStep(this, session));
+    await testWindow2.runCommands(async () => SelectNoneAudioInputStep.executeStep(this, session));
 
     const compareFn = (actualContent, expectedContent) => {
       const nonAlphaNumericAndWhitespace = /[^0-9^a-z^A-Z^\s+]/g
@@ -55,81 +62,42 @@ class TranscriptionTest extends SdkBaseTest {
     }
 
     // Transcribe
-    await this.runTranscriptionTest(session1, session2, false, session1, session2, session1, attendeeId1, compareFn);
+    await this.runTranscriptionTest(session, testWindow1, testWindow2, false, testWindow1, testWindow2, testWindow1, attendeeId1, compareFn);
 
     // Transcribe Medical
-    await this.runTranscriptionTest(session1, session2, true, session2, session1, session2, attendeeId2, compareFn);
+    await this.runTranscriptionTest(session, testWindow1, testWindow2, true, testWindow2, testWindow1, testWindow2, attendeeId2, compareFn);
 
     await this.waitAllSteps();
   }
 
-  async runTranscriptionTest(session1, session2, useMedical, startSession, stopSession, speakerSession, speakerAttendeeId, compareFn) {
+  async runTranscriptionTest(session, window1, window2, useMedical, startWindow, stopWindow, speakerWindow, speakerAttendeeId, compareFn) {
     // Start
-    await StartMeetingTranscriptionStep.executeStep(this, startSession, useMedical);
+    await startWindow.runCommands(async () => StartMeetingTranscriptionStep.executeStep(this, session, useMedical));
     await TestUtils.waitAround(5000);
-    await this.checkTranscriptionStarted(session1, session2, useMedical);
+    await window1.runCommands(async () => TranscriptionStartedCheck.executeStep(this, session, useMedical));
+    await window2.runCommands(async () => TranscriptionStartedCheck.executeStep(this, session, useMedical));
 
     // Play out the audio file and wait for transcripts to return
-    await PlayPrerecordedSpeechStep.executeStep(this, speakerSession);
-    await TestUtils.waitAround(25000);
+    await speakerWindow.runCommands(async () => PlayPrerecordedSpeechStep.executeStep(this, session));
+    await TestUtils.waitAround(30000);
 
     // Validate transcripts
     // Audio and transcript taken from https://millercenter.org/the-presidency/presidential-speeches/november-20-2014-address-nation-immigration.
     const expectedTranscriptContentBySpeaker = {};
     expectedTranscriptContentBySpeaker[speakerAttendeeId] =
-      'My fellow Americans, tonight, I’d like to talk with you about immigration. ' +
+      'My fellow Americans, tonight, I\'d like to talk with you about immigration. ' +
       'For more than 200 years, our tradition of welcoming immigrants ' +
       'from around the world has given us a tremendous advantage over other nations. ' +
-      'It’s kept us youthful, dynamic, and entrepreneurial.';
-    this.checkTranscriptsReceived(session1, session2, expectedTranscriptContentBySpeaker, compareFn);
+      'It\'s kept us youthful, dynamic, and entrepreneurial.';
+
+    await window1.runCommands(async () => TranscriptsReceivedCheck.executeStep(this, session, expectedTranscriptContentBySpeaker, compareFn));
+    await window2.runCommands(async () => TranscriptsReceivedCheck.executeStep(this, session, expectedTranscriptContentBySpeaker, compareFn));
 
     // Stop
-    await StopMeetingTranscriptionStep.executeStep(this, stopSession);
+    await stopWindow.runCommands(async () => StopMeetingTranscriptionStep.executeStep(this, session));
     await TestUtils.waitAround(5000);
-    await this.checkTranscriptionStopped(session1, session2, useMedical);
-  }
-
-  async addUserToMeeting(attendee_id, sessionInfo) {
-    await OpenAppStep.executeStep(this, sessionInfo);
-    await AuthenticateUserStep.executeStep(this, sessionInfo, attendee_id);
-    await UserAuthenticationCheck.executeStep(this, sessionInfo);
-    await JoinMeetingStep.executeStep(this, sessionInfo);
-    await UserJoinedMeetingCheck.executeStep(this, sessionInfo, attendee_id);
-  }
-
-  async checkRoster(session1, session2, numAttendees) {
-    await Promise.all([
-      RosterCheck.executeStep(this, session1, numAttendees),
-      RosterCheck.executeStep(this, session2, numAttendees)
-    ]);
-  }
-
-  async checkTranscriptionStarted(session1, session2, useMedical) {
-    await Promise.all([
-      TranscriptionStartedCheck.executeStep(this, session1, useMedical),
-      TranscriptionStartedCheck.executeStep(this, session2, useMedical)
-    ]);
-  }
-
-  async checkTranscriptionStopped(session1, session2, useMedical) {
-    await Promise.all([
-      TranscriptionStoppedCheck.executeStep(this, session1, useMedical),
-      TranscriptionStoppedCheck.executeStep(this, session2, useMedical)
-    ]);
-  }
-
-  async checkTranscriptsReceived(session1, session2, expectedTranscripts, compareFn) {
-    await Promise.all([
-      TranscriptsReceivedCheck.executeStep(this, session1, expectedTranscripts, compareFn),
-      TranscriptsReceivedCheck.executeStep(this, session2, expectedTranscripts, compareFn)
-    ]);
-  }
-
-  async selectNoneAudioInput(session1, session2) {
-    await Promise.all([
-      SelectNoneAudioInputStep.executeStep(this, session1),
-      SelectNoneAudioInputStep.executeStep(this, session2)
-    ]);
+    await window1.runCommands(async () => TranscriptionStoppedCheck.executeStep(this, session, useMedical));
+    await window2.runCommands(async () => TranscriptionStoppedCheck.executeStep(this, session, useMedical));
   }
 }
 

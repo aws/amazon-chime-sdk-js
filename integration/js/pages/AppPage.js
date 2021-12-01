@@ -363,29 +363,24 @@ class AppPage {
   }
 
   async isLiveTranscriptionEnabledInDeviceMenu() {
-    const transcriptionDropDownButton = await this.driver.findElement(elements.microphoneDropDownLiveTranscriptionButton);
-    const classes = await transcriptionDropDownButton.getAttribute('class');
+    const classes = await this.driver.findElement(elements.microphoneDropDownLiveTranscriptionButton).getAttribute('class');
     return classes.split(' ').includes('live-transcription-active');
   }
 
   async clickLiveTranscriptionMenuButton() {
-    const liveTranscriptionMenuButton = await this.driver.findElement(elements.microphoneDropDownLiveTranscriptionButton);
-    await clickElement(this.driver, liveTranscriptionMenuButton);
+    await this.driver.findElement(elements.microphoneDropDownLiveTranscriptionButton).click();
   }
 
   async clickTranscribeEngineOption() {
-    const transcribeEngineOption = await this.driver.findElement(elements.transcriptionModalTranscribeEngine);
-    await clickElement(this.driver, transcribeEngineOption);
+    await this.driver.findElement(elements.transcriptionModalTranscribeEngine).click();
   }
 
   async clickTranscribeMedicalEngineOption() {
-    const transcribeMedicalEngineOption = await this.driver.findElement(elements.transcriptionModalTranscribeMedicalEngine);
-    await clickElement(this.driver, transcribeMedicalEngineOption);
+    await this.driver.findElement(elements.transcriptionModalTranscribeMedicalEngine).click();
   }
 
   async clickStartTranscriptionButton() {
-    const startTranscriptionButton = await this.driver.findElement(elements.startTranscriptionButton);
-    await clickElement(this.driver, startTranscriptionButton);
+    await this.driver.findElement(elements.startTranscriptionButton).click();
   }
 
   async checkIfTranscriptionVisible() {
@@ -393,17 +388,17 @@ class AppPage {
   }
 
   async checkIfTranscriptionStarted(useMedical) {
-    const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
-    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
-    if (transcriptDivs.length < 1) {
+    const transcriptContainerText = await this.driver.findElement(elements.transcriptContainer).getText();
+    const allTranscripts = transcriptContainerText.split('\n');
+    if (allTranscripts.length < 1) {
       return false;
     }
 
     // Only validate the most recent started message.
     let lastStartedMessageText = '';
-    let lastStartedIdx = transcriptDivs.length - 1;
+    let lastStartedIdx = allTranscripts.length - 1;
     while (lastStartedIdx >= 0) {
-      const transcriptText = await transcriptDivs[lastStartedIdx].getText();
+      const transcriptText = allTranscripts[lastStartedIdx];
       if (transcriptText.includes('Live Transcription started')) {
         lastStartedMessageText = transcriptText;
         break;
@@ -422,13 +417,13 @@ class AppPage {
   }
 
   async checkIfTranscriptionStopped(useMedical) {
-    const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
-    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
-    if (transcriptDivs.length < 1) {
+    const transcriptContainerText = await this.driver.findElement(elements.transcriptContainer).getText();
+    const allTranscripts = transcriptContainerText.split('\n');
+    if (allTranscripts.length < 1) {
       return false;
     }
 
-    const lastTranscriptText = await transcriptDivs[transcriptDivs.length - 1].getText();
+    const lastTranscriptText = allTranscripts[allTranscripts.length - 1];
     if (!lastTranscriptText.includes('Live Transcription stopped')) {
       return false;
     }
@@ -441,16 +436,15 @@ class AppPage {
   }
 
   async checkTranscriptsFromLastStart(expectedTranscriptContentBySpeaker, compareFn) {
-    const transcriptContainer = await this.driver.findElement(elements.transcriptContainer);
-    const transcriptDivs = await transcriptContainer.findElements(By.css('div'));
-    if (transcriptDivs.length < 1) {
+    const transcriptContainerText = await this.driver.findElement(elements.transcriptContainer).getText();
+    const allTranscripts = transcriptContainerText.split('\n');
+    if (allTranscripts.length < 1) {
       return false;
     }
 
-    let lastStartedIdx = transcriptDivs.length - 1;
+    let lastStartedIdx = allTranscripts.length - 1;
     while (lastStartedIdx >= 0) {
-      const transcriptText = await transcriptDivs[lastStartedIdx].getText();
-      if (transcriptText.includes('Live Transcription started')) {
+      if (allTranscripts[lastStartedIdx].includes('Live Transcription started')) {
         break;
       }
       lastStartedIdx--;
@@ -458,23 +452,13 @@ class AppPage {
     if (lastStartedIdx < 0) {
       return false;
     }
-
-    // Filter out wrapper divs.
-    const transcriptsAfterLastStart = transcriptDivs.slice(lastStartedIdx + 1);
-    let transcriptsToValidate = [];
-    for (let i = 0; i < transcriptsAfterLastStart.length; i++) {
-      const transcriptElement = transcriptsAfterLastStart[i];
-      const classes = await transcriptElement.getAttribute('class');
-      if (classes.split(' ').includes('transcript')) {
-        transcriptsToValidate.push(transcriptElement);
-      }
-    }
+    const transcriptsToValidate = allTranscripts.slice(lastStartedIdx + 1);
 
     // Verify that each speaker's content is as expected according to compareFn.
     // Sequential transcripts for the same speaker are appended together for comparison.
     const actualTranscriptContentBySpeaker = {};
     for (let i = 0; i < transcriptsToValidate.length; i++) {
-      const transcriptText = await transcriptsToValidate[i].getText();
+      const transcriptText = transcriptsToValidate[i];
       const speaker = transcriptText.slice(0, transcriptText.indexOf(':'));
       const content = transcriptText.slice(transcriptText.indexOf(':') + 1).trim();
       if (actualTranscriptContentBySpeaker[speaker]) {

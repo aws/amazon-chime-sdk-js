@@ -83,3 +83,6 @@
         - name: Run Meeting End Integration Test
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: npm run test:integration-meeting-end
+        - name: Run Transcription Integration Test
+          if:  steps.test_needed.outputs.integ_test_required == 'true'
+          run: npm run test:integration-transcription

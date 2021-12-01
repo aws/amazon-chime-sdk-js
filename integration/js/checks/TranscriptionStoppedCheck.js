@@ -21,9 +21,11 @@ class TranscriptionStoppedCheck extends AppTestStep {
   }
 
   async run() {
+    await this.page.clickOnMicrophoneDropDownButton(); // open dropdown
     if (await this.page.isLiveTranscriptionEnabledInDeviceMenu()) {
       throw new KiteTestError(Status.FAILED, 'Live Transcription still selected in menu');
     }
+    await this.page.clickOnMicrophoneDropDownButton(); // close dropdown
     if (!await this.page.checkIfTranscriptionVisible()) {
       throw new KiteTestError(Status.FAILED, 'Transcript container UI is not visible on page');
     }
