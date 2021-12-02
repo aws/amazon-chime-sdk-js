@@ -11,12 +11,9 @@
         "testImpl": "TranscriptionTest.js",
         "payload": {
           "url": "http://localhost:8080/",
+          "region": "us-east-1",
           "port": 30001,
-          "retry": 2,
-          "seleniumSessions": {
-            "chrome": 2,
-            "firefox": 2
-          }
+          "retry": 2
         }
       }
     ],
