@@ -22,10 +22,10 @@ class TranscriptionTest extends SdkBaseTest {
     const testWindow1 = await Window.existing(session.driver, "TEST1");
     const testWindow2 = await Window.openNew(session.driver, "TEST2");
 
-    await testWindow1.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, attendeeId1, session));
+    await testWindow1.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, attendeeId1, session, this.region));
     await testWindow1.runCommands(async () => await RosterCheck.executeStep(this, session, 1));
 
-    await testWindow2.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, attendeeId2, session));
+    await testWindow2.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, attendeeId2, session, this.region));
     await testWindow2.runCommands(async () => await RosterCheck.executeStep(this, session, 2));
 
     await testWindow1.runCommands(async () => SelectNoneAudioInputStep.executeStep(this, session));

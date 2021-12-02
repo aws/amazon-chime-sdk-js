@@ -10,7 +10,7 @@
         "noOfThreads": 1,
         "testImpl": "TranscriptionTest.js",
         "payload": {
-          "url": "http://localhost:8080/?region=us-east-1",
+          "url": "http://localhost:8080/",
           "region": "us-east-1",
           "port": 30001,
           "retry": 2
