@@ -18,7 +18,7 @@ class TranscriptsReceivedCheck extends AppTestStep {
   }
 
   metricName() {
-    return 'TranscriptionStartedCheck'
+    return 'TranscriptionReceivedCheck'
   }
 
   async run() {
