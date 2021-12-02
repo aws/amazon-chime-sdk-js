@@ -29,6 +29,11 @@ export default class ReceiveVideoStreamIndexTask
   implements SignalingClientObserver, RemovableObserver {
   protected taskName = 'ReceiveVideoStreamIndexTask';
 
+  // See comment above invocation of `pauseIngestion` in `DefaultAudioVideoController`
+  // for explanation.
+  private isIngestionPaused: boolean = false;
+  private pendingIndex: SdkIndexFrame | null = null;
+
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
   }
@@ -56,9 +61,33 @@ export default class ReceiveVideoStreamIndexTask
     this.handleIndexFrame(indexFrame);
   }
 
+  pauseIngestion(): void {
+    this.isIngestionPaused = true;
+  }
+
+  resumeIngestion(): void {
+    if (!this.isIngestionPaused) {
+      // Do not recheck subcribe if it wasn't paused to begin with.
+      return;
+    }
+    this.isIngestionPaused = false;
+    if (this.pendingIndex) {
+      this.context.logger.info('Resuming index ingestion with pending index');
+      this.handleIndexFrame(this.pendingIndex);
+    }
+  }
+
   private handleIndexFrame(indexFrame: SdkIndexFrame | null): void {
     if (!indexFrame) {
       return;
+    }
+
+    if (this.isIngestionPaused) {
+      this.context.logger.info(`Index ingestion is paused, setting most recent index as pending`);
+      this.pendingIndex = indexFrame;
+      return;
+    } else {
+      this.pendingIndex = null;
     }
 
     // Filter out self content share video

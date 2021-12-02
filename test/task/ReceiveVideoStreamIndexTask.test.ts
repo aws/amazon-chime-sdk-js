@@ -188,6 +188,89 @@ describe('ReceiveVideoStreamIndexTask', () => {
       task.run();
     });
 
+    it('will not attempt to resubscribe if paused', done => {
+      const ids: number[] = [1, 2, 3];
+      class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
+        wantsResubscribe(): boolean {
+          return true;
+        }
+        chooseSubscriptions(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet(ids);
+        }
+      }
+      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+
+      task.resumeIngestion();
+      task.pauseIngestion();
+      task.resumeIngestion();
+      task.pauseIngestion();
+
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(createIndexSignalBuffer());
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(ids))).to.be.false;
+        done();
+      });
+
+      task.run();
+    });
+
+    it('will attempt to resubscribe if paused and resumed', done => {
+      const ids: number[] = [1, 2, 3];
+      class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
+        wantsResubscribe(): boolean {
+          return true;
+        }
+        chooseSubscriptions(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet(ids);
+        }
+      }
+      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+
+      task.pauseIngestion();
+
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(createIndexSignalBuffer());
+        await delay(behavior.asyncWaitMs + 10);
+        task.resumeIngestion();
+        expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(ids))).to.be.true;
+        done();
+      });
+
+      task.run();
+    });
+
+    it('will attempt to resubscribe if paused and resumed', done => {
+      const ids: number[] = [1, 2, 3];
+      class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
+        wantsResubscribe(): boolean {
+          return true;
+        }
+        chooseSubscriptions(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet(ids);
+        }
+      }
+      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+
+      task.pauseIngestion();
+
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(createIndexSignalBuffer());
+        await delay(behavior.asyncWaitMs + 10);
+        task.resumeIngestion();
+
+        task.pauseIngestion();
+        webSocketAdapter.send(createIndexSignalBuffer());
+        await delay(behavior.asyncWaitMs + 10);
+        task.resumeIngestion();
+
+        expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(ids))).to.be.true;
+        done();
+      });
+
+      task.run();
+    });
+
     it('attemps to resubscribe if video uplink bandwidth policy wants to resubscribe', done => {
       const captureWidth = 400;
       const captureHeight = 300;

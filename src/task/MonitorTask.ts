@@ -46,6 +46,11 @@ export default class MonitorTask
   private hasSignalingError: boolean = false;
   private presenceHandlerCalled: boolean = false;
 
+  // See comment above invocation of `pauseResubscribeCheck` in `DefaultAudioVideoController`
+  // for explanation.
+  private isResubscribeCheckPaused: boolean = false;
+  private pendingMetricsReport: ClientMetricReport | undefined = undefined;
+
   constructor(
     private context: AudioVideoControllerState,
     connectionHealthPolicyConfiguration: ConnectionHealthPolicyConfiguration,
@@ -91,6 +96,24 @@ export default class MonitorTask
     this.context.connectionMonitor.start();
     this.context.statsCollector.start(this.context.signalingClient, this.context.videoStreamIndex);
     this.context.signalingClient.registerObserver(this);
+  }
+
+  pauseResubscribeCheck(): void {
+    this.isResubscribeCheckPaused = true;
+  }
+
+  resumeResubscribeCheck(): void {
+    if (!this.isResubscribeCheckPaused) {
+      // Do not recheck subcribe if it wasn't paused to begin with.
+      return;
+    }
+    this.isResubscribeCheckPaused = false;
+    if (this.pendingMetricsReport) {
+      this.context.logger.info('Resuming resubscribe check with pending metrics report');
+      if (this.checkResubscribe(this.pendingMetricsReport)) {
+        this.context.audioVideoController.update({ needsRenegotiation: false });
+      }
+    }
   }
 
   videoTileDidUpdate(_tileState: VideoTileState): void {
@@ -144,6 +167,16 @@ export default class MonitorTask
   }
 
   private checkResubscribe(clientMetricReport: ClientMetricReport): boolean {
+    if (this.isResubscribeCheckPaused) {
+      this.context.logger.info(
+        'Resubscribe check is paused, setting incoming client metric report as pending'
+      );
+      this.pendingMetricsReport = clientMetricReport;
+      return;
+    } else {
+      this.pendingMetricsReport = undefined;
+    }
+
     const metricReport = clientMetricReport.getObservableMetrics();
     if (!metricReport) {
       return false;
