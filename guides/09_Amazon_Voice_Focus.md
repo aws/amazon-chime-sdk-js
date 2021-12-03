@@ -283,9 +283,9 @@ A specification is used to derive a runtime _configuration_ when a transformer i
 
 ## Enabling Voice Focus with Echo Reduction
 
-Enabling Voice Focus with Echo Reduction is a three step process: 
+Enabling Voice Focus with Echo Reduction is a two step process: 
 
-### 1. Changing the namespace to Amazon Chime Meetings SDK
+### 1. Create a meeting with support for Echo Reduction using Amazon Chime Meeting SDK namespace
 
 To create meetings, the following line of code is used to address the namespace:
 
@@ -302,8 +302,6 @@ const chimeMeetings = AWS.ChimeSDKMeetings({ region: "eu-central-1" });
 The Amazon Chime SDK Meetings namespace uses a new service principal: meetings.chime.amazonaws.com. If you have SQS, SNS, or other IAM access policies that grant access to the service, you need to update those polices to grant access to the new service principal.
 
 More information regarding this change can be found [here](https://docs.aws.amazon.com/chime/latest/dg/meeting-namespace-migration.html).
-
-### 2. Creating a meeting with support for Echo Reduction
 
 Create your meeting by calling the CreateMeeting API and specifying the Echo Reduction flag as `'AVAILABLE'`.
 
@@ -328,7 +326,7 @@ const joinInfo = {
 }
 ```
 
-### 3. Enabling Echo Reduction at the client level
+### 2. Enabling Echo Reduction at the client level
 
 Once you have created the meeting with the correct flags, you can pass in the `joinInfo` when creating the Voice Focus device. Please note the usage of the `ns_es` as the spec name for Echo Reduction. Use `default` if you would like to use Voice Focus without Echo Reduction.
 
@@ -382,7 +380,7 @@ console.log('Amazon Voice Focus switched to new device', newDevice);
 
 During the meeting, you can disable Echo Reduction using the following code. This will just disable the Echo Reduction part of Voice Focus, while maintaining the Noise Reduction:
 
-```typecript
+```typescript
 await vfDevice.unObserveMeetingAudio(this.audioVideo);
 ```
 

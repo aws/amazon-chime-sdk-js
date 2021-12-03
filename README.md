@@ -89,7 +89,7 @@ The following developer guides cover specific topics for a technical audience.
 - [Quality, Bandwidth, and Connectivity](https://aws.github.io/amazon-chime-sdk-js/modules/qualitybandwidth_connectivity.html)
 - [Simulcast](https://aws.github.io/amazon-chime-sdk-js/modules/simulcast.html)
 - [Meeting Events](https://aws.github.io/amazon-chime-sdk-js/modules/meetingevents.html)
-- [Integrating Amazon Voice Focus Into Your Application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
+- [Integrating Amazon Voice Focus and Echo Reduction Into Your Application](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html)
 - [Adding Frame-By-Frame Processing to an Outgoing Video Stream](https://aws.github.io/amazon-chime-sdk-js/modules/videoprocessor.html)
 - [Adding Background Filtering to an Outgoing Video Stream](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html)
 - [Adapting Video to Limited Bandwidth Using a Priority-Based Video Downlink Policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html)
@@ -298,6 +298,7 @@ Please do **not** create a public GitHub issue.
 - [Meeting readiness checker](#meeting-readiness-checker)
 - [Selecting an Audio Profile](#selecting-an-audio-profile)
 - [Starting a Messaging Session](#starting-a-messaging-session)
+- [Amazon Voice Focus and Echo Reduction](#amazon-voice-focus-and-echo-reduction)
 
 ### Device
 
@@ -1190,6 +1191,14 @@ const observer = {
 messagingSession.addObserver(observer);
 messagingSession.start();
 ```
+
+### Amazon Voice Focus and Echo Reduction
+
+Amazon Voice Focus is a noise suppressor that uses machine learning to reduce unwanted background noise in your users’ microphone input. Unlike conventional noise suppressors, Amazon Voice Focus reduces fan noise, road noise, typing, rustling paper, lawnmowers, barking dogs, and other kinds of non-speech input, allowing your users to focus on the human voice. Amazon Voice Focus offers multiple complexity levels, allowing you to trade some quality to support a wider range of devices. The Amazon Chime SDK will by default automatically choose the right complexity level at runtime based on device performance.
+
+Echo reduction helps keep echoes—sounds from a user’s loudspeaker that get picked up by their microphone—from circulating back into meeting audio and bringing discussions to a standstill. The echo reduction feature is available in conjunction with the noise reduction provided by Amazon Voice Focus. Echo reduction is enabled at the meeting level when you call the CreateMeeting or CreateMeetingWithAttendees APIs. Enabling the feature this way allows others who join the meeting to enable echo reduction as desired.
+
+For more information on how to enable and use these features, you can refer to the [guide](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/09_Amazon_Voice_Focus.md).
 
 ## Notice
 
