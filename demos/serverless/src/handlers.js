@@ -9,18 +9,27 @@ const { metricScope } = require('aws-embedded-metrics');
 // Store meetings in a DynamoDB table so attendees can join by meeting title
 const ddb = new AWS.DynamoDB();
 
-// Create an AWS SDK Chime object. Region 'us-east-1' is currently required.
+// Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
+const endpoint = process.env.CHIME_ENDPOINT;
+const currentRegion = process.env.REGION;
+const useRegional = process.env.USE_REGIONAL;
+
+// Create an AWS SDK Chime object.
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
 
 // Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
-chime.endpoint = new AWS.Endpoint(process.env.CHIME_ENDPOINT);
+chime.endpoint = new AWS.Endpoint(endpoint);
 
-const chimeRegional = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
+const chimeRegional = new AWS.ChimeSDKMeetings({ region: currentRegion });
+chimeRegional.endpoint = new AWS.Endpoint(endpoint);
 
 // return regional API just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
+  if(useRegional){
+    return chimeRegional;
+  }
   if (meeting && meeting.Meeting && meeting.Meeting.MeetingFeatures && meeting.Meeting.MeetingFeatures.Audio &&
     meeting.Meeting.MeetingFeatures.Audio.EchoReduction === 'AVAILABLE') {
       return chimeRegional;
