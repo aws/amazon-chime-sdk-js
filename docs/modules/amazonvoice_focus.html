@@ -338,9 +338,20 @@ spec = { ...
 					<a href="#enabling-voice-focus-with-echo-reduction" id="enabling-voice-focus-with-echo-reduction" style="color: inherit; text-decoration: none;">
 						<h2>Enabling Voice Focus with Echo Reduction</h2>
 					</a>
-					<p>Enabling Voice Focus with Echo Reduction is a two step process:</p>
-					<a href="#1-creating-a-meeting-with-support-for-echo-reduction" id="1-creating-a-meeting-with-support-for-echo-reduction" style="color: inherit; text-decoration: none;">
-						<h3>1. Creating a meeting with support for Echo Reduction</h3>
+					<p>Enabling Voice Focus with Echo Reduction is a three step process:</p>
+					<a href="#1-changing-the-namespace-to-amazon-chime-meetings-sdk" id="1-changing-the-namespace-to-amazon-chime-meetings-sdk" style="color: inherit; text-decoration: none;">
+						<h3>1. Changing the namespace to Amazon Chime Meetings SDK</h3>
+					</a>
+					<p>To create meetings, the following line of code is used to address the namespace:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> chimeMeetings = AWS.Chime();
+</code></pre>
+					<p>To use the Echo Reduction feature, developers need to migrate to the Amazon Chime Meetings SDK by updating this line of code with the new namespace and the endpoint region:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> chimeMeetings = AWS.ChimeSDKMeetings({ <span class="hljs-attr">region</span>: <span class="hljs-string">&quot;eu-central-1&quot;</span> });
+</code></pre>
+					<p>The Amazon Chime SDK Meetings namespace uses a new service principal: meetings.chime.amazonaws.com. If you have SQS, SNS, or other IAM access policies that grant access to the service, you need to update those polices to grant access to the new service principal.</p>
+					<p>More information regarding this change can be found <a href="https://docs.aws.amazon.com/chime/latest/dg/meeting-namespace-migration.html">here</a>.</p>
+					<a href="#2-creating-a-meeting-with-support-for-echo-reduction" id="2-creating-a-meeting-with-support-for-echo-reduction" style="color: inherit; text-decoration: none;">
+						<h3>2. Creating a meeting with support for Echo Reduction</h3>
 					</a>
 					<p>Create your meeting by calling the CreateMeeting API and specifying the Echo Reduction flag as <code>&#39;AVAILABLE&#39;</code>.</p>
 					<pre><code class="language-typescript"><span class="hljs-comment">// Create meeting</span>
@@ -362,8 +373,8 @@ spec = { ...
   }
 }
 </code></pre>
-					<a href="#2-enabling-echo-reduction-at-the-client-level" id="2-enabling-echo-reduction-at-the-client-level" style="color: inherit; text-decoration: none;">
-						<h3>2. Enabling Echo Reduction at the client level</h3>
+					<a href="#3-enabling-echo-reduction-at-the-client-level" id="3-enabling-echo-reduction-at-the-client-level" style="color: inherit; text-decoration: none;">
+						<h3>3. Enabling Echo Reduction at the client level</h3>
 					</a>
 					<p>Once you have created the meeting with the correct flags, you can pass in the <code>joinInfo</code> when creating the Voice Focus device. Please note the usage of the <code>ns_es</code> as the spec name for Echo Reduction. Use <code>default</code> if you would like to use Voice Focus without Echo Reduction.</p>
 					<pre><code class="language-typescript"><span class="hljs-comment">// Select the Echo Reduction model</span>
