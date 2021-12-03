@@ -1,0 +1,75 @@
+{
+  "`": 1,
+  "name": "meeting_readiness_checker_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Meeting readiness checker all checks pass test %ts",
+      "description": "Meeting readiness checker all checks pass test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "MeetingReadinessCheckerRunAllTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "safari",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}

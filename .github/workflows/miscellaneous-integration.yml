@@ -9,7 +9,7 @@
   env:
     SELENIUM_GRID_PROVIDER: saucelabs
     CLOUD_WATCH_METRIC: false
-    TEST_TYPE: Github-Action
+    TEST_TYPE: Integration-Test
     SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
     SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
 
@@ -63,11 +63,11 @@
             accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
             noSSLBumpDomains: all
             tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
-        - name: Setup Node.js - 14.x
+        - name: Setup Node.js - 16.x
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           uses: actions/setup-node@v1
           with:
-            node-version: 14.x
+            node-version: 16.x
         - name: Install Kite
           if:  steps.test_needed.outputs.integ_test_required == 'true'
           run: integration/js/script/install-kite

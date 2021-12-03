@@ -1,14 +1,19 @@
 #!/usr/bin/env node
 
+// test-setup is used for setting payload values using environment variables. GitHub secrets like userArn are available as environment variables during run time in GitHub actions. 
+// This script parses the config payload to set the value of the key. For example, setting userArn in messaging test payload. 
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 
-const test_config_path = path.join(__dirname, '..', '..', 'configs', 'messaging_session_test.config.json');
+console.log("Using integration test configs for setting userArn");
+var test_config_path = path.join(__dirname, '..', '..', 'configs', 'integrationTest', 'messaging_session_test.config.json');
 const test_config_file = fs.readFileSync(test_config_path);
 
 const test_config = JSON.parse(test_config_file);
 
+console.log("Setting userArn in the request payload");
 test_config.tests[0].payload.userArn = process.env.MESSAGING_USER_ARN;
 fs.writeFileSync(test_config_path, JSON.stringify(test_config, null, 2));

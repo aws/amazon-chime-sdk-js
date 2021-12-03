@@ -1,0 +1,29 @@
+{
+  "`": 1,
+  "name": "meeting_end_video_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Meeting Leave Video Test %ts",
+      "description": "Meeting Leave Video Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "MeetingLeaveVideoTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2,
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}
