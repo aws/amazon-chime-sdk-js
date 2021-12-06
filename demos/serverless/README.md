@@ -28,6 +28,16 @@ npm install
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
+#### ChimeSDKMeetings vs Chime
+If you want to use Chime Client for meetings we need to provide an additional parameter "-u false"
+This paramter is true by default as we want ChimeSDKMeetings to be the default client.
+
+```
+cd demos/serverless
+npm install
+npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting -u false
+```
+
 #### Media Capture
 If you want to use media capture, an S3 bucket needs to be created for each region.
 The S3 bucket will be created with a prefix specified with the -o option.

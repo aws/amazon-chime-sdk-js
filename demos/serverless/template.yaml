@@ -12,7 +12,7 @@ Parameters:
     Default: "us-east-1"
     Type: String
   UseRegional:
-    Description: The AWS SDK Chime REGION
+    Description: Use Regional to switch between Chime and ChimeSDKMeetings Client
     Default: true
     Type: String
     AllowedValues: [true, false]
