@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -192,6 +193,30 @@ describe('JoinAndReceiveIndexTask', () => {
         webSocketAdapter.send(indexSignalBuffer);
       });
       await task.run();
+      expect(context.indexFrame).to.not.equal(null);
+      expect(context.turnCredentials.username).to.equal('fake-username');
+      expect(context.turnCredentials.password).to.equal('fake-password');
+      expect(context.turnCredentials.ttl).to.equal(300);
+      expect(context.turnCredentials.uris).to.deep.equal(['fake-turn', 'fake-turns']);
+    });
+
+    it('can run and send join with application metadata if valid', async () => {
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      context.meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create(
+        'AmazonChimeJSSDKDemoApp',
+        '1.0.0'
+      );
+      const { appName, appVersion } = context.meetingSessionConfiguration.applicationMetadata;
+      await task.run();
+      expect(appName).to.eq('AmazonChimeJSSDKDemoApp');
+      expect(appVersion).to.eq('1.0.0');
       expect(context.indexFrame).to.not.equal(null);
       expect(context.turnCredentials.username).to.equal('fake-username');
       expect(context.turnCredentials.password).to.equal('fake-password');

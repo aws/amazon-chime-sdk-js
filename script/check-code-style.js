@@ -118,8 +118,15 @@ tests().forEach(file => {
   }
 });
 
+const isIgnoredForInterfaceCheck = (file) => {
+  return ['applicationmetadata'].includes(file);
+};
+
 components().forEach(component => {
   if (isIgnored(component)) {
+    return;
+  }
+  if (isIgnoredForInterfaceCheck(component)) {
     return;
   }
 

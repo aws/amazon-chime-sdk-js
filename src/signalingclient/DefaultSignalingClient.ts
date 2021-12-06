@@ -5,6 +5,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
+  ISdkClientDetails,
   SdkAudioControlFrame,
   SdkClientDetails,
   SdkClientMetricFrame,
@@ -89,12 +90,18 @@ export default class DefaultSignalingClient implements SignalingClient {
       joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
     }
     joinFrame.flags |= settings.sendBitrates ? SdkJoinFlags.SEND_BITRATES : 0;
-    joinFrame.clientDetails = SdkClientDetails.create({
+    const sdkClientDetails: ISdkClientDetails = {
       platformName: browserBehavior.name(),
       platformVersion: browserBehavior.version(),
       clientSource: Versioning.sdkName,
       chimeSdkVersion: Versioning.sdkVersion,
-    });
+    };
+    if (settings.applicationMetadata) {
+      const { appName, appVersion } = settings.applicationMetadata;
+      sdkClientDetails.appName = appName;
+      sdkClientDetails.appVersion = appVersion;
+    }
+    joinFrame.clientDetails = SdkClientDetails.create(sdkClientDetails);
     joinFrame.audioSessionId = this.audioSessionId;
 
     const message = SdkSignalFrame.create();

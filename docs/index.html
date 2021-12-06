@@ -363,6 +363,7 @@ npm run doc
 					<li><a href="#meeting-readiness-checker">Meeting readiness checker</a></li>
 					<li><a href="#selecting-an-audio-profile">Selecting an Audio Profile</a></li>
 					<li><a href="#starting-a-messaging-session">Starting a Messaging Session</a></li>
+					<li><a href="#providing-application-metadata">Providing application metadata</a></li>
 				</ul>
 				<a href="#device" id="device" style="color: inherit; text-decoration: none;">
 					<h3>Device</h3>
@@ -1159,6 +1160,38 @@ meetingSession.audioVideo.addObserver(observer);
 messagingSession.addObserver(observer);
 messagingSession.start();
 </code></pre>
+				<a href="#providing-application-metadata" id="providing-application-metadata" style="color: inherit; text-decoration: none;">
+					<h3>Providing application metadata</h3>
+				</a>
+				<p>Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience. </p>
+				<blockquote>
+					<p>⚠️ Do not pass any Personal Identifiable Information (PII).</p>
+				</blockquote>
+				<p><strong>Use case 35.</strong> Provide application metadata to the meeting session configuration.</p>
+				<pre><code><span class="hljs-keyword">import</span> { MeetingSessionConfiguration, ApplicationMetadata } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+
+<span class="hljs-keyword">const</span> createMeetingResponse = <span class="hljs-comment">// CreateMeeting API response.</span>
+<span class="hljs-keyword">const</span> createAttendeeResponse = <span class="hljs-comment">// CreateAttendee API response.</span>
+<span class="hljs-keyword">const</span> meetingSessionConfiguration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(
+  createMeetingResponse,
+  createAttendeeResponse
+);
+
+meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
+  <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;AppName&#x27;</span>,
+  <span class="hljs-attr">appVersion</span>: <span class="hljs-string">&#x27;1.0.0&#x27;</span>
+});
+</code></pre>
+				<a href="#accepted-application-metadata-constraints" id="accepted-application-metadata-constraints" style="color: inherit; text-decoration: none;">
+					<h4>Accepted application metadata constraints</h4>
+				</a>
+				<pre><code><span class="hljs-comment">// The appName must be between 1-32 characters and satisfy following regular expression: /^[a-zA-Z0-9]+[a-zA-Z0-9_-]*[a-zA-Z0-9]+$/g</span>
+appName: <span class="hljs-keyword">string</span>;
+
+<span class="hljs-comment">// The appVersion must be between 1-32 characters and follow the Semantic Versioning format.</span>
+<span class="hljs-comment">// https://semver.org/</span>
+appVersion: <span class="hljs-keyword">string</span>;
+</code></pre>
 				<a href="#notice" id="notice" style="color: inherit; text-decoration: none;">
 					<h2>Notice</h2>
 				</a>
@@ -1277,6 +1310,9 @@ messagingSession.start();
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/allhighestvideobandwidthpolicy.html" class="tsd-kind-icon">All<wbr>Highest<wbr>Video<wbr>Bandwidth<wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/applicationmetadata.html" class="tsd-kind-icon">Application<wbr>Metadata</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/asyncscheduler.html" class="tsd-kind-icon">Async<wbr>Scheduler</a>
