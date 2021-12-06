@@ -22,7 +22,7 @@ const indexPage = fs.readFileSync(indexPagePath);
 
 // Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
 const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
-const currentRegion = process.env.Region || 'us-east-1';
+const currentRegion = process.env.REGION || 'us-east-1';
 const useChimeMeetingsSDK = process.env.USE_CHIME_MEETINGS_SDK || true;
 
 // Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
