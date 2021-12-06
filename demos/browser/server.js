@@ -47,7 +47,7 @@ if (captureS3Destination) {
   console.info(`S3 destination for capture not set.  Cloud media capture will not be available.`)
 }
 
-// return regional API just for Echo Reduction for now.
+// return Chime Meetings SDK Client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
   return (useChimeMeetingsSDK || (meeting && meeting.Meeting && meeting.Meeting.MeetingFeatures && meeting.Meeting.MeetingFeatures.Audio &&
     meeting.Meeting.MeetingFeatures.Audio.EchoReduction === 'AVAILABLE')) ? chimeSDKMeetings : chime;

@@ -19,7 +19,7 @@ const useChimeMeetingsSDK = process.env.USE_CHIME_MEETINGS_SDK;
 // the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
 
-// Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
+// Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
 chime.endpoint = new AWS.Endpoint(endpoint);
 
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
