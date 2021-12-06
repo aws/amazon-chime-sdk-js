@@ -1,0 +1,84 @@
+{
+  "`": 1,
+  "name": "data_message_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Data Message %ts",
+      "description": "Data Message Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "DataMessageTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2,
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "WINDOWS"
+    }
+  ]
+}

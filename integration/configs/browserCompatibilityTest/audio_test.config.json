@@ -1,0 +1,86 @@
+{
+  "`": 1,
+  "name": "audio_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Audio Test %ts",
+      "description": "Audio Test",
+      "tupleSize": 2,
+      "noOfThreads": 1,
+      "testImpl": "AudioTest.js",
+      "payload": {
+        "url": "http://localhost:8080/?earlyConnect=1",
+        "port": 30001,
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "safari",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}
