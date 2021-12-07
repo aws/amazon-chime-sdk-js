@@ -10,7 +10,7 @@ Amazon Voice Focus is integrated into the `browser` demo application. To try it 
 
 ## What is Echo Reduction?
 
-Echo reduction helps keep echoes—sounds from a user’s loudspeaker that get picked up by their microphone—from circulating back into meeting audio and bringing discussions to a standstill. The echo reduction feature is available in conjunction with the noise reduction provided by Amazon Voice Focus. 
+Echo reduction helps keep echoes and sounds from a user’s loudspeaker that get picked up by their microphone—from circulating back into meeting audio and bringing discussions to a standstill. The echo reduction feature is available in conjunction with the noise reduction provided by Amazon Voice Focus. 
 
 Echo reduction is enabled at the meeting level when you call the CreateMeeting or CreateMeetingWithAttendees APIs. Enabling the feature this way allows others who join the meeting to enable echo reduction as desired.
 
@@ -283,21 +283,11 @@ A specification is used to derive a runtime _configuration_ when a transformer i
 
 ## Enabling Voice Focus with Echo Reduction
 
+> ⚠️ To use the Echo Reduction feature, you must migrate to the [Amazon Chime SDK Meetings](https://docs.aws.amazon.com/chime/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html) namespace. To do so, you can follow the steps in the [Migrating to the Amazon Chime SDK Meetings namespace](https://docs.aws.amazon.com/chime/latest/dg/meeting-namespace-migration.html).
+
 Enabling Voice Focus with Echo Reduction is a two step process: 
 
-### 1. Create a meeting with support for Echo Reduction using Amazon Chime Meeting SDK namespace
-
-To create meetings, the following line of code is used to address the namespace:
-
-```typescript
-const chimeMeetings = AWS.Chime();
-```
-
-To use the Echo Reduction feature, developers need to migrate to the Amazon Chime Meetings SDK by updating this line of code with the new namespace and the endpoint region:
-
-```typescript
-const chimeMeetings = AWS.ChimeSDKMeetings({ region: "eu-central-1" });
-```
+### 1. Create a meeting with support for Echo Reduction using Amazon Chime SDK Meetings namespace
 
 The Amazon Chime SDK Meetings namespace uses a new service principal: meetings.chime.amazonaws.com. If you have SQS, SNS, or other IAM access policies that grant access to the service, you need to update those polices to grant access to the new service principal.
 
@@ -306,6 +296,9 @@ More information regarding this change can be found [here](https://docs.aws.amaz
 Create your meeting by calling the CreateMeeting API and specifying the Echo Reduction flag as `'AVAILABLE'`.
 
 ```typescript
+// You must migrate to the Amazon Chime SDK Meetings namespace.
+const chime = AWS.ChimeSDKMeetings({ region: "eu-central-1" });
+
 // Create meeting 
 const meetingInfo = await chime.createMeeting({
   ...
