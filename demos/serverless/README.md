@@ -28,8 +28,8 @@ npm install
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
-#### ChimeSDKMeetings Namespace vs Chime NameSpace
-The Chime and the ChimeSDKMeetings are both Amazon Chime's AWS clients to help builders create the Amazon Chime SDK meeting, attendees, enable transcription features and so on. Going forward, we will be using ChimeSDKMeetings client as the default client.
+#### ChimeSDKMeetings Namespace vs Chime Namespace
+The AWS.Chime and the AWS.ChimeSDKMeetings are both Amazon Chime's AWS clients to help builders create the Amazon Chime SDK meeting, create attendees, and enable optional meeting features such as transcription. AWS.ChimeSDKMeetings is intended to replace the previous AWS.Chime client.
 
 For local deployment, you can provide an additional parameter -u false if you want to use the legacy Chime SDK client over the ChimeSDKMeetings client.
 
