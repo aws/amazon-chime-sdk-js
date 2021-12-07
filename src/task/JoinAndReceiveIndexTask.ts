@@ -100,7 +100,13 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       const interceptor = new IndexFrameInterceptor(this.context.signalingClient);
       this.context.signalingClient.registerObserver(interceptor);
       this.taskCanceler = interceptor;
-      this.context.signalingClient.join(new SignalingClientJoin(this.maxVideos, true));
+      this.context.signalingClient.join(
+        new SignalingClientJoin(
+          this.maxVideos,
+          true,
+          this.context.meetingSessionConfiguration.applicationMetadata
+        )
+      );
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);
     this.context.indexFrame = indexFrame;

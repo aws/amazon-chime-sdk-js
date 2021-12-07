@@ -97,6 +97,14 @@ After running `start` the first time, you can speed things up on subsequent iter
 npm run start:fast (--app=<app>)
 ```
 
+### Providing a custom application metadata
+
+Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience. 
+
+> ⚠️ Do not pass any Personal Identifiable Information (PII).
+
+The demo meetingV2 app is using `amazon-chime-sdk-js-demo` as the `appName` and `2.0.0` as the `appVersion` for building the application metadata. To provide a custom application metadata, please follow [providing application metadata](https://github.com/aws/amazon-chime-sdk-js#providing-application-metadata) usage section.
+
 ## Notice
 
 The browser demo applications in the [demos directory](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos) use [TensorFlow.js](https://github.com/tensorflow/tfjs) and pre-trained [TensorFlow.js models](https://github.com/tensorflow/tfjs-models) for image segmentation. Use of these third party models involves downloading and execution of code at runtime from [jsDelivr](https://www.jsdelivr.com/) by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this [link](https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net).

@@ -1,0 +1,25 @@
+{
+  "`": 1,
+  "name": "app_quit_content_share_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "App Quit Content Share Test %ts",
+      "description": "App Quit Content Share Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "AppQuitContentShareTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}
