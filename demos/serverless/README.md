@@ -28,9 +28,12 @@ npm install
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
-#### ChimeSDKMeetings vs Chime
-If you want to use Chime Client for meetings we need to provide an additional parameter "-u false"
-This paramter is true by default as we want ChimeSDKMeetings to be the default client.
+#### ChimeSDKMeetings Namespace vs Chime NameSpace
+The Chime and the ChimeSDKMeetings are both Amazon Chime's AWS clients to help builders create the Amazon Chime SDK meeting, attendees, enable transcription features and so on. Going forward, we will be using ChimeSDKMeetings client as the default client.
+
+For local development.....
+
+For serverless backend deployment, provide an additional parameter -u false if you want to use the Chime client over the ChimeSDKMeetings client.
 
 ```
 cd demos/serverless

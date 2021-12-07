@@ -37,7 +37,7 @@ let mediaCaptureRegions = [
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
   console.log(`  -r, --region                         Target region, default '${region}'`);
-  console.log(`  -u, --use-chime-meetings-sdk         Flag to switch between chime and regional client, default '${useChimeMeetingsSDK}'`);
+  console.log(`  -u, --use-chime-meetings-sdk         Flag to switch between chime and ChimeSDKMeetings client, default '${useChimeMeetingsSDK}'`);
   console.log(`  -b, --s3-bucket                      S3 bucket for deployment, required`);
   console.log(`  -s, --stack-name                     CloudFormation stack name, required`);
   console.log(`  -a, --application                    Browser application to deploy, default '${app}'`);
