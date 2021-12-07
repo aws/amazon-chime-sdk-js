@@ -1200,7 +1200,7 @@ Amazon Chime SDK for JavaScript allows builders to provide application metadata 
 
 **Use case 35.** Provide application metadata to the meeting session configuration.
 
-```
+```js
 import { MeetingSessionConfiguration, ApplicationMetadata } from 'amazon-chime-sdk-js';
 
 const createMeetingResponse = // CreateMeeting API response.
@@ -1218,11 +1218,14 @@ meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
 
 #### Accepted application metadata constraints
 
-```
-// The appName must be between 1-32 characters and satisfy following regular expression: /^[a-zA-Z0-9]+[a-zA-Z0-9_-]*[a-zA-Z0-9]+$/g
+```js
+// The appName must be between 1-32 characters.
+// The appName must satisfy following regular expression:
+// /^[a-zA-Z0-9]+[a-zA-Z0-9_-]*[a-zA-Z0-9]+$/g
 appName: string;
 
-// The appVersion must be between 1-32 characters and follow the Semantic Versioning format.
+// The appVersion must be between 1-32 characters.
+// The appVersion must follow the Semantic Versioning format.
 // https://semver.org/
 appVersion: string;
 ```
