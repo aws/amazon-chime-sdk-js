@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SignalingClientJoin | amazon-chime-sdk-js</title>
+	<title>ApplicationMetadata | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="signalingclientjoin.html">SignalingClientJoin</a>
+					<a href="applicationmetadata.html">ApplicationMetadata</a>
 				</li>
 			</ul>
-			<h1>Class SignalingClientJoin</h1>
+			<h1>Class ApplicationMetadata</h1>
 		</div>
 	</div>
 </header>
@@ -69,15 +69,33 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p><a href="signalingclientjoin.html">SignalingClientJoin</a> contains settings for the Join SignalFrame.</p>
+						<p><a href="applicationmetadata.html">ApplicationMetadata</a> contains application metadata such as application name and version.
+							Amazon Chime SDK for JavaScript allows builders to provide application metadata in
+							the meeting session configuration. This field is optional. Amazon Chime uses application metadata to
+						analyze meeting health trends or identify common failures to improve your meeting experience.</p>
 					</div>
+					<p>Do not pass any Personal Identifiable Information (PII).</p>
+					<pre><code class="language-js"><span class="hljs-keyword">import</span> { MeetingSessionConfiguration, ApplicationMetadata } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
+
+<span class="hljs-keyword">const</span> createMeetingResponse = <span class="hljs-comment">// CreateMeeting API response.</span>
+<span class="hljs-keyword">const</span> createAttendeeResponse = <span class="hljs-comment">// CreateAttendee API response.</span>
+<span class="hljs-keyword">const</span> meetingSessionConfiguration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(
+ createMeetingResponse,
+ createAttendeeResponse
+);
+
+meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
+ <span class="hljs-attr">appName</span>: <span class="hljs-string">&#x27;AppName&#x27;</span>,
+ <span class="hljs-attr">appVersion</span>: <span class="hljs-string">&#x27;1.0.0&#x27;</span>
+});
+</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SignalingClientJoin</span>
+						<span class="target">ApplicationMetadata</span>
 					</li>
 				</ul>
 			</section>
@@ -86,120 +104,83 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="signalingclientjoin.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="applicationmetadata.html#appname" class="tsd-kind-icon">app<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="applicationmetadata.html#appversion" class="tsd-kind-icon">app<wbr>Version</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientjoin.html#applicationmetadata" class="tsd-kind-icon">application<wbr>Metadata</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientjoin.html#maxvideos" class="tsd-kind-icon">max<wbr>Videos</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="signalingclientjoin.html#sendbitrates" class="tsd-kind-icon">send<wbr>Bitrates</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="applicationmetadata.html#create" class="tsd-kind-icon">create</a></li>
 							</ul>
 						</section>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Signaling<wbr>Client<wbr>Join<span class="tsd-signature-symbol">(</span>maxVideos<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, sendBitrates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, applicationMetadata<span class="tsd-signature-symbol">?: </span><a href="applicationmetadata.html" class="tsd-signature-type">ApplicationMetadata</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="signalingclientjoin.html" class="tsd-signature-type">SignalingClientJoin</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientJoin.ts#L9">src/signalingclient/SignalingClientJoin.ts:9</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Initializes a SignalingClientJoin with the given properties.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>maxVideos: <span class="tsd-signature-type">number</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>The maximum number of video tiles to send.</p>
-										</div>
-									</div>
-								</li>
-								<li>
-									<h5>sendBitrates: <span class="tsd-signature-type">boolean</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Whether the server should send Bitrates messages.</p>
-										</div>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> applicationMetadata: <a href="applicationmetadata.html" class="tsd-signature-type">ApplicationMetadata</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p><a href="applicationmetadata.html">ApplicationMetadata</a>.</p>
-										</div>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="signalingclientjoin.html" class="tsd-signature-type">SignalingClientJoin</a></h4>
-						</li>
-					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="applicationmetadata" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> application<wbr>Metadata</h3>
-					<div class="tsd-signature tsd-kind-icon">application<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="applicationmetadata.html" class="tsd-signature-type">ApplicationMetadata</a></div>
+					<a name="appname" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> app<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">app<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientJoin.ts#L19">src/signalingclient/SignalingClientJoin.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/applicationmetadata/ApplicationMetadata.ts#L31">src/applicationmetadata/ApplicationMetadata.ts:31</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p><a href="applicationmetadata.html">ApplicationMetadata</a>.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="maxvideos" class="tsd-anchor"></a>
-					<h3>max<wbr>Videos</h3>
-					<div class="tsd-signature tsd-kind-icon">max<wbr>Videos<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="appversion" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> app<wbr>Version</h3>
+					<div class="tsd-signature tsd-kind-icon">app<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientJoin.ts#L17">src/signalingclient/SignalingClientJoin.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/applicationmetadata/ApplicationMetadata.ts#L31">src/applicationmetadata/ApplicationMetadata.ts:31</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The maximum number of video tiles to send.</p>
-						</div>
-					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="sendbitrates" class="tsd-anchor"></a>
-					<h3>send<wbr>Bitrates</h3>
-					<div class="tsd-signature tsd-kind-icon">send<wbr>Bitrates<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/signalingclient/SignalingClientJoin.ts#L18">src/signalingclient/SignalingClientJoin.ts:18</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether the server should send Bitrates messages.</p>
-						</div>
-					</div>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="create" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>appName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, appVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="applicationmetadata.html" class="tsd-signature-type">ApplicationMetadata</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/applicationmetadata/ApplicationMetadata.ts#L43">src/applicationmetadata/ApplicationMetadata.ts:43</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>appName: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Builder&#39;s application name.
+											The app name must satisfy following regular expression:
+										<code>/^[a-zA-Z0-9]+[a-zA-Z0-9_-]*[a-zA-Z0-9]+$/g</code></p>
+									</div>
+								</li>
+								<li>
+									<h5>appVersion: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Builder&#39;s application version.
+										The app version must follow the <a href="https://semver.org/">Semantic Versioning</a> format.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="applicationmetadata.html" class="tsd-signature-type">ApplicationMetadata</a></h4>
+							<p><a href="applicationmetadata.html">ApplicationMetadata</a></p>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -216,19 +197,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="signalingclientjoin.html" class="tsd-kind-icon">Signaling<wbr>Client<wbr>Join</a>
+						<a href="applicationmetadata.html" class="tsd-kind-icon">Application<wbr>Metadata</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="signalingclientjoin.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="applicationmetadata.html#appname" class="tsd-kind-icon">app<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="signalingclientjoin.html#applicationmetadata" class="tsd-kind-icon">application<wbr>Metadata</a>
+								<a href="applicationmetadata.html#appversion" class="tsd-kind-icon">app<wbr>Version</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="signalingclientjoin.html#maxvideos" class="tsd-kind-icon">max<wbr>Videos</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="signalingclientjoin.html#sendbitrates" class="tsd-kind-icon">send<wbr>Bitrates</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="applicationmetadata.html#create" class="tsd-kind-icon">create</a>
 							</li>
 						</ul>
 					</li>

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import ApplicationMetadata from '../applicationmetadata/ApplicationMetadata';
 import ConnectionHealthPolicyConfiguration from '../connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import { toLowerCasePropertyNames } from '../utils/Utils';
 import VideoDownlinkBandwidthPolicy from '../videodownlinkbandwidthpolicy/VideoDownlinkBandwidthPolicy';
@@ -104,6 +105,12 @@ export default class MeetingSessionConfiguration {
    * of the local video.
    */
   videoUplinkBandwidthPolicy: VideoUplinkBandwidthPolicy = null;
+
+  /**
+   * Builder's application metadata such as application name or version.
+   * This is an optional parameter. Please check [[ApplicationMetadata]] for more information.
+   */
+  applicationMetadata: ApplicationMetadata;
 
   /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and

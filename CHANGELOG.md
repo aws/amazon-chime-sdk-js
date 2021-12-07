@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add error name for custom device controller error.
 - Added pagination option to meeting demo when priority downlink policy is used.
+- Add `ApplicationMetadata` to enable builders to send their application name or version to the Amazon Chime backend. This is an opt-in addition.
 
 ### Removed
 

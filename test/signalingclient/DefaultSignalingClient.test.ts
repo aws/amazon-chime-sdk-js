@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 
 import { SignalingClientVideoSubscriptionConfiguration } from '../../src';
+import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
 import LogLevel from '../../src/logger/LogLevel';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -291,6 +292,40 @@ describe('DefaultSignalingClient', () => {
               done();
             });
             event.client.join(new SignalingClientJoin(_maxNumVideos, false));
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('will send a join with application metadata if provided', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
+              const buffer = new Uint8Array(event.data);
+              const frame = SdkSignalFrame.decode(buffer.slice(1));
+              expect(buffer[0]).to.equal(_messageType);
+              expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
+              expect(frame.join.maxNumOfVideos).to.equal(_maxNumVideos);
+              expect(frame.join.protocolVersion).to.equal(2);
+              expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
+              expect(frame.join.clientDetails.appName).to.eq('AmazonChimeJSSDKDemoApp');
+              expect(frame.join.clientDetails.appVersion).to.eq('1.0.0');
+              done();
+            });
+            const applicationMetadata = ApplicationMetadata.create(
+              'AmazonChimeJSSDKDemoApp',
+              '1.0.0'
+            );
+            const signalingClientJoin = new SignalingClientJoin(
+              _maxNumVideos,
+              false,
+              applicationMetadata
+            );
+            event.client.join(signalingClientJoin);
           }
         }
       }
