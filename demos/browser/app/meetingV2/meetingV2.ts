@@ -5,6 +5,7 @@ import './styleV2.scss';
 import 'bootstrap';
 
 import {
+  ApplicationMetadata,
   AsyncScheduler,
   Attendee,
   AudioInputDevice,
@@ -1557,7 +1558,7 @@ export class DemoMeetingApp
       configuration.videoDownlinkBandwidthPolicy = this.priorityBasedDownlinkPolicy;
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
-
+    configuration.applicationMetadata = ApplicationMetadata.create('amazon-chime-sdk-js-demo', '2.0.0');
     this.meetingSession = new DefaultMeetingSession(
       configuration,
       this.meetingLogger,

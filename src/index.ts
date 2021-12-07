@@ -3,6 +3,7 @@ import ActiveSpeakerDetector from './activespeakerdetector/ActiveSpeakerDetector
 import ActiveSpeakerDetectorFacade from './activespeakerdetector/ActiveSpeakerDetectorFacade';
 import ActiveSpeakerPolicy from './activespeakerpolicy/ActiveSpeakerPolicy';
 import AllHighestVideoBandwidthPolicy from './videodownlinkbandwidthpolicy/AllHighestVideoBandwidthPolicy';
+import ApplicationMetadata from './applicationmetadata/ApplicationMetadata';
 import AssetSpec from './voicefocus/AssetSpec';
 import AsyncScheduler from './scheduler/AsyncScheduler';
 import AttachMediaInputTask from './task/AttachMediaInputTask';
@@ -313,6 +314,7 @@ export {
   ActiveSpeakerDetectorFacade,
   ActiveSpeakerPolicy,
   AllHighestVideoBandwidthPolicy,
+  ApplicationMetadata,
   AssetSpec,
   AsyncScheduler,
   AttachMediaInputTask,

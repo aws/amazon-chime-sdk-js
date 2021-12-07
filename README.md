@@ -298,6 +298,7 @@ Please do **not** create a public GitHub issue.
 - [Meeting readiness checker](#meeting-readiness-checker)
 - [Selecting an Audio Profile](#selecting-an-audio-profile)
 - [Starting a Messaging Session](#starting-a-messaging-session)
+- [Providing application metadata](#providing-application-metadata)
 
 ### Device
 
@@ -1189,6 +1190,44 @@ const observer = {
 
 messagingSession.addObserver(observer);
 messagingSession.start();
+```
+
+### Providing application metadata
+
+Amazon Chime SDK for JavaScript allows builders to provide application metadata in the meeting session configuration. This field is optional. Amazon Chime uses application metadata to analyze meeting health trends or identify common failures to improve your meeting experience. 
+
+> ⚠️ Do not pass any Personal Identifiable Information (PII).
+
+**Use case 35.** Provide application metadata to the meeting session configuration.
+
+```js
+import { MeetingSessionConfiguration, ApplicationMetadata } from 'amazon-chime-sdk-js';
+
+const createMeetingResponse = // CreateMeeting API response.
+const createAttendeeResponse = // CreateAttendee API response.
+const meetingSessionConfiguration = new MeetingSessionConfiguration(
+  createMeetingResponse,
+  createAttendeeResponse
+);
+
+meetingSessionConfiguration.applicationMetadata = ApplicationMetadata.create({
+  appName: 'AppName',
+  appVersion: '1.0.0'
+});
+```
+
+#### Accepted application metadata constraints
+
+```js
+// The appName must be between 1-32 characters.
+// The appName must satisfy following regular expression:
+// /^[a-zA-Z0-9]+[a-zA-Z0-9_-]*[a-zA-Z0-9]+$/g
+appName: string;
+
+// The appVersion must be between 1-32 characters.
+// The appVersion must follow the Semantic Versioning format.
+// https://semver.org/
+appVersion: string;
 ```
 
 ## Notice

@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import ApplicationMetadata from '../../src/applicationmetadata/ApplicationMetadata';
 import MeetingSessionConfiguration from '../../src/meetingsession/MeetingSessionConfiguration';
 
 describe('MeetingSessionConfiguration', () => {
@@ -341,6 +342,17 @@ describe('MeetingSessionConfiguration', () => {
         }
       );
       expect(configuration.urls.eventIngestionURL).to.eq(null);
+    });
+
+    it('can assign application metadata once constructed', () => {
+      const configuration = new MeetingSessionConfiguration();
+      expect(configuration.applicationMetadata).to.be.undefined;
+      configuration.applicationMetadata = ApplicationMetadata.create(
+        'AmazonChimeJSSDKDemoApp',
+        '1.0.0'
+      );
+      expect(configuration.applicationMetadata.appName).to.eq('AmazonChimeJSSDKDemoApp');
+      expect(configuration.applicationMetadata.appVersion).to.eq('1.0.0');
     });
   });
 });
