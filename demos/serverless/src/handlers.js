@@ -12,7 +12,7 @@ const ddb = new AWS.DynamoDB();
 // Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
 const endpoint = process.env.CHIME_ENDPOINT;
 const currentRegion = process.env.REGION;
-const useChimeMeetingsSDK = process.env.USE_CHIME_MEETINGS_SDK;
+const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS;
 
 // Create an AWS SDK Chime object.
 // Use the MediaRegion property below in CreateMeeting to select the region
@@ -30,11 +30,10 @@ if(endpoint != 'https://service.chime.aws.amazon.com'){
 
 // return chime meetings SDK client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
-  if(useChimeMeetingsSDK){
+  if(useChimeSDKMeetings){
     return chimeSDKMeetings;
   }
-  if (meeting && meeting.Meeting && meeting.Meeting.MeetingFeatures && meeting.Meeting.MeetingFeatures.Audio &&
-    meeting.Meeting.MeetingFeatures.Audio.EchoReduction === 'AVAILABLE') {
+  if (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE') {
       return chimeSDKMeetings;
   }
   return chime;

@@ -19,14 +19,15 @@ export AWS_SECRET_ACCESS_KEY=$GAMMA_AWS_SECRET_ACCESS_KEY
 
 # Uses Chime Client
 npm run deploy -- -b chime-sdk-demo-gamma-canary -s chime-sdk-demo-gamma-canary -o chime-sdk-demo-gamma-canary -u false -i eu-south-1 -t -l
+npm run deploy -- -b chime-sdk-meeting-readiness-checker-gamma-canary -s chime-sdk-meeting-readiness-checker-gamma-canary -a meetingReadinessChecker -t -l
 
-# Uses ChimeMeetingsSDK client
+# Uses ChimeSDKMeetings client
 npm run deploy -- -r us-east-1 -b chime-sdk-demo-gamma-canary-us-east-1 -s chime-sdk-demo-gamma-canary-us-east-1 -o chime-sdk-demo-gamma-canary-us-east-1 -t -l
 npm run deploy -- -r us-west-2 -b chime-sdk-demo-gamma-canary-us-west-2 -s chime-sdk-demo-gamma-canary-us-west-2 -o chime-sdk-demo-gamma-canary-us-west-2 -t -l
 npm run deploy -- -r eu-central-1 -b chime-sdk-demo-gamma-canary-eu-central-1 -s chime-sdk-demo-gamma-canary-eu-central-1 -o chime-sdk-demo-gamma-canary-eu-central-1 -t -l
 npm run deploy -- -r ap-southeast-1 -b chime-sdk-demo-gamma-canary-ap-southeast-1 -s chime-sdk-demo-gamma-canary-ap-southeast-1 -o chime-sdk-demo-gamma-canary-ap-southeast-1 -t -l
 
-npm run deploy -- -b chime-sdk-meeting-readiness-checker-gamma-canary -s chime-sdk-meeting-readiness-checker-gamma-canary -a meetingReadinessChecker -t -l
+
 
 echo "Deploying to beta stage for canary that talks to gamma Chime endpoint"
 export AWS_ACCESS_KEY_ID=$BETA_AWS_ACCESS_KEY_ID
@@ -34,9 +35,10 @@ export AWS_SECRET_ACCESS_KEY=$BETA_AWS_SECRET_ACCESS_KEY
 
 # Uses Chime Client
 npm run deploy -- -b chime-sdk-demo-beta-canary -s chime-sdk-demo-beta-canary -o chime-sdk-demo-beta-canary -i eu-south-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -u false -t -l
+npm run deploy -- -b chime-sdk-meeting-readiness-checker-beta-canary -s chime-sdk-meeting-readiness-checker-beta-canary -a meetingReadinessChecker -c $GAMMA_CHIME_ENDPOINT -t -l
 
-# Uses ChimeMeetingsSDK client
+# Uses ChimeSDKMeetings client
 npm run deploy -- -r us-east-1 -b chime-sdk-demo-beta-canary-us-east-1 -s chime-sdk-demo-beta-canary-us-east-1 -o chime-sdk-demo-beta-canary-us-east-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
 npm run deploy -- -r eu-central-1 -b chime-sdk-demo-beta-canary-eu-central-1 -s chime-sdk-demo-beta-canary-eu-central-1 -o chime-sdk-demo-beta-canary-eu-central-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1 -t -l
 npm run deploy -- -r ap-southeast-1 -b chime-sdk-demo-beta-canary-ap-southeast-1 -s chime-sdk-demo-beta-canary-ap-southeast-1 -o chime-sdk-demo-beta-canary-ap-southeast-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1 -t -l
-npm run deploy -- -b chime-sdk-meeting-readiness-checker-beta-canary -s chime-sdk-meeting-readiness-checker-beta-canary -a meetingReadinessChecker -c $GAMMA_CHIME_ENDPOINT -t -l
+
