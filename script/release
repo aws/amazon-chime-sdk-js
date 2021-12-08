@@ -87,4 +87,4 @@ else
 end
 
 Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '../demos/serverless')))
-verbose("npm run deploy -- -b chime-sdk-demo-#{formatted_version} -s chime-sdk-demo-#{formatted_version} -o chime-sdk-demo-#{formatted_version}")
+verbose("npm run deploy -- -b chime-sdk-demo-#{formatted_version} -s chime-sdk-demo-#{formatted_version} -o chime-sdk-demo-#{formatted_version} -u false")
