@@ -31,6 +31,8 @@ npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 #### ChimeSDKMeetings Namespace vs Chime Namespace
 The AWS.Chime and the AWS.ChimeSDKMeetings are both Amazon Chime's AWS clients to help builders create the Amazon Chime SDK meeting, create attendees, and enable optional meeting features such as transcription. AWS.ChimeSDKMeetings is intended to replace the previous AWS.Chime client.
 
+Introduced a new command line parameter `-u` or `--use-chime-sdk-meetings` which is a boolean flag and can used to specify the AWS client. This flag is true by default to make AWS.ChimeSDKMeetings as default client. Also, this flag is primarly intended for internal testing of the legacy Chime SDK client.
+
 For local deployment, you can provide an additional parameter -u false if you want to use the legacy Chime SDK client over the ChimeSDKMeetings client.
 
 For serverless backend deployment, provide an additional parameter -u false if you want to use the Chime client over the ChimeSDKMeetings client.
