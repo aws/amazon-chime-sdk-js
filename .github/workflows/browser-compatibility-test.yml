@@ -3,7 +3,8 @@ name: Browser Compatibility Test
 on:
   schedule:
     # More information on cron https://crontab.guru/
-    - cron: '0 0 * * *'
+    # GitHub actions is using UTC time. Scheduling action at 5 am PST
+    - cron: '0 13 * * *'
 
 env:
   SELENIUM_GRID_PROVIDER: saucelabs
