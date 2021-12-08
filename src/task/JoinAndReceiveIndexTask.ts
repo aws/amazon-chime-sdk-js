@@ -21,7 +21,6 @@ import BaseTask from './BaseTask';
 export default class JoinAndReceiveIndexTask extends BaseTask {
   protected taskName = 'JoinAndReceiveIndexTask';
   private taskCanceler: TaskCanceler | null = null;
-  private maxVideos = 25;
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
@@ -37,6 +36,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
   async run(): Promise<void> {
     const indexFrame = await new Promise<SdkIndexFrame>((resolve, reject) => {
       const context = this.context;
+      let videoSubscriptionLimit: number = 25;
       context.turnCredentials = null;
       class IndexFrameInterceptor implements SignalingClientObserver, TaskCanceler {
         constructor(private signalingClient: SignalingClient) {}
@@ -71,6 +71,10 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
           if (event.message.type === SdkSignalFrame.Type.JOIN_ACK) {
             // @ts-ignore: force cast to SdkJoinAckFrame
             const joinAckFrame: SdkJoinAckFrame = event.message.joinack;
+            if (joinAckFrame && joinAckFrame.videoSubscriptionLimit) {
+              videoSubscriptionLimit = joinAckFrame.videoSubscriptionLimit;
+            }
+            context.videoSubscriptionLimit = videoSubscriptionLimit;
             if (joinAckFrame && joinAckFrame.turnCredentials) {
               context.turnCredentials = new MeetingSessionTURNCredentials();
               context.turnCredentials.username = joinAckFrame.turnCredentials.username;
@@ -101,11 +105,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       this.context.signalingClient.registerObserver(interceptor);
       this.taskCanceler = interceptor;
       this.context.signalingClient.join(
-        new SignalingClientJoin(
-          this.maxVideos,
-          true,
-          this.context.meetingSessionConfiguration.applicationMetadata
-        )
+        new SignalingClientJoin(true, this.context.meetingSessionConfiguration.applicationMetadata)
       );
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);

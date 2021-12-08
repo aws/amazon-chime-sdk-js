@@ -82,7 +82,6 @@ class TestObjects {
 describe('DefaultSignalingClient', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const activeTestObjects: TestObjects[] = [];
-  const _maxNumVideos = 16;
   const _messageType = 5;
   const _streamId = 1;
   const _groupId = 1;
@@ -261,14 +260,14 @@ describe('DefaultSignalingClient', () => {
               const frame = SdkSignalFrame.decode(buffer.slice(1));
               expect(buffer[0]).to.equal(_messageType);
               expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
-              expect(frame.join.maxNumOfVideos).to.equal(_maxNumVideos);
+              expect(frame.join.maxNumOfVideos).to.equal(0);
               expect(frame.join.protocolVersion).to.equal(2);
               expect(frame.join.flags).to.equal(
                 SdkJoinFlags.SEND_BITRATES | SdkJoinFlags.HAS_STREAM_UPDATE
               );
               done();
             });
-            event.client.join(new SignalingClientJoin(_maxNumVideos, true));
+            event.client.join(new SignalingClientJoin(true));
           }
         }
       }
@@ -286,12 +285,12 @@ describe('DefaultSignalingClient', () => {
               const frame = SdkSignalFrame.decode(buffer.slice(1));
               expect(buffer[0]).to.equal(_messageType);
               expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
-              expect(frame.join.maxNumOfVideos).to.equal(_maxNumVideos);
+              expect(frame.join.maxNumOfVideos).to.equal(0);
               expect(frame.join.protocolVersion).to.equal(2);
               expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
               done();
             });
-            event.client.join(new SignalingClientJoin(_maxNumVideos, false));
+            event.client.join(new SignalingClientJoin(false));
           }
         }
       }
@@ -309,7 +308,7 @@ describe('DefaultSignalingClient', () => {
               const frame = SdkSignalFrame.decode(buffer.slice(1));
               expect(buffer[0]).to.equal(_messageType);
               expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
-              expect(frame.join.maxNumOfVideos).to.equal(_maxNumVideos);
+              expect(frame.join.maxNumOfVideos).to.equal(0);
               expect(frame.join.protocolVersion).to.equal(2);
               expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
               expect(frame.join.clientDetails.appName).to.eq('AmazonChimeJSSDKDemoApp');
@@ -320,11 +319,7 @@ describe('DefaultSignalingClient', () => {
               'AmazonChimeJSSDKDemoApp',
               '1.0.0'
             );
-            const signalingClientJoin = new SignalingClientJoin(
-              _maxNumVideos,
-              false,
-              applicationMetadata
-            );
+            const signalingClientJoin = new SignalingClientJoin(false, applicationMetadata);
             event.client.join(signalingClientJoin);
           }
         }

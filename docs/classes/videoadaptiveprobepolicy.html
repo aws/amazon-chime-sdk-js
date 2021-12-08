@@ -115,7 +115,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoadaptiveprobepolicy.html#bindtotilecontroller" class="tsd-kind-icon">bind<wbr>ToTile<wbr>Controller</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="videoadaptiveprobepolicy.html#calculateoptimalreceiveset" class="tsd-kind-icon">calculate<wbr>Optimal<wbr>Receive<wbr>Set</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="videoadaptiveprobepolicy.html#calculateoptimalreceivestreams" class="tsd-kind-icon">calculate<wbr>Optimal<wbr>Receive<wbr>Streams</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="videoadaptiveprobepolicy.html#chooseremotevideosources" class="tsd-kind-icon">choose<wbr>Remote<wbr>Video<wbr>Sources</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoadaptiveprobepolicy.html#chooseremotevideosources" class="tsd-kind-icon">choose<wbr>Remote<wbr>Video<wbr>Sources</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoadaptiveprobepolicy.html#choosesubscriptions" class="tsd-kind-icon">choose<wbr>Subscriptions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoadaptiveprobepolicy.html#foreachobserver" class="tsd-kind-icon">for<wbr>Each<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="videoadaptiveprobepolicy.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
@@ -334,31 +334,24 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="chooseremotevideosources" class="tsd-anchor"></a>
 					<h3>choose<wbr>Remote<wbr>Video<wbr>Sources</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">choose<wbr>Remote<wbr>Video<wbr>Sources<span class="tsd-signature-symbol">(</span>_preferences<span class="tsd-signature-symbol">: </span><a href="videopreferences.html" class="tsd-signature-type">VideoPreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">choose<wbr>Remote<wbr>Video<wbr>Sources<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">: </span><a href="videopreferences.html" class="tsd-signature-type">VideoPreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a>.<a href="videoprioritybasedpolicy.html#chooseremotevideosources">chooseRemoteVideoSources</a></p>
+								<p>Inherited from <a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a>.<a href="videoprioritybasedpolicy.html#chooseremotevideosources">chooseRemoteVideoSources</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts#L58">src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts#L146">src/videodownlinkbandwidthpolicy/VideoPriorityBasedPolicy.ts:146</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p><a href="videoadaptiveprobepolicy.html">VideoAdaptiveProbePolicy</a> does not allow setting video preferences and this function
-										will be a no-op.  Please use <a href="videoprioritybasedpolicy.html">VideoPriorityBasedPolicy</a> directly if you would like to set
-									preferences.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>_preferences: <a href="videopreferences.html" class="tsd-signature-type">VideoPreferences</a></h5>
+									<h5>preferences: <a href="videopreferences.html" class="tsd-signature-type">VideoPreferences</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -618,7 +611,7 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 								<a href="videoadaptiveprobepolicy.html#calculateoptimalreceivestreams" class="tsd-kind-icon">calculate<wbr>Optimal<wbr>Receive<wbr>Streams</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="videoadaptiveprobepolicy.html#chooseremotevideosources" class="tsd-kind-icon">choose<wbr>Remote<wbr>Video<wbr>Sources</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">

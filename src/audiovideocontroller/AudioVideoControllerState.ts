@@ -106,6 +106,9 @@ export default class AudioVideoControllerState {
   // itself correspond to transceivers; 0 in this list corresponds to an inactive tranceiver.
   videoSubscriptions: number[] | null = null;
 
+  // Total number of videos streams that can be subscribed to.
+  videoSubscriptionLimit: number = 0;
+
   videosPaused: VideoStreamIdSet | null = null;
 
   videoDuplexMode: SdkStreamServiceType | null = null;

@@ -141,6 +141,30 @@ describe('DefaultVideoStreamIdSet', () => {
     });
   });
 
+  describe('truncate', () => {
+    it('returns a truncated copy of the original array', () => {
+      const set = new DefaultVideoStreamIdSet();
+      set.add(1);
+      set.add(11);
+      const other = set.truncate(1);
+      expect(other.array()).to.deep.equal([1]);
+      set.add(17);
+      expect(other.array()).to.deep.equal([1]);
+      expect(set.array()).to.deep.equal([1, 11, 17]);
+    });
+
+    it('returns a copy of the original array', () => {
+      const set = new DefaultVideoStreamIdSet();
+      set.add(1);
+      set.add(11);
+      const other = set.truncate(10);
+      expect(other.array()).to.deep.equal([1, 11]);
+      set.add(17);
+      expect(other.array()).to.deep.equal([1, 11]);
+      expect(set.array()).to.deep.equal([1, 11, 17]);
+    });
+  });
+
   describe('toJSON', () => {
     it('converts current set to a sorted array', () => {
       const set = new DefaultVideoStreamIdSet();

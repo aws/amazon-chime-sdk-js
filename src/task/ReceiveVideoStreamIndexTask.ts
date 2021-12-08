@@ -164,7 +164,11 @@ export default class ReceiveVideoStreamIndexTask
       return;
     }
 
-    this.context.videosToReceive = videoDownlinkBandwidthPolicy.chooseSubscriptions();
+    const videoSubscriptionIdSet = videoDownlinkBandwidthPolicy.chooseSubscriptions();
+    this.context.videosToReceive = videoSubscriptionIdSet.truncate(
+      this.context.videoSubscriptionLimit
+    );
+
     this.context.videoCaptureAndEncodeParameter = videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
     this.logger.info(
       `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}] captureParams=${JSON.stringify(

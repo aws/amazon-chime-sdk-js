@@ -62,6 +62,7 @@ describe('JoinAndReceiveIndexTask', () => {
     joinAckFrame.turnCredentials.password = 'fake-password';
     joinAckFrame.turnCredentials.ttl = 300;
     joinAckFrame.turnCredentials.uris = ['fake-turn', 'fake-turns'];
+    joinAckFrame.videoSubscriptionLimit = 10;
 
     const joinAckSignal = SdkSignalFrame.create();
     joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
@@ -119,6 +120,7 @@ describe('JoinAndReceiveIndexTask', () => {
       } catch {
         expect(context.indexFrame).to.equal(null);
         expect(context.turnCredentials).to.equal(null);
+        expect(context.videoSubscriptionLimit).to.equal(0);
         expect(receivedStatus).to.equal(true);
       }
     });
@@ -149,6 +151,7 @@ describe('JoinAndReceiveIndexTask', () => {
       } catch {
         expect(context.indexFrame).to.equal(null);
         expect(context.turnCredentials).to.equal(null);
+        expect(context.videoSubscriptionLimit).to.equal(0);
         expect(receivedStatus).to.equal(true);
       }
     });
@@ -179,6 +182,7 @@ describe('JoinAndReceiveIndexTask', () => {
       } catch {
         expect(context.indexFrame).to.equal(null);
         expect(context.turnCredentials).to.equal(null);
+        expect(context.videoSubscriptionLimit).to.equal(0);
         expect(receivedStatus).to.equal(true);
       }
     });
@@ -198,6 +202,34 @@ describe('JoinAndReceiveIndexTask', () => {
       expect(context.turnCredentials.password).to.equal('fake-password');
       expect(context.turnCredentials.ttl).to.equal(300);
       expect(context.turnCredentials.uris).to.deep.equal(['fake-turn', 'fake-turns']);
+      expect(context.videoSubscriptionLimit).to.equal(10);
+    });
+
+    it('should set video subscription limit to default value when join ack frame has empty video subscription limit', async () => {
+      const defaultVideoSubscriptionLimit = 25;
+      const joinAckFrame = SdkJoinAckFrame.create();
+      joinAckFrame.videoSubscriptionLimit = 0;
+
+      const joinAckSignal = SdkSignalFrame.create();
+      joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
+      joinAckSignal.joinack = joinAckFrame;
+
+      const joinAckBuffer = SdkSignalFrame.encode(joinAckSignal).finish();
+      joinAckSignalBuffer = new Uint8Array(joinAckBuffer.length + 1);
+      joinAckSignalBuffer[0] = 0x5;
+      joinAckSignalBuffer.set(joinAckBuffer, 1);
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(context.indexFrame).to.not.equal(null);
+      expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
     });
 
     it('can run and send join with application metadata if valid', async () => {
