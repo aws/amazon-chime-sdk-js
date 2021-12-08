@@ -30,7 +30,7 @@ import MeetingSessionConfiguration from './MeetingSessionConfiguration';
 export default class DefaultMeetingSession implements MeetingSession, Destroyable {
   private _configuration: MeetingSessionConfiguration;
   private _logger: Logger;
-  private audioVideoController: AudioVideoController;
+  protected audioVideoController: AudioVideoController;
   private contentShareController: ContentShareController;
   private _deviceController: DeviceController;
   private audioVideoFacade: AudioVideoFacade;
