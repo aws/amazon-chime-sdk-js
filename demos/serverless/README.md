@@ -33,10 +33,6 @@ The AWS.Chime and the AWS.ChimeSDKMeetings are both Amazon Chime's AWS clients t
 
 Use `-u` or `--use-chime-sdk-meetings` to specify the AWS client. It defaults to true using the AWS.ChimeSDKMeetings client. This flag is primarly intended for internal testing of the legacy AWS.Chime client.
 
-For local deployment, you can provide an additional parameter -u false if you want to use the legacy Chime SDK client over the ChimeSDKMeetings client.
-
-For serverless backend deployment, provide an additional parameter -u false if you want to use the Chime client over the ChimeSDKMeetings client.
-
 ```
 cd demos/serverless
 npm install
