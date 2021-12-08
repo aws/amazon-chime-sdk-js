@@ -82,7 +82,7 @@
 					<a href="#what-is-echo-reduction" id="what-is-echo-reduction" style="color: inherit; text-decoration: none;">
 						<h2>What is Echo Reduction?</h2>
 					</a>
-					<p>Echo reduction helps keep echoes—sounds from a user’s loudspeaker that get picked up by their microphone—from circulating back into meeting audio and bringing discussions to a standstill. The echo reduction feature is available in conjunction with the noise reduction provided by Amazon Voice Focus.</p>
+					<p>Echo reduction helps keep echoes and sounds from a user’s loudspeaker that get picked up by their microphone—from circulating back into meeting audio and bringing discussions to a standstill. The echo reduction feature is available in conjunction with the noise reduction provided by Amazon Voice Focus.</p>
 					<p>Echo reduction is enabled at the meeting level when you call the CreateMeeting or CreateMeetingWithAttendees APIs. Enabling the feature this way allows others who join the meeting to enable echo reduction as desired.</p>
 					<p>The feature is integrated into the <code>browser</code> demo application. To try it out, launch the demo with <code>npm run start</code>, choose “Web Audio” and “Use Echo Reduction (new meetings only)” on the first screen, then either check the “Voice Focus” box in the lobby view, or click “Voice Focus” in the device picker after joining the meeting.</p>
 					<p>Amazon Chime Echo Reduction is a premium feature, please refer to the <a href="https://aws.amazon.com/chime/pricing/#Chime_SDK_">Pricing</a> page for details.</p>
@@ -338,12 +338,20 @@ spec = { ...
 					<a href="#enabling-voice-focus-with-echo-reduction" id="enabling-voice-focus-with-echo-reduction" style="color: inherit; text-decoration: none;">
 						<h2>Enabling Voice Focus with Echo Reduction</h2>
 					</a>
+					<blockquote>
+						<p>⚠️ To use the Echo Reduction feature, you must migrate to the <a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_Operations_Amazon_Chime_SDK_Meetings.html">Amazon Chime SDK Meetings</a> namespace. To do so, you can follow the steps in the <a href="https://docs.aws.amazon.com/chime/latest/dg/meeting-namespace-migration.html">Migrating to the Amazon Chime SDK Meetings namespace</a>.</p>
+					</blockquote>
 					<p>Enabling Voice Focus with Echo Reduction is a two step process:</p>
-					<a href="#1-creating-a-meeting-with-support-for-echo-reduction" id="1-creating-a-meeting-with-support-for-echo-reduction" style="color: inherit; text-decoration: none;">
-						<h3>1. Creating a meeting with support for Echo Reduction</h3>
+					<a href="#1-create-a-meeting-with-support-for-echo-reduction-using-amazon-chime-sdk-meetings-namespace" id="1-create-a-meeting-with-support-for-echo-reduction-using-amazon-chime-sdk-meetings-namespace" style="color: inherit; text-decoration: none;">
+						<h3>1. Create a meeting with support for Echo Reduction using Amazon Chime SDK Meetings namespace</h3>
 					</a>
+					<p>The Amazon Chime SDK Meetings namespace uses a new service principal: meetings.chime.amazonaws.com. If you have SQS, SNS, or other IAM access policies that grant access to the service, you need to update those polices to grant access to the new service principal.</p>
+					<p>More information regarding this change can be found <a href="https://docs.aws.amazon.com/chime/latest/dg/meeting-namespace-migration.html">here</a>.</p>
 					<p>Create your meeting by calling the CreateMeeting API and specifying the Echo Reduction flag as <code>&#39;AVAILABLE&#39;</code>.</p>
-					<pre><code class="language-typescript"><span class="hljs-comment">// Create meeting</span>
+					<pre><code class="language-typescript"><span class="hljs-comment">// You must migrate to the Amazon Chime SDK Meetings namespace.</span>
+<span class="hljs-keyword">const</span> chime = AWS.ChimeSDKMeetings({ <span class="hljs-attr">region</span>: <span class="hljs-string">&quot;eu-central-1&quot;</span> });
+
+<span class="hljs-comment">// Create meeting</span>
 <span class="hljs-keyword">const</span> meetingInfo = <span class="hljs-keyword">await</span> chime.createMeeting({
   ...
   <span class="hljs-attr">MeetingFeatures</span>: {
@@ -405,7 +413,7 @@ spec = { ...
 						<h2>Disabling Echo Reduction from your application</h2>
 					</a>
 					<p>During the meeting, you can disable Echo Reduction using the following code. This will just disable the Echo Reduction part of Voice Focus, while maintaining the Noise Reduction:</p>
-					<pre><code class="language-typecript">await vfDevice.unObserveMeetingAudio(this.audioVideo);
+					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> vfDevice.unObserveMeetingAudio(<span class="hljs-built_in">this</span>.audioVideo);
 </code></pre>
 					<a href="#adapting-to-performance-constraints" id="adapting-to-performance-constraints" style="color: inherit; text-decoration: none;">
 						<h2>Adapting to performance constraints</h2>
