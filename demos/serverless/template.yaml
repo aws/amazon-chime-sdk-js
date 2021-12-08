@@ -7,6 +7,15 @@ Parameters:
     Default: false
     Type: String
     AllowedValues: [true, false]
+  Region:
+    Description: The AWS SDK Chime REGION
+    Default: "us-east-1"
+    Type: String
+  UseChimeSDKMeetings:
+    Description: Use boolean to switch between Chime and ChimeSDKMeetings Client
+    Default: true
+    Type: String
+    AllowedValues: [true, false]
   ChimeEndpoint:
     Description: The AWS SDK Chime endpoint
     Default: "https://service.chime.aws.amazon.com"
@@ -33,6 +42,8 @@ Globals:
         BROWSER_LOG_GROUP_NAME: !Ref ChimeBrowserLogs
         BROWSER_MEETING_EVENT_LOG_GROUP_NAME: !Ref ChimeBrowserMeetingEventLogs
         CHIME_ENDPOINT: !Ref ChimeEndpoint
+        REGION: !Ref Region
+        USE_CHIME_SDK_MEETINGS: !Ref UseChimeSDKMeetings
         BROWSER_EVENT_INGESTION_LOG_GROUP_NAME: !Ref ChimeBrowserEventIngestionLogs
         CAPTURE_S3_DESTINATION_PREFIX: !Ref ChimeMediaCaptureS3BucketPrefix
         AWS_ACCOUNT_ID: !Sub "${AWS::AccountId}"

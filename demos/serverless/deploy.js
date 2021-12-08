@@ -4,6 +4,7 @@ const path = require("path");
 
 // Parameters
 let region = 'us-east-1';
+let useChimeSDKMeetings = true;
 let bucket = ``;
 let artifactBucket = ``;
 let stack = ``;
@@ -36,6 +37,7 @@ let mediaCaptureRegions = [
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
   console.log(`  -r, --region                         Target region, default '${region}'`);
+  console.log(`  -u, --use-chime-sdk-meetings         Flag to switch between chime and ChimeSDKMeetings client, default '${useChimeSDKMeetings}'`);
   console.log(`  -b, --s3-bucket                      S3 bucket for deployment, required`);
   console.log(`  -s, --stack-name                     CloudFormation stack name, required`);
   console.log(`  -a, --application                    Browser application to deploy, default '${app}'`);
@@ -82,6 +84,9 @@ function parseArgs() {
         break;
       case '-r': case '--region':
         region = getArgOrExit(++i, args)
+        break;
+      case '-u': case '--use-chime-sdk-meetings':
+        useChimeSDKMeetings = getArgOrExit(++i, args)
         break;
       case '-b': case '--s3-bucket':
         bucket = getArgOrExit(++i, args)
@@ -235,7 +240,7 @@ if (!fs.existsSync('build')) {
   fs.mkdirSync('build');
 }
 
-console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}, disable-printing-logs ${disablePrintingLogs}`);
+console.log(`Using region ${region}, useChimeSDKMeetings ${useChimeSDKMeetings}, bucket ${bucket}, stack ${stack}, endpoint ${chimeEndpoint}, enable-termination-protection ${enableTerminationProtection}, disable-printing-logs ${disablePrintingLogs}`);
 ensureBucket();
 
 copyAssets();
@@ -245,7 +250,7 @@ spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,
                     '--region',  `${region}`]);
 console.log('Deploying serverless application');
-let parameterOverrides = `UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal}`
+let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal}`
 if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
     createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);
