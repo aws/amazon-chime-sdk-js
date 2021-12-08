@@ -19,23 +19,26 @@ console.info('Using index path', indexPagePath);
 
 const indexPage = fs.readFileSync(indexPagePath);
 
+
+// Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
+const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
+const currentRegion = process.env.REGION || 'us-east-1';
+const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || true;
+
 // Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
 // Use the MediaRegion property below in CreateMeeting to select the region
 // the meeting is hosted in.
 const chime = new AWS.Chime({ region: 'us-east-1' });
-// Set the AWS SDK Chime endpoint. The global endpoint is https://service.chime.aws.amazon.com.
-const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
+chime.endpoint = endpoint;
 
-const chimeRegional = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
-const chimeRegionalEndpoint = process.env.REGIONAL_ENDPOINT || 'https://meetings-chime.us-east-1.amazonaws.com';
+
+const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: currentRegion });
+if(endpoint != 'https://service.chime.aws.amazon.com'){
+  chimeSDKMeetings.endpoint = endpoint;
+}
 
 const sts = new AWS.STS({ region: 'us-east-1' })
 
-console.info('Using global endpoint', endpoint);
-chime.endpoint = new AWS.Endpoint(endpoint);
-
-console.info('Using regional endpoint', chimeRegionalEndpoint);
-chimeRegional.endpoint = new AWS.Endpoint(chimeRegionalEndpoint);
 
 const captureS3Destination = process.env.CAPTURE_S3_DESTINATION;
 if (captureS3Destination) {
@@ -44,13 +47,9 @@ if (captureS3Destination) {
   console.info(`S3 destination for capture not set.  Cloud media capture will not be available.`)
 }
 
-// return regional API just for Echo Reduction for now.
+// return Chime Meetings SDK Client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
-  if (meeting && meeting.Meeting && meeting.Meeting.MeetingFeatures && meeting.Meeting.MeetingFeatures.Audio &&
-    meeting.Meeting.MeetingFeatures.Audio.EchoReduction === 'AVAILABLE') {
-      return chimeRegional;
-  }
-  return chime;
+  return (useChimeSDKMeetings || (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE')) ? chimeSDKMeetings : chime;
 }
 
 function serve(host = '127.0.0.1:8080') {
@@ -88,7 +87,7 @@ function serve(host = '127.0.0.1:8080') {
           };
           
           if (requestUrl.query.ns_es === 'true') {
-            client = chimeRegional;
+            client = chimeSDKMeetings;
             request.MeetingFeatures = {
               Audio: {
                 // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
