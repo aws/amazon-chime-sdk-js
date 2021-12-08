@@ -28,6 +28,17 @@ npm install
 npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting
 ```
 
+#### ChimeSDKMeetings Namespace vs Chime Namespace
+The AWS.Chime and the AWS.ChimeSDKMeetings are both Amazon Chime's AWS clients to help builders create the Amazon Chime SDK meeting, create attendees, and enable optional meeting features such as transcription. AWS.ChimeSDKMeetings is intended to replace the previous AWS.Chime client.
+
+Use `-u` or `--use-chime-sdk-meetings` to specify the AWS client. It defaults to true using the AWS.ChimeSDKMeetings client. This flag is primarly intended for internal testing of the legacy AWS.Chime client.
+
+```
+cd demos/serverless
+npm install
+npm run deploy -- -r us-east-1 -b <my-bucket> -s <my-stack-name> -a meeting -u false
+```
+
 #### Media Capture
 If you want to use media capture, an S3 bucket needs to be created for each region.
 The S3 bucket will be created with a prefix specified with the -o option.
