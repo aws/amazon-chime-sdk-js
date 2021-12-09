@@ -60,8 +60,7 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, {
-      scaleResolutionDownBy: 1,
-      maxBitrate: this.idealMaxBandwidthKbps * 1000,
+      maxBitrate: 0,
     });
   }
 
