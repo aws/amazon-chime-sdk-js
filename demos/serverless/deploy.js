@@ -259,7 +259,7 @@ spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--sta
                     '--parameter-overrides', parameterOverrides,
                     '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`, '--no-fail-on-empty-changeset'], null, !disablePrintingLogs);
 if (enableTerminationProtection) {
-  spawnOrFail('aws', ['cloudformation', 'update-termination-protection', '--enable-termination-protection', '--stack-name', `${stack}`], null, false);
+  spawnOrFail('aws', ['cloudformation', 'update-termination-protection', '--enable-termination-protection', '--stack-name', `${stack}`, '--region', `${region}`], null, false);
 }
 if (!disablePrintingLogs) {
   console.log('Amazon Chime SDK Meeting Demo URL: ');
