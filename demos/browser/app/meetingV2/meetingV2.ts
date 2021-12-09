@@ -504,6 +504,16 @@ export class DemoMeetingApp
       }
     });
 
+    const echoReductionCheckbox = (document.getElementById('echo-reduction-checkbox') as HTMLInputElement);
+    (document.getElementById('webaudio') as HTMLInputElement).addEventListener('change', e => {
+      this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
+      if (this.enableWebAudio) {
+        echoReductionCheckbox.style.display = 'block';
+      } else {
+        echoReductionCheckbox.style.display = 'none';
+      }
+    });
+
     const presetDropDown = document.getElementById('priority-downlink-policy-preset') as HTMLSelectElement;
     presetDropDown.addEventListener('change', async e => {
       switch (presetDropDown.value) {
