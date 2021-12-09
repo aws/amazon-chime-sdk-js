@@ -701,7 +701,30 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       expect(spy.calledOnce).to.be.true;
       spy.restore();
     });
-
+    it('Ensure setEncodingParameters is called to initially set the max bitrate', () => {
+      // use a new policy to ensure it's using the default values
+      policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId, true, new NoOpLogger());
+      policy.setTransceiverController(transceiverController);
+      const index = new DefaultVideoStreamIndex(logger);
+      const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
+      index.integrateIndexFrame(
+        new SdkIndexFrame({
+          sources: [
+            new SdkStreamDescriptor({
+              streamId: 2,
+              groupId: 1,
+              maxBitrateKbps: 1400,
+              attendeeId: 'xy1',
+              mediaType: SdkStreamMediaType.VIDEO,
+            }),
+          ],
+        })
+      );
+      policy.updateIndex(index);
+      policy.updateTransceiverController();
+      expect(spy.calledOnce).to.be.true;
+      spy.restore();
+    });
     it('Return early if there is no transceiver controller', () => {
       const index = new DefaultVideoStreamIndex(logger);
       const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
