@@ -30,7 +30,7 @@ if(endpoint != 'https://service.chime.aws.amazon.com'){
 
 // return chime meetings SDK client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
-  if(useChimeSDKMeetings){
+  if(useChimeSDKMeetings === 'true'){
     return chimeSDKMeetings;
   }
   if (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE') {
