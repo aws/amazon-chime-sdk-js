@@ -69,7 +69,7 @@ class AuthenticateUserStep extends AppTestStep {
     }
     await this.page.authenticate();
     this.logger("waiting to authenticate");
-    let authenticationState = await this.page.waitForAuthentication();
+    let authenticationState = await this.page.waitForDeviceFlow();
     if (authenticationState === 'failed') {
       throw new KiteTestError(Status.FAILED, 'Authentication timeout');
     }
