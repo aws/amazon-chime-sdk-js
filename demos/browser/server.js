@@ -23,7 +23,7 @@ const indexPage = fs.readFileSync(indexPagePath);
 // Set the AWS SDK Chime endpoint. The Chime endpoint is https://service.chime.aws.amazon.com.
 const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
 const currentRegion = process.env.REGION || 'us-east-1';
-const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || true;
+const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || 'true';
 
 // Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
 // Use the MediaRegion property below in CreateMeeting to select the region
@@ -49,7 +49,7 @@ if (captureS3Destination) {
 
 // return Chime Meetings SDK Client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
-  return (useChimeSDKMeetings || (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE')) ? chimeSDKMeetings : chime;
+  return ((useChimeSDKMeetings === 'true') || (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE')) ? chimeSDKMeetings : chime;
 }
 
 function serve(host = '127.0.0.1:8080') {
