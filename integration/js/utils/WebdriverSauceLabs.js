@@ -9,7 +9,7 @@ const getPlatformName = capabilities => {
   switch (platform) {
     case 'MAC':
       if (browserName === 'safari') {
-        return version === 'latest' ? 'macOS 11.00' : 'macOS 10.13';
+        return version === 'latest' ? 'macOS 12' : 'macOS 10.13';
       }
       return 'macOS 10.14';
     case 'WINDOWS':
