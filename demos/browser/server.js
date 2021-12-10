@@ -49,9 +49,14 @@ if (captureS3Destination) {
 
 // return Chime Meetings SDK Client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
-  return (
-    (useChimeSDKMeetings === 'true') ||
-    (meeting && meeting.Meeting && meeting.Meeting.MeetingFeatures && meeting.Meeting.MeetingFeatures.Audio && meeting.Meeting.MeetingFeatures.Audio.EchoReduction === 'AVAILABLE')) ? chimeSDKMeetings : chime;
+  return useChimeSDKMeetings === "true" ||
+    (meeting &&
+      meeting.Meeting &&
+      meeting.Meeting.MeetingFeatures &&
+      meeting.Meeting.MeetingFeatures.Audio &&
+      meeting.Meeting.MeetingFeatures.Audio.EchoReduction === "AVAILABLE")
+    ? chimeSDKMeetings
+    : chime;
 }
 
 function serve(host = '127.0.0.1:8080') {
