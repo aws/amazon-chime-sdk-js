@@ -484,6 +484,10 @@ export class DemoMeetingApp
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
     }
 
+    if (!this.defaultBrowserBehaviour.supportDownlinkBandwidthEstimation()) {
+      (document.getElementById('priority-downlink-policy') as HTMLInputElement).disabled = true;
+    }
+
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
 
@@ -1037,15 +1041,15 @@ export class DemoMeetingApp
         if (isChecked('content-identification-checkbox')) {
           transcriptionStreamParams.contentIdentificationType = 'PII';
         }
-        
+
         if (isChecked('content-redaction-checkbox')) {
           transcriptionStreamParams.contentRedactionType = 'PII';
         }
-        
+
         if (isChecked('partial-stabilization-checkbox')) {
           transcriptionStreamParams.enablePartialResultsStability = true;
         }
-        
+
         let partialResultsStability = (document.getElementById('partial-stability') as HTMLInputElement).value;
         if (partialResultsStability) {
           transcriptionStreamParams.partialResultsStability = partialResultsStability;
@@ -1055,7 +1059,7 @@ export class DemoMeetingApp
           let values = '';
           if (selected.length > 0) {
             values = Array.from(selected).filter(node => (node as HTMLInputElement).value !== '').map(el => (el as HTMLInputElement).value).join(',');
-          } 
+          }
           if (values !== '') {
             transcriptionStreamParams.piiEntityTypes = values;
           }
@@ -1388,49 +1392,31 @@ export class DemoMeetingApp
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
-    if (
-      typeof metricReport.availableSendBandwidth === 'number' &&
-      !isNaN(metricReport.availableSendBandwidth)
-    ) {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Uplink Bandwidth: ' +
-        String(metricReport.availableSendBandwidth / 1000) +
-        ' Kbps';
-    } else if (
-      typeof metricReport.availableOutgoingBitrate === 'number' &&
-      !isNaN(metricReport.availableOutgoingBitrate)
-    ) {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Uplink Bandwidth: ' +
-        String(metricReport.availableOutgoingBitrate / 1000) +
-        ' Kbps';
-    } else {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Uplink Bandwidth: Unknown';
-    }
 
-    if (
-      typeof metricReport.availableReceiveBandwidth === 'number' &&
-      !isNaN(metricReport.availableReceiveBandwidth)
-    ) {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Downlink Bandwidth: ' +
-        String(metricReport.availableReceiveBandwidth / 1000) +
-        ' Kbps';
-    } else if (
-      typeof metricReport.availableIncomingBitrate === 'number' &&
-      !isNaN(metricReport.availableIncomingBitrate)
-    ) {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Downlink Bandwidth: ' +
-        String(metricReport.availableIncomingBitrate / 1000) +
-        ' Kbps';
-    } else {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Downlink Bandwidth: Unknown';
-    }
+    this.displayEstimatedUplinkBandwidth(
+      metricReport.availableSendBandwidth
+        ? metricReport.availableSendBandwidth
+        : metricReport.availableOutgoingBitrate
+    );
+    this.displayEstimatedDownlinkBandwidth(
+      metricReport.availableReceiveBandwidth
+        ? metricReport.availableReceiveBandwidth
+        : metricReport.availableIncomingBitrate
+    );
 
     this.isButtonOn('button-video-stats') && this.videoTileCollection.showVideoWebRTCStats(this.videoMetricReport);
+  }
+
+  displayEstimatedUplinkBandwidth(bitrate: number) {
+    const value = `Available Uplink Bandwidth: ${bitrate ? bitrate / 1000 : 'Unknown'} Kbps`;
+    (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText = value;
+    (document.getElementById('mobile-video-uplink-bandwidth') as HTMLSpanElement).innerText = value;
+  }
+
+  displayEstimatedDownlinkBandwidth(bitrate: number) {
+    const value = `Available Downlink Bandwidth: ${bitrate ? bitrate / 1000 : 'Unknown'} Kbps`;
+    (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText = value;
+    (document.getElementById('mobile-video-downlink-bandwidth') as HTMLSpanElement).innerText = value;
   }
 
   resetStats = (): void => {
@@ -1596,8 +1582,8 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
 
-    this.videoTileCollection = new VideoTileCollection(this.audioVideo, 
-        this.meetingLogger, 
+    this.videoTileCollection = new VideoTileCollection(this.audioVideo,
+        this.meetingLogger,
         this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
         (document.getElementById('enable-pagination') as HTMLInputElement).checked ? DemoMeetingApp.REDUCED_REMOTE_VIDEO_PAGE_SIZE : DemoMeetingApp.REMOTE_VIDEO_PAGE_SIZE)
     this.audioVideo.addObserver(this.videoTileCollection);

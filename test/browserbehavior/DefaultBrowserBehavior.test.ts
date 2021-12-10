@@ -87,7 +87,7 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(FIREFOX_MAC_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
+      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
@@ -95,6 +95,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
       expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
+      expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.false;
     });
 
     it('can detect Firefox on Android', () => {
@@ -111,12 +112,12 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(CHROME_MAC_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('chrome');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(78);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
       expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
+      expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.true;
       const enableUnifiedPlan = true;
       expect(
         new DefaultBrowserBehavior({
@@ -144,7 +145,6 @@ describe('DefaultBrowserBehavior', () => {
       function check(): void {
         expect(new DefaultBrowserBehavior().name()).to.eq('edge-chromium');
         expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-        expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
         expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
         expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
         expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
@@ -187,7 +187,6 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(SAMSUNG_INTERNET_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('samsung');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
@@ -224,7 +223,6 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(SAFARI_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
@@ -232,6 +230,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.true;
       expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
+      expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.true;
     });
 
     it('can detect Ipad Safari', () => {
@@ -299,7 +298,6 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(CHROMIUM_WEBVIEW_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('chromium-webview');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.false;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(92);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
@@ -336,7 +334,6 @@ describe('DefaultBrowserBehavior', () => {
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
       expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
@@ -352,7 +349,6 @@ describe('DefaultBrowserBehavior', () => {
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(11);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
@@ -367,7 +363,6 @@ describe('DefaultBrowserBehavior', () => {
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('ios');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.true;
@@ -382,7 +377,6 @@ describe('DefaultBrowserBehavior', () => {
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('ios');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.true;

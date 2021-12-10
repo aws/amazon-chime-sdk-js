@@ -217,10 +217,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   // TODO: Deprecated, needs to be removed
   screenShareUnsupported(): boolean {
     console.warn('This function is no longer supported.');
-    if (this.isSafari()) {
-      return true;
-    }
-    return false;
+    return true;
   }
 
   isSupported(): boolean {
@@ -238,6 +235,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   isSimulcastSupported(): boolean {
     return this.hasChromiumWebRTC();
+  }
+
+  supportDownlinkBandwidthEstimation(): boolean {
+    return !this.isFirefox();
   }
 
   supportString(): string {
