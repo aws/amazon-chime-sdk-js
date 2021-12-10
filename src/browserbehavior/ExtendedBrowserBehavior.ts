@@ -20,4 +20,5 @@ export default interface ExtendedBrowserBehavior extends BrowserBehavior {
   supportsBackgroundFilter(): boolean;
   disableResolutionScaleDown(): boolean;
   requiresDisablingH264Encoding(): boolean;
+  supportDownlinkBandwidthEstimation(): boolean;
 }
