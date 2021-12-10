@@ -497,7 +497,7 @@ svg {
     margin-left: 0;
     margin-top: 0;
   }
-  
+
   #video-preview  {
     max-height: 300px;
   }
@@ -918,6 +918,10 @@ a.markdown:active {
 
 .video-tile.active:hover > .video-tile-attendee-id {
   display: block;
+}
+
+.video-tile-pause-state {
+  position: absolute;
 }
 
 .vf-active::before {

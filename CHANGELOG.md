@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Add `supportDownlinkBandwidthEstimation` API to check whether the browser support downlink bandwidth estimation 
+- Add `supportDownlinkBandwidthEstimation` API to check whether browsers support downlink bandwidth estimation 
   which requires for priority based downlink policy to work.
+- Add `keepLastFrameWhenPause` in `DefaultVideoTile` as an option to keep last frame when pausing a video tile.
 
 ### Removed
 

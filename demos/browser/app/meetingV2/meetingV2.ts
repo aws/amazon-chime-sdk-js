@@ -27,6 +27,7 @@ import {
   DefaultMeetingEventReporter,
   DefaultMeetingSession,
   DefaultModality,
+  DefaultVideoTile,
   DefaultVideoTransformDevice,
   Device,
   DeviceChangeObserver,
@@ -1589,6 +1590,10 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this.videoTileCollection);
 
     this.initContentShareDropDownItems();
+
+    if ((document.getElementById('pause-last-frame') as HTMLInputElement).checked) {
+      DefaultVideoTile.keepLastFrameWhenPause = true;
+    }
   }
 
   async setupEventReporter(configuration: MeetingSessionConfiguration): Promise<EventReporter> {
@@ -1639,7 +1644,6 @@ export class DemoMeetingApp
     window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
       this.log(event.reason);
     });
-
     this.audioVideo.start();
   }
 

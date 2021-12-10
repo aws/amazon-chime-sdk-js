@@ -13,6 +13,8 @@ import VideoTileState from './VideoTileState';
 export default class DefaultVideoTile implements DevicePixelRatioObserver, VideoTile {
   private tileState: VideoTileState = new VideoTileState();
 
+  static keepLastFrameWhenPause: boolean = false;
+
   static connectVideoStreamToVideoElement(
     videoStream: MediaStream,
     videoElement: HTMLVideoElement,
@@ -74,7 +76,9 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     }
 
     if (dueToPause) {
-      videoElement.srcObject = null;
+      if (!DefaultVideoTile.keepLastFrameWhenPause) {
+        videoElement.srcObject = null;
+      }
       videoElement.style.transform = '';
     } else {
       if (!videoElement.srcObject) {

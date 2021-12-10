@@ -457,14 +457,35 @@ describe('DefaultVideoTile', () => {
     it('pauses', () => {
       tile = new DefaultVideoTile(tileId, true, tileController, monitor);
       expect(tileControllerSpy.callCount).to.equal(1);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+      expect(tileControllerSpy.callCount).to.equal(2);
       const videoElement = videoElementFactory.create();
       tile.bindVideoElement(videoElement);
-
-      expect(tileControllerSpy.callCount).to.equal(2);
+      expect(videoElement.srcObject).not.to.be.null;
+      expect(tileControllerSpy.callCount).to.equal(3);
 
       tile.pause();
       expect(tile.state().paused).to.equal(true);
+      expect(videoElement.srcObject).to.be.null;
+      expect(tileControllerSpy.callCount).to.equal(4);
+    });
+
+    it('pauses without clearing srcObject', () => {
+      DefaultVideoTile.keepLastFrameWhenPause = true;
+      tile = new DefaultVideoTile(tileId, true, tileController, monitor);
+      expect(tileControllerSpy.callCount).to.equal(1);
+      tile.bindVideoStream('attendee', true, mockVideoStream, 1, 1, 1);
+      expect(tileControllerSpy.callCount).to.equal(2);
+      const videoElement = videoElementFactory.create();
+      tile.bindVideoElement(videoElement);
+      expect(videoElement.srcObject).not.to.be.null;
       expect(tileControllerSpy.callCount).to.equal(3);
+
+      tile.pause();
+      expect(tile.state().paused).to.equal(true);
+      expect(videoElement.srcObject).not.to.be.null;
+      expect(tileControllerSpy.callCount).to.equal(4);
+      DefaultVideoTile.keepLastFrameWhenPause = false;
     });
 
     it("cannot pause a tile if it's already paused", () => {
