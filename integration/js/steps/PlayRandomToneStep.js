@@ -2,18 +2,18 @@ const {KiteTestError, Status} = require('kite-common');
 const AppTestStep = require('../utils/AppTestStep');
 
 class PlayRandomToneStep extends AppTestStep {
-  constructor(kiteBaseTest, sessionInfo, attendee_id) {
+  constructor(kiteBaseTest, sessionInfo, playStereoTones) {
     super(kiteBaseTest, sessionInfo);
-    this.attendee_id = attendee_id;
+    this.playStereoTones = playStereoTones;
   }
 
-  static async executeStep(KiteBaseTest, sessionInfo) {
-    const step = new PlayRandomToneStep(KiteBaseTest, sessionInfo);
+  static async executeStep(KiteBaseTest, sessionInfo, playStereoTones = false) {
+    const step = new PlayRandomToneStep(KiteBaseTest, sessionInfo, playStereoTones);
     await step.execute(KiteBaseTest);
   }
 
   stepDescription() {
-    return 'Start playing random tone';
+    return `Start playing random ${this.playStereoTones ? 'stereo' : 'mono'} tone`;
   }
 
   metricName() {
@@ -22,7 +22,11 @@ class PlayRandomToneStep extends AppTestStep {
 
   async run() {
     await this.page.clickOnMicrophoneDropDownButton();
-    await this.page.playRandomTone();
+    if (this.playStereoTones) {
+      await this.page.playRandomStereoTone();
+    } else {
+      await this.page.playRandomTone();
+    }
     this.finished("audio_start");
   }
 }

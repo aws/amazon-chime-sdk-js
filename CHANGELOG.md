@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add error name for custom device controller error.
 - Added pagination option to meeting demo when priority downlink policy is used.
 - Add `ApplicationMetadata` to enable builders to send their application name or version to the Amazon Chime backend. This is an opt-in addition.
+- Add a new `AudioProfile` called `fullbandMusicStereo` which can be passed into `setAudioProfile` to support sending and recieving stereo audio through main audio input and output. This can also be passed into `setContentAudioProfile` to support sending stereo audio as content
+- [Demo] Add new checbox on join screen to select new `fullbandMusicStereo` audio profile
+- [Demo] Add new dropdown items in microphone dropdown menu to test sending stereo audio as main audio input
+- [Demo] Add new dropdown items in content share dropdown menu to test sending stereo audio as content
 
 ### Removed
 

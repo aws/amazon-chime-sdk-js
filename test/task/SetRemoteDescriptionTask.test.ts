@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -116,6 +117,15 @@ describe('SetRemoteDescriptionTask', () => {
       domMockBehavior.iceConnectionStates = ['someotherstate', 'completed'];
       context.peer = new RTCPeerConnection();
       task.run().then(() => done());
+    });
+
+    it('can be run and succeed with stereo audio profile', done => {
+      context.audioProfile = AudioProfile.fullbandMusicStereo();
+      task.run().then(() => {
+        const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
+        expect(peerSDPAnswer).to.be.equal(SDPMock.VIDEO_HOST_AUDIO_ANSWER_WITH_STEREO);
+        done();
+      });
     });
   });
 

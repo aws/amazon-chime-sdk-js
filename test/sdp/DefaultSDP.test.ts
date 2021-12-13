@@ -145,6 +145,20 @@ describe('DefaultSDP', () => {
     });
   });
 
+  describe('withStereoAudio', () => {
+    it('adds the stereo parameters correctly for fmtp that follows opus rtpmap', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(128000).withStereoAudio();
+      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_STEREO);
+    });
+
+    it('adds the stereo parameters correctly for fmtp that precedes opus rtpmap', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FIREFOX);
+      const sdpB = sdpA.withAudioMaxAverageBitrate(128000).withStereoAudio();
+      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_STEREO_FIREFOX);
+    });
+  });
+
   describe('withBandwidthRestriction', () => {
     it('adds bandwidth line for Chrome', () => {
       const sdpA = new DefaultSDP(SDPMock.VIDEO_HOST_AUDIO_VIDEO_ANSWER);

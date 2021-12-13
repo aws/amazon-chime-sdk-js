@@ -192,6 +192,17 @@ Resources:
           Properties:
             Path: /audio_file
             Method: GET
+  ChimeSdkStereoAudioFileLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.stereo_audio_file
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /stereo_audio_file
+            Method: GET
   ChimeSdkJoinLambda:
     Type: AWS::Serverless::Function
     Properties:
