@@ -13,7 +13,8 @@ The existing `AllHighestVideoBandwidthPolicy` and `AdaptiveProbePolicy` both sub
 
 Under constrained networks where simulcast is in use, `VideoPriorityBasedPolicy` may lower the resolution of remote video sources, starting with the lowest priority sources. All video sources are separeted into multiple groups by different priorities. If all video sources within same priority group are at the lowest resolution possible, or simulcast is not being used, the policy may further pause video tiles until the network has recovered. Same operations will be repeated group by group, from priority lowest to highest.
 
-Video might be paused or unpaused if a network event occurs or recovers. To configure the network event delays, refer [Configure network event delays](#configure-network-event-delays).
+Video might be paused or unpaused if a network event occurs or recovers. To configure the network event delays, refer to [Configure network event delays](#configure-network-event-delays). If you want to keep the last frame of the 
+video stream when paused due to insufficient bandwidth, please set `MeetingSessionConfiguration.keepLastFrameWhenPaused` to true. 
 
 A typical workflow to use this policy would be:
 

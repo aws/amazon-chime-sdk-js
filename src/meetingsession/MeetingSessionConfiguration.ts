@@ -113,6 +113,12 @@ export default class MeetingSessionConfiguration {
   applicationMetadata: ApplicationMetadata;
 
   /**
+   * Keep the last frame of the video when a remote video is paused via the pauseVideoTile API.
+   * This is done by not clearing the srcObject property of the videoElement.
+   */
+  keepLastFrameWhenPaused: boolean = false;
+
+  /**
    * Constructs a MeetingSessionConfiguration optionally with a chime:CreateMeeting and
    * chime:CreateAttendee response. You can pass in either a JSON object containing the
    * responses, or a JSON object containing the information in the Meeting and Attendee

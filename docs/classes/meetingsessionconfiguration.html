@@ -103,6 +103,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#enablesimulcastforunifiedplanchromiumbasedbrowsers" class="tsd-kind-icon">enable<wbr>Simulcast<wbr>For<wbr>Unified<wbr>Plan<wbr>Chromium<wbr>Based<wbr>Browsers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#enableunifiedplanforchromiumbasedbrowsers" class="tsd-kind-icon">enable<wbr>Unified<wbr>Plan<wbr>For<wbr>Chromium<wbr>Based<wbr>Browsers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#externalmeetingid" class="tsd-kind-icon">external<wbr>Meeting<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#keeplastframewhenpaused" class="tsd-kind-icon">keep<wbr>Last<wbr>Frame<wbr>When<wbr>Paused</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#meetingid" class="tsd-kind-icon">meeting<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#reconnectfixedwaitms" class="tsd-kind-icon">reconnect<wbr>Fixed<wbr>Wait<wbr>Ms</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="meetingsessionconfiguration.html#reconnectlongbackoffms" class="tsd-kind-icon">reconnect<wbr>Long<wbr>Back<wbr>Off<wbr>Ms</a></li>
@@ -130,7 +131,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L113">src/meetingsession/MeetingSessionConfiguration.ts:113</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L119">src/meetingsession/MeetingSessionConfiguration.ts:119</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -316,6 +317,22 @@
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The external meeting id of the meeting the session is joining.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="keeplastframewhenpaused" class="tsd-anchor"></a>
+					<h3>keep<wbr>Last<wbr>Frame<wbr>When<wbr>Paused</h3>
+					<div class="tsd-signature tsd-kind-icon">keep<wbr>Last<wbr>Frame<wbr>When<wbr>Paused<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L119">src/meetingsession/MeetingSessionConfiguration.ts:119</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Keep the last frame of the video when a remote video is paused via the pauseVideoTile API.
+							This is done by not clearing the srcObject property of the videoElement.</p>
 						</div>
 					</div>
 				</section>
@@ -514,6 +531,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="meetingsessionconfiguration.html#externalmeetingid" class="tsd-kind-icon">external<wbr>Meeting<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="meetingsessionconfiguration.html#keeplastframewhenpaused" class="tsd-kind-icon">keep<wbr>Last<wbr>Frame<wbr>When<wbr>Paused</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="meetingsessionconfiguration.html#meetingid" class="tsd-kind-icon">meeting<wbr>Id</a>
