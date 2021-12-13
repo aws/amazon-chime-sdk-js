@@ -27,7 +27,6 @@ import {
   DefaultMeetingEventReporter,
   DefaultMeetingSession,
   DefaultModality,
-  DefaultVideoTile,
   DefaultVideoTransformDevice,
   Device,
   DeviceChangeObserver,
@@ -1556,6 +1555,11 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
     configuration.applicationMetadata = ApplicationMetadata.create('amazon-chime-sdk-js-demo', '2.0.0');
+
+    if ((document.getElementById('pause-last-frame') as HTMLInputElement).checked) {
+      configuration.keepLastFrameWhenPaused = true;
+    }
+
     this.meetingSession = new DefaultMeetingSession(
       configuration,
       this.meetingLogger,
@@ -1590,10 +1594,6 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this.videoTileCollection);
 
     this.initContentShareDropDownItems();
-
-    if ((document.getElementById('pause-last-frame') as HTMLInputElement).checked) {
-      DefaultVideoTile.keepLastFrameWhenPause = true;
-    }
   }
 
   async setupEventReporter(configuration: MeetingSessionConfiguration): Promise<EventReporter> {

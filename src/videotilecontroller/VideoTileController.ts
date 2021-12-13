@@ -11,6 +11,8 @@ import VideoTileState from '../videotile/VideoTileState';
  * in the [[videoTileUpdated]] callbacks.
  */
 export default interface VideoTileController {
+  keepLastFrameWhenPaused?: boolean | undefined;
+
   /**
    * Binds the video element to the tile if it exists for the provided tileId.
    * This should also be called any time the layout of the video element changes, for example, when changing its

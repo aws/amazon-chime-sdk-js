@@ -13,8 +13,12 @@ import VideoTileState from './VideoTileState';
 export default class DefaultVideoTile implements DevicePixelRatioObserver, VideoTile {
   private tileState: VideoTileState = new VideoTileState();
 
-  static keepLastFrameWhenPause: boolean = false;
-
+  /**
+   * Connect a video stream to a video element by setting the srcObject of the video element to the video stream.
+   * @param videoStream The video stream input.
+   * @param videoElement The video element input.
+   * @param localTile Flag to indicate whether this is a local video.
+   */
   static connectVideoStreamToVideoElement(
     videoStream: MediaStream,
     videoElement: HTMLVideoElement,
@@ -67,19 +71,29 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     }
   }
 
+  /**
+   * Disconnect a video stream to a video element by clearing the srcObject of the video element.
+   * This will also stop all the tracks of the current stream in the srcObject.
+   * @param videoElement The video element input.
+   * @param dueToPause A flag to indicate whether this function is called due to pausing video tile.
+   *  If true, then we will not stop the stream's tracks and just clearing out the srcObject.
+   * @param keepLastFrameWhenPaused If true and dueToPause is also true, then we will not clear out the srcObject of the
+   * video element when it is paused and therefore, the last frame of the stream will be shown.
+   */
   static disconnectVideoStreamFromVideoElement(
     videoElement: HTMLVideoElement | null,
-    dueToPause: boolean
+    dueToPause: boolean,
+    keepLastFrameWhenPaused: boolean | undefined = false
   ): void {
     if (!videoElement) {
       return;
     }
 
     if (dueToPause) {
-      if (!DefaultVideoTile.keepLastFrameWhenPause) {
+      if (!keepLastFrameWhenPaused) {
         videoElement.srcObject = null;
+        videoElement.style.transform = '';
       }
-      videoElement.style.transform = '';
     } else {
       if (!videoElement.srcObject) {
         return;
@@ -320,7 +334,8 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     } else {
       DefaultVideoTile.disconnectVideoStreamFromVideoElement(
         this.tileState.boundVideoElement,
-        this.tileState.paused
+        this.tileState.paused,
+        this.tileController.keepLastFrameWhenPaused
       );
     }
   }

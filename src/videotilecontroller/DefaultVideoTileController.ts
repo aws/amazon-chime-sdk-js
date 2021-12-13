@@ -18,12 +18,15 @@ export default class DefaultVideoTileController implements VideoTileController {
   private currentLocalTile: VideoTile | null = null;
   private devicePixelRatioMonitor: undefined | DefaultDevicePixelRatioMonitor;
   private currentPausedTilesByIds: Set<number> = new Set<number>();
+  keepLastFrameWhenPaused: boolean | undefined = false;
 
   constructor(
     private tileFactory: VideoTileFactory,
     private audioVideoController: AudioVideoController,
     private logger: Logger
-  ) {}
+  ) {
+    this.keepLastFrameWhenPaused = audioVideoController.configuration.keepLastFrameWhenPaused;
+  }
 
   private createDevicePixelRatioMonitorIfNeeded(): void {
     if (this.devicePixelRatioMonitor) {
