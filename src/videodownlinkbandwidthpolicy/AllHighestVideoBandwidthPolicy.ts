@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { DefaultVideoStreamIndex } from '..';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
@@ -17,7 +16,6 @@ import VideoDownlinkBandwidthPolicy from './VideoDownlinkBandwidthPolicy';
 export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBandwidthPolicy {
   private optimalReceiveSet: VideoStreamIdSet;
   private subscribedReceiveSet: VideoStreamIdSet;
-  private areVideoSourcesChosen: boolean;
   private videoSources: VideoSource[] | undefined;
   protected videoIndex: VideoStreamIndex;
 
@@ -63,8 +61,8 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
     const receiveSet = videoIndex.highestQualityStreamFromEachGroupExcludingSelf(this.selfAttendeeId);
 
     // If video sources are not chosen, then return the default receive set.
-    if (this.areVideoSourcesChosen === undefined) {
-      return receiveSet;
+    if (this.videoSources === undefined) {
+      return receiveSet; 
     }
 
     // Get the list of all the remote stream information
