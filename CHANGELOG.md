@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Enforced a video receive limit incase the number of videos shared in the meeting
-are greater 
+are greater than the limit.
 
 ## [2.24.0] - 2021-12-07
 ### Added

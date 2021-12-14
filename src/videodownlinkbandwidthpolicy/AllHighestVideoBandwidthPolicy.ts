@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { DefaultVideoStreamIndex } from '..';
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import VideoSource from '../videosource/VideoSource';
 import DefaultVideoStreamIdSet from '../videostreamidset/DefaultVideoStreamIdSet';
@@ -17,7 +18,7 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   private optimalReceiveSet: VideoStreamIdSet;
   private subscribedReceiveSet: VideoStreamIdSet;
   private areVideoSourcesChosen: boolean;
-  private videoSources: VideoSource[];
+  private videoSources: VideoSource[] | undefined;
   protected videoIndex: VideoStreamIndex;
 
   constructor(private selfAttendeeId: string) {
@@ -27,17 +28,12 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   reset(): void {
     this.optimalReceiveSet = new DefaultVideoStreamIdSet();
     this.subscribedReceiveSet = new DefaultVideoStreamIdSet();
-    this.videoSources = [];
-    this.areVideoSourcesChosen = false;
+    this.videoSources = undefined;
   }
 
   updateIndex(videoIndex: VideoStreamIndex): void {
     this.videoIndex = videoIndex;
-    if (!this.areVideoSourcesChosen) {
-      this.optimalReceiveSet = this.calculateOptimalReceiveSet(videoIndex);
-    } else {
-      this.chooseRemoteVideoSources(this.videoSources);
-    }
+    this.optimalReceiveSet = this.calculateOptimalReceiveSet(videoIndex);
   }
 
   updateMetrics(_clientMetricReport: ClientMetricReport): void {}
@@ -52,39 +48,43 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   }
 
   chooseRemoteVideoSources(videoSources: VideoSource[]): void {
+    this.videoSources = videoSources;    
+    this.optimalReceiveSet = this.calculateOptimalReceiveSet(this.videoIndex).clone();
+  }
+
+  private calculateOptimalReceiveSet(videoIndex: VideoStreamIndex): VideoStreamIdSet {
+
+    const streamSelectionSet = new DefaultVideoStreamIdSet();
+
     if (!this.videoIndex || this.videoIndex.allStreams().empty()) {
-      return;
+      return streamSelectionSet;
     }
 
-    this.videoSources = videoSources;
+    const receiveSet = videoIndex.highestQualityStreamFromEachGroupExcludingSelf(this.selfAttendeeId);
+
+    // If video sources are not chosen, then return the default receive set.
+    if (this.areVideoSourcesChosen === undefined) {
+      return receiveSet;
+    }
 
     // Get the list of all the remote stream information
     const remoteInfos = this.videoIndex.remoteStreamDescriptions();
 
-    // calculate the optimal set for the given index
-    const receiveSet = this.calculateOptimalReceiveSet(this.videoIndex);
-
     const mapOfAttendeeIdToOptimalStreamId = new Map<string, number>();
-
+    
     for (const info of remoteInfos) {
       if (receiveSet.contain(info.streamId)) {
         mapOfAttendeeIdToOptimalStreamId.set(info.attendeeId, info.streamId);
       }
     }
-
-    const streamSelectionSet = new DefaultVideoStreamIdSet();
-    for (const videoSource of videoSources) {
+    
+    for (const videoSource of this.videoSources) {
       const attendeeId = videoSource.attendee.attendeeId;
       if (mapOfAttendeeIdToOptimalStreamId.has(attendeeId)) {
         streamSelectionSet.add(mapOfAttendeeIdToOptimalStreamId.get(attendeeId));
       }
     }
 
-    this.areVideoSourcesChosen = true;
-    this.optimalReceiveSet = streamSelectionSet.clone();
-  }
-
-  private calculateOptimalReceiveSet(videoIndex: VideoStreamIndex): VideoStreamIdSet {
-    return videoIndex.highestQualityStreamFromEachGroupExcludingSelf(this.selfAttendeeId);
+    return streamSelectionSet;
   }
 }

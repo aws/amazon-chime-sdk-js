@@ -82,6 +82,7 @@ class TestObjects {
 describe('DefaultSignalingClient', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const activeTestObjects: TestObjects[] = [];
+  const _maxNumVideos = 16;
   const _messageType = 5;
   const _streamId = 1;
   const _groupId = 1;
@@ -267,7 +268,7 @@ describe('DefaultSignalingClient', () => {
               );
               done();
             });
-            event.client.join(new SignalingClientJoin(true));
+            event.client.join(new SignalingClientJoin(_maxNumVideos, true));
           }
         }
       }
@@ -290,7 +291,7 @@ describe('DefaultSignalingClient', () => {
               expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
               done();
             });
-            event.client.join(new SignalingClientJoin(false));
+            event.client.join(new SignalingClientJoin(_maxNumVideos, false));
           }
         }
       }
@@ -319,7 +320,7 @@ describe('DefaultSignalingClient', () => {
               'AmazonChimeJSSDKDemoApp',
               '1.0.0'
             );
-            const signalingClientJoin = new SignalingClientJoin(false, applicationMetadata);
+            const signalingClientJoin = new SignalingClientJoin(_maxNumVideos ,false, applicationMetadata);
             event.client.join(signalingClientJoin);
           }
         }

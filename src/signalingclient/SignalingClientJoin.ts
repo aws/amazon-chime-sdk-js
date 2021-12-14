@@ -9,11 +9,14 @@ import ApplicationMetadata from '../applicationmetadata/ApplicationMetadata';
 export default class SignalingClientJoin {
   /** Initializes a SignalingClientJoin with the given properties.
    *
+   * 
+   * @param maxVideos The maximum number of video tiles to send. // deprecated
    * @param sendBitrates Whether the server should send Bitrates messages.
    * @param applicationMetadata [[ApplicationMetadata]].
    */
 
   constructor(
+    public maxVideos: number,
     public sendBitrates: boolean,
     public readonly applicationMetadata?: ApplicationMetadata
   ) {}

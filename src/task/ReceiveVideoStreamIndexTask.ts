@@ -169,6 +169,10 @@ export default class ReceiveVideoStreamIndexTask
       this.context.videoSubscriptionLimit
     );
 
+    if (videoSubscriptionIdSet.size() > this.context.videosToReceive.size()) {
+      this.logger.warn(`video receive limit exceeded. Limiting the videos to ${this.context.videosToReceive.size()}`);
+    }
+
     this.context.videoCaptureAndEncodeParameter = videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
     this.logger.info(
       `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}] captureParams=${JSON.stringify(
