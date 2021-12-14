@@ -10,15 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `supportDownlinkBandwidthEstimation` API to check whether browsers support downlink bandwidth estimation 
   which requires for priority based downlink policy to work.
 - Add `keepLastFrameWhenPaused` in `DefaultVideoTile` as an option to keep last frame when pausing a video tile.
-
-### Removed
-
-### Fixed
-
-### Changed
-
-## [2.24.0] - 2021-12-07
-### Added
 - Add error name for custom device controller error.
 - Added pagination option to meeting demo when priority downlink policy is used.
 - Add `ApplicationMetadata` to enable builders to send their application name or version to the Amazon Chime backend. This is an opt-in addition.
