@@ -86,6 +86,7 @@ import {
   loadBodyPixDependency,
   platformCanSupportBodyPixWithoutDegradation,
 } from './video/filters/SegmentationUtil';
+import { MediaMetricsMonitor, MediaQuality } from './util/MediaMetrics';
 
 let SHOULD_EARLY_CONNECT = (() => {
   return document.location.search.includes('earlyConnect=1');
@@ -332,6 +333,7 @@ export class DemoMeetingApp
   behaviorAfterLeave: 'spa' | 'reload' | 'halt' = 'reload';
 
   videoMetricReport: { [id: string]: { [id: string]: {} } } = {};
+  mediaMetricsMonitor: MediaMetricsMonitor | undefined = undefined;
 
   removeFatalHandlers: () => void;
 
@@ -910,11 +912,13 @@ export class DemoMeetingApp
             }
             await this.openVideoInputFromSelection(camera, false);
             this.audioVideo.startLocalVideoTile();
+            this.mediaMetricsMonitor.isSendingVideo = true;
           } catch (err) {
             fatal(err);
           }
         } else {
           this.audioVideo.stopLocalVideoTile();
+          this.mediaMetricsMonitor.isSendingVideo = false;
           // Tile will be removed in response to `videoTileWasRemoved` in `VideoTileCollection`
         }
       });
@@ -1405,6 +1409,11 @@ export class DemoMeetingApp
     );
 
     this.isButtonOn('button-video-stats') && this.videoTileCollection.showVideoWebRTCStats(this.videoMetricReport);
+    if (this.audioVideo.getAllRemoteVideoTiles().length > 0) {
+      this.mediaMetricsMonitor.isReceivingVideo = true;
+    } else {
+      this.mediaMetricsMonitor.isReceivingVideo = false;
+    }
   }
 
   displayEstimatedUplinkBandwidth(bitrate: number) {
@@ -1584,6 +1593,7 @@ export class DemoMeetingApp
     this.setupSubscribeToAttendeeIdPresenceHandler();
     this.setupDataMessage();
     this.setupLiveTranscription();
+    this.setupMediaMetricsMonitor();
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
 
@@ -1861,6 +1871,30 @@ export class DemoMeetingApp
       DemoMeetingApp.DATA_MESSAGE_TOPIC,
       (dataMessage: DataMessage) => {
         this.dataMessageHandler(dataMessage);
+      }
+    );
+  }
+
+  setupMediaMetricsMonitor(): void {
+    this.mediaMetricsMonitor = new MediaMetricsMonitor((quality: MediaQuality): void => {
+      AsyncScheduler.nextTick(() => {
+        const messageJson = {
+          mediaQuality: quality.toString()
+        }
+        this.audioVideo.realtimeSendDataMessage(
+          'media-quality',
+          JSON.stringify(messageJson),
+          DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+        );
+      });
+    }, this.meetingLogger, this.meetingSession.configuration.credentials.attendeeId);
+    this.audioVideo.addObserver(this.mediaMetricsMonitor);
+
+    this.audioVideo.realtimeSubscribeToReceiveDataMessage(
+      'media-quality',
+      (dataMessage: DataMessage) => {
+        const messageJson = dataMessage.json();
+        this.meetingLogger.info(`Received media quality ${messageJson.mediaQuality} for user ${dataMessage.senderExternalUserId}`)
       }
     );
   }
