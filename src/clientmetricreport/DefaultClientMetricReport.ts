@@ -465,6 +465,11 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
+    audioPacketsReceivedJitter: {
+      source: 'googJitterReceived',
+      media: MediaType.AUDIO,
+      dir: Direction.DOWNSTREAM,
+    },
     audioDecoderLoss: {
       source: 'googDecodingNormal',
       media: MediaType.AUDIO,

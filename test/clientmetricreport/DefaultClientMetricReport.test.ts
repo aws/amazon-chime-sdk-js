@@ -374,7 +374,7 @@ describe('DefaultClientMetricReport', () => {
   describe('getObservableMetrics', () => {
     it('returns the observable metrics as a JS object', () => {
       const metrics = clientMetricReport.getObservableMetrics();
-      expect(Object.keys(metrics).length).to.equal(14);
+      expect(Object.keys(metrics).length).to.equal(15);
     });
   });
 
