@@ -230,6 +230,7 @@ function createCaptureS3Buckets(bucketPrefix, regions) {
 
 function copyAssets() {
   fs.copySync('../browser/dist/speech.mp3', 'src/speech.mp3');
+  fs.copySync('../browser/dist/speech_stereo.mp3', 'src/speech_stereo.mp3');
 }
 
 parseArgs();

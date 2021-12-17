@@ -41,6 +41,14 @@ export default class SetLocalDescriptionTask extends BaseTask {
     if (new DefaultBrowserBehavior().requiresDisablingH264Encoding()) {
       sdp = new DefaultSDP(sdp).removeH264SupportFromSendSection().sdp;
     }
+    if (this.context.audioProfile) {
+      sdp = new DefaultSDP(sdp).withAudioMaxAverageBitrate(
+        this.context.audioProfile.audioBitrateBps
+      ).sdp;
+      if (this.context.audioProfile.isStereo()) {
+        sdp = new DefaultSDP(sdp).withStereoAudio().sdp;
+      }
+    }
 
     this.logger.debug(() => {
       return `local description is >>>${sdp}<<<`;

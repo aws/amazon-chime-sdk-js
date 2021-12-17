@@ -248,6 +248,10 @@ exports.audio_file = async (event, context) => {
   return response(200, 'audio/mpeg', fs.readFileSync('./speech.mp3', {encoding: 'base64'}), true);
 };
 
+exports.stereo_audio_file = async (event, context) => {
+  return response(200, 'audio/mpeg', fs.readFileSync('./speech_stereo.mp3', {encoding: 'base64'}), true);
+};
+
 exports.fetch_credentials = async (event, context) => {
   const awsCredentials = {
     accessKeyId: AWS.config.credentials.accessKeyId,
