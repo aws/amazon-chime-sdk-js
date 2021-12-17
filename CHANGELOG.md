@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+=======
+## [Unreleased]
+
+### Fixed
+- Temporararily removed munging of layers allocation extension to mitigate Chrome M97 change which led to `setLocalDescription` failures. This was not yet being negotiated by the remote end, so this will not have any impact on media quality.
+
 ## [2.23.0] - 2021-11-22
 ### Added
 - Add support for Echo Reduction when using Voice Focus.

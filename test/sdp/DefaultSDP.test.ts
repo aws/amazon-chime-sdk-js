@@ -169,9 +169,19 @@ describe('DefaultSDP', () => {
     });
 
     it('adds layers allocation line if available', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITHOUT_HEADER_EXTENSIONS);
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
       const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
-      expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_HEADER_EXTENSIONS);
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
+    });
+
+    it('adds layers allocation line if available in gap', () => {
+      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS);
+      const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
+      expect(sdpB.sdp).to.equal(
+        SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
+      );
     });
   });
 
