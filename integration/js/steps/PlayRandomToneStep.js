@@ -17,7 +17,7 @@ class PlayRandomToneStep extends AppTestStep {
   }
 
   metricName() {
-    return 'PlayRandomToneStep'
+    return `PlayRandomToneStep${this.playStereoTones ? 'Stereo': ''}`
   }
 
   async run() {
