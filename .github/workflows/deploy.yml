@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy_chime_alpha_demo:
-    name: Alpha - Deploy Meeting Demo And Meeting Readiness Checker
+    name: Alpha - Chime Client - Deploy Meeting Demo And Meeting Readiness Checker Demos
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1
@@ -31,7 +31,7 @@ jobs:
       - name: Run Deployment Script
         run: script/deploy-canary-demo
   deploy_chime_beta_demo:
-    name: Beta - Deploy the Serverless Meeting and Meeting Readiness Checker Demos that talks to Chime Client
+    name: Beta - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1
@@ -55,7 +55,7 @@ jobs:
       - name: Run Deployment Script
         run: script/deploy-canary-demo
   deploy_chime_sdk_meetings_beta_demo:
-    name: Beta - Deploy the Serverless Meeting Demos that talks to ChimeSDKMeetings Client
+    name: Beta - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1
@@ -81,7 +81,7 @@ jobs:
       - name: Run Deployment Script
         run: script/deploy-canary-demo
   deploy_chime_gamma_demo:
-    name: Gamma - Deploy the Serverless Meeting and Meeting Readiness Checker Demos that talks to Chime Client
+    name: Gamma - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1
@@ -103,7 +103,7 @@ jobs:
       - name: Run Deployment Script
         run: script/deploy-canary-demo
   deploy_chime_sdk_meetings_gamma_demo:
-    name: Gamma - Deploy the Serverless Meeting Demos that talks to ChimeSDKMeetings Client
+    name: Gamma - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
     env:
         AWS_DEFAULT_REGION: us-east-1
