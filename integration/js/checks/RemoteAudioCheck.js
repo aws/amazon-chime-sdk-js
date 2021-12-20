@@ -14,11 +14,11 @@ class RemoteAudioCheck extends AppTestStep {
   }
 
   stepDescription() {
-    return 'Check the remote audio';
+    return `Check the remote audio for ${this.checkStereoTones ? 'stereo' : 'mono'} tone`;
   }
 
   metricName() {
-    return `Check the remote audio for ${this.checkStereoTones ? 'stereo' : 'mono'} tone`;
+    return `RemoteAudio${this.testType === 'AUDIO_ON' ? 'Enabled' : 'Disabled'}Check${this.checkStereoTones ? 'Stereo': ''}`
   }
 
   async run() {
