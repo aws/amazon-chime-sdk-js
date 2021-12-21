@@ -72,7 +72,7 @@
               <input type="checkbox" id="webaudio" class="custom-control-input">
               <label for="webaudio" class="custom-control-label">Use WebAudio</label>
             </div>
-            <div class="custom-control custom-checkbox" style="text-align: left;">
+            <div class="custom-control custom-checkbox" id='echo-reduction-checkbox' style="text-align: left; display: none;">
               <input type="checkbox" id="echo-reduction-capability" class="custom-control-input">
               <label for="echo-reduction-capability" class="custom-control-label">Use Echo Reduction (new meetings only)</label>
             </div>
@@ -83,6 +83,10 @@
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" id="fullband-music-mono-quality" class="custom-control-input">
               <label for="fullband-music-mono-quality" class="custom-control-label">Set fullband music (mono) quality</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="fullband-music-stereo-quality" class="custom-control-input">
+              <label for="fullband-music-stereo-quality" class="custom-control-label">Set fullband music (stereo) quality</label>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" id="simulcast" class="custom-control-input">
@@ -104,6 +108,10 @@
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" checked id="preconnect" class="custom-control-input">
               <label for="preconnect" class="custom-control-label">Open signaling connection early</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="pause-last-frame" class="custom-control-input">
+              <label for="pause-last-frame" class="custom-control-label">Keep Video Last Frame When Paused</label>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" id="event-reporting" class="custom-control-input">
@@ -241,7 +249,7 @@
           <label for="video-input block">Camera</label>
           <select id="video-input" class="custom-select" style="width:100%"></select>
         </div>
-        
+
       </div>
       <div class="row mt-3">
         <div class="col-12">
@@ -444,6 +452,8 @@
         <div id="meeting-id" class="navbar-brand text-muted m-0 m-lg-2"></div>
         <div id="mobile-chime-meeting-id" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
         <div id="mobile-attendee-id" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
+        <div id="mobile-video-uplink-bandwidth" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
+        <div id="mobile-video-downlink-bandwidth" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
       </div>
       <div class="col-8 col-lg-6 order-2 order-lg-2 text-left text-lg-center">
         <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
@@ -488,6 +498,9 @@
             <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-content-share-drop" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
               <a id="dropdown-item-content-share-screen-capture" class="dropdown-item" href="#">Screen Capture...</a>
               <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item" href="#">Test Video</a>
+              <a id="dropdown-item-content-share-test-mono-audio-speech" class="dropdown-item" href="#">Test Mono Audio Speech</a>
+              <a id="dropdown-item-content-share-test-stereo-audio-speech" class="dropdown-item" href="#">Test Stereo Audio Speech</a>
+              <a id="dropdown-item-content-share-test-stereo-audio-tone" class="dropdown-item" href="#">Test Stereo Tone (L-500Hz R-1000Hz)</a>
               <a id="dropdown-item-content-share-file-item" class="dropdown-item" href="#"><input id="content-share-item" type="file"></a>
               <a id="dropdown-item-content-share-stop" style="display:none" class="dropdown-item" href="#">Stop Sharing</a>
             </div>

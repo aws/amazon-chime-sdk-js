@@ -288,6 +288,7 @@ export class DemoMeetingApp
   videoPriorityBasedPolicyConfig = VideoPriorityBasedPolicyConfig.Default;
   enablePin = false;
   echoReductionCapability = false;
+  usingStereoMusicAudioProfile = false;
 
   supportsVoiceFocus = false;
   enableVoiceFocus = false;
@@ -484,6 +485,10 @@ export class DemoMeetingApp
       (document.getElementById('simulcast') as HTMLInputElement).disabled = true;
     }
 
+    if (!this.defaultBrowserBehaviour.supportDownlinkBandwidthEstimation()) {
+      (document.getElementById('priority-downlink-policy') as HTMLInputElement).disabled = true;
+    }
+
     document.getElementById('priority-downlink-policy').addEventListener('change', e => {
       this.usePriorityBasedDownlinkPolicy = (document.getElementById('priority-downlink-policy') as HTMLInputElement).checked;
 
@@ -501,6 +506,16 @@ export class DemoMeetingApp
       } else {
         priorityBasedDownlinkPolicyConfig.style.display = 'none';
         enablePaginationCheckbox.style.display = 'none';
+      }
+    });
+
+    const echoReductionCheckbox = (document.getElementById('echo-reduction-checkbox') as HTMLInputElement);
+    (document.getElementById('webaudio') as HTMLInputElement).addEventListener('change', e => {
+      this.enableWebAudio = (document.getElementById('webaudio') as HTMLInputElement).checked;
+      if (this.enableWebAudio) {
+        echoReductionCheckbox.style.display = 'block';
+      } else {
+        echoReductionCheckbox.style.display = 'none';
       }
     });
 
@@ -639,14 +654,28 @@ export class DemoMeetingApp
     const musicMonoCheckbox = document.getElementById(
       'fullband-music-mono-quality'
     ) as HTMLInputElement;
+    const musicStereoCheckbox = document.getElementById(
+      'fullband-music-stereo-quality'
+    ) as HTMLInputElement;
     speechMonoCheckbox.addEventListener('change', _e => {
       if (speechMonoCheckbox.checked) {
         musicMonoCheckbox.checked = false;
+        musicStereoCheckbox.checked = false;
       }
     });
     musicMonoCheckbox.addEventListener('change', _e => {
       if (musicMonoCheckbox.checked) {
         speechMonoCheckbox.checked = false;
+        musicStereoCheckbox.checked = false;
+      }
+    });
+    musicStereoCheckbox.addEventListener('change', _e => {
+      if (musicStereoCheckbox.checked) {
+        speechMonoCheckbox.checked = false;
+        musicMonoCheckbox.checked = false;
+        this.usingStereoMusicAudioProfile = true;
+      } else {
+        this.usingStereoMusicAudioProfile = false;
       }
     });
 
@@ -1027,15 +1056,15 @@ export class DemoMeetingApp
         if (isChecked('content-identification-checkbox')) {
           transcriptionStreamParams.contentIdentificationType = 'PII';
         }
-        
+
         if (isChecked('content-redaction-checkbox')) {
           transcriptionStreamParams.contentRedactionType = 'PII';
         }
-        
+
         if (isChecked('partial-stabilization-checkbox')) {
           transcriptionStreamParams.enablePartialResultsStability = true;
         }
-        
+
         let partialResultsStability = (document.getElementById('partial-stability') as HTMLInputElement).value;
         if (partialResultsStability) {
           transcriptionStreamParams.partialResultsStability = partialResultsStability;
@@ -1045,7 +1074,7 @@ export class DemoMeetingApp
           let values = '';
           if (selected.length > 0) {
             values = Array.from(selected).filter(node => (node as HTMLInputElement).value !== '').map(el => (el as HTMLInputElement).value).join(',');
-          } 
+          }
           if (values !== '') {
             transcriptionStreamParams.piiEntityTypes = values;
           }
@@ -1378,49 +1407,31 @@ export class DemoMeetingApp
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
-    if (
-      typeof metricReport.availableSendBandwidth === 'number' &&
-      !isNaN(metricReport.availableSendBandwidth)
-    ) {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Uplink Bandwidth: ' +
-        String(metricReport.availableSendBandwidth / 1000) +
-        ' Kbps';
-    } else if (
-      typeof metricReport.availableOutgoingBitrate === 'number' &&
-      !isNaN(metricReport.availableOutgoingBitrate)
-    ) {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Uplink Bandwidth: ' +
-        String(metricReport.availableOutgoingBitrate / 1000) +
-        ' Kbps';
-    } else {
-      (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Uplink Bandwidth: Unknown';
-    }
 
-    if (
-      typeof metricReport.availableReceiveBandwidth === 'number' &&
-      !isNaN(metricReport.availableReceiveBandwidth)
-    ) {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Downlink Bandwidth: ' +
-        String(metricReport.availableReceiveBandwidth / 1000) +
-        ' Kbps';
-    } else if (
-      typeof metricReport.availableIncomingBitrate === 'number' &&
-      !isNaN(metricReport.availableIncomingBitrate)
-    ) {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Downlink Bandwidth: ' +
-        String(metricReport.availableIncomingBitrate / 1000) +
-        ' Kbps';
-    } else {
-      (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText =
-        'Available Downlink Bandwidth: Unknown';
-    }
+    this.displayEstimatedUplinkBandwidth(
+      metricReport.availableSendBandwidth
+        ? metricReport.availableSendBandwidth
+        : metricReport.availableOutgoingBitrate
+    );
+    this.displayEstimatedDownlinkBandwidth(
+      metricReport.availableReceiveBandwidth
+        ? metricReport.availableReceiveBandwidth
+        : metricReport.availableIncomingBitrate
+    );
 
     this.isButtonOn('button-video-stats') && this.videoTileCollection.showVideoWebRTCStats(this.videoMetricReport);
+  }
+
+  displayEstimatedUplinkBandwidth(bitrate: number) {
+    const value = `Available Uplink Bandwidth: ${bitrate ? bitrate / 1000 : 'Unknown'} Kbps`;
+    (document.getElementById('video-uplink-bandwidth') as HTMLSpanElement).innerText = value;
+    (document.getElementById('mobile-video-uplink-bandwidth') as HTMLSpanElement).innerText = value;
+  }
+
+  displayEstimatedDownlinkBandwidth(bitrate: number) {
+    const value = `Available Downlink Bandwidth: ${bitrate ? bitrate / 1000 : 'Unknown'} Kbps`;
+    (document.getElementById('video-downlink-bandwidth') as HTMLSpanElement).innerText = value;
+    (document.getElementById('mobile-video-downlink-bandwidth') as HTMLSpanElement).innerText = value;
   }
 
   resetStats = (): void => {
@@ -1559,6 +1570,11 @@ export class DemoMeetingApp
       this.priorityBasedDownlinkPolicy.addObserver(this);
     }
     configuration.applicationMetadata = ApplicationMetadata.create('amazon-chime-sdk-js-demo', '2.0.0');
+
+    if ((document.getElementById('pause-last-frame') as HTMLInputElement).checked) {
+      configuration.keepLastFrameWhenPaused = true;
+    }
+
     this.meetingSession = new DefaultMeetingSession(
       configuration,
       this.meetingLogger,
@@ -1569,11 +1585,19 @@ export class DemoMeetingApp
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
       this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandSpeechMono());
+      this.log('Using audio profile fullband-speech-mono-quality');
     } else if (
       (document.getElementById('fullband-music-mono-quality') as HTMLInputElement).checked
     ) {
       this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicMono());
       this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
+      this.log('Using audio profile fullband-music-mono-quality');
+    } else if (
+      (document.getElementById('fullband-music-stereo-quality') as HTMLInputElement).checked
+    ) {
+      this.meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicStereo());
+      this.meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
+      this.log('Using audio profile fullband-music-stereo-quality');
     }
     this.audioVideo = this.meetingSession.audioVideo;
     this.audioVideo.addDeviceChangeObserver(this);
@@ -1586,8 +1610,8 @@ export class DemoMeetingApp
     this.audioVideo.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
 
-    this.videoTileCollection = new VideoTileCollection(this.audioVideo, 
-        this.meetingLogger, 
+    this.videoTileCollection = new VideoTileCollection(this.audioVideo,
+        this.meetingLogger,
         this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
         (document.getElementById('enable-pagination') as HTMLInputElement).checked ? DemoMeetingApp.REDUCED_REMOTE_VIDEO_PAGE_SIZE : DemoMeetingApp.REMOTE_VIDEO_PAGE_SIZE)
     this.audioVideo.addObserver(this.videoTileCollection);
@@ -1643,7 +1667,6 @@ export class DemoMeetingApp
     window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
       this.log(event.reason);
     });
-
     this.audioVideo.start();
   }
 
@@ -2380,7 +2403,8 @@ export class DemoMeetingApp
 
   async populateAudioInputList(): Promise<void> {
     const genericName = 'Microphone';
-    const additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Echo'];
+    let additionalDevices = ['None', '440 Hz', 'Prerecorded Speech', 'Echo'];
+    const additionalStereoTestDevices = ['L-500Hz R-1000Hz', 'Prerecorded Speech (Stereo)'];
     const additionalToggles = [];
 
     // This can't work unless Web Audio is enabled.
@@ -2408,6 +2432,10 @@ export class DemoMeetingApp
       await this.audioVideo.listAudioInputDevices(),
       additionalDevices
     );
+
+    if (this.usingStereoMusicAudioProfile) {
+      additionalDevices = additionalDevices.concat(additionalStereoTestDevices);
+    }
 
     this.populateInMeetingDeviceList(
       'dropdown-menu-microphone',
@@ -2738,30 +2766,20 @@ export class DemoMeetingApp
       return DefaultDeviceController.synthesizeAudioDevice(440);
     }
 
-    if (value == 'Prerecorded Speech') {
-      const audioPath = 'audio_file';
-      try {
-        const resp = await fetch(audioPath);
-        const bytes = await resp.arrayBuffer();
-        const audioData = new TextDecoder('utf8').decode(bytes);
-        const audio = new Audio('data:audio/mpeg;base64,' + audioData);
-        audio.loop = false;
-        audio.crossOrigin = 'anonymous';
-        audio.play();
-        // @ts-ignore
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const streamDestination = audioContext.createMediaStreamDestination();
-        const mediaElementSource = audioContext.createMediaElementSource(audio);
-        mediaElementSource.connect(streamDestination);
-        return streamDestination.stream;
-      } catch (e) {
-        this.log(`Error fetching audio from ${audioPath}: ${e}`);
-        return null;
-      }
+    if (value === 'L-500Hz R-1000Hz') {
+      return this.synthesizeStereoTones(500, 1000);
+    }
+
+    if (value === 'Prerecorded Speech') {
+      return this.streamAudioFile('audio_file');
+    }
+
+    if (value === 'Prerecorded Speech (Stereo)') {
+      return this.streamAudioFile('stereo_audio_file', true);
     }
 
     // use the speaker output MediaStream with a 50ms delay and a 20% volume reduction as audio input
-    if (value == 'Echo') {
+    if (value === 'Echo') {
       try {
         const speakerStream = await this.audioVideo.getCurrentMeetingAudioStream();
 
@@ -2789,6 +2807,54 @@ export class DemoMeetingApp
     }
 
     return value;
+  }
+
+  /**
+   * Generate a stereo tone by using 2 OsciallatorNode's that
+   * produce 2 different frequencies. The output of these 2
+   * nodes is passed through a ChannelMergerNode to obtain
+   * an audio stream with stereo channels where the left channel
+   * contains the samples genrated by oscillatorNodeLeft and the 
+   * right channel contains samples generated by oscillatorNodeRight.
+   */
+  private async synthesizeStereoTones(toneHzLeft: number, toneHzRight: number): Promise<MediaStream> {
+    const audioContext = DefaultDeviceController.getAudioContext();
+    const outputNode = audioContext.createMediaStreamDestination();
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.1;
+    gainNode.connect(outputNode);
+    const oscillatorNodeLeft = audioContext.createOscillator();
+    oscillatorNodeLeft.frequency.value = toneHzLeft;
+    const oscillatorNodeRight = audioContext.createOscillator();
+    oscillatorNodeRight.frequency.value = toneHzRight;
+    const mergerNode = audioContext.createChannelMerger(2);
+    oscillatorNodeLeft.connect(mergerNode, 0, 0);
+    oscillatorNodeRight.connect(mergerNode, 0, 1);
+    mergerNode.connect(gainNode);
+    oscillatorNodeLeft.start();
+    oscillatorNodeRight.start();
+    return outputNode.stream;
+  }
+
+  private async streamAudioFile(audioPath: string, shouldLoop: boolean = false): Promise<MediaStream> {
+    try {
+      const resp = await fetch(audioPath);
+      const bytes = await resp.arrayBuffer();
+      const audioData = new TextDecoder('utf8').decode(bytes);
+      const audio = new Audio('data:audio/mpeg;base64,' + audioData);
+      audio.loop = shouldLoop;
+      audio.crossOrigin = 'anonymous';
+      audio.play();
+      // @ts-ignore
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const streamDestination = audioContext.createMediaStreamDestination();
+      const mediaElementSource = audioContext.createMediaElementSource(audio);
+      mediaElementSource.connect(streamDestination);
+      return streamDestination.stream;
+    } catch (e) {
+      this.log(`Error fetching audio from ${audioPath}: ${e}`);
+      return null;
+    }
   }
 
   private async getVoiceFocusDeviceTransformer(maxComplexity?: VoiceFocusModelComplexity): Promise<VoiceFocusDeviceTransformer> {
@@ -2983,6 +3049,27 @@ export class DemoMeetingApp
       this.contentShareStart(DemoMeetingApp.testVideo);
     });
 
+    item = document.getElementById('dropdown-item-content-share-test-mono-audio-speech');
+    item.addEventListener('click', () => {
+      this.contentShareStartAudio('audio_file');
+    });
+
+    item = document.getElementById('dropdown-item-content-share-test-stereo-audio-speech');
+    item.addEventListener('click', () => {
+      this.contentShareStartAudio('stereo_audio_file');
+    });
+    if (!this.usingStereoMusicAudioProfile) {
+      item.style.display = 'none';
+    }
+
+    item = document.getElementById('dropdown-item-content-share-test-stereo-audio-tone');
+    item.addEventListener('click', () => {
+      this.contentShareStartAudio();
+    });
+    if (!this.usingStereoMusicAudioProfile) {
+      item.style.display = 'none';
+    }
+
     document.getElementById('content-share-item').addEventListener('change', () => {
       const fileList = document.getElementById('content-share-item') as HTMLInputElement;
       const file = fileList.files[0];
@@ -3048,6 +3135,24 @@ export class DemoMeetingApp
     this.updateContentShareDropdown(true);
   }
 
+  private async contentShareStartAudio(audioPath: string | null = null) {
+    let mediaStream: MediaStream = null;
+    if (!audioPath) {
+      mediaStream = await this.synthesizeStereoTones(500, 1000);
+    } else {
+      mediaStream = await this.streamAudioFile(audioPath, true);
+    }
+    try {
+      // getDisplayMedia can throw.
+      await this.audioVideo.startContentShare(mediaStream);
+    } catch (e) {
+      this.meetingLogger?.error(`Could not start content share: ${e}`);
+      return;
+    }
+    this.toggleButton('button-content-share', 'on');
+    this.updateContentShareDropdown(true);
+  }
+
   private async contentShareStop(): Promise<void> {
     this.audioVideo.stopContentShare();
     this.toggleButton('button-pause-content-share', 'off');
@@ -3064,6 +3169,9 @@ export class DemoMeetingApp
   private updateContentShareDropdown(enabled: boolean): void {
     document.getElementById('dropdown-item-content-share-screen-capture').style.display = enabled ? 'none' : 'block';
     document.getElementById('dropdown-item-content-share-screen-test-video').style.display = enabled ? 'none' : 'block';
+    document.getElementById('dropdown-item-content-share-test-mono-audio-speech').style.display = enabled ? 'none' : 'block';
+    document.getElementById('dropdown-item-content-share-test-stereo-audio-speech').style.display = enabled ? 'none' : this.usingStereoMusicAudioProfile ? 'block' : 'none';
+    document.getElementById('dropdown-item-content-share-test-stereo-audio-tone').style.display = enabled ? 'none' : this.usingStereoMusicAudioProfile ? 'block' : 'none';
     document.getElementById('dropdown-item-content-share-file-item').style.display = enabled ? 'none' : 'block';
     document.getElementById('dropdown-item-content-share-stop').style.display = enabled ? 'block' : 'none';
   }

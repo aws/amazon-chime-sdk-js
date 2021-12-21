@@ -32,4 +32,18 @@ export default class AudioProfile {
   static fullbandMusicMono(): AudioProfile {
     return new AudioProfile(64000);
   }
+
+  /**
+   * Creates an AudioProfile optimized for fullband stereo music (128 kbit/s stereo).
+   */
+  static fullbandMusicStereo(): AudioProfile {
+    return new AudioProfile(128000);
+  }
+
+  /**
+   * Returns true if audio profile is set to stereo mode.
+   */
+  isStereo(): boolean {
+    return this.audioBitrateBps === 128000;
+  }
 }

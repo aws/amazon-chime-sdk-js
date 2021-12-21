@@ -1149,7 +1149,7 @@ Use the following setting to optimize the audio bitrate of the main audio input 
 
 ```js
 meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
-````
+```
 
 **Use case 33.** Set the audio quality of content share audio to optimize for speech or music:
 
@@ -1159,9 +1159,25 @@ Use the following setting to optimize the audio bitrate of content share audio f
 meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
 ```
 
+**Use case 34.** Sending and receiving stereo audio
+
+You can send an audio stream with stereo channels either as content or through the main audio input.
+
+Use the following setting to optimize the main audio input and output for an audio stream with stereo channels:
+
+```js
+meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicStereo());
+```
+
+Use the following setting to optimize the content share audio for an audio stream with stereo channels:
+
+```js
+meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
+```
+
 ### Starting a messaging session
 
-**Use case 34.** Setup an observer to receive events: connecting, start, stop and receive message; and
+**Use case 35.** Setup an observer to receive events: connecting, start, stop and receive message; and
 start a messaging session.
 
 > Note: You can remove an observer by calling `messagingSession.removeObserver(observer)`.
@@ -1198,7 +1214,7 @@ Amazon Chime SDK for JavaScript allows builders to provide application metadata 
 
 > ⚠️ Do not pass any Personal Identifiable Information (PII).
 
-**Use case 35.** Provide application metadata to the meeting session configuration.
+**Use case 36.** Provide application metadata to the meeting session configuration.
 
 ```js
 import { MeetingSessionConfiguration, ApplicationMetadata } from 'amazon-chime-sdk-js';
@@ -1229,6 +1245,7 @@ appName: string;
 // https://semver.org/
 appVersion: string;
 ```
+
 
 ## Notice
 

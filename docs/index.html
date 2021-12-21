@@ -1128,10 +1128,18 @@ meetingSession.audioVideo.addObserver(observer);
 				<p>Use the following setting to optimize the audio bitrate of content share audio for fullband music with a mono channel:</p>
 				<pre><code class="language-js">meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
 </code></pre>
+				<p><strong>Use case 34.</strong> Sending and receiving stereo audio</p>
+				<p>You can send an audio stream with stereo channels either as content or through the main audio input.</p>
+				<p>Use the following setting to optimize the main audio input and output for an audio stream with stereo channels:</p>
+				<pre><code class="language-js">meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicStereo());
+</code></pre>
+				<p>Use the following setting to optimize the content share audio for an audio stream with stereo channels:</p>
+				<pre><code class="language-js">meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
+</code></pre>
 				<a href="#starting-a-messaging-session" id="starting-a-messaging-session" style="color: inherit; text-decoration: none;">
 					<h3>Starting a messaging session</h3>
 				</a>
-				<p><strong>Use case 34.</strong> Setup an observer to receive events: connecting, start, stop and receive message; and
+				<p><strong>Use case 35.</strong> Setup an observer to receive events: connecting, start, stop and receive message; and
 				start a messaging session.</p>
 				<blockquote>
 					<p>Note: You can remove an observer by calling <code>messagingSession.removeObserver(observer)</code>.
@@ -1167,7 +1175,7 @@ messagingSession.start();
 				<blockquote>
 					<p>⚠️ Do not pass any Personal Identifiable Information (PII).</p>
 				</blockquote>
-				<p><strong>Use case 35.</strong> Provide application metadata to the meeting session configuration.</p>
+				<p><strong>Use case 36.</strong> Provide application metadata to the meeting session configuration.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { MeetingSessionConfiguration, ApplicationMetadata } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 
 <span class="hljs-keyword">const</span> createMeetingResponse = <span class="hljs-comment">// CreateMeeting API response.</span>
