@@ -12,6 +12,9 @@ describe('AudioProfile', () => {
       expect(new AudioProfile().audioBitrateBps).to.equal(null);
       expect(AudioProfile.fullbandSpeechMono().audioBitrateBps).to.equal(40000);
       expect(AudioProfile.fullbandMusicMono().audioBitrateBps).to.equal(64000);
+      expect(AudioProfile.fullbandMusicStereo().audioBitrateBps).to.equal(128000);
+      expect(AudioProfile.fullbandMusicStereo().isStereo()).to.equal(true);
+      expect(AudioProfile.fullbandMusicMono().isStereo()).to.equal(false);
     });
   });
 });

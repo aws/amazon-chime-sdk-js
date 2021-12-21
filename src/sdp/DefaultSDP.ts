@@ -218,41 +218,101 @@ export default class DefaultSDP implements SDP {
       )
     );
     const srcLines: string[] = this.lines();
-    const dstLines: string[] = [];
+    const fmtpAttributes = DefaultSDP.findOpusFmtpAttributes(srcLines);
+    const dstLines = DefaultSDP.updateOpusFmtpAttributes(srcLines, fmtpAttributes, [
+      `maxaveragebitrate=${maxAverageBitrate}`,
+    ]);
+    return DefaultSDP.linesToSDP(dstLines);
+  }
+
+  withStereoAudio(): DefaultSDP {
+    const srcLines: string[] = this.lines();
+    const fmtpAttributes = DefaultSDP.findOpusFmtpAttributes(srcLines);
+    const dstLines = DefaultSDP.updateOpusFmtpAttributes(srcLines, fmtpAttributes, [
+      'stereo=1',
+      'sprop-stereo=1',
+    ]);
+    return DefaultSDP.linesToSDP(dstLines);
+  }
+
+  /**
+   * Here we loop through each line in the SDP
+   * and construct an array containing the fmtp
+   * attribute for all the audio m lines that use
+   * the opus codec. If it doesn't use opus codec
+   * we add null to the array which tells
+   * updateOpusFmtpAttributes that no update is
+   * needed for that particular fmtp attribute line
+   */
+  static findOpusFmtpAttributes(sdpLines: string[]): string[] | null {
     const opusRtpMapRegex = /^a=rtpmap:\s*(\d+)\s+opus\/48000/;
     let lookingForOpusRtpMap = false;
-    let fmtpAttribute: string | null = null;
-    for (const line of srcLines) {
+    const fmtpAttributes: (string | null)[] = [];
+
+    for (const line of sdpLines) {
       if (line.startsWith('m=audio')) {
+        fmtpAttributes.push(null);
         lookingForOpusRtpMap = true;
-        fmtpAttribute = null;
       }
       if (line.startsWith('m=video')) {
+        // Opus rtpmap is only part of audio m lines section
+        // Set this to false as we don't need to perform regex
+        // matches for video section
         lookingForOpusRtpMap = false;
-        fmtpAttribute = null;
       }
       if (lookingForOpusRtpMap) {
         const match = opusRtpMapRegex.exec(line);
         if (match !== null) {
-          fmtpAttribute = `a=fmtp:${match[1]} `;
-          lookingForOpusRtpMap = false;
+          fmtpAttributes[fmtpAttributes.length - 1] = `a=fmtp:${match[1]} `;
         }
       }
-      if (fmtpAttribute && line.startsWith(fmtpAttribute)) {
-        const oldParameters: string[] = line.slice(fmtpAttribute.length).split(';');
+    }
+    return fmtpAttributes;
+  }
+
+  /**
+   * Update the fmtp lines in each audio m section
+   * that correspond to the opus codec with the parameters
+   * specifief in additionalParams
+   */
+  static updateOpusFmtpAttributes(
+    srcLines: string[],
+    fmtpAttributes: (string | null)[],
+    additionalParams: string[]
+  ): string[] {
+    const dstLines: string[] = [];
+    let fmtpIndex = 0;
+    let currFmtpAttribute: string | null = null;
+    for (const line of srcLines) {
+      if (line.startsWith('m=audio')) {
+        currFmtpAttribute = fmtpAttributes[fmtpIndex];
+        fmtpIndex++;
+      }
+      if (line.startsWith('m=video')) {
+        currFmtpAttribute = null;
+      }
+      if (currFmtpAttribute && line.startsWith(currFmtpAttribute)) {
+        const oldParameters: string[] = line.slice(currFmtpAttribute.length).split(';');
         const newParameters: string[] = [];
+        // If an existing parameter is in additionalParams
+        // dont add it to newParameters as it will be replaced
         for (const parameter of oldParameters) {
-          if (!parameter.startsWith('maxaveragebitrate=')) {
+          const index = additionalParams.findIndex(element =>
+            element.startsWith(parameter.split('=')[0])
+          );
+          if (index < 0) {
             newParameters.push(parameter);
           }
         }
-        newParameters.push(`maxaveragebitrate=${maxAverageBitrate}`);
-        dstLines.push(fmtpAttribute + newParameters.join(';'));
+        for (const parameter of additionalParams) {
+          newParameters.push(parameter);
+        }
+        dstLines.push(currFmtpAttribute + newParameters.join(';'));
       } else {
         dstLines.push(line);
       }
     }
-    return DefaultSDP.linesToSDP(dstLines);
+    return dstLines;
   }
 
   // TODO: will remove this soon.

@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
 import { DefaultBrowserBehavior } from '../../src';
+import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
@@ -93,6 +94,13 @@ describe('SetLocalDescriptionTask', () => {
     it('handles when the setLocalDescription call fails', async () => {
       domMockBehavior.setLocalDescriptionSucceeds = false;
       expect(task.run()).to.eventually.be.rejected;
+    });
+
+    it('can be run and succeed with stereo audio profile', async () => {
+      context.audioProfile = AudioProfile.fullbandMusicStereo();
+      await task.run();
+      const peerLocalSDP = context.peer.localDescription.sdp;
+      expect(peerLocalSDP).to.be.equal(sdpOffer.sdp);
     });
   });
 

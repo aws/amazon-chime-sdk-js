@@ -22,21 +22,23 @@ class AudioTest extends SdkBaseTest {
 
   async runIntegrationTest() {
     const session = this.seleniumSessions[0];
+    const generateStereoTones = this.payload.generateStereoTones ? this.payload.generateStereoTones : false;
+    const useStereoMusicAudioProfile = this.payload.useStereoMusicAudioProfile ? this.payload.useStereoMusicAudioProfile : false;
 
     await WaitForMeetingToBeCreated.executeStep(this, session);
     await OpenAppStep.executeStep(this, session);
-    await AuthenticateUserStep.executeStep(this, session, this.attendeeId);
+    await AuthenticateUserStep.executeStep(this, session, this.attendeeId, false, false, false, '', useStereoMusicAudioProfile);
     await UserAuthenticationCheck.executeStep(this, session);
     await JoinMeetingStep.executeStep(this, session);
     await UserJoinedMeetingCheck.executeStep(this, session, this.attendeeId);
     await WaitForRemoteParticipantsToJoinMeeting.executeStep(this, session);
     await RosterCheck.executeStep(this, session, 2);
 
-    await PlayRandomToneStep.executeStep(this, session);
+    await PlayRandomToneStep.executeStep(this, session, generateStereoTones);
     // Wait for other participant to start audio
     await WaitForRemoteParticipantsToTurnAudioOn.executeStep(this, session);
     // test audio
-    await RemoteAudioCheck.executeStep(this, session, "AUDIO_ON");
+    await RemoteAudioCheck.executeStep(this, session, "AUDIO_ON", generateStereoTones);
     // wait for other participant to finish audio check to finish
     await WaitForRemoteAudioCheckToComplete.executeStep(this, session);
     // mute
@@ -44,7 +46,7 @@ class AudioTest extends SdkBaseTest {
     // wait for other participant to mute
     await WaitForRemoteParticipantsToTurnAudioOff.executeStep(this, session);
     // Test Mute
-    await RemoteAudioCheck.executeStep(this, session, "AUDIO_OFF");
+    await RemoteAudioCheck.executeStep(this, session, "AUDIO_OFF", generateStereoTones);
     // wait for other participant to finish audio check to finish
     await WaitForRemoteAudioCheckToComplete.executeStep(this, session);
 

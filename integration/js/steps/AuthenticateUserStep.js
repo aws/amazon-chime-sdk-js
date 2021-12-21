@@ -9,7 +9,8 @@ class AuthenticateUserStep extends AppTestStep {
     useSimulcastFlag = false,
     useWebAudioFlag = false,
     enableEventReporting = false,
-    region = ''
+    region = '',
+    useStereoMusicAudioProfile = false,
   ) {
     super(kiteBaseTest, sessionInfo);
     this.attendee_id = attendee_id;
@@ -17,6 +18,7 @@ class AuthenticateUserStep extends AppTestStep {
     this.useWebAudioFlag = useWebAudioFlag;
     this.enableEventReporting = enableEventReporting;
     this.region = region;
+    this.useStereoMusicAudioProfile = useStereoMusicAudioProfile;
   }
 
   static async executeStep(
@@ -27,6 +29,7 @@ class AuthenticateUserStep extends AppTestStep {
     useWebAudioFlag = false,
     enableEventReporting = false,
     region = '',
+    useStereoMusicAudioProfile = false,
   ) {
     const step = new AuthenticateUserStep(
       KiteBaseTest,
@@ -35,7 +38,8 @@ class AuthenticateUserStep extends AppTestStep {
       useSimulcastFlag,
       useWebAudioFlag,
       enableEventReporting,
-      region
+      region,
+      useStereoMusicAudioProfile
     );
     await step.execute(KiteBaseTest);
   }
@@ -66,6 +70,10 @@ class AuthenticateUserStep extends AppTestStep {
     if (this.region !== '') {
       this.logger(`selecting region ${this.region}`);
       await this.page.selectRegion(this.region);
+    }
+    if (this.useStereoMusicAudioProfile) {
+      this.logger("Using stereo music audio profile");
+      await this.page.chooseStereoMusicAudioProfile();
     }
     await this.page.authenticate();
     this.logger("waiting to authenticate");
