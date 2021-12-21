@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AllHighestVideoBandwidthPolicy, VideoAdaptiveProbePolicy, VideoPriorityBasedPolicy } from '..';
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
@@ -169,9 +170,9 @@ export default class ReceiveVideoStreamIndexTask
       this.context.videoSubscriptionLimit
     );
 
-    if (videoSubscriptionIdSet.size() > this.context.videosToReceive.size()) {
-      this.logger.warn(`video receive limit exceeded. Limiting the videos to ${this.context.videosToReceive.size()}`);
-    }
+    if (videoSubscriptionIdSet.size() > this.context.videosToReceive.size()) {      
+      this.logger.warn(`Video receive limit exceeded. Limiting the videos to ${this.context.videosToReceive.size()}. Please consider using AllHighestVideoBandwidthPolicy or VideoPriorityBasedPolicy along with chooseRemoteVideoSources api to select the video sources to be displayed.`);
+    } 
 
     this.context.videoCaptureAndEncodeParameter = videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
     this.logger.info(

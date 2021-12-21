@@ -37,7 +37,6 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
   async run(): Promise<void> {
     const indexFrame = await new Promise<SdkIndexFrame>((resolve, reject) => {
       const context = this.context;
-      let defaultVideoSubscriptionLimit: number = 25;
       context.turnCredentials = null;
       class IndexFrameInterceptor implements SignalingClientObserver, TaskCanceler {
         constructor(private signalingClient: SignalingClient) {}
@@ -71,10 +70,11 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
           }
           if (event.message.type === SdkSignalFrame.Type.JOIN_ACK) {
             // @ts-ignore: force cast to SdkJoinAckFrame
-            const joinAckFrame: SdkJoinAckFrame = event.message.joinack;                        
-            context.videoSubscriptionLimit = 
-              joinAckFrame?.videoSubscriptionLimit ? joinAckFrame.videoSubscriptionLimit : defaultVideoSubscriptionLimit;              
-
+            const joinAckFrame: SdkJoinAckFrame = event.message.joinack;
+            if (joinAckFrame && joinAckFrame.videoSubscriptionLimit) {
+              context.videoSubscriptionLimit = joinAckFrame.videoSubscriptionLimit;
+            }
+            
             if (joinAckFrame && joinAckFrame.turnCredentials) {
               context.turnCredentials = new MeetingSessionTURNCredentials();
               context.turnCredentials.username = joinAckFrame.turnCredentials.username;

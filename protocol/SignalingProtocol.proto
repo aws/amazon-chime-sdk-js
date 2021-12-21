@@ -80,7 +80,7 @@ message SdkJoinFrame {
 
 message SdkJoinAckFrame {
     optional SdkTurnCredentials turn_credentials = 1;
-    optional uint32 video_subscription_limit = 2;
+    optional uint32 video_subscription_limit = 2 [default=25];
 }
 
 message SdkLeaveFrame {}
