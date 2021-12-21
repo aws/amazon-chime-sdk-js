@@ -107,8 +107,8 @@ export default class AudioVideoControllerState {
   videoSubscriptions: number[] | null = null;
 
   // The video subscription limit is set by the backend and is subject to change in future.
-  // This value is set in the `JoinAndReceiveIndexTask` when we process the `SdkJoinAckFrame` 
-  // and is used in the `ReceiveVideoStreamIndexTask` to limit the total number of streams 
+  // This value is set in the `JoinAndReceiveIndexTask` when we process the `SdkJoinAckFrame`
+  // and is used in the `ReceiveVideoStreamIndexTask` to limit the total number of streams
   // that we include in the `videosToReceive`.
   videoSubscriptionLimit: number = 25;
 

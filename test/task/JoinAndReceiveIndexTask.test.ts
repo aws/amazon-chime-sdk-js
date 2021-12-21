@@ -31,6 +31,7 @@ describe('JoinAndReceiveIndexTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const behavior = new DOMMockBehavior();
   const logger = new NoOpDebugLogger();
+  const defaultVideoSubscriptionLimit = 25;
   let task: JoinAndReceiveIndexTask;
   let webSocketAdapter: DefaultWebSocketAdapter;
   let signalingClient: DefaultSignalingClient;
@@ -120,7 +121,7 @@ describe('JoinAndReceiveIndexTask', () => {
       } catch {
         expect(context.indexFrame).to.equal(null);
         expect(context.turnCredentials).to.equal(null);
-        expect(context.videoSubscriptionLimit).to.equal(0);
+        expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
         expect(receivedStatus).to.equal(true);
       }
     });
@@ -151,7 +152,7 @@ describe('JoinAndReceiveIndexTask', () => {
       } catch {
         expect(context.indexFrame).to.equal(null);
         expect(context.turnCredentials).to.equal(null);
-        expect(context.videoSubscriptionLimit).to.equal(0);
+        expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
         expect(receivedStatus).to.equal(true);
       }
     });
@@ -182,7 +183,7 @@ describe('JoinAndReceiveIndexTask', () => {
       } catch {
         expect(context.indexFrame).to.equal(null);
         expect(context.turnCredentials).to.equal(null);
-        expect(context.videoSubscriptionLimit).to.equal(0);
+        expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
         expect(receivedStatus).to.equal(true);
       }
     });
@@ -206,7 +207,6 @@ describe('JoinAndReceiveIndexTask', () => {
     });
 
     it('should set video subscription limit to default value when join ack frame has empty video subscription limit', async () => {
-      const defaultVideoSubscriptionLimit = 25;
       const joinAckFrame = SdkJoinAckFrame.create();
       joinAckFrame.videoSubscriptionLimit = 0;
 

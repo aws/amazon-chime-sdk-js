@@ -74,7 +74,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
             if (joinAckFrame && joinAckFrame.videoSubscriptionLimit) {
               context.videoSubscriptionLimit = joinAckFrame.videoSubscriptionLimit;
             }
-            
+
             if (joinAckFrame && joinAckFrame.turnCredentials) {
               context.turnCredentials = new MeetingSessionTURNCredentials();
               context.turnCredentials.username = joinAckFrame.turnCredentials.username;
@@ -105,7 +105,11 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       this.context.signalingClient.registerObserver(interceptor);
       this.taskCanceler = interceptor;
       this.context.signalingClient.join(
-        new SignalingClientJoin(this.maxVideos, true, this.context.meetingSessionConfiguration.applicationMetadata)
+        new SignalingClientJoin(
+          this.maxVideos,
+          true,
+          this.context.meetingSessionConfiguration.applicationMetadata
+        )
       );
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);

@@ -55,7 +55,7 @@ export default class VideoAdaptiveProbePolicy extends VideoPriorityBasedPolicy {
    * will be a no-op.  Please use [[VideoPriorityBasedPolicy]] directly if you would like to set
    * preferences.
    */
-   chooseRemoteVideoSources(_preferences: VideoPreferences): void {
+  chooseRemoteVideoSources(_preferences: VideoPreferences): void {
     this.logger.error('chooseRemoteVideoSources should not be called by VideoAdaptiveProbePolicy');
     return;
   }

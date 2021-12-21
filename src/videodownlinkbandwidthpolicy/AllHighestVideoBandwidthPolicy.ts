@@ -46,36 +46,37 @@ export default class AllHighestVideoBandwidthPolicy implements VideoDownlinkBand
   }
 
   chooseRemoteVideoSources(videoSources: VideoSource[]): void {
-    this.videoSources = videoSources;    
+    this.videoSources = videoSources;
     this.optimalReceiveSet = this.calculateOptimalReceiveSet(this.videoIndex).clone();
   }
 
   private calculateOptimalReceiveSet(videoIndex: VideoStreamIndex): VideoStreamIdSet {
-
     const streamSelectionSet = new DefaultVideoStreamIdSet();
 
     if (!this.videoIndex || this.videoIndex.allStreams().empty()) {
       return streamSelectionSet;
     }
 
-    const receiveSet = videoIndex.highestQualityStreamFromEachGroupExcludingSelf(this.selfAttendeeId);
+    const receiveSet = videoIndex.highestQualityStreamFromEachGroupExcludingSelf(
+      this.selfAttendeeId
+    );
 
     // If video sources are not chosen, then return the default receive set.
     if (this.videoSources === undefined) {
-      return receiveSet; 
+      return receiveSet;
     }
 
     // Get the list of all the remote stream information
     const remoteInfos = this.videoIndex.remoteStreamDescriptions();
 
     const mapOfAttendeeIdToOptimalStreamId = new Map<string, number>();
-    
+
     for (const info of remoteInfos) {
       if (receiveSet.contain(info.streamId)) {
         mapOfAttendeeIdToOptimalStreamId.set(info.attendeeId, info.streamId);
       }
     }
-    
+
     for (const videoSource of this.videoSources) {
       const attendeeId = videoSource.attendee.attendeeId;
       if (mapOfAttendeeIdToOptimalStreamId.has(attendeeId)) {

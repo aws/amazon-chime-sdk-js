@@ -320,7 +320,11 @@ describe('DefaultSignalingClient', () => {
               'AmazonChimeJSSDKDemoApp',
               '1.0.0'
             );
-            const signalingClientJoin = new SignalingClientJoin(_maxNumVideos ,false, applicationMetadata);
+            const signalingClientJoin = new SignalingClientJoin(
+              _maxNumVideos,
+              false,
+              applicationMetadata
+            );
             event.client.join(signalingClientJoin);
           }
         }
