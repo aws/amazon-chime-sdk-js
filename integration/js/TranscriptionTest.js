@@ -31,7 +31,7 @@ class TranscriptionTest extends SdkBaseTest {
     await testWindow1.runCommands(async () => SelectNoneAudioInputStep.executeStep(this, session));
     await testWindow2.runCommands(async () => SelectNoneAudioInputStep.executeStep(this, session));
 
-    const compareFn = (actualContent, expectedContent) => {
+    const compareFn = (actualContent, expectedContent, isMedicalTranscribe) => {
       const nonAlphaNumericAndWhitespace = /[^0-9^a-z^A-Z^\s+]/g
       const actualTokens = actualContent.trim().replace(nonAlphaNumericAndWhitespace, '').toLowerCase().split(/\s+/g);
       const expectedTokens = expectedContent.trim().replace(nonAlphaNumericAndWhitespace, '').toLowerCase().split(/\s+/g);
@@ -52,7 +52,7 @@ class TranscriptionTest extends SdkBaseTest {
 
       const hitPct = 100 * hits / total;
       if (hitPct < 80) {
-        console.log(`Need at least 80% of expected tokens in transcript content, got ${hitPct}%. (actual == "${actualContent}", expected == "${expectedContent}")`);
+        console.log(`Need at least 80% of expected tokens in transcript content, got ${hitPct}%. (isMedicalTranscribe == ${isMedicalTranscribe}, actual == "${actualContent}", expected == "${expectedContent}")`);
         return false;
       } else {
         console.log(`Success, ${hitPct}% of expected tokens present in transcripts`);
@@ -90,8 +90,8 @@ class TranscriptionTest extends SdkBaseTest {
       'from around the world has given us a tremendous advantage over other nations. ' +
       'It\'s kept us youthful, dynamic, and entrepreneurial.';
 
-    await window1.runCommands(async () => TranscriptsReceivedCheck.executeStep(this, session, expectedTranscriptContentBySpeaker, compareFn));
-    await window2.runCommands(async () => TranscriptsReceivedCheck.executeStep(this, session, expectedTranscriptContentBySpeaker, compareFn));
+    await window1.runCommands(async () => TranscriptsReceivedCheck.executeStep(this, session, expectedTranscriptContentBySpeaker, useMedical, compareFn));
+    await window2.runCommands(async () => TranscriptsReceivedCheck.executeStep(this, session, expectedTranscriptContentBySpeaker, useMedical, compareFn));
 
     // Stop
     await stopWindow.runCommands(async () => StopMeetingTranscriptionStep.executeStep(this, session));
