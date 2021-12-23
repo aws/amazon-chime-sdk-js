@@ -9,9 +9,11 @@
     "build": "npm run deps && npm install && tsc && npm run build:fast",
     "start:fast": "npm run copy-assets && node script/webpack-wrapper.js --serve",
     "start:hot": "npm run copy-assets && webpack serve --config ./webpack.config.hot.js",
-    "start": "npm run deps && npm install && npm run start:fast"
+    "start": "npm run deps && npm install && npm run start:fast",
+    "create-chime-app": "node script/create-chime-app"
   },
   "devDependencies": {
+    "fs-extra": "^8.1.0",
     "autoprefixer": "^10.2.6",
     "cross-spawn": "^7.0.3",
     "csp-html-webpack-plugin": "^5.1.0",
@@ -20,6 +22,7 @@
     "markdown-it": "^11.0.1",
     "open-iconic": "^1.1.1",
     "postcss-loader": "^6.1.1",
+    "prompt-sync": "^4.2.0",
     "react-dev-utils": "^11.0.4",
     "sass": "^1.26.11",
     "sass-loader": "^12.1.0",

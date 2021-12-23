@@ -105,6 +105,28 @@ Amazon Chime SDK for JavaScript allows builders to provide application metadata 
 
 The demo meetingV2 app is using `amazon-chime-sdk-js-demo` as the `appName` and `2.0.0` as the `appVersion` for building the application metadata. To provide a custom application metadata, please follow [providing application metadata](https://github.com/aws/amazon-chime-sdk-js#providing-application-metadata) usage section.
 
+### Creating the Chime SDK for JavaScript demo with the latest NPM release
+
+This browser demo uses an unreleased version of the Chime SDK for JavaScript. In a production environment, we recommend
+using the NPM release. To do so, run the following:
+
+1. Navigate to the `demos/browser`.
+   ```
+   git clone https://github.com/aws/amazon-chime-sdk-js.git -b add-create-chime-app-script
+   cd amazon-chime-sdk-js/demos/browser
+   ```
+1. Use the `create-chime-app` script to create a demo under the specified directory (`-d`). If you do not specify the directory option (`-d`), the script creates a demo under `demos/browser`.
+   ```
+   npm install
+   npm run create-chime-app -- -d ~/Desktop
+   ```
+1. Navigate to the generated directory and start a demo.
+   ```
+   cd path/to/demo_2_24_0
+   cd browser
+   npm start
+   ```
+
 ## Notice
 
 The browser demo applications in the [demos directory](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos) use [TensorFlow.js](https://github.com/tensorflow/tfjs) and pre-trained [TensorFlow.js models](https://github.com/tensorflow/tfjs-models) for image segmentation. Use of these third party models involves downloading and execution of code at runtime from [jsDelivr](https://www.jsdelivr.com/) by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this [link](https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net).
