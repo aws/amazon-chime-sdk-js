@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Changed
+- Clarified a comment in `DefaultSimulcastUplinkPolicy`.
 
 ## [2.24.0] - 2021-12-17
 ### Added
