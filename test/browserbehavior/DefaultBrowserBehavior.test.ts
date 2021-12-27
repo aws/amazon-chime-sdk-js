@@ -23,9 +23,9 @@ describe('DefaultBrowserBehavior', () => {
   const CHROME_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
   const FIREFOX_WINDOWS_USER_AGENT =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/68.0';
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/75.0';
   const FIREFOX_MAC_USER_AGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/75.0';
   const SAFARI_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
   const CHROMIUM_EDGE_WINDOWS_USER_AGENT =
@@ -34,7 +34,7 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.63';
   const OPERA_USER_AGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
   const FIREFOX_ANDROID_USER_AGENT =
-    'Mozilla/5.0 (Android 10; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0';
+    'Mozilla/5.0 (Android 10; Mobile; rv:68.0) Gecko/75.0 Firefox/75.0';
   const SAMSUNG_INTERNET_USER_AGENT =
     'Mozilla/5.0 (Linux; Android 11; Pixel 3a XL) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/13.0 Chrome/83.0.4103.106 Mobile Safari/537.36';
   const CHROME_IOS_USER_AGENT =
@@ -88,7 +88,7 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(75);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.false;
@@ -102,7 +102,7 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(FIREFOX_ANDROID_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
-      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(68);
+      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(75);
       expect(new DefaultBrowserBehavior().supportString()).to.eq(
         'Google Chrome 78+, Samsung Internet 12+'
       );
