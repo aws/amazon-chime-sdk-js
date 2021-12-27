@@ -245,4 +245,4 @@ if (!this.browserBehavior.supportsSetSinkId()) {
 ### Deprecating legacy screen share
 
 From version 2.0 onwards, the Amazon Chime SDK for JavaScript will no longer include the deprecated screen share API identified by `ScreenShareFacade` and `ScreenShareViewFacade` and all related code.
-Customers should use our Video Based Content Sharing detailed in our [Content Share guide](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/02_Content_Share.md).
+Customers should use our Video Based Content Sharing detailed in our [Content Share guide](https://aws.github.io/amazon-chime-sdk-js/modules/contentshare.html).
