@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Package
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
         with:
           ref: ${{ github.event.release.tag_name }}
       - name: Setup Node environment

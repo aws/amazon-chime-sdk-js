@@ -61,7 +61,7 @@ exit(1) unless x.strip == 'yes'
 puts
 
 verbose('git fetch origin')
-verbose('git reset --hard origin/master') if release_option != "5"
+verbose('git reset --hard origin/main') if release_option != "5"
 verbose('git clean -ffxd .')
 
 File.write(changelog_file, File.read(changelog_file).gsub(/\[Unreleased\]/, "[#{version_string}] - #{Date.today}"))
