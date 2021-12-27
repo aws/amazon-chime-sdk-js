@@ -24,7 +24,7 @@ walk('docs')
     fs.readFile(file, 'utf8', (err, data) => {
       if (err) return console.error(err);
 
-      let result = data.replace(/blob\/[0-9a-f]{5,40}\//g, 'blob/master/');
+      let result = data.replace(/blob\/[0-9a-f]{5,40}\//g, 'blob/main/');
 
       fs.writeFile(file, result, 'utf8', err => {
         if (err) return console.error(err);

@@ -1,7 +1,7 @@
-# For the backwards compatibility test, this should be run on the release branch only as part. 
+# For the backwards compatibility test, this should be run on the release branch only as part.
 # The release branch should not be tagged with the new version yet (that happens when we create a Github Release)
-# so we can checkout the latest tag and install the new version tarball into the demo. 
-# For example, if we're about to release v2.14.0, first create a tarball (the relase commit should bump the pacakge.json version to v2.14.0) 
+# so we can checkout the latest tag and install the new version tarball into the demo.
+# For example, if we're about to release v2.14.0, first create a tarball (the relase commit should bump the pacakge.json version to v2.14.0)
 # then check out the previous v2.13.0 demo using the v2.13.0 tag, then navigate to the v2.13.0 demo and install the v2.14.0 amazon-chime-sdk-js tarball.
 # Then run the entire integration test suite on the demo.
 name: Backwards Compatibility Test
@@ -9,7 +9,7 @@ name: Backwards Compatibility Test
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 env:
   SELENIUM_GRID_PROVIDER: saucelabs
