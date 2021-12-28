@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Correct the minimum supported Firefox version to `75` to match the official [documentation](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers).
 
 ### Changed
 - Clarified a comment in `DefaultSimulcastUplinkPolicy`.
