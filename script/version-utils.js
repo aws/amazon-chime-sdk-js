@@ -29,12 +29,15 @@ const getNewVersion = (currentVersion, versionIncrement) => {
         return undefined;
       }
       verArr[1] = Number(verArr[1]) + 1;
+      verArr[2] = 0;
       return verArr.join('.');
     case 3: // Major
       if (isBeta) {
         return currentVersion.split('-')[0];
       }
       verArr[0] = Number(verArr[0]) + 1;
+      verArr[1] = 0;
+      verArr[2] = 0;
       return verArr.join('.');
     case 4: // Beta (e.g., 3.0.0-beta.0)
       if (isBeta) { // Already a beta version then just increase the build number at the end
@@ -42,6 +45,8 @@ const getNewVersion = (currentVersion, versionIncrement) => {
         return verArr.join('.');
       }
       verArr[0] = Number(verArr[0]) + 1;
+      verArr[1] = 0;
+      verArr[2] = 0;
       return verArr.join('.') + '-beta.0';
     default:
       logger.error(`ERROR: Invalid input: ${versionIncrement}`);
