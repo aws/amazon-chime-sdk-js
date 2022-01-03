@@ -18,7 +18,12 @@ reported the issue. When possible use an existing template and provide all the i
 
 Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
 
-1. You are working against the latest source on the *main* branch.
+1. Make sure you have the following dependency installed:
+- Node.js version 12 or higher. Node.js 16 (Active LTS) is recommended.
+- Typescript version 4.2.3 because later versions may cause reference errors in `lib.d.ts`.
+- Ruby version 3 or higher. This is needed for `npm run build` script.
+
+2. You are working against the latest source on the *main* branch.
    
    Note that we recently renamed our branch from *master* to *main*. If you have checked out our repo before, please run the following commands:
 
