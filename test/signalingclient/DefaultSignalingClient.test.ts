@@ -261,7 +261,7 @@ describe('DefaultSignalingClient', () => {
               const frame = SdkSignalFrame.decode(buffer.slice(1));
               expect(buffer[0]).to.equal(_messageType);
               expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
-              expect(frame.join.maxNumOfVideos).to.equal(_maxNumVideos);
+              expect(frame.join.maxNumOfVideos).to.equal(0);
               expect(frame.join.protocolVersion).to.equal(2);
               expect(frame.join.flags).to.equal(
                 SdkJoinFlags.SEND_BITRATES | SdkJoinFlags.HAS_STREAM_UPDATE
@@ -286,7 +286,7 @@ describe('DefaultSignalingClient', () => {
               const frame = SdkSignalFrame.decode(buffer.slice(1));
               expect(buffer[0]).to.equal(_messageType);
               expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
-              expect(frame.join.maxNumOfVideos).to.equal(_maxNumVideos);
+              expect(frame.join.maxNumOfVideos).to.equal(0);
               expect(frame.join.protocolVersion).to.equal(2);
               expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
               done();
@@ -309,7 +309,7 @@ describe('DefaultSignalingClient', () => {
               const frame = SdkSignalFrame.decode(buffer.slice(1));
               expect(buffer[0]).to.equal(_messageType);
               expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
-              expect(frame.join.maxNumOfVideos).to.equal(_maxNumVideos);
+              expect(frame.join.maxNumOfVideos).to.equal(0);
               expect(frame.join.protocolVersion).to.equal(2);
               expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
               expect(frame.join.clientDetails.appName).to.eq('AmazonChimeJSSDKDemoApp');

@@ -106,6 +106,12 @@ export default class AudioVideoControllerState {
   // itself correspond to transceivers; 0 in this list corresponds to an inactive tranceiver.
   videoSubscriptions: number[] | null = null;
 
+  // The video subscription limit is set by the backend and is subject to change in future.
+  // This value is set in the `JoinAndReceiveIndexTask` when we process the `SdkJoinAckFrame`
+  // and is used in the `ReceiveVideoStreamIndexTask` to limit the total number of streams
+  // that we include in the `videosToReceive`.
+  videoSubscriptionLimit: number = 25;
+
   videosPaused: VideoStreamIdSet | null = null;
 
   videoDuplexMode: SdkStreamServiceType | null = null;

@@ -48,7 +48,7 @@ The downlink policy controls which remote video sources are received downstream 
 
 ##### AllHighestVideoBandwidthPolicy (Default)
 
-This policy subscribes to the highest quality video layer of all publishers. Under constrained network, some or all videos may freeze as packets are lost on the network, and they will recover automatically once network congestion is reduced.
+This policy subscribes to the highest quality video layer of all publishers. This policy allows builders to choose which remote video sources to subscribe to through the use of `chooseRemoteVideoSources` API.  Under constrained network, some or all videos may freeze as packets are lost on the network, and they will recover automatically once network congestion is reduced.
 
 ##### VideoPriorityBasedPolicy
 
