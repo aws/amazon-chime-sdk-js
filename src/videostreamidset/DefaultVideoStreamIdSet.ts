@@ -66,4 +66,9 @@ export default class DefaultVideoStreamIdSet implements VideoStreamIdSet {
   toJSON(): number[] {
     return this.array();
   }
+
+  truncate(length: number): DefaultVideoStreamIdSet {
+    const x: number[] = this.array();
+    return new DefaultVideoStreamIdSet(x.splice(0, length));
+  }
 }

@@ -43,6 +43,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
   const assert: Chai.AssertStatic = chai.assert;
   const behavior = new DOMMockBehavior();
   const logger = new NoOpLogger();
+  const _videoSubscriptionLimit = 25;
   let task: ReceiveVideoStreamIndexTask;
   let webSocketAdapter: DefaultWebSocketAdapter;
   let signalingClient: DefaultSignalingClient;
@@ -177,6 +178,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
         }
       }
       context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+      context.videoSubscriptionLimit = _videoSubscriptionLimit;
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer());
@@ -226,6 +228,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
         }
       }
       context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+      context.videoSubscriptionLimit = _videoSubscriptionLimit;
 
       task.pauseIngestion();
 
@@ -251,6 +254,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
         }
       }
       context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+      context.videoSubscriptionLimit = _videoSubscriptionLimit;
 
       task.pauseIngestion();
 
@@ -265,6 +269,32 @@ describe('ReceiveVideoStreamIndexTask', () => {
         task.resumeIngestion();
 
         expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(ids))).to.be.true;
+        done();
+      });
+
+      task.run();
+    });
+
+    it('Truncates the videos to receive to a specified limit', done => {
+      const ids: number[] = [1, 2, 3];
+      const truncatedRecieveSetIds: number[] = [1];
+
+      class TestVideoDownlinkBandwidthPolicy extends NoVideoDownlinkBandwidthPolicy {
+        wantsResubscribe(): boolean {
+          return true;
+        }
+        chooseSubscriptions(): DefaultVideoStreamIdSet {
+          return new DefaultVideoStreamIdSet(ids);
+        }
+      }
+      context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
+      context.videoSubscriptionLimit = 1;
+
+      new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
+        webSocketAdapter.send(createIndexSignalBuffer());
+        await delay(behavior.asyncWaitMs + 10);
+        expect(context.videosToReceive.equal(new DefaultVideoStreamIdSet(truncatedRecieveSetIds)))
+          .to.be.true;
         done();
       });
 
@@ -357,6 +387,7 @@ describe('ReceiveVideoStreamIndexTask', () => {
 
       context.videoDownlinkBandwidthPolicy = new TestVideoDownlinkBandwidthPolicy();
       context.audioVideoController.addObserver(new TestAudioVideoObserver());
+      context.videoSubscriptionLimit = _videoSubscriptionLimit;
 
       new TimeoutScheduler(behavior.asyncWaitMs).start(async () => {
         webSocketAdapter.send(createIndexSignalBuffer(true));

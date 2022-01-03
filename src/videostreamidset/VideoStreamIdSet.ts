@@ -54,4 +54,13 @@ export default interface VideoStreamIdSet {
    * Converts [[VideoStreamIdSet]] to JSON format
    */
   toJSON(): number[];
+
+  /**
+   * Returns a copy of the current set, with only N values
+   * copied from the original set.
+   *
+   * @param length the total number of values to be included
+   *               in the new set.
+   */
+  truncate(length: number): VideoStreamIdSet;
 }
