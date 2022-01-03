@@ -3,7 +3,7 @@
   on:
     pull_request:
       branches:
-        - master
+        - main
 
   env:
     SELENIUM_GRID_PROVIDER: saucelabs
