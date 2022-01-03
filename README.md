@@ -148,7 +148,10 @@ The Amazon Chime SDK for JavaScript uses WebRTC, the real-time communication API
 
 ## Installation
 
-Make sure you have Node.js version 12 or higher. Node 14 is recommended and supported.
+Make sure you have the following dependency installed:
+- Node.js version 12 or higher. Node 16 - the current LTS version - is recommended.
+- TypeScript version 4.2.3 (Later versions may cause reference errors in `lib.d.ts`).
+- Ruby version 3 or higher. This is needed for `npm run build`.
 
 To add the Amazon Chime SDK for JavaScript into an existing application,
 install the package directly from npm:
