@@ -63,7 +63,7 @@ The Amazon Chime SDK for JavaScript produces several kinds of events on the [Aud
 >
 > Downstream video information: Frame height, Frame width, Bitrate (bps), Packet Loss (%), Frame Rate (fps).
 >
-> You can check the implementation in the [demo app](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts) to build your own custom widget 
+> You can check the implementation in the [demo app](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts) to build your own custom widget
 > (look for `getObservableVideoMetrics` method in the demo). This video stats widget is built using the [getObservableVideoMetrics](https://aws.github.io/amazon-chime-sdk-js/interfaces/clientmetricreport.html#getobservablevideometrics) and the [metricsDidReceive](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#metricsdidreceive) APIs. Through the information provided in these stats, the application can monitor key attributes and take action. For instance if the bitrate or resolution falls below a certain threshold, the user could be notified in some manner, or diagnostic reporting could take place.
 
 
@@ -136,7 +136,9 @@ You can use the [active speaker detector](https://aws.github.io/amazon-chime-sdk
 
 #### Configure a video downlink policy
 
-By default the SDK uses the [AllHighestVideoBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html) which subscribes to the highest quality video of all participants. This can be customized by setting the [VideoDownlinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) in MeetingSessionConfiguration class.
+By default the SDK uses the [AllHighestVideoBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html), but [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) is used if simulcast is enabled. [AllHighestVideoBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/allhighestvideobandwidthpolicy.html) subscribes to the highest quality video of all participants and [VideoAdaptiveProbePolicy](https://aws.github.io/amazon-chime-sdk-js/classes/videoadaptiveprobepolicy.html) tries to subscribe to videos based on the browser downlink estimate, dropping videos in case of not enough bandwidth.
+
+You can customize the default downlink policy by setting the [VideoDownlinkBandwidthPolicy](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) in [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#videodownlinkbandwidthpolicy) class.
 
 *Browser clients currently only send one stream resolution. You would only need to use this function if you were also using the Amazon Chime SDK for iOS or the Amazon Chime SDK for Android.*
 
