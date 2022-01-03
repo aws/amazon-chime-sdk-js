@@ -118,6 +118,8 @@ Resources:
         - Ref: ChimeSdkBrowserEventIngestionLogsLambdaRole
         - Ref: ChimeSdkBrowserEventIngestionLogStreamLambdaRole
   Meetings:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
@@ -167,6 +169,8 @@ Resources:
       TargetKeyId:
         Ref: ChimeKMSKey
   MeetingNotificationsQueue:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: !Sub alias/ChimeKMS-${AWS::StackName}
