@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { BackgroundFilterOptions } from '..';
 import { loadWorker } from '../../libs/voicefocus/loader';
 import { supportsWASM, supportsWorker } from '../../libs/voicefocus/support';
 import { AssetSpec } from '../../libs/voicefocus/voicefocus';
@@ -11,6 +10,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
 import ModelSpec from '../modelspec/ModelSpec';
 import Versioning from '../versioning/Versioning';
+import BackgroundFilterOptions from './BackgroundFilterOptions';
 import BackgroundFilterSpec from './BackgroundFilterSpec';
 
 /** @internal */
@@ -144,10 +144,10 @@ export default class BackgroundFilterVideoFrameProcessor {
       logger.info('Browser does not support WASM.');
       return Promise.resolve(false);
     }
-    return this.supportsBackgroundBlur(globalThis, spec, logger);
+    return this.supportsBackgroundFilter(globalThis, spec, logger);
   }
 
-  private static async supportsBackgroundBlur(
+  private static async supportsBackgroundFilter(
     /* istanbul ignore next */
     scope: { Worker?: typeof Worker } = globalThis,
     spec?: BackgroundFilterSpec,

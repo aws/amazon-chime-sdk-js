@@ -92,8 +92,7 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
    * @param options  the options that are passed in
    * @returns An updated set of options with defaults set
    */
-  protected static resolveOptions(options?: BackgroundBlurOptions): BackgroundBlurOptions {
-    options = options ?? {};
+  protected static resolveOptions(options: BackgroundBlurOptions = {}): BackgroundBlurOptions {
     if (!options.blurStrength) {
       options.blurStrength = BlurStrength.MEDIUM;
     }

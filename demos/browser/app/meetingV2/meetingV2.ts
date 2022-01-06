@@ -317,8 +317,8 @@ export class DemoMeetingApp
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
   joinInfo: any | undefined;
 
-  bbprocessor: BackgroundBlurProcessor | undefined;
-  brprocessor: BackgroundReplacementProcessor | undefined;
+  blurProcessor: BackgroundBlurProcessor | undefined;
+  replacementProcessor: BackgroundReplacementProcessor | undefined;
   replacementOptions: BackgroundReplacementOptions | undefined;
 
   // This is an extremely minimal reactive programming approach: these elements
@@ -473,22 +473,21 @@ export class DemoMeetingApp
   }
 
   async initBackgroundBlur(): Promise<void> {
-      const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
       try {
         this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
       }
       catch (e) {
-      logger.warn(`[DEMO] Does not support background blur: ${e.message}`);
+        this.log(`[DEMO] Does not support background blur: ${e.message}`);
         this.supportsBackgroundBlur = false;
       }
   }
 
   async createReplacementImageBlob(startColor: string, endColor: string): Promise<Blob> {
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = 500; 
     canvas.height = 500;
-    var ctx = canvas.getContext("2d");
-    var grd = ctx.createLinearGradient(0, 0, 250, 0);
+    const ctx = canvas.getContext('2d');
+    const grd = ctx.createLinearGradient(0, 0, 250, 0);
     grd.addColorStop(0, startColor);
     grd.addColorStop(1, endColor);
     ctx.fillStyle = grd;
@@ -515,12 +514,11 @@ export class DemoMeetingApp
   }
 
   async initBackgroundReplacement(): Promise<void> {
-    const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
     try {
       this.supportsBackgroundReplacement = await BackgroundReplacementVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec(), await this.getBackgroundReplacementOptions());
     }
     catch (e) {
-      logger.warn(`[DEMO] Does not support background replacement: ${e.message}`);
+      this.log(`[DEMO] Does not support background replacement: ${e.message}`);
       this.supportsBackgroundReplacement = false;
     }
   }
@@ -3026,8 +3024,6 @@ export class DemoMeetingApp
     }
 
     if (videoFilter.startsWith('Background Blur')) {
-      console.log("background blur - create called from videoFilterToProcessor!")
-
       // In the event that frames start being dropped we should take some action to remove the background blur.
       this.blurObserver = {
         filterFrameDurationHigh: (event) => {
@@ -3038,16 +3034,13 @@ export class DemoMeetingApp
         }
       };
 
-
       const cpuUtilization: number = Number(videoFilter.match(/([0-9]{2})%/)[1]);
-      this.bbprocessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec(), {filterCPUUtilization: cpuUtilization});
-      this.bbprocessor.addObserver(this.blurObserver);
-      return this.bbprocessor;
+      this.blurProcessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec(), {filterCPUUtilization: cpuUtilization});
+      this.blurProcessor.addObserver(this.blurObserver);
+      return this.blurProcessor;
     }
 
     if (videoFilter.startsWith('Background Replacement')) {
-      console.log("background replacement - create called from videoFilterToProcessor!")
-
       // In the event that frames start being dropped we should take some action to remove the background replacement.
       this.replacementObserver = {
         filterFrameDurationHigh: (event) => {
@@ -3055,9 +3048,9 @@ export class DemoMeetingApp
         }
       };
 
-      this.brprocessor = await BackgroundReplacementVideoFrameProcessor.create(this.getBackgroundBlurSpec(), await this.getBackgroundReplacementOptions());
-      this.brprocessor.addObserver(this.replacementObserver);
-      return this.brprocessor;
+      this.replacementProcessor = await BackgroundReplacementVideoFrameProcessor.create(this.getBackgroundBlurSpec(), await this.getBackgroundReplacementOptions());
+      this.replacementProcessor.addObserver(this.replacementObserver);
+      return this.replacementProcessor;
     }
 
     return null;
@@ -3344,10 +3337,10 @@ export class DemoMeetingApp
       this.audioVideo.unbindAudioElement();
 
       // remove blur event observer
-      this.bbprocessor?.removeObserver(this.blurObserver);
+      this.blurProcessor?.removeObserver(this.blurObserver);
 
       // remove replacement event observer
-      this.brprocessor?.removeObserver(this.replacementObserver);
+      this.replacementProcessor?.removeObserver(this.replacementObserver);
 
       // Stop any video processor.
       await this.chosenVideoTransformDevice?.stop();
@@ -3368,8 +3361,8 @@ export class DemoMeetingApp
         this.eventReporter?.destroy();
       }
 
-      await this.bbprocessor?.destroy();
-      await this.brprocessor?.destroy();
+      await this.blurProcessor?.destroy();
+      await this.replacementProcessor?.destroy();
 
       this.audioVideo = undefined;
       this.voiceFocusDevice = undefined;
@@ -3377,8 +3370,8 @@ export class DemoMeetingApp
       this.activeSpeakerHandler = undefined;
       this.currentAudioInputDevice = undefined;
       this.eventReporter = undefined;
-      this.bbprocessor = undefined;
-      this.brprocessor = undefined;
+      this.blurProcessor = undefined;
+      this.replacementProcessor = undefined;
     };
 
     const onLeftMeeting = async () => {

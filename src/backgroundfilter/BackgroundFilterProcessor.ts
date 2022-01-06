@@ -143,10 +143,10 @@ export default abstract class BackgroundFilterProcessor {
     this.spec = spec;
     this.logger = options.logger;
     this.delegate = delegate;
-    this.initCpuMonitor(options);
+    this.initCPUMonitor(options);
   }
 
-  initCpuMonitor(options: BackgroundFilterOptions): void {
+  initCPUMonitor(options: BackgroundFilterOptions): void {
     const CPU_MONITORING_PERIOD_MILLIS = 5000;
     const MAX_SEGMENTATION_SKIP_RATE = 10;
     const MIN_SEGMENTATION_SKIP_RATE = 1;

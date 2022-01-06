@@ -6,7 +6,6 @@ import BackgroundFilterSpec from '../backgroundfilter/BackgroundFilterSpec';
 import BackgroundFilterVideoFrameProcessor from '../backgroundfilter/BackgroundFilterVideoFrameProcessor';
 import BackgroundReplacementProcessor from '../backgroundreplacementprocessor/BackgroundReplacementProcessor';
 import ConsoleLogger from '../logger/ConsoleLogger';
-import Logger from '../logger/Logger';
 import LogLevel from '../logger/LogLevel';
 import NoOpVideoFrameProcessor from '../videoframeprocessor/NoOpVideoFrameProcessor';
 import BackgroundReplacementFilter from './BackgroundReplacementFilter';
@@ -86,9 +85,8 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
    * @returns An updated set of options with defaults set
    */
   protected static resolveOptions(
-    options?: BackgroundReplacementOptions
+    options: BackgroundReplacementOptions = {}
   ): BackgroundReplacementOptions {
-    options = options ?? {};
     if (!options.logger) {
       options.logger = new ConsoleLogger('BackgroundReplacementProcessor', LogLevel.INFO);
     }
@@ -121,7 +119,7 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
    */
   static async isSupported(
     spec?: BackgroundFilterSpec,
-    options?: { logger?: Logger; imageBlob?: Blob }
+    options?: BackgroundReplacementOptions
   ): Promise<boolean> {
     spec = this.resolveSpec(spec);
     options = this.resolveOptions(options);
