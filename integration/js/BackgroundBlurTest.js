@@ -1,35 +1,22 @@
-const {ClickVideoButton, ClickBackgroundBlurButton} = require('./steps');
-const {VideoBackgroundBlurCheck, LocalVideoCheck, RemoteVideoCheck} = require('./checks');
-const {AppPage} = require('./pages/AppPage');
+const {ClickBackgroundBlurButton} = require('./steps');
+const {VideoBackgroundBlurCheck} = require('./checks');
 const {TestUtils} = require('kite-common');
-const {SdkTestUtils} = require('./utils/SdkTestUtils');
-const SdkBaseTest = require('./utils/SdkBaseTest');
-const { v4: uuidv4 } = require('uuid');
-const {Window} = require('./utils/Window');
+const BackgroundFilterBaseTest = require('./utils/BackgroundFilterBaseTest');
 
-class BackgroundBlurTest extends SdkBaseTest {
+class BackgroundBlurTest extends BackgroundFilterBaseTest {
   constructor(name, kiteConfig) {
-    super(name, kiteConfig, "Background Blur Test");
+    super(name, kiteConfig);
   }
 
-  async runIntegrationTest() {
-    const attendee_id = uuidv4()
-    const remote_attendee_id =uuidv4();
-    const session = this.seleniumSessions[0];
-    const test_window_1 = await Window.existing(session.driver, "TEST1");
-    const test_window_2 = await Window.openNew(session.driver, "TEST2");
-    await test_window_1.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, attendee_id, session));
-    await test_window_2.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, remote_attendee_id, session));
-    await test_window_1.runCommands(async () => await ClickVideoButton.executeStep(this, session));
+  async clickBackgroundFilterButton(test_run_info)  {
+    const {test_window_1, session} = test_run_info;
     await test_window_1.runCommands(async () => await ClickBackgroundBlurButton.executeStep(this, session));
-    await test_window_1.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON'));
+  }
+
+  async checkBackgroundFilter(test_run_info) {
+    const {test_window_1, test_window_2, session, attendee_id} = test_run_info;
     await test_window_1.runCommands(async () => await VideoBackgroundBlurCheck.executeStep(this, session, attendee_id));
     await test_window_2.runCommands(async () => await VideoBackgroundBlurCheck.executeStep(this, session, attendee_id));
-    await test_window_2.runCommands(async () => await RemoteVideoCheck.executeStep(this, session, 'VIDEO_ON'));   
-    await test_window_1.runCommands(async () => await ClickVideoButton.executeStep(this, session));   
-    await test_window_1.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_OFF'));   
-    await test_window_2.runCommands(async () => await RemoteVideoCheck.executeStep(this, session, 'VIDEO_OFF'));   
-    await this.waitAllSteps();
   }
 }
 
