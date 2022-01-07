@@ -182,7 +182,6 @@ function ensureTools() {
 }
 
 function createCaptureS3Buckets(bucketPrefix, regions) {
-  console.log(`Creating S3 buckets for media capture pipelines artifacts.  Bucket prefix: ${bucketPrefix} Regions:[${regions}]`);
   const lifecycleConfiguration = JSON.stringify({
     "Rules": [{
       "ID": "Delete artifacts after 1 day",
@@ -192,39 +191,50 @@ function createCaptureS3Buckets(bucketPrefix, regions) {
     }]
   });
   fs.writeFileSync('build/lifecycle_configuration.json', lifecycleConfiguration, {encoding: 'utf8', flag: 'w'});
-  for (bucketRegion of regions) {
-    const bucketName = `${bucketPrefix}-${bucketRegion}`;
-    const bucketPolicy = JSON.stringify({
-      "Id": "Policy1625687208360",
-      "Version": "2012-10-17",
-      "Statement": [{
-        "Sid": "Stmt1625687206729",
-        "Action": [
-          "s3:PutObject",
-          "s3:PutObjectAcl"
-        ],
-        "Effect": "Allow",
-        "Resource": `arn:aws:s3:::${bucketName}/*`,
-        "Principal": {
-          "Service": [
-            chimeServicePrincipal
-          ]
-        }
-      }]
-    });
-
-    fs.writeFileSync('build/bucket_policy.json', bucketPolicy, {encoding: 'utf8', flag: 'w'});
-
-    const s3Api = spawnSync('aws', ['s3api', 'head-bucket', '--bucket', `${bucketName}`, '--region', `${bucketRegion}`]);
-    if (s3Api.status !== 0) {
-      if (bucketRegion === 'us-east-1') {
-        spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion]);
-      } else {
-        spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion, '--create-bucket-configuration', `LocationConstraint=${bucketRegion}`]);
-      }
-      spawnOrFail('aws', ['s3api', 'put-bucket-policy', '--bucket', bucketName, '--region', bucketRegion, '--policy', 'file://build/bucket_policy.json']);
-      spawnOrFail('aws', ['s3api', 'put-bucket-lifecycle-configuration', '--bucket', bucketName, '--region', bucketRegion, '--lifecycle-configuration', 'file://build/lifecycle_configuration.json']);
+  if (JSON.parse(useChimeSDKMeetings)) {
+    console.log(`Creating S3 buckets for media capture pipelines artifacts.  Bucket prefix: ${bucketPrefix} Regions:[${region}, "us-east-1"]`);
+    createS3Bucket(bucketPrefix, region);
+    createS3Bucket(bucketPrefix, "us-east-1");
+  } else {
+    console.log(`Creating S3 buckets for media capture pipelines artifacts.  Bucket prefix: ${bucketPrefix} Regions:[${regions}]`);
+    for (bucketRegion of regions) {
+      createS3Bucket(bucketPrefix, bucketRegion);
     }
+  }
+}
+
+function createS3Bucket(bucketPrefix, bucketRegion) {
+  const bucketName = `${bucketPrefix}-${bucketRegion}`;
+  const bucketPolicy = JSON.stringify({
+    "Id": "Policy1625687208360",
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Sid": "Stmt1625687206729",
+      "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+      ],
+      "Effect": "Allow",
+      "Resource": `arn:aws:s3:::${bucketName}/*`,
+      "Principal": {
+        "Service": [
+          chimeServicePrincipal
+        ]
+      }
+    }]
+  });
+
+  fs.writeFileSync(`build/bucket_policy.json`, bucketPolicy, {encoding: 'utf8', flag: 'w'});
+
+  const s3Api = spawnSync('aws', ['s3api', 'head-bucket', '--bucket', `${bucketName}`, '--region', `${bucketRegion}`]);
+  if (s3Api.status !== 0) {
+    if (bucketRegion === 'us-east-1') {
+      spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion]);
+    } else {
+      spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion, '--create-bucket-configuration', `LocationConstraint=${bucketRegion}`]);
+    }
+    spawnOrFail('aws', ['s3api', 'put-bucket-policy', '--bucket', bucketName, '--region', bucketRegion, '--policy', `file://build/bucket_policy.json`]);
+    spawnOrFail('aws', ['s3api', 'put-bucket-lifecycle-configuration', '--bucket', bucketName, '--region', bucketRegion, '--lifecycle-configuration', 'file://build/lifecycle_configuration.json']);
   }
 }
 
@@ -256,7 +266,7 @@ if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
     createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);
 }
-spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--stack-name', `${stack}`,
+spawnOrFail('sam', ['deploy', '--template-file', `./build/packaged.yaml`, '--stack-name', `${stack}`,
                     '--parameter-overrides', parameterOverrides,
                     '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`, '--no-fail-on-empty-changeset'], null, !disablePrintingLogs);
 if (enableTerminationProtection) {
