@@ -43,7 +43,7 @@ class DeferredObservable<T> {
 }
 
 /**
- * The [[BackgroundFilter]] uses WASM and TensorFlow Lite to apply changes to the
+ * The [[BackgroundFilterProcessor]] uses WASM and TensorFlow Lite to apply changes to the
  * background image.
  */
 /** @internal */

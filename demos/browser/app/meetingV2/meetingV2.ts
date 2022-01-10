@@ -507,7 +507,7 @@ export class DemoMeetingApp
   */
   async getBackgroundReplacementOptions(): Promise<BackgroundReplacementOptions> {
     if (!this.replacementOptions) {
-      const imageBlob = await this.createReplacementImageBlob("#000428", "#004e92");
+      const imageBlob = await this.createReplacementImageBlob('#000428', '#004e92');
       this.replacementOptions = { imageBlob };
     }
     return this.replacementOptions;

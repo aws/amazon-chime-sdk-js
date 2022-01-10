@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { BackgroundReplacementOptions } from '..';
 import BackgroundFilterSpec from '../backgroundfilter/BackgroundFilterSpec';
 import BackgroundFilterVideoFrameProcessor from '../backgroundfilter/BackgroundFilterVideoFrameProcessor';
 import BackgroundReplacementProcessor from '../backgroundreplacementprocessor/BackgroundReplacementProcessor';
@@ -9,6 +8,7 @@ import ConsoleLogger from '../logger/ConsoleLogger';
 import LogLevel from '../logger/LogLevel';
 import NoOpVideoFrameProcessor from '../videoframeprocessor/NoOpVideoFrameProcessor';
 import BackgroundReplacementFilter from './BackgroundReplacementFilter';
+import BackgroundReplacementOptions from './BackgroundReplacementOptions';
 
 /**
  * No-op implementation of the background replacement processor. An instance of this class will be returned when a user attempts

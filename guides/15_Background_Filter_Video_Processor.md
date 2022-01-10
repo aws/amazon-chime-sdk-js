@@ -23,7 +23,7 @@ There is a known issue with `VideoFrameProcessor` in Safari 15: see [github issu
 
 A background filter can be CPU-intensive and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use a background filter while also supporting multiple video streams and rich application functionality.
 
-See the sections “[Checking for support before offering background filter](#checking-for-support-before-offering-background-filter)” for more details about checking for support.
+See the sections “[Checking for support before offering a background filter](#checking-for-support-before-offering-a-background-filter)” for more details about checking for support.
 
 
 ### SIMD support
@@ -143,7 +143,7 @@ let transformDevice = new DefaultVideoTransformDevice(logger, device, processors
 
 ## Configuration
 
-Both `isSupported` and `create` accept _specifications_ — `BackgroundFilterSpec` and `BackgroundBlurOptions` or `BackgroundReplacementOptions` structures — as input. The `BackgroundFilterSpec` allow you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The `BackgroundBlurOptions` and `BackgroundReplacementOptions` allow you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.
+Both `isSupported` and `create` accept _specifications_ — `BackgroundFilterSpec` and `BackgroundBlurOptions` or `BackgroundReplacementOptions` structures — as input. The `BackgroundFilterSpec` allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The `BackgroundBlurOptions` and `BackgroundReplacementOptions` allow you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.
 
 Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints. 
 
@@ -176,7 +176,7 @@ interface BackgroundReplacementOptions {
 
 The logger, reportingPeriodMillis, and filterCPUUtilization work in the exact same way as with `BackgroundBlurOptions`. 
 
-* imageBlob: This is a blob that contains an image that will be used in the background. If an image blob is not provided a default solid blue will be displayed. The Blob can be created in many different ways (e.g. https fetch, file upload, etc.). If you are using fetch to load the image blob we recommend using HTTPS for a security reasons.
+* imageBlob: This is a blob that contains an image that will be used in the background. If an image blob is not provided a default solid blue will be displayed. The Blob can be created in many different ways (e.g. https fetch, file upload, etc.). If you are using fetch to load the image blob we recommend using HTTPS for security reasons.
 
 ### CPU Utilization mitigation 
 

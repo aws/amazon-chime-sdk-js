@@ -93,7 +93,7 @@
 					<p>A background filter in the Amazon Chime SDK for JavaScript works in Firefox, Chrome, and Chromium-based browsers (including Electron) on desktop, Android, and Safari 14.1 and later on macOS.</p>
 					<p>There is a known issue with <code>VideoFrameProcessor</code> in Safari 15: see <a href="https://github.com/aws/amazon-chime-sdk-js/issues/1059">github issue 1059</a></p>
 					<p>A background filter can be CPU-intensive and the web runtime affects performance. As such, not all mobile devices or lower-spec laptop or desktop computers will be sufficiently powerful, or will be able to use a background filter while also supporting multiple video streams and rich application functionality.</p>
-					<p>See the sections “<a href="#checking-for-support-before-offering-background-filter">Checking for support before offering background filter</a>” for more details about checking for support.</p>
+					<p>See the sections “<a href="#checking-for-support-before-offering-a-background-filter">Checking for support before offering a background filter</a>” for more details about checking for support.</p>
 					<a href="#simd-support" id="simd-support" style="color: inherit; text-decoration: none;">
 						<h3>SIMD support</h3>
 					</a>
@@ -189,7 +189,7 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 					<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
 						<h2>Configuration</h2>
 					</a>
-					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>BackgroundFilterSpec</code> and <code>BackgroundBlurOptions</code> or <code>BackgroundReplacementOptions</code> structures — as input. The <code>BackgroundFilterSpec</code> allow you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code> allow you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.</p>
+					<p>Both <code>isSupported</code> and <code>create</code> accept <em>specifications</em> — <code>BackgroundFilterSpec</code> and <code>BackgroundBlurOptions</code> or <code>BackgroundReplacementOptions</code> structures — as input. The <code>BackgroundFilterSpec</code> allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The <code>BackgroundBlurOptions</code> and <code>BackgroundReplacementOptions</code> allow you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.</p>
 					<p>Most developers will not need to provide a specification: the defaults are chosen to work well and adapt to runtime constraints.</p>
 					<p><strong>BackgroundBlurOptions</strong></p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> BackgroundBlurOptions {
@@ -215,7 +215,7 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 </code></pre>
 					<p>The logger, reportingPeriodMillis, and filterCPUUtilization work in the exact same way as with <code>BackgroundBlurOptions</code>.</p>
 					<ul>
-						<li>imageBlob: This is a blob that contains an image that will be used in the background. If an image blob is not provided a default solid blue will be displayed. The Blob can be created in many different ways (e.g. https fetch, file upload, etc.). If you are using fetch to load the image blob we recommend using HTTPS for a security reasons.</li>
+						<li>imageBlob: This is a blob that contains an image that will be used in the background. If an image blob is not provided a default solid blue will be displayed. The Blob can be created in many different ways (e.g. https fetch, file upload, etc.). If you are using fetch to load the image blob we recommend using HTTPS for security reasons.</li>
 					</ul>
 					<a href="#cpu-utilization-mitigation" id="cpu-utilization-mitigation" style="color: inherit; text-decoration: none;">
 						<h3>CPU Utilization mitigation</h3>
