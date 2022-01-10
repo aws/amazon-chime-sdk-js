@@ -90,7 +90,7 @@ import { BackgroundReplacementVideoFrameProcessor } from 'amazon-chime-sdk-js';
 await BackgroundReplacementVideoFrameProcessor.isSupported();
 ```
 
-If `isSupported` resolves to `true`, you can instantiate the background filter video frame processor.
+If `isSupported` resolves to `true`, instantiate the background filter video frame processor.
 
 ```typescript
 // Background Blur

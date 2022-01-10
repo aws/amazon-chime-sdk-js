@@ -47,10 +47,6 @@ Globals:
         BROWSER_EVENT_INGESTION_LOG_GROUP_NAME: !Ref ChimeBrowserEventIngestionLogs
         CAPTURE_S3_DESTINATION_PREFIX: !Ref ChimeMediaCaptureS3BucketPrefix
         AWS_ACCOUNT_ID: !Sub "${AWS::AccountId}"
-  Api:
-    BinaryMediaTypes:
-      # These is equivalent to image/* when deployed
-      - image~1*
 Resources:
 
   ChimeMeetingsAccessPolicy:

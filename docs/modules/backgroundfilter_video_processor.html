@@ -146,7 +146,7 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 <span class="hljs-keyword">import</span> { BackgroundReplacementVideoFrameProcessor } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;amazon-chime-sdk-js&#x27;</span>;
 <span class="hljs-keyword">await</span> BackgroundReplacementVideoFrameProcessor.isSupported();
 </code></pre>
-					<p>If <code>isSupported</code> resolves to <code>true</code>, you can instantiate the background filter video frame processor.</p>
+					<p>If <code>isSupported</code> resolves to <code>true</code>, instantiate the background filter video frame processor.</p>
 					<pre><code class="language-typescript"><span class="hljs-comment">// Background Blur</span>
 <span class="hljs-keyword">const</span> processors = [];
 <span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> BackgroundBlurVideoFrameProcessor.isSupported()) {

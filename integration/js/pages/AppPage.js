@@ -69,7 +69,9 @@ function findAllElements() {
     backgroundReplacementFilterButton: By.id('dropdown-menu-filter-Background-Replacement'),
     microphoneDropEchoButton: By.id('dropdown-menu-microphone-Echo'),
     echoReductionFeature: By.id('echo-reduction-capability'),
-    echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]')
+    echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]'),
+    stereoMusicProfileCheckBox: By.id('fullband-music-stereo-quality'),
+    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]')
   };
 }
 
