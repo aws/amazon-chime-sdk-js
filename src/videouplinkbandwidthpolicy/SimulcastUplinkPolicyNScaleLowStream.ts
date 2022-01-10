@@ -29,7 +29,9 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
   static readonly kMidDisabledRate = 240;
 
   private numSenders: number = 0;
-  private numParticipants: number = -1;
+  // Simulcast is disabled when there are only 2 or fewer attendees, because in that case the backend will forward REMBs from
+  // receiver to sender. Therefore there is no need for simulcast based adaption.
+  private shouldDisableSimulcast: boolean = false;
   private optimalParameters: DefaultVideoAndEncodeParameter;
   private parametersInEffect: DefaultVideoAndEncodeParameter;
   private newQualityMap = new Map<string, RTCRtpEncodingParameters>();
@@ -123,12 +125,37 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
       this.lastUplinkBandwidthKbps >= hysteresisIncrease ||
       this.lastUplinkBandwidthKbps <= hysteresisDecrease
     ) {
-      if (this.numParticipants >= 0 && this.numParticipants <= 2) {
-        // Simulcast disabled
+      if (this.shouldDisableSimulcast) {
+        // See comment above `shouldDisableSimulcast` for usage.
+        //
+        // The value of `newActiveStreams` is somewhat irrelevant since in one to one calls
+        // we forward REMBs, so this single stream will adapt anywhere from < 100 kbps to 1200 kbps
+        // based on both sender and receiver network conditions. E.g. A receiver may calculate it's
+        // receive BWE as 300 kbps, send that in a REMB which is forwarded, and on receipt the sender
+        // will set its own BWE at 300 kbps, and start sending that as well (again, only for one-to-one
+        // calls). Additionally the value `kHi` is only relevant to the send side (via
+        // `encodingSimulcastLayersDidChange`) as it is not transmitted in anyform to the receiver.
+        //
+        // We use middle layer here to work around a bug in Chromium where
+        // it seems when a transceiver is created when BWE is low (e.g. on a reconnection),
+        // it will never reset the encoder even when `setParameters` is called.  WebRTC bug
+        // #12788 seems to call a similar issue out as fixed for VP8, it's not clear if this
+        // is the same issue for H.264. Additionally we are not able to force a keyframe
+        // request from the backend since it will only be sending padding (which also
+        // don't have MID due to #10822). Since we don't scale when simulcast is disabled
+        // this doesn't have any end-user effect.
+        //
+        // Note that this still relies on a little bit (5-6 packets) of padding on reconnect
+        // and that technically the browser will still eventually try to send all 3 streams.
+        //
+        // Also note that due to some uninvestigated logic in bitrate allocation, Chromium
+        // will skip the bottom layer if we try setting it to 1200 kbps instead so it will
+        // still take a while to recover (as it needs to send padding until it reaches around
+        // 1000 kbps).
         this.newActiveStreams = SimulcastLayers.High;
         newBitrates[0].maxBitrateKbps = 0;
-        newBitrates[1].maxBitrateKbps = 0;
-        newBitrates[2].maxBitrateKbps = 1200;
+        newBitrates[1].maxBitrateKbps = 1200;
+        newBitrates[2].maxBitrateKbps = 0;
       } else if (this.lastUplinkBandwidthKbps >= SimulcastUplinkPolicyNScaleLowStream.kHiDisabledRate) {
         // 320x192+ (640x384)  + 1280x768
         if (this.numSenders <= 8) {
@@ -161,8 +188,8 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
         this.logger.info(
           `simulcast: policy:calculateEncodingParameters bw:${
             this.lastUplinkBandwidthKbps
-          } numSources:${this.numSenders} numClients:${
-            this.numParticipants
+          } numSources:${this.numSenders} shouldDisableSimulcast:${
+            this.shouldDisableSimulcast
           } newQualityMap: ${this.getQualityMapString(this.newQualityMap)}`
         );
       }
@@ -196,13 +223,15 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
     // the context here is VideoUplinkBandwidthPolicy
     const numSenders =
       videoIndex.numberOfVideoPublishingParticipantsExcludingSelf(this.selfAttendeeId) + 1;
-    const numParticipants = videoIndex.numberOfParticipants();
     const numSendersChanged = numSenders !== this.numSenders;
-    const numParticipantsChanged =
-      (numParticipants > 2 && this.numParticipants <= 2) ||
-      (numParticipants <= 2 && this.numParticipants > 2);
+
+    // See comment above `shouldDisableSimulcast`
+    const numParticipants = videoIndex.numberOfParticipants();
+    const newShouldDisableSimulcast = numParticipants >= 0 && numParticipants <= 2;
+    const shouldDisableSimulcastChanged = this.shouldDisableSimulcast !== newShouldDisableSimulcast;
+
     this.numSenders = numSenders;
-    this.numParticipants = numParticipants;
+    this.shouldDisableSimulcast = newShouldDisableSimulcast;
     this.optimalParameters = new DefaultVideoAndEncodeParameter(
       this.captureWidth(),
       this.captureHeight(),
@@ -212,7 +241,7 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
     );
     this.videoIndex = videoIndex;
     this.newQualityMap = this.calculateEncodingParameters(
-      numSendersChanged || numParticipantsChanged
+      numSendersChanged || shouldDisableSimulcastChanged
     );
   }
 
@@ -313,13 +342,14 @@ export default class SimulcastUplinkPolicyNScaleLowStream implements SimulcastUp
     const nameArr = SimulcastTransceiverController.NAME_ARR_ASCENDING;
     const bitrateArr = bitratesKbps;
 
-    let scale = 4;
+    // Don't scale the single simulcast stream regardless of its layer.
+    let scale = this.shouldDisableSimulcast ? 1 : 4;
     for (let i = 0; i < nameArr.length; i++) {
       const ridName = nameArr[i];
       newMap.set(ridName, {
         rid: ridName,
         active: bitrateArr[i] > 0 ? true : false,
-        scaleResolutionDownBy: scale,
+        scaleResolutionDownBy: Math.max(scale, 1),
         maxBitrate: bitrateArr[i] * toBps,
       });
       scale = scale / 2;
