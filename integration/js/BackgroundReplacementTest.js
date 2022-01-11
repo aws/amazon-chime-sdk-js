@@ -1,17 +1,17 @@
 const {TestUtils} = require('kite-common');
-const BackgroundFilterBaseTest = require("./utils/BackgroundFilterBaseTest");
+const BackgroundFilterBaseTest = require('./utils/BackgroundFilterBaseTest');
 
-const {ClickBackgroundBlurButton} = require('./steps');
+const {ClickBackgroundReplacementButton} = require('./steps');
 const {VideoBackgroundBlurCheck} = require('./checks');
 
-class BackgroundBlurTest extends BackgroundFilterBaseTest {
+class BackgroundReplacementTest extends BackgroundFilterBaseTest {
   constructor(kiteConfig) {
-    super('Background Blur Test', kiteConfig, 'blur');
+    super('Background Replacement Test', kiteConfig, 'replacement');
   }
 
   async clickBackgroundFilterButton(test_run_info) {
     const {test_window_1, session} = test_run_info;
-    await test_window_1.runCommands(async () => await ClickBackgroundBlurButton.executeStep(this, session));
+    await test_window_1.runCommands(async () => await ClickBackgroundReplacementButton.executeStep(this, session));
   }
 
   async checkBackgroundFilter(test_run_info) {
@@ -21,10 +21,10 @@ class BackgroundBlurTest extends BackgroundFilterBaseTest {
   }
 }
 
-module.exports = BackgroundBlurTest;
+module.exports = BackgroundReplacementTest;
 
 (async () => {
   const kiteConfig = await TestUtils.getKiteConfig(__dirname);
-  let test = new BackgroundBlurTest(kiteConfig);
+  let test = new BackgroundReplacementTest(kiteConfig);
   await test.run();
 })();

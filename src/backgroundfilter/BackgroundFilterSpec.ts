@@ -15,7 +15,7 @@ import BackgroundFilterPaths from './BackgroundFilterPaths';
  */
 export default interface BackgroundFilterSpec extends AssetSpec {
   /**
-   * Paths to resources that need to be loaded for background blur.
+   * Paths to resources that need to be loaded for background filter.
    */
   paths?: BackgroundFilterPaths;
 
