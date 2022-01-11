@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BackgroundBlurVideoFrameProcessor | amazon-chime-sdk-js</title>
+	<title>BackgroundFilterVideoFrameProcessor | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,32 +56,27 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="backgroundblurvideoframeprocessor.html">BackgroundBlurVideoFrameProcessor</a>
+					<a href="backgroundfiltervideoframeprocessor.html">BackgroundFilterVideoFrameProcessor</a>
 				</li>
 			</ul>
-			<h1>Class BackgroundBlurVideoFrameProcessor</h1>
+			<h1>Class BackgroundFilterVideoFrameProcessor</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p><a href="backgroundblurvideoframeprocessor.html">BackgroundBlurVideoFrameProcessor</a>
-						Creates a background blur processor which identifies the foreground person and blurs the background.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="backgroundfiltervideoframeprocessor.html" class="tsd-signature-type">BackgroundFilterVideoFrameProcessor</a>
+						<span class="target">BackgroundFilterVideoFrameProcessor</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">BackgroundBlurVideoFrameProcessor</span>
+								<a href="backgroundblurvideoframeprocessor.html" class="tsd-signature-type">BackgroundBlurVideoFrameProcessor</a>
+							</li>
+							<li>
+								<a href="backgroundreplacementvideoframeprocessor.html" class="tsd-signature-type">BackgroundReplacementVideoFrameProcessor</a>
 							</li>
 						</ul>
 					</li>
@@ -94,10 +89,9 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="backgroundblurvideoframeprocessor.html#create" class="tsd-kind-icon">create</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="backgroundblurvideoframeprocessor.html#issupported" class="tsd-kind-icon">is<wbr>Supported</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-static"><a href="backgroundblurvideoframeprocessor.html#resolveoptions" class="tsd-kind-icon">resolve<wbr>Options</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static"><a href="backgroundblurvideoframeprocessor.html#resolvespec" class="tsd-kind-icon">resolve<wbr>Spec</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="backgroundfiltervideoframeprocessor.html#issupported" class="tsd-kind-icon">is<wbr>Supported</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="backgroundfiltervideoframeprocessor.html#resolveoptions" class="tsd-kind-icon">resolve<wbr>Options</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="backgroundfiltervideoframeprocessor.html#resolvespec" class="tsd-kind-icon">resolve<wbr>Spec</a></li>
 							</ul>
 						</section>
 					</div>
@@ -106,59 +100,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="create" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> create</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>spec<span class="tsd-signature-symbol">?: </span><a href="../interfaces/backgroundfilterspec.html" class="tsd-signature-type">BackgroundFilterSpec</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/backgroundbluroptions.html" class="tsd-signature-type">BackgroundBlurOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/backgroundblurprocessor.html" class="tsd-signature-type">BackgroundBlurProcessor</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor.ts#L61">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor.ts:61</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>A factory method that will call the private constructor to instantiate the processor and asynchronously
-										initialize the worker, wasm, and ML models. Upon completion of the initialization the promise will either
-									be resolved or rejected.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> spec: <a href="../interfaces/backgroundfilterspec.html" class="tsd-signature-type">BackgroundFilterSpec</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The spec defines the assets that will be used for adding background blur to a frame</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/backgroundbluroptions.html" class="tsd-signature-type">BackgroundBlurOptions</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/backgroundblurprocessor.html" class="tsd-signature-type">BackgroundBlurProcessor</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
 					<a name="issupported" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Supported</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
 						<li class="tsd-signature tsd-kind-icon">is<wbr>Supported<span class="tsd-signature-symbol">(</span>spec<span class="tsd-signature-symbol">?: </span><a href="../interfaces/backgroundfilterspec.html" class="tsd-signature-type">BackgroundFilterSpec</a>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>logger<span class="tsd-signature-symbol">?: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="backgroundfiltervideoframeprocessor.html">BackgroundFilterVideoFrameProcessor</a>.<a href="backgroundfiltervideoframeprocessor.html#issupported">isSupported</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor.ts#L114">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor.ts:114</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessor.ts#L127">src/backgroundfilter/BackgroundFilterVideoFrameProcessor.ts:127</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>This method will detect the environment in which it is being used and determine if background
-									blur can be used.</p>
+									blur/replacement can be used.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -186,18 +143,17 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-static">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
 					<a name="resolveoptions" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> resolve<wbr>Options</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">resolve<wbr>Options<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/backgroundbluroptions.html" class="tsd-signature-type">BackgroundBlurOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/backgroundbluroptions.html" class="tsd-signature-type">BackgroundBlurOptions</a></li>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">resolve<wbr>Options<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/backgroundfilteroptions.html" class="tsd-signature-type">BackgroundFilterOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/backgroundfilteroptions.html" class="tsd-signature-type">BackgroundFilterOptions</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="backgroundfiltervideoframeprocessor.html">BackgroundFilterVideoFrameProcessor</a>.<a href="backgroundfiltervideoframeprocessor.html#resolveoptions">resolveOptions</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor.ts#L95">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor.ts:95</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessor.ts#L103">src/backgroundfilter/BackgroundFilterVideoFrameProcessor.ts:103</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -208,27 +164,26 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/backgroundbluroptions.html" class="tsd-signature-type">BackgroundBlurOptions</a><span class="tsd-signature-symbol"> = {}</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/backgroundfilteroptions.html" class="tsd-signature-type">BackgroundFilterOptions</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>the options that are passed in</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/backgroundbluroptions.html" class="tsd-signature-type">BackgroundBlurOptions</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/backgroundfilteroptions.html" class="tsd-signature-type">BackgroundFilterOptions</a></h4>
 							<p>An updated set of options with defaults set</p>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
 					<a name="resolvespec" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> resolve<wbr>Spec</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
 						<li class="tsd-signature tsd-kind-icon">resolve<wbr>Spec<span class="tsd-signature-symbol">(</span>spec<span class="tsd-signature-symbol">?: </span><a href="../interfaces/backgroundfilterspec.html" class="tsd-signature-type">BackgroundFilterSpec</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/backgroundfilterspec.html" class="tsd-signature-type">BackgroundFilterSpec</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="backgroundfiltervideoframeprocessor.html">BackgroundFilterVideoFrameProcessor</a>.<a href="backgroundfiltervideoframeprocessor.html#resolvespec">resolveSpec</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessor.ts#L70">src/backgroundfilter/BackgroundFilterVideoFrameProcessor.ts:70</a></li>
 								</ul>
@@ -267,19 +222,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="backgroundblurvideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor</a>
+						<a href="backgroundfiltervideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Video<wbr>Frame<wbr>Processor</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="backgroundblurvideoframeprocessor.html#create" class="tsd-kind-icon">create</a>
+								<a href="backgroundfiltervideoframeprocessor.html#issupported" class="tsd-kind-icon">is<wbr>Supported</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-								<a href="backgroundblurvideoframeprocessor.html#issupported" class="tsd-kind-icon">is<wbr>Supported</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="backgroundfiltervideoframeprocessor.html#resolveoptions" class="tsd-kind-icon">resolve<wbr>Options</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-static">
-								<a href="backgroundblurvideoframeprocessor.html#resolveoptions" class="tsd-kind-icon">resolve<wbr>Options</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-static">
-								<a href="backgroundblurvideoframeprocessor.html#resolvespec" class="tsd-kind-icon">resolve<wbr>Spec</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+								<a href="backgroundfiltervideoframeprocessor.html#resolvespec" class="tsd-kind-icon">resolve<wbr>Spec</a>
 							</li>
 						</ul>
 					</li>

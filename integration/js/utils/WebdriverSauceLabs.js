@@ -101,7 +101,10 @@ const fetchMediaPath = function(media, browserName) {
 }
 
 const getPrerunScript = (capabilities) =>{
-  return capabilities.name.includes("Background Blur Test") ? 'storage:b23b0bb6-8e47-4e90-80e8-fc2cb92408bf' : "";
+  const name = capabilities.name;
+  const blurName = "Background Blur Test";
+  const repName = "Background Replacement Test";
+  return (name.includes(blurName) || name.includes(repName)) ?  'storage:b23b0bb6-8e47-4e90-80e8-fc2cb92408bf' : "";
 }
 const getChromeCapabilities = capabilities => {
   let cap = Capabilities.chrome();

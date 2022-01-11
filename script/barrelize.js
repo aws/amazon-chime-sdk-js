@@ -5,10 +5,10 @@ const fs = require('fs-extra');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 
-const walk = function(dir) {
+const walk = function (dir) {
   let results = [];
   let list = fs.readdirSync(dir);
-  list.forEach(function(file) {
+  list.forEach(function (file) {
     file = dir + '/' + file;
     let stat = fs.statSync(file);
     if (stat && stat.isDirectory()) {
@@ -28,11 +28,19 @@ const ignoredTypes = [
   'VoiceFocusTransformDeviceDelegate',
   'LoggerAdapter',
 
+  // These are @internal background filter types
+  'BackgroundFilterVideoFrameProcessorDelegate',
+  'BackgroundFilterProcessor',
+
   // These are @internal background blur types
   'BackgroundBlurVideoFrameProcessorDelegate',
   'BackgroundFilterFrameCounter',
   'BackgroundBlurProcessorBuiltIn',
   'BackgroundBlurProcessorProvided',
+
+  // These are @internal background replacement types
+  'BackgroundReplacementVideoFrameProcessorDelegate',
+  'BackgroundReplacementFilter',
 
   // Generated versioning data.
   'version',
