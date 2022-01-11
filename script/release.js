@@ -4,10 +4,14 @@ const { versionBump, currentVersion, isPreRelease }  = require('./version-utils'
 const { logger, spawnOrFail, prompt, shouldContinuePrompt, quit, process, path } = require('./cli-utils');
 
 const deployDemo = (version) => {
-  const demoName = `chime-sdk-demo-${version.replace(/\./g, "-")}`;
-  logger.log(`Deploying ${demoName} ...`);
+  const formattedVersion = `${version.replace(/\./g, "-")}`;
   process.chdir(path.join(__dirname, '../demos/serverless'));
-  spawnOrFail('npm', [`run deploy -- -b ${demoName} -s ${demoName} -o ${demoName} -u false`], { printErr: true });
+  const meetingDemoName = `chime-sdk-demo-${formattedVersion}`;
+  logger.log(`Deploying ${meetingDemoName} ...`);
+  spawnOrFail('npm', [`run deploy -- -b ${meetingDemoName} -s ${meetingDemoName} -o ${meetingDemoName} -u false`], { printErr: true });
+  const readinessCheckerDemoName = `chime-sdk-meeting-readiness-checker-${formattedVersion}`;
+  logger.log(`Deploying ${readinessCheckerDemoName} ...`);
+  spawnOrFail('npm', [`run deploy -- -b ${readinessCheckerDemoName} -s ${readinessCheckerDemoName} -a meetingReadinessChecker -u false`], { printErr: true });
 };
 
 const getCurrentRemoteBranch = () => {
