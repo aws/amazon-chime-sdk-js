@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Ability to choose remote video sources in `AllHighestVideoBandwidthPolicy`. see [guide](https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html#downlink-policy)
+- Add `BackgroundReplacementVideoFrameProcessor` that will create a `VideoFrameProcessor` to apply a background image to an outgoing video stream.
 
 ### Removed
 

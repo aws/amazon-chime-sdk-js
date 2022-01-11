@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BackgroundBlurVideoFrameProcessorObserver | amazon-chime-sdk-js</title>
+	<title>BackgroundFilterVideoFrameProcessorObserver | amazon-chime-sdk-js</title>
 	<meta name="description" content="Documentation for amazon-chime-sdk-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="backgroundblurvideoframeprocessorobserver.html">BackgroundBlurVideoFrameProcessorObserver</a>
+					<a href="backgroundfiltervideoframeprocessorobserver.html">BackgroundFilterVideoFrameProcessorObserver</a>
 				</li>
 			</ul>
-			<h1>Interface BackgroundBlurVideoFrameProcessorObserver</h1>
+			<h1>Interface BackgroundFilterVideoFrameProcessorObserver</h1>
 		</div>
 	</div>
 </header>
@@ -69,9 +69,9 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>An observer for the background blur video frame processor.</p>
+						<p>An observer for the background filter video frame processor.</p>
 					</div>
-					<p>Use {@link BackgroundBlurVideoFrameProcessor.addObserver} to register an
+					<p>Use {@link BackgroundFilterVideoFrameProcessor.addObserver} to register an
 					observer with the processor.</p>
 				</div>
 			</section>
@@ -79,10 +79,13 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="backgroundfiltervideoframeprocessorobserver.html" class="tsd-signature-type">BackgroundFilterVideoFrameProcessorObserver</a>
+						<span class="target">BackgroundFilterVideoFrameProcessorObserver</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">BackgroundBlurVideoFrameProcessorObserver</span>
+								<a href="backgroundblurvideoframeprocessorobserver.html" class="tsd-signature-type">BackgroundBlurVideoFrameProcessorObserver</a>
+							</li>
+							<li>
+								<a href="backgroundreplacementvideoframeprocessorobserver.html" class="tsd-signature-type">BackgroundReplacementVideoFrameProcessorObserver</a>
 							</li>
 						</ul>
 					</li>
@@ -92,24 +95,23 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-inherited">
+						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundblurvideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundblurvideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfiltervideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundfiltervideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="filtercpuutilizationhigh" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filterCPUUtilization<wbr>High</h3>
 					<div class="tsd-signature tsd-kind-icon">filterCPUUtilization<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filtercpuutilizationhighevent.html" class="tsd-signature-type">FilterCPUUtilizationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="backgroundfiltervideoframeprocessorobserver.html">BackgroundFilterVideoFrameProcessorObserver</a>.<a href="backgroundfiltervideoframeprocessorobserver.html#filtercpuutilizationhigh">filterCPUUtilizationHigh</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L51">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:51</a></li>
 						</ul>
@@ -149,12 +151,11 @@
 						</ul>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="filterframedurationhigh" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filter<wbr>Frame<wbr>Duration<wbr>High</h3>
 					<div class="tsd-signature tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filterframedurationhighevent.html" class="tsd-signature-type">FilterFrameDurationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="backgroundfiltervideoframeprocessorobserver.html">BackgroundFilterVideoFrameProcessorObserver</a>.<a href="backgroundfiltervideoframeprocessorobserver.html#filterframedurationhigh">filterFrameDurationHigh</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L40">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:40</a></li>
 						</ul>
@@ -215,13 +216,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="backgroundblurvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
+						<a href="backgroundfiltervideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="backgroundblurvideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="backgroundfiltervideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="backgroundblurvideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="backgroundfiltervideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a>
 							</li>
 						</ul>
 					</li>

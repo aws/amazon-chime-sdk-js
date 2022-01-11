@@ -4,10 +4,10 @@
 import BackgroundFilterVideoFrameProcessorObserver from '../backgroundfilter/BackgroundFilterVideoFrameProcessorObserver';
 
 /**
- * An observer for the background blur video frame processor.
+ * An observer for the background replacement video frame processor.
  *
- * Use {@link BackgroundBlurVideoFrameProcessor.addObserver} to register an
+ * Use {@link BackgroundReplacementVideoFrameProcessor.addObserver} to register an
  * observer with the processor.
  */
-export default interface BackgroundBlurVideoFrameProcessorObserver
+export default interface BackgroundReplacementVideoFrameProcessorObserver
   extends BackgroundFilterVideoFrameProcessorObserver {}
