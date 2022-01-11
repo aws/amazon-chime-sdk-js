@@ -11,7 +11,7 @@ assetDefinitions.forEach(assetDef => {
     const files = fs.readdirSync(assetDef.path);
 
     if (!fs.existsSync(assetDef.outputPath)) {
-        fs.mkdirSync(assetDef.outputPath, {recursive: true});
+        fs.mkdirSync(assetDef.outputPath, { recursive: true });
     }
 
     files.filter(f => assetDef.ext.includes(f.split('.').pop())).forEach(f => {
