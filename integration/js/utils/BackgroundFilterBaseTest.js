@@ -10,13 +10,10 @@ const sleep = (milliseconds) => {
 };
 class BackgroundFilterBaseTest extends SdkBaseTest {
 
-  filter_type;
-
   constructor(name, kiteConfig, filter_type) {
     super(name, kiteConfig, name);
     this.filter_type = filter_type;
   }
-
 
   async runIntegrationTest() {
 
@@ -39,11 +36,11 @@ class BackgroundFilterBaseTest extends SdkBaseTest {
     await test_window_2.runCommands(async () => await SdkTestUtils.addUserToMeeting(this, remote_attendee_id, session));
     await test_window_1.runCommands(async () => await ClickVideoButton.executeStep(this, session));
     
-    this.clickBackgroundFilterButton(test_run_info);
+    await this.clickBackgroundFilterButton(test_run_info);
 
     await test_window_1.runCommands(async () => await LocalVideoCheck.executeStep(this, session, 'VIDEO_ON'));
 
-    this.checkBackgroundFilter(test_run_info);
+    await this.checkBackgroundFilter(test_run_info);
  
     await test_window_2.runCommands(async () => await RemoteVideoCheck.executeStep(this, session, 'VIDEO_ON'));   
     await test_window_1.runCommands(async () => await ClickVideoButton.executeStep(this, session));   

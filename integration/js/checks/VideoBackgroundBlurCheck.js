@@ -3,8 +3,6 @@ const { KiteTestError, Status, TestUtils } = require('kite-common');
 
 class VideoBackgroundBlurCheck extends AppTestStep {
 
-  filter_type;
-
   constructor(kiteBaseTest, sessionInfo, attendeeId, filter_type) {
     super(kiteBaseTest, sessionInfo);
     this.attendeeId = attendeeId;
@@ -15,12 +13,20 @@ class VideoBackgroundBlurCheck extends AppTestStep {
     await step.execute(KiteBaseTest);
   }
 
+  isBlurFilter() {
+    return this.filter_type === 'blur';
+  }
+
+  filterTypeDescription() {
+    return this.isBlurFilter() ? 'background blur' : 'background replacement';
+  }
+
   stepDescription() {
-    return 'Check background filter';
+    return "Check " + this.filterTypeDescription(); 
   }
 
   async runCheck() {
-    if (this.filter_type === 'blur') {
+    if (this.isBlurFilter()) {
       return await this.page.backgroundBlurCheck(this.attendeeId);
     }
     else {
@@ -39,9 +45,9 @@ class VideoBackgroundBlurCheck extends AppTestStep {
       await TestUtils.waitAround(1000);
     }
     if (!videoBackgroundBlurCheck) {
-      throw new KiteTestError(Status.FAILED, `Background filter check failed`);
+      throw new KiteTestError(Status.FAILED, this.filterTypeDescription() + ' check failed');
     }
-    this.finished("Background filter check success");
+    this.finished(this.filterTypeDescription() + ' check success');
   }
 }
 

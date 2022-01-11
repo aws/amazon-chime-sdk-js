@@ -15,6 +15,7 @@ class BackgroundBlurTest extends BackgroundFilterBaseTest {
   }
 
   async checkBackgroundFilter(test_run_info) {
+    const {test_window_1, test_window_2, attendee_id, session} = test_run_info;
     await test_window_1.runCommands(async () => await VideoBackgroundBlurCheck.executeStep(this, session, attendee_id, this.filter_type));
     await test_window_2.runCommands(async () => await VideoBackgroundBlurCheck.executeStep(this, session, attendee_id, this.filter_type));
   }
