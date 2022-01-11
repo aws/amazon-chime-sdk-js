@@ -118,6 +118,8 @@ Resources:
         - Ref: ChimeSdkBrowserEventIngestionLogsLambdaRole
         - Ref: ChimeSdkBrowserEventIngestionLogStreamLambdaRole
   Meetings:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
@@ -167,6 +169,8 @@ Resources:
       TargetKeyId:
         Ref: ChimeKMSKey
   MeetingNotificationsQueue:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: !Sub alias/ChimeKMS-${AWS::StackName}
@@ -191,6 +195,17 @@ Resources:
           Type: Api
           Properties:
             Path: /audio_file
+            Method: GET
+  ChimeSdkStereoAudioFileLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.stereo_audio_file
+      CodeUri: src/
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /stereo_audio_file
             Method: GET
   ChimeSdkJoinLambda:
     Type: AWS::Serverless::Function

@@ -4,7 +4,8 @@
 
 The background blur API allows builders to enable background blur on a video stream. To add a background blur to a video stream the builder needs to create a `VideoFrameProcessor` using `BackgroundBlurVideoFrameProcessor` and then insert that processor into a `VideoTransformDevice`. The video frame processor uses a TensorFlow Lite (TFLite) machine learning (ML) model along with JavaScript Web Workers and WebAssembly (WASM) to apply blur to the background of each frame in the video stream. These assets are downloaded at runtime when the video frame processor is created and not provided in the source directly.
 
-Background blur is integrated into the [browser demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser) application. To try it out, launch the demo with `npm run start`, join the meeting, click on the camera icon to enable video, then select the video filter drop down and select `Background Blur`.
+Background blur is integrated into the [browser demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/browser) application. To try it out, launch the demo with `npm run start`, 
+join the meeting, click on the camera icon to enable video, then select the video filter drop down and select `Background Blur`.
 
 ## Background blur on the web
 

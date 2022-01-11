@@ -38,6 +38,9 @@ export default class SetRemoteDescriptionTask extends BaseTask {
       sdp = new DefaultSDP(sdp).withAudioMaxAverageBitrate(
         this.context.audioProfile.audioBitrateBps
       ).sdp;
+      if (this.context.audioProfile.isStereo()) {
+        sdp = new DefaultSDP(sdp).withStereoAudio().sdp;
+      }
     }
     if (!this.context.browserBehavior.requiresUnifiedPlan()) {
       // Under Plan B if our offer has video, but we're not going to subscribe to

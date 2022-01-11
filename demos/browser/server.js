@@ -49,7 +49,14 @@ if (captureS3Destination) {
 
 // return Chime Meetings SDK Client just for Echo Reduction for now.
 function getClientForMeeting(meeting) {
-  return ((useChimeSDKMeetings === 'true') || (meeting?.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE')) ? chimeSDKMeetings : chime;
+  return useChimeSDKMeetings === "true" ||
+    (meeting &&
+      meeting.Meeting &&
+      meeting.Meeting.MeetingFeatures &&
+      meeting.Meeting.MeetingFeatures.Audio &&
+      meeting.Meeting.MeetingFeatures.Audio.EchoReduction === "AVAILABLE")
+    ? chimeSDKMeetings
+    : chime;
 }
 
 function serve(host = '127.0.0.1:8080') {
@@ -248,8 +255,11 @@ function serve(host = '127.0.0.1:8080') {
           sessionToken: AWS.config.credentials.sessionToken,
         };
         respond(response, 200, 'application/json', JSON.stringify(awsCredentials), true);
-      } else if (request.method === 'GET' && requestUrl.pathname === '/audio_file') {
-        const filePath = 'dist/speech.mp3';
+      } else if (request.method === 'GET' && (requestUrl.pathname === '/audio_file' || requestUrl.pathname === '/stereo_audio_file')) {
+        let filePath = 'dist/speech.mp3';
+        if (requestUrl.pathname === '/stereo_audio_file') {
+          filePath = 'dist/speech_stereo.mp3';
+        }
         fs.readFile(filePath, {encoding: 'base64'}, function(err, data) {
           if (err) {
             log(`Error reading audio file ${filePath}: ${err}`)

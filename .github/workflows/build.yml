@@ -6,7 +6,7 @@ name: Build and Test Workflow
 on:
   pull_request:
     branches:
-      - master
+      - main
       - release-1.x
 
 jobs:

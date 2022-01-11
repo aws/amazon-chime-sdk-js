@@ -85,6 +85,10 @@
               <label for="fullband-music-mono-quality" class="custom-control-label">Set fullband music (mono) quality</label>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="fullband-music-stereo-quality" class="custom-control-input">
+              <label for="fullband-music-stereo-quality" class="custom-control-label">Set fullband music (stereo) quality</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" id="simulcast" class="custom-control-input">
               <label for="simulcast" class="custom-control-label">Enable Simulcast for Chrome</label>
             </div>
@@ -104,6 +108,10 @@
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" checked id="preconnect" class="custom-control-input">
               <label for="preconnect" class="custom-control-label">Open signaling connection early</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="text-align: left;">
+              <input type="checkbox" id="pause-last-frame" class="custom-control-input">
+              <label for="pause-last-frame" class="custom-control-label">Keep Video Last Frame When Paused</label>
             </div>
             <div class="custom-control custom-checkbox" style="text-align: left;">
               <input type="checkbox" id="event-reporting" class="custom-control-input">
@@ -490,6 +498,9 @@
             <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-right" aria-labelledby="button-content-share-drop" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
               <a id="dropdown-item-content-share-screen-capture" class="dropdown-item" href="#">Screen Capture...</a>
               <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item" href="#">Test Video</a>
+              <a id="dropdown-item-content-share-test-mono-audio-speech" class="dropdown-item" href="#">Test Mono Audio Speech</a>
+              <a id="dropdown-item-content-share-test-stereo-audio-speech" class="dropdown-item" href="#">Test Stereo Audio Speech</a>
+              <a id="dropdown-item-content-share-test-stereo-audio-tone" class="dropdown-item" href="#">Test Stereo Tone (L-500Hz R-1000Hz)</a>
               <a id="dropdown-item-content-share-file-item" class="dropdown-item" href="#"><input id="content-share-item" type="file"></a>
               <a id="dropdown-item-content-share-stop" style="display:none" class="dropdown-item" href="#">Stop Sharing</a>
             </div>

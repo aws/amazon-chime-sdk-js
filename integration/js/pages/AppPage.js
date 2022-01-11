@@ -44,6 +44,7 @@ function findAllElements() {
     microphoneDropDown440HzButton: By.id('dropdown-menu-microphone-440-Hz'),
     microphoneDropDownPrecordedSpeechButton: By.id('dropdown-menu-microphone-Prerecorded-Speech'),
     microphoneDropDownNoneButton: By.id('dropdown-menu-microphone-None'),
+    microphoneDropDownL500HzR1000HzButton: By.id('dropdown-menu-microphone-L-500Hz-R-1000Hz'),
     microphoneDropDownButton: By.id('button-microphone-drop'),
     microphoneButton: By.id('button-microphone'),
 
@@ -67,8 +68,9 @@ function findAllElements() {
     backgroundBlurFilterButton: By.id('dropdown-menu-filter-Background-Blur-10%-CPU'),
     microphoneDropEchoButton: By.id('dropdown-menu-microphone-Echo'),
     echoReductionFeature: By.id('echo-reduction-capability'),
-    echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]')
-
+    echoReductionFeatureLabel: By.css('label[for="echo-reduction-capability"]'),
+    stereoMusicProfileCheckBox: By.id('fullband-music-stereo-quality'),
+    stereoMusicProfileCheckBoxLabel: By.css('label[for="fullband-music-stereo-quality"]')
   };
 }
 
@@ -169,6 +171,18 @@ class AppPage {
     }
   }
 
+  async chooseStereoMusicAudioProfile() {
+    const stereoMusicProfileCheck = await this.driver.findElement(elements.stereoMusicProfileCheckBox);
+    const stereoMusicProfileCheckLabel = await this.driver.findElement(elements.stereoMusicProfileCheckBoxLabel);
+    
+    // Click the label because it's on top.
+    if (await stereoMusicProfileCheck.isSelected()) {
+      this.logger('stereo music audio profile is selected');
+    } else {
+      await stereoMusicProfileCheckLabel.click();
+    }
+  }
+
   async joinMeeting() {
     let joinButton = await this.driver.findElement(elements.joinButton);
     await clickElement(this.driver, joinButton);
@@ -233,6 +247,11 @@ class AppPage {
   async playRandomTone() {
     let tone = await this.driver.findElement(elements.microphoneDropDown440HzButton);
     await clickElement(this.driver, tone);
+  }
+
+  async playRandomStereoTone() {
+    let tone = await this.driver.findElement(elements.microphoneDropDownL500HzR1000HzButton);
+    await tone.click();
   }
 
   async playPrerecordedSpeech() {
@@ -443,7 +462,7 @@ class AppPage {
     }
   }
 
-  async checkTranscriptsFromLastStart(expectedTranscriptContentBySpeaker, compareFn) {
+  async checkTranscriptsFromLastStart(expectedTranscriptContentBySpeaker, isMedicalTranscribe, compareFn) {
     const transcriptContainerText = await this.driver.findElement(elements.transcriptContainer).getText();
     const allTranscripts = transcriptContainerText.split('\n');
     if (allTranscripts.length < 1) {
@@ -485,8 +504,8 @@ class AppPage {
 
     for (let i = 0; i < actualSpeakers.length; i++) {
       const speaker = actualSpeakers[i];
-      if (!compareFn(actualTranscriptContentBySpeaker[speaker], expectedTranscriptContentBySpeaker[speaker])) {
-        console.log(`Transcript comparison failed, speaker ${speaker} actual content: "${actualTranscriptContentBySpeaker[speaker]}" does not match with expected: "${expectedTranscriptContentBySpeaker[speaker]}"`);
+      if (!compareFn(actualTranscriptContentBySpeaker[speaker], expectedTranscriptContentBySpeaker[speaker], isMedicalTranscribe)) {
+        console.log(`Transcript comparison failed, speaker: ${speaker} isMedicalTranscribe: ${isMedicalTranscribe} actual content: "${actualTranscriptContentBySpeaker[speaker]}" does not match with expected: "${expectedTranscriptContentBySpeaker[speaker]}"`);
         return false;
       }
     }
@@ -610,10 +629,10 @@ class AppPage {
     return 'blank';
   }
 
-  async audioCheck(stepInfo, expectedState) {
+  async audioCheck(stepInfo, expectedState, checkStereoTones = false) {
     let res = undefined;
     try {
-      res = await this.driver.executeAsyncScript(async (expectedState) => {
+      res = await this.driver.executeAsyncScript(async (expectedState, checkStereoTones) => {
         let logs = [];
         let callback = arguments[arguments.length - 1];
 
@@ -621,60 +640,77 @@ class AppPage {
           return new Promise(resolve => setTimeout(resolve, milliseconds))
         };
 
-        let successfulToneChecks = 0;
-        let totalToneChecks = 0;
-        let audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        let minToneError = Infinity;
-        let maxToneError = -Infinity;
+        const channelCount = checkStereoTones ? 2 : 1;
+
+        const successfulToneChecks = Array(channelCount).fill(0);
+        const totalToneChecks = Array(channelCount).fill(0);
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const minToneError = Array(channelCount).fill(Infinity);
+        const maxToneError = Array(channelCount).fill(-Infinity);
+        const percentages = Array(channelCount).fill(0);
         try {
-          let stream = document.getElementById('meeting-audio').srcObject;
-          let source = audioContext.createMediaStreamSource(stream);
-          let analyser = audioContext.createAnalyser();
-          source.connect(analyser);
-          let byteFrequencyData = new Uint8Array(analyser.frequencyBinCount);
-          let floatFrequencyData = new Float32Array(analyser.frequencyBinCount);
+          const stream = document.getElementById('meeting-audio').srcObject;
+          const source = audioContext.createMediaStreamSource(stream);
+          let analyser = [];
+          for(let i=0; i<channelCount; i++) {
+            analyser.push(audioContext.createAnalyser());
+          }
+          let byteFrequencyData = [];
+          for(let i=0; i<channelCount; i++) {
+            byteFrequencyData.push(new Uint8Array(analyser[i].frequencyBinCount));
+          }
+          let floatFrequencyData = [];
+          for(let i=0; i<channelCount; i++) {
+            floatFrequencyData.push(new Float32Array(analyser[i].frequencyBinCount));
+          }
+
+          if (checkStereoTones) {
+            const splitterNode = audioContext.createChannelSplitter(2);
+            source.connect(splitterNode);
+            splitterNode.connect(analyser[0], 0);
+            splitterNode.connect(analyser[1], 1);
+          } else {
+            source.connect(analyser[0]);
+          }
 
           await sleep(5000);
 
-          const getAverageVolume = () => {
-            analyser.getByteFrequencyData(byteFrequencyData);
-
+          const getAverageVolume = (channelIndex) => {
+            analyser[channelIndex].getByteFrequencyData(byteFrequencyData[channelIndex]);
             let values = 0;
             let average;
-            let length = byteFrequencyData.length;
+            const length = byteFrequencyData[channelIndex].length;
             // get all the frequency amplitudes
             for (let i = 0; i < length; i++) {
-              values += byteFrequencyData[i];
+              values += byteFrequencyData[channelIndex][i];
             }
             average = values / length;
             return average;
           };
 
-          const checkVolumeFor = async (runCount) => {
-            let i = 0;
-            for (i = 0; i < runCount; i++) {
-              totalToneChecks++;
-              const avgTestVolume = getAverageVolume();
+          const checkVolumeFor = async (runCount, channelIndex) => {
+            for (let i = 0; i < runCount; i++) {
+              totalToneChecks[channelIndex]++;
+              const avgTestVolume = getAverageVolume(channelIndex);
               logs.push(`Resulting volume ${avgTestVolume}`);
               if (
                 (expectedState === "AUDIO_ON" && avgTestVolume > 0) ||
                 (expectedState === "AUDIO_OFF" && avgTestVolume === 0)
               ) {
-                successfulToneChecks++;
+                successfulToneChecks[channelIndex]++;
               }
-              i++;
               await sleep(100)
             }
           };
 
-          const checkFrequency = (targetReceiveFrequency) => {
-            analyser.getFloatFrequencyData(floatFrequencyData);
+          const checkFrequency = (targetReceiveFrequency, channelIndex) => {
+            analyser[channelIndex].getFloatFrequencyData(floatFrequencyData[channelIndex]);
             // logs.push(`frequency data : ${floatFrequencyData}`);
             let maxBinDb = -Infinity;
             let hotBinFrequency = 0;
-            const binSize = audioContext.sampleRate / analyser.fftSize; // default fftSize is 2048
-            for (let i = 0; i < floatFrequencyData.length; i++) {
-              const v = floatFrequencyData[i];
+            const binSize = audioContext.sampleRate / analyser[channelIndex].fftSize; // default fftSize is 2048
+            for (let i = 0; i < floatFrequencyData[channelIndex].length; i++) {
+              const v = floatFrequencyData[channelIndex][i];
               if (v > maxBinDb) {
                 maxBinDb = v;
                 hotBinFrequency = i * binSize;
@@ -682,36 +718,46 @@ class AppPage {
             }
             const error = Math.abs(hotBinFrequency - targetReceiveFrequency);
             if (maxBinDb > -Infinity) {
-              if (error < minToneError) {
-                minToneError = error;
+              if (error < minToneError[channelIndex]) {
+                minToneError[channelIndex] = error;
               }
-              if (error > maxToneError) {
-                maxToneError = error;
+              if (error > maxToneError[channelIndex]) {
+                maxToneError[channelIndex] = error;
               }
             }
             if (error <= 2 * binSize) {
-              successfulToneChecks++;
+              successfulToneChecks[channelIndex]++;
             }
-            totalToneChecks++;
+            totalToneChecks[channelIndex]++;
             return hotBinFrequency
           };
 
-          const checkFrequencyFor = async (runCount, freq) => {
-            let i = 0;
-            for (i = 0; i < runCount; i++) {
-              const testFrequency = checkFrequency(freq);
-              logs.push(`Resulting Frequency ${testFrequency}`);
-              i++;
+          const checkFrequencyFor = async (runCount, freq, channelIndex) => {
+            for (let i = 0; i < runCount; i++) {
+              const testFrequency = checkFrequency(freq, channelIndex);
+              logs.push(`Resulting Frequency ${testFrequency} for channel ${channelIndex}`);
               await sleep(100)
             }
           };
 
           if (expectedState === "AUDIO_OFF") {
-            await checkVolumeFor(50);
+            await checkVolumeFor(50, 0);
+            if (checkStereoTones) {
+              await checkVolumeFor(50, 1);
+            }
           }
 
           if (expectedState === "AUDIO_ON") {
-            await checkFrequencyFor(50, 440);
+            if (checkStereoTones) {
+              await checkFrequencyFor(50, 500, 0);
+              await checkFrequencyFor(50, 1000, 1);
+            } else {
+              await checkFrequencyFor(50, 440, 0);
+            }
+          }
+
+          for (let i=0; i<channelCount; i++) {
+            percentages[i] = successfulToneChecks[i] / totalToneChecks[i];
           }
         } catch (e) {
           logs.push(`${e}`)
@@ -719,11 +765,11 @@ class AppPage {
           logs.push(`test completed`);
           await audioContext.close();
           callback({
-            percentage: successfulToneChecks / totalToneChecks,
+            percentages,
             logs
           });
         }
-      }, expectedState);
+      }, expectedState, checkStereoTones);
     } catch (e) {
       this.logger(`Audio Check Failed ${e}`)
     } finally {
@@ -733,11 +779,16 @@ class AppPage {
         })
       }
     }
-    this.logger(`Audio check success rate: ${res.percentage * 100}%`);
-    if (res.percentage >= 0.75) {
-      return true
+    if (!res) {
+      return false;
     }
-    return false
+    for (let i=0; i<res.percentages.length; i++) {
+      this.logger(`Audio check success rate channel ${i}: ${res.percentages[i] * 100}%`);
+      if (res.percentages[i] < 0.75) {
+        return false;
+      }
+    }
+    return true;
   }
 
   async triggerReconnection() {

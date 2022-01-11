@@ -7,20 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Add `supportDownlinkBandwidthEstimation` API to check whether the browser support downlink bandwidth estimation 
-  which requires for priority based downlink policy to work.
+- Ability to choose remote video sources in `AllHighestVideoBandwidthPolicy`. see [guide](https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html#downlink-policy)
 
 ### Removed
 
 ### Fixed
+- Correct the minimum supported Firefox version to `75` to match the official [documentation](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers).
 
 ### Changed
+- Enforced a video receive limit incase the number of videos shared in the meeting are greater than the limit. The current limit is 25, which can change in future.
+- Clarified a comment in `DefaultSimulcastUplinkPolicy`.
 
-## [2.24.0] - 2021-12-07
+## [2.24.0] - 2021-12-17
 ### Added
+- Add `supportDownlinkBandwidthEstimation` API to check whether browsers support downlink bandwidth estimation 
+  which requires for priority based downlink policy to work.
+- Add `keepLastFrameWhenPaused` in `DefaultVideoTile` as an option to keep last frame when pausing a video tile.
 - Add error name for custom device controller error.
 - Added pagination option to meeting demo when priority downlink policy is used.
 - Add `ApplicationMetadata` to enable builders to send their application name or version to the Amazon Chime backend. This is an opt-in addition.
+- Add a new `AudioProfile` called `fullbandMusicStereo` which can be passed into `setAudioProfile` to support sending and recieving stereo audio through main audio input and output. This can also be passed into `setContentAudioProfile` to support sending stereo audio as content
+- [Demo] Add new checbox on join screen to select new `fullbandMusicStereo` audio profile
+- [Demo] Add new dropdown items in microphone dropdown menu to test sending stereo audio as main audio input
+- [Demo] Add new dropdown items in content share dropdown menu to test sending stereo audio as content
 
 ### Removed
 
@@ -30,6 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Clarified comment in `DefaultSimulcastUplinkPolicy`.
+
+## [2.23.1] - 2021-12-17
+
+### Fixed
+- Temporararily removed munging of layers allocation extension to mitigate Chrome M97 change which led to `setLocalDescription` failures. This was not yet being negotiated by the remote end, so this will not have any impact on media quality.
 
 ## [2.23.0] - 2021-11-22
 ### Added

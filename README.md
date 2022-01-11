@@ -111,9 +111,9 @@ The following developer guides cover the Amazon Chime SDK more broadly.
 ## Examples
 
 - [Amazon Chime SDK Samples](https://github.com/aws-samples/amazon-chime-sdk) — Amazon Chime SDK Samples repository
-- [Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/browser) — A browser
+- [Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/browser) — A browser
  meeting application with a local server
-- [Serverless Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos/serverless) — A self-contained serverless meeting application
+- [Serverless Meeting Demo](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos/serverless) — A self-contained serverless meeting application
 - [Single JS](https://github.com/aws-samples/amazon-chime-sdk/tree/main/utils/singlejs) — A script to bundle the SDK into a single `.js` file
 - [Recording Demo](https://aws.amazon.com/blogs/business-productivity/how-to-enable-client-side-recording-using-the-amazon-chime-sdk/) — Recording the meeting's audio, video and screen share in high definition
 - [Virtual Classroom](https://aws.amazon.com/blogs/business-productivity/building-a-virtual-classroom-application-using-the-amazon-chime-sdk/) — An online classroom built with Electron and React
@@ -1149,7 +1149,7 @@ Use the following setting to optimize the audio bitrate of the main audio input 
 
 ```js
 meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandSpeechMono());
-````
+```
 
 **Use case 33.** Set the audio quality of content share audio to optimize for speech or music:
 
@@ -1159,9 +1159,25 @@ Use the following setting to optimize the audio bitrate of content share audio f
 meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicMono());
 ```
 
+**Use case 34.** Sending and receiving stereo audio
+
+You can send an audio stream with stereo channels either as content or through the main audio input.
+
+Use the following setting to optimize the main audio input and output for an audio stream with stereo channels:
+
+```js
+meetingSession.audioVideo.setAudioProfile(AudioProfile.fullbandMusicStereo());
+```
+
+Use the following setting to optimize the content share audio for an audio stream with stereo channels:
+
+```js
+meetingSession.audioVideo.setContentAudioProfile(AudioProfile.fullbandMusicStereo());
+```
+
 ### Starting a messaging session
 
-**Use case 34.** Setup an observer to receive events: connecting, start, stop and receive message; and
+**Use case 35.** Setup an observer to receive events: connecting, start, stop and receive message; and
 start a messaging session.
 
 > Note: You can remove an observer by calling `messagingSession.removeObserver(observer)`.
@@ -1198,7 +1214,7 @@ Amazon Chime SDK for JavaScript allows builders to provide application metadata 
 
 > ⚠️ Do not pass any Personal Identifiable Information (PII).
 
-**Use case 35.** Provide application metadata to the meeting session configuration.
+**Use case 36.** Provide application metadata to the meeting session configuration.
 
 ```js
 import { MeetingSessionConfiguration, ApplicationMetadata } from 'amazon-chime-sdk-js';
@@ -1230,13 +1246,14 @@ appName: string;
 appVersion: string;
 ```
 
+
 ## Notice
 
 The use of Amazon Voice Focus and background blur via this SDK involves the downloading and execution of code at runtime by end users.
 
 The use of Amazon Voice Focus and background blur runtime code is subject to additional notices. See [this Amazon Voice Focus NOTICES file](https://static.sdkassets.chime.aws/workers/NOTICES.txt) and [background blur NOTICES file](https://static.sdkassets.chime.aws/bgblur/workers/NOTICES.txt) for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus and background blur runtime code via this SDK.
 
-The browser demo applications in the [demos directory](https://github.com/aws/amazon-chime-sdk-js/tree/master/demos) use [TensorFlow.js](https://github.com/tensorflow/tfjs) and pre-trained [TensorFlow.js models](https://github.com/tensorflow/tfjs-models) for image segmentation. Use of these third party models involves downloading and execution of code at runtime from [jsDelivr](https://www.jsdelivr.com/) by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this [link](https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net).
+The browser demo applications in the [demos directory](https://github.com/aws/amazon-chime-sdk-js/tree/main/demos) use[TensorFlow.js](https://github.com/tensorflow/tfjs) and pre-trained [TensorFlow.js models](https://github.com/tensorflow/tfjs-models) for image segmentation. Use of these third party models involves downloading and execution of code at runtime from [jsDelivr](https://www.jsdelivr.com/) by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this [link](https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net).
 
 The use of TensorFlow runtime code referenced above may be subject to additional license requirements. See the licenses page for TensorFlow.js [here](https://github.com/tensorflow/tfjs/blob/master/LICENSE) and TensorFlow.js models [here](https://github.com/tensorflow/tfjs-models/blob/master/LICENSE) for details.
 

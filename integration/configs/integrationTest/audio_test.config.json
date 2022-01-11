@@ -14,6 +14,33 @@
         "port": 30001,
         "retry": 2
       }
+    },
+    {
+      "name": "Audio Test Stereo Mode Mono Tone %ts",
+      "description": "Audio Test Stereo Mode Mono Tone",
+      "tupleSize": 2,
+      "noOfThreads": 1,
+      "testImpl": "AudioTest.js",
+      "payload": {
+        "url": "http://localhost:8080/?earlyConnect=1",
+        "port": 30001,
+        "retry": 2,
+        "useStereoMusicAudioProfile": true
+      }
+    },
+    {
+      "name": "Audio Test Stereo Mode Stereo Tone %ts",
+      "description": "Audio Test Stereo Mode Stereo Tone",
+      "tupleSize": 2,
+      "noOfThreads": 1,
+      "testImpl": "AudioTest.js",
+      "payload": {
+        "url": "http://localhost:8080/?earlyConnect=1",
+        "port": 30001,
+        "retry": 2,
+        "generateStereoTones": true,
+        "useStereoMusicAudioProfile": true
+      }
     }
   ],
   "clients": [
