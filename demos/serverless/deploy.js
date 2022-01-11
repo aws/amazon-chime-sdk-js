@@ -224,7 +224,7 @@ function createS3Bucket(bucketPrefix, bucketRegion) {
     }]
   });
 
-  fs.writeFileSync(`build/bucket_policy.json`, bucketPolicy, {encoding: 'utf8', flag: 'w'});
+  fs.writeFileSync('build/bucket_policy.json', bucketPolicy, {encoding: 'utf8', flag: 'w'});
 
   const s3Api = spawnSync('aws', ['s3api', 'head-bucket', '--bucket', `${bucketName}`, '--region', `${bucketRegion}`]);
   if (s3Api.status !== 0) {
@@ -233,7 +233,7 @@ function createS3Bucket(bucketPrefix, bucketRegion) {
     } else {
       spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion, '--create-bucket-configuration', `LocationConstraint=${bucketRegion}`]);
     }
-    spawnOrFail('aws', ['s3api', 'put-bucket-policy', '--bucket', bucketName, '--region', bucketRegion, '--policy', `file://build/bucket_policy.json`]);
+    spawnOrFail('aws', ['s3api', 'put-bucket-policy', '--bucket', bucketName, '--region', bucketRegion, '--policy', 'file://build/bucket_policy.json']);
     spawnOrFail('aws', ['s3api', 'put-bucket-lifecycle-configuration', '--bucket', bucketName, '--region', bucketRegion, '--lifecycle-configuration', 'file://build/lifecycle_configuration.json']);
   }
 }
@@ -266,7 +266,7 @@ if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
     createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);
 }
-spawnOrFail('sam', ['deploy', '--template-file', `./build/packaged.yaml`, '--stack-name', `${stack}`,
+spawnOrFail('sam', ['deploy', '--template-file', './build/packaged.yaml', '--stack-name', `${stack}`,
                     '--parameter-overrides', parameterOverrides,
                     '--capabilities', 'CAPABILITY_IAM', '--region', `${region}`, '--no-fail-on-empty-changeset'], null, !disablePrintingLogs);
 if (enableTerminationProtection) {
