@@ -1089,6 +1089,31 @@ describe('VideoPriorityBasedPolicy', () => {
   });
 
   describe('VideoPriorityBasedPolicyConfig', () => {
+    it('will not instantly drop videos caused by dip during startup period', () => {
+      const policy = new VideoPriorityBasedPolicy(logger);
+      updateIndexFrame(videoStreamIndex, 1, 0, 1200);
+      policy.updateIndex(videoStreamIndex);
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      const received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2]);
+
+      incrementTime(500);
+      const metricReport = new DefaultClientMetricReport(logger);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 1000 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+
+      incrementTime(1100);
+      metricReport.globalMetricReport = new GlobalMetricReport();
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 300 * 1000;
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+    });
+
     it('unstable network with unstable preset', () => {
       const config = VideoPriorityBasedPolicyConfig.UnstableNetworkPreset;
       policy.setVideoPriorityBasedPolicyConfigs(config);
@@ -1167,7 +1192,7 @@ describe('VideoPriorityBasedPolicy', () => {
       expect(received.array()).to.deep.equal([2, 4, 5]);
     });
 
-    it('stable network with unstable preset', () => {
+    it('stable network with stable preset', () => {
       const config = VideoPriorityBasedPolicyConfig.StableNetworkPreset;
       policy.setVideoPriorityBasedPolicyConfigs(config);
       updateIndexFrame(videoStreamIndex, 3, 300, 1200);
@@ -1220,7 +1245,7 @@ describe('VideoPriorityBasedPolicy', () => {
       resub = policy.wantsResubscribe();
       expect(resub).to.equal(false);
 
-      incrementTime(5100);
+      incrementTime(8100);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 900 * 1000;
       policy.updateMetrics(metricReport);
       resub = policy.wantsResubscribe();
