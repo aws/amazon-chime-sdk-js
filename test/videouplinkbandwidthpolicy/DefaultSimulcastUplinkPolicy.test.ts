@@ -17,7 +17,6 @@ import {
 } from '../../src/signalingprotocol/SignalingProtocol.js';
 import SimulcastLayers from '../../src/simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from '../../src/transceivercontroller/SimulcastTransceiverController';
-import { wait as delay } from '../../src/utils/Utils';
 import SimulcastVideoStreamIndex from '../../src/videostreamindex/SimulcastVideoStreamIndex';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
 import SimulcastUplinkObserver from '../../src/videouplinkbandwidthpolicy/SimulcastUplinkObserver';
@@ -447,46 +446,30 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       let called = 0;
       class TestObserver implements SimulcastUplinkObserver {
         encodingSimulcastLayersDidChange(_simulcastLayer: SimulcastLayers): void {
-          if (event !== 1 && event !== 3 && event !== 5) {
+          if (event !== 1 && event !== 3) {
             assert.fail();
           }
           called += 1;
         }
       }
       const observer = new TestObserver();
-      await delay(100);
       (policy as SimulcastUplinkPolicy).addObserver(observer);
       event += 1;
       (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
         observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
       });
-      await delay(100);
       (policy as SimulcastUplinkPolicy).removeObserver(observer);
       event += 1;
       (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
         observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
       });
-      await delay(100);
       (policy as SimulcastUplinkPolicy).addObserver(observer);
       event += 1;
       (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
         observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
       });
-      await delay(100);
-      event += 1;
-      (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
-        observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
-      });
-      (policy as SimulcastUplinkPolicy).removeObserver(observer);
-      await delay(100);
-      (policy as SimulcastUplinkPolicy).addObserver(observer);
-      event += 1;
-      (policy as SimulcastUplinkPolicy).forEachObserver((observer: SimulcastUplinkObserver) => {
-        observer.encodingSimulcastLayersDidChange(SimulcastLayers.High);
-      });
-      await delay(100);
-      expect(event).to.equal(5);
-      expect(called).to.equal(3);
+      expect(event).to.equal(3);
+      expect(called).to.equal(2);
     });
 
     it('observer should get called only when simulcast encoding layers change', async () => {
@@ -504,7 +487,6 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       const index = new SimulcastVideoStreamIndex(logger);
       // Low and high simulcast streams by default
       let encodingParams = policy.chooseEncodingParameters();
-      await delay(100);
       index.integrateUplinkPolicyDecision(Array.from(encodingParams.values()));
       // Only high simulcast stream
       updateIndexFrame(index, 1);
@@ -525,7 +507,6 @@ describe('DefaultSimulcastUplinkPolicy', () => {
       updateIndexFrame(index, 8);
       policy.updateIndex(index);
       encodingParams = policy.chooseEncodingParameters();
-      await delay(100);
       expect(called).to.equal(4);
     });
   });
