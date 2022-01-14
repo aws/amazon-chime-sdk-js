@@ -1490,7 +1490,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    it('will skip renegotiation if we are only completing simulcast stream encoding change', async () => {
+    it('will skip renegotiation if simulcast streams do not change', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
@@ -1519,16 +1519,6 @@ describe('DefaultAudioVideoController', () => {
         }
       }
 
-      let remoteVideoUpdateCalled = false;
-      class TestSignalingClient extends DefaultSignalingClient {
-        remoteVideoUpdate(
-          _addedOrUpdated: SignalingClientVideoSubscriptionConfiguration[],
-          _removedMids: string[]
-        ): void {
-          remoteVideoUpdateCalled = true;
-        }
-      }
-
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
         1,
@@ -1539,17 +1529,14 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
       audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
-      // @ts-ignore
-      audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
-        webSocketAdapter,
-        new NoOpDebugLogger()
-      );
 
+      // One that requires subscribe
+      audioVideoController.update({ needsRenegotiation: false });
+      // One that doesn't
       audioVideoController.update({ needsRenegotiation: false });
 
       await stop();
 
-      expect(remoteVideoUpdateCalled).to.be.false;
       // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
       expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
         .true;
