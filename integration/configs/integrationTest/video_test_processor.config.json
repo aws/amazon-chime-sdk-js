@@ -1,20 +1,22 @@
 {
   "`": 1,
   "name": "video_test_processor.config.json %ts",
-  "grids": [
-  ],
+  "grids": [],
   "tests": [
     {
       "name": "Video Test Processor %ts",
       "description": "Video Test Processor",
-      "tupleSize": 2,
+      "tupleSize": 1,
       "noOfThreads": 1,
       "testImpl": "VideoTest.js",
       "payload": {
         "url": "http://localhost:8080/",
-        "port": 30015,
         "retry": 2,
-        "useVideoProcessor": true
+        "useVideoProcessor": true,
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
       }
     }
   ],
