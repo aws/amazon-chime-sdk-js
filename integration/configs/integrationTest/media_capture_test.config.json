@@ -1,26 +1,26 @@
 {
-    "`": 1,
-    "name": "media_capture_test.config.json %ts",
-    "grids": [],
-    "tests": [
-      {
-        "name": "Media Capture Test %ts",
-        "description": "Media Capture Test",
-        "tupleSize": 1,
-        "noOfThreads": 1,
-        "testImpl": "MediaCaptureTest.js",
-        "payload": {
-          "url": "http://localhost:8080/",
-          "retry": 2,
-          "region": "us-east-1"
-        }
+  "`": 1,
+  "name": "media_capture_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Media Capture Test %ts",
+      "description": "Media Capture Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "MediaCaptureTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "retry": 2,
+        "region": "us-east-1"
       }
-    ],
-    "clients": [
-      {
-        "browserName": "chrome",
-        "version": "latest",
-        "platform": "MAC"
-      }
-    ]
-  }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}

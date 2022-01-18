@@ -6,14 +6,17 @@
     {
       "name": "Video Test Simulcast %ts",
       "description": "Video Test Simulcast",
-      "tupleSize": 2,
+      "tupleSize": 1,
       "noOfThreads": 1,
       "testImpl": "VideoTest.js",
       "payload": {
         "url": "http://localhost:8080/",
-        "port": 30010,
         "retry": 2,
-        "useSimulcast": true
+        "useSimulcast": true,
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
       }
     }
   ],
