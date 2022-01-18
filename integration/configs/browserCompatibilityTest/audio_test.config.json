@@ -6,13 +6,16 @@
     {
       "name": "Audio Test %ts",
       "description": "Audio Test",
-      "tupleSize": 2,
+      "tupleSize": 1,
       "noOfThreads": 1,
       "testImpl": "AudioTest.js",
       "payload": {
         "url": "http://localhost:8080/?earlyConnect=1",
-        "port": 30001,
-        "retry": 2
+        "retry": 2,
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
       }
     }
   ],

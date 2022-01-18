@@ -6,13 +6,16 @@
     {
       "name": "Video Test %ts",
       "description": "Video Test",
-      "tupleSize": 2,
+      "tupleSize": 1,
       "noOfThreads": 1,
       "testImpl": "VideoTest.js",
       "payload": {
         "url": "http://localhost:8080/?earlyConnect=1",
-        "port": 30002,
-        "retry": 2
+        "retry": 2,
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
       }
     }
   ],

@@ -1,32 +1,31 @@
 {
-    "`": 1,
-    "name": "transcription_test.config.json %ts",
-    "grids": [],
-    "tests": [
-      {
-        "name": "Transcription Test %ts",
-        "description": "Transcription Test",
-        "tupleSize": 1,
-        "noOfThreads": 1,
-        "testImpl": "TranscriptionTest.js",
-        "payload": {
-          "url": "http://localhost:8080/",
-          "region": "us-east-1",
-          "port": 30001,
-          "retry": 2
-        }
+  "`": 1,
+  "name": "transcription_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Transcription Test %ts",
+      "description": "Transcription Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "TranscriptionTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
+        "region": "us-east-1",
+        "retry": 2
       }
-    ],
-    "clients": [
-      {
-        "browserName": "chrome",
-        "version": "latest",
-        "platform": "MAC"
-      },
-      {
-        "browserName": "firefox",
-        "version": "latest",
-        "platform": "MAC"
-      }
-    ]
-  }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "MAC"
+    }
+  ]
+}
