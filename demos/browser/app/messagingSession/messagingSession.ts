@@ -18,8 +18,7 @@ import {
   Versioning,
 } from 'amazon-chime-sdk-js';
 
-import * as AWS from 'aws-sdk/global';
-import * as Chime from 'aws-sdk/clients/chime';
+import { ChimeSDKMessagingClient, GetMessagingSessionEndpointCommand } from '@aws-sdk/client-chime-sdk-messaging';
 
 export class DemoMessagingSessionApp implements MessagingSessionObserver {
   static readonly BASE_URL: string = [
@@ -52,22 +51,48 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
 
   initEventListeners(): void {
     document.getElementById('connect').addEventListener('click', async () => {
-      const response = await this.fetchCredentials();
-      AWS.config.credentials = new AWS.Credentials(response.accessKeyId, response.secretAccessKey, response.sessionToken);
-      AWS.config.credentials.get(async () => {
+      // AWS.config.credentials = new AWS.Credentials(response.accessKeyId, response.secretAccessKey, response.sessionToken);
+      // AWS.config.credentials.get(async () => {
+      //   this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
+      //   this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
+      //   try {
+      //     const chime = new ChimeSDKMessagingClient({ region: 'us-east-1' });
+      //     const endpoint = await chime.getMessagingSessionEndpoint().promise();
+      //     this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime, AWS);
+      //     this.session = new DefaultMessagingSession(this.configuration, this.logger);
+      //     this.session.addObserver(this);
+      //     this.session.start();
+      //   } catch (error) {
+      //     console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
+      //   }
+      // });
+      try {
+        // const chime = new ChimeSDKMessaging({ credentials: async () => {
+        //   const response = await this.fetchCredentials();
+        //   return {
+        //     accessKeyId: response.AccessKeyId,
+        //     secretAccessKey: response.SecretAccessKey,
+        //     sessionToken: response.SessionToken
+        //   };
+        // }});
+        // console.log(chime.config.credentials);
+        // const endpoint = await chime.getMessagingSessionEndpoint();
+        // console.log(endpoint);
+        const response = await this.fetchCredentials();
+        const chime = new ChimeSDKMessagingClient({ region: 'us-east-1', credentials: response });
+        const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
+        console.log(endpoint);
+        console.log(await chime.config.credentials());
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-        try {
-          const chime = new Chime({ region: 'us-east-1' });
-          const endpoint = await chime.getMessagingSessionEndpoint().promise();
-          this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime, AWS);
-          this.session = new DefaultMessagingSession(this.configuration, this.logger);
-          this.session.addObserver(this);
-          this.session.start();
-        } catch (error) {
-          console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
-        }
-      });
+        this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);
+        this.session = new DefaultMessagingSession(this.configuration, this.logger);
+        this.session.addObserver(this);
+        this.session.start();
+      } catch (error) {
+        console.error(error);
+        console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
+      }
     });
     document.getElementById('disconnect').addEventListener('click', () => {
       this.session?.stop();

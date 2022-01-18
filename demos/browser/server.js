@@ -92,14 +92,14 @@ function serve(host = '127.0.0.1:8080') {
             // For simplicity here, we use the meeting title.
             ExternalMeetingId: requestUrl.query.title.substring(0, 64),
           };
-          
+
           if (requestUrl.query.ns_es === 'true') {
             client = chimeSDKMeetings;
             request.MeetingFeatures = {
               Audio: {
                 // The EchoReduction parameter helps the user enable and use Amazon Echo Reduction.
                 EchoReduction: 'AVAILABLE'
-              } 
+              }
             };
           }
           meetingTable[requestUrl.query.title] = await client.createMeeting(request).promise();
@@ -119,7 +119,7 @@ function serve(host = '127.0.0.1:8080') {
           // be used to help build the roster.
           ExternalUserId: `${uuidv4().substring(0, 8)}#${requestUrl.query.name}`.substring(0, 64),
         }).promise();
-        
+
         // Return the meeting and attendee responses. The client will use these
         // to join the meeting.
         respond(response, 201, 'application/json', JSON.stringify({
@@ -163,13 +163,6 @@ function serve(host = '127.0.0.1:8080') {
           console.warn("Cloud media capture not available")
           respond(response, 500, 'application/json', JSON.stringify({}))
         }
-      } else if (request.method === 'GET' && requestUrl.pathname === '/fetch_credentials') {
-        const awsCredentials = {
-          accessKeyId: AWS.config.credentials.accessKeyId,
-          secretAccessKey: AWS.config.credentials.secretAccessKey,
-          sessionToken: AWS.config.credentials.sessionToken,
-        };
-        respond(response, 200, 'application/json', JSON.stringify(awsCredentials), true);
       } else if (request.method === 'POST' && requestUrl.pathname === '/end') {
         // End the meeting. All attendee connections will hang up.
         let client = getClientForMeeting(meetingTable[requestUrl.query.title]);
@@ -185,7 +178,7 @@ function serve(host = '127.0.0.1:8080') {
         let transcriptionStreamParams = {};
         if (requestUrl.query.transcriptionStreamParams){
           transcriptionStreamParams = JSON.parse(requestUrl.query.transcriptionStreamParams);
-        } 
+        }
         const contentIdentification = requestUrl.query.contentIdentification;
         const piiEntityTypes = requestUrl.query.piiEntityTypes;
         if (requestUrl.query.engine === 'transcribe') {

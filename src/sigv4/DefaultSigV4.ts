@@ -3,6 +3,8 @@
 
 import Versioning from '../versioning/Versioning';
 import SigV4 from './SigV4';
+var hmacSHA256 = require('crypto-js/hmac-sha256');
+var sha256 = require('crypto-js/sha256');
 
 export default class DefaultSigV4 implements SigV4 {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
@@ -43,14 +45,22 @@ export default class DefaultSigV4 implements SigV4 {
     regionName: string,
     serviceName: string
   ): string {
-    const kDate = this.awsClient.util.crypto.hmac('AWS4' + key, date, 'buffer');
-    const kRegion = this.awsClient.util.crypto.hmac(kDate, regionName, 'buffer');
-    const kService = this.awsClient.util.crypto.hmac(kRegion, serviceName, 'buffer');
-    const kSigning = this.awsClient.util.crypto.hmac(kService, 'aws4_request', 'buffer');
+    const kDate = hmacSHA256(date, 'AWS4' + key, {
+      asBytes: true
+    });
+    const kRegion = hmacSHA256(regionName, kDate, {
+      asBytes: true
+    });
+    const kService = hmacSHA256(serviceName, kRegion, {
+      asBytes: true
+    });
+    const kSigning = hmacSHA256('aws4_request', kService, {
+      asBytes: true
+    });
     return kSigning;
   }
 
-  signURL(
+  async signURL(
     method: string,
     scheme: string,
     serviceName: string,
@@ -58,18 +68,18 @@ export default class DefaultSigV4 implements SigV4 {
     path: string,
     payload: string,
     queryParams: Map<string, string[]> | null
-  ): string {
+  ): Promise<string> {
     const now = this.getDateTimeString();
     const today = this.getDateString(now);
 
     const algorithm = 'AWS4-HMAC-SHA256';
-    const region = this.chimeClient.config.region;
+    const region = await this.chimeClient.config.region();
 
     const signedHeaders = 'host';
 
     const canonicalHeaders = 'host:' + hostname.toLowerCase() + '\n';
     const credentialScope = today + '/' + region + '/' + serviceName + '/' + 'aws4_request';
-    const credentials = this.chimeClient.config.credentials;
+    const credentials = await this.chimeClient.config.credentials();
 
     let params: Map<string, string[]> = new Map<string, string[]>();
     params.set('X-Amz-Algorithm', [algorithm]);
@@ -119,9 +129,9 @@ export default class DefaultSigV4 implements SigV4 {
       '\n' +
       signedHeaders +
       '\n' +
-      this.awsClient.util.crypto.sha256(payload, 'hex');
+      sha256(payload,  { asBytes: true });
 
-    const hashedCanonicalRequest = this.awsClient.util.crypto.sha256(canonicalRequest, 'hex');
+    const hashedCanonicalRequest = sha256(canonicalRequest, { asBytes: true });
 
     const stringToSign =
       'AWS4-HMAC-SHA256\n' +
@@ -142,7 +152,7 @@ export default class DefaultSigV4 implements SigV4 {
       serviceName
     );
 
-    const signature = this.awsClient.util.crypto.hmac(signingKey, stringToSign, 'hex');
+    const signature = hmacSHA256(stringToSign, signingKey, { asBytes: true });
 
     const finalParams = canonicalQuerystring + '&X-Amz-Signature=' + signature;
 
