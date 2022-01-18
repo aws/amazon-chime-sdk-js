@@ -13,7 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Added additional pausing of `MonitorTask` and `ReceiveVideoStreamIndexTask` to avoid modifying mutable state mid-subscribe
+- Fixed delays in advertising simulcast stream switches due to asynchronous and out of order checks
+
 ### Changed
+- Made `SimulcastUplinkObserver.encodingSimulcastLayersDidChange` (*not* `AudioVideoObserver.encodingSimulcastLayersDidChange`) synchronous.
 
 ## [2.25.0] - 2022-01-11
 ### Added

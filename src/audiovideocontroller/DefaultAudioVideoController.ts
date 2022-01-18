@@ -916,25 +916,25 @@ export default class DefaultAudioVideoController
   }
 
   updateLocalVideoFromPolicy(): boolean {
-    if (
-      this.mayNeedRenegotiationForSimulcastLayerChange &&
-      !this.negotiatedBitrateLayersAllocationRtpHeaderExtension()
-    ) {
-      this.logger.info('Needs regenotiation for local video simulcast layer change');
-      this.mayNeedRenegotiationForSimulcastLayerChange = false;
-      return false;
+    // Try updating parameters without renegotiation
+    if (this.meetingSessionContext.enableSimulcast) {
+      // The following may result in `this.mayNeedRenegotiationForSimulcastLayerChange` being switched on
+      const encodingParam = this.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
+      if (
+        this.mayNeedRenegotiationForSimulcastLayerChange &&
+        !this.negotiatedBitrateLayersAllocationRtpHeaderExtension()
+      ) {
+        this.logger.info('Needs regenotiation for local video simulcast layer change');
+        this.mayNeedRenegotiationForSimulcastLayerChange = false;
+        return false;
+      }
+      this.meetingSessionContext.transceiverController.setEncodingParameters(encodingParam);
+    } else {
+      this.meetingSessionContext.videoCaptureAndEncodeParameter = this.meetingSessionContext.videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
+      // Bitrate will be set in `actionFinishUpdating`. This should never need a resubscribe.
     }
 
-    // Update bandwidth without renegotiation
-    this.logger.info('Updating local video from policy without renegotiation');
-    if (this.meetingSessionContext.enableSimulcast) {
-      // `AttachMediaInputTask` will update sender's simulcast streams encoding parameters of the local video transceiver
-      new AttachMediaInputTask(this.meetingSessionContext).run();
-    } else {
-      // `ReceiveVideoInputTask` will update `meetingSessionContext.videoCaptureAndEncodeParameter`
-      // from uplink policy on internal state
-      new ReceiveVideoInputTask(this.meetingSessionContext).run();
-    }
+    this.logger.info('Updated local video from policy without renegotiation');
     return true;
   }
 
