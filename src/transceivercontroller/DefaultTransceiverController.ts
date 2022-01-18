@@ -256,10 +256,6 @@ export default class DefaultTransceiverController implements TransceiverControll
     this.videoSubscriptions = [0];
 
     for (const transceiver of transceivers) {
-      this.logger.info(
-        `Inspecting for MID: ${transceiver.mid}, direction: ${transceiver.direction}, current direction: ${transceiver.currentDirection}`
-      );
-
       if (
         transceiver === this._localCameraTransceiver ||
         !this.transceiverIsVideo(transceiver) ||
@@ -267,23 +263,17 @@ export default class DefaultTransceiverController implements TransceiverControll
       ) {
         continue;
       }
-      this.logger.info(
-        `Moving forwards with MID: ${transceiver.mid}, direction: ${transceiver.direction}, current direction: ${transceiver.currentDirection}`
-      );
 
       let reusingTranceiver = false;
-      // See if we want this existing transceiver
-      // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
-      // we use this to get the streamId for the track
+      // See if we want this existing transceiver for a simulcast stream switch
+      //
+      // By convention with the service backend, msid is equal to the media section mid, prefixed with the string "v_";
+      // we use this to get the stream ID for the track
       const streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
       if (transceiver.direction !== 'inactive' && streamId !== undefined) {
         for (const [index, recvStreamId] of videosRemaining.entries()) {
           // `streamId` may still be the same as `recvStreamId`
           if (videoStreamIndex.StreamIdsInSameGroup(streamId, recvStreamId)) {
-            this.logger.info(
-              `Found stream in same group ${streamId} ~= ${recvStreamId} MID: ${transceiver.mid}, direction: ${transceiver.direction}, current direction: ${transceiver.currentDirection}`
-            );
-
             transceiver.direction = 'recvonly';
             this.videoSubscriptions[n] = recvStreamId;
             reusingTranceiver = true;
@@ -294,10 +284,6 @@ export default class DefaultTransceiverController implements TransceiverControll
             break;
           }
         }
-      } else {
-        this.logger.info(
-          `Could not find stream ID for MID: ${transceiver.mid}, direction: ${transceiver.direction}, current direction: ${transceiver.currentDirection}`
-        );
       }
 
       if (!reusingTranceiver) {
