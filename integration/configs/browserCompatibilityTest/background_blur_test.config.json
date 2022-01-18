@@ -11,7 +11,17 @@
       "testImpl": "BackgroundBlurTest.js",
       "payload": {
         "url": "http://localhost:8080/",
-        "port": 30002,
+        "retry": 2
+      }
+    },
+    {
+      "name": "Background Replacement Test %ts",
+      "description": "Background Replacement Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "BackgroundReplacementTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
         "retry": 2
       }
     }
@@ -21,16 +31,16 @@
       "browserName": "chrome",
       "version": "latest",
       "platform": "MAC",
-       "video":{
-         "type":"Video",
-         "directory":"/Users/chef/",
-         "filename":"test_video"
-         },
-      "audio":{
-        "type":"Audio",
-        "directory":"/Users/chef/",
-        "filename":"test_video"
-        }
+      "video": {
+        "type": "Video",
+        "directory": "/Users/chef/",
+        "filename": "test_video"
+      },
+      "audio": {
+        "type": "Audio",
+        "directory": "/Users/chef/",
+        "filename": "test_video"
+      }
     }
   ]
 }
