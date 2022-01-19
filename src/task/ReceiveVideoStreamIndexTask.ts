@@ -164,7 +164,17 @@ export default class ReceiveVideoStreamIndexTask
       return;
     }
 
-    this.context.videosToReceive = videoDownlinkBandwidthPolicy.chooseSubscriptions();
+    const videoSubscriptionIdSet = videoDownlinkBandwidthPolicy.chooseSubscriptions();
+    this.context.videosToReceive = videoSubscriptionIdSet.truncate(
+      this.context.videoSubscriptionLimit
+    );
+
+    if (videoSubscriptionIdSet.size() > this.context.videosToReceive.size()) {
+      this.logger.warn(
+        `Video receive limit exceeded. Limiting the videos to ${this.context.videosToReceive.size()}. Please consider using AllHighestVideoBandwidthPolicy or VideoPriorityBasedPolicy along with chooseRemoteVideoSources api to select the video sources to be displayed.`
+      );
+    }
+
     this.context.videoCaptureAndEncodeParameter = videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
     this.logger.info(
       `trigger resubscribe for up=${resubscribeForUplink} down=${resubscribeForDownlink}; videosToReceive=[${this.context.videosToReceive.array()}] captureParams=${JSON.stringify(

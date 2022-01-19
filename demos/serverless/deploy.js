@@ -218,9 +218,9 @@ function createCaptureS3Buckets(bucketPrefix, regions) {
     const s3Api = spawnSync('aws', ['s3api', 'head-bucket', '--bucket', `${bucketName}`, '--region', `${bucketRegion}`]);
     if (s3Api.status !== 0) {
       if (bucketRegion === 'us-east-1') {
-        spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion]);
+        spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion], null, !disablePrintingLogs);
       } else {
-        spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion, '--create-bucket-configuration', `LocationConstraint=${bucketRegion}`]);
+        spawnOrFail('aws', ['s3api', 'create-bucket', '--bucket', bucketName, '--region', bucketRegion, '--create-bucket-configuration', `LocationConstraint=${bucketRegion}`], null, !disablePrintingLogs);
       }
       spawnOrFail('aws', ['s3api', 'put-bucket-policy', '--bucket', bucketName, '--region', bucketRegion, '--policy', 'file://build/bucket_policy.json']);
       spawnOrFail('aws', ['s3api', 'put-bucket-lifecycle-configuration', '--bucket', bucketName, '--region', bucketRegion, '--lifecycle-configuration', 'file://build/lifecycle_configuration.json']);

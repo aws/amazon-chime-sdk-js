@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Package
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
         with:
           ref: ${{ github.event.release.tag_name }}
       - name: Setup Node environment
@@ -21,7 +21,19 @@ jobs:
         run: npm install
       - name: NPM run build
         run: npm run build
-      - name: Publish to NPM
+      - name: Get npm tag name if needed
+        id: npm_tag
+        run: |
+          pre_release_name=$(.github/script/get-pre-release-name.js)
+          echo "Pre release name:" $pre_release_name
+          echo ::set-output name=npm_tag::$pre_release_name
+      - name: Publish to NPM latest
+        if:  steps.npm_tag.outputs.npm_tag == ''
         run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Publish to NPM with tag
+        if: steps.npm_tag.outputs.npm_tag != ''
+        run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

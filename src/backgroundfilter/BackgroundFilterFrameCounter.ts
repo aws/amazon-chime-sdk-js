@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
-import BackgroundBlurVideoFrameProcessorDelegate from './BackgroundBlurVideoFrameProcessorDelegate';
+import BackgroundFilterVideoFrameProcessorDelegate from './BackgroundFilterVideoFrameProcessorDelegate';
 
 const FILTER_DURATION_FACTOR = 0.8;
 
@@ -22,7 +22,7 @@ export default class BackgroundFilterFrameCounter {
   private filterDurationNotifyMillis = 0;
 
   constructor(
-    private delegate: BackgroundBlurVideoFrameProcessorDelegate,
+    private delegate: BackgroundFilterVideoFrameProcessorDelegate,
     private reportingPeriodMillis: number,
     private filterCPUUtilization: number,
     private logger: Logger

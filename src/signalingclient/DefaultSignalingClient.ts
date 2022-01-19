@@ -83,7 +83,6 @@ export default class DefaultSignalingClient implements SignalingClient {
     this.logger.info('sending join');
     const joinFrame = SdkJoinFrame.create();
     joinFrame.protocolVersion = 2;
-    joinFrame.maxNumOfVideos = settings.maxVideos;
     joinFrame.flags = SdkJoinFlags.HAS_STREAM_UPDATE;
     const browserBehavior = new DefaultBrowserBehavior();
     if (browserBehavior.supportsSenderSideBandwidthEstimation()) {

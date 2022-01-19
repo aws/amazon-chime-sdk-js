@@ -122,7 +122,7 @@ If your use case requires more than 250 attendees, consider using a [broadcastin
 
 ### What happens to the subsequent participants who try to turn on the local video while 25 participants have already turned on the local video?
 
-Once the limit of 25 video tiles is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://github.com/aws/amazon-chime-sdk-js/blob/bfc4c600fb7e68f2d358ecb6c7fd096d30b2d430/src/meetingsession/MeetingSessionStatusCode.ts#L73) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
+Once the limit of 25 video tiles is reached in a meeting, each subsequent participant that tries to turn on the local video will receive a Meeting Session status code of [VideoCallSwitchToViewOnly = 10](https://aws.github.io/amazon-chime-sdk-js/enums/meetingsessionstatuscode.html#videocallswitchtoviewonly) which in turn triggers the observer '[videoSendDidBecomeUnavailable](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideoobserver.html#videosenddidbecomeunavailable)'.
 
 ### Can I schedule Amazon Chime SDK meetings ahead of time?
 
@@ -162,7 +162,7 @@ The Amazon Chime SDK for JavaScript retries the connection in the following situ
 * The SDK experiences a significant audio delay.
 * The SDK encounters a retryable error during the session. Retryable errors are errors with [retryable response status codes](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html#isfailure) received regarding the session. i.e. status code with `TaskFailed` or `SignalingInternalServerError` will handled for retries.
 
-The SDK uses [ConnectionHealthPolicyConfiguration](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts) to trigger a reconnection. We recommend using the default configuration, but you can also provide the custom ConnectionHealthPolicyConfiguration object to change this behavior. 
+The SDK uses [ConnectionHealthPolicyConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/connectionhealthpolicyconfiguration.html) to trigger a reconnection. We recommend using the default configuration, but you can also provide the custom ConnectionHealthPolicyConfiguration object to change this behavior. 
 
 ```js
 import {
@@ -208,7 +208,7 @@ const meetingSession = new DefaultMeetingSession(
 
 ### What is the timeout for connect and reconnect and where can I configure the value?
 
-The maximum amount of time to allow for connecting is 15 seconds, which can be configurable in [MeetingSessionConfiguration](https://github.com/aws/amazon-chime-sdk-js/blob/0147ed9fb76429a70fb0161405687af63b592fe0/src/meetingsession/MeetingSessionConfiguration.ts#L40). The [reconnectTimeout](https://github.com/aws/amazon-chime-sdk-js/blob/0147ed9fb76429a70fb0161405687af63b592fe0/src/meetingsession/MeetingSessionConfiguration.ts#L67) is configurable for how long you want to timeout the reconnection. The default value is 2 minutes.
+The maximum amount of time to allow for connecting is 15 seconds, which can be configurable in [MeetingSessionConfiguration](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html). The [reconnectTimeout](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionconfiguration.html#reconnecttimeoutms) is configurable for how long you want to timeout the reconnection. The default value is 2 minutes.
 
 
 ## Media
@@ -225,7 +225,10 @@ Applications built with the Amazon Chime SDK for JavaScript can adjust video par
 
 ### How can I stream music or video into a meeting?
 
-You can use the [AudioVideoFacade.startContentShare(MediaStream)](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare) API to stream audio and/or video content to the meetings. See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/ee8831f2fe7747e52fdef49db0dc1dfc2a4778f6/demos/browser/app/meetingV2/meetingV2.ts#L1266) for an example of how to achieve this.
+You can use the [AudioVideoFacade.startContentShare(MediaStream)](https://aws.github.
+io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#startcontentshare) API to stream audio and/or video content 
+to the meetings. See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts#L1266) for an example of how to 
+achieve this.
 
 ### When I stream video in Chrome, other attendees see a black screen. Is this a known issue?
 
@@ -297,11 +300,12 @@ Yes. You can [record to Amazon S3 using media capture pipelines](https://docs.aw
 
 ### How can I get Amazon Chime SDK logs for debugging?
 
-Applications can get logs from Chime SDK by passing instances of `Logger` when instantiating [the MeetingSession object](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSession.ts#L14). Amazon Chime SDK has some default implementations of logger that your application can use, such as [ConsoleLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/ConsoleLogger.ts) which logs into the browser console, [MeetingSessionPOSTLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/MeetingSessionPOSTLogger.ts) which logs in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [MultiLogger](https://github.com/aws/amazon-chime-sdk-js/blob/8e5802c04031ac62a2c5c5fe75af5bb4ffbf12d0/src/logger/MultiLogger.ts) which logs in multiple destinations.
+Applications can get logs from Chime SDK by passing instances of `Logger` when instantiating [the MeetingSession object](https://aws.github.io/amazon-chime-sdk-js/interfaces/meetingsession.html). Amazon Chime SDK has some default implementations of logger that your application can use, such as [ConsoleLogger](https://aws.github.io/amazon-chime-sdk-js/classes/consolelogger.html) which logs into the browser console, [MeetingSessionPOSTLogger](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionpostlogger.html) which logs in [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [MultiLogger](https://aws.github.io/amazon-chime-sdk-js/classes/multilogger.html) which logs in multiple destinations.
 
 ### How do I file an issue for the Amazon Chime SDK for JavaScript?
 
-You can use our [bug template](https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&labels=bug&template=bug-report.md&title=) to file issues with logs (it is helpful to set the logging level as INFO) and exact reproduction steps. To help you faster, you can check the usage of the API in our [API overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html), [demos](https://github.com/aws/amazon-chime-sdk-js/blob/master/README.md#examples) and the [usage section](https://github.com/aws/amazon-chime-sdk-js/blob/master/README.md#usage) in our Readme. In addition search our [issues database](https://github.com/aws/amazon-chime-sdk-js/issues?q=is:issue) as your concern may have been addressed previously and mitigations may have been posted.
+You can use our [bug template](https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&labels=bug&template=bug-report.md&title=) to file issues with logs (it is helpful to set the logging 
+level as INFO) and exact reproduction steps. To help you faster, you can check the usage of the API in our [API overview](https://aws.github.io/amazon-chime-sdk-js/modules/apioverview.html), [demos](https://github.com/aws/amazon-chime-sdk-js/blob/main/README.md#examples) and the [usage section](https://github.com/aws/amazon-chime-sdk-js/blob/main/README.md#usage) in our Readme. In addition search our [issues database](https://github.com/aws/amazon-chime-sdk-js/issues?q=is:issue) as your concern may have been addressed previously and mitigations may have been posted.
 
 ## Networking
 
@@ -378,7 +382,7 @@ This is a bug on Android 11 running Chromium 83 based browsers. You will observe
 
 ### Does Amazon Voice Focus support the Samsung Internet browser?
 
-Yes, Amazon Voice Focus supports the Samsung Internet browser (Chromium 83 or lower). However, it leads to a poor user experience because the preferred Chromium version is 87 or higher. Please check Amazon Voice Focus [browser compatibility matrix](https://github.com/aws/amazon-chime-sdk-js/blob/master/guides/09_Amazon_Voice_Focus.md#browser-compatibility) in Amazon Voice Focus guide.
+Yes, Amazon Voice Focus supports the Samsung Internet browser (Chromium 83 or lower). However, it leads to a poor user experience because the preferred Chromium version is 87 or higher. Please check Amazon Voice Focus [browser compatibility matrix](https://aws.github.io/amazon-chime-sdk-js/modules/amazonvoice_focus.html#browser-compatibility) in Amazon Voice Focus guide.
 
 
 ## Audio and video
@@ -392,8 +396,8 @@ Amazon Chime SDK for JavaScript uses WebRTC’s getUserMedia() when you invoke t
 Applications that show multiple video tiles on the screen will need to decide where to place the underlying video elements and how to apply CSS styling. Here are a few things to consider as you develop the tile layout for your application:
 
 * A video whose source is a mobile device in portrait mode will display quite differently compared to a video in landscape mode from a laptop camera. The CSS object-fit rule can be applied to the video element to change how the content scales to fit the parent video element.
-* Use the `VideoTileState` [videoStreamContentWidth and videoStreamContentHeight](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videotile/VideoTileState.ts) properties to determine the aspect ratio of the content.
-* After calling [bindVideoElement](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/audiovideofacade/DefaultAudioVideoFacade), set up `resize` [event listeners on the HTMLVideoElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/videoWidth) to listen to intrinsic resolution from the video content.
+* Use the `VideoTileState` [videoStreamContentWidth and videoStreamContentHeight](https://aws.github.io/amazon-chime-sdk-js/classes/videotilestate.html) properties to determine the aspect ratio of the content.
+* After calling [bindVideoElement](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html#bindvideoelement), set up `resize` [event listeners on the HTMLVideoElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/videoWidth) to listen to intrinsic resolution from the video content.
 * For landscape aspect ratios (width > height), apply the CSS rule `object-fit:cover` to the HTML element that will contain the video to crop and scale the video to the aspect ratio of the video element.
 * For portrait aspect ratios (height > width), apply the CSS rule `object-fit:contain` to the HTML element that will contain the video to ensure that all video content can be seen.
 
@@ -429,7 +433,9 @@ This applies for video input as well.
 
 Device labels are privileged since they add to the fingerprinting surface area of the browser session. In Chrome private tabs and in all Firefox tabs, the labels can only be read once a MediaStream is active. How to deal with this restriction depends on the desired UX. The device controller includes an injectable device label trigger which allows you to perform custom behavior in case there are no labels, such as creating a temporary audio/video stream to unlock the device names, which is the default behavior.
 
-You may want to override this behavior to provide a custom UX such as a prompt explaining why microphone and camera access is being asked for by supplying your own function to setDeviceLabelTrigger(). See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/b0e1b16b83b9d56b2a6354b0509aa888ef7b983c/demos/browser/app/meetingV2/meetingV2.ts#L928) for an example.
+You may want to override this behavior to provide a custom UX such as a prompt explaining why microphone and camera 
+access is being asked for by supplying your own function to setDeviceLabelTrigger(). See the [meeting demo application](https://github.com/aws/amazon-chime-sdk-js/blob/main/demos/browser/app/meetingV2/meetingV2.ts#L928) for 
+an example.
 
 ```
 meetingSession.audioVideo.setDeviceLabelTrigger(

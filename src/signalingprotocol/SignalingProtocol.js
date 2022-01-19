@@ -1472,7 +1472,7 @@ $root.SdkJoinFrame = (function() {
      * @memberof SdkJoinFrame
      * @instance
      */
-    SdkJoinFrame.prototype.maxNumOfVideos = 8;
+    SdkJoinFrame.prototype.maxNumOfVideos = 0;
 
     /**
      * SdkJoinFrame flags.
@@ -1686,7 +1686,7 @@ $root.SdkJoinFrame = (function() {
         var object = {};
         if (options.defaults) {
             object.protocolVersion = 2;
-            object.maxNumOfVideos = 8;
+            object.maxNumOfVideos = 0;
             object.flags = 0;
             object.clientDetails = null;
             if ($util.Long) {
@@ -1732,6 +1732,7 @@ $root.SdkJoinAckFrame = (function() {
      * @exports ISdkJoinAckFrame
      * @interface ISdkJoinAckFrame
      * @property {ISdkTurnCredentials|null} [turnCredentials] SdkJoinAckFrame turnCredentials
+     * @property {number|null} [videoSubscriptionLimit] SdkJoinAckFrame videoSubscriptionLimit
      */
 
     /**
@@ -1756,6 +1757,14 @@ $root.SdkJoinAckFrame = (function() {
      * @instance
      */
     SdkJoinAckFrame.prototype.turnCredentials = null;
+
+    /**
+     * SdkJoinAckFrame videoSubscriptionLimit.
+     * @member {number} videoSubscriptionLimit
+     * @memberof SdkJoinAckFrame
+     * @instance
+     */
+    SdkJoinAckFrame.prototype.videoSubscriptionLimit = 0;
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.
@@ -1783,6 +1792,8 @@ $root.SdkJoinAckFrame = (function() {
             writer = $Writer.create();
         if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
             $root.SdkTurnCredentials.encode(message.turnCredentials, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
+            writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.videoSubscriptionLimit);
         return writer;
     };
 
@@ -1819,6 +1830,9 @@ $root.SdkJoinAckFrame = (function() {
             switch (tag >>> 3) {
             case 1:
                 message.turnCredentials = $root.SdkTurnCredentials.decode(reader, reader.uint32());
+                break;
+            case 2:
+                message.videoSubscriptionLimit = reader.uint32();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -1860,6 +1874,9 @@ $root.SdkJoinAckFrame = (function() {
             if (error)
                 return "turnCredentials." + error;
         }
+        if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
+            if (!$util.isInteger(message.videoSubscriptionLimit))
+                return "videoSubscriptionLimit: integer expected";
         return null;
     };
 
@@ -1880,6 +1897,8 @@ $root.SdkJoinAckFrame = (function() {
                 throw TypeError(".SdkJoinAckFrame.turnCredentials: object expected");
             message.turnCredentials = $root.SdkTurnCredentials.fromObject(object.turnCredentials);
         }
+        if (object.videoSubscriptionLimit != null)
+            message.videoSubscriptionLimit = object.videoSubscriptionLimit >>> 0;
         return message;
     };
 
@@ -1896,10 +1915,14 @@ $root.SdkJoinAckFrame = (function() {
         if (!options)
             options = {};
         var object = {};
-        if (options.defaults)
+        if (options.defaults) {
             object.turnCredentials = null;
+            object.videoSubscriptionLimit = 0;
+        }
         if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
             object.turnCredentials = $root.SdkTurnCredentials.toObject(message.turnCredentials, options);
+        if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
+            object.videoSubscriptionLimit = message.videoSubscriptionLimit;
         return object;
     };
 

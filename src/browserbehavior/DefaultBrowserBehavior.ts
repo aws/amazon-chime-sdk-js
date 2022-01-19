@@ -13,7 +13,7 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     chrome: 78,
     'edge-chromium': 79,
     electron: 7,
-    firefox: 60,
+    firefox: 75,
     ios: 12,
     safari: 12,
     opera: 66,

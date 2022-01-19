@@ -12,7 +12,7 @@ if intersection.empty?
 end
 
 remote = intersection[0]
-branch = 'master'
+branch = 'main'
 
 STDERR.puts "Generating docs against #{remote}/#{branch}."
 

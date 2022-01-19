@@ -3,8 +3,8 @@ name: WebView Sample Demos E2E Tests
 on:
   workflow_run:
     workflows: ["Deploy Demo App Workflow"]
-    branches: [master]
-    types: 
+    branches: [main]
+    types:
       - completed
 
 jobs:

@@ -79,7 +79,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">BackgroundBlurVideoFrameProcessorObserver</span>
+						<a href="backgroundfiltervideoframeprocessorobserver.html" class="tsd-signature-type">BackgroundFilterVideoFrameProcessorObserver</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">BackgroundBlurVideoFrameProcessorObserver</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -87,25 +92,26 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundblurvideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="backgroundblurvideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundblurvideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="backgroundblurvideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="filtercpuutilizationhigh" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filterCPUUtilization<wbr>High</h3>
 					<div class="tsd-signature tsd-kind-icon">filterCPUUtilization<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filtercpuutilizationhighevent.html" class="tsd-signature-type">FilterCPUUtilizationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="backgroundfiltervideoframeprocessorobserver.html">BackgroundFilterVideoFrameProcessorObserver</a>.<a href="backgroundfiltervideoframeprocessorobserver.html#filtercpuutilizationhigh">filterCPUUtilizationHigh</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts#L51">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L51">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:51</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -143,25 +149,26 @@
 						</ul>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="filterframedurationhigh" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> filter<wbr>Frame<wbr>Duration<wbr>High</h3>
 					<div class="tsd-signature tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="filterframedurationhighevent.html" class="tsd-signature-type">FilterFrameDurationHighEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="backgroundfiltervideoframeprocessorobserver.html">BackgroundFilterVideoFrameProcessorObserver</a>.<a href="backgroundfiltervideoframeprocessorobserver.html#filterframedurationhigh">filterFrameDurationHigh</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts#L40">src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts#L40">src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>This event occurs when the amount of time it takes to apply the background blur is longer than expected. The
+							<p>This event occurs when the amount of time it takes to apply the background filter is longer than expected. The
 								measurement is taken from the time the process method starts to when it returns. For example, if the video
 								is running at 15 frames per second and we are averaging more than 67 ms (1000 ms reporting period / 15 fps)
-								to apply background blur, then a very large portion of each frame&#39;s maximum processing time is taken up by
-							processing background blur.</p>
+								to apply background filter, then a very large portion of each frame&#39;s maximum processing time is taken up by
+							processing background filter.</p>
 						</div>
 						<p>The observer will be called a maximum of once per <a href="filtercpuutilizationhighevent.html#periodmillis">periodMillis</a>. In the event that the <a href="filterframedurationhighevent.html#avgfilterdurationmillis">avgFilterDurationMillis</a>
-						is larger than expected the builder can use this event as a trigger to disable the background blur.</p>
+						is larger than expected the builder can use this event as a trigger to disable the background filter.</p>
 						<dl class="tsd-comment-tags">
 							<dt>param</dt>
 							<dd><p>framesDropped: The expected amount of frames based on frame rate minus the actual number of frames.
@@ -210,10 +217,10 @@
 					<li class="current tsd-kind-interface">
 						<a href="backgroundblurvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="backgroundblurvideoframeprocessorobserver.html#filtercpuutilizationhigh" class="tsd-kind-icon">filterCPUUtilization<wbr>High</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="backgroundblurvideoframeprocessorobserver.html#filterframedurationhigh" class="tsd-kind-icon">filter<wbr>Frame<wbr>Duration<wbr>High</a>
 							</li>
 						</ul>

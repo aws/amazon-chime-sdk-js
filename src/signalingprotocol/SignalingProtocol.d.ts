@@ -585,6 +585,9 @@ export interface ISdkJoinAckFrame {
 
     /** SdkJoinAckFrame turnCredentials */
     turnCredentials?: (ISdkTurnCredentials|null);
+
+    /** SdkJoinAckFrame videoSubscriptionLimit */
+    videoSubscriptionLimit?: (number|null);
 }
 
 /** Represents a SdkJoinAckFrame. */
@@ -598,6 +601,9 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
 
     /** SdkJoinAckFrame turnCredentials. */
     public turnCredentials?: (ISdkTurnCredentials|null);
+
+    /** SdkJoinAckFrame videoSubscriptionLimit. */
+    public videoSubscriptionLimit: number;
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.

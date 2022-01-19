@@ -2,7 +2,7 @@
 
 This guide explains how to share audio and video content such as screen capture or
 media files in a meeting. This guide assumes you have already created a meeting and
-added attendees to the meeting (see [Setup section](https://github.com/aws/amazon-chime-sdk-js/blob/master/README.md#Setup) in our Readme for more information).
+added attendees to the meeting (see [Setup section](https://github.com/aws/amazon-chime-sdk-js/blob/main/README.md#Setup) in our Readme for more information).
 
 Content share methods are accessed from the
 [audio-video facade](https://aws.github.io/amazon-chime-sdk-js/interfaces/audiovideofacade.html)

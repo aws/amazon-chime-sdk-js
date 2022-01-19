@@ -5,14 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.26.0] - 2022-01-14
+    
 ### Added
+    
+### Removed
+    
+### Changed
+- Made `SimulcastUplinkObserver.encodingSimulcastLayersDidChange` (*not* `AudioVideoObserver.encodingSimulcastLayersDidChange`) synchronous.
+    
+### Fixed
+- Fixed delays in advertising simulcast stream switches due to asynchronous and out of order checks
+
+## [2.25.0] - 2022-01-11
+### Added
+- Ability to choose remote video sources in `AllHighestVideoBandwidthPolicy`. see [guide](https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html#downlink-policy)
+- Add `BackgroundReplacementVideoFrameProcessor` that will create a `VideoFrameProcessor` to apply a background image to an outgoing video stream.
 
 ### Removed
 
 ### Fixed
+- Correct the minimum supported Firefox version to `75` to match the official [documentation](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers).
 
 ### Changed
+- Enforced a video receive limit incase the number of videos shared in the meeting are greater than the limit. The current limit is 25, which can change in future.
+- Clarified a comment in `DefaultSimulcastUplinkPolicy`.
 
 ## [2.24.0] - 2021-12-17
 ### Added

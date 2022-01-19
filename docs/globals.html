@@ -135,6 +135,8 @@
 								<li class="tsd-kind-class"><a href="classes/audioprofile.html" class="tsd-kind-icon">Audio<wbr>Profile</a></li>
 								<li class="tsd-kind-class"><a href="classes/audiovideocontrollerstate.html" class="tsd-kind-icon">Audio<wbr>Video<wbr>Controller<wbr>State</a></li>
 								<li class="tsd-kind-class"><a href="classes/backgroundblurvideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor</a></li>
+								<li class="tsd-kind-class"><a href="classes/backgroundfiltervideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Video<wbr>Frame<wbr>Processor</a></li>
+								<li class="tsd-kind-class"><a href="classes/backgroundreplacementvideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Video<wbr>Frame<wbr>Processor</a></li>
 								<li class="tsd-kind-class"><a href="classes/baseconnectionhealthpolicy.html" class="tsd-kind-icon">Base<wbr>Connection<wbr>Health<wbr>Policy</a></li>
 								<li class="tsd-kind-class"><a href="classes/basetask.html" class="tsd-kind-icon">Base<wbr>Task</a></li>
 								<li class="tsd-kind-class"><a href="classes/bitrateparameters.html" class="tsd-kind-icon">Bitrate<wbr>Parameters</a></li>
@@ -317,8 +319,13 @@
 								<li class="tsd-kind-interface"><a href="interfaces/backgroundbluroptions.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Options</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/backgroundblurprocessor.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Processor</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/backgroundblurvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/backgroundfilteroptions.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Options</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/backgroundfilterpaths.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Paths</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/backgroundfilterspec.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Spec</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/backgroundfiltervideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/backgroundreplacementoptions.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Options</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/backgroundreplacementprocessor.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Processor</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/backgroundreplacementvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/backoff.html" class="tsd-kind-icon">Backoff</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/backofffactory.html" class="tsd-kind-icon">Backoff<wbr>Factory</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/browserbehavior.html" class="tsd-kind-icon">Browser<wbr>Behavior</a></li>
@@ -470,7 +477,7 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Input<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audiotransformdevice.html" class="tsd-signature-type">AudioTransformDevice</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/AudioInputDevice.ts#L7">src/devicecontroller/AudioInputDevice.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/AudioInputDevice.ts#L7">src/devicecontroller/AudioInputDevice.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -480,7 +487,7 @@
 					<div class="tsd-signature tsd-kind-icon">Detector<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>attendeeIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/activespeakerdetector/DefaultActiveSpeakerDetector.ts#L13">src/activespeakerdetector/DefaultActiveSpeakerDetector.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/activespeakerdetector/DefaultActiveSpeakerDetector.ts#L13">src/activespeakerdetector/DefaultActiveSpeakerDetector.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -516,7 +523,7 @@
 					<div class="tsd-signature tsd-kind-icon">Detector<wbr>Handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, present<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/activespeakerdetector/DefaultActiveSpeakerDetector.ts#L14">src/activespeakerdetector/DefaultActiveSpeakerDetector.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/activespeakerdetector/DefaultActiveSpeakerDetector.ts#L14">src/activespeakerdetector/DefaultActiveSpeakerDetector.ts:14</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -550,7 +557,7 @@
 					<div class="tsd-signature tsd-kind-icon">Device<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaTrackConstraints</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/Device.ts#L9">src/devicecontroller/Device.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/Device.ts#L9">src/devicecontroller/Device.ts:9</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -567,7 +574,7 @@
 					<div class="tsd-signature tsd-kind-icon">Event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"meetingStartRequested"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartSucceeded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingReconnected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingStartFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingEnded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"meetingFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"attendeePresenceReceived"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"audioInputFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputSelected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputUnselected"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"videoInputFailed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"signalingDropped"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"receivingAudioDropped"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/eventcontroller/EventName.ts#L4">src/eventcontroller/EventName.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/EventName.ts#L4">src/eventcontroller/EventName.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -577,7 +584,7 @@
 					<div class="tsd-signature tsd-kind-icon">Listener<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventListenerOrEventListenerObject</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AddEventListenerOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/mediadevicefactory/MediaDeviceProxyHandler.ts#L7">src/mediadevicefactory/MediaDeviceProxyHandler.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/mediadevicefactory/MediaDeviceProxyHandler.ts#L7">src/mediadevicefactory/MediaDeviceProxyHandler.ts:7</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -614,7 +621,7 @@
 					<div class="tsd-signature tsd-kind-icon">Meeting<wbr>History<wbr>State<span class="tsd-signature-symbol">:</span> <a href="globals.html#eventname" class="tsd-signature-type">EventName</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/eventcontroller/MeetingHistoryState.ts#L10">src/eventcontroller/MeetingHistoryState.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/MeetingHistoryState.ts#L10">src/eventcontroller/MeetingHistoryState.ts:10</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -630,7 +637,7 @@
 					<div class="tsd-signature tsd-kind-icon">Raw<wbr>Metric<wbr>Report<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/statscollector/DefaultStatsCollector.ts#L28">src/statscollector/DefaultStatsCollector.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L28">src/statscollector/DefaultStatsCollector.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -640,7 +647,7 @@
 					<div class="tsd-signature tsd-kind-icon">Realtime<wbr>Subscribe<wbr>ToAttendee<wbr>IdPresence<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, present<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, dropped<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, posInFrame<span class="tsd-signature-symbol">?: </span><a href="classes/realtimeattendeepositioninframe.html" class="tsd-signature-type">RealtimeAttendeePositionInFrame</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback.ts#L9">src/realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback.ts#L9">src/realtimecontroller/RealtimeSubscribeToAttendeeIdPresenceCallback.ts:9</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -727,7 +734,7 @@
 					<div class="tsd-signature tsd-kind-icon">Stats<wbr>Report<wbr>Item<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/statscollector/DefaultStatsCollector.ts#L31">src/statscollector/DefaultStatsCollector.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/statscollector/DefaultStatsCollector.ts#L31">src/statscollector/DefaultStatsCollector.ts:31</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -737,7 +744,7 @@
 					<div class="tsd-signature tsd-kind-icon">Thunk<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L32">src/devicecontroller/DefaultDeviceController.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L32">src/devicecontroller/DefaultDeviceController.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -762,7 +769,7 @@
 					<div class="tsd-signature tsd-kind-icon">Transcript<wbr>Event<span class="tsd-signature-symbol">:</span> <a href="classes/transcript.html" class="tsd-signature-type">Transcript</a><span class="tsd-signature-symbol"> | </span><a href="classes/transcriptionstatus.html" class="tsd-signature-type">TranscriptionStatus</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L27">src/transcript/TranscriptEvent.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/TranscriptEvent.ts#L27">src/transcript/TranscriptEvent.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -772,7 +779,7 @@
 					<div class="tsd-signature tsd-kind-icon">Video<wbr>Input<wbr>Device<span class="tsd-signature-symbol">:</span> <a href="globals.html#device" class="tsd-signature-type">Device</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/videotransformdevice.html" class="tsd-signature-type">VideoTransformDevice</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoInputDevice.ts#L7">src/devicecontroller/VideoInputDevice.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/VideoInputDevice.ts#L7">src/devicecontroller/VideoInputDevice.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -782,7 +789,7 @@
 					<div class="tsd-signature tsd-kind-icon">Volume<wbr>Indicator<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>attendeeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, volume<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, muted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, signalStrength<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, externalUserId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/realtimecontroller/VolumeIndicatorCallback.ts#L8">src/realtimecontroller/VolumeIndicatorCallback.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/realtimecontroller/VolumeIndicatorCallback.ts#L8">src/realtimecontroller/VolumeIndicatorCallback.ts:8</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -833,7 +840,7 @@
 					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>FRAMERATE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">15</span><span class="tsd-signature-symbol"> = 15</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L11">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts#L11">src/videoframeprocessor/DefaultVideoFrameProcessorPipeline.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -843,7 +850,7 @@
 					<div class="tsd-signature tsd-kind-icon">FILTER_<wbr>DURATION_<wbr>FACTOR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0.8</span><span class="tsd-signature-symbol"> = 0.8</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundFilterFrameCounter.ts#L7">src/backgroundblurprocessor/BackgroundFilterFrameCounter.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundfilter/BackgroundFilterFrameCounter.ts#L7">src/backgroundfilter/BackgroundFilterFrameCounter.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -853,7 +860,7 @@
 					<div class="tsd-signature tsd-kind-icon">TRANSCRIPTION_<wbr>DATA_<wbr>MESSAGE_<wbr>TOPIC<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"aws:chime:transcription"</span><span class="tsd-signature-symbol"> = &quot;aws:chime:transcription&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/DefaultTranscriptionController.ts#L9">src/transcript/DefaultTranscriptionController.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/DefaultTranscriptionController.ts#L9">src/transcript/DefaultTranscriptionController.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -870,7 +877,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L34">src/devicecontroller/DefaultDeviceController.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L34">src/devicecontroller/DefaultDeviceController.ts:34</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -896,7 +903,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/eventcontroller/flattenEventAttributes.ts#L14">src/eventcontroller/flattenEventAttributes.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/flattenEventAttributes.ts#L14">src/eventcontroller/flattenEventAttributes.ts:14</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -934,7 +941,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/AudioTransformDevice.ts#L62">src/devicecontroller/AudioTransformDevice.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/AudioTransformDevice.ts#L62">src/devicecontroller/AudioTransformDevice.ts:62</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -965,7 +972,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/voicefocus/VoiceFocusTransformDevice.ts#L303">src/voicefocus/VoiceFocusTransformDevice.ts:303</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/voicefocus/VoiceFocusTransformDevice.ts#L303">src/voicefocus/VoiceFocusTransformDevice.ts:303</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -988,7 +995,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/destroyable/Destroyable.ts#L21">src/destroyable/Destroyable.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/destroyable/Destroyable.ts#L21">src/destroyable/Destroyable.ts:21</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1020,7 +1027,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/utils/Utils.ts#L10">src/utils/Utils.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/utils/Utils.ts#L10">src/utils/Utils.ts:10</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1037,7 +1044,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L1919">src/devicecontroller/DefaultDeviceController.ts:1919</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L1919">src/devicecontroller/DefaultDeviceController.ts:1919</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1060,7 +1067,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/VideoTransformDevice.ts#L42">src/devicecontroller/VideoTransformDevice.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/VideoTransformDevice.ts#L42">src/devicecontroller/VideoTransformDevice.ts:42</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1091,7 +1098,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/devicecontroller/DefaultDeviceController.ts#L80">src/devicecontroller/DefaultDeviceController.ts:80</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/devicecontroller/DefaultDeviceController.ts#L80">src/devicecontroller/DefaultDeviceController.ts:80</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1117,7 +1124,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/utils/Utils.ts#L23">src/utils/Utils.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/utils/Utils.ts#L23">src/utils/Utils.ts:23</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1140,7 +1147,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/utils/Utils.ts#L4">src/utils/Utils.ts:4</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/utils/Utils.ts#L4">src/utils/Utils.ts:4</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1162,7 +1169,7 @@
 					<div class="tsd-signature tsd-kind-icon">Blur<wbr>Strength<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurStrength.ts#L8">src/backgroundblurprocessor/BackgroundBlurStrength.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundblurprocessor/BackgroundBlurStrength.ts#L8">src/backgroundblurprocessor/BackgroundBlurStrength.ts:8</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1177,7 +1184,7 @@
 						<div class="tsd-signature tsd-kind-icon">HIGH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 30</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurStrength.ts#L11">src/backgroundblurprocessor/BackgroundBlurStrength.ts:11</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundblurprocessor/BackgroundBlurStrength.ts#L11">src/backgroundblurprocessor/BackgroundBlurStrength.ts:11</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1187,7 +1194,7 @@
 						<div class="tsd-signature tsd-kind-icon">LOW<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 7</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurStrength.ts#L9">src/backgroundblurprocessor/BackgroundBlurStrength.ts:9</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundblurprocessor/BackgroundBlurStrength.ts#L9">src/backgroundblurprocessor/BackgroundBlurStrength.ts:9</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1197,7 +1204,7 @@
 						<div class="tsd-signature tsd-kind-icon">MEDIUM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 15</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/backgroundblurprocessor/BackgroundBlurStrength.ts#L10">src/backgroundblurprocessor/BackgroundBlurStrength.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundblurprocessor/BackgroundBlurStrength.ts#L10">src/backgroundblurprocessor/BackgroundBlurStrength.ts:10</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1208,7 +1215,7 @@
 					<div class="tsd-signature tsd-kind-icon">Transcription<wbr>Status<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L19">src/transcript/TranscriptEvent.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/TranscriptEvent.ts#L19">src/transcript/TranscriptEvent.ts:19</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -1217,7 +1224,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.FAILED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.FAILED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L24">src/transcript/TranscriptEvent.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/TranscriptEvent.ts#L24">src/transcript/TranscriptEvent.ts:24</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1227,7 +1234,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.INTERRUPTED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.INTERRUPTED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L21">src/transcript/TranscriptEvent.ts:21</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/TranscriptEvent.ts#L21">src/transcript/TranscriptEvent.ts:21</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1237,7 +1244,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.RESUMED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.RESUMED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L22">src/transcript/TranscriptEvent.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/TranscriptEvent.ts#L22">src/transcript/TranscriptEvent.ts:22</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1247,7 +1254,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.STARTED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.STARTED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L20">src/transcript/TranscriptEvent.ts:20</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/TranscriptEvent.ts#L20">src/transcript/TranscriptEvent.ts:20</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1257,7 +1264,7 @@
 						<div class="tsd-signature tsd-kind-icon">[<wbr>Sdk<wbr>Transcription<wbr>Status.<wbr>Type.STOPPED]<span class="tsd-signature-symbol">:</span> <a href="enums/transcriptionstatustype.html" class="tsd-signature-type">TranscriptionStatusType</a><span class="tsd-signature-symbol"> = TranscriptionStatusType.STOPPED</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/transcript/TranscriptEvent.ts#L23">src/transcript/TranscriptEvent.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/transcript/TranscriptEvent.ts#L23">src/transcript/TranscriptEvent.ts:23</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1390,6 +1397,12 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/backgroundblurvideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/backgroundfiltervideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Video<wbr>Frame<wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/backgroundreplacementvideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Video<wbr>Frame<wbr>Processor</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/baseconnectionhealthpolicy.html" class="tsd-kind-icon">Base<wbr>Connection<wbr>Health<wbr>Policy</a>
@@ -1923,10 +1936,25 @@
 						<a href="interfaces/backgroundblurvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundfilteroptions.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/backgroundfilterpaths.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Paths</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/backgroundfilterspec.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Spec</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundfiltervideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundreplacementoptions.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundreplacementprocessor.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundreplacementvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/backoff.html" class="tsd-kind-icon">Backoff</a>

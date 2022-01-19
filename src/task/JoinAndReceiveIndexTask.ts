@@ -71,6 +71,10 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
           if (event.message.type === SdkSignalFrame.Type.JOIN_ACK) {
             // @ts-ignore: force cast to SdkJoinAckFrame
             const joinAckFrame: SdkJoinAckFrame = event.message.joinack;
+            if (joinAckFrame && joinAckFrame.videoSubscriptionLimit) {
+              context.videoSubscriptionLimit = joinAckFrame.videoSubscriptionLimit;
+            }
+
             if (joinAckFrame && joinAckFrame.turnCredentials) {
               context.turnCredentials = new MeetingSessionTURNCredentials();
               context.turnCredentials.username = joinAckFrame.turnCredentials.username;

@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import BackgroundFilterSpec from '../backgroundfilter/BackgroundFilterSpec';
 import BackgroundBlurOptions from './BackgroundBlurOptions';
 import BackgroundBlurProcessorProvided from './BackgroundBlurProcessorProvided';
 import { BlurStrengthMapper } from './BackgroundBlurStrength';
-import BackgroundFilterSpec from './BackgroundFilterSpec';
 
 /**
  * The [[BackgroundBlurProcessorBuiltIn]] uses the browser's built-in capability to apply blurring to
