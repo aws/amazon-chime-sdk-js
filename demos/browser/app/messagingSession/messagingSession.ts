@@ -51,38 +51,10 @@ export class DemoMessagingSessionApp implements MessagingSessionObserver {
 
   initEventListeners(): void {
     document.getElementById('connect').addEventListener('click', async () => {
-      // AWS.config.credentials = new AWS.Credentials(response.accessKeyId, response.secretAccessKey, response.sessionToken);
-      // AWS.config.credentials.get(async () => {
-      //   this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
-      //   this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
-      //   try {
-      //     const chime = new ChimeSDKMessagingClient({ region: 'us-east-1' });
-      //     const endpoint = await chime.getMessagingSessionEndpoint().promise();
-      //     this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime, AWS);
-      //     this.session = new DefaultMessagingSession(this.configuration, this.logger);
-      //     this.session.addObserver(this);
-      //     this.session.start();
-      //   } catch (error) {
-      //     console.error(`Failed to retrieve messaging session endpoint: ${error.message}`);
-      //   }
-      // });
       try {
-        // const chime = new ChimeSDKMessaging({ credentials: async () => {
-        //   const response = await this.fetchCredentials();
-        //   return {
-        //     accessKeyId: response.AccessKeyId,
-        //     secretAccessKey: response.SecretAccessKey,
-        //     sessionToken: response.SessionToken
-        //   };
-        // }});
-        // console.log(chime.config.credentials);
-        // const endpoint = await chime.getMessagingSessionEndpoint();
-        // console.log(endpoint);
         const response = await this.fetchCredentials();
         const chime = new ChimeSDKMessagingClient({ region: 'us-east-1', credentials: response });
         const endpoint = await chime.send(new GetMessagingSessionEndpointCommand());
-        console.log(endpoint);
-        console.log(await chime.config.credentials());
         this.userArn = (document.getElementById('userArn') as HTMLInputElement).value;
         this.sessionId = (document.getElementById('sessionId') as HTMLInputElement).value;
         this.configuration = new MessagingSessionConfiguration(this.userArn, this.sessionId, endpoint.Endpoint.Url, chime);

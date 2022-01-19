@@ -3,8 +3,8 @@
 
 import Versioning from '../versioning/Versioning';
 import SigV4 from './SigV4';
-var hmacSHA256 = require('crypto-js/hmac-sha256');
-var sha256 = require('crypto-js/sha256');
+import { Sha256 } from '@aws-crypto/sha256-js';
+import { toHex } from "@aws-sdk/util-hex-encoding";
 
 export default class DefaultSigV4 implements SigV4 {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
@@ -19,6 +19,12 @@ export default class DefaultSigV4 implements SigV4 {
       return '0' + n.toString();
     }
   }
+
+  private hmac(data: string | Uint8Array, secret?: string | Uint8Array): Promise<Uint8Array> {
+    const hash = new Sha256(secret);
+    hash.update(data);
+    return hash.digest();
+  };
 
   private getDateTimeString(): string {
     const d = new Date();
@@ -39,24 +45,16 @@ export default class DefaultSigV4 implements SigV4 {
     return dateTimeString.substring(0, dateTimeString.indexOf('T'));
   }
 
-  private getSignatureKey(
+  private async getSignatureKey(
     key: string,
     date: string,
     regionName: string,
     serviceName: string
-  ): string {
-    const kDate = hmacSHA256(date, 'AWS4' + key, {
-      asBytes: true
-    });
-    const kRegion = hmacSHA256(regionName, kDate, {
-      asBytes: true
-    });
-    const kService = hmacSHA256(serviceName, kRegion, {
-      asBytes: true
-    });
-    const kSigning = hmacSHA256('aws4_request', kService, {
-      asBytes: true
-    });
+  ): Promise<Uint8Array> {
+    const kDate = await this.hmac(date, 'AWS4' + key);
+    const kRegion = await this.hmac(regionName, kDate);
+    const kService = await this.hmac(serviceName, kRegion);
+    const kSigning = await this.hmac('aws4_request', kService);
     return kSigning;
   }
 
@@ -73,13 +71,23 @@ export default class DefaultSigV4 implements SigV4 {
     const today = this.getDateString(now);
 
     const algorithm = 'AWS4-HMAC-SHA256';
-    const region = await this.chimeClient.config.region();
+    let region = '';
+    if (this.chimeClient.config.region instanceof Function) {
+      region = await this.chimeClient.config.region();
+    } else {
+      region = this.chimeClient.config.region;
+    }
 
     const signedHeaders = 'host';
 
     const canonicalHeaders = 'host:' + hostname.toLowerCase() + '\n';
     const credentialScope = today + '/' + region + '/' + serviceName + '/' + 'aws4_request';
-    const credentials = await this.chimeClient.config.credentials();
+    let credentials = undefined;
+    if (!this.chimeClient.config.credentials.accessKeyId) {
+      credentials = await this.chimeClient.config.credentials();
+    } else {
+      credentials = this.chimeClient.config.credentials;
+    }
 
     let params: Map<string, string[]> = new Map<string, string[]>();
     params.set('X-Amz-Algorithm', [algorithm]);
@@ -129,9 +137,9 @@ export default class DefaultSigV4 implements SigV4 {
       '\n' +
       signedHeaders +
       '\n' +
-      sha256(payload,  { asBytes: true });
+      toHex(await this.hmac(payload));
 
-    const hashedCanonicalRequest = sha256(canonicalRequest, { asBytes: true });
+    const hashedCanonicalRequest = toHex(await this.hmac(canonicalRequest));
 
     const stringToSign =
       'AWS4-HMAC-SHA256\n' +
@@ -145,14 +153,14 @@ export default class DefaultSigV4 implements SigV4 {
       '/aws4_request\n' +
       hashedCanonicalRequest;
 
-    const signingKey = this.getSignatureKey(
+    const signingKey = await this.getSignatureKey(
       credentials.secretAccessKey,
       today,
       region,
       serviceName
     );
 
-    const signature = hmacSHA256(stringToSign, signingKey, { asBytes: true });
+    const signature =  toHex(await this.hmac(stringToSign, signingKey));
 
     const finalParams = canonicalQuerystring + '&X-Amz-Signature=' + signature;
 
