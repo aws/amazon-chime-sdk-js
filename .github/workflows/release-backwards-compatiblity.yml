@@ -7,9 +7,9 @@
 name: Backwards Compatibility Test
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - release
 
 env:
   SELENIUM_GRID_PROVIDER: saucelabs
@@ -23,7 +23,6 @@ jobs:
   release-integ-test:
     name: Run Backwards Compatible Integration Tests with Release Tarball
     runs-on: ubuntu-latest
-    if: ${{ github.head_ref == 'release' }}
 
     steps:
       - name: Setup Node.js - 16.x
