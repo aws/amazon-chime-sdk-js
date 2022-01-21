@@ -11,14 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
 ### Removed
 
+### Changed
+- Made `SimulcastUplinkObserver.encodingSimulcastLayersDidChange` (*not* `AudioVideoObserver.encodingSimulcastLayersDidChange`) synchronous.
+
 ### Fixed
 - Fixed delays in advertising simulcast stream switches due to asynchronous and out of order checks
 - Fixed Firefox video tiles containing stale frames from previous transceivers by not attempting to reuse inactive transceivers. This switches to using `RTCRtpTransceiver.stop` when possible and may fix other incorrect tile bugs.
 - Fix the bug that the max bandwidth set by the chooseVideoInputQuality API is ignored when the Chime SDK retries the connection.
 - Added additional pausing of `MonitorTask` and `ReceiveVideoStreamIndexTask` to avoid modifying mutable state mid-subscribe
-
-### Changed
-- Made `SimulcastUplinkObserver.encodingSimulcastLayersDidChange` (*not* `AudioVideoObserver.encodingSimulcastLayersDidChange`) synchronous.
 
 ## [2.25.0] - 2022-01-11
 ### Added
