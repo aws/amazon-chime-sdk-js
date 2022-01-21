@@ -24,6 +24,8 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
   const assert: Chai.AssertStatic = chai.assert;
   const logger = new NoOpLogger(LogLevel.DEBUG);
   const selfAttendeeId = 'self-cb7cb43b';
+  const IDEAL_MAX_BANDWIDTH_KBPS = 600;
+  const SCALE_RESOLUTION_DOWN_BY = 1;
   let policy: NScaleVideoUplinkBandwidthPolicy;
   let domMockBehavior: DOMMockBehavior;
   let domMockBuilder: DOMMockBuilder | null = null;
@@ -37,7 +39,7 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
 
   beforeEach(() => {
     policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId, true, new NoOpLogger());
-    policy.setIdealMaxBandwidthKbps(600);
+    policy.setIdealMaxBandwidthKbps(IDEAL_MAX_BANDWIDTH_KBPS);
     domMockBehavior = new DOMMockBehavior();
     domMockBehavior.mediaStreamTrackSettings = {
       width: 960,
@@ -620,128 +622,71 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
   });
 
   describe('updateTransceiverController', () => {
-    it('Calling setEncodingParameters if there is changed', () => {
+    it('calls setEncodingParameters if the transceiver controller has different maxBitrate', () => {
+      transceiverController.localVideoTransceiver().sender.setParameters({
+        transactionId: undefined,
+        codecs: [],
+        rtcp: undefined,
+        encodings: [
+          {
+            maxBitrate: IDEAL_MAX_BANDWIDTH_KBPS * 1000 + 1,
+            scaleResolutionDownBy: SCALE_RESOLUTION_DOWN_BY,
+          },
+        ],
+        headerExtensions: undefined,
+      });
       policy.setTransceiverController(transceiverController);
-      const index = new DefaultVideoStreamIndex(logger);
-      const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
-      index.integrateIndexFrame(
-        new SdkIndexFrame({
-          sources: [
-            new SdkStreamDescriptor({
-              streamId: 2,
-              groupId: 1,
-              maxBitrateKbps: 200,
-              attendeeId: 'xy1',
-              mediaType: SdkStreamMediaType.VIDEO,
-            }),
-          ],
-        })
-      );
-      policy.updateIndex(index);
-      index.integrateIndexFrame(
-        new SdkIndexFrame({
-          sources: [
-            new SdkStreamDescriptor({
-              streamId: 6,
-              groupId: 2,
-              maxBitrateKbps: 400,
-              attendeeId: 'xy2',
-              mediaType: SdkStreamMediaType.VIDEO,
-            }),
-            new SdkStreamDescriptor({
-              streamId: 2,
-              groupId: 1,
-              maxBitrateKbps: 200,
-              attendeeId: 'xy1',
-              mediaType: SdkStreamMediaType.VIDEO,
-            }),
-          ],
-        })
-      );
-      policy.updateIndex(index);
+
+      const spy = sinon.spy(transceiverController, 'setEncodingParameters');
       policy.updateTransceiverController();
       expect(spy.calledOnce).to.be.true;
       spy.restore();
     });
-    it('Do not calling setEncodingParameters if there is no changed', () => {
+
+    it('calls setEncodingParameters if the transceiver controller has different scaleResolutionDownBy', () => {
+      transceiverController.localVideoTransceiver().sender.setParameters({
+        transactionId: undefined,
+        codecs: [],
+        rtcp: undefined,
+        encodings: [
+          {
+            maxBitrate: IDEAL_MAX_BANDWIDTH_KBPS * 1000,
+            scaleResolutionDownBy: SCALE_RESOLUTION_DOWN_BY + 1,
+          },
+        ],
+        headerExtensions: undefined,
+      });
       policy.setTransceiverController(transceiverController);
-      const index = new DefaultVideoStreamIndex(logger);
-      const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
-      index.integrateIndexFrame(
-        new SdkIndexFrame({
-          sources: [
-            new SdkStreamDescriptor({
-              streamId: 2,
-              groupId: 1,
-              maxBitrateKbps: 200,
-              attendeeId: 'xy1',
-              mediaType: SdkStreamMediaType.VIDEO,
-            }),
-          ],
-        })
-      );
-      policy.updateIndex(index);
-      policy.updateTransceiverController();
-      expect(spy.calledOnce).to.be.true;
-      index.integrateIndexFrame(
-        new SdkIndexFrame({
-          sources: [
-            new SdkStreamDescriptor({
-              streamId: 2,
-              groupId: 1,
-              maxBitrateKbps: 200,
-              attendeeId: 'xy1',
-              mediaType: SdkStreamMediaType.VIDEO,
-            }),
-          ],
-        })
-      );
-      policy.updateIndex(index);
+
+      const spy = sinon.spy(transceiverController, 'setEncodingParameters');
       policy.updateTransceiverController();
       expect(spy.calledOnce).to.be.true;
       spy.restore();
     });
-    it('Ensure setEncodingParameters is called to initially set the max bitrate', () => {
-      // use a new policy to ensure it's using the default values
-      policy = new NScaleVideoUplinkBandwidthPolicy(selfAttendeeId, true, new NoOpLogger());
+
+    it('does not call setEncodingParameters if the value does not change', () => {
+      transceiverController.localVideoTransceiver().sender.setParameters({
+        transactionId: undefined,
+        codecs: [],
+        rtcp: undefined,
+        encodings: [
+          {
+            maxBitrate: IDEAL_MAX_BANDWIDTH_KBPS * 1000,
+            scaleResolutionDownBy: SCALE_RESOLUTION_DOWN_BY,
+          },
+        ],
+        headerExtensions: undefined,
+      });
       policy.setTransceiverController(transceiverController);
-      const index = new DefaultVideoStreamIndex(logger);
-      const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
-      index.integrateIndexFrame(
-        new SdkIndexFrame({
-          sources: [
-            new SdkStreamDescriptor({
-              streamId: 2,
-              groupId: 1,
-              maxBitrateKbps: 1400,
-              attendeeId: 'xy1',
-              mediaType: SdkStreamMediaType.VIDEO,
-            }),
-          ],
-        })
-      );
-      policy.updateIndex(index);
+
+      const spy = sinon.spy(transceiverController, 'setEncodingParameters');
       policy.updateTransceiverController();
-      expect(spy.calledOnce).to.be.true;
+      expect(spy.calledOnce).to.be.false;
       spy.restore();
     });
-    it('Return early if there is no transceiver controller', () => {
-      const index = new DefaultVideoStreamIndex(logger);
+
+    it('returns early if there is no transceiver controller', () => {
       const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
-      index.integrateIndexFrame(
-        new SdkIndexFrame({
-          sources: [
-            new SdkStreamDescriptor({
-              streamId: 2,
-              groupId: 1,
-              maxBitrateKbps: 200,
-              attendeeId: 'xy1',
-              mediaType: SdkStreamMediaType.VIDEO,
-            }),
-          ],
-        })
-      );
-      policy.updateIndex(index);
       policy.updateTransceiverController();
       expect(spy.notCalled).to.be.true;
       spy.restore();
