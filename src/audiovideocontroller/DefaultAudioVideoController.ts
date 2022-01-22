@@ -117,6 +117,7 @@ export default class DefaultAudioVideoController
   private signalingTask: Task;
   private preStartObserver: SignalingClientObserver | undefined;
   private mayNeedRenegotiationForSimulcastLayerChange: boolean = false;
+  private maxUplinkBandwidthKbps: number;
 
   // `connectWithPromises`, `connectWithTasks`, and `actionUpdateWithRenegotiation` all
   // contains a significant portion of asynchronous tasks, so we need to explicitly defer
@@ -545,6 +546,12 @@ export default class DefaultAudioVideoController
         );
       }
       this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+
+    if (this.meetingSessionContext.videoUplinkBandwidthPolicy && this.maxUplinkBandwidthKbps) {
+      this.meetingSessionContext.videoUplinkBandwidthPolicy.setIdealMaxBandwidthKbps(
+        this.maxUplinkBandwidthKbps
+      );
     }
 
     if (this.meetingSessionContext.videoDownlinkBandwidthPolicy.bindToTileController) {
@@ -1353,6 +1360,8 @@ export default class DefaultAudioVideoController
         maxBandwidthKbps
       );
     }
+
+    this.maxUplinkBandwidthKbps = maxBandwidthKbps;
   }
 
   async handleHasBandwidthPriority(hasBandwidthPriority: boolean): Promise<void> {
