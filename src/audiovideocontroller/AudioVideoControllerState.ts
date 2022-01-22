@@ -16,6 +16,7 @@ import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import RemovableObserver from '../removableobserver/RemovableObserver';
 import SDP from '../sdp/SDP';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import SignalingClient from '../signalingclient/SignalingClient';
 import { SdkIndexFrame, SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import StatsCollector from '../statscollector/StatsCollector';
@@ -114,6 +115,17 @@ export default class AudioVideoControllerState {
 
   // This flag indicates if the backend supports compression for the client.
   serverSupportsCompression: boolean = false;
+
+  // Values set by `setVideoCodecSendPreferences`.
+  videoSendCodecPreferences: VideoCodecCapability[] = [];
+
+  // Calculated as the highest priority available codec set in the (possibly munged) SDP answer
+  // that is provide to the peer connection, which will be what is sent.
+  currentVideoSendCodec: VideoCodecCapability;
+
+  // Intersection of `videoSendCodecPreferences` and the supported receive codecs of
+  // all the other clients in the meeting.
+  meetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] | undefined = undefined;
 
   videosPaused: VideoStreamIdSet | null = null;
 

@@ -5,6 +5,7 @@ import AudioProfile from '../audioprofile/AudioProfile';
 import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import MeetingSessionCredentials from '../meetingsession/MeetingSessionCredentials';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import VideoSource from '../videosource/VideoSource';
 
 export default interface AudioVideoControllerFacade {
@@ -101,4 +102,21 @@ export default interface AudioVideoControllerFacade {
    * Sets the max bandwidth for video publishing
    */
   setVideoMaxBandwidthKbps(maxBandwidthKbps: number): void;
+
+  /**
+   * Set codec preferences for this clients send stream in order
+   * of most preferred to least preferred. The controller will
+   * fallback for one of two reasons
+   *  * The codec is not supported by the browser
+   *  * Another client that has joined the conference does not support
+   *    receiving the video. Note that if another client does not support
+   *    any of the codecs provided the sender will not fallback, and that client
+   *    will not be able to receive from this sender.
+   *
+   * If there is no overlap between what is passed in and what is supported by the browser, this function
+   * may not have any effect, and the default set of codecs for this browser will be used.
+   *
+   * @param Array of [[VideoCodecCapability]].
+   */
+  setVideoCodecSendPreferences?(preferences: VideoCodecCapability[]): void;
 }

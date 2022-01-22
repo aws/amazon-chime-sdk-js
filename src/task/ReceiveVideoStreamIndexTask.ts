@@ -6,6 +6,7 @@ import AudioVideoObserver from '../audiovideoobserver/AudioVideoObserver';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
 import DefaultModality from '../modality/DefaultModality';
 import RemovableObserver from '../removableobserver/RemovableObserver';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
@@ -113,6 +114,12 @@ export default class ReceiveVideoStreamIndexTask
     this.resubscribe(videoDownlinkBandwidthPolicy, videoUplinkBandwidthPolicy);
     this.updateVideoAvailability(indexFrame);
     this.handleIndexVideosPausedAtSource();
+    if (
+      indexFrame.supportedReceiveCodecIntersection !== undefined &&
+      indexFrame.supportedReceiveCodecIntersection.length > 0
+    ) {
+      this.handleSupportedVideoReceiveCodecIntersection(indexFrame);
+    }
     // `forEachObserver`is asynchronous anyways so it doesn't matter (for better or worse) whether we
     // trigger it before or after the policy update + possible resubscribe kickoff
     const newVideoSources = videoStreamIndex.allVideoSendingSourcesExcludingSelf(selfAttendeeId);
@@ -203,6 +210,43 @@ export default class ReceiveVideoStreamIndexTask
           f.bind(observer)(videoAvailability.clone())
         );
       });
+    }
+  }
+
+  private handleSupportedVideoReceiveCodecIntersection(index: SdkIndexFrame): void {
+    if (this.context.videoSendCodecPreferences === undefined) {
+      return;
+    }
+
+    const newMeetingSupportedVideoSendCodecPreferences: VideoCodecCapability[] = [];
+    let willNeedUpdate = false;
+
+    // Interesect `this.context.videoSendCodecPreferences` with `index.supportedReceiveCodecIntersection`
+    for (const capability of this.context.videoSendCodecPreferences) {
+      for (const signaledCapability of index.supportedReceiveCodecIntersection) {
+        if (capability.equals(VideoCodecCapability.fromSignaled(signaledCapability))) {
+          newMeetingSupportedVideoSendCodecPreferences.push(capability);
+          break;
+        }
+      }
+      // We don't need to renegotiate if we aren't sending a codec that is no longer supported in the call.
+      if (
+        this.context.currentVideoSendCodec &&
+        capability.equals(this.context.currentVideoSendCodec)
+      ) {
+        willNeedUpdate = true;
+      }
+    }
+
+    if (newMeetingSupportedVideoSendCodecPreferences.length > 0) {
+      this.context.meetingSupportedVideoSendCodecPreferences = newMeetingSupportedVideoSendCodecPreferences;
+    } else {
+      // Intersection results in no codecs, this will cause client to fall back to `this.context.videoSendCodecPreferences`
+      this.context.meetingSupportedVideoSendCodecPreferences = undefined;
+    }
+
+    if (willNeedUpdate) {
+      this.context.audioVideoController.update({ needsRenegotiation: true });
     }
   }
 

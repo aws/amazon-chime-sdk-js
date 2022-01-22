@@ -28,6 +28,7 @@ import DefaultRealtimeController from '../realtimecontroller/DefaultRealtimeCont
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import DefaultSessionStateController from '../sessionstatecontroller/DefaultSessionStateController';
 import SessionStateController from '../sessionstatecontroller/SessionStateController';
 import SessionStateControllerAction from '../sessionstatecontroller/SessionStateControllerAction';
@@ -120,6 +121,7 @@ export default class DefaultAudioVideoController
   private preStartObserver: SignalingClientObserver | undefined;
   private mayNeedRenegotiationForSimulcastLayerChange: boolean = false;
   private maxUplinkBandwidthKbps: number;
+  private videoSendCodecPreferences: VideoCodecCapability[];
   // Stored solely to trigger demotion callback on disconnection (expected behavior).
   //
   // We otherwise intentionally do not use this for any other behavior to avoid the complexity
@@ -282,6 +284,7 @@ export default class DefaultAudioVideoController
     this.meetingSessionContext.logger = this.logger;
     this.meetingSessionContext.eventController = this.eventController;
     this.meetingSessionContext.browserBehavior = new DefaultBrowserBehavior();
+    this.meetingSessionContext.videoSendCodecPreferences = this.videoSendCodecPreferences;
 
     this.meetingSessionContext.meetingSessionConfiguration = this.configuration;
     this.meetingSessionContext.signalingClient = new DefaultSignalingClient(
@@ -1428,6 +1431,12 @@ export default class DefaultAudioVideoController
     if (!!this.meetingSessionContext && this.meetingSessionContext.signalingClient) {
       this.meetingSessionContext.signalingClient.resume([streamId]);
     }
+  }
+
+  setVideoCodecSendPreferences(preferences: VideoCodecCapability[]): void {
+    this.videoSendCodecPreferences = preferences; // In case we haven't called `initSignalingClient` yet
+    this.meetingSessionContext.videoSendCodecPreferences = preferences;
+    this.update({ needsRenegotiation: true });
   }
 
   getRemoteVideoSources(): VideoSource[] {

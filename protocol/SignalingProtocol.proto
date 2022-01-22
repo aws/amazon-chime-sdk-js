@@ -128,6 +128,7 @@ message SdkIndexFrame {
     repeated SdkStreamDescriptor sources = 2;
     repeated uint32 paused_at_source_ids = 3;
     optional uint32 num_participants = 4;
+    repeated SdkVideoCodecCapability supported_receive_codec_intersection = 5;
 }
 
 message SdkPauseResumeFrame {
@@ -404,3 +405,8 @@ message SdkMeetingSessionCredentials {
     optional string external_user_id = 2;
     optional string join_token = 3;
 }
+
+enum SdkVideoCodecCapability {
+    VP8 = 1;
+    H264_CONSTRAINED_BASELINE_PROFILE = 3;
+};

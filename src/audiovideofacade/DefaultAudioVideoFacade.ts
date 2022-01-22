@@ -21,6 +21,7 @@ import VideoQualitySettings from '../devicecontroller/VideoQualitySettings';
 import { isVideoTransformDevice } from '../devicecontroller/VideoTransformDevice';
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import type VolumeIndicatorCallback from '../realtimecontroller/VolumeIndicatorCallback';
+import VideoCodecCapability from '../sdp/VideoCodecCapability';
 import TranscriptionController from '../transcript/TranscriptionController';
 import VideoSource from '../videosource/VideoSource';
 import VideoTile from '../videotile/VideoTile';
@@ -438,6 +439,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
     this.trace('setVideoMaxBandwidthKbps', maxBandwidthKbps);
   }
 
+  setVideoCodecSendPreferences(preferences: VideoCodecCapability[]): void {
+    this.audioVideoController.setVideoCodecSendPreferences(preferences);
+    this.trace('setVideoCodecSendPreferences', preferences);
+  }
+
   getVideoInputQualitySettings(): VideoQualitySettings | null {
     const result = this.deviceController.getVideoInputQualitySettings();
     this.trace('getVideoInputQualitySettings');
@@ -495,6 +501,11 @@ export default class DefaultAudioVideoFacade implements AudioVideoFacade, AudioV
   removeContentShareObserver(observer: ContentShareObserver): void {
     this.contentShareController.removeContentShareObserver(observer);
     this.trace('removeContentShareObserver');
+  }
+
+  setContentShareVideoCodecPreferences(preferences: VideoCodecCapability[]): void {
+    this.contentShareController.setContentShareVideoCodecPreferences(preferences);
+    this.trace('setContentShareVideoCodecPreferences');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

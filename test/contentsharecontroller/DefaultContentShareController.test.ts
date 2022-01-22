@@ -4,6 +4,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 
+import { VideoCodecCapability } from '../../src';
 import AudioProfile from '../../src/audioprofile/AudioProfile';
 import AudioVideoController from '../../src/audiovideocontroller/AudioVideoController';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
@@ -479,6 +480,12 @@ describe('DefaultContentShareController', () => {
       contentShareController.removeContentShareObserver(contentShareObserver);
       await delay(defaultDelay);
       expect(contentShareObserverSpy.notCalled).to.be.true;
+    });
+
+    it('setContentShareVideoCodecPreferences', async () => {
+      const audioVideoSpy = sinon.spy(contentAudioVideoController, 'setVideoCodecSendPreferences');
+      contentShareController.setContentShareVideoCodecPreferences([VideoCodecCapability.vp8()]);
+      expect(audioVideoSpy.calledOnceWith([VideoCodecCapability.vp8()])).to.be.true;
     });
   });
 });
