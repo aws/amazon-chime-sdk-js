@@ -69,6 +69,11 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
     this.context.videoStreamIndex.subscribeFrameSent();
 
+    // See comment above `fixUpSubscriptionOrder`
+    const videoSubscriptions = this.context.browserBehavior.requiresUnifiedPlan()
+      ? this.fixUpSubscriptionOrder(localSdp, this.context.videoSubscriptions)
+      : this.context.videoSubscriptions;
+
     const isSendingStreams: boolean =
       this.context.videoDuplexMode === SdkStreamServiceType.TX ||
       this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX;
@@ -79,7 +84,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.meetingSessionConfiguration.urls.audioHostURL,
       this.context.realtimeController.realtimeIsLocalAudioMuted(),
       false,
-      this.context.videoSubscriptions,
+      videoSubscriptions,
       isSendingStreams,
       this.context.videoStreamIndex.localStreamDescriptions(),
       // TODO: handle check-in mode, or remove this param
@@ -92,6 +97,42 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     this.context.logger.info(`got subscribe ack: ${JSON.stringify(subscribeAckFrame)}`);
     this.context.sdpAnswer = subscribeAckFrame.sdpAnswer;
     this.context.videoStreamIndex.integrateSubscribeAckFrame(subscribeAckFrame);
+  }
+
+  // Our backends currently expect the video subscriptions passed in subscribe to precisely
+  // line up with the media sections, with a zero for any video send or inactive section.
+  //
+  // Firefox occasionally tosses stopped transceivers at the end of the SDP without reason
+  // and in general we don't want to be at the mercy of SDP sections not being in the same
+  // order as `getTransceivers`, so we simply recalculate the array here to enforce that
+  // expected invarient.
+  private fixUpSubscriptionOrder(sdp: string, videoSubscriptions: number[]): number[] {
+    const subscriptionsWithoutZero = videoSubscriptions.filter((value: number) => value !== 0);
+    let subscriptionsWithoutZeroIndex = 0;
+
+    const directions = new DefaultSDP(sdp).videoSectionDirections();
+    const newSubscriptions: number[] = [];
+    for (const direction of directions) {
+      if (direction === 'recvonly') {
+        if (subscriptionsWithoutZeroIndex >= subscriptionsWithoutZero.length) {
+          this.context.logger.warn(
+            `More receive sections (>${subscriptionsWithoutZeroIndex}) then subscriptions (${subscriptionsWithoutZero.length})`
+          );
+          newSubscriptions.push(0);
+          continue;
+        }
+        newSubscriptions.push(subscriptionsWithoutZero[subscriptionsWithoutZeroIndex]);
+        subscriptionsWithoutZeroIndex += 1;
+      } else {
+        newSubscriptions.push(0);
+      }
+    }
+    this.context.logger.info(
+      `Fixed up ${JSON.stringify(videoSubscriptions)} to ${JSON.stringify(
+        newSubscriptions
+      )} (may be same))}`
+    );
+    return newSubscriptions;
   }
 
   private receiveSubscribeAck(): Promise<SdkSubscribeAckFrame> {
