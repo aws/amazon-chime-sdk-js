@@ -23,107 +23,12 @@ import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
 
 /** @internal */
 class LinkMediaStats {
-  constructor() {}
+  constructor() { }
   bandwidthEstimateKbps: number = 0;
   usedBandwidthKbps: number = 0;
   packetsLost: number = 0;
   nackCount: number = 0;
   rttMs: number = 0;
-}
-
-/** @internal */
-class PriorityBasedPolicyConfigManager {
-  private static readonly MINIMUM_DELAY = 2000; // keep the same as MIN_TIME_BETWEEN_SUBSCRIBE_MS
-  private static readonly MAXIMUM_DELAY = 8000;
-
-  private currentNetworkEvent: NetworkEvent;
-  private networkIncreaseTimestamp: number; // the last time network increases
-  private networkDecreaseTimestamp: number; // the last time network decreases
-  private networkEventChangeTimestamp: number; // the last time when network is changing from increase to decrease or decrease to increase
-
-  constructor(private videoPriorityBasedPolicyConfig: VideoPriorityBasedPolicyConfig) {
-    this.networkEventChangeTimestamp = 0;
-  }
-
-  getNetworkEventStartTimestamp(
-    numberOfParticipants: number,
-    prevEstimated: number,
-    currEstimated: number
-  ): [number, number] {
-    let networkEventStartTimestamp = 0;
-    let timeBeforeAllowSubscribeMs = 0;
-    const previousNetworkEvent = this.currentNetworkEvent;
-
-    if (currEstimated > prevEstimated) {
-      // if bw increases, we use recovery delay
-      this.currentNetworkEvent = NetworkEvent.Increase;
-      timeBeforeAllowSubscribeMs = this.getSubscribeDelay(
-        this.currentNetworkEvent,
-        numberOfParticipants
-      );
-
-      this.networkIncreaseTimestamp = Date.now();
-      // if bw is increasing, we want to look back to find when it starts to increase (the last moment bw is decreasing).
-      // e.g. [500, 400, 300, 400, 500, *600*], we are at 600. We know the bw is increasing since point 300, which is stored in networkDecreaseTimestamp.
-      networkEventStartTimestamp = this.networkDecreaseTimestamp;
-    } else if (currEstimated < prevEstimated) {
-      // if bw decreases, we use response delay
-      this.currentNetworkEvent = NetworkEvent.Decrease;
-      timeBeforeAllowSubscribeMs = this.getSubscribeDelay(
-        this.currentNetworkEvent,
-        numberOfParticipants
-      );
-
-      this.networkDecreaseTimestamp = Date.now();
-      // if bw is decreasing, we want to look back to find when it starts to decrease (the last moment bw is increasing) and select it as a window.
-      // see example above
-      networkEventStartTimestamp = this.networkIncreaseTimestamp;
-    } else {
-      // if bw is stable, we want to look back to find when it starts to become the current state
-      // e.g. [400, 500, 400, 400, 300, *300*], we are at the last 300. We know the bw is decreasing since point 500, which is stored in networkEventChangeTimestamp
-      networkEventStartTimestamp = this.networkEventChangeTimestamp;
-    }
-
-    if (
-      (previousNetworkEvent &&
-        previousNetworkEvent !== this.currentNetworkEvent) /* network state is changing */ ||
-      this.networkEventChangeTimestamp === 0 /* running the first time */
-    ) {
-      // set networkEventChangeTimestamp to now since network state is changing
-      this.networkEventChangeTimestamp = Date.now();
-    }
-
-    // if networkEventStartTimestamp is not defined, it means the bw is increasing/decreasing ever since the beginning.
-    // e.g. [300, 400, *500*], we are at 500. We set networkEventStartTimestamp to networkDecreaseTimestamp (undefined) above.
-    // So here, we set it to the beginning, which is networkEventChangeTimestamp (explanation above)
-    if (!networkEventStartTimestamp) networkEventStartTimestamp = this.networkEventChangeTimestamp;
-    return [networkEventStartTimestamp, timeBeforeAllowSubscribeMs];
-  }
-
-  // convert network event delay factor to actual delay in ms
-  private getSubscribeDelay(event: NetworkEvent, numberOfParticipants: number): number {
-    // left and right boundary of the delay
-    let subscribeDelay = PriorityBasedPolicyConfigManager.MINIMUM_DELAY;
-    const range =
-      PriorityBasedPolicyConfigManager.MAXIMUM_DELAY -
-      PriorityBasedPolicyConfigManager.MINIMUM_DELAY;
-
-    const responseFactor = this.videoPriorityBasedPolicyConfig.networkIssueResponseDelayFactor;
-    const recoveryFactor = this.videoPriorityBasedPolicyConfig.networkIssueRecoveryDelayFactor;
-
-    switch (event) {
-      case NetworkEvent.Decrease:
-        // we include number of participants here since bigger size of the meeting will generate higher bitrate
-        subscribeDelay += range * responseFactor * (1 + numberOfParticipants / 10);
-        subscribeDelay = Math.min(PriorityBasedPolicyConfigManager.MAXIMUM_DELAY, subscribeDelay);
-        break;
-      case NetworkEvent.Increase:
-        subscribeDelay += range * recoveryFactor;
-        break;
-    }
-
-    return subscribeDelay;
-  }
 }
 
 /** @internal */
@@ -145,12 +50,6 @@ const enum UseReceiveSet {
   NewOptimal,
   PreviousOptimal,
   PreProbe,
-}
-
-/** @internal */
-const enum NetworkEvent {
-  Decrease,
-  Increase,
 }
 
 export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthPolicy {
@@ -196,7 +95,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   private timeBeforeAllowProbeMs: number;
   private lastProbeTimestamp: number;
   private probeFailed: boolean;
-  private videoPriorityBasedPolicyConfigManager: PriorityBasedPolicyConfigManager;
 
   constructor(
     protected logger: Logger,
@@ -229,9 +127,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     this.downlinkStats = new LinkMediaStats();
     this.prevDownlinkStats = new LinkMediaStats();
     this.probeFailed = false;
-    this.videoPriorityBasedPolicyConfigManager = new PriorityBasedPolicyConfigManager(
-      this.videoPriorityBasedPolicyConfig
-    );
   }
 
   bindToTileController(tileController: VideoTileController): void {
@@ -352,7 +247,6 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
   setVideoPriorityBasedPolicyConfigs(config: VideoPriorityBasedPolicyConfig): void {
     this.videoPriorityBasedPolicyConfig = config;
-    this.videoPriorityBasedPolicyConfigManager = new PriorityBasedPolicyConfigManager(config);
   }
 
   protected calculateOptimalReceiveStreams(): void {
@@ -411,26 +305,12 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     rates.targetDownlinkBitrate = this.determineTargetRate();
 
     const numberOfParticipants = this.subscribedReceiveSet.size();
-    const prevEstimated = this.prevDownlinkStats.bandwidthEstimateKbps;
-    const currEstimated = this.downlinkStats.bandwidthEstimateKbps;
-    // calculate subscribe delay based on bandwidth increasing/decreasing
-    const [
-      networkEventStartTimestamp,
-      timeBeforeAllowSubscribeMs,
-    ] = this.videoPriorityBasedPolicyConfigManager.getNetworkEventStartTimestamp(
-      numberOfParticipants,
-      prevEstimated,
-      currEstimated
-    );
-
-    if (timeBeforeAllowSubscribeMs !== 0) {
-      this.timeBeforeAllowSubscribeMs = timeBeforeAllowSubscribeMs;
-    }
+    const currentEstimated = this.downlinkStats.bandwidthEstimateKbps;
 
     // If no major changes then don't allow subscribes for the allowed amount of time
     if (
       noMajorChange &&
-      Date.now() - networkEventStartTimestamp < this.timeBeforeAllowSubscribeMs
+      !this.videoPriorityBasedPolicyConfig.allowSubscribe(numberOfParticipants, currentEstimated)
     ) {
       return;
     }
