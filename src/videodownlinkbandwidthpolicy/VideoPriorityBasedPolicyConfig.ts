@@ -12,6 +12,9 @@ const enum NetworkEvent {
  * [[VideoPriorityBasedPolicyConfig]] contains the network issue response delay and network issue recovery delay.
  */
 export default class VideoPriorityBasedPolicyConfig {
+  private static readonly MINIMUM_DELAY = 2000;
+  private static readonly MAXIMUM_DELAY = 8000;
+
   // presets
   static readonly Default = new VideoPriorityBasedPolicyConfig(0, 0);
   static readonly UnstableNetworkPreset = new VideoPriorityBasedPolicyConfig(0, 1);
@@ -27,9 +30,6 @@ export default class VideoPriorityBasedPolicyConfig {
     public networkIssueResponseDelayFactor: number = 0,
     public networkIssueRecoveryDelayFactor: number = 0
   ) {
-    this.currentNetworkEvent = NetworkEvent.Stable;
-    this.referenceBitrate = 0;
-
     if (networkIssueResponseDelayFactor < 0) {
       networkIssueResponseDelayFactor = 0;
     } else if (networkIssueResponseDelayFactor > 1) {
@@ -45,18 +45,12 @@ export default class VideoPriorityBasedPolicyConfig {
     this.networkIssueRecoveryDelayFactor = networkIssueRecoveryDelayFactor;
   }
 
-  private static readonly MINIMUM_DELAY = 2000; 
-  private static readonly MAXIMUM_DELAY = 8000;
+  private currentNetworkEvent: NetworkEvent = NetworkEvent.Stable;
+  private networkIncreaseTimestamp: number = 0; // the last time network increases
+  private networkDecreaseTimestamp: number = 0; // the last time network decreases
+  private referenceBitrate: number = 0;
 
-  private currentNetworkEvent: NetworkEvent;
-  private networkIncreaseTimestamp: number; // the last time network increases
-  private networkDecreaseTimestamp: number; // the last time network decreases
-  private referenceBitrate: number; 
-
-  allowSubscribe(
-    numberOfParticipants: number,
-    currentEstimated: number
-  ): boolean {
+  allowSubscribe(numberOfParticipants: number, currentEstimated: number): boolean {
     let timeBeforeAllowSubscribeMs = 0;
     const previousNetworkEvent = this.currentNetworkEvent;
 
@@ -68,7 +62,7 @@ export default class VideoPriorityBasedPolicyConfig {
         numberOfParticipants
       );
 
-      if (previousNetworkEvent != NetworkEvent.Increase) {
+      if (previousNetworkEvent !== NetworkEvent.Increase) {
         this.networkIncreaseTimestamp = Date.now();
       } else if (Date.now() - this.networkIncreaseTimestamp > timeBeforeAllowSubscribeMs) {
         this.referenceBitrate = currentEstimated;
@@ -81,9 +75,9 @@ export default class VideoPriorityBasedPolicyConfig {
       timeBeforeAllowSubscribeMs = this.getSubscribeDelay(
         this.currentNetworkEvent,
         numberOfParticipants
-      ); 
-      
-      if (previousNetworkEvent != NetworkEvent.Decrease) {
+      );
+
+      if (previousNetworkEvent !== NetworkEvent.Decrease) {
         this.networkDecreaseTimestamp = Date.now();
       } else if (Date.now() - this.networkDecreaseTimestamp > timeBeforeAllowSubscribeMs) {
         this.referenceBitrate = currentEstimated;
@@ -101,8 +95,7 @@ export default class VideoPriorityBasedPolicyConfig {
     // left and right boundary of the delay
     let subscribeDelay = VideoPriorityBasedPolicyConfig.MINIMUM_DELAY;
     const range =
-    VideoPriorityBasedPolicyConfig.MAXIMUM_DELAY -
-    VideoPriorityBasedPolicyConfig.MINIMUM_DELAY;
+      VideoPriorityBasedPolicyConfig.MAXIMUM_DELAY - VideoPriorityBasedPolicyConfig.MINIMUM_DELAY;
 
     const responseFactor = this.networkIssueResponseDelayFactor;
     const recoveryFactor = this.networkIssueRecoveryDelayFactor;

@@ -643,6 +643,15 @@ describe('VideoPriorityBasedPolicy', () => {
       setPacketLoss(metricReport, 60, 50);
       policy.updateMetrics(metricReport);
       resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4, 6, 7]);
+
+      incrementTime(3000);
+      metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 405 * 1000;
+      setPacketLoss(metricReport, 60, 50);
+      policy.updateMetrics(metricReport);
+      resub = policy.wantsResubscribe();
       expect(resub).to.equal(true);
       received = policy.chooseSubscriptions();
       expect(received.array()).to.deep.equal([1, 4, 6, 7]);
@@ -1181,7 +1190,7 @@ describe('VideoPriorityBasedPolicy', () => {
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3600 * 1000;
       policy.updateMetrics(metricReport);
       resub = policy.wantsResubscribe();
-      expect(resub).to.equal(false);
+      expect(resub).to.equal(true);
 
       incrementTime(5100);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 3000 * 1000;
@@ -1243,7 +1252,7 @@ describe('VideoPriorityBasedPolicy', () => {
       setPacketLoss(metricReport, 30, 20);
       policy.updateMetrics(metricReport);
       resub = policy.wantsResubscribe();
-      expect(resub).to.equal(false);
+      expect(resub).to.equal(true);
 
       incrementTime(8100);
       metricReport.globalMetricReport.currentMetrics['googAvailableReceiveBandwidth'] = 900 * 1000;

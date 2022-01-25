@@ -23,7 +23,7 @@ import VideoPriorityBasedPolicyConfig from './VideoPriorityBasedPolicyConfig';
 
 /** @internal */
 class LinkMediaStats {
-  constructor() { }
+  constructor() {}
   bandwidthEstimateKbps: number = 0;
   usedBandwidthKbps: number = 0;
   packetsLost: number = 0;
@@ -269,13 +269,10 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     // subscribe interval will be changed if probe failed, will take this temporary interval into account
     if (
       noMajorChange &&
-      this.probeFailed &&
       Date.now() - this.lastSubscribeTimestamp < this.timeBeforeAllowSubscribeMs
     ) {
       return;
     }
-
-    this.probeFailed = false;
 
     // Sort streams by bitrate ascending.
     remoteInfos.sort((a, b) => {
@@ -310,10 +307,15 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     // If no major changes then don't allow subscribes for the allowed amount of time
     if (
       noMajorChange &&
+      this.probeFailed &&
       !this.videoPriorityBasedPolicyConfig.allowSubscribe(numberOfParticipants, currentEstimated)
     ) {
       return;
     }
+
+    // when probe failed, we set timeBeforeAllowSubscribeMs to 3x longer
+    // ince we have passed the window now, we will try to probe again
+    this.probeFailed = false;
 
     const upgradeStream: VideoStreamDescription = this.priorityPolicy(
       rates,

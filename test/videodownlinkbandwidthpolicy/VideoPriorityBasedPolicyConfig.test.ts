@@ -90,8 +90,6 @@ describe('VideoPriorityBasedPolicyConfig', () => {
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.true;
       incrementTime(2100);
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.false;
-      incrementTime(2100);
-      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1100)).to.be.true;
     });
 
     it('not allowed subscribe when bandwidth decreases within response delay', () => {
@@ -105,7 +103,6 @@ describe('VideoPriorityBasedPolicyConfig', () => {
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 300)).to.be.false;
       incrementTime(1000);
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 300)).to.be.false;
-      
     });
 
     it('not allowed subscribe when bandwidth increases within recovery delay', () => {
@@ -121,5 +118,4 @@ describe('VideoPriorityBasedPolicyConfig', () => {
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 300)).to.be.true;
     });
   });
-
 });
