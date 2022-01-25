@@ -1,0 +1,25 @@
+{
+    "`": 1,
+    "name": "linux_data_message_test.json",
+    "grids": [
+    ],
+    "tests": [
+      {
+        "name": "Data Message on Linux %ts",
+        "description": "Data Message Test on Linux",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "DataMessageTest.js",
+        "payload":{
+          "url": "http://localhost:8080/?earlyConnect=1",
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "platform": "LINUX"
+      }
+    ]
+}

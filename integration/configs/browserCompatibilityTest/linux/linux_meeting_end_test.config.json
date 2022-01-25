@@ -1,0 +1,25 @@
+{
+    "`": 1,
+    "name": "linux_meeting_end.json",
+    "grids": [
+    ],
+    "tests": [
+      {
+        "name": "Chime Meeting End Test on Linux %ts",
+        "description": "Chime Meeting End Test on Linux",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "MeetingEndTest.js",
+        "payload":{
+          "url": "http://localhost:8080/?earlyConnect=1",
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "platform": "LINUX"
+      }
+    ]
+}
