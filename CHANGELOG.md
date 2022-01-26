@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix the bug that the max bandwidth set by the chooseVideoInputQuality API is ignored when the Chime SDK retries the connection.
 - Added additional pausing of `MonitorTask` and `ReceiveVideoStreamIndexTask` to avoid modifying mutable state mid-subscribe
 - Fix the bug that the max bandwidth is ignored if the chooseVideoInputQuality API is called before starting a meeting.
+- Use optional chaining to prevent an error from undefined transceiverEncoding in FF.
 
 ## [2.25.0] - 2022-01-11
 ### Added
