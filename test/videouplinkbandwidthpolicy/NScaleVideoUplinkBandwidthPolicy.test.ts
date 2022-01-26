@@ -685,6 +685,57 @@ describe('NScaleVideoUplinkBandwidthPolicy', () => {
       spy.restore();
     });
 
+    it('calls setEncodingParameters if the transceiver controller has undefined encodings from transceiver controller', () => {
+      transceiverController.localVideoTransceiver().sender.setParameters({
+        transactionId: undefined,
+        codecs: [],
+        rtcp: undefined,
+        encodings: undefined,
+        headerExtensions: undefined,
+      });
+      policy.setTransceiverController(transceiverController);
+
+      const spy = sinon.spy(transceiverController, 'setEncodingParameters');
+      policy.updateTransceiverController();
+
+      expect(spy.calledOnce).to.be.true;
+      spy.restore();
+    });
+
+    it('calls setEncodingParameters if the transceiver controller has undefined parameters from transceiver controller', () => {
+      transceiverController.localVideoTransceiver().sender.setParameters(undefined);
+
+      const spy = sinon.spy(transceiverController, 'setEncodingParameters');
+
+      policy.setTransceiverController(transceiverController);
+      policy.updateTransceiverController();
+
+      expect(spy.calledOnce).to.be.true;
+      spy.restore();
+    });
+
+    it('should not call setEncodingParameters if the transceiver controller has an undefined sender', () => {
+      class InvalidTransceiverController extends TestTransceiverController {
+        localVideoTransceiver(): RTCRtpTransceiver {
+          // @ts-ignore
+          return {
+            sender: undefined,
+          };
+        }
+      }
+      const invalidTransceiverController = new InvalidTransceiverController(
+        new NoOpLogger(),
+        new DefaultBrowserBehavior()
+      );
+      const spy = sinon.spy(invalidTransceiverController, 'setEncodingParameters');
+      invalidTransceiverController.setPeer(new RTCPeerConnection());
+      invalidTransceiverController.setupLocalTransceivers();
+      policy.setTransceiverController(invalidTransceiverController);
+      policy.updateTransceiverController();
+      expect(spy.called).to.be.false;
+      spy.restore();
+    });
+
     it('returns early if there is no transceiver controller', () => {
       const spy = sinon.spy(TestTransceiverController.prototype, 'setEncodingParameters');
       policy.updateTransceiverController();
