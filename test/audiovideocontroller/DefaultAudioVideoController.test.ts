@@ -805,7 +805,8 @@ describe('DefaultAudioVideoController', () => {
       );
 
       // use this opportunity to verify that these can be called before start
-      audioVideoController.setVideoMaxBandwidthKbps(100);
+      const MAX_BANDWIDTH_KBPS = 100;
+      audioVideoController.setVideoMaxBandwidthKbps(MAX_BANDWIDTH_KBPS);
       audioVideoController.handleHasBandwidthPriority(false);
 
       let sessionStarted = false;
@@ -825,12 +826,15 @@ describe('DefaultAudioVideoController', () => {
       await delay(defaultDelay);
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
-      audioVideoController.setVideoMaxBandwidthKbps(100);
       audioVideoController.handleHasBandwidthPriority(false);
       audioVideoController.handleHasBandwidthPriority(true);
       audioVideoController.handleHasBandwidthPriority(true);
       // @ts-ignore mutate the policy state to trigger bandwidth reduction
       audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.numParticipants = 4;
+      expect(
+        // @ts-ignore to ensure that calling setVideoMaxBandwidthKbps works.
+        audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps()
+      ).to.equal(MAX_BANDWIDTH_KBPS);
       audioVideoController.handleHasBandwidthPriority(false);
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
