@@ -12,13 +12,18 @@ const enum NetworkEvent {
  * [[VideoPriorityBasedPolicyConfig]] contains the network issue response delay and network issue recovery delay.
  */
 export default class VideoPriorityBasedPolicyConfig {
-  private static readonly MINIMUM_DELAY = 2000;
-  private static readonly MAXIMUM_DELAY = 8000;
+  private static readonly MINIMUM_DELAY_MS = 2000;
+  private static readonly MAXIMUM_DELAY_MS = 8000;
 
   // presets
   static readonly Default = new VideoPriorityBasedPolicyConfig(0, 0);
   static readonly UnstableNetworkPreset = new VideoPriorityBasedPolicyConfig(0, 1);
   static readonly StableNetworkPreset = new VideoPriorityBasedPolicyConfig(1, 0);
+
+  private currentNetworkEvent: NetworkEvent = NetworkEvent.Stable;
+  private bandwidthIncreaseTimestamp: number = 0; // the last time bandwidth increases
+  private bandwidthDecreaseTimestamp: number = 0; // the last time bandwidth decreases
+  private referenceBitrate: number = 0;
 
   /** Initializes a [[VideoPriorityBasedPolicyConfig]] with the network event delays.
    *
@@ -45,11 +50,7 @@ export default class VideoPriorityBasedPolicyConfig {
     this.networkIssueRecoveryDelayFactor = networkIssueRecoveryDelayFactor;
   }
 
-  private currentNetworkEvent: NetworkEvent = NetworkEvent.Stable;
-  private networkIncreaseTimestamp: number = 0; // the last time network increases
-  private networkDecreaseTimestamp: number = 0; // the last time network decreases
-  private referenceBitrate: number = 0;
-
+  // determine if subscribe is allowed based on network issue/recovery delays
   allowSubscribe(numberOfParticipants: number, currentEstimated: number): boolean {
     let timeBeforeAllowSubscribeMs = 0;
     const previousNetworkEvent = this.currentNetworkEvent;
@@ -63,8 +64,8 @@ export default class VideoPriorityBasedPolicyConfig {
       );
 
       if (previousNetworkEvent !== NetworkEvent.Increase) {
-        this.networkIncreaseTimestamp = Date.now();
-      } else if (Date.now() - this.networkIncreaseTimestamp > timeBeforeAllowSubscribeMs) {
+        this.bandwidthIncreaseTimestamp = Date.now();
+      } else if (Date.now() - this.bandwidthIncreaseTimestamp > timeBeforeAllowSubscribeMs) {
         this.referenceBitrate = currentEstimated;
         return true;
       }
@@ -78,8 +79,8 @@ export default class VideoPriorityBasedPolicyConfig {
       );
 
       if (previousNetworkEvent !== NetworkEvent.Decrease) {
-        this.networkDecreaseTimestamp = Date.now();
-      } else if (Date.now() - this.networkDecreaseTimestamp > timeBeforeAllowSubscribeMs) {
+        this.bandwidthDecreaseTimestamp = Date.now();
+      } else if (Date.now() - this.bandwidthDecreaseTimestamp > timeBeforeAllowSubscribeMs) {
         this.referenceBitrate = currentEstimated;
         return true;
       }
@@ -93,9 +94,10 @@ export default class VideoPriorityBasedPolicyConfig {
   // convert network event delay factor to actual delay in ms
   private getSubscribeDelay(event: NetworkEvent, numberOfParticipants: number): number {
     // left and right boundary of the delay
-    let subscribeDelay = VideoPriorityBasedPolicyConfig.MINIMUM_DELAY;
+    let subscribeDelay = VideoPriorityBasedPolicyConfig.MINIMUM_DELAY_MS;
     const range =
-      VideoPriorityBasedPolicyConfig.MAXIMUM_DELAY - VideoPriorityBasedPolicyConfig.MINIMUM_DELAY;
+      VideoPriorityBasedPolicyConfig.MAXIMUM_DELAY_MS -
+      VideoPriorityBasedPolicyConfig.MINIMUM_DELAY_MS;
 
     const responseFactor = this.networkIssueResponseDelayFactor;
     const recoveryFactor = this.networkIssueRecoveryDelayFactor;
@@ -104,7 +106,7 @@ export default class VideoPriorityBasedPolicyConfig {
       case NetworkEvent.Decrease:
         // we include number of participants here since bigger size of the meeting will generate higher bitrate
         subscribeDelay += range * responseFactor * (1 + numberOfParticipants / 10);
-        subscribeDelay = Math.min(VideoPriorityBasedPolicyConfig.MAXIMUM_DELAY, subscribeDelay);
+        subscribeDelay = Math.min(VideoPriorityBasedPolicyConfig.MAXIMUM_DELAY_MS, subscribeDelay);
         break;
       case NetworkEvent.Increase:
         subscribeDelay += range * recoveryFactor;

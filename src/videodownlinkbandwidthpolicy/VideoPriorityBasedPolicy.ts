@@ -263,10 +263,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
 
     const sameStreamChoices = this.availStreamsSameAsLast(remoteInfos);
 
-    // If no major changes then don't allow subscribes for the allowed amount of time
     const noMajorChange = !this.startupPeriod && sameStreamChoices;
 
-    // subscribe interval will be changed if probe failed, will take this temporary interval into account
+    // If no major changes then don't allow subscribes for the allowed amount of time
     if (
       noMajorChange &&
       Date.now() - this.lastSubscribeTimestamp < this.timeBeforeAllowSubscribeMs
@@ -304,7 +303,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     const numberOfParticipants = this.subscribedReceiveSet.size();
     const currentEstimated = this.downlinkStats.bandwidthEstimateKbps;
 
-    // If no major changes then don't allow subscribes for the allowed amount of time
+    // Use videoPriorityBasedPolicyConfig to add additional delays based on network conditions
     if (
       noMajorChange &&
       this.probeFailed &&
@@ -313,9 +312,11 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       return;
     }
 
-    // when probe failed, we set timeBeforeAllowSubscribeMs to 3x longer
-    // ince we have passed the window now, we will try to probe again
+    // When probe failed, we set timeBeforeAllowSubscribeMs to 3x longer
+    // Since we have passed the subscribe interval now, we will try to probe again
     this.probeFailed = false;
+    // For the same reason above, reset time before allow subscribe to default
+    this.timeBeforeAllowSubscribeMs = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS;
 
     const upgradeStream: VideoStreamDescription = this.priorityPolicy(
       rates,
