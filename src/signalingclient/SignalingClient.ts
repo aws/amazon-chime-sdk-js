@@ -43,6 +43,9 @@ export default interface SignalingClient {
    */
   openConnection(request: SignalingClientConnectionRequest): void;
 
+  
+  openConnection2(request: SignalingClientConnectionRequest): void;
+
   /**
    * Sends a ping or pong with an id.
    *

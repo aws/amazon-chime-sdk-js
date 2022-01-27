@@ -29,7 +29,7 @@ export default class OpenSignalingConnectionTask extends BaseTask {
   async run(): Promise<void> {
     const configuration = this.context.meetingSessionConfiguration;
 
-    this.context.signalingClient.openConnection(
+    this.context.signalingClient.openConnection2(
       new SignalingClientConnectionRequest(
         configuration.urls.signalingURL,
         configuration.credentials.joinToken
