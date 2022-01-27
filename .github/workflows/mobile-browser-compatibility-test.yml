@@ -1,0 +1,41 @@
+name: Mobile Browser Compatibility Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - release-1.x
+      - linux-compatibility-tests
+
+env:
+  SELENIUM_GRID_PROVIDER: saucelabs
+  CLOUD_WATCH_METRIC: false
+  TEST_TYPE: Browser-Compatibility-Test
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  SAUCE_REST_URL: https://us-east-1.saucelabs.com/rest/v1
+
+jobs:
+  browser-compatibility-mobile-audio:
+    name: Linux Audio Compatibility Test
+    runs-on: ubuntu-latest
+    # needs: [ browser-compatibility-meeting-readiness-checker ]
+    # if: always()
+    outputs:
+      job-status: ${{ job.status }}
+    steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            ref: mobile-compatibility-tests # TODO: Remove this before merge to main
+            fetch-depth: 0
+        - name: Setup GitHub Actions Host
+          uses: ./.github/actions/setup-github-action-host
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            # sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Mobile Audio Compatibility Test
+          run: npm run test:browser-compatibility-mobile-audio
