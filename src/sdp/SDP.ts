@@ -84,9 +84,4 @@ export default interface SDP {
    * Removes H.264 from the send section.
    */
   removeH264SupportFromSendSection(): SDP;
-
-  /**
-   * List of directions of video sections in order.
-   */
-  videoSectionDirections(): RTCRtpTransceiverDirection[];
 }
