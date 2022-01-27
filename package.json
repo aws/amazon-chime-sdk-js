@@ -61,7 +61,10 @@
     "test:linux-browser-compatibility-audio": "cd ./integration/js && npm run test -- browser_compatibility linux_audio ",
     "test:linux-browser-compatibility-video": "cd ./integration/js && npm run test -- browser_compatibility linux_video ",
     "test:linux-browser-compatibility-content-share": "cd ./integration/js && npm run test -- browser_compatibility linux_content_share ",
-    "test:linux-browser-compatibility-other": "cd ./integration/js && npm run test -- browser_compatibility linux_other "
+    "test:linux-browser-compatibility-other": "cd ./integration/js && npm run test -- browser_compatibility linux_other ",
+    "test:browser-compatibility-mobile-audio": "cd ./integration/js && npm run test -- browser_compatibility mobile_audio ",
+    "test:browser-compatibility-mobile-video": "cd ./integration/js && npm run test -- browser_compatibility mobile_video ",
+    "test:browser-compatibility-mobile-data-message": "cd ./integration/js && npm run test -- browser_compatibility mobile_data_message "
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.89.0",

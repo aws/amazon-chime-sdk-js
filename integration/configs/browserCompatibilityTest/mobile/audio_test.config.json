@@ -1,0 +1,39 @@
+{
+  "`": 1,
+  "name": "mobile_audio.json",
+  "grids": [
+  ],
+  "tests": [
+    {
+      "name": "Chime Mobile Audio Test",
+      "description":"Test audio on demo meeting app with mobile devices",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "AudioTest.js",
+      "payload":{
+        "url": "https://uydhec8638.execute-api.us-east-1.amazonaws.com/Prod/",
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "version": "11",
+      "platform": "ANDROID"
+    },
+    {
+      "browserName": "chrome",
+      "version": "10",
+      "platform": "ANDROID"
+    },
+    {
+      "browserName": "chrome",
+      "version": "9",
+      "platform": "ANDROID"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+    "`": 1,
+    "name": "mobile_data_message_test.json",
+    "grids": [
+    ],
+    "tests": [
+      {
+        "name": "Mobile Data Message %ts",
+        "description": "Data Message Test on real mobile devices",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "DataMessageTest.js",
+        "payload":{
+          "url": "https://uydhec8638.execute-api.us-east-1.amazonaws.com/Prod/",
+          "seleniumSessions": {
+            "ANDROID": 2
+          }
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "version": "11",
+        "platform": "ANDROID"
+      },
+      {
+        "browserName": "chrome",
+        "version": "10",
+        "platform": "ANDROID"
+      },
+      {
+        "browserName": "chrome",
+        "version": "9",
+        "platform": "ANDROID"
+      }
+    ]
+  }

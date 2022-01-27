@@ -189,6 +189,15 @@ case $1 in
          r configs/browserCompatibilityTest/linux/linux_meeting_end_test.config.json
          # r configs/browserCompatibilityTest/linux/linux_sip_call_test.config.json
          ;;
+      mobile_audio)
+         r configs/browserCompatibilityTest/mobile/audio_test.config.json
+         ;;
+      mobile_video)
+         r configs/browserCompatibilityTest/mobile/video_test.config.json
+         ;;
+      mobile_data_message)
+         r configs/browserCompatibilityTest/mobile/data_message_test.config.json
+         ;;
       *)
          r configs/browserCompatibilityTest/desktop/audio_test.config.json
          r configs/browserCompatibilityTest/desktop/video_test.config.json
