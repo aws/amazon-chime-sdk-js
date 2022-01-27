@@ -128,4 +128,6 @@ export default interface SignalingClient {
    * Sends a resume frame with the given stream ids.
    */
   resume(streamIds: number[]): void;
+
+  closeEventHandler(event: CloseEvent): void;
 }

@@ -205,14 +205,19 @@ export default class DefaultSignalingClient implements SignalingClient {
   closeConnection(): void {
     if (
       this.webSocket.readyState() !== WebSocketReadyState.None &&
-      this.webSocket.readyState() !== WebSocketReadyState.Closed
+      this.webSocket.readyState() !== WebSocketReadyState.Closed &&
+      this.webSocket.readyState() !== WebSocketReadyState.Closing
     ) {
       this.isClosing = true;
+      console.warn(`DefaultSignalingClient::closeConnection::1`);
       this.sendEvent(
         new SignalingClientEvent(this, SignalingClientEventType.WebSocketClosing, null)
       );
+      console.warn(`DefaultSignalingClient::closeConnection::2`);
       this.webSocket.close();
+      console.warn(`DefaultSignalingClient::closeConnection::3`);
       this.deactivatePageUnloadHandler();
+      console.warn(`DefaultSignalingClient::closeConnection::4`);
     } else {
       this.logger.info('no existing signaling client connection needs closing');
       this.serviceConnectionRequestQueue();
@@ -318,10 +323,12 @@ export default class DefaultSignalingClient implements SignalingClient {
   private serviceConnectionRequestQueue(): void {
     if (this.connectionRequestQueue.length === 0) {
       this.logger.info('no connection requests to service');
+      console.warn('DefaultSignalingClient::serviceConnectionRequestQueue::no connection requests to service');
       return;
     }
     const request = this.connectionRequestQueue.shift();
     this.logger.info(`opening connection to ${request.url()}`);
+    console.warn(`DefaultSignalingClient::serviceConnectionRequestQueue::opening connection to ${request.url()}`);
     this.isClosing = false;
     this.webSocket.create(request.url(), request.protocols());
     this.setUpEventListeners();
@@ -355,6 +362,25 @@ export default class DefaultSignalingClient implements SignalingClient {
     }
   }
 
+  closeEventHandler = (event: CloseEvent) => {
+    this.deactivatePageUnloadHandler();
+    console.warn(`DefaultSignalingClient::setUpEventListeners::close::1`);
+    this.resetConnection();
+    console.warn(`DefaultSignalingClient::setUpEventListeners::close::2`);
+    this.sendEvent(
+      new SignalingClientEvent(
+        this,
+        SignalingClientEventType.WebSocketClosed,
+        null,
+        event.code,
+        event.reason
+      )
+    );
+    console.warn(`DefaultSignalingClient::setUpEventListeners::close::3`);
+    this.serviceConnectionRequestQueue();
+    console.warn(`DefaultSignalingClient::setUpEventListeners::close::4`);
+  };
+
   private setUpEventListeners(): void {
     this.webSocket.addEventListener('open', () => {
       this.activatePageUnloadHandler();
@@ -367,20 +393,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       );
       this.receiveMessage(this.stripFrameTypeRTC(new Uint8Array(event.data)));
     });
-    this.webSocket.addEventListener('close', (event: CloseEvent) => {
-      this.deactivatePageUnloadHandler();
-      this.resetConnection();
-      this.sendEvent(
-        new SignalingClientEvent(
-          this,
-          SignalingClientEventType.WebSocketClosed,
-          null,
-          event.code,
-          event.reason
-        )
-      );
-      this.serviceConnectionRequestQueue();
-    });
+    this.webSocket.addEventListener('close', this.closeEventHandler);
     this.webSocket.addEventListener('error', () => {
       if (this.isClosing && !this.wasOpened) {
         this.logger.info('ignoring error closing signaling while connecting');

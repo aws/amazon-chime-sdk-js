@@ -39,6 +39,7 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
   }
 
   close(code?: number, reason?: string): void {
+    console.warn(`DefaultWebSocketAdapter::close::code:${code} reason:${reason}`);
     this.connection?.close(code, reason);
   }
 

@@ -22,5 +22,6 @@ export default class CleanRestartedSessionTask extends BaseTask {
     this.context.iceCandidateHandler = null;
     this.context.iceCandidates = [];
     this.context.previousSdpOffer = null;
+    this.context.signalingClient.closeConnection();
   }
 }
