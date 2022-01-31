@@ -1,0 +1,24 @@
+{
+  "`": 1,
+  "name": "linux_audio_test.config.json %ts",
+  "grids": [],
+  "tests": [
+    {
+      "name": "Chime Audio Test on Linux %ts",
+      "description": "Test audio on demo meeting app on Linux",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "AudioTest.js",
+      "payload": {
+        "url": "http://localhost:8080/?earlyConnect=1",
+        "retry": 2
+      }
+    }
+  ],
+  "clients": [
+    {
+      "browserName": "chrome",
+      "platform": "LINUX"
+    }
+  ]
+}

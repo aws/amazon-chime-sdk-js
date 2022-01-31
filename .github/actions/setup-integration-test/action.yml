@@ -1,0 +1,69 @@
+name: Setup Integration Test Action
+description: "A composite GitHub action used to download the Chime JS SDK repo, install dependencies and setup SauceLabs Connect."
+inputs:
+  sauce-username:
+    required: true
+    description: "The username of the SauceLabs account"
+    default: ""
+  sauce-access-key:
+    required: true
+    description: "The access key of the SauceLabs account"
+    default: ""
+  sauce-rest-url:
+    required: false
+    description: "The datacenter endpoint for the SauceLabs Connect Proxy."
+    default: "https://saucelabs.com/rest/v1"
+  aws-access-key-id:
+    required: true
+    description: "The access key of the AWS account"
+    default: ""
+  aws-secret-access-key:
+    required: true
+    description: "The secret access key of the AWS account"
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Pack the Chime SDK and install the tarball into the Demo
+      run: |
+        current_version=$(.github/script/get-current-version)
+        echo "Packing current version:" $current_version
+        npm run build
+        npm pack
+        cd demos/browser
+        npm uninstall amazon-chime-sdk-js
+        npm install ../../amazon-chime-sdk-js-$current_version.tgz
+      shell: bash
+    - name: Create a Job ID
+      id: create-job-id
+      uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c
+    - name: Set JOB_ID Env Variable
+      run: echo "JOB_ID=${{ steps.create-job-id.outputs.uuid }}" >> $GITHUB_ENV
+      shell: bash
+    - name: Echo Job ID
+      run: echo "${{ steps.create-job-id.outputs.uuid }}"
+      shell: bash
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: us-east-1
+    - name: Setup Sauce Connect
+      uses: saucelabs/sauce-connect-action@v1
+      with:
+        username: ${{ inputs.sauce-username }}
+        accessKey: ${{ inputs.sauce-access-key }}
+        noSSLBumpDomains: all
+        tunnelIdentifier: ${{ steps.create-job-id.outputs.uuid }}
+        restUrl: ${{ inputs.sauce-rest-url }}
+    - name: Setup Node.js - 16.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+    - name: Install Kite
+      run: integration/js/script/install-kite
+      shell: bash
+    - name: Clean Install
+      run: npm ci
+      shell: bash

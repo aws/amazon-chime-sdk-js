@@ -1,0 +1,25 @@
+{
+    "`": 1,
+    "name": "linux_content_share_only_allow_two_test.json",
+    "grids": [
+    ],
+    "tests": [
+      {
+        "name": "Content Share Only Allow Two Test on Linux %ts",
+        "description": "Content Share Only Allow Upto Two Context Shares at the same time on Linux",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "ContentShareOnlyAllowTwoTest.js",
+        "payload":{
+          "url": "http://localhost:8080/?earlyConnect=1",
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "platform": "LINUX"
+      }
+    ]
+}
