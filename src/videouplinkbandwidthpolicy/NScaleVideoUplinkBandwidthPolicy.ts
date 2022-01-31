@@ -167,27 +167,22 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     if (!settings) {
       return;
     }
-
     const encodingParams: RTCRtpEncodingParameters = this.calculateEncodingParameters(settings);
-    if (
-      !this.encodingParametersHaveSameBitrateAndScaling(
-        encodingParams,
-        this.encodingParamMap.get(NScaleVideoUplinkBandwidthPolicy.encodingMapKey)
-      )
-    ) {
+    if (this.shouldUpdateEndcodingParameters(encodingParams)) {
       this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, encodingParams);
       this.transceiverController.setEncodingParameters(this.encodingParamMap);
     }
   }
 
-  private encodingParametersHaveSameBitrateAndScaling(
-    encoding1: RTCRtpEncodingParameters,
-    encoding2: RTCRtpEncodingParameters
-  ): boolean {
+  private shouldUpdateEndcodingParameters(encoding: RTCRtpEncodingParameters): boolean {
+    const transceiverEncoding = this.transceiverController
+      .localVideoTransceiver()
+      .sender.getParameters()?.encodings?.[0];
+
+    /* istanbul ignore next: transceiverEncoding?.scaleResolutionDownBy cannot be covered */
     return (
-      encoding1 === encoding2 ||
-      (encoding1.maxBitrate === encoding2.maxBitrate &&
-        encoding1.scaleResolutionDownBy === encoding2.scaleResolutionDownBy)
+      encoding.maxBitrate !== transceiverEncoding?.maxBitrate ||
+      encoding.scaleResolutionDownBy !== transceiverEncoding?.scaleResolutionDownBy
     );
   }
 

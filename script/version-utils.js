@@ -79,6 +79,7 @@ const updateBaseBranch = (branchName) => {
 }
 
 const versionBump = async (option, branchName) => {
+  process.chdir(path.join(__dirname, '..'));
   if (!option) {
     logger.log('Choose one of the following options to bump the next version:');
     logger.log('  1. Patch');

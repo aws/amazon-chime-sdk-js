@@ -113,6 +113,9 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       );
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);
+    // We currently don't bother ingesting this into the same places as `ReceiveVideoStreamIndexTask` as we synchronously attempt a first subscribe
+    // after this task completes and the state isn't quite in the right place to make it work without some refactoring. However that
+    // means that we will always have an initial subscribe without any received videos.
     this.context.indexFrame = indexFrame;
   }
 }
