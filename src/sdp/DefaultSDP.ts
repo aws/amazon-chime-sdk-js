@@ -3,6 +3,7 @@
 
 import SDP from './SDP';
 import SDPCandidateType from './SDPCandidateType';
+import SDPMediaSection from './SDPMediaSection';
 
 /**
  * Implements [[SDP]]. [[SDP]] also includes a few helper functions for parsing string.
@@ -51,6 +52,29 @@ export default class DefaultSDP implements SDP {
       return null;
     }
     return DefaultSDP.candidateTypeFromString(match[1]);
+  }
+
+  private static mediaType(sdpLine: string): 'audio' | 'video' | null {
+    const match = /m=(audio|video)/g.exec(sdpLine);
+    if (match === null) {
+      return null;
+    }
+    return match[1] as 'audio' | 'video';
+  }
+
+  private static mid(sdpLine: string): string | null {
+    if (!sdpLine.includes('a=mid:')) {
+      return null;
+    }
+    return sdpLine.replace(/^(a=mid:)/, '');
+  }
+
+  private static direction(sdpLine: string): RTCRtpTransceiverDirection | null {
+    const match = /a=(sendrecv|sendonly|recvonly|inactive)/g.exec(sdpLine);
+    if (match === null) {
+      return null;
+    }
+    return match[1] as RTCRtpTransceiverDirection;
   }
 
   static splitLines(blob: string): string[] {
@@ -618,5 +642,37 @@ export default class DefaultSDP implements SDP {
 
     const newSDP = sections.join('');
     return new DefaultSDP(newSDP);
+  }
+
+  mediaSections(): SDPMediaSection[] {
+    const sections = DefaultSDP.splitSections(this.sdp);
+    if (sections.length < 2) {
+      return [];
+    }
+
+    const parsedSections: SDPMediaSection[] = [];
+    for (let i = 1; i < sections.length; i++) {
+      const section = new SDPMediaSection();
+      const lines = DefaultSDP.splitLines(sections[i]);
+      for (const line of lines) {
+        const mediaType = DefaultSDP.mediaType(line);
+        if (mediaType) {
+          section.mediaType = mediaType;
+          continue;
+        }
+        const direction = DefaultSDP.direction(line);
+        if (direction) {
+          section.direction = direction;
+          continue;
+        }
+        const mid = DefaultSDP.mid(line);
+        if (mid) {
+          section.mid = mid;
+          continue;
+        }
+      }
+      parsedSections.push(section);
+    }
+    return parsedSections;
   }
 }

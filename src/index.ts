@@ -217,6 +217,7 @@ import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
 import SDP from './sdp/SDP';
 import SDPCandidateType from './sdp/SDPCandidateType';
+import SDPMediaSection from './sdp/SDPMediaSection';
 import Scheduler from './scheduler/Scheduler';
 import SendAndReceiveDataMessagesTask from './task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from './task/SerialGroupTask';
@@ -541,6 +542,7 @@ export {
   RunnableTask,
   SDP,
   SDPCandidateType,
+  SDPMediaSection,
   Scheduler,
   SendAndReceiveDataMessagesTask,
   SerialGroupTask,
