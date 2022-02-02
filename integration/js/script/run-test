@@ -142,41 +142,56 @@ case $1 in
    browser_compatibility)
    case $2 in
       audio)
-         r configs/browserCompatibilityTest/audio_test.config.json
+         r configs/browserCompatibilityTest/desktop/audio_test.config.json
          ;;
       video)
-         r configs/browserCompatibilityTest/video_test.config.json
-         r configs/browserCompatibilityTest/video_test_processor.config.json
+         r configs/browserCompatibilityTest/desktop/video_test.config.json
+         r configs/browserCompatibilityTest/desktop/video_test_processor.config.json
          #  TODO: Re-enable simulcast test after it has been fixed
          # r video_test_simulcast.config.json
-         r configs/browserCompatibilityTest/app_quit_video_test.config.json
-         r configs/browserCompatibilityTest/meeting_leave_video_test.config.json
-         r configs/browserCompatibilityTest/reconnection_test.config.json
+         r configs/browserCompatibilityTest/desktop/app_quit_video_test.config.json
+         r configs/browserCompatibilityTest/desktop/meeting_leave_video_test.config.json
+         r configs/browserCompatibilityTest/desktop/reconnection_test.config.json
          ;;
       content_share)
-         r configs/browserCompatibilityTest/content_share_screen_capture_test.config.json
-         r configs/browserCompatibilityTest/meeting_leave_content_share_test.config.json
-         r configs/browserCompatibilityTest/content_share_video_test.config.json
-         r configs/browserCompatibilityTest/content_share_only_allow_two_test.config.json
-         r configs/browserCompatibilityTest/content_share_join_later_test.config.json
-         r configs/browserCompatibilityTest/app_quit_content_share_test.config.json
+         r configs/browserCompatibilityTest/desktop/content_share_screen_capture_test.config.json
+         r configs/browserCompatibilityTest/desktop/meeting_leave_content_share_test.config.json
+         r configs/browserCompatibilityTest/desktop/content_share_video_test.config.json
+         r configs/browserCompatibilityTest/desktop/content_share_only_allow_two_test.config.json
+         r configs/browserCompatibilityTest/desktop/content_share_join_later_test.config.json
+         r configs/browserCompatibilityTest/desktop/app_quit_content_share_test.config.json
          ;;
       data_message)
-         r configs/browserCompatibilityTest/data_message_test.config.json
+         r configs/browserCompatibilityTest/desktop/data_message_test.config.json
          ;;
       meeting_readiness_checker)
-         r configs/browserCompatibilityTest/meeting_readiness_checker_test.config.json
+         r configs/browserCompatibilityTest/desktop/meeting_readiness_checker_test.config.json
          ;;
       background_blur)
-         r configs/browserCompatibilityTest/background_blur_test.config.json
+         r configs/browserCompatibilityTest/desktop/background_blur_test.config.json
          ;;
       voice_focus)
-         r configs/browserCompatibilityTest/voice_focus_test.config.json
+         r configs/browserCompatibilityTest/desktop/voice_focus_test.config.json
+         ;;
+      linux_audio)
+         r configs/browserCompatibilityTest/desktop/linux/audio_test.config.json
+         ;;
+      linux_video)
+         r configs/browserCompatibilityTest/desktop/linux/video_test.config.json
+         ;;
+      linux_content_share)
+         r configs/browserCompatibilityTest/desktop/linux/content_share_join_later_test.config.json
+         r configs/browserCompatibilityTest/desktop/linux/content_share_only_allow_two_test.config.json
+         r configs/browserCompatibilityTest/desktop/linux/content_share_screen_capture_test.config.json
+         ;;
+      linux_other)
+         r configs/browserCompatibilityTest/desktop/linux/data_message_test.config.json
+         r configs/browserCompatibilityTest/desktop/linux/meeting_end_test.config.json
          ;;
       *)
-         r configs/browserCompatibilityTest/audio_test.config.json
-         r configs/browserCompatibilityTest/video_test.config.json
-         r configs/browserCompatibilityTest/meeting_end_test.config.json
+         r configs/browserCompatibilityTest/desktop/audio_test.config.json
+         r configs/browserCompatibilityTest/desktop/video_test.config.json
+         r configs/browserCompatibilityTest/desktop/meeting_end_test.config.json
          ;;
       esac
       ;;

@@ -1,6 +1,6 @@
 {
   "name": "amazon-chime-sdk-js",
-  "version": "2.26.0",
+  "version": "2.27.0",
   "description": "Amazon Chime SDK for JavaScript",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -57,7 +57,11 @@
     "test:browser-compatibility-data-message": "cd ./integration/js && npm run test -- browser_compatibility data_message ",
     "test:browser-compatibility-meeting-readiness-checker": "cd ./integration/js && npm run test -- browser_compatibility meeting_readiness_checker ",
     "test:browser-compatibility-background-blur": "cd ./integration/js && npm run test -- browser_compatibility background_blur ",
-    "test:browser-compatibility-voice-focus": "cd ./integration/js && npm run test -- browser_compatibility voice_focus "
+    "test:browser-compatibility-voice-focus": "cd ./integration/js && npm run test -- browser_compatibility voice_focus ",
+    "test:linux-browser-compatibility-audio": "cd ./integration/js && npm run test -- browser_compatibility linux_audio ",
+    "test:linux-browser-compatibility-video": "cd ./integration/js && npm run test -- browser_compatibility linux_video ",
+    "test:linux-browser-compatibility-content-share": "cd ./integration/js && npm run test -- browser_compatibility linux_content_share ",
+    "test:linux-browser-compatibility-other": "cd ./integration/js && npm run test -- browser_compatibility linux_other "
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.89.0",

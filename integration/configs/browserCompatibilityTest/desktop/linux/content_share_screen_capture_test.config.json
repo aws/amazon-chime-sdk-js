@@ -1,0 +1,25 @@
+{
+    "`": 1,
+    "name": "linux_content_share_screen_capture_test.json",
+    "grids": [
+    ],
+    "tests": [
+      {
+        "name": "Content Share Screen Capture Test on Linux %ts",
+        "description": "Content Share Screen Capture Test on Linux",
+        "tupleSize": 1,
+        "noOfThreads": 1,
+        "testImpl": "ContentShareScreenCapture.js",
+        "payload":{
+          "url": "http://localhost:8080/?earlyConnect=1",
+          "retry": 2
+        }
+      }
+    ],
+    "clients": [
+      {
+        "browserName": "chrome",
+        "platform": "LINUX"
+      }
+    ]
+}
