@@ -239,8 +239,6 @@ export default class DefaultTransceiverController implements TransceiverControll
         `adding transceiver mid: ${transceiver.mid} subscription: ${index} direction: recvonly`
       );
     }
-
-    this.logger.info(`returning direction: blah ${this.videoSubscriptions}`);
   }
 
   private updateTransceiverWithStop(

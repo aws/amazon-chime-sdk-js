@@ -89,5 +89,5 @@ export default interface SDP {
   /**
    * List of parsed media sections sections in order they occur on SDP.
    */
-  mediaSections(): SDPMediaSection[];
+  mediaSections?(): SDPMediaSection[];
 }

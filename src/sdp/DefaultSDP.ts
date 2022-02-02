@@ -54,25 +54,25 @@ export default class DefaultSDP implements SDP {
     return DefaultSDP.candidateTypeFromString(match[1]);
   }
 
-  private static mediaType(sdpLine: string): 'audio' | 'video' | null {
+  private static mediaType(sdpLine: string): 'audio' | 'video' | undefined {
     const match = /m=(audio|video)/g.exec(sdpLine);
     if (match === null) {
-      return null;
+      return undefined;
     }
     return match[1] as 'audio' | 'video';
   }
 
-  private static mid(sdpLine: string): string | null {
+  private static mid(sdpLine: string): string | undefined {
     if (!sdpLine.includes('a=mid:')) {
-      return null;
+      return undefined;
     }
     return sdpLine.replace(/^(a=mid:)/, '');
   }
 
-  private static direction(sdpLine: string): RTCRtpTransceiverDirection | null {
+  private static direction(sdpLine: string): RTCRtpTransceiverDirection | undefined {
     const match = /a=(sendrecv|sendonly|recvonly|inactive)/g.exec(sdpLine);
     if (match === null) {
-      return null;
+      return undefined;
     }
     return match[1] as RTCRtpTransceiverDirection;
   }
@@ -650,29 +650,29 @@ export default class DefaultSDP implements SDP {
       return [];
     }
 
-    const parsedSections: SDPMediaSection[] = [];
+    const parsedMediaSections: SDPMediaSection[] = [];
     for (let i = 1; i < sections.length; i++) {
       const section = new SDPMediaSection();
       const lines = DefaultSDP.splitLines(sections[i]);
       for (const line of lines) {
         const mediaType = DefaultSDP.mediaType(line);
-        if (mediaType) {
+        if (mediaType !== undefined) {
           section.mediaType = mediaType;
           continue;
         }
         const direction = DefaultSDP.direction(line);
-        if (direction) {
+        if (direction !== undefined) {
           section.direction = direction;
           continue;
         }
         const mid = DefaultSDP.mid(line);
-        if (mid) {
+        if (mid !== undefined) {
           section.mid = mid;
           continue;
         }
       }
-      parsedSections.push(section);
+      parsedMediaSections.push(section);
     }
-    return parsedSections;
+    return parsedMediaSections;
   }
 }
