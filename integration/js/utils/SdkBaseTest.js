@@ -35,8 +35,8 @@ class SdkBaseTest extends KiteBaseTest {
     this.testReady = false;
     this.testFinish = false;
     this.testName = testName;
-    this.useSimulcast = !!this.payload?.useSimulcast;
-    this.namespaceInfix = this.payload?.namespaceInfix || '';
+    this.useSimulcast = !!this.payload.useSimulcast;
+    this.namespaceInfix = this.payload.namespaceInfix || '';
 
     if (this.useSimulcast) {
       this.testName += 'Simulcast';

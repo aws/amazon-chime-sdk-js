@@ -18,7 +18,7 @@ class AppTestStep extends TestStep {
       this.driver = sessionInfo.driver;
     }
 
-    this.namespaceInfix = kiteBaseTest.payload?.namespaceInfix || '';
+    this.namespaceInfix = kiteBaseTest.payload.namespaceInfix || '';
   }
 
   async step() {
