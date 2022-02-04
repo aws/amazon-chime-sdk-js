@@ -1,5 +1,5 @@
-const {KiteTestError, TestStep, Status} = require('kite-common');
-const {emitMetric} = require('./CloudWatch');
+const { KiteTestError, TestStep, Status } = require('kite-common');
+const { emitMetric } = require('./CloudWatch');
 
 class AppTestStep extends TestStep {
   constructor(kiteBaseTest, sessionInfo) {
@@ -17,11 +17,13 @@ class AppTestStep extends TestStep {
       this.page = sessionInfo.page;
       this.driver = sessionInfo.driver;
     }
+
+    this.namespaceInfix = kiteBaseTest.payload.namespaceInfix || '';
   }
 
   async step() {
     if (this.test.remoteFailed || this.test.failedTest) {
-      this.logger("Skipping: " + this.stepDescription());
+      this.logger('Skipping: ' + this.stepDescription());
       return;
     }
     try {
@@ -34,14 +36,14 @@ class AppTestStep extends TestStep {
   }
 
   metricName() {
-    return ""
+    return '';
   }
 
   async run() {
   }
 
   emitMetricToCommonNamespace() {
-    return false
+    return false;
   }
 
   failed() {
@@ -54,13 +56,13 @@ class AppTestStep extends TestStep {
   }
 
   emitCwMetric(value) {
-    if (this.metricName() === "") {
+    if (this.metricName() === '') {
       return;
     }
     if (this.emitMetricToCommonNamespace()) {
-      emitMetric("Common", this.test.capabilities, this.metricName(), value);
+      emitMetric('Common', this.test.capabilities, this.metricName(), value, this.namespaceInfix);
     }
-    emitMetric(this.test.testName, this.test.capabilities, this.metricName(), value);
+    emitMetric(this.test.testName, this.test.capabilities, this.metricName(), value, this.namespaceInfix);
   }
 
   finished(message, data) {
