@@ -217,10 +217,104 @@ export default class DefaultTransceiverController implements TransceiverControll
     videosToReceive: VideoStreamIdSet
   ): void {
     const videosRemaining = videosToReceive.array();
+    if (transceivers.length !== 0 && !transceivers[0].stop) {
+      // This function and its usage can be removed once we raise Chrome browser requirements
+      // to M88 (when `RTCRtpTransceiver.stop` was added)
+      this.logger.info('Updating transceivers without `stop` function');
+      this.updateTransceiverWithoutStop(transceivers, videoStreamIndex, videosRemaining);
+    } else if (transceivers.length !== 0) {
+      this.updateTransceiverWithStop(transceivers, videoStreamIndex, videosRemaining);
+    }
 
-    // Start by handling existing videos
+    // Add transceivers for the remaining subscriptions
+    for (const index of videosRemaining) {
+      // @ts-ignore
+      const transceiver = this.peer.addTransceiver('video', {
+        direction: 'recvonly',
+        streams: [new MediaStream()],
+      });
+      this.streamIdToTransceiver.set(index, transceiver);
+      this.videoSubscriptions.push(index);
+      this.logger.info(
+        `adding transceiver mid: ${transceiver.mid} subscription: ${index} direction: recvonly`
+      );
+    }
+  }
+
+  private updateTransceiverWithStop(
+    transceivers: RTCRtpTransceiver[],
+    videoStreamIndex: VideoStreamIndex,
+    videosRemaining: number[]
+  ): void {
     // Begin counting out index in the the subscription array at 1 since the camera.
     // Always occupies position 0 (whether active or not).
+    let n = 1;
+    // Reset since otherwise there will be stale indexes corresponding to
+    // stopped transceivers.
+    this.videoSubscriptions = [0];
+
+    for (const transceiver of transceivers) {
+      if (
+        transceiver === this._localCameraTransceiver ||
+        !this.transceiverIsVideo(transceiver) ||
+        !transceiver.mid
+      ) {
+        continue;
+      }
+
+      let reusingTranceiver = false;
+      // See if we want this existing transceiver for a simulcast stream switch
+      //
+      // By convention with the service backend, msid is equal to the media section mid, prefixed with the string "v_";
+      // we use this to get the stream ID for the track
+      const streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
+      if (transceiver.direction !== 'inactive' && streamId !== undefined) {
+        for (const [index, recvStreamId] of videosRemaining.entries()) {
+          // `streamId` may still be the same as `recvStreamId`
+          if (videoStreamIndex.StreamIdsInSameGroup(streamId, recvStreamId)) {
+            transceiver.direction = 'recvonly';
+            this.videoSubscriptions[n] = recvStreamId;
+            reusingTranceiver = true;
+
+            this.streamIdToTransceiver.delete(streamId);
+            this.streamIdToTransceiver.set(recvStreamId, transceiver);
+            videosRemaining.splice(index, 1);
+            break;
+          }
+        }
+      }
+
+      if (!reusingTranceiver) {
+        this.videoSubscriptions[n] = 0;
+        this.logger.info(
+          `Stopping MID: ${transceiver.mid}, direction: ${transceiver.direction}, current direction: ${transceiver.currentDirection}`
+        );
+        // Clean up transceiver and mappings for streams that have been unsubscribed from.  Note we do not try to reuse
+        // old inactive transceivers for new streams as Firefox will reuse the last frame from
+        // that transceiver, and additionally we simply don't want to risk wiring up a transceiver
+        // to the incorrect video stream for no real benefit besides possible a smaller SDP size.
+        transceiver.stop(); // Note (as of Firefox 94): Firefox will keep these around forever
+        for (const [streamId, previousTransceiver] of this.streamIdToTransceiver.entries()) {
+          if (transceiver.mid === previousTransceiver.mid) {
+            this.streamIdToTransceiver.delete(streamId);
+          }
+        }
+      }
+      n += 1;
+    }
+  }
+
+  // This function operates similarily to `updateTransceiverWithStop` with the following changes to account
+  // for the fact RTCRtpTransceiver.stop is not available on all supported browsers:
+  //  * We attempt to reuse inactive transceivers because libwebrtc will not remove them otherwise and
+  //    the SDP will grow endlessly.
+  //  * We mark unsubscribed transceivers as 'inactive' so that they can be reused. This requires using a
+  //    second for loop.
+  private updateTransceiverWithoutStop(
+    transceivers: RTCRtpTransceiver[],
+    videoStreamIndex: VideoStreamIndex,
+    videosRemaining: number[]
+  ): void {
     let n = 1;
     for (const transceiver of transceivers) {
       if (transceiver === this._localCameraTransceiver || !this.transceiverIsVideo(transceiver)) {
@@ -228,9 +322,6 @@ export default class DefaultTransceiverController implements TransceiverControll
       }
       this.videoSubscriptions[n] = 0;
       if (transceiver.direction !== 'inactive') {
-        // See if we want this existing transceiver
-        // by convention with the video host, msid is equal to the media section mid, prefixed with the string "v_"
-        // we use this to get the streamId for the track
         const streamId = videoStreamIndex.streamIdForTrack('v_' + transceiver.mid);
         if (streamId !== undefined) {
           for (const [index, recvStreamId] of videosRemaining.entries()) {
@@ -274,20 +365,6 @@ export default class DefaultTransceiverController implements TransceiverControll
         }
       }
       n += 1;
-    }
-
-    // add transceivers for the remaining subscriptions
-    for (const index of videosRemaining) {
-      // @ts-ignore
-      const transceiver = this.peer.addTransceiver('video', {
-        direction: 'recvonly',
-        streams: [this.defaultMediaStream],
-      });
-      this.streamIdToTransceiver.set(index, transceiver);
-      this.videoSubscriptions.push(index);
-      this.logger.info(
-        `adding transceiver mid: ${transceiver.mid} subscription: ${index} direction: recvonly`
-      );
     }
   }
 

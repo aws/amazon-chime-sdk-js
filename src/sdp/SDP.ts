@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import SDPCandidateType from './SDPCandidateType';
+import SDPMediaSection from './SDPMediaSection';
 
 /**
  * [[SDP]] manages and helps munge an SDP during negotiation.
@@ -84,4 +85,9 @@ export default interface SDP {
    * Removes H.264 from the send section.
    */
   removeH264SupportFromSendSection(): SDP;
+
+  /**
+   * List of parsed media sections sections in order they occur on SDP.
+   */
+  mediaSections?(): SDPMediaSection[];
 }

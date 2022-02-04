@@ -69,6 +69,11 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
 
     this.context.videoStreamIndex.subscribeFrameSent();
 
+    // See comment above `fixUpSubscriptionOrder`
+    const videoSubscriptions = this.context.browserBehavior.requiresUnifiedPlan()
+      ? this.fixUpSubscriptionOrder(localSdp, this.context.videoSubscriptions)
+      : this.context.videoSubscriptions;
+
     const isSendingStreams: boolean =
       this.context.videoDuplexMode === SdkStreamServiceType.TX ||
       this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX;
@@ -79,7 +84,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       this.context.meetingSessionConfiguration.urls.audioHostURL,
       this.context.realtimeController.realtimeIsLocalAudioMuted(),
       false,
-      this.context.videoSubscriptions,
+      videoSubscriptions,
       isSendingStreams,
       this.context.videoStreamIndex.localStreamDescriptions(),
       // TODO: handle check-in mode, or remove this param
@@ -92,6 +97,59 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     this.context.logger.info(`got subscribe ack: ${JSON.stringify(subscribeAckFrame)}`);
     this.context.sdpAnswer = subscribeAckFrame.sdpAnswer;
     this.context.videoStreamIndex.integrateSubscribeAckFrame(subscribeAckFrame);
+  }
+
+  // Our backends currently expect the video subscriptions passed in subscribe to precisely
+  // line up with the media sections, with a zero for any video send or inactive section.
+  //
+  // Firefox occasionally tosses stopped transceivers at the end of the SDP without reason
+  // and in general we don't want to be at the mercy of SDP sections not being in the same
+  // order as `getTransceivers`, so we simply recalculate the array here to enforce that
+  // expected invarient until we refactor our signaling to simply take a mapping of MID to
+  // subscription.
+  //
+  // This only works on Unified Plan SDPs
+  private fixUpSubscriptionOrder(sdp: string, videoSubscriptions: number[]): number[] {
+    if (this.context.transceiverController.getMidForStreamId === undefined) {
+      return videoSubscriptions;
+    }
+
+    const midsToStreamIds = new Map<string, number>();
+    for (const streamId of videoSubscriptions) {
+      // The local description will have been set by the time this task is running, so all
+      // of the transceivers should have `mid` set by now (see comment above `getMidForStreamId`)
+      const mid = this.context.transceiverController.getMidForStreamId(streamId);
+      if (mid === undefined) {
+        this.context.logger.warn(`Could not find MID for stream ID: ${streamId}`);
+        continue;
+      }
+      midsToStreamIds.set(mid, streamId);
+    }
+
+    const sections = new DefaultSDP(sdp).mediaSections();
+    const newSubscriptions: number[] = [];
+    for (const section of sections) {
+      if (section.mediaType !== 'video') {
+        continue;
+      }
+
+      if (section.direction === 'recvonly') {
+        const streamId = midsToStreamIds.get(section.mid);
+        if (streamId === undefined) {
+          this.context.logger.warn(`Could not find stream ID for MID: ${section.mid}`);
+          continue;
+        }
+        newSubscriptions.push(streamId);
+      } else {
+        newSubscriptions.push(0);
+      }
+    }
+    this.context.logger.info(
+      `Fixed up ${JSON.stringify(videoSubscriptions)} to ${JSON.stringify(
+        newSubscriptions
+      )} (may be same))}`
+    );
+    return newSubscriptions;
   }
 
   private receiveSubscribeAck(): Promise<SdkSubscribeAckFrame> {
