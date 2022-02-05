@@ -10,6 +10,7 @@ import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocket
 import WebSocketReadyState from '../../src/websocketadapter/WebSocketReadyState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import { wait } from '../../src/utils/Utils';
 
 describe('DefaultWebSocketAdapter', () => {
   let expect: Chai.ExpectStatic;
@@ -83,6 +84,21 @@ describe('DefaultWebSocketAdapter', () => {
     const handler = (_testEvent: Event): void => {};
     socket.addEventListener('testHandler', handler);
     expect(spy.calledWith('testHandler', handler)).to.be.true;
+  });
+
+  it('removes an event listener from the websocket', async () => {
+    let callCount = 0;
+    domMockBuilder = new DOMMockBuilder();
+    socket.create('http://example.com', ['testProtocol']);
+    const handler = (): void => {
+      callCount += 1;
+    };
+    socket.addEventListener('close', handler);
+    socket.close();
+    await wait(10);
+    socket.removeEventListener('close', handler);
+    socket.close();
+    expect(callCount).to.equal(1);
   });
 
   it('will call close on the websocket', done => {

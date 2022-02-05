@@ -33,12 +33,15 @@ import SignalingClientEventType from './SignalingClientEventType';
 import SignalingClientJoin from './SignalingClientJoin';
 import SignalingClientSubscribe from './SignalingClientSubscribe';
 import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVideoSubscriptionConfiguration';
+import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 
 /**
  * [[DefaultSignalingClient]] implements the SignalingClient interface.
  */
 export default class DefaultSignalingClient implements SignalingClient {
   private static FRAME_TYPE_RTC: number = 0x5;
+  private static CLOSE_EVENT_TIMEOUT_MS: number = 2000;
+
   private observerQueue: Set<SignalingClientObserver>;
   private wasOpened: boolean;
   private isClosing: boolean;
@@ -65,9 +68,23 @@ export default class DefaultSignalingClient implements SignalingClient {
   }
 
   openConnection(request: SignalingClientConnectionRequest): void {
-    this.logger.info('adding connection request to queue: ' + request.url());
-    this.connectionRequestQueue.push(request);
-    this.closeConnection();
+    const openConnection = () => {
+      this.logger.info(`adding connection request to queue: ${request.url()}`);
+      this.connectionRequestQueue.push(request);
+      this.serviceConnectionRequestQueue();
+    };
+
+    if (
+      this.webSocket.readyState() === WebSocketReadyState.None ||
+      this.webSocket.readyState() === WebSocketReadyState.Closed
+    ) {
+      openConnection();
+    } else {
+      // Reconnect
+      this.closeConnectionPromise().then(() => {
+        openConnection();
+      });
+    }
   }
 
   pingPong(pingPongFrame: SdkPingPongFrame): number {
@@ -204,19 +221,53 @@ export default class DefaultSignalingClient implements SignalingClient {
 
   closeConnection(): void {
     if (
-      this.webSocket.readyState() !== WebSocketReadyState.None &&
-      this.webSocket.readyState() !== WebSocketReadyState.Closed
+      this.webSocket.readyState() === WebSocketReadyState.Closing ||
+      this.webSocket.readyState() === WebSocketReadyState.Connecting ||
+      this.webSocket.readyState() === WebSocketReadyState.Open
     ) {
+      this.closeConnectionPromise();
+    }
+  }
+
+  private async closeConnectionPromise(): Promise<void> {
+    return new Promise(resolve => {
+      this.logger.info('closing the signaling connection');
       this.isClosing = true;
       this.sendEvent(
         new SignalingClientEvent(this, SignalingClientEventType.WebSocketClosing, null)
       );
-      this.webSocket.close();
       this.deactivatePageUnloadHandler();
-    } else {
-      this.logger.info('no existing signaling client connection needs closing');
-      this.serviceConnectionRequestQueue();
-    }
+
+      // Continue resetting the connection even if SDK does not receive the "close" event.
+      const scheduler: TimeoutScheduler = new TimeoutScheduler(
+        DefaultSignalingClient.CLOSE_EVENT_TIMEOUT_MS
+      );
+      const handler = (event: CloseEvent) => {
+        this.webSocket.removeEventListener('close', handler);
+        scheduler.stop();
+        this.resetConnection();
+        this.sendEvent(
+          new SignalingClientEvent(
+            this,
+            SignalingClientEventType.WebSocketClosed,
+            null,
+            event.code,
+            event.reason
+          )
+        );
+        resolve();
+      };
+
+      // Remove the existing close handler to prevent SDK from opening a new connection.
+      this.webSocket.removeEventListener('close', this.closeEventHandler);
+      this.webSocket.addEventListener('close', handler);
+      scheduler.start(() => {
+        handler(
+          new CloseEvent('close', { wasClean: false, code: 1006, reason: '', bubbles: false })
+        );
+      });
+      this.webSocket.close();
+    });
   }
 
   ready(): boolean {
@@ -367,20 +418,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       );
       this.receiveMessage(this.stripFrameTypeRTC(new Uint8Array(event.data)));
     });
-    this.webSocket.addEventListener('close', (event: CloseEvent) => {
-      this.deactivatePageUnloadHandler();
-      this.resetConnection();
-      this.sendEvent(
-        new SignalingClientEvent(
-          this,
-          SignalingClientEventType.WebSocketClosed,
-          null,
-          event.code,
-          event.reason
-        )
-      );
-      this.serviceConnectionRequestQueue();
-    });
+    this.webSocket.addEventListener('close', this.closeEventHandler);
     this.webSocket.addEventListener('error', () => {
       if (this.isClosing && !this.wasOpened) {
         this.logger.info('ignoring error closing signaling while connecting');
@@ -425,4 +463,19 @@ export default class DefaultSignalingClient implements SignalingClient {
     const randomNum = window.crypto.getRandomValues(num);
     return randomNum[0];
   }
+
+  private closeEventHandler = (event: CloseEvent): void => {
+    this.deactivatePageUnloadHandler();
+    this.resetConnection();
+    this.sendEvent(
+      new SignalingClientEvent(
+        this,
+        SignalingClientEventType.WebSocketClosed,
+        null,
+        event.code,
+        event.reason
+      )
+    );
+    this.serviceConnectionRequestQueue();
+  };
 }
