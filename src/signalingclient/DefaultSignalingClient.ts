@@ -3,6 +3,7 @@
 
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
+import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
   ISdkClientDetails,
@@ -33,7 +34,6 @@ import SignalingClientEventType from './SignalingClientEventType';
 import SignalingClientJoin from './SignalingClientJoin';
 import SignalingClientSubscribe from './SignalingClientSubscribe';
 import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVideoSubscriptionConfiguration';
-import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 
 /**
  * [[DefaultSignalingClient]] implements the SignalingClient interface.
@@ -68,23 +68,9 @@ export default class DefaultSignalingClient implements SignalingClient {
   }
 
   openConnection(request: SignalingClientConnectionRequest): void {
-    const openConnection = () => {
-      this.logger.info(`adding connection request to queue: ${request.url()}`);
-      this.connectionRequestQueue.push(request);
-      this.serviceConnectionRequestQueue();
-    };
-
-    if (
-      this.webSocket.readyState() === WebSocketReadyState.None ||
-      this.webSocket.readyState() === WebSocketReadyState.Closed
-    ) {
-      openConnection();
-    } else {
-      // Reconnect
-      this.closeConnectionPromise().then(() => {
-        openConnection();
-      });
-    }
+    this.logger.info('adding connection request to queue: ' + request.url());
+    this.connectionRequestQueue.push(request);
+    this.closeConnection();
   }
 
   pingPong(pingPongFrame: SdkPingPongFrame): number {
@@ -221,41 +207,22 @@ export default class DefaultSignalingClient implements SignalingClient {
 
   closeConnection(): void {
     if (
-      this.webSocket.readyState() === WebSocketReadyState.Closing ||
-      this.webSocket.readyState() === WebSocketReadyState.Connecting ||
-      this.webSocket.readyState() === WebSocketReadyState.Open
+      this.webSocket.readyState() !== WebSocketReadyState.None &&
+      this.webSocket.readyState() !== WebSocketReadyState.Closed
     ) {
-      this.closeConnectionPromise();
-    }
-  }
-
-  private async closeConnectionPromise(): Promise<void> {
-    return new Promise(resolve => {
-      this.logger.info('closing the signaling connection');
       this.isClosing = true;
       this.sendEvent(
         new SignalingClientEvent(this, SignalingClientEventType.WebSocketClosing, null)
       );
-      this.deactivatePageUnloadHandler();
 
       // Continue resetting the connection even if SDK does not receive the "close" event.
       const scheduler: TimeoutScheduler = new TimeoutScheduler(
         DefaultSignalingClient.CLOSE_EVENT_TIMEOUT_MS
       );
-      const handler = (event: CloseEvent) => {
+      const handler = (event: CloseEvent): void => {
         this.webSocket.removeEventListener('close', handler);
         scheduler.stop();
-        this.resetConnection();
-        this.sendEvent(
-          new SignalingClientEvent(
-            this,
-            SignalingClientEventType.WebSocketClosed,
-            null,
-            event.code,
-            event.reason
-          )
-        );
-        resolve();
+        this.closeEventHandler(event);
       };
 
       // Remove the existing close handler to prevent SDK from opening a new connection.
@@ -267,7 +234,11 @@ export default class DefaultSignalingClient implements SignalingClient {
         );
       });
       this.webSocket.close();
-    });
+      this.deactivatePageUnloadHandler();
+    } else {
+      this.logger.info('no existing signaling client connection needs closing');
+      this.serviceConnectionRequestQueue();
+    }
   }
 
   ready(): boolean {

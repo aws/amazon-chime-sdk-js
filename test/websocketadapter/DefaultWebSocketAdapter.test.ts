@@ -6,11 +6,11 @@ import * as sinon from 'sinon';
 
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import { wait } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketReadyState from '../../src/websocketadapter/WebSocketReadyState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { wait } from '../../src/utils/Utils';
 
 describe('DefaultWebSocketAdapter', () => {
   let expect: Chai.ExpectStatic;

@@ -27,12 +27,12 @@ import {
   SdkStreamMediaType,
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import { wait } from '../../src/utils/Utils';
 import VideoStreamDescription from '../../src/videostreamindex/VideoStreamDescription';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import { wait } from '../../src/utils/Utils';
 
 interface TestConfigs {
   adapterSendSucceeds: boolean;
@@ -662,7 +662,7 @@ describe('DefaultSignalingClient', () => {
           }
         }
       }
-      
+
       testObjects.signalingClient.registerObserver(new TestObserver());
       testObjects.signalingClient.closeConnection();
       await wait(10);

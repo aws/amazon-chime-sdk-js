@@ -40,7 +40,7 @@ export default interface WebSocketAdapter {
    * @param eventListener The event listener to add.
    */
   addEventListener(handler: string, eventListener: EventListener): void;
-  
+
   /**
    * Remove an event listener for one of the handler types.
    *
