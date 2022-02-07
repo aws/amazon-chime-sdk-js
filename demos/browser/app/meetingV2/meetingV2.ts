@@ -1003,22 +1003,42 @@ export class DemoMeetingApp
         const engineTranscribeChecked = (document.getElementById('engine-transcribe') as HTMLInputElement).checked;
         const contentIdentificationChecked = (document.getElementById('content-identification-checkbox') as HTMLInputElement).checked;
         const contentRedactionChecked = (document.getElementById('content-redaction-checkbox') as HTMLInputElement).checked;
+        const languageIdentificationChecked = (document.getElementById('identify-language-checkbox') as HTMLInputElement).checked;
         document.getElementById('engine-transcribe-language').classList.toggle('hidden', !engineTranscribeChecked);
-		    document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
+		document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-region').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-region').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-content-identification').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-language-identification').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-content-identification').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-redaction').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-partial-stabilization').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-custom-language-model').classList.toggle('hidden', !engineTranscribeChecked);
+        document.getElementById('engine-transcribe-language-identification').classList.toggle('hidden', !engineTranscribeChecked);
+        (document.getElementById('transcribe-language')  as HTMLInputElement).disabled = languageIdentificationChecked;
         if (!engineTranscribeChecked) {
           document.getElementById('transcribe-entity-types').classList.toggle('hidden', true);
+          document.getElementById('engine-transcribe-custom-language-model').classList.toggle('hidden', true);
+        } else if (engineTranscribeChecked && languageIdentificationChecked) {
+          (document.getElementById('language-options') as HTMLInputElement).classList.toggle('hidden', false);
+          (document.getElementById('preferred-language') as HTMLInputElement).classList.toggle('hidden', false);
         } else if (engineTranscribeChecked && (contentIdentificationChecked || contentRedactionChecked)) {
           document.getElementById('transcribe-entity-types').classList.toggle('hidden', false);
         }
       });
     });
+
+    const languageIdentificationCb = (document.getElementById('identify-language-checkbox') as HTMLInputElement);
+    languageIdentificationCb.addEventListener('click', () => {
+      (document.getElementById('transcribe-language')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('content-identification-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('content-redaction-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('custom-language-model-checkbox')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('transcribe-entity')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('language-model-input-text')  as HTMLInputElement).disabled = languageIdentificationCb.checked;
+      (document.getElementById('language-options') as HTMLInputElement).classList.toggle('hidden', !languageIdentificationCb.checked);
+      (document.getElementById('preferred-language') as HTMLInputElement).classList.toggle('hidden', !languageIdentificationCb.checked);
+    })
 
     const contentIdentificationCb = document.getElementById('content-identification-checkbox') as HTMLInputElement;
     contentIdentificationCb.addEventListener('click', () => {

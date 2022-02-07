@@ -370,6 +370,46 @@
           </select>
         </div>
       </div>
+      <div id="engine-transcribe-language-identification">
+        <div id="engine-transcribe-identify-language" class="custom-control custom-checkbox" style="text-align: left;">
+          <input type="checkbox" id="identify-language-checkbox" class="custom-control-input">
+          <label for="identify-language-checkbox" class="custom-control-label">Enable Language Identification</label>
+        </div>
+        <div id="language-options" class="hidden">
+          <label for="language-options-selection" class="sr-only">Language Options (minimum 2 selections required)</label>
+          <select id="language-options-selection" class="custom-select"  style="width:100%" multiple>
+            <option value="en-US" selected>US English (en-US)</option>
+            <option value="en-GB">British English (en-GB)</option>
+            <option value="en-AU">Australian English (en-AU)</option>
+            <option value="es-US">US Spanish (es-US)</option>
+            <option value="fr-CA">Canadian French (fr-CA)</option>
+            <option value="fr-FR">French (fr-FR)</option>
+            <option value="it-IT">Italian (it-IT)</option>
+            <option value="de-DE">German (de-DE)</option>
+            <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
+            <option value="ja-JP">Japanese (ja-JP)</option>
+            <option value="ko-KR">Korean (ko-KR)</option>
+            <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
+          </select>
+        </div>
+        <div id="preferred-language" class="hidden">
+          <label for="preferred-language-selection" class="sr-only">Preferred Language</label>
+          <select id="preferred-language-selection" class="custom-select"  style="width:100%">
+            <option value="en-US" selected>US English (en-US)</option>
+            <option value="en-GB">British English (en-GB)</option>
+            <option value="en-AU">Australian English (en-AU)</option>
+            <option value="es-US">US Spanish (es-US)</option>
+            <option value="fr-CA">Canadian French (fr-CA)</option>
+            <option value="fr-FR">French (fr-FR)</option>
+            <option value="it-IT">Italian (it-IT)</option>
+            <option value="de-DE">German (de-DE)</option>
+            <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
+            <option value="ja-JP">Japanese (ja-JP)</option>
+            <option value="ko-KR">Korean (ko-KR)</option>
+            <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
+          </select>
+        </div>
+      </div>
       <div id="engine-transcribe-custom-language-model">
         <div id="engine-transcribe-language-model" class="custom-control custom-checkbox" style="text-align: left;">
           <input type="checkbox" id="custom-language-model-checkbox" class="custom-control-input">
