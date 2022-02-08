@@ -75,7 +75,7 @@ jobs:
         run: |
           demo_current_version=$(.github/script/get-demo-browser-current-version)
           echo "Current demo version:" $demo_current_version
-          if demo_current_version != "^#${{ steps.npm_version.outputs.npm_version }}"
+          if [[ *$demo_current_version* != "^#${{ steps.npm_version.outputs.npm_version }}" ]];
           then
             echo "Demo npm version is not the same as the current released version"
           else
@@ -122,7 +122,7 @@ jobs:
         run: |
           demo_current_version=$(.github/script/get-demo-browser-current-version)
           echo "Current demo version:" $demo_current_version
-          if demo_current_version != "^#${{ steps.npm_version.outputs.npm_version }}"
+          if [[ *$demo_current_version* != "^#${{ steps.npm_version.outputs.npm_version }}" ]];
           then
             echo "Demo npm version is not the same as the current released version"
           else
