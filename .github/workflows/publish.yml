@@ -37,3 +37,97 @@ jobs:
         run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Wait for 300 seconds
+        run: sleep 300s
+        shell: bash
+  deploy_chime_prod_demo:
+    needs: publish
+    name: Prod - Chime Client - Deploy the Serverless Meeting Demos
+    runs-on: ubuntu-latest
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_DEFAULT_OUTPUT: text
+      NAME: ChimeProd
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.PROD_AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - name: Get current published version
+        id: npm_version
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Current released version:" $current_version
+          echo ::set-output name=npm_version::$current_version
+      - name: Install SDK and verify npm version
+        run: |
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install amazon-chime-sdk-js@${{ steps.npm_version.outputs.npm_version }}
+      - name: Verify npm version
+        run: |
+          demo_current_version=$(.github/script/get-demo-browser-current-version)
+          echo "Current demo version:" $demo_current_version
+          if demo_current_version != "^#${{ steps.npm_version.outputs.npm_version }}"
+          then
+            echo "Demo npm version is not the same as the current released version"
+          else
+            npm run build
+            npm run build --app=meetingReadinessChecker
+            script/github-action-awscli-installation
+            script/postrelease
+          fi
+  deploy_chime_sdk_meetings_prod_demo:
+    needs: publish
+    name: Prod - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demo
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        name: [ ChimeSDKMeetingsProdIAD, ChimeSDKMeetingsProdPDX, ChimeSDKMeetingsProdFRA, ChimeSDKMeetingsProdSIN ]
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_DEFAULT_OUTPUT: text
+      NAME: ${{ matrix.name }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.PROD_AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - name: Get current published version
+        id: npm_version
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "Current released version:" $current_version
+          echo ::set-output name=npm_version::$current_version
+      - name: Install SDK and verify npm version
+        run: |
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install amazon-chime-sdk-js@${{ steps.npm_version.outputs.npm_version }}
+      - name: Verify npm version
+        run: |
+          demo_current_version=$(.github/script/get-demo-browser-current-version)
+          echo "Current demo version:" $demo_current_version
+          if demo_current_version != "^#${{ steps.npm_version.outputs.npm_version }}"
+          then
+            echo "Demo npm version is not the same as the current released version"
+          else
+            npm run build
+            npm run build --app=meetingReadinessChecker
+            script/github-action-awscli-installation
+            script/postrelease
+          fi

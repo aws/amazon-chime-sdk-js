@@ -1,42 +1,45 @@
-#!/usr/bin/env ruby
-require 'json'
+#!/bin/bash
+set -euxo pipefail
 
-def verbose command
-  puts("--> #{command}") || system(command) || fail("Failed: #{command}")
-end
+cd $GITHUB_WORKSPACE/demos/serverless
+npm ci
 
-Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+case $NAME in
 
-puts
-puts "Enter the version to deploy to prod"
-puts
-npm_version = STDIN.gets.strip
-puts "Are you sure to deploy '#{npm_version}' this to prod?"
-puts "Current staged and local changes will be lost!"
-puts
-puts "Type 'yes' to continue"
-x = STDIN.gets
-exit(1) unless x.strip == 'yes'
-puts
+ChimeProd)
+    echo "Deploying to prod stage for canary that talks to prod Chime client"
 
-verbose('git fetch origin')
-verbose('git clean -ffxd .')
+    # Uses Chime Client
+    npm run deploy -- -b chime-sdk-demo-prod-canary -o chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary -u false -t -l
+    npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary -s chime-sdk-meeting-readiness-checker-prod-canary -a meetingReadinessChecker -u false -t -l
+    ;;
 
-verbose("git checkout tags/v#{npm_version} -b deploy-to-prod")
-Dir.chdir('demos/browser/')
-verbose('npm uninstall amazon-chime-sdk-js')
-verbose("npm install amazon-chime-sdk-js@#{npm_version}")
+ChimeSDKMeetingsProdIAD)
+    echo "Deploying to prod stage for canary that talks to prod IAD ChimeSDKMeetings client"
 
-demo_package = JSON.parse(File.read('package.json'))
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-prod-canary-us-east-1 -o chime-sdk-meetings-iad-demo-prod-canary -s chime-sdk-meetings-demo-prod-canary-us-east-1 -t -l
+    ;;
 
-if demo_package['dependencies']['amazon-chime-sdk-js'] != "^#{npm_version}"
-  puts 'npm version is not the same as the version specified'
-  exit(1)
-end
+ChimeSDKMeetingsProdPDX)
+    echo "Deploying to prod stage for canary that talks to prod PDX ChimeSDKMeetings client"
 
-verbose('npm run build')
-verbose('npm run build --app=meetingReadinessChecker')
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r us-west-2 -b chime-sdk-meetings-demo-prod-canary-us-west-2 -o chime-sdk-meetings-pdx-demo-prod-canary -s chime-sdk-meetings-demo-prod-canary-us-west-2 -t -l
+    ;;
 
-Dir.chdir('../serverless/')
-verbose('npm run deploy -- -b chime-sdk-demo-prod-canary -o chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary -u false -t -l')
-verbose('npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary -s chime-sdk-meeting-readiness-checker-prod-canary -a meetingReadinessChecker -u false -t -l')
+ChimeSDKMeetingsProdFRA)
+    echo "Deploying to prod stage for canary that talks to prod FRA ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-prod-canary-eu-central-1 -o chime-sdk-meetings-fra-demo-prod-canary -s chime-sdk-meetings-demo-prod-canary-eu-central-1 -t -l
+    ;;
+
+ChimeSDKMeetingsProdSIN)
+    echo "Deploying to prod stage for canary that talks to prod SIN ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-prod-canary-ap-southeast-1 -o chime-sdk-meetings-sin-demo-prod-canary -s chime-sdk-meetings-demo-prod-canary-ap-southeast-1 -t -l
+    ;;
+
+esac
