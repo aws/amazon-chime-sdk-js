@@ -118,7 +118,7 @@ jobs:
           cd demos/browser
           npm uninstall amazon-chime-sdk-js
           npm install amazon-chime-sdk-js@${{ steps.npm_version.outputs.npm_version }}
-      - name: Verify npm version
+      - name: Verify npm version and run deployment Script
         run: |
           demo_current_version=$(.github/script/get-demo-browser-current-version)
           echo "Current demo version:" $demo_current_version
