@@ -60,8 +60,18 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   private static readonly LOW_BITRATE_THRESHOLD_KBPS = 300;
   private static readonly MIN_TIME_BETWEEN_PROBE_MS = 5000;
   private static readonly MIN_TIME_BETWEEN_SUBSCRIBE_MS = 2000;
-  private static readonly MAX_HOLD_BEFORE_PROBE_MS = 60000;
+  // We apply exponentional backoff to probe attempts if they do not
+  // succeed, so we need to set a reasonable maximum.
+  private static readonly MAX_HOLD_BEFORE_PROBE_MS = 30000;
   private static readonly MAX_ALLOWED_PROBE_TIME_MS = 60000;
+  // Occasionally we see that on unpause or upgrade we see a single packet lost
+  // or two, even in completely unconstrained scenarios. We should look into
+  // why this occurs on the backend, but for now we require a non-trivial
+  // amount of packets lost to fail the probe. These could also be from
+  // other senders given we don't yet use TWCC.
+  private static readonly SPURIOUS_PACKET_LOST_THRESHOLD = 2;
+  // See usage
+  private static readonly USED_BANDWIDTH_OVERRIDE_BUFFER_KBPS = 100;
 
   protected tileController: VideoTileController | undefined;
   protected videoPreferences: VideoPreferences | undefined;
@@ -87,6 +97,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   private startupPeriod: boolean;
   private usingPrevTargetRate: boolean;
   private prevTargetRateKbps: number;
+  // A seperate target rate baseline to use to avoid changing the subscriptions until we see
+  // a `TARGET_RATE_CHANGE_TRIGGER_PERCENT` change
+  private prevTargetRateForDiffKbps: number;
   private lastUpgradeRateKbps: number;
   private firstEstimateTimestamp: number;
   private lastSubscribeTimestamp: number;
@@ -427,7 +440,24 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       if (this.startupPeriod) {
         targetBitrate = VideoPriorityBasedPolicy.DEFAULT_BANDWIDTH_KBPS;
       } else {
-        targetBitrate = this.downlinkStats.bandwidthEstimateKbps;
+        // We rely on our target bitrate being above what we are receiving to mark a probe as complete,
+        // however in browsers, the estimate can heavily lag behind the actual receive rate, especially when low.
+        //
+        // To mitigate this we override with the actual estimate plus some buffer if we aren't seeing packet loss.
+        if (
+          this.rateProbeState === RateProbeState.Probing &&
+          this.downlinkStats.usedBandwidthKbps > this.downlinkStats.bandwidthEstimateKbps &&
+          this.downlinkStats.packetsLost < VideoPriorityBasedPolicy.SPURIOUS_PACKET_LOST_THRESHOLD
+        ) {
+          this.logger.info(
+            `bwe: In probe state, overriding estimate ${this.downlinkStats.bandwidthEstimateKbps} with actual receive bitrate ${this.downlinkStats.usedBandwidthKbps}`
+          );
+          targetBitrate =
+            this.downlinkStats.usedBandwidthKbps +
+            VideoPriorityBasedPolicy.USED_BANDWIDTH_OVERRIDE_BUFFER_KBPS;
+        } else {
+          targetBitrate = this.downlinkStats.bandwidthEstimateKbps;
+        }
       }
     } else {
       if (this.firstEstimateTimestamp === 0) {
@@ -552,31 +582,33 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     }
 
     if (this.downlinkStats.packetsLost > 0) {
-      this.setProbeState(RateProbeState.NotProbing);
-      this.logger.info(`bwe: Canceling probe due to network loss`);
-      this.probeFailed = true;
-      this.timeBeforeAllowSubscribeMs =
-        Math.max(
-          VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS,
-          this.timeBeforeAllowSubscribeMs
-        ) * 3;
-      // packet lost indicates bad network and thus slowing down subscribing by extend delay by 3 times
-      return UseReceiveSet.PreProbe;
+      this.logger.info(`bwe: Probe encountering packets lost:${this.downlinkStats.packetsLost}`);
+      // See comment above `VideoPriorityBasedPolicy.SPURIOUS_PACKET_LOST_THRESHOLD`
+      if (
+        this.downlinkStats.packetsLost > VideoPriorityBasedPolicy.SPURIOUS_PACKET_LOST_THRESHOLD
+      ) {
+        this.setProbeState(RateProbeState.NotProbing);
+        this.logger.info(
+          `bwe: Canceling probe due to packets lost:${this.downlinkStats.packetsLost}`
+        );
+        this.probeFailed = true;
+        this.timeBeforeAllowSubscribeMs =
+          Math.max(
+            VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS,
+            this.timeBeforeAllowSubscribeMs
+          ) * 3;
+        // packet lost indicates bad network and thus slowing down subscribing by extend delay by 3 times
+        return UseReceiveSet.PreProbe;
+      }
     }
     const subscribedRate = this.calculateSubscribeRate(this.optimalReceiveStreams);
     if (this.chosenStreamsSameAsLast(chosenStreams) || targetDownlinkBitrate > subscribedRate) {
-      let avgRate = 0;
-      for (const chosenStream of chosenStreams) {
-        avgRate += chosenStream.avgBitrateKbps;
-      }
-      if (targetDownlinkBitrate > avgRate) {
-        this.logger.info(`bwe: Probe successful`);
-        // If target bitrate can sustain probe rate, then probe was successful.
-        this.setProbeState(RateProbeState.NotProbing);
-        // Reset the time allowed between probes since this was successful
-        this.timeBeforeAllowProbeMs = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_PROBE_MS;
-        return UseReceiveSet.NewOptimal;
-      }
+      this.logger.info(`bwe: Probe successful`);
+      // If target bitrate can sustain probe rate, then probe was successful.
+      this.setProbeState(RateProbeState.NotProbing);
+      // Reset the time allowed between probes since this was successful
+      this.timeBeforeAllowProbeMs = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_PROBE_MS;
+      return UseReceiveSet.NewOptimal;
     }
 
     return UseReceiveSet.PreviousOptimal;
@@ -598,9 +630,13 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
         ? VideoPriorityBasedPolicy.TARGET_RATE_CHANGE_TRIGGER_PERCENT
         : VideoPriorityBasedPolicy.TARGET_RATE_CHANGE_TRIGGER_PERCENT * 2;
     const minTargetBitrateDelta = (rates.targetDownlinkBitrate * triggerPercent) / 100;
+    this.prevTargetRateForDiffKbps =
+      this.prevTargetRateForDiffKbps !== undefined
+        ? this.prevTargetRateForDiffKbps
+        : this.prevTargetRateKbps;
     if (
       !sameSubscriptions &&
-      Math.abs(rates.targetDownlinkBitrate - this.prevTargetRateKbps) < minTargetBitrateDelta
+      Math.abs(rates.targetDownlinkBitrate - this.prevTargetRateForDiffKbps) < minTargetBitrateDelta
     ) {
       this.logger.info(
         'bwe: MaybeOverrideOrProbe: Reuse last decision based on delta rate. {' +
@@ -608,6 +644,8 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
           `}`
       );
       useLastSubscriptions = UseReceiveSet.PreviousOptimal;
+    } else {
+      this.prevTargetRateForDiffKbps = rates.targetDownlinkBitrate;
     }
 
     // If there has been packet loss, then reset to no probing state
