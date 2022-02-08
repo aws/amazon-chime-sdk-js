@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed `VideoPriorityBasedPolicyConfig` to be dependent on bandwidth fluctuation so that `VideoPriorityBasedPolicy` will not drop/resume video instantly when network bandwidth changes. (#1921)
     
 ### Fixed
+- Fix the reconnecting issue (#1985) by skipping the "close" event if it does not arrive in two seconds.
     
 ## [2.26.0] - 2022-01-14
     

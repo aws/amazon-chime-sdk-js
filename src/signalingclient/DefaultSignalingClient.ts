@@ -3,6 +3,7 @@
 
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import Logger from '../logger/Logger';
+import TimeoutScheduler from '../scheduler/TimeoutScheduler';
 import SignalingClientObserver from '../signalingclientobserver/SignalingClientObserver';
 import {
   ISdkClientDetails,
@@ -39,6 +40,8 @@ import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVide
  */
 export default class DefaultSignalingClient implements SignalingClient {
   private static FRAME_TYPE_RTC: number = 0x5;
+  private static CLOSE_EVENT_TIMEOUT_MS: number = 2000;
+
   private observerQueue: Set<SignalingClientObserver>;
   private wasOpened: boolean;
   private isClosing: boolean;
@@ -211,6 +214,29 @@ export default class DefaultSignalingClient implements SignalingClient {
       this.sendEvent(
         new SignalingClientEvent(this, SignalingClientEventType.WebSocketClosing, null)
       );
+
+      // Continue resetting the connection even if SDK does not receive the "close" event.
+      const scheduler: TimeoutScheduler = new TimeoutScheduler(
+        DefaultSignalingClient.CLOSE_EVENT_TIMEOUT_MS
+      );
+      const handler = (event: CloseEvent): void => {
+        /* istanbul ignore next */
+        this.webSocket.removeEventListener?.('close', handler);
+        scheduler.stop();
+        this.closeEventHandler(event);
+      };
+
+      // Remove the existing close handler to prevent SDK from opening a new connection.
+      /* istanbul ignore next */
+      this.webSocket.removeEventListener?.('close', this.closeEventHandler);
+      this.webSocket.addEventListener('close', handler);
+      scheduler.start(() => {
+        // SDK has not received the "close" event on WebSocket for two seconds.
+        // Handle a fake close event with 1006 to indicate that the client abnormally closed the connection.
+        handler(
+          new CloseEvent('close', { wasClean: false, code: 1006, reason: '', bubbles: false })
+        );
+      });
       this.webSocket.close();
       this.deactivatePageUnloadHandler();
     } else {
@@ -367,20 +393,7 @@ export default class DefaultSignalingClient implements SignalingClient {
       );
       this.receiveMessage(this.stripFrameTypeRTC(new Uint8Array(event.data)));
     });
-    this.webSocket.addEventListener('close', (event: CloseEvent) => {
-      this.deactivatePageUnloadHandler();
-      this.resetConnection();
-      this.sendEvent(
-        new SignalingClientEvent(
-          this,
-          SignalingClientEventType.WebSocketClosed,
-          null,
-          event.code,
-          event.reason
-        )
-      );
-      this.serviceConnectionRequestQueue();
-    });
+    this.webSocket.addEventListener('close', this.closeEventHandler);
     this.webSocket.addEventListener('error', () => {
       if (this.isClosing && !this.wasOpened) {
         this.logger.info('ignoring error closing signaling while connecting');
@@ -425,4 +438,19 @@ export default class DefaultSignalingClient implements SignalingClient {
     const randomNum = window.crypto.getRandomValues(num);
     return randomNum[0];
   }
+
+  private closeEventHandler = (event: CloseEvent): void => {
+    this.deactivatePageUnloadHandler();
+    this.resetConnection();
+    this.sendEvent(
+      new SignalingClientEvent(
+        this,
+        SignalingClientEventType.WebSocketClosed,
+        null,
+        event.code,
+        event.reason
+      )
+    );
+    this.serviceConnectionRequestQueue();
+  };
 }
