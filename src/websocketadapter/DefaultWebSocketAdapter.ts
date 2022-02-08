@@ -55,6 +55,10 @@ export default class DefaultWebSocketAdapter implements WebSocketAdapter {
     this.connection.addEventListener(handler, eventListener);
   }
 
+  removeEventListener(handler: string, eventListener: EventListener): void {
+    this.connection?.removeEventListener(handler, eventListener);
+  }
+
   readyState(): WebSocketReadyState {
     if (!this.connection) {
       return WebSocketReadyState.None;

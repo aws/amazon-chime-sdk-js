@@ -27,6 +27,7 @@ import {
   SdkStreamMediaType,
   SdkStreamServiceType,
 } from '../../src/signalingprotocol/SignalingProtocol.js';
+import { wait } from '../../src/utils/Utils';
 import VideoStreamDescription from '../../src/videostreamindex/VideoStreamDescription';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketAdapter from '../../src/websocketadapter/WebSocketAdapter';
@@ -645,6 +646,83 @@ describe('DefaultSignalingClient', () => {
         }
       }
       testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('does not do anything when closeConnection on an already-closed connection', async () => {
+      let called = false;
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (
+            event.type === SignalingClientEventType.WebSocketClosed ||
+            event.type === SignalingClientEventType.WebSocketClosing
+          ) {
+            called = true;
+          }
+        }
+      }
+
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.closeConnection();
+      await wait(10);
+      expect(called).to.be.false;
+    });
+
+    it('continues closing the connection even when WebSocket does not receive the "close" event', function (done) {
+      this.timeout(5000);
+      const behavior = new DOMMockBehavior();
+      behavior.webSocketCloseSucceeds = false;
+      domMockBuilder = new DOMMockBuilder(behavior);
+
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            event.client.closeConnection();
+          } else if (event.type === SignalingClientEventType.WebSocketClosed) {
+            done();
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('closes the connection when WebSocket receives the "close" event, e.g., from Tincan', done => {
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            testObjects.webSocketAdapter.close();
+          } else if (event.type === SignalingClientEventType.WebSocketClosed) {
+            done();
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
+
+    it('opens a new connection after closing the first one', done => {
+      let callCount = 0;
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            callCount += 1;
+            if (callCount === 2) {
+              event.client.closeConnection();
+            }
+          } else if (event.type === SignalingClientEventType.WebSocketClosed) {
+            if (callCount === 2) {
+              done();
+            }
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
       testObjects.signalingClient.openConnection(testObjects.request);
     });
   });

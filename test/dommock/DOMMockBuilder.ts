@@ -207,6 +207,12 @@ export default class DOMMockBuilder {
         this.listeners[type].push(listener);
       }
 
+      removeEventListener(type: string, listener: (event?: Event) => void): void {
+        if (this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = this.listeners[type].filter(l => l !== listener);
+        }
+      }
+
       close(code: number = 1000, reason: string = 'normal'): void {
         this.readyState = MockWebSocket.CLOSING;
         if (mockBehavior.webSocketCloseSucceeds) {
