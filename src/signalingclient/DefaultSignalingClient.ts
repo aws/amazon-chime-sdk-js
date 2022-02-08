@@ -220,15 +220,19 @@ export default class DefaultSignalingClient implements SignalingClient {
         DefaultSignalingClient.CLOSE_EVENT_TIMEOUT_MS
       );
       const handler = (event: CloseEvent): void => {
-        this.webSocket.removeEventListener('close', handler);
+        /* istanbul ignore next */
+        this.webSocket.removeEventListener?.('close', handler);
         scheduler.stop();
         this.closeEventHandler(event);
       };
 
       // Remove the existing close handler to prevent SDK from opening a new connection.
-      this.webSocket.removeEventListener('close', this.closeEventHandler);
+      /* istanbul ignore next */
+      this.webSocket.removeEventListener?.('close', this.closeEventHandler);
       this.webSocket.addEventListener('close', handler);
       scheduler.start(() => {
+        // SDK has not received the "close" event on WebSocket for two seconds.
+        // Handle a fake close event with 1006 to indicate that the client abnormally closed the connection.
         handler(
           new CloseEvent('close', { wasClean: false, code: 1006, reason: '', bubbles: false })
         );

@@ -703,6 +703,28 @@ describe('DefaultSignalingClient', () => {
       testObjects.signalingClient.registerObserver(new TestObserver());
       testObjects.signalingClient.openConnection(testObjects.request);
     });
+
+    it('opens a new connection after closing the first one', done => {
+      let callCount = 0;
+      const testObjects = createTestObjects();
+      class TestObserver implements SignalingClientObserver {
+        handleSignalingClientEvent(event: SignalingClientEvent): void {
+          if (event.type === SignalingClientEventType.WebSocketOpen) {
+            callCount += 1;
+            if (callCount === 2) {
+              event.client.closeConnection();
+            }
+          } else if (event.type === SignalingClientEventType.WebSocketClosed) {
+            if (callCount === 2) {
+              done();
+            }
+          }
+        }
+      }
+      testObjects.signalingClient.registerObserver(new TestObserver());
+      testObjects.signalingClient.openConnection(testObjects.request);
+      testObjects.signalingClient.openConnection(testObjects.request);
+    });
   });
 
   describe('mute', () => {
