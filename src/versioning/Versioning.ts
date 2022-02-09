@@ -22,6 +22,11 @@ export interface SemVer {
    * The patch version.
    */
   patch: string;
+
+  /**
+   * The pre release identifier
+   */
+  preRelease: string;
 }
 
 export default class Versioning {
@@ -47,13 +52,14 @@ export default class Versioning {
    */
   static get sdkVersionSemVer(): SemVer {
     const v = VERSION.semverString.match(
-      /^(?<major>[0-9]+)\.(?<minor>[0-9]+)(?:\.(?<patch>[0-9]+))?/
+      /^(?<major>[0-9]+)\.(?<minor>[0-9]+)((?:\.(?<patch>[0-9]+))(?:-(?<preRelease>[a-zA-Z]+(\.[0-9])*))?)?/
     );
 
     return {
       major: v?.groups?.major,
       minor: v?.groups?.minor,
       patch: v?.groups?.patch,
+      preRelease: v?.groups?.preRelease,
     };
   }
   /**
