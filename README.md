@@ -122,6 +122,7 @@ The following developer guides cover the Amazon Chime SDK more broadly.
 - [Amazon Chime SDK and Amazon Connect Integration](https://aws.amazon.com/blogs/business-productivity/build-a-video-contact-center-with-amazon-connect-and-amazon-chime-sdk/) — Build a video contact center with Amazon Connect and Amazon Chime SDK
 - [Device Integration](https://aws.amazon.com/blogs/business-productivity/using-the-amazon-chime-sdk-for-3rd-party-devices/) — Using the Amazon Chime SDK for 3rd party devices
 - [Messaging](https://aws.amazon.com/blogs/business-productivity/build-chat-features-into-your-application-with-amazon-chime-sdk-messaging/) — Build chat features into your application with Amazon Chime SDK messaging
+- [Load Testing Applications](https://aws.amazon.com/blogs/business-productivity/load-testing-applications-built-with-the-amazon-chime-sdk/) — A tool to load test audio-video communication applications
 
 ### PSTN Audio Examples
 
