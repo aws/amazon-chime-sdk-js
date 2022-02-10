@@ -36,7 +36,7 @@ class SdkBaseTest extends KiteBaseTest {
     this.testFinish = false;
     this.testName = testName;
     this.useSimulcast = !!this.payload.useSimulcast;
-    this.namespaceInfix = this.payload.namespaceInfix || '';
+    this.cwNamespaceInfix = this.payload.cwNamespaceInfix || '';
 
     if (this.useSimulcast) {
       this.testName += 'Simulcast';
@@ -167,11 +167,11 @@ class SdkBaseTest extends KiteBaseTest {
         console.log(e);
         await this.updateSeleniumTestResult(false);
         await this.quitSeleniumSessions();
-        await emitMetric('Common', this.capabilities, 'SeleniumInit', 0, this.namespaceInfix);
+        await emitMetric('Common', this.capabilities, 'SeleniumInit', 0, this.cwNamespaceInfix);
         throw (e);
       }
     }
-    emitMetric('Common', this.capabilities, 'SeleniumInit', 1, this.namespaceInfix);
+    emitMetric('Common', this.capabilities, 'SeleniumInit', 1, this.cwNamespaceInfix);
     return true;
   }
 
@@ -207,9 +207,9 @@ class SdkBaseTest extends KiteBaseTest {
       try {
         if (!await this.initializeSeleniumSession(numberOfSeleniumSessions)) {
           if (this.testName === 'MediaCapture' || this.testName === 'Transcription') {
-            await emitMetric(this.testName, this.capabilities, 'E2E_' + this.region, 0, this.namespaceInfix);
+            await emitMetric(this.testName, this.capabilities, 'E2E_' + this.region, 0, this.cwNamespaceInfix);
           } else {
-            await emitMetric(this.testName, this.capabilities, 'E2E', 0, this.namespaceInfix);
+            await emitMetric(this.testName, this.capabilities, 'E2E', 0, this.cwNamespaceInfix);
           }
           return;
         }
@@ -293,9 +293,9 @@ class SdkBaseTest extends KiteBaseTest {
     try {
       await this.updateSeleniumTestResult(testResult);
       if (this.testName === 'MediaCapture' || this.testName === 'Transcription') {
-        await emitMetric(this.testName, this.capabilities, 'E2E_' + this.region, testResult ? 1 : 0, this.namespaceInfix);
+        await emitMetric(this.testName, this.capabilities, 'E2E_' + this.region, testResult ? 1 : 0, this.cwNamespaceInfix);
       } else {
-        await emitMetric(this.testName, this.capabilities, 'E2E', testResult ? 1 : 0, this.namespaceInfix);
+        await emitMetric(this.testName, this.capabilities, 'E2E', testResult ? 1 : 0, this.cwNamespaceInfix);
       }
       await this.printRunDetails(testResult);
     } catch (e) {
