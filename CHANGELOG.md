@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
     
 ### Fixed
+    
+## [2.26.1] - 2022-02-10
+    
+### Added
+    
+### Removed
+    
+### Changed
+    
+### Fixed
 - Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy
   for Chromium browsers version 98 on Windows and use 360p instead.
     
