@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
 ### Fixed
 - Fix the reconnecting issue (#1985) by skipping the "close" event if it does not arrive in two seconds.
+- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy
+  for Chromium browsers version 98 on Windows and use 360p instead.
     
 ## [2.26.0] - 2022-01-14
     
