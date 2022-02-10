@@ -30,6 +30,8 @@ describe('DefaultBrowserBehavior', () => {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
   const CHROMIUM_EDGE_WINDOWS_USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3729.48 Safari/537.36 Edg/79.1.96.24';
+  const CHROMIUM_EDGE_WINDOWS_USER_AGENT_98 =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.4758.80';
   const CHROMIUM_EDGE_MAC_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.63';
   const OPERA_USER_AGENT = 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18';
@@ -410,6 +412,20 @@ describe('DefaultBrowserBehavior', () => {
   describe('supportsCanvasCapturedStreamPlayback', () => {
     it('can determine if video processing is supported', () => {
       expect(new DefaultBrowserBehavior().supportsCanvasCapturedStreamPlayback()).to.be.true;
+    });
+  });
+
+  describe('disable480pResolutionScaleDown', () => {
+    it('Return true for Edge 98 Windows', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT_98);
+      expect(new DefaultBrowserBehavior().disable480pResolutionScaleDown()).to.be.true;
+    });
+
+    it('Return false for non Edge 98 Windows', () => {
+      setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
+      expect(new DefaultBrowserBehavior().disable480pResolutionScaleDown()).to.be.false;
+      setUserAgent(CHROME_MAC_USER_AGENT);
+      expect(new DefaultBrowserBehavior().disable480pResolutionScaleDown()).to.be.false;
     });
   });
 
