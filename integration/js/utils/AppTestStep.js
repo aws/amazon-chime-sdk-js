@@ -18,7 +18,7 @@ class AppTestStep extends TestStep {
       this.driver = sessionInfo.driver;
     }
 
-    this.namespaceInfix = kiteBaseTest.payload.namespaceInfix || '';
+    this.cwNamespaceInfix = kiteBaseTest.payload.cwNamespaceInfix || '';
   }
 
   async step() {
@@ -60,9 +60,9 @@ class AppTestStep extends TestStep {
       return;
     }
     if (this.emitMetricToCommonNamespace()) {
-      emitMetric('Common', this.test.capabilities, this.metricName(), value, this.namespaceInfix);
+      emitMetric('Common', this.test.capabilities, this.metricName(), value, this.cwNamespaceInfix);
     }
-    emitMetric(this.test.testName, this.test.capabilities, this.metricName(), value, this.namespaceInfix);
+    emitMetric(this.test.testName, this.test.capabilities, this.metricName(), value, this.cwNamespaceInfix);
   }
 
   finished(message, data) {
