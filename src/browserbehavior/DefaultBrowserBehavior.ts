@@ -279,6 +279,10 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return this.isAndroid();
   }
 
+  disable480pResolutionScaleDown(): boolean {
+    return /( Chrome\/98\.)/i.test(navigator.userAgent) && this.browser.os.startsWith('Windows');
+  }
+
   requiresDisablingH264Encoding(): boolean {
     return (
       (this.isIOSSafari() || this.isIOSChrome() || this.isIOSFirefox()) &&
