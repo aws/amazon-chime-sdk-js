@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for pre-release in Versioning.
     
 ### Fixed
+- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy 
+  for Chromium browsers version 98 on Windows and use 360p instead.
     
 ## [2.27.0] - 2022-01-27
     

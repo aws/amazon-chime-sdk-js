@@ -97,9 +97,9 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
   private startupPeriod: boolean;
   private usingPrevTargetRate: boolean;
   private prevTargetRateKbps: number;
-  // A seperate target rate baseline to use to avoid changing the subscriptions until we see
-  // a `TARGET_RATE_CHANGE_TRIGGER_PERCENT` change
-  private prevTargetRateForDiffKbps: number;
+  // A target rate baseline to use to avoid changing the subscriptions until we see
+  // a `TARGET_RATE_CHANGE_TRIGGER_PERCENT` change between this and the current target rate
+  private targetRateBaselineForDeltaCheckKbps: number;
   private lastUpgradeRateKbps: number;
   private firstEstimateTimestamp: number;
   private lastSubscribeTimestamp: number;
@@ -630,13 +630,14 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
         ? VideoPriorityBasedPolicy.TARGET_RATE_CHANGE_TRIGGER_PERCENT
         : VideoPriorityBasedPolicy.TARGET_RATE_CHANGE_TRIGGER_PERCENT * 2;
     const minTargetBitrateDelta = (rates.targetDownlinkBitrate * triggerPercent) / 100;
-    this.prevTargetRateForDiffKbps =
-      this.prevTargetRateForDiffKbps !== undefined
-        ? this.prevTargetRateForDiffKbps
+    this.targetRateBaselineForDeltaCheckKbps =
+      this.targetRateBaselineForDeltaCheckKbps !== undefined
+        ? this.targetRateBaselineForDeltaCheckKbps
         : this.prevTargetRateKbps;
     if (
       !sameSubscriptions &&
-      Math.abs(rates.targetDownlinkBitrate - this.prevTargetRateForDiffKbps) < minTargetBitrateDelta
+      Math.abs(rates.targetDownlinkBitrate - this.targetRateBaselineForDeltaCheckKbps) <
+        minTargetBitrateDelta
     ) {
       this.logger.info(
         'bwe: MaybeOverrideOrProbe: Reuse last decision based on delta rate. {' +
@@ -645,7 +646,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       );
       useLastSubscriptions = UseReceiveSet.PreviousOptimal;
     } else {
-      this.prevTargetRateForDiffKbps = rates.targetDownlinkBitrate;
+      this.targetRateBaselineForDeltaCheckKbps = rates.targetDownlinkBitrate;
     }
 
     // If there has been packet loss, then reset to no probing state

@@ -58,7 +58,7 @@ jobs:
         run: script/deploy-canary-demo 
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev-major
+        run: script/deploy-canary-demo -prev
   deploy_chime_sdk_meetings_beta_demo:
     name: Beta - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
@@ -88,7 +88,7 @@ jobs:
         run: script/deploy-canary-demo 
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev-major
+        run: script/deploy-canary-demo -prev
   deploy_chime_gamma_demo:
     name: Gamma - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
     runs-on: ubuntu-latest
@@ -114,7 +114,7 @@ jobs:
         run: script/deploy-canary-demo 
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev-major
+        run: script/deploy-canary-demo -prev
   deploy_chime_sdk_meetings_gamma_demo:
     name: Gamma - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
@@ -140,4 +140,4 @@ jobs:
         run: script/deploy-canary-demo 
       - name: Run Deployment Script Previous Major Version
         if: ${{ github.ref != 'refs/heads/main' }}
-        run: script/deploy-canary-demo -prev-major
+        run: script/deploy-canary-demo -prev

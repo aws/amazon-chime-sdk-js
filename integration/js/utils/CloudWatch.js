@@ -4,13 +4,15 @@ var cloudWatch = new AWS.CloudWatch({
   apiVersion: '2010-08-01'
 });
 
-module.exports.emitMetric = async (namespace, capabilities, metric_name, value, namespaceInfix) => {
+// emitMetric function is used to send metrics to CloudWatch. The metrics are sent to their respective namespaces and the namespaces are derived from the params.
+// Namespace is constructured as TestType/cwNamespaceInfix/namespace/metric_name.
+module.exports.emitMetric = async (namespace, capabilities, metric_name, value, cwNamespaceInfix) => {
   if (process.env.CLOUD_WATCH_METRIC === undefined || process.env.CLOUD_WATCH_METRIC === 'false') {
     return;
   }
-  namespace = namespaceInfix === ''
+  namespace = cwNamespaceInfix === ''
     ? `${process.env.TEST_TYPE}/${namespace.trim()}`
-    : `${process.env.TEST_TYPE}/${namespaceInfix}/${namespace.trim()}`;
+    : `${process.env.TEST_TYPE}/${cwNamespaceInfix}/${namespace.trim()}`;
   metric_name = metric_name.trim();
   console.log(`Emitting metric: ${namespace}/${metric_name} : ${value}`);
   var params = {
