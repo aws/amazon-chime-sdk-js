@@ -61,9 +61,9 @@ const hotfix = async () => {
     quit(1);
   }
   await cleanUp();
+  const newVersion = await versionBump(1, 'hotfix');
   buildAndPack();
-  await versionBump(1, 'hotfix');
-  deployDemo(currentVersion);
+  deployDemo(newVersion);
 };
 
 const main = async () => {
