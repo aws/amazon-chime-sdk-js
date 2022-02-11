@@ -129,7 +129,10 @@ const versionBump = async (option, branchName) => {
   logger.log(`Do you want to upload these files to ${branchName} branch?\n`);
   await shouldContinuePrompt();
   spawnOrFail('git', [`push origin HEAD:${branchName} -f`]);
-  logger.log('Please create a pull request to merge the version bump to main.');
+  if (branchName === 'version-bump') {
+    logger.log('Please create a pull request to merge the version bump to main.');
+  }
+  return newVersion;
 };
 
 module.exports = {
