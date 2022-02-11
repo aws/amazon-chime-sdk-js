@@ -80,8 +80,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.PROD_CANARY_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.PROD_CANARY_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Checkout Package
         uses: actions/checkout@v2
