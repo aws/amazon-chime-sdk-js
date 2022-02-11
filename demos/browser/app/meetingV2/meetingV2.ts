@@ -1953,6 +1953,13 @@ export class DemoMeetingApp
       for (const result of transcriptEvent.results) {
         const resultId = result.resultId;
         const isPartial = result.isPartial;
+        const languageCode = result.languageCode;
+        this.log("LanguageCode => %s", languageCode)
+        // console.log("LanguageCode => %s", languageCode)
+        for(const languageIdentification of result.languageIdentifications) {
+          this.log("[LangWithScore] LanguageCode => %s", languageIdentification.languageCode);
+          this.log("[LangWithScore] Score => %s", languageIdentification.score);
+        }
         if (!isPartial) {
           if (result.alternatives[0].entities?.length > 0) {
             for (const entity of result.alternatives[0].entities) {
