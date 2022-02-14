@@ -9464,10 +9464,10 @@ $root.SdkTranscriptResult = (function() {
      * @property {string|null} [channelId] SdkTranscriptResult channelId
      * @property {number|Long|null} [endTime] SdkTranscriptResult endTime
      * @property {boolean|null} [isPartial] SdkTranscriptResult isPartial
-     * @property {string|null} [languageCode] SdkTranscriptResult languageCode
-     * @property {Array.<ISdkTranscriptLanguageWithScore>|null} [languageIdentifications] SdkTranscriptResult languageIdentifications
      * @property {string|null} [resultId] SdkTranscriptResult resultId
      * @property {number|Long|null} [startTime] SdkTranscriptResult startTime
+     * @property {string|null} [languageCode] SdkTranscriptResult languageCode
+     * @property {Array.<ISdkTranscriptLanguageWithScore>|null} [languageIdentifications] SdkTranscriptResult languageIdentifications
      */
 
     /**
@@ -9520,22 +9520,6 @@ $root.SdkTranscriptResult = (function() {
     SdkTranscriptResult.prototype.isPartial = false;
 
     /**
-     * SdkTranscriptResult languageCode.
-     * @member {string} languageCode
-     * @memberof SdkTranscriptResult
-     * @instance
-     */
-    SdkTranscriptResult.prototype.languageCode = "";
-
-    /**
-     * SdkTranscriptResult languageIdentifications.
-     * @member {Array.<ISdkTranscriptLanguageWithScore>} languageIdentifications
-     * @memberof SdkTranscriptResult
-     * @instance
-     */
-    SdkTranscriptResult.prototype.languageIdentifications = $util.emptyArray;
-
-    /**
      * SdkTranscriptResult resultId.
      * @member {string} resultId
      * @memberof SdkTranscriptResult
@@ -9550,6 +9534,22 @@ $root.SdkTranscriptResult = (function() {
      * @instance
      */
     SdkTranscriptResult.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+    /**
+     * SdkTranscriptResult languageCode.
+     * @member {string} languageCode
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.languageCode = "";
+
+    /**
+     * SdkTranscriptResult languageIdentifications.
+     * @member {Array.<ISdkTranscriptLanguageWithScore>} languageIdentifications
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.languageIdentifications = $util.emptyArray;
 
     /**
      * Creates a new SdkTranscriptResult instance using the specified properties.
@@ -9584,15 +9584,15 @@ $root.SdkTranscriptResult = (function() {
             writer.uint32(/* id 3, wireType 0 =*/24).int64(message.endTime);
         if (message.isPartial != null && message.hasOwnProperty("isPartial"))
             writer.uint32(/* id 4, wireType 0 =*/32).bool(message.isPartial);
+        if (message.resultId != null && message.hasOwnProperty("resultId"))
+            writer.uint32(/* id 5, wireType 2 =*/42).string(message.resultId);
+        if (message.startTime != null && message.hasOwnProperty("startTime"))
+            writer.uint32(/* id 6, wireType 0 =*/48).int64(message.startTime);
         if (message.languageCode != null && message.hasOwnProperty("languageCode"))
-            writer.uint32(/* id 5, wireType 2 =*/42).string(message.languageCode);
+            writer.uint32(/* id 7, wireType 2 =*/58).string(message.languageCode);
         if (message.languageIdentifications != null && message.languageIdentifications.length)
             for (var i = 0; i < message.languageIdentifications.length; ++i)
-                $root.SdkTranscriptLanguageWithScore.encode(message.languageIdentifications[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-        if (message.resultId != null && message.hasOwnProperty("resultId"))
-            writer.uint32(/* id 7, wireType 2 =*/58).string(message.resultId);
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
-            writer.uint32(/* id 8, wireType 0 =*/64).int64(message.startTime);
+                $root.SdkTranscriptLanguageWithScore.encode(message.languageIdentifications[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
         return writer;
     };
 
@@ -9642,18 +9642,18 @@ $root.SdkTranscriptResult = (function() {
                 message.isPartial = reader.bool();
                 break;
             case 5:
-                message.languageCode = reader.string();
+                message.resultId = reader.string();
                 break;
             case 6:
+                message.startTime = reader.int64();
+                break;
+            case 7:
+                message.languageCode = reader.string();
+                break;
+            case 8:
                 if (!(message.languageIdentifications && message.languageIdentifications.length))
                     message.languageIdentifications = [];
                 message.languageIdentifications.push($root.SdkTranscriptLanguageWithScore.decode(reader, reader.uint32()));
-                break;
-            case 7:
-                message.resultId = reader.string();
-                break;
-            case 8:
-                message.startTime = reader.int64();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -9708,6 +9708,12 @@ $root.SdkTranscriptResult = (function() {
         if (message.isPartial != null && message.hasOwnProperty("isPartial"))
             if (typeof message.isPartial !== "boolean")
                 return "isPartial: boolean expected";
+        if (message.resultId != null && message.hasOwnProperty("resultId"))
+            if (!$util.isString(message.resultId))
+                return "resultId: string expected";
+        if (message.startTime != null && message.hasOwnProperty("startTime"))
+            if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
+                return "startTime: integer|Long expected";
         if (message.languageCode != null && message.hasOwnProperty("languageCode"))
             if (!$util.isString(message.languageCode))
                 return "languageCode: string expected";
@@ -9720,12 +9726,6 @@ $root.SdkTranscriptResult = (function() {
                     return "languageIdentifications." + error;
             }
         }
-        if (message.resultId != null && message.hasOwnProperty("resultId"))
-            if (!$util.isString(message.resultId))
-                return "resultId: string expected";
-        if (message.startTime != null && message.hasOwnProperty("startTime"))
-            if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
-                return "startTime: integer|Long expected";
         return null;
     };
 
@@ -9764,6 +9764,17 @@ $root.SdkTranscriptResult = (function() {
                 message.endTime = new $util.LongBits(object.endTime.low >>> 0, object.endTime.high >>> 0).toNumber();
         if (object.isPartial != null)
             message.isPartial = Boolean(object.isPartial);
+        if (object.resultId != null)
+            message.resultId = String(object.resultId);
+        if (object.startTime != null)
+            if ($util.Long)
+                (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
+            else if (typeof object.startTime === "string")
+                message.startTime = parseInt(object.startTime, 10);
+            else if (typeof object.startTime === "number")
+                message.startTime = object.startTime;
+            else if (typeof object.startTime === "object")
+                message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
         if (object.languageCode != null)
             message.languageCode = String(object.languageCode);
         if (object.languageIdentifications) {
@@ -9776,17 +9787,6 @@ $root.SdkTranscriptResult = (function() {
                 message.languageIdentifications[i] = $root.SdkTranscriptLanguageWithScore.fromObject(object.languageIdentifications[i]);
             }
         }
-        if (object.resultId != null)
-            message.resultId = String(object.resultId);
-        if (object.startTime != null)
-            if ($util.Long)
-                (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
-            else if (typeof object.startTime === "string")
-                message.startTime = parseInt(object.startTime, 10);
-            else if (typeof object.startTime === "number")
-                message.startTime = object.startTime;
-            else if (typeof object.startTime === "object")
-                message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
         return message;
     };
 
@@ -9815,13 +9815,13 @@ $root.SdkTranscriptResult = (function() {
             } else
                 object.endTime = options.longs === String ? "0" : 0;
             object.isPartial = false;
-            object.languageCode = "";
             object.resultId = "";
             if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
             } else
                 object.startTime = options.longs === String ? "0" : 0;
+            object.languageCode = "";
         }
         if (message.alternatives && message.alternatives.length) {
             object.alternatives = [];
@@ -9837,13 +9837,6 @@ $root.SdkTranscriptResult = (function() {
                 object.endTime = options.longs === String ? $util.Long.prototype.toString.call(message.endTime) : options.longs === Number ? new $util.LongBits(message.endTime.low >>> 0, message.endTime.high >>> 0).toNumber() : message.endTime;
         if (message.isPartial != null && message.hasOwnProperty("isPartial"))
             object.isPartial = message.isPartial;
-        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
-            object.languageCode = message.languageCode;
-        if (message.languageIdentifications && message.languageIdentifications.length) {
-            object.languageIdentifications = [];
-            for (var j = 0; j < message.languageIdentifications.length; ++j)
-                object.languageIdentifications[j] = $root.SdkTranscriptLanguageWithScore.toObject(message.languageIdentifications[j], options);
-        }
         if (message.resultId != null && message.hasOwnProperty("resultId"))
             object.resultId = message.resultId;
         if (message.startTime != null && message.hasOwnProperty("startTime"))
@@ -9851,6 +9844,13 @@ $root.SdkTranscriptResult = (function() {
                 object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
             else
                 object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
+        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+            object.languageCode = message.languageCode;
+        if (message.languageIdentifications && message.languageIdentifications.length) {
+            object.languageIdentifications = [];
+            for (var j = 0; j < message.languageIdentifications.length; ++j)
+                object.languageIdentifications[j] = $root.SdkTranscriptLanguageWithScore.toObject(message.languageIdentifications[j], options);
+        }
         return object;
     };
 

@@ -3655,17 +3655,17 @@ export interface ISdkTranscriptResult {
     /** SdkTranscriptResult isPartial */
     isPartial?: (boolean|null);
 
-    /** SdkTranscriptResult languageCode */
-    languageCode?: (string|null);
-
-    /** SdkTranscriptResult languageIdentifications */
-    languageIdentifications?: (ISdkTranscriptLanguageWithScore[]|null);
-
     /** SdkTranscriptResult resultId */
     resultId?: (string|null);
 
     /** SdkTranscriptResult startTime */
     startTime?: (number|Long|null);
+
+    /** SdkTranscriptResult languageCode */
+    languageCode?: (string|null);
+
+    /** SdkTranscriptResult languageIdentifications */
+    languageIdentifications?: (ISdkTranscriptLanguageWithScore[]|null);
 }
 
 /** Represents a SdkTranscriptResult. */
@@ -3689,17 +3689,17 @@ export class SdkTranscriptResult implements ISdkTranscriptResult {
     /** SdkTranscriptResult isPartial. */
     public isPartial: boolean;
 
-    /** SdkTranscriptResult languageCode. */
-    public languageCode: string;
-
-    /** SdkTranscriptResult languageIdentifications. */
-    public languageIdentifications: ISdkTranscriptLanguageWithScore[];
-
     /** SdkTranscriptResult resultId. */
     public resultId: string;
 
     /** SdkTranscriptResult startTime. */
     public startTime: (number|Long);
+
+    /** SdkTranscriptResult languageCode. */
+    public languageCode: string;
+
+    /** SdkTranscriptResult languageIdentifications. */
+    public languageIdentifications: ISdkTranscriptLanguageWithScore[];
 
     /**
      * Creates a new SdkTranscriptResult instance using the specified properties.
