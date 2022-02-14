@@ -131,6 +131,7 @@ import EventController from './eventcontroller/EventController';
 import EventData from './eventreporter/EventData';
 import EventIngestionConfiguration from './eventingestionconfiguration/EventIngestionConfiguration';
 import EventName from './eventcontroller/EventName';
+import EventObserver from './eventobserver/EventObserver';
 import EventReporter from './eventreporter/EventReporter';
 import EventsClientConfiguration from './eventsclientconfiguration/EventsClientConfiguration';
 import EventsIngestionMetadata from './eventreporter/EventsIngestionMetadata';
@@ -451,6 +452,7 @@ export {
   EventData,
   EventIngestionConfiguration,
   EventName,
+  EventObserver,
   EventReporter,
   EventsClientConfiguration,
   EventsIngestionMetadata,

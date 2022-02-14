@@ -98,7 +98,7 @@
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#configuration" class="tsd-kind-icon">configuration</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#contentshare" class="tsd-kind-icon">content<wbr>Share</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#devicecontroller" class="tsd-kind-icon">device<wbr>Controller</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#eventreporter" class="tsd-kind-icon">event<wbr>Reporter</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#eventcontroller" class="tsd-kind-icon">event<wbr>Controller</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaultmeetingsession.html#logger" class="tsd-kind-icon">logger</a></li>
 							</ul>
 						</section>
@@ -117,13 +117,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Meeting<wbr>Session<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, deviceController<span class="tsd-signature-symbol">: </span><a href="../interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-signature-type">DeviceControllerBasedMediaStreamBroker</a>, eventReporter<span class="tsd-signature-symbol">?: </span><a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultmeetingsession.html" class="tsd-signature-type">DefaultMeetingSession</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Meeting<wbr>Session<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, deviceController<span class="tsd-signature-symbol">: </span><a href="../interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-signature-type">DeviceControllerBasedMediaStreamBroker</a>, _eventController<span class="tsd-signature-symbol">?: </span><a href="../interfaces/eventcontroller.html" class="tsd-signature-type">EventController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultmeetingsession.html" class="tsd-signature-type">DefaultMeetingSession</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L37">src/meetingsession/DefaultMeetingSession.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L33">src/meetingsession/DefaultMeetingSession.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -138,7 +138,7 @@
 									<h5>deviceController: <a href="../interfaces/devicecontrollerbasedmediastreambroker.html" class="tsd-signature-type">DeviceControllerBasedMediaStreamBroker</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> eventReporter: <a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> _eventController: <a href="../interfaces/eventcontroller.html" class="tsd-signature-type">EventController</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="defaultmeetingsession.html" class="tsd-signature-type">DefaultMeetingSession</a></h4>
@@ -158,7 +158,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L110">src/meetingsession/DefaultMeetingSession.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L111">src/meetingsession/DefaultMeetingSession.ts:111</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/audiovideofacade.html" class="tsd-signature-type">AudioVideoFacade</a></h4>
@@ -175,7 +175,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L102">src/meetingsession/DefaultMeetingSession.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L103">src/meetingsession/DefaultMeetingSession.ts:103</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></h4>
@@ -192,7 +192,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L114">src/meetingsession/DefaultMeetingSession.ts:114</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L115">src/meetingsession/DefaultMeetingSession.ts:115</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/contentsharecontroller.html" class="tsd-signature-type">ContentShareController</a></h4>
@@ -209,7 +209,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L118">src/meetingsession/DefaultMeetingSession.ts:118</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L119">src/meetingsession/DefaultMeetingSession.ts:119</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/devicecontroller.html" class="tsd-signature-type">DeviceController</a></h4>
@@ -217,19 +217,19 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="eventreporter" class="tsd-anchor"></a>
-					<h3>event<wbr>Reporter</h3>
+					<a name="eventcontroller" class="tsd-anchor"></a>
+					<h3>event<wbr>Controller</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> eventReporter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> eventController<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/eventcontroller.html" class="tsd-signature-type">EventController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L122">src/meetingsession/DefaultMeetingSession.ts:122</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L123">src/meetingsession/DefaultMeetingSession.ts:123</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/eventcontroller.html" class="tsd-signature-type">EventController</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -243,7 +243,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L106">src/meetingsession/DefaultMeetingSession.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L107">src/meetingsession/DefaultMeetingSession.ts:107</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h4>
@@ -264,7 +264,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/destroyable.html">Destroyable</a>.<a href="../interfaces/destroyable.html#destroy">destroy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L131">src/meetingsession/DefaultMeetingSession.ts:131</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/meetingsession/DefaultMeetingSession.ts#L132">src/meetingsession/DefaultMeetingSession.ts:132</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -310,7 +310,7 @@
 								<a href="defaultmeetingsession.html#devicecontroller" class="tsd-kind-icon">device<wbr>Controller</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="defaultmeetingsession.html#eventreporter" class="tsd-kind-icon">event<wbr>Reporter</a>
+								<a href="defaultmeetingsession.html#eventcontroller" class="tsd-kind-icon">event<wbr>Controller</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="defaultmeetingsession.html#logger" class="tsd-kind-icon">logger</a>

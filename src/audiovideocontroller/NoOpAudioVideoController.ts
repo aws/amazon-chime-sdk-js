@@ -3,6 +3,7 @@
 
 import AudioProfile from '../audioprofile/AudioProfile';
 import FullJitterBackoff from '../backoff/FullJitterBackoff';
+import DefaultEventController from '../eventcontroller/DefaultEventController';
 import NoOpDebugLogger from '../logger/NoOpDebugLogger';
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -24,12 +25,14 @@ export default class NoOpAudioVideoController extends DefaultAudioVideoControlle
     emptyConfiguration.urls.turnControlURL = '';
     emptyConfiguration.urls.audioHostURL = '';
     emptyConfiguration.urls.signalingURL = 'wss://localhost/';
+    const noOpLogger = new NoOpDebugLogger();
     super(
       configuration ? configuration : emptyConfiguration,
-      new NoOpDebugLogger(),
+      noOpLogger,
       new DefaultWebSocketAdapter(new NoOpDebugLogger()),
       new NoOpMediaStreamBroker(),
-      new DefaultReconnectController(0, new FullJitterBackoff(0, 0, 0))
+      new DefaultReconnectController(0, new FullJitterBackoff(0, 0, 0)),
+      new DefaultEventController(configuration ? configuration : emptyConfiguration, noOpLogger)
     );
   }
 

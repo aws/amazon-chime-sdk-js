@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove all deprecated meeting status code.  
     
 ### Changed
+- Decoupled `EventController` from `AudioVideo` and `MeetingSession`.
 - Add support for pre-release in Versioning.
 - Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.
 - Add support for aws-sdk js v3 for messaging session.

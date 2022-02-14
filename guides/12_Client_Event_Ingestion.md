@@ -23,7 +23,8 @@ import {
   LogLevel,
   MeetingSessionConfiguration,
   NoOpEventReporter,
-  EventReporter
+  EventReporter,
+  DefaultEventController
 } from 'amazon-chime-sdk-js';
 
 const logger = new ConsoleLogger('MyLogger', LogLevel.INFO);
@@ -41,6 +42,6 @@ const meetingSession = new DefaultMeetingSession(
   configuration,
   logger,
   deviceController,
-  eventReporter
+  new DefaultEventController(configuration, logger, eventReporter)
 );
 ```

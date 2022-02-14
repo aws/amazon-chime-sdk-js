@@ -79,11 +79,14 @@
 					<p>Installation involves adjusting your <code>package.json</code> to depend on version <code>3.0.0</code>.</p>
 					<pre><code class="language-shell">npm install --save amazon-chime-sdk-js@3
 </code></pre>
-					<a href="#interface-changes" id="interface-changes" style="color: inherit; text-decoration: none;">
-						<h2>Interface changes</h2>
-					</a>
-					<p>Version 3 of the Amazon Chime SDK for JavaScript makes a small number of interface
-					changes, as well as removing some deprecated interfaces.</p>
+					<p><strong>Version 3 of the Amazon Chime SDK for JavaScript makes a number of interface changes.</strong></p>
+					<p><strong>In many cases you should not need to adjust your application code at all. This will be the case if:</strong></p>
+					<ul>
+						<li>You do not implement your own <code>EventController</code> or construct <code>DefaultEventController</code> yourself.</li>
+						<li>You do not pass a <code>EventReporter</code> yourself or use the reporter through <code>MeetingSession</code>.</li>
+						<li>You do not explicitly add <code>eventDidReceive</code> observer using <code>addObserver(&lt;class implementing AudioVideoObserver&#39;s eventDidReceive method&gt;)</code> on any instances of an <code>AudioVideoFacade</code> or <code>AudioVideoController</code> such as <code>meetingSession.audioVideo.addObserver(&lt;class implementing AudioVideoObserver&#39;s eventDidReceive method&gt;)</code></li>
+					</ul>
+					<p>If your application does not meet all three criteria, read on.</p>
 					<a href="#messaging" id="messaging" style="color: inherit; text-decoration: none;">
 						<h3>Messaging</h3>
 					</a>
@@ -119,9 +122,72 @@
 						<li>AudioCallEnded</li>
 						<li>TURNMeetingEnded</li>
 						<li>StateMachineTransitionFailed</li>
-						<li>AudioDeviceSwitched
-						<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Migration%20to_3_0%20feedback">Give feedback on this guide</a></li>
+						<li>AudioDeviceSwitched</li>
 					</ul>
+					<a href="#updating-eventcontroller-use-cases" id="updating-eventcontroller-use-cases" style="color: inherit; text-decoration: none;">
+						<h3>Updating <code>EventController</code> use cases</h3>
+					</a>
+					<p>We have de-coupled the <code>EventController</code> from <code>AudioVideoController</code>. Check below for the new changes and if updates are needed for your implementation.</p>
+					<p>Use case 1: Update implementation of custom <code>EventController</code></p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> EventController {
+  <span class="hljs-comment">// Adds an observer for event published to this controller.</span>
+  addObserver(observer: EventObserver): <span class="hljs-built_in">void</span>;
+
+  <span class="hljs-comment">// Removes an observer for event published to this controller.</span>
+  removeObserver(observer: EventObserver): <span class="hljs-built_in">void</span>;
+
+  <span class="hljs-comment">// EventReporter that the EventController uses to send events to the Amazon Chime backend.</span>
+  <span class="hljs-keyword">readonly</span> eventReporter?: EventReporter;
+
+  <span class="hljs-comment">// pushMeetingState has been deprecated</span>
+}
+</code></pre>
+					<p>Use case 2: Update creation of <code>EventController</code></p>
+					<pre><code class="language-typescript"><span class="hljs-comment">// Before in 2.x:</span>
+<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
+<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
+…
+<span class="hljs-keyword">const</span> audioVideoController = <span class="hljs-keyword">new</span> DefaultAudioVideoController(configuration, logger, ..., eventReporter);
+<span class="hljs-keyword">const</span> eventController = <span class="hljs-keyword">new</span> DefaultEventController(audioVideoController, eventReporter)
+
+<span class="hljs-comment">// After in 3.x:</span>
+<span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
+<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
+…
+<span class="hljs-keyword">const</span> eventController = <span class="hljs-keyword">new</span> DefaultEventController(configuration, logger, eventReporter)
+<span class="hljs-keyword">const</span> audioVideoController = <span class="hljs-keyword">new</span> DefaultAudioVideoController(configuration, logger, ..., eventController);
+</code></pre>
+					<a href="#updating-eventreporter-use-cases" id="updating-eventreporter-use-cases" style="color: inherit; text-decoration: none;">
+						<h3>Updating <code>EventReporter</code> use cases</h3>
+					</a>
+					<p>The <code>DefaultMeetingSession</code> constructor no longer takes in a <code>EventReporter</code> and instead optionally takes in an <code>EventController</code> or creates one if none is given.</p>
+					<p>Before in 2.x:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
+<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
+…
+<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+
+<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController, eventReporter);
+})
+</code></pre>
+					<p>After in 3.x:</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> configuration = <span class="hljs-keyword">new</span> MeetingSessionConfiguration(…);
+<span class="hljs-keyword">const</span> logger = <span class="hljs-keyword">new</span> Logger(…);
+<span class="hljs-keyword">const</span> eventReporter = <span class="hljs-keyword">new</span> EventReporter(...)
+…
+<span class="hljs-keyword">const</span> deviceController = <span class="hljs-keyword">new</span> DefaultDeviceController(logger);
+<span class="hljs-keyword">const</span> eventController = <span class="hljs-keyword">new</span> DefaultEventController(configuration, logger, eventReporter)
+<span class="hljs-built_in">this</span>.meetingSession = <span class="hljs-keyword">new</span> DefaultMeetingSession(configuration, logger, deviceController, eventController);
+})
+</code></pre>
+					<a href="#foreachobserver-use-cases" id="foreachobserver-use-cases" style="color: inherit; text-decoration: none;">
+						<h3><code>forEachObserver</code> use cases</h3>
+					</a>
+					<p>The <code>eventDidReceive</code> function that was part of <code>AudioVideoObserver</code> has been moved to <code>EventObserver</code> which is a observer that the <code>EventController</code> now handles. Because of this if you were you were to call <code>eventDidReceive</code> through <code>forEachObserver</code> on <code>AudioVideoController</code> this functionallity will no longer be possible in 3.x, however you will still be able to call <code>eventDidReceive</code> by using the <code>publishEvent</code> method on <code>EventController</code>. If you have a use case not covered by this method you can implement your own <code>EventController</code> or make a feature request.</p>
+					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Migration%20to_3_0%20feedback">Give feedback on this guide</a></p>
 				</div>
 			</section>
 		</div>

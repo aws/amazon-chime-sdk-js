@@ -15,6 +15,7 @@ import {
   DefaultVideoTileController,
   DefaultVideoTileFactory,
   DevicePixelRatioWindowSource,
+  NoOpLogger,
   SignalingClientVideoSubscriptionConfiguration,
   VideoTile,
 } from '../../src';
@@ -25,7 +26,9 @@ import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver'
 import Backoff from '../../src/backoff/Backoff';
 import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
+import EventController from '../../src/eventcontroller/EventController';
 import EventName from '../../src/eventcontroller/EventName';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
@@ -88,6 +91,7 @@ describe('DefaultAudioVideoController', () => {
   let reconnectController: DefaultReconnectController;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
+  let eventController: EventController;
 
   const attendeeId = 'foo-attendee';
 
@@ -298,6 +302,7 @@ describe('DefaultAudioVideoController', () => {
     webSocketAdapter = new DefaultWebSocketAdapter(new NoOpDebugLogger());
     configuration = makeSessionConfiguration();
     reconnectController = new DefaultReconnectController(120 * 1000, new TestBackoff());
+    eventController = new DefaultEventController(configuration, new NoOpLogger());
   });
 
   afterEach(() => {
@@ -1043,18 +1048,12 @@ describe('DefaultAudioVideoController', () => {
         logger,
         webSocketAdapter,
         new NoOpMediaStreamBroker(),
-        reconnectController
+        reconnectController,
+        eventController
       );
 
       const result = new Promise((resolve, _reject) => {
         class TestObserver implements AudioVideoObserver {
-          eventDidReceive(name: EventName, attributes: EventAttributes): void {
-            events.push({
-              name,
-              attributes,
-            });
-          }
-
           async audioVideoDidStop(sessionStatus: MeetingSessionStatus): Promise<void> {
             await delay(defaultDelay);
             expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
@@ -1064,11 +1063,20 @@ describe('DefaultAudioVideoController', () => {
               'meetingStartFailed',
             ]);
             spy.restore();
+            eventController.removeObserver(observer);
             resolve(undefined);
           }
         }
-
+        const observer = {
+          eventDidReceive(name: EventName, attributes: EventAttributes): void {
+            events.push({
+              name,
+              attributes,
+            });
+          },
+        };
         audioVideoController.addObserver(new TestObserver());
+        eventController.addObserver(observer);
       });
 
       // Start and wait for the Join frame in JoinAndReceiveIndexTask.
@@ -2475,17 +2483,19 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDebugLogger(),
         webSocketAdapter,
         new NoOpMediaStreamBroker(),
-        reconnectController
+        reconnectController,
+        eventController
       );
       const events: { name: EventName; attributes: EventAttributes }[] = [];
-      audioVideoController.addObserver({
+      const observer = {
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           events.push({
             name,
             attributes,
           });
         },
-      });
+      };
+      eventController.addObserver(observer);
       await start();
       await reconnect();
       await stop();
@@ -2498,6 +2508,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingReconnected',
         'meetingEnded',
       ]);
+      eventController.removeObserver(observer);
     }).timeout(5000);
 
     it('does not reconnect if canceled', async () => {
@@ -3151,18 +3162,20 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDebugLogger(),
         webSocketAdapter,
         new NoOpDeviceController(),
-        reconnectController
+        reconnectController,
+        eventController
       );
 
       const events: { name: EventName; attributes: EventAttributes }[] = [];
-      audioVideoController.addObserver({
+      const observer = {
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           events.push({
             name,
             attributes,
           });
         },
-      });
+      };
+      eventController.addObserver(observer);
       await start();
       await stop();
 
@@ -3173,6 +3186,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingStartSucceeded',
         'meetingEnded',
       ]);
+      eventController.removeObserver(observer);
     });
 
     it('sends failure events', async () => {
@@ -3181,19 +3195,21 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDebugLogger(),
         webSocketAdapter,
         new NoOpDeviceController(),
-        reconnectController
+        reconnectController,
+        eventController
       );
 
       const errorMessage = 'Something went wrong';
       const events: { name: EventName; attributes: EventAttributes }[] = [];
-      audioVideoController.addObserver({
+      const observer = {
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           events.push({
             name,
             attributes,
           });
         },
-      });
+      };
+      eventController.addObserver(observer);
       await start();
       reconnectController.disableReconnect();
       audioVideoController.reconnect(
@@ -3210,6 +3226,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingFailed',
       ]);
       expect(events[3].attributes.meetingErrorMessage).includes(errorMessage);
+      eventController.removeObserver(observer);
     });
 
     it('sends failure events with a non-empty error message', async () => {
@@ -3218,18 +3235,20 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDebugLogger(),
         webSocketAdapter,
         new NoOpDeviceController(),
-        reconnectController
+        reconnectController,
+        eventController
       );
 
       const events: { name: EventName; attributes: EventAttributes }[] = [];
-      audioVideoController.addObserver({
+      const observer = {
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           events.push({
             name,
             attributes,
           });
         },
-      });
+      };
+      eventController.addObserver(observer);
       await start();
       reconnectController.disableReconnect();
       audioVideoController.reconnect(
@@ -3246,6 +3265,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingFailed',
       ]);
       expect(events[3].attributes.meetingErrorMessage).not.to.be.empty;
+      eventController.removeObserver(observer);
     });
   });
 

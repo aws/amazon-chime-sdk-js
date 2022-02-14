@@ -6,6 +6,7 @@ import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import type { Destroyable } from '../destroyable/Destroyable';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
+import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import DefaultMediaDeviceFactory from '../mediadevicefactory/DefaultMediaDeviceFactory';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
@@ -170,7 +171,8 @@ export default class DefaultDeviceController
   constructor(
     private logger: Logger,
     options?: { enableWebAudio?: boolean },
-    private browserBehavior: ExtendedBrowserBehavior = new DefaultBrowserBehavior()
+    private browserBehavior: ExtendedBrowserBehavior = new DefaultBrowserBehavior(),
+    public eventController?: EventController
   ) {
     const { enableWebAudio = false } = options || {};
     this.useWebAudio = enableWebAudio;
@@ -292,13 +294,13 @@ export default class DefaultDeviceController
   }
 
   private pushAudioMeetingStateForPermissions(device: AudioInputDevice): void {
-    this.boundAudioVideoController?.eventController?.publishEvent(
+    this.eventController?.publishEvent(
       device === null ? 'audioInputUnselected' : 'audioInputSelected'
     );
   }
 
   private pushVideoMeetingStateForPermissions(device: VideoInputDevice): void {
-    this.boundAudioVideoController?.eventController?.publishEvent(
+    this.eventController?.publishEvent(
       device === null ? 'videoInputUnselected' : 'videoInputSelected'
     );
   }
@@ -1536,11 +1538,11 @@ export default class DefaultDeviceController
       }
 
       if (kind === 'audio') {
-        this.boundAudioVideoController?.eventController?.publishEvent('audioInputFailed', {
+        this.eventController?.publishEvent('audioInputFailed', {
           audioInputErrorMessage: errorMessage,
         });
       } else {
-        this.boundAudioVideoController?.eventController?.publishEvent('videoInputFailed', {
+        this.eventController?.publishEvent('videoInputFailed', {
           videoInputErrorMessage: errorMessage,
         });
       }
