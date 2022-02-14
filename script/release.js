@@ -87,6 +87,7 @@ const main = async () => {
         quit(1);
       }
       await cleanUp(remoteBranch);
+      spawnOrFail('npm', ['install']);
       deployDemo(currentVersion);
       break;
     default:
