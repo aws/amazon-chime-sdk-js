@@ -398,7 +398,7 @@ export default abstract class BackgroundFilterProcessor {
     this.delegate.removeObserver(this.cpuMonitor);
     this.canvasVideoFrameBuffer.destroy();
     this.worker?.postMessage({ msg: 'destroy' });
-    this.worker?.postMessage({ msg: 'close' });
+    this.worker?.postMessage({ msg: 'stop' });
     this.targetCanvas?.remove();
     this.targetCanvas = undefined;
     this.scaledCanvas?.remove();
