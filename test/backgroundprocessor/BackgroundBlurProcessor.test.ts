@@ -919,16 +919,33 @@ describe('BackgroundBlurProcessor', () => {
     });
 
     it('can destroy', async () => {
-      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
-      stubSupported(true, false);
+      const worker = sandbox.spy(
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 }),
+        'postMessage'
+      );
+      stubSupported(true);
 
       let bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
       bbprocessor['blurCanvas'] = null;
       await bbprocessor.destroy();
 
+      // Verify `stop` is called for BackgroundBlurProcessorBuiltIn.
+      // Workers loaded for background blur must maintain API contract
+      // of `stop` command existing. Integration tests should exist on
+      // the worker code to ensure that it does not change. As a result,
+      // a unit test is fine here to ensure that `stop` contract is
+      // fulfilled on the client side.
+      expect(worker.callCount).to.be.equal(4);
+      expect(worker.calledWith({ msg: 'stop' })).to.be.true;
+      worker.resetHistory();
+
       bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
       bbprocessor['blurCanvas'] = document.createElement('canvas');
       await bbprocessor.destroy();
+
+      // Verify `stop` is called for BackgroundBlurProcessorBuiltIn.
+      expect(worker.callCount).to.be.equal(4);
+      expect(worker.calledWith({ msg: 'stop' })).to.be.true;
     });
 
     it('initialize handles errors', async () => {
