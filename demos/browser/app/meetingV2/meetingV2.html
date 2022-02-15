@@ -373,40 +373,47 @@
       <div id="engine-transcribe-language-identification">
         <div id="engine-transcribe-identify-language" class="custom-control custom-checkbox" style="text-align: left;">
           <input type="checkbox" id="identify-language-checkbox" class="custom-control-input">
-          <label for="identify-language-checkbox" class="custom-control-label">Enable Language Identification</label>
+          <label for="identify-language-checkbox" class="custom-control-label" title="Automatically identify the language spoken in a media file without you having to specify a language code">Enable Automatic Language Identification</label>
         </div>
         <div id="language-options" class="hidden">
-          <label for="language-options-selection" class="sr-only">Language Options (minimum 2 selections required)</label>
-          <select id="language-options-selection" class="custom-select"  style="width:100%" multiple>
-            <option value="en-US" selected>US English (en-US)</option>
-            <option value="en-GB">British English (en-GB)</option>
-            <option value="en-AU">Australian English (en-AU)</option>
-            <option value="es-US">US Spanish (es-US)</option>
-            <option value="fr-CA">Canadian French (fr-CA)</option>
-            <option value="fr-FR">French (fr-FR)</option>
-            <option value="it-IT">Italian (it-IT)</option>
-            <option value="de-DE">German (de-DE)</option>
-            <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
-            <option value="ja-JP">Japanese (ja-JP)</option>
-            <option value="ko-KR">Korean (ko-KR)</option>
-            <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
+          <label for="language-options" class="sr-only">Language Options</label>
+          <p title="For better accuracy of automatic language identification, select at least 2 languages, one from each group."><small>Select a minimum of 2 language options</small></p>
+          <select name="language-options" id="language-options" multiple="multiple" class="custom-select" style="width:100%">
+            <optgroup id="group1" label="English">
+              <option value="en-US">US English</option>
+              <option value="en-GB">British English</option>
+              <option value="en-AU">Australian English</option>
+            </optgroup>
+            <optgroup id="group2" label="French">
+              <option value="fr-FR">French</option>
+              <option value="fr-CA">Canadian French</option>
+            </optgroup>
+            <optgroup id="group3" label="German">
+              <option value="de-De">German</option>
+            </optgroup>
+            <optgroup id="group4" label="Chinese">
+              <option value="zh-CN">Mandarin Chinese - Mainland</option>
+            </optgroup>
+            <optgroup id="group5" label="Italian">
+              <option value="it-IT">Italian</option>
+            </optgroup>
+            <optgroup id="group6" label="Portuguese">
+              <option value="pt-BR">Brazilian Portuguese</option>
+            </optgroup>
+            <optgroup id="group7" label="Japanese">
+              <option value="ja-JP">Japanese</option>
+            </optgroup>
+            <optgroup id="group8" label="Korean">
+              <option value="ko-KR">Korean</option>
+            </optgroup>
           </select>
+          <div id="language-options-error-message"></div>
         </div>
-        <div id="preferred-language" class="hidden">
+        <div id="preferred-language" class="hidden" style="margin-top: 10px">
           <label for="preferred-language-selection" class="sr-only">Preferred Language</label>
-          <select id="preferred-language-selection" class="custom-select"  style="width:100%">
-            <option value="en-US" selected>US English (en-US)</option>
-            <option value="en-GB">British English (en-GB)</option>
-            <option value="en-AU">Australian English (en-AU)</option>
-            <option value="es-US">US Spanish (es-US)</option>
-            <option value="fr-CA">Canadian French (fr-CA)</option>
-            <option value="fr-FR">French (fr-FR)</option>
-            <option value="it-IT">Italian (it-IT)</option>
-            <option value="de-DE">German (de-DE)</option>
-            <option value="pt-BR">Brazilian Portuguese (pt-BR)</option>
-            <option value="ja-JP">Japanese (ja-JP)</option>
-            <option value="ko-KR">Korean (ko-KR)</option>
-            <option value="zh-CN">Mandarin Chinese - Mainland (zh-CN)</option>
+          <p title="Help Amazon Transcribe identify the language in the first few seconds of your stream."><small>Specify one preferred language</small></p>
+          <select id="preferred-language-selection" class="custom-select" style="width:100%">
+            <option value="" selected> -- Optional -- </option>
           </select>
         </div>
       </div>
@@ -453,7 +460,7 @@
           <option value="BANK_ROUTING">BANK ROUTING</option>
           <option value="CREDIT_DEBIT_NUMBER">CREDIT/DEBIT NUMBER</option>
           <option value="CREDIT_DEBIT_CVV">CREDIT/DEBIT CVV</option>
-          <option value="CREDIT_DEBIT_EXPIRY">CREDIT/DEBIT EXPIRTY</option>
+          <option value="CREDIT_DEBIT_EXPIRY">CREDIT/DEBIT EXPIRY</option>
           <option value="PIN">PIN</option>
           <option value="EMAIL">EMAIL</option>
           <option value="ADDRESS">ADDRESS</option>
