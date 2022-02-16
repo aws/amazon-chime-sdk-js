@@ -21,6 +21,7 @@ import {
   makeSdkTranscriptFrame,
   makeSdkTranscriptionStatus,
   makeSdkTranscriptWithEntities,
+  makeSdkTranscriptWithLanguageIdentifications,
   TRANSCRIPT_EVENT_TEST_VECTORS,
 } from './TranscriptEventTestDataHelper';
 
@@ -262,5 +263,37 @@ describe('TranscriptEvent', () => {
     expect(actualEvents[0].results[0].alternatives[0].entities[0].type).to.eql('Address');
     expect(actualEvents[0].results[0].alternatives[0].entities[1].type).to.be.undefined;
     expect(actualEvents[0].results[0].alternatives[0].entities[1].confidence).to.eql(0);
+  });
+
+  it('handles one transcript event of transcript type with language identifications', async () => {
+    const event = makeSdkTranscriptWithLanguageIdentifications();
+    const data = SdkTranscriptFrame.encode(makeSdkTranscriptFrame([event])).finish();
+    logBase64FromUint8Array(data);
+    // The steps above generates data below passed directly as test input
+    const dataMessage = makeTranscriptDataMessageFrom(
+        TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPT_LANGUAGE_IDENTIFICATIONS
+    );
+    const actualEvents = TranscriptEventConverter.from(dataMessage);
+    expect(actualEvents.length).to.equal(1);
+    if (!(actualEvents[0] instanceof Transcript)) {
+      assert.fail();
+      return;
+    }
+    expect(actualEvents[0].results.length).to.eql(1);
+    expect(actualEvents[0].results[0].alternatives[0].items.length).to.eql(3);
+    expect(actualEvents[0].results[0].alternatives[0].items[0].confidence).to.eql(1);
+    expect(actualEvents[0].results[0].alternatives[0].items[0].stable).to.eql(true);
+    expect(actualEvents[0].results[0].alternatives[0].items[1].confidence).to.be.undefined;
+    expect(actualEvents[0].results[0].alternatives[0].items[1].stable).eql(false);
+    expect(actualEvents[0].results[0].alternatives[0].items[1].stable).eql(false);
+    expect(actualEvents[0].results[0].alternatives[0].items[2].stable).to.be.undefined;
+    expect(actualEvents[0].results[0].alternatives[0].items[2].confidence).to.eql(0);
+    expect(actualEvents[0].results[0].languageIdentifications.length).to.eql(3);
+    expect(actualEvents[0].results[0].languageIdentifications[0].languageCode).to.eql('en-US');
+    expect(actualEvents[0].results[0].languageIdentifications[0].score).to.eql(0.895);
+    expect(actualEvents[0].results[0].languageIdentifications[1].languageCode).to.eql('fr-CA');
+    expect(actualEvents[0].results[0].languageIdentifications[1].score).to.eql(0.102);
+    expect(actualEvents[0].results[0].languageIdentifications[2].languageCode).to.eql('ja-JP');
+    expect(actualEvents[0].results[0].languageIdentifications[2].score).to.eql(0.003);
   });
 });
