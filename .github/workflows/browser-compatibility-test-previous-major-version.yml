@@ -278,7 +278,6 @@ jobs:
       - name: Checkout Package
         uses: actions/checkout@v2
         with:
-          ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
           fetch-depth: 0
       - name: Setup Node.js - 16.x
         uses: actions/setup-node@v1
@@ -305,4 +304,4 @@ jobs:
       - name: Install Axios
         run: npm install axios
       - name: Send Slack Message
-        run: node .github/script/send-test-report.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_PREV_VER_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }} ${{ needs.get-previous-version.outputs.previous_version_number }}
+        run: node .github/script/send-test-report.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_PREV_VER_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }}
