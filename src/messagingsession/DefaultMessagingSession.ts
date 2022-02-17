@@ -43,7 +43,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       );
     }
     if (!this.sigV4) {
-      this.sigV4 = new DefaultSigV4(this.configuration.chimeClient, this.configuration.awsClient);
+      this.sigV4 = new DefaultSigV4(this.configuration.chimeClient);
     }
 
     CSPMonitor.addLogger(this.logger);

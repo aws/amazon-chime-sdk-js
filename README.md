@@ -1206,7 +1206,7 @@ const observer = {
 };
 
 messagingSession.addObserver(observer);
-messagingSession.start();
+await messagingSession.start();
 ```
 
 ### Providing application metadata

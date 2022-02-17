@@ -93,7 +93,6 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="defaultsigv4.html#awsclient" class="tsd-kind-icon">aws<wbr>Client</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="defaultsigv4.html#chimeclient" class="tsd-kind-icon">chime<wbr>Client</a></li>
 							</ul>
 						</section>
@@ -112,22 +111,19 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Sig<wbr>V4<span class="tsd-signature-symbol">(</span>chimeClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, awsClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultsigv4.html" class="tsd-signature-type">DefaultSigV4</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Sig<wbr>V4<span class="tsd-signature-symbol">(</span>chimeClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaultsigv4.html" class="tsd-signature-type">DefaultSigV4</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sigv4/DefaultSigV4.ts#L7">src/sigv4/DefaultSigV4.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sigv4/DefaultSigV4.ts#L10">src/sigv4/DefaultSigV4.ts:10</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>chimeClient: <span class="tsd-signature-type">any</span></h5>
-								</li>
-								<li>
-									<h5>awsClient: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="defaultsigv4.html" class="tsd-signature-type">DefaultSigV4</a></h4>
@@ -138,22 +134,12 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="awsclient" class="tsd-anchor"></a>
-					<h3>aws<wbr>Client</h3>
-					<div class="tsd-signature tsd-kind-icon">aws<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sigv4/DefaultSigV4.ts#L9">src/sigv4/DefaultSigV4.ts:9</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="chimeclient" class="tsd-anchor"></a>
 					<h3>chime<wbr>Client</h3>
 					<div class="tsd-signature tsd-kind-icon">chime<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sigv4/DefaultSigV4.ts#L9">src/sigv4/DefaultSigV4.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sigv4/DefaultSigV4.ts#L12">src/sigv4/DefaultSigV4.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -164,14 +150,14 @@
 					<a name="signurl" class="tsd-anchor"></a>
 					<h3>signURL</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">signURL<span class="tsd-signature-symbol">(</span>method<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, scheme<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, serviceName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, hostname<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, payload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryParams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">signURL<span class="tsd-signature-symbol">(</span>method<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, scheme<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, serviceName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, hostname<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, payload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, queryParams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/sigv4.html">SigV4</a>.<a href="../interfaces/sigv4.html#signurl">signURL</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sigv4/DefaultSigV4.ts#L53">src/sigv4/DefaultSigV4.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sigv4/DefaultSigV4.ts#L62">src/sigv4/DefaultSigV4.ts:62</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -198,7 +184,7 @@
 									<h5>queryParams: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -221,9 +207,6 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="defaultsigv4.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="defaultsigv4.html#awsclient" class="tsd-kind-icon">aws<wbr>Client</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="defaultsigv4.html#chimeclient" class="tsd-kind-icon">chime<wbr>Client</a>

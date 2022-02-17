@@ -29,7 +29,7 @@ export default class MessagingSessionConfiguration {
 
   /**
    * Constructs a MessagingSessionConfiguration optionally with userArn, messaging session id, a messaging session
-   * endpoint URL, the chimeClient, and the AWSClient.
+   * endpoint URL, and the chimeClient.
    * The messaging session id is to uniquely identify this messaging session for the userArn.
    * If messaging session id is passed in as null, it will be automatically generated.
    */
@@ -37,8 +37,7 @@ export default class MessagingSessionConfiguration {
     public userArn: string,
     public messagingSessionId: string | null,
     public endpointUrl: string,
-    public chimeClient: any,
-    public awsClient: any
+    public chimeClient: any
   ) {
     if (!this.messagingSessionId) {
       this.messagingSessionId = this.generateSessionId();

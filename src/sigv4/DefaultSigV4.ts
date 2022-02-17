@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Sha256 } from '@aws-crypto/sha256-js';
+import { toHex } from '@aws-sdk/util-hex-encoding';
+
 import Versioning from '../versioning/Versioning';
 import SigV4 from './SigV4';
-import { Sha256 } from '@aws-crypto/sha256-js';
-import { toHex } from "@aws-sdk/util-hex-encoding";
 
 export default class DefaultSigV4 implements SigV4 {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-  constructor(public chimeClient: any, public awsClient: any) {}
+  constructor(public chimeClient: any) {}
 
   private makeTwoDigits(n: number): string {
     /* istanbul ignore if */
@@ -24,7 +25,7 @@ export default class DefaultSigV4 implements SigV4 {
     const hash = new Sha256(secret);
     hash.update(data);
     return hash.digest();
-  };
+  }
 
   private getDateTimeString(): string {
     const d = new Date();
@@ -72,6 +73,7 @@ export default class DefaultSigV4 implements SigV4 {
 
     const algorithm = 'AWS4-HMAC-SHA256';
     let region = '';
+    // in AWS SDK v3 region is a function
     if (this.chimeClient.config.region instanceof Function) {
       region = await this.chimeClient.config.region();
     } else {
@@ -83,7 +85,8 @@ export default class DefaultSigV4 implements SigV4 {
     const canonicalHeaders = 'host:' + hostname.toLowerCase() + '\n';
     const credentialScope = today + '/' + region + '/' + serviceName + '/' + 'aws4_request';
     let credentials = undefined;
-    if (!this.chimeClient.config.credentials.accessKeyId) {
+    // in AWS SDK v3 credentials is a function
+    if (this.chimeClient.config.credentials instanceof Function) {
       credentials = await this.chimeClient.config.credentials();
     } else {
       credentials = this.chimeClient.config.credentials;
@@ -160,7 +163,7 @@ export default class DefaultSigV4 implements SigV4 {
       serviceName
     );
 
-    const signature =  toHex(await this.hmac(stringToSign, signingKey));
+    const signature = toHex(await this.hmac(stringToSign, signingKey));
 
     const finalParams = canonicalQuerystring + '&X-Amz-Signature=' + signature;
 
