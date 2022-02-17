@@ -3,7 +3,7 @@
 
 import * as chai from 'chai';
 
-import { DefaultTransceiverController } from '../../src';
+import { DefaultSDP, DefaultTransceiverController, ZLIBTextCompressor } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -45,6 +45,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
   const sdpAnswer = 'sdp-answer';
 
   let domMockBuilder: DOMMockBuilder;
+  let textCompressor: ZLIBTextCompressor;
   let context: AudioVideoControllerState;
   let webSocketAdapter: DefaultWebSocketAdapter;
   let subscribeAckBuffer: Uint8Array;
@@ -60,11 +61,13 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
 
   beforeEach(() => {
     domMockBuilder = new DOMMockBuilder(behavior);
+
     context = new AudioVideoControllerState();
     context.audioVideoController = new NoOpAudioVideoController();
     context.logger = context.audioVideoController.logger;
     context.realtimeController = new DefaultRealtimeController();
 
+    textCompressor = new ZLIBTextCompressor(context.logger);
     webSocketAdapter = new DefaultWebSocketAdapter(context.logger);
 
     context.signalingClient = new TestSignalingClient(webSocketAdapter, context.logger);
@@ -98,6 +101,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     context.transceiverController = new TestTransceiverController();
     const frame = SdkSubscribeAckFrame.create();
     frame.sdpAnswer = sdpAnswer;
+    frame.compressedSdpAnswer = new Uint8Array();
 
     const signal = SdkSignalFrame.create();
     signal.type = SdkSignalFrame.Type.SUBSCRIBE_ACK;
@@ -127,9 +131,52 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         .settings;
       expect(settings.attendeeId).to.equal(attendeeId);
       expect(settings.sdpOffer).to.equal(sdpOffer);
+      expect(settings.compressedSdpOffer).to.equal(undefined);
       expect(settings.audioHost).to.equal(audioHost);
       expect(settings.audioMuted).to.equal(false);
       expect(settings.audioCheckin).to.equal(false);
+    });
+
+    it('can subscribe with a compressed SDP offer for the first request', async () => {
+      context.serverSupportsCompression = true;
+      context.previousSdpOffer = null;
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(context.signalingClient.ready()).to.equal(true);
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      await task.run();
+
+      const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
+        .settings;
+
+      expect(settings.sdpOffer).to.equal('');
+      expect(settings.compressedSdpOffer.length).is.greaterThan(0);
+    });
+
+    it('can subscribe with a compressed SDP offer for subsequent requests', async () => {
+      context.serverSupportsCompression = true;
+
+      const description: RTCSessionDescriptionInit = {
+        type: 'offer',
+        sdp: FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE,
+      };
+
+      context.previousSdpOffer = new DefaultSDP(description.sdp);
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(context.signalingClient.ready()).to.equal(true);
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      await task.run();
+
+      const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
+        .settings;
+
+      expect(settings.sdpOffer).to.equal('');
+      expect(settings.compressedSdpOffer.length).is.greaterThan(0);
     });
 
     it('can subscribe SdkSubscribeAckFrame with SDP', async () => {
@@ -215,6 +262,64 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
       await task.run();
       expect(context.sdpAnswer).to.equal(sdpAnswer);
+    });
+
+    it('can receive compressed sdp answer', async () => {
+      const prevSdpAnwer = 'sdp-answer';
+      context.serverSupportsCompression = true;
+      context.previousSdpAnswerAsString = prevSdpAnwer;
+
+      const frame = SdkSubscribeAckFrame.create();
+      frame.compressedSdpAnswer = textCompressor.compress(sdpAnswer, prevSdpAnwer);
+
+      const signal = SdkSignalFrame.create();
+      signal.type = SdkSignalFrame.Type.SUBSCRIBE_ACK;
+      signal.suback = frame;
+
+      const buffer = SdkSignalFrame.encode(signal).finish();
+      subscribeAckBuffer = new Uint8Array(buffer.length + 1);
+      subscribeAckBuffer[0] = 0x5;
+      subscribeAckBuffer.set(buffer, 1);
+
+      await delay(behavior.asyncWaitMs + 10);
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      await task.run();
+
+      const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
+        .settings;
+
+      expect(settings.compressedSdpOffer.length).is.greaterThan(0);
+      expect(context.sdpAnswer).to.equal(sdpAnswer);
+    });
+
+    it('throws error when there sdp decompression fails', async () => {
+      const prevSdpAnwer = 'sdp-answer';
+      context.serverSupportsCompression = true;
+      context.previousSdpAnswerAsString = 'random';
+
+      const frame = SdkSubscribeAckFrame.create();
+      frame.compressedSdpAnswer = textCompressor.compress(sdpAnswer, prevSdpAnwer);
+
+      const signal = SdkSignalFrame.create();
+      signal.type = SdkSignalFrame.Type.SUBSCRIBE_ACK;
+      signal.suback = frame;
+
+      const buffer = SdkSignalFrame.encode(signal).finish();
+      subscribeAckBuffer = new Uint8Array(buffer.length + 1);
+      subscribeAckBuffer[0] = 0x5;
+      subscribeAckBuffer.set(buffer, 1);
+
+      await delay(behavior.asyncWaitMs + 10);
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      try {
+        await task.run();
+      } catch {
+        expect(context.previousSdpAnswerAsString).to.be.equal('');
+      }
     });
 
     it('can subscribe without videoCaptureAndEncodeParameter', async () => {

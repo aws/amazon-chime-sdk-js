@@ -101,6 +101,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="sdp.html#mediasections" class="tsd-kind-icon">media<wbr>Sections</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="sdp.html#removeh264supportfromsendsection" class="tsd-kind-icon">remove<wbr>H264<wbr>Support<wbr>From<wbr>Send<wbr>Section</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="sdp.html#ssrcforvideosendingsection" class="tsd-kind-icon">ssrc<wbr>For<wbr>Video<wbr>Sending<wbr>Section</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="sdp.html#tostring" class="tsd-kind-icon">to<wbr>String</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="sdp.html#videosendsectionhasdifferentssrc" class="tsd-kind-icon">video<wbr>Send<wbr>Section<wbr>Has<wbr>DifferentSSRC</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="sdp.html#withaudiomaxaveragebitrate" class="tsd-kind-icon">with<wbr>Audio<wbr>Max<wbr>Average<wbr>Bitrate</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="sdp.html#withunifiedplanformat" class="tsd-kind-icon">with<wbr>Unified<wbr>Plan<wbr>Format</a></li>
@@ -136,6 +137,34 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="copyvideo" class="tsd-anchor"></a>
+					<h3>copy<wbr>Video</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">copy<wbr>Video<span class="tsd-signature-symbol">(</span>otherSDP<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L44">src/sdp/SDP.ts:44</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Copies video sections from other SDP to this SDP</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>otherSDP: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="sdp.html" class="tsd-signature-type">SDP</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="hascandidates" class="tsd-anchor"></a>
 					<h3>has<wbr>Candidates</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -145,7 +174,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L24">src/sdp/SDP.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L29">src/sdp/SDP.ts:29</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -167,7 +196,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L29">src/sdp/SDP.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L34">src/sdp/SDP.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -189,7 +218,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L19">src/sdp/SDP.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L24">src/sdp/SDP.ts:24</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -211,7 +240,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L69">src/sdp/SDP.ts:69</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L97">src/sdp/SDP.ts:97</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -220,6 +249,28 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../classes/sdpmediasection.html" class="tsd-signature-type">SDPMediaSection</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="preferh264ifexists" class="tsd-anchor"></a>
+					<h3>prefer<wbr>H264<wbr>IfExists</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">prefer<wbr>H264<wbr>IfExists<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L87">src/sdp/SDP.ts:87</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sorts the codec preferences in video section.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="sdp.html" class="tsd-signature-type">SDP</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -233,7 +284,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L64">src/sdp/SDP.ts:64</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L92">src/sdp/SDP.ts:92</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -255,12 +306,34 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L54">src/sdp/SDP.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L77">src/sdp/SDP.ts:77</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Extracts the ssrc for the sendrecv video media section in SDP</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="tostring" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> to<wbr>String</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>String<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L19">src/sdp/SDP.ts:19</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retuns SDP string</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -277,7 +350,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L59">src/sdp/SDP.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L82">src/sdp/SDP.ts:82</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -305,7 +378,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L44">src/sdp/SDP.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L59">src/sdp/SDP.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -324,6 +397,61 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="withbandwidthrestriction" class="tsd-anchor"></a>
+					<h3>with<wbr>Bandwidth<wbr>Restriction</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">with<wbr>Bandwidth<wbr>Restriction<span class="tsd-signature-symbol">(</span>maxBitrateKbps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, isFirefox<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L67">src/sdp/SDP.ts:67</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Deprecated: <code>RTCRtpSender.setParameters</code> has supported setting bitrates for a while and
+									we no longer use this function in other areas of the SDK. Should remove when possible.</p>
+								</div>
+								<p>Inserts a bandwidth limitation attribute to answer SDP for setRemoteDescription and limiting client outbound maximum bitrate</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>maxBitrateKbps: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>isFirefox: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="sdp.html" class="tsd-signature-type">SDP</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="withbundleaudiovideo" class="tsd-anchor"></a>
+					<h3>with<wbr>Bundle<wbr>Audio<wbr>Video</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">with<wbr>Bundle<wbr>Audio<wbr>Video<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sdp.html" class="tsd-signature-type">SDP</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L39">src/sdp/SDP.ts:39</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Replaces group attribute <code>a=group:</code> line with <code>a=group:BUNDLE audio video</code></p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="sdp.html" class="tsd-signature-type">SDP</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="withunifiedplanformat" class="tsd-anchor"></a>
 					<h3>with<wbr>Unified<wbr>Plan<wbr>Format</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -333,7 +461,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L49">src/sdp/SDP.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L72">src/sdp/SDP.ts:72</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -355,7 +483,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L34">src/sdp/SDP.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L49">src/sdp/SDP.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -383,7 +511,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L39">src/sdp/SDP.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/sdp/SDP.ts#L54">src/sdp/SDP.ts:54</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -432,6 +560,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="sdp.html#ssrcforvideosendingsection" class="tsd-kind-icon">ssrc<wbr>For<wbr>Video<wbr>Sending<wbr>Section</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="sdp.html#tostring" class="tsd-kind-icon">to<wbr>String</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="sdp.html#videosendsectionhasdifferentssrc" class="tsd-kind-icon">video<wbr>Send<wbr>Section<wbr>Has<wbr>DifferentSSRC</a>

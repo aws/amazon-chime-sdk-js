@@ -45,6 +45,14 @@ describe('DefaultSDP', () => {
     });
   });
 
+  describe('toString', () => {
+    it('returns the sdp as a string', () => {
+      const sdpA = new DefaultSDP(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
+      const sdpB = sdpA.toString();
+      expect(SDPMock.VIDEO_HOST_AUDIO_ANSWER).to.equal(sdpB);
+    });
+  });
+
   describe('hasVideo', () => {
     it('returns true if the sdp has a line for the video', () => {
       const sdp = new DefaultSDP(SDPMock.VIDEO_HOST_AUDIO_VIDEO_ANSWER);

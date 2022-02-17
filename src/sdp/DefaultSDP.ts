@@ -20,6 +20,10 @@ export default class DefaultSDP implements SDP {
     return new DefaultSDP(this.sdp);
   }
 
+  toString(): string {
+    return this.sdp;
+  }
+
   static isRTPCandidate(candidate: string): boolean {
     const match = /candidate[:](\S+) (\d+)/g.exec(candidate);
     if (match === null || match[2] !== '1') {
