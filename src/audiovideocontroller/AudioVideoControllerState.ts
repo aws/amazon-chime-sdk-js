@@ -112,6 +112,13 @@ export default class AudioVideoControllerState {
   // that we include in the `videosToReceive`.
   videoSubscriptionLimit: number = 25;
 
+  // The previous SDP answer will be used as a dictionary to seed the compression library
+  // during decompressing the compressed SDP answer.
+  previousSdpAnswerAsString: string = '';
+
+  // This flag indicates if the backend supports compression for the client.
+  serverSupportsCompression: boolean = false;
+
   videosPaused: VideoStreamIdSet | null = null;
 
   videoDuplexMode: SdkStreamServiceType | null = null;

@@ -75,6 +75,8 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
               context.videoSubscriptionLimit = joinAckFrame.videoSubscriptionLimit;
             }
 
+            context.serverSupportsCompression = joinAckFrame?.wantsCompressedSdp;
+
             if (joinAckFrame && joinAckFrame.turnCredentials) {
               context.turnCredentials = new MeetingSessionTURNCredentials();
               context.turnCredentials.username = joinAckFrame.turnCredentials.username;

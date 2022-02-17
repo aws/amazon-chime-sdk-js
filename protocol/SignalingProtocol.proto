@@ -76,11 +76,13 @@ message SdkJoinFrame {
     optional uint32 flags = 3;
     optional SdkClientDetails client_details = 4;
     optional uint64 audio_session_id = 6;
+    optional bool wants_compressed_sdp = 7;
 }
 
 message SdkJoinAckFrame {
     optional SdkTurnCredentials turn_credentials = 1;
     optional uint32 video_subscription_limit = 2 [default=25];
+    optional bool wants_compressed_sdp = 3;
 }
 
 message SdkLeaveFrame {}
@@ -106,6 +108,7 @@ message SdkSubscribeFrame {
     optional string audio_host = 5;
     optional bool audio_checkin = 6;
     optional bool audio_muted = 7;
+    optional bytes compressed_sdp_offer = 8;
 }
 
 message SdkSubscribeAckFrame {
@@ -113,6 +116,7 @@ message SdkSubscribeAckFrame {
     repeated SdkStreamAllocation allocations = 2;
     optional string sdp_answer = 3;
     repeated SdkTrackMapping tracks = 4;
+    optional bytes compressed_sdp_answer = 5;
 }
 
 message SdkIndexFrame {

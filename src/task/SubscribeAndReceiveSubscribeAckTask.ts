@@ -5,6 +5,7 @@ import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControl
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
 import DefaultSDP from '../sdp/DefaultSDP';
+import ZLIBTextCompressor from '../sdp/ZLIBTextCompressor';
 import SignalingClient from '../signalingclient/SignalingClient';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
 import SignalingClientEventType from '../signalingclient/SignalingClientEventType';
@@ -26,9 +27,11 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
   protected taskName = 'SubscribeAndReceiveSubscribeAckTask';
 
   private taskCanceler: TaskCanceler | null = null;
+  private textCompressor: ZLIBTextCompressor;
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
+    this.textCompressor = new ZLIBTextCompressor(context.logger);
   }
 
   cancel(): void {
@@ -77,7 +80,24 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     const isSendingStreams: boolean =
       this.context.videoDuplexMode === SdkStreamServiceType.TX ||
       this.context.videoDuplexMode === SdkStreamServiceType.DUPLEX;
-    this.context.previousSdpOffer = new DefaultSDP(localSdp);
+
+    let compressedSDPOffer: Uint8Array | null;
+    const localSdpOffer = localSdp;
+
+    if (this.context.serverSupportsCompression) {
+      // If the server supports compression, then send the compressed version of the sdp
+      // and exclude the original sdp offer.
+      const prevOffer = this.context.previousSdpOffer
+        ? this.context.previousSdpOffer.toString()
+        : '';
+      compressedSDPOffer = this.textCompressor.compress(localSdpOffer, prevOffer);
+      this.context.logger.info(
+        `Compressed the SDP message from ${localSdpOffer.length} to ${compressedSDPOffer.length} bytes.`
+      );
+      localSdp = '';
+    }
+    this.context.previousSdpOffer = new DefaultSDP(localSdpOffer);
+
     const subscribe = new SignalingClientSubscribe(
       this.context.meetingSessionConfiguration.credentials.attendeeId,
       localSdp,
@@ -88,14 +108,37 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       isSendingStreams,
       this.context.videoStreamIndex.localStreamDescriptions(),
       // TODO: handle check-in mode, or remove this param
-      true
+      true,
+      compressedSDPOffer
     );
     this.context.logger.info(`sending subscribe: ${JSON.stringify(subscribe)}`);
     this.context.signalingClient.subscribe(subscribe);
 
     const subscribeAckFrame = await this.receiveSubscribeAck();
     this.context.logger.info(`got subscribe ack: ${JSON.stringify(subscribeAckFrame)}`);
-    this.context.sdpAnswer = subscribeAckFrame.sdpAnswer;
+
+    let decompressedText = '';
+    if (subscribeAckFrame.compressedSdpAnswer && subscribeAckFrame.compressedSdpAnswer.length) {
+      decompressedText = this.textCompressor.decompress(
+        subscribeAckFrame.compressedSdpAnswer,
+        this.context.previousSdpAnswerAsString
+      );
+
+      if (decompressedText.length === 0) {
+        this.context.sdpAnswer = '';
+        this.context.previousSdpAnswerAsString = '';
+        this.logAndThrow(`Error occurred while trying to decompress the SDP answer.`);
+      }
+
+      this.context.logger.info(
+        `Decompressed the SDP message from ${subscribeAckFrame.compressedSdpAnswer.length} to ${decompressedText.length} bytes.`
+      );
+      this.context.sdpAnswer = decompressedText;
+    } else {
+      this.context.sdpAnswer = subscribeAckFrame.sdpAnswer;
+    }
+    this.context.previousSdpAnswerAsString = this.context.sdpAnswer;
+
     this.context.videoStreamIndex.integrateSubscribeAckFrame(subscribeAckFrame);
   }
 

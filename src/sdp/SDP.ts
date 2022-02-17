@@ -14,6 +14,11 @@ export default interface SDP {
   clone(): SDP;
 
   /**
+   * Retuns SDP string
+   */
+  toString?(): string;
+
+  /**
    * Splits SDP string into lines
    */
   lines(): string[];
