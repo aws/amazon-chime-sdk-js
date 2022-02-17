@@ -17,7 +17,7 @@
     "csp-html-webpack-plugin": "^5.1.0",
     "css-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.2",
-    "markdown-it": "^11.0.1",
+    "markdown-it": "^12.3.2",
     "open-iconic": "^1.1.1",
     "postcss-loader": "^6.1.1",
     "react-dev-utils": "^11.0.4",
