@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
 ### Changed
 - Add support for pre-release in Versioning.
+- Removed upward logic in VideoPriorityBasedPolicyConfig.
     
 ### Fixed
 - Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy 
