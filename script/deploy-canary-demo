@@ -28,9 +28,9 @@ ChimeSDKMeetingsBeta)
     echo "Deploying to beta stage for canary that talks to gamma ChimeSDKMeetings client"
 
     # Uses ChimeSDKMeetings client
-    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -o chime-sdk-meetings-iad-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
-    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -o chime-sdk-meetings-fra-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1 -t -l
-    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1 -t -l
+    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -o chime-sdk-meetings-iad-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -m $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
+    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -o chime-sdk-meetings-fra-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -m $GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1 -t -l
+    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -m $GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1 -t -l
     ;;
 
 ChimeGamma)

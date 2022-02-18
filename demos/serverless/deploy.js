@@ -13,6 +13,7 @@ let useEventBridge = false;
 let enableTerminationProtection = false;
 let disablePrintingLogs = false;
 let chimeEndpoint = 'https://service.chime.aws.amazon.com';
+let chimeSDKMeetingsEndpoint = 'https://service.chime.aws.amazon.com';
 let chimeServicePrincipal = 'chime.amazonaws.com'
 let captureOutputPrefix = ''
 let mediaCaptureRegions = [
@@ -42,12 +43,13 @@ function usage() {
   console.log(`  -s, --stack-name                     CloudFormation stack name, required`);
   console.log(`  -a, --application                    Browser application to deploy, default '${app}'`);
   console.log(`  -e, --event-bridge                   Enable EventBridge integration, default is no integration`);
-  console.log(`  -c, --chime-endpoint                 AWS SDK Chime endpoint, default is '${chimeEndpoint}'`);
+  console.log(`  -c, --chime-endpoint                 AWS SDK Chime global endpoint, default is '${chimeEndpoint}'`);
   console.log(`  -p, --service-principal              Service principal for meeting related resources, default is '${chimeServicePrincipal}'`)
   console.log(`  -t, --enable-termination-protection  Enable termination protection for the Cloudformation stack, default is false`);
   console.log(`  -l, --disable-printing-logs          Disable printing logs`);
   console.log(`  -o, --capture-output-prefix          Prefix for S3 bucket name`);
   console.log(`  -i, --opt-in-regions                 Comma separated list of additional opt-in regions to enable for media capture`);
+  console.log(`  -m, --chime-sdk-meetings-endpoint    AWS SDK Chime Meetings endpoint`);
   console.log(`  -h, --help                           Show help and exit`);
 }
 
@@ -118,6 +120,9 @@ function parseArgs() {
       case '-i': case '--opt-in-regions':
         optInRegions = getArgOrExit(++i, args);
         mediaCaptureRegions = mediaCaptureRegions.concat(optInRegions.split(','));
+        break;
+      case '-m': case '--chime-sdk-meetings-endpoint':
+        chimeSDKMeetingsEndpoint = getArgOrExit(++i, args)
         break;
       default:
         console.log(`Invalid argument ${args[i]}`);
@@ -251,7 +256,7 @@ spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,
                     '--region',  `${region}`]);
 console.log('Deploying serverless application');
-let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal}`
+let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal} ChimeSDKMeetingsEndpoint=${chimeSDKMeetingsEndpoint}`
 if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
     createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);
