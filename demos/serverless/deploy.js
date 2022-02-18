@@ -43,7 +43,7 @@ function usage() {
   console.log(`  -s, --stack-name                     CloudFormation stack name, required`);
   console.log(`  -a, --application                    Browser application to deploy, default '${app}'`);
   console.log(`  -e, --event-bridge                   Enable EventBridge integration, default is no integration`);
-  console.log(`  -c, --chime-endpoint                 AWS SDK Chime global endpoint, default is '${chimeEndpoint}'`);
+  console.log(`  -c, --chime-endpoint                 AWS SDK Chime endpoint, default is '${chimeEndpoint}'`);
   console.log(`  -p, --service-principal              Service principal for meeting related resources, default is '${chimeServicePrincipal}'`)
   console.log(`  -t, --enable-termination-protection  Enable termination protection for the Cloudformation stack, default is false`);
   console.log(`  -l, --disable-printing-logs          Disable printing logs`);
