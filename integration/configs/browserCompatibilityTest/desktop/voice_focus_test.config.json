@@ -1,17 +1,27 @@
 {
   "`": 1,
-  "name": "audio_test.config.json %ts",
+  "name": "voice_focus_test.config.json %ts",
   "grids": [],
   "tests": [
     {
-      "name": "Audio Test %ts",
-      "description": "Audio Test",
-      "tupleSize": 2,
+      "name": "Voice Focus Offered Test %ts",
+      "description": "Voice Focus Offered Test",
+      "tupleSize": 1,
       "noOfThreads": 1,
-      "testImpl": "AudioTest.js",
+      "testImpl": "VoiceFocusOfferedTest.js",
       "payload": {
-        "url": "http://localhost:8080/?earlyConnect=1",
-        "port": 30001,
+        "url": "http://localhost:8080/",
+        "retry": 2
+      }
+    },
+    {
+      "name": "Voice Focus Enabled Test %ts",
+      "description": "Voice Focus Enabled Test",
+      "tupleSize": 1,
+      "noOfThreads": 1,
+      "testImpl": "VoiceFocusEnabledTest.js",
+      "payload": {
+        "url": "http://localhost:8080/",
         "retry": 2
       }
     }

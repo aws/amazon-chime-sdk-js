@@ -5,7 +5,7 @@ name: Deploy Demo App Workflow
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'release-**.x' ]
 
 jobs:
   deploy_chime_alpha_demo:
@@ -29,7 +29,8 @@ jobs:
       - name: Install SAM CLI
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
-        run: script/deploy-canary-demo
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: script/deploy-canary-demo 
   deploy_chime_beta_demo:
     name: Beta - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
     runs-on: ubuntu-latest
@@ -53,7 +54,11 @@ jobs:
       - name: Install SAM CLI
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
-        run: script/deploy-canary-demo
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: script/deploy-canary-demo 
+      - name: Run Deployment Script Previous Major Version
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: script/deploy-canary-demo -prev
   deploy_chime_sdk_meetings_beta_demo:
     name: Beta - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
@@ -79,7 +84,11 @@ jobs:
       - name: Install SAM CLI
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
-        run: script/deploy-canary-demo
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: script/deploy-canary-demo 
+      - name: Run Deployment Script Previous Major Version
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: script/deploy-canary-demo -prev
   deploy_chime_gamma_demo:
     name: Gamma - Chime Client - Deploy the Serverless Meeting and Meeting Readiness Checker Demos
     runs-on: ubuntu-latest
@@ -101,7 +110,11 @@ jobs:
       - name: Install SAM CLI
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
-        run: script/deploy-canary-demo
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: script/deploy-canary-demo 
+      - name: Run Deployment Script Previous Major Version
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: script/deploy-canary-demo -prev
   deploy_chime_sdk_meetings_gamma_demo:
     name: Gamma - ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
     runs-on: ubuntu-latest
@@ -123,4 +136,8 @@ jobs:
       - name: Install SAM CLI
         run: script/github-action-awscli-installation
       - name: Run Deployment Script
-        run: script/deploy-canary-demo
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: script/deploy-canary-demo 
+      - name: Run Deployment Script Previous Major Version
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: script/deploy-canary-demo -prev

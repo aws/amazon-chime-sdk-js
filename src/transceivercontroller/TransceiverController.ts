@@ -65,6 +65,12 @@ export default interface TransceiverController {
   /**
    * Get the associated MID for a given stream ID, either set via `updateVideoTranceivers`
    * or overriden through `setStreamIdForMid`.
+   *
+   * Note: According to https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/mid
+   * `mid` may not exist yet even if the transceiver has been created:
+   * "This association is established, when possible, whenever either a local or remote description is applied.
+   * This field is null if neither a local or remote description has been applied,
+   * or if its associated m-line is rejected by either a remote offer or any answer."
    */
   getMidForStreamId?(streamId: number): string | undefined;
 

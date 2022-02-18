@@ -27,8 +27,15 @@ import BackgroundBlurProcessor from './backgroundblurprocessor/BackgroundBlurPro
 import BackgroundBlurStrength from './backgroundblurprocessor/BackgroundBlurStrength';
 import BackgroundBlurVideoFrameProcessor from './backgroundblurprocessor/BackgroundBlurVideoFrameProcessor';
 import BackgroundBlurVideoFrameProcessorObserver from './backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver';
-import BackgroundFilterPaths from './backgroundblurprocessor/BackgroundFilterPaths';
-import BackgroundFilterSpec from './backgroundblurprocessor/BackgroundFilterSpec';
+import BackgroundFilterOptions from './backgroundfilter/BackgroundFilterOptions';
+import BackgroundFilterPaths from './backgroundfilter/BackgroundFilterPaths';
+import BackgroundFilterSpec from './backgroundfilter/BackgroundFilterSpec';
+import BackgroundFilterVideoFrameProcessor from './backgroundfilter/BackgroundFilterVideoFrameProcessor';
+import BackgroundFilterVideoFrameProcessorObserver from './backgroundfilter/BackgroundFilterVideoFrameProcessorObserver';
+import BackgroundReplacementOptions from './backgroundreplacementprocessor/BackgroundReplacementOptions';
+import BackgroundReplacementProcessor from './backgroundreplacementprocessor/BackgroundReplacementProcessor';
+import BackgroundReplacementVideoFrameProcessor from './backgroundreplacementprocessor/BackgroundReplacementVideoFrameProcessor';
+import BackgroundReplacementVideoFrameProcessorObserver from './backgroundreplacementprocessor/BackgroundReplacementVideoFrameProcessorObserver';
 import Backoff from './backoff/Backoff';
 import BackoffFactory from './backoff/BackoffFactory';
 import BaseConnectionHealthPolicy from './connectionhealthpolicy/BaseConnectionHealthPolicy';
@@ -210,6 +217,7 @@ import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
 import SDP from './sdp/SDP';
 import SDPCandidateType from './sdp/SDPCandidateType';
+import SDPMediaSection from './sdp/SDPMediaSection';
 import Scheduler from './scheduler/Scheduler';
 import SendAndReceiveDataMessagesTask from './task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from './task/SerialGroupTask';
@@ -339,8 +347,15 @@ export {
   BackgroundBlurStrength,
   BackgroundBlurVideoFrameProcessor,
   BackgroundBlurVideoFrameProcessorObserver,
+  BackgroundFilterOptions,
   BackgroundFilterPaths,
   BackgroundFilterSpec,
+  BackgroundFilterVideoFrameProcessor,
+  BackgroundFilterVideoFrameProcessorObserver,
+  BackgroundReplacementOptions,
+  BackgroundReplacementProcessor,
+  BackgroundReplacementVideoFrameProcessor,
+  BackgroundReplacementVideoFrameProcessorObserver,
   Backoff,
   BackoffFactory,
   BaseConnectionHealthPolicy,
@@ -528,6 +543,7 @@ export {
   RunnableTask,
   SDP,
   SDPCandidateType,
+  SDPMediaSection,
   Scheduler,
   SendAndReceiveDataMessagesTask,
   SerialGroupTask,

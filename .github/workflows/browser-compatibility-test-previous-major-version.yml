@@ -1,0 +1,307 @@
+name: Previous Major Version Browser Compatibility Test
+
+on:
+  schedule:
+    # More information on cron https://crontab.guru/
+    # GitHub actions is using UTC time. Scheduling action at 12 am PST
+    - cron: '0 8 * * *'
+
+env:
+  SELENIUM_GRID_PROVIDER: saucelabs
+  CLOUD_WATCH_METRIC: false
+  TEST_TYPE: Browser-Compatibility-Test
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
+
+jobs:
+  get-previous-version:
+    name: Get Previous Major Version
+    runs-on: ubuntu-latest
+    outputs:
+      previous_version_number: ${{ steps.get-version.outputs.version-number }}
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Get Version
+        id: get-version
+        run: |
+          current_version=$(.github/script/get-current-version)
+          echo "::set-output name=version-number::$((${current_version%%.*} - 1))"
+
+
+  browser-compatibility-audio-previous-major-version:
+    name: Audio Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ get-previous-version ]
+    outputs:
+      job-status: ${{ job.status }}
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+          fetch-depth: 0
+      - name: Setup GitHub Actions Host
+        uses: ./.github/actions/setup-integration-test
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Run Audio Compatibility Test
+        run: npm run test:browser-compatibility-audio
+  browser-compatibility-video-previous-major-version:
+    name: Video Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ get-previous-version ]
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+          fetch-depth: 0
+      - name: Setup GitHub Actions Host
+        uses: ./.github/actions/setup-integration-test
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Run Video Compatibility Test
+        run: npm run test:browser-compatibility-video
+  browser-compatibility-content-share-previous-major-version:
+    name: Content Share Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-video-previous-major-version, get-previous-version]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+          fetch-depth: 0
+      - name: Setup GitHub Actions Host
+        uses: ./.github/actions/setup-integration-test
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Run Content Share Compatibility Test
+        run: npm run test:browser-compatibility-content-share
+  browser-compatibility-data-message-previous-major-version:
+    name: Data Message Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-content-share-previous-major-version, get-previous-version ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+          fetch-depth: 0
+      - name: Setup GitHub Actions Host
+        uses: ./.github/actions/setup-integration-test
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Run Data Message Compatibility Test
+        run: npm run test:browser-compatibility-data-message
+  browser-compatibility-meeting-readiness-checker-previous-major-version:
+    name: Meeting Readiness Checker Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-data-message-previous-major-version, get-previous-version ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+          fetch-depth: 0
+      - name: Setup GitHub Actions Host
+        uses: ./.github/actions/setup-integration-test
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Run Meeting Readiness Checker Compatibility Test
+        run: npm run test:browser-compatibility-meeting-readiness-checker
+  browser-compatibility-background-blur-previous-major-version:
+    name: Background Blur Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-meeting-readiness-checker-previous-major-version, get-previous-version ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+          fetch-depth: 0
+      - name: Setup GitHub Actions Host
+        uses: ./.github/actions/setup-integration-test
+        with:
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Run Background Blur Compatibility Test
+        run: npm run test:browser-compatibility-background-blur
+  browser-compatibility-linux-audio-previous-major-version:
+    name: Linux Audio Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-audio-previous-major-version, get-previous-version ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+            fetch-depth: 0
+        - name: Setup GitHub Actions Host
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Linux Audio Compatibility Test
+          run: npm run test:linux-browser-compatibility-audio
+  browser-compatibility-linux-video-previous-major-version:
+    name: Linux Video Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-linux-audio-previous-major-version, get-previous-version ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+            fetch-depth: 0
+        - name: Setup GitHub Actions Host
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Linux Video Compatibility Test
+          run: npm run test:linux-browser-compatibility-video
+  browser-compatibility-linux-content-share-previous-major-version:
+    name: Linux Content Share Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-linux-video-previous-major-version, get-previous-version ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+            fetch-depth: 0
+        - name: Setup GitHub Actions Host
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Linux Content Share Compatibility Test
+          run: npm run test:linux-browser-compatibility-content-share
+  browser-compatibility-linux-other-previous-major-version:
+    name: Linux Other Compatibility Test
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-linux-content-share-previous-major-version, get-previous-version ]
+    if: always()
+    outputs:
+      job-status: ${{ job.status }}
+      
+    steps:
+        - name: Checkout Package
+          uses: actions/checkout@v2
+          with:
+            ref: "release-${{ needs.get-previous-version.outputs.previous_version_number }}.x"
+            fetch-depth: 0
+        - name: Setup GitHub Actions Host
+          uses: ./.github/actions/setup-integration-test
+          with:
+            sauce-username: ${{ secrets.SAUCE_USERNAME }}
+            sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+            sauce-rest-url: https://us-east-1.saucelabs.com/rest/v1
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        - name: Run Linux Other Compatibility Test
+          run: npm run test:linux-browser-compatibility-other
+  browser-compatibility-results-report-previous-major-version:
+    name: Browser Compatibility Results Report
+    runs-on: ubuntu-latest
+    needs: [ browser-compatibility-audio-previous-major-version, browser-compatibility-video-previous-major-version, browser-compatibility-content-share-previous-major-version, browser-compatibility-data-message-previous-major-version, 
+    browser-compatibility-meeting-readiness-checker-previous-major-version, browser-compatibility-background-blur-previous-major-version, browser-compatibility-linux-audio-previous-major-version, browser-compatibility-linux-video-previous-major-version, 
+    browser-compatibility-linux-content-share-previous-major-version, browser-compatibility-linux-other-previous-major-version, get-previous-version ]
+    if: always()
+    env:
+      WORKFLOW_JOBS_STATUS: success
+      WORKFLOW_URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js - 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: Gather Job Status Data
+        run: >
+          if [[ 
+            "${{ needs.browser-compatibility-audio-previous-major-version.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-video-previous-major-version.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-content-share-previous-major-version.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-data-message-previous-major-version.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-meeting-readiness-checker-previous-major-version.outputs.job-status }}" != "success" || 
+            "${{ needs.browser-compatibility-linux-audio-previous-major-version.outputs.job-status }}" != "success" ||
+            "${{ needs.browser-compatibility-linux-video-previous-major-version.outputs.job-status }}" != "success" ||
+            "${{ needs.browser-compatibility-linux-content-share-previous-major-version.outputs.job-status }}" != "success" ||
+            "${{ needs.browser-compatibility-linux-other-previous-major-version.outputs.job-status }}" != "success"
+           ]]; then
+            echo "Workflow Job Status is failure";
+            echo "WORKFLOW_JOBS_STATUS=failure" >> $GITHUB_ENV;
+          else
+            echo "Workflow Job Status is success";
+          fi
+      - name: Install Axios
+        run: npm install axios
+      - name: Send Slack Message
+        run: node .github/script/send-test-report.js ${{ secrets.SLACK_JS_SDK_DEV_CORE_PREV_VER_WEBHOOK }} ${{ env.WORKFLOW_URL}} ${{ env.WORKFLOW_JOBS_STATUS }}

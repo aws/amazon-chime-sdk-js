@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-      - release-1.x
+      - 'release-**.x'
 
 jobs:
   build:

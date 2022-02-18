@@ -21,7 +21,87 @@ jobs:
         run: npm install
       - name: NPM run build
         run: npm run build
-      - name: Publish to NPM
+      - name: Get npm tag name if needed
+        id: npm_tag
+        run: |
+          pre_release_name=$(.github/script/get-pre-release-name.js)
+          echo "Pre release name:" $pre_release_name
+          echo ::set-output name=npm_tag::$pre_release_name
+      - name: Publish to NPM latest
+        if:  steps.npm_tag.outputs.npm_tag == ''
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Publish to NPM with tag
+        if: steps.npm_tag.outputs.npm_tag != ''
+        run: npm publish --tag ${{ steps.npm_tag.outputs.npm_tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+  deploy_chime_prod_demo:
+    needs: publish
+    name: Prod - Chime and ChimeSDKMeetings Client - Deploy the Serverless Meeting Demos
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        name: [ ChimeProd, ChimeSDKMeetingsProdIAD, ChimeSDKMeetingsProdPDX, ChimeSDKMeetingsProdFRA, ChimeSDKMeetingsProdSIN ]
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_DEFAULT_OUTPUT: text
+      NAME: ${{ matrix.name }}
+    steps:
+      - name: Verify the npm version is available
+        id: npm_version
+        run: |
+          tag_name=${{ github.event.release.tag_name }}
+          current_version=${tag_name:1}
+          max_wait_time=300
+          wait_time=0
+          sleep_time=60
+          while :
+          do
+            if [[ $wait_time -ge $max_wait_time ]]
+            then
+              echo "Version is not published to npm:" $current_version
+              exit 1
+            fi
+            echo $wait_time
+            npm_version=$(npm view amazon-chime-sdk-js@${current_version} version)
+            if [[ *$npm_version* = *$current_version* ]]
+            then
+              echo "Version is published to npm:" $current_version
+              echo ::set-output name=npm_version::$current_version
+              break
+            fi
+
+            sleep $sleep_time
+            wait_time=$((wait_time+sleep_time))
+            done
+        shell: bash
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.PROD_CANARY_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.PROD_CANARY_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - name: Install SDK
+        run: |
+          cd demos/browser
+          npm uninstall amazon-chime-sdk-js
+          npm install amazon-chime-sdk-js@${{ steps.npm_version.outputs.npm_version }}
+      - name: Verify demo browser npm version and run deployment script
+        run: |
+          demo_current_version=$(.github/script/get-demo-browser-current-version)
+          echo "Current demo version:" $demo_current_version
+          if [[ *$demo_current_version* != "^#${{ steps.npm_version.outputs.npm_version }}" ]];
+          then
+            echo "Demo npm version is not the same as the current released version"
+            exit 1
+          else
+            npm run build --app=meetingReadinessChecker
+            script/github-action-awscli-installation
+            script/deploy-canary-demo
+          fi

@@ -8,6 +8,7 @@ import { v1 as uuidv1 } from 'uuid';
 
 import GetUserMediaError from '../../src/devicecontroller/GetUserMediaError';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import DOMBlobMock from '../domblobmock/DOMBlobMock';
 import SafariSDPMock from '../sdp/SafariSDPMock';
 import DisplayMediaState from './DisplayMediaState';
 import DOMMockBehavior from './DOMMockBehavior';
@@ -204,6 +205,12 @@ export default class DOMMockBuilder {
           this.listeners[type] = [];
         }
         this.listeners[type].push(listener);
+      }
+
+      removeEventListener(type: string, listener: (event?: Event) => void): void {
+        if (this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = this.listeners[type].filter(l => l !== listener);
+        }
       }
 
       close(code: number = 1000, reason: string = 'normal'): void {
@@ -1060,6 +1067,36 @@ export default class DOMMockBuilder {
       constructor(public data: Uint8ClampedArray, public width: number, public height: number) {}
     };
 
+    GlobalAny.Image = class MockImage {
+      constructor(public width: number, public height: number) {
+        asyncWait(() => {
+          if (this.listeners.hasOwnProperty('load')) {
+            this.listeners.load.forEach((listener: MockListener) =>
+              listener({
+                ...Substitute.for(),
+                type: 'load',
+              })
+            );
+          }
+        });
+      }
+      private listeners: { [type: string]: MockListener[] } = {};
+
+      addEventListener(type: string, listener: MockListener): void {
+        if (!this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = [];
+        }
+        this.listeners[type].push(listener);
+      }
+    };
+
+    GlobalAny.URL = class MockURL extends URL {
+      static createObjectURL(url: string): string {
+        return url;
+      }
+      static revokeObjectURL(): void {}
+    };
+
     GlobalAny.requestAnimationFrame = function mockRequestAnimationFrame(callback: () => void) {
       setTimeout(callback);
     };
@@ -1397,6 +1434,10 @@ export default class DOMMockBuilder {
 
       captureStream(_frameRate: number): MediaStream {
         return mockBehavior.createElementCaptureStream;
+      }
+
+      toBlob(callback: BlobCallback): void {
+        callback(new DOMBlobMock());
       }
 
       remove(): void {}

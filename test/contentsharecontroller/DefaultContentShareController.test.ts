@@ -292,7 +292,7 @@ describe('DefaultContentShareController', () => {
       expect(selfVideoTileSpy.calledOnce).to.be.true;
     });
 
-    it(' did not add local video tile for other attendee presence events', async () => {
+    it('did not add local video tile for other attendee presence events', async () => {
       const selfVideoTileSpy = sinon.spy(
         attendeeAudioVideoController.videoTileController,
         'addVideoTile'
@@ -307,7 +307,7 @@ describe('DefaultContentShareController', () => {
       expect(selfVideoTileSpy.notCalled).to.be.true;
     });
 
-    it(' did not add local video tile for same attendee presence events if no media stream', async () => {
+    it('did not add local video tile for same attendee presence events if no media stream', async () => {
       const selfVideoTileSpy = sinon.spy(
         attendeeAudioVideoController.videoTileController,
         'addVideoTile'

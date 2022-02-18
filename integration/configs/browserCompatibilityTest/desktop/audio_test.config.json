@@ -1,18 +1,21 @@
 {
   "`": 1,
-  "name": "video_test.config.json %ts",
+  "name": "audio_test.config.json %ts",
   "grids": [],
   "tests": [
     {
-      "name": "Video Test %ts",
-      "description": "Video Test",
-      "tupleSize": 2,
+      "name": "Audio Test %ts",
+      "description": "Audio Test",
+      "tupleSize": 1,
       "noOfThreads": 1,
-      "testImpl": "VideoTest.js",
+      "testImpl": "AudioTest.js",
       "payload": {
         "url": "http://localhost:8080/?earlyConnect=1",
-        "port": 30002,
-        "retry": 2
+        "retry": 2,
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
       }
     }
   ],
@@ -44,6 +47,36 @@
     },
     {
       "browserName": "chrome",
+      "version": "latest",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest",
+      "platform": "MAC"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-2",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
+      "version": "latest-1",
+      "platform": "WINDOWS"
+    },
+    {
+      "browserName": "firefox",
       "version": "latest",
       "platform": "WINDOWS"
     },

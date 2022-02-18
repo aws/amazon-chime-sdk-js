@@ -1,5 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
+#if($1) canarySuffix=$1 else canarySuffix=nothing
+canarySuffix=${1+$1}
 
 cd $GITHUB_WORKSPACE/demos/serverless
 npm ci
@@ -10,43 +12,79 @@ ChimeAlpha)
     echo "Deploying to alpha stage for canary"
 
     # Uses Chime Client
-    npm run deploy -- -b chime-sdk-demo-canary -s chime-sdk-demo-canary -o chime-sdk-demo-canary -u false -i eu-south-1 -t -l
-    npm run deploy -- -b chime-sdk-meeting-readiness-checker-dev-canary -s chime-sdk-meeting-readiness-checker-dev-canary -a meetingReadinessChecker -u false -t -l
+    npm run deploy -- -b chime-sdk-demo-canary$canarySuffix -s chime-sdk-demo-canary$canarySuffix -o chime-sdk-demo-canary$canarySuffix -u false -i eu-south-1 -t -l
+    npm run deploy -- -b chime-sdk-meeting-readiness-checker-dev-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-dev-canary$canarySuffix -a meetingReadinessChecker -u false -t -l
     ;;
 
 ChimeBeta)
     echo "Deploying to beta stage for canary that talks to gamma Chime client"
 
     # Uses Chime Client
-    npm run deploy -- -b chime-sdk-demo-beta-canary -s chime-sdk-demo-beta-canary -o chime-sdk-demo-beta-canary -i eu-south-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -u false -t -l
-    npm run deploy -- -b chime-sdk-meeting-readiness-checker-beta-canary -s chime-sdk-meeting-readiness-checker-beta-canary -a meetingReadinessChecker -c $GAMMA_CHIME_ENDPOINT -u false -t -l
+    npm run deploy -- -b chime-sdk-demo-beta-canary$canarySuffix -s chime-sdk-demo-beta-canary$canarySuffix -o chime-sdk-demo-beta-canary$canarySuffix -i eu-south-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT -u false -t -l
+    npm run deploy -- -b chime-sdk-meeting-readiness-checker-beta-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-beta-canary$canarySuffix -a meetingReadinessChecker -c $GAMMA_CHIME_ENDPOINT -u false -t -l
     ;;
 
 ChimeSDKMeetingsBeta)
     echo "Deploying to beta stage for canary that talks to gamma ChimeSDKMeetings client"
 
     # Uses ChimeSDKMeetings client
-    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-beta-canary-us-east-1 -s chime-sdk-meetings-demo-beta-canary-us-east-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
-    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-beta-canary-eu-central-1 -s chime-sdk-meetings-demo-beta-canary-eu-central-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1 -t -l
-    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-beta-canary-ap-southeast-1 -s chime-sdk-meetings-demo-beta-canary-ap-southeast-1 -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1 -t -l
+    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-us-east-1$canarySuffix -o chime-sdk-meetings-iad-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_US_EAST_1 -t -l
+    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-eu-central-1$canarySuffix -o chime-sdk-meetings-fra-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_EU_CENTRAL_1 -t -l
+    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-demo-beta-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-beta-canary$canarySuffix -p $GAMMA_CHIME_SERVICE_PRINCIPAL -c $GAMMA_CHIME_ENDPOINT_AP_SOUTHEAST_1 -t -l
     ;;
 
 ChimeGamma)
     echo "Deploying to gamma stage for canary that talks to prod Chime client"
 
     # Uses Chime Client
-    npm run deploy -- -b chime-sdk-demo-gamma-canary -s chime-sdk-demo-gamma-canary -o chime-sdk-demo-gamma-canary -u false -i eu-south-1 -t -l
-    npm run deploy -- -b chime-sdk-meeting-readiness-checker-gamma-canary -s chime-sdk-meeting-readiness-checker-gamma-canary -a meetingReadinessChecker -u false -t -l
+    npm run deploy -- -b chime-sdk-demo-gamma-canary$canarySuffix -s chime-sdk-demo-gamma-canary$canarySuffix -o chime-sdk-demo-gamma-canary$canarySuffix -u false -i eu-south-1 -t -l
+    npm run deploy -- -b chime-sdk-meeting-readiness-checker-gamma-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-gamma-canary$canarySuffix -a meetingReadinessChecker -u false -t -l
     ;;
 
 ChimeSDKMeetingsGamma)
     echo "Deploying to gamma stage for canary that talks to prod ChimeSDKMeetings client"
 
     # Uses ChimeSDKMeetings client
-    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-gamma-canary-us-east-1 -s chime-sdk-meetings-demo-gamma-canary-us-east-1 -t -l
-    npm run deploy -- -r us-west-2 -b chime-sdk-meetings-demo-gamma-canary-us-west-2 -s chime-sdk-meetings-demo-gamma-canary-us-west-2 -t -l
-    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-gamma-canary-eu-central-1 -s chime-sdk-meetings-demo-gamma-canary-eu-central-1 -t -l
-    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-gamma-canary-ap-southeast-1 -s chime-sdk-meetings-demo-gamma-canary-ap-southeast-1 -t -l
+    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-gamma-canary-us-east-1$canarySuffix -s chime-sdk-meetings-demo-gamma-canary-us-east-1$canarySuffix -o chime-sdk-meetings-iad-demo-gamma-canary$canarySuffix -t -l
+    npm run deploy -- -r us-west-2 -b chime-sdk-meetings-demo-gamma-canary-us-west-2$canarySuffix -s chime-sdk-meetings-demo-gamma-canary-us-west-2$canarySuffix -o chime-sdk-meetings-pdx-demo-gamma-canary$canarySuffix -t -l
+    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-gamma-canary-eu-central-1$canarySuffix -s chime-sdk-meetings-demo-gamma-canary-eu-central-1$canarySuffix -o chime-sdk-meetings-fra-demo-gamma-canary$canarySuffix -t -l
+    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-gamma-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-demo-gamma-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-gamma-canary$canarySuffix -t -l
+    ;;
+
+ChimeProd)
+    echo "Deploying to prod stage for canary that talks to prod Chime client"
+
+    # Uses Chime Client
+    npm run deploy -- -b chime-sdk-demo-prod-canary -o chime-sdk-demo-prod-canary -s chime-sdk-demo-prod-canary -u false -t -l
+    npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary -s chime-sdk-meeting-readiness-checker-prod-canary -a meetingReadinessChecker -u false -t -l
+    ;;
+
+ChimeSDKMeetingsProdIAD)
+    echo "Deploying to prod stage for canary that talks to prod IAD ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-prod-canary-us-east-1 -o chime-sdk-meetings-iad-demo-prod-canary -s chime-sdk-meetings-demo-prod-canary-us-east-1 -t -l
+    ;;
+
+ChimeSDKMeetingsProdPDX)
+    echo "Deploying to prod stage for canary that talks to prod PDX ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r us-west-2 -b chime-sdk-meetings-demo-prod-canary-us-west-2 -o chime-sdk-meetings-pdx-demo-prod-canary -s chime-sdk-meetings-demo-prod-canary-us-west-2 -t -l
+    ;;
+
+ChimeSDKMeetingsProdFRA)
+    echo "Deploying to prod stage for canary that talks to prod FRA ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-prod-canary-eu-central-1 -o chime-sdk-meetings-fra-demo-prod-canary -s chime-sdk-meetings-demo-prod-canary-eu-central-1 -t -l
+    ;;
+
+ChimeSDKMeetingsProdSIN)
+    echo "Deploying to prod stage for canary that talks to prod SIN ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-prod-canary-ap-southeast-1 -o chime-sdk-meetings-sin-demo-prod-canary -s chime-sdk-meetings-demo-prod-canary-ap-southeast-1 -t -l
     ;;
 
 esac

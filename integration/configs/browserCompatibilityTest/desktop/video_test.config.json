@@ -1,19 +1,21 @@
 {
   "`": 1,
-  "name": "video_test_simulcast.config.json %ts",
+  "name": "video_test.config.json %ts",
   "grids": [],
   "tests": [
     {
-      "name": "Video Test Simulcast %ts",
-      "description": "Video Test Simulcast",
-      "tupleSize": 2,
+      "name": "Video Test %ts",
+      "description": "Video Test",
+      "tupleSize": 1,
       "noOfThreads": 1,
       "testImpl": "VideoTest.js",
       "payload": {
-        "url": "http://localhost:8080/",
-        "port": 30010,
+        "url": "http://localhost:8080/?earlyConnect=1",
         "retry": 2,
-        "useSimulcast": true
+        "seleniumSessions": {
+          "safari": 2,
+          "ANDROID": 2
+        }
       }
     }
   ],
@@ -47,6 +49,11 @@
       "browserName": "chrome",
       "version": "latest",
       "platform": "WINDOWS"
+    },
+    {
+      "browserName": "safari",
+      "version": "latest",
+      "platform": "MAC"
     }
   ]
 }

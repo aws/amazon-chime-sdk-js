@@ -457,4 +457,44 @@ describe('DefaultSDP', () => {
       );
     });
   });
+
+  describe('mediaSections', () => {
+    it('Returns empty list without media sections', () => {
+      const sdpObj = new DefaultSDP(FirefoxSDPMock.NO_MEDIA_SECTION);
+      const mediaSections = sdpObj.mediaSections();
+
+      expect(mediaSections.length).to.equal(0);
+    });
+
+    it('Returns correct list', () => {
+      const sdpObj = new DefaultSDP(FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE);
+      const mediaSections = sdpObj.mediaSections();
+
+      expect(mediaSections.length).to.equal(6);
+
+      expect(mediaSections[0].mediaType).to.equal('audio');
+      expect(mediaSections[0].mid).to.equal('0');
+      expect(mediaSections[0].direction).to.equal('sendrecv');
+
+      expect(mediaSections[1].mediaType).to.equal('video');
+      expect(mediaSections[1].mid).to.equal('1');
+      expect(mediaSections[1].direction).to.equal('sendrecv');
+
+      expect(mediaSections[2].mediaType).to.equal('video');
+      expect(mediaSections[2].mid).to.equal('2');
+      expect(mediaSections[2].direction).to.equal('sendrecv');
+
+      expect(mediaSections[3].mediaType).to.equal('video');
+      expect(mediaSections[3].mid).to.equal('3');
+      expect(mediaSections[3].direction).to.equal('recvonly');
+
+      expect(mediaSections[4].mediaType).to.equal('video');
+      expect(mediaSections[4].mid).to.equal('4');
+      expect(mediaSections[4].direction).to.equal('sendonly');
+
+      expect(mediaSections[5].mediaType).to.equal('video');
+      expect(mediaSections[5].mid).to.equal('5');
+      expect(mediaSections[5].direction).to.equal('inactive');
+    });
+  });
 });

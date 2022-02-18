@@ -9,7 +9,7 @@ const getPlatformName = capabilities => {
   switch (platform) {
     case 'MAC':
       if (browserName === 'safari') {
-        return version === 'latest' ? 'macOS 11.00' : 'macOS 10.13';
+        return version === 'latest' ? 'macOS 12' : 'macOS 10.13';
       }
       return 'macOS 10.14';
     case 'WINDOWS':
@@ -101,7 +101,10 @@ const fetchMediaPath = function(media, browserName) {
 }
 
 const getPrerunScript = (capabilities) =>{
-  return capabilities.name.includes("Background Blur Test") ? 'storage:b23b0bb6-8e47-4e90-80e8-fc2cb92408bf' : "";
+  const name = capabilities.name;
+  const blurName = "Background Blur Test";
+  const repName = "Background Replacement Test";
+  return (name.includes(blurName) || name.includes(repName)) ?  'storage:8f86b53d-eeb3-4eb3-98c5-4c2b79544d23' : "";
 }
 const getChromeCapabilities = capabilities => {
   let cap = Capabilities.chrome();

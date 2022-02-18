@@ -5,9 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0-beta.0] - 2022-02-08
+    
+### Added
+    
+### Removed
+    
+### Changed
+- Add support for pre-release in Versioning.
+    
+### Fixed
+- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy 
+  for Chromium browsers version 98 on Windows and use 360p instead.
+- Fix a worker resource leak with `BackgroundBlurProcessor` and `BackgroundReplacementProcessor`.
+    
+## [2.27.0] - 2022-01-27
+    
+### Added
+    
+### Removed
+    
+### Changed
+- Changed `VideoPriorityBasedPolicyConfig` to be dependent on bandwidth fluctuation so that `VideoPriorityBasedPolicy` will not drop/resume video instantly when network bandwidth changes. (#1921)
+- Adjust the recovery behavior of `VideoPriorityBasedPolicy` to not get stuck at low estimates, not overeact to spurious packet loss when probing, and not let the time between probes raise to 60 seconds (reduced to maximum of 30 seconds).
+    
+### Fixed
+- Fix the reconnecting issue (#1985) by skipping the "close" event if it does not arrive in two seconds.
+    
+## [2.26.0] - 2022-01-14
+    
+### Added
+    
+### Removed
+
+### Changed
+- Made `SimulcastUplinkObserver.encodingSimulcastLayersDidChange` (*not* `AudioVideoObserver.encodingSimulcastLayersDidChange`) synchronous.
+
+### Fixed
+- Fixed delays in advertising simulcast stream switches due to asynchronous and out of order checks
+- Fixed Firefox video tiles containing stale frames from previous transceivers by not attempting to reuse inactive transceivers. This switches to using `RTCRtpTransceiver.stop` when possible and may fix other incorrect tile bugs.
+- Fix the bug that the max bandwidth set by the chooseVideoInputQuality API is ignored when the Chime SDK retries the connection.
+- Added additional pausing of `MonitorTask` and `ReceiveVideoStreamIndexTask` to avoid modifying mutable state mid-subscribe
+- Fix the bug that the max bandwidth is ignored if the chooseVideoInputQuality API is called before starting a meeting.
+- Use optional chaining to prevent an error from undefined transceiverEncoding in FF.
+
+## [2.25.0] - 2022-01-11
 ### Added
 - Ability to choose remote video sources in `AllHighestVideoBandwidthPolicy`. see [guide](https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html#downlink-policy)
+- Add `BackgroundReplacementVideoFrameProcessor` that will create a `VideoFrameProcessor` to apply a background image to an outgoing video stream.
 
 ### Removed
 

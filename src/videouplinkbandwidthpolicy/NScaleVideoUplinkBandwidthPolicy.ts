@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import Logger from '../logger/Logger';
 import TransceiverController from '../transceivercontroller/TransceiverController';
 import DefaultVideoAndEncodeParameter from '../videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
@@ -55,7 +56,8 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
   constructor(
     private selfAttendeeId: string,
     private scaleResolution: boolean = true,
-    private logger: Logger | undefined = undefined
+    private logger: Logger | undefined = undefined,
+    private browserBehavior: ExtendedBrowserBehavior | undefined = undefined
   ) {
     this.optimalParameters = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
     this.parametersInEffect = new DefaultVideoAndEncodeParameter(0, 0, 0, 0, false);
@@ -167,27 +169,22 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
     if (!settings) {
       return;
     }
-
     const encodingParams: RTCRtpEncodingParameters = this.calculateEncodingParameters(settings);
-    if (
-      !this.encodingParametersHaveSameBitrateAndScaling(
-        encodingParams,
-        this.encodingParamMap.get(NScaleVideoUplinkBandwidthPolicy.encodingMapKey)
-      )
-    ) {
+    if (this.shouldUpdateEndcodingParameters(encodingParams)) {
       this.encodingParamMap.set(NScaleVideoUplinkBandwidthPolicy.encodingMapKey, encodingParams);
       this.transceiverController.setEncodingParameters(this.encodingParamMap);
     }
   }
 
-  private encodingParametersHaveSameBitrateAndScaling(
-    encoding1: RTCRtpEncodingParameters,
-    encoding2: RTCRtpEncodingParameters
-  ): boolean {
+  private shouldUpdateEndcodingParameters(encoding: RTCRtpEncodingParameters): boolean {
+    const transceiverEncoding = this.transceiverController
+      .localVideoTransceiver()
+      .sender.getParameters()?.encodings?.[0];
+
+    /* istanbul ignore next: transceiverEncoding?.scaleResolutionDownBy cannot be covered */
     return (
-      encoding1 === encoding2 ||
-      (encoding1.maxBitrate === encoding2.maxBitrate &&
-        encoding1.scaleResolutionDownBy === encoding2.scaleResolutionDownBy)
+      encoding.maxBitrate !== transceiverEncoding?.maxBitrate ||
+      encoding.scaleResolutionDownBy !== transceiverEncoding?.scaleResolutionDownBy
     );
   }
 
@@ -201,13 +198,17 @@ export default class NScaleVideoUplinkBandwidthPolicy implements VideoUplinkBand
       !this.hasBandwidthPriority &&
       this.numParticipants > 2
     ) {
-      const targetHeight =
+      let targetHeight =
         NScaleVideoUplinkBandwidthPolicy.targetHeightArray[
           Math.min(
             this.numParticipants,
             NScaleVideoUplinkBandwidthPolicy.targetHeightArray.length - 1
           )
         ];
+      //Workaround for issue https://github.com/aws/amazon-chime-sdk-js/issues/2002
+      if (targetHeight === 480 && this.browserBehavior?.disable480pResolutionScaleDown()) {
+        targetHeight = 360;
+      }
       scale = Math.max(Math.min(setting.height, setting.width) / targetHeight, 1);
       this.logger?.info(
         `Resolution scale factor is ${scale} for capture resolution ${setting.width}x${

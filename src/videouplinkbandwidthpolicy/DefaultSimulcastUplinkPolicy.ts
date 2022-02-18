@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Logger from '../logger/Logger';
-import AsyncScheduler from '../scheduler/AsyncScheduler';
 import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
 import SimulcastTransceiverController from '../transceivercontroller/SimulcastTransceiverController';
 import { Maybe } from '../utils/Types';
@@ -410,11 +409,7 @@ export default class DefaultSimulcastUplinkPolicy implements SimulcastUplinkPoli
 
   forEachObserver(observerFunc: (observer: SimulcastUplinkObserver) => void): void {
     for (const observer of this.observerQueue) {
-      AsyncScheduler.nextTick(() => {
-        if (this.observerQueue.has(observer)) {
-          observerFunc(observer);
-        }
-      });
+      observerFunc(observer);
     }
   }
 }

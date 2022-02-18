@@ -117,7 +117,16 @@ export default class DefaultAudioVideoController
   private signalingTask: Task;
   private preStartObserver: SignalingClientObserver | undefined;
   private mayNeedRenegotiationForSimulcastLayerChange: boolean = false;
+  private maxUplinkBandwidthKbps: number;
 
+  // `connectWithPromises`, `connectWithTasks`, and `actionUpdateWithRenegotiation` all
+  // contains a significant portion of asynchronous tasks, so we need to explicitly defer
+  // any task operation which may be performed on the event queue that may modify
+  // mutable state in `MeetingSessionContext`, as this mutable state needs to be consistent over the course of the update.
+  //
+  // Currently this includes
+  // * `ReceiveVideoStreamIndexTask` which updates `videosToReceive` and `videoCaptureAndEncodeParameter`
+  // * `MonitorTask` which updates `videosToReceive`
   private receiveIndexTask: ReceiveVideoStreamIndexTask | undefined = undefined;
   private monitorTask: MonitorTask | undefined = undefined;
 
@@ -343,6 +352,9 @@ export default class DefaultAudioVideoController
     // Second layer.
     const receiveAudioInput = new ReceiveAudioInputTask(context).once();
     this.receiveIndexTask = new ReceiveVideoStreamIndexTask(context);
+    // See declaration (unpaused in actionFinishConnecting)
+    this.monitorTask.pauseResubscribeCheck();
+    this.receiveIndexTask.pauseIngestion();
     const signaling = new SerialGroupTask(this.logger, 'Signaling', [
       // If pre-connecting, this will be an existing task that has already been run.
       this.createOrReuseSignalingTask(),
@@ -398,6 +410,9 @@ export default class DefaultAudioVideoController
       this.configuration.connectionHealthPolicyConfiguration,
       this.connectionHealthData
     );
+    // See declaration (unpaused in actionFinishConnecting)
+    this.receiveIndexTask.pauseIngestion();
+    this.monitorTask.pauseResubscribeCheck();
 
     return new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoStart'), [
       this.monitorTask,
@@ -511,7 +526,8 @@ export default class DefaultAudioVideoController
         this.meetingSessionContext.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy(
           this.configuration.credentials.attendeeId,
           !this.meetingSessionContext.browserBehavior.disableResolutionScaleDown(),
-          this.meetingSessionContext.logger
+          this.meetingSessionContext.logger,
+          this.meetingSessionContext.browserBehavior
         );
       }
       if (!this.meetingSessionContext.videoDownlinkBandwidthPolicy) {
@@ -531,6 +547,12 @@ export default class DefaultAudioVideoController
         );
       }
       this.meetingSessionContext.audioProfile = this._audioProfile;
+    }
+
+    if (this.meetingSessionContext.videoUplinkBandwidthPolicy && this.maxUplinkBandwidthKbps) {
+      this.meetingSessionContext.videoUplinkBandwidthPolicy.setIdealMaxBandwidthKbps(
+        this.maxUplinkBandwidthKbps
+      );
     }
 
     if (this.meetingSessionContext.videoDownlinkBandwidthPolicy.bindToTileController) {
@@ -683,6 +705,10 @@ export default class DefaultAudioVideoController
       Maybe.of(observer.audioVideoDidStart).map(f => f.bind(observer)());
     });
     this._reconnectController.reset();
+
+    // `receiveIndexTask` needs to be resumed first so it can set `remoteStreamDescriptions`
+    this.receiveIndexTask.resumeIngestion();
+    this.monitorTask.resumeResubscribeCheck();
   }
 
   /* @internal */
@@ -898,25 +924,25 @@ export default class DefaultAudioVideoController
   }
 
   updateLocalVideoFromPolicy(): boolean {
-    if (
-      this.mayNeedRenegotiationForSimulcastLayerChange &&
-      !this.negotiatedBitrateLayersAllocationRtpHeaderExtension()
-    ) {
-      this.logger.info('Needs regenotiation for local video simulcast layer change');
-      this.mayNeedRenegotiationForSimulcastLayerChange = false;
-      return false;
+    // Try updating parameters without renegotiation
+    if (this.meetingSessionContext.enableSimulcast) {
+      // The following may result in `this.mayNeedRenegotiationForSimulcastLayerChange` being switched on
+      const encodingParam = this.meetingSessionContext.videoUplinkBandwidthPolicy.chooseEncodingParameters();
+      if (
+        this.mayNeedRenegotiationForSimulcastLayerChange &&
+        !this.negotiatedBitrateLayersAllocationRtpHeaderExtension()
+      ) {
+        this.logger.info('Needs regenotiation for local video simulcast layer change');
+        this.mayNeedRenegotiationForSimulcastLayerChange = false;
+        return false;
+      }
+      this.meetingSessionContext.transceiverController.setEncodingParameters(encodingParam);
+    } else {
+      this.meetingSessionContext.videoCaptureAndEncodeParameter = this.meetingSessionContext.videoUplinkBandwidthPolicy.chooseCaptureAndEncodeParameters();
+      // Bitrate will be set in `actionFinishUpdating`. This should never need a resubscribe.
     }
 
-    // Update bandwidth without renegotiation
-    this.logger.info('Updating local video from policy without renegotiation');
-    if (this.meetingSessionContext.enableSimulcast) {
-      // `AttachMediaInputTask` will update sender's simulcast streams encoding parameters of the local video transceiver
-      new AttachMediaInputTask(this.meetingSessionContext).run();
-    } else {
-      // `ReceiveVideoInputTask` will update `meetingSessionContext.videoCaptureAndEncodeParameter`
-      // from uplink policy on internal state
-      new ReceiveVideoInputTask(this.meetingSessionContext).run();
-    }
+    this.logger.info('Updated local video from policy without renegotiation');
     return true;
   }
 
@@ -1046,10 +1072,8 @@ export default class DefaultAudioVideoController
   }
 
   private async actionUpdateWithRenegotiation(notify: boolean): Promise<void> {
-    // `actionUpdateWithRenegotiation` contains a significant portion of asynchronous tasks, so we need
-    // to explicitly defer any task operation which may be performed on the event queue that may modify
-    // mutable state needed to be consistent over the course of the update. The operations above do not
-    // need this protection because they are synchronous.
+    // See declaration (unpaused in actionFinishUpdating)
+    // The operations in `update` do not need this protection because they are synchronous.
     this.monitorTask.pauseResubscribeCheck();
     this.receiveIndexTask.pauseIngestion();
 
@@ -1337,6 +1361,8 @@ export default class DefaultAudioVideoController
         maxBandwidthKbps
       );
     }
+
+    this.maxUplinkBandwidthKbps = maxBandwidthKbps;
   }
 
   async handleHasBandwidthPriority(hasBandwidthPriority: boolean): Promise<void> {

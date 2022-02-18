@@ -3,6 +3,7 @@
 
 import * as chai from 'chai';
 
+import { DefaultTransceiverController } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -29,6 +30,7 @@ import DefaultVideoStreamIndex from '../../src/videostreamindex/DefaultVideoStre
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import FirefoxSDPMock from '../sdp/FirefoxSDPMock';
 
 describe('SubscribeAndReceiveSubscribeAckTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
@@ -86,6 +88,14 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     context.videoCaptureAndEncodeParameter = captureAndEncodeParameters;
     const videoStreamIndex = new DefaultVideoStreamIndex(context.logger);
     context.videoStreamIndex = videoStreamIndex;
+    context.videoSubscriptions = [1, 2, 3];
+    class TestTransceiverController extends DefaultTransceiverController {
+      getMidForStreamId(_streamId: number): string {
+        return _streamId === -1 ? undefined : _streamId.toString();
+      }
+    }
+    // @ts-ignore
+    context.transceiverController = new TestTransceiverController();
     const frame = SdkSubscribeAckFrame.create();
     frame.sdpAnswer = sdpAnswer;
 
@@ -125,9 +135,13 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
     it('can subscribe SdkSubscribeAckFrame with SDP', async () => {
       await delay(behavior.asyncWaitMs + 10);
 
-      const description: RTCSessionDescriptionInit = { type: 'offer', sdp: 'sdp-offer' };
+      const description: RTCSessionDescriptionInit = {
+        type: 'offer',
+        sdp: FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE,
+      };
       context.peer = new RTCPeerConnection();
       context.peer.setLocalDescription(description);
+      context.videoSubscriptions = [1, 2, 3, -1];
 
       const task = new SubscribeAndReceiveSubscribeAckTask(context);
       new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
@@ -140,6 +154,58 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
       expect(settings.audioHost).to.equal(audioHost);
       expect(settings.audioMuted).to.equal(false);
       expect(settings.audioCheckin).to.equal(false);
+      expect(settings.receiveStreamIds).to.deep.equal([0, 0, 3, 0, 0]);
+    });
+
+    it('can subscribe SdkSubscribeAckFrame with SDP with no subscriptions', async () => {
+      await delay(behavior.asyncWaitMs + 10);
+
+      const description: RTCSessionDescriptionInit = {
+        type: 'offer',
+        sdp: FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE,
+      };
+      context.peer = new RTCPeerConnection();
+      context.peer.setLocalDescription(description);
+      context.videoSubscriptions = [0, 0, 0];
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      await task.run();
+
+      const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
+        .settings;
+      expect(settings.attendeeId).to.equal(attendeeId);
+      expect(settings.sdpOffer).to.equal(description.sdp);
+      expect(settings.audioHost).to.equal(audioHost);
+      expect(settings.audioMuted).to.equal(false);
+      expect(settings.audioCheckin).to.equal(false);
+      expect(settings.receiveStreamIds).to.deep.equal([0, 0, 0, 0]);
+    });
+
+    it('can subscribe SdkSubscribeAckFrame with SDP without getMidForStreamId', async () => {
+      await delay(behavior.asyncWaitMs + 10);
+
+      const description: RTCSessionDescriptionInit = {
+        type: 'offer',
+        sdp: FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE,
+      };
+      context.peer = new RTCPeerConnection();
+      context.peer.setLocalDescription(description);
+      context.videoSubscriptions = [0, 0, 0];
+      context.transceiverController.getMidForStreamId = undefined;
+
+      const task = new SubscribeAndReceiveSubscribeAckTask(context);
+      new TimeoutScheduler(waitTimeMs).start(() => webSocketAdapter.send(subscribeAckBuffer));
+      await task.run();
+
+      const settings: SignalingClientSubscribe = (context.signalingClient as TestSignalingClient)
+        .settings;
+      expect(settings.attendeeId).to.equal(attendeeId);
+      expect(settings.sdpOffer).to.equal(description.sdp);
+      expect(settings.audioHost).to.equal(audioHost);
+      expect(settings.audioMuted).to.equal(false);
+      expect(settings.audioCheckin).to.equal(false);
+      expect(settings.receiveStreamIds).to.deep.equal([0, 0, 0]);
     });
 
     it('can receive SdkSubscribeAckFrame', async () => {

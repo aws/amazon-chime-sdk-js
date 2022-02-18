@@ -15,6 +15,10 @@ import {
   BackgroundBlurProcessor,
   BackgroundBlurVideoFrameProcessor,
   BackgroundBlurVideoFrameProcessorObserver,
+  BackgroundReplacementProcessor,
+  BackgroundReplacementVideoFrameProcessor,
+  BackgroundReplacementVideoFrameProcessorObserver,
+  BackgroundReplacementOptions,
   ClientMetricReport,
   ClientVideoStreamReceivingReport,
   ConsoleLogger,
@@ -168,7 +172,7 @@ const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BL
   revisionID: BACKGROUND_BLUR_REVISION_ID,
 }
 
-type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'None';
+type VideoFilterName = 'Emojify' | 'CircularCut' | 'NoOp' | 'Segmentation' | 'Resize (9/16)' | 'Background Blur 10% CPU' | 'Background Blur 20% CPU' | 'Background Blur 30% CPU' | 'Background Blur 40% CPU' | 'Background Replacement' | 'None';
 
 const VIDEO_FILTERS: VideoFilterName[] = ['Emojify', 'CircularCut', 'NoOp', 'Resize (9/16)'];
 
@@ -246,6 +250,7 @@ export class DemoMeetingApp
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
   blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver ) = undefined;
+  replacementObserver: (undefined | BackgroundReplacementVideoFrameProcessorObserver ) = undefined;
 
   showActiveSpeakerScores = false;
   meeting: string | null = null;
@@ -298,6 +303,7 @@ export class DemoMeetingApp
   voiceFocusIsActive = false;
 
   supportsBackgroundBlur = false;
+  supportsBackgroundReplacement = false;
 
   enableLiveTranscription = false;
   noWordSeparatorForTranscription = false;
@@ -314,7 +320,9 @@ export class DemoMeetingApp
   voiceFocusDevice: VoiceFocusTransformDevice | undefined;
   joinInfo: any | undefined;
 
-  bbprocessor: BackgroundBlurProcessor | undefined;
+  blurProcessor: BackgroundBlurProcessor | undefined;
+  replacementProcessor: BackgroundReplacementProcessor | undefined;
+  replacementOptions: BackgroundReplacementOptions | undefined;
 
   // This is an extremely minimal reactive programming approach: these elements
   // will be updated when the Amazon Voice Focus display state changes.
@@ -468,14 +476,54 @@ export class DemoMeetingApp
   }
 
   async initBackgroundBlur(): Promise<void> {
-      const logger = new ConsoleLogger('SDK', LogLevel.DEBUG);
       try {
         this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
       }
       catch (e) {
-      logger.warn(`[DEMO] Does not support background blur: ${e.message}`);
+        this.log(`[DEMO] Does not support background blur: ${e.message}`);
         this.supportsBackgroundBlur = false;
       }
+  }
+
+  async createReplacementImageBlob(startColor: string, endColor: string): Promise<Blob> {
+    const canvas = document.createElement('canvas');
+    canvas.width = 500; 
+    canvas.height = 500;
+    const ctx = canvas.getContext('2d');
+    const grd = ctx.createLinearGradient(0, 0, 250, 0);
+    grd.addColorStop(0, startColor);
+    grd.addColorStop(1, endColor);
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, 500, 500);
+    const blob = await new Promise<Blob> (resolve => {
+      canvas.toBlob(resolve);
+    });
+    return blob;
+  }
+
+  /**
+  * The image blob in this demo is created by generating an image
+  * from a canvas, but another common scenario would be to provide 
+  * an image blob from fetching a URL.
+  *   const image = await fetch('https://someimage.jpeg');
+  *   const imageBlob = await image.blob();
+  */
+  async getBackgroundReplacementOptions(): Promise<BackgroundReplacementOptions> {
+    if (!this.replacementOptions) {
+      const imageBlob = await this.createReplacementImageBlob('#000428', '#004e92');
+      this.replacementOptions = { imageBlob };
+    }
+    return this.replacementOptions;
+  }
+
+  async initBackgroundReplacement(): Promise<void> {
+    try {
+      this.supportsBackgroundReplacement = await BackgroundReplacementVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec(), await this.getBackgroundReplacementOptions());
+    }
+    catch (e) {
+      this.log(`[DEMO] Does not support background replacement: ${e.message}`);
+      this.supportsBackgroundReplacement = false;
+    }
   }
 
   private async onVoiceFocusSettingChanged(): Promise<void> {
@@ -606,6 +654,7 @@ export class DemoMeetingApp
 
           await this.initVoiceFocus();
           await this.initBackgroundBlur();
+          await this.initBackgroundReplacement();
           await this.populateAllDeviceLists();
           await this.populateVideoFilterInputList(false);
           await this.populateVideoFilterInputList(true);
@@ -2470,6 +2519,10 @@ export class DemoMeetingApp
         filters.push('Background Blur 30% CPU');
         filters.push('Background Blur 40% CPU');
       }
+
+      if (this.supportsBackgroundReplacement) {
+        filters.push('Background Replacement');
+      }
     }
 
     this.populateFilterList(isPreviewWindow, genericName, filters);
@@ -3067,8 +3120,6 @@ export class DemoMeetingApp
     }
 
     if (videoFilter.startsWith('Background Blur')) {
-      console.log("background blur - create called from videoFilterToProcessor!")
-
       // In the event that frames start being dropped we should take some action to remove the background blur.
       this.blurObserver = {
         filterFrameDurationHigh: (event) => {
@@ -3079,11 +3130,23 @@ export class DemoMeetingApp
         }
       };
 
-
       const cpuUtilization: number = Number(videoFilter.match(/([0-9]{2})%/)[1]);
-      this.bbprocessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec(), {filterCPUUtilization: cpuUtilization});
-      this.bbprocessor.addObserver(this.blurObserver);
-      return this.bbprocessor;
+      this.blurProcessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec(), {filterCPUUtilization: cpuUtilization});
+      this.blurProcessor.addObserver(this.blurObserver);
+      return this.blurProcessor;
+    }
+
+    if (videoFilter.startsWith('Background Replacement')) {
+      // In the event that frames start being dropped we should take some action to remove the background replacement.
+      this.replacementObserver = {
+        filterFrameDurationHigh: (event) => {
+          this.log(`background filter duration high: framed dropped - ${event.framesDropped}, avg - ${event.avgFilterDurationMillis} ms, frame rate - ${event.framerate}, period - ${event.periodMillis} ms`);
+        }
+      };
+
+      this.replacementProcessor = await BackgroundReplacementVideoFrameProcessor.create(this.getBackgroundBlurSpec(), await this.getBackgroundReplacementOptions());
+      this.replacementProcessor.addObserver(this.replacementObserver);
+      return this.replacementProcessor;
     }
 
     return null;
@@ -3370,7 +3433,10 @@ export class DemoMeetingApp
       this.audioVideo.unbindAudioElement();
 
       // remove blur event observer
-      this.bbprocessor?.removeObserver(this.blurObserver);
+      this.blurProcessor?.removeObserver(this.blurObserver);
+
+      // remove replacement event observer
+      this.replacementProcessor?.removeObserver(this.replacementObserver);
 
       // Stop any video processor.
       await this.chosenVideoTransformDevice?.stop();
@@ -3391,13 +3457,17 @@ export class DemoMeetingApp
         this.eventReporter?.destroy();
       }
 
+      await this.blurProcessor?.destroy();
+      await this.replacementProcessor?.destroy();
+
       this.audioVideo = undefined;
       this.voiceFocusDevice = undefined;
       this.meetingSession = undefined;
       this.activeSpeakerHandler = undefined;
       this.currentAudioInputDevice = undefined;
       this.eventReporter = undefined;
-      this.bbprocessor = undefined;
+      this.blurProcessor = undefined;
+      this.replacementProcessor = undefined;
     };
 
     const onLeftMeeting = async () => {

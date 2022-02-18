@@ -1,9 +1,9 @@
-const {OpenAppStep, JoinMeetingStep, AuthenticateUserStep, PlayRandomToneStep, LeaveMeetingStep} = require('./steps');
-const {UserJoinedMeetingCheck, LocalVideoCheck, RemoteAudioCheck, UserAuthenticationCheck, RosterCheck} = require('./checks');
-const {AppPage} = require('./pages/AppPage');
-const {TestUtils} = require('./node_modules/kite-common');
+const { OpenAppStep, JoinMeetingStep, AuthenticateUserStep, PlayRandomToneStep, LeaveMeetingStep } = require('./steps');
+const { UserJoinedMeetingCheck, LocalVideoCheck, RemoteAudioCheck, UserAuthenticationCheck, RosterCheck } = require('./checks');
+const { AppPage } = require('./pages/AppPage');
+const { TestUtils } = require('./node_modules/kite-common');
 const SdkBaseTest = require('./utils/SdkBaseTest');
-const {Window} = require('./utils/Window');
+const { Window } = require('./utils/Window');
 const { v4: uuidv4 } = require('uuid');
 
 class MeetingLeaveAudioTest extends SdkBaseTest {
@@ -15,9 +15,9 @@ class MeetingLeaveAudioTest extends SdkBaseTest {
     this.numberOfParticipant = 2;
 
     if (this.numberOfSessions() > 1) {
-      await this.runTestOnMultipleSessions()
+      await this.runTestOnMultipleSessions();
     } else {
-      await this.runTestOnSingleSessions()
+      await this.runTestOnSingleSessions();
     }
   }
 
@@ -32,12 +32,12 @@ class MeetingLeaveAudioTest extends SdkBaseTest {
 
     await this.addUserToMeeting(test_attendee_id, testSession);
     await this.addUserToMeeting(monitor_attendee_id, monitorSession);
-    await RosterCheck.executeStep(this, testSession, 2);
     await RosterCheck.executeStep(this, monitorSession, 2);
-    await PlayRandomToneStep.executeStep(this, monitorSession);
-    await RemoteAudioCheck.executeStep(this, testSession, 'AUDIO_ON');
-    await LeaveMeetingStep.executeStep(this, monitorSession);
-    await RemoteAudioCheck.executeStep(this, testSession, 'AUDIO_OFF');
+    await RosterCheck.executeStep(this, testSession, 2);
+    await PlayRandomToneStep.executeStep(this, testSession);
+    await RemoteAudioCheck.executeStep(this, monitorSession, 'AUDIO_ON');
+    await LeaveMeetingStep.executeStep(this, testSession);
+    await RemoteAudioCheck.executeStep(this, monitorSession, 'AUDIO_OFF');
   }
 
   async runTestOnSingleSessions() {

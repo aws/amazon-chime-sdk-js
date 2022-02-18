@@ -1,14 +1,18 @@
 const AWS = require('../node_modules/aws-sdk');
-AWS.config.update({region: 'us-east-1'});
+AWS.config.update({ region: 'us-east-1' });
 var cloudWatch = new AWS.CloudWatch({
   apiVersion: '2010-08-01'
 });
 
-module.exports.emitMetric = async (namespace, capabilities, metric_name, value) => {
-  if (process.env.CLOUD_WATCH_METRIC === undefined || process.env.CLOUD_WATCH_METRIC === "false") {
-    return
+// emitMetric function is used to send metrics to CloudWatch. The metrics are sent to their respective namespaces and the namespaces are derived from the params.
+// Namespace is constructured as TestType/cwNamespaceInfix/namespace/metric_name.
+module.exports.emitMetric = async (namespace, capabilities, metric_name, value, cwNamespaceInfix) => {
+  if (process.env.CLOUD_WATCH_METRIC === undefined || process.env.CLOUD_WATCH_METRIC === 'false') {
+    return;
   }
-  namespace = `${process.env.TEST_TYPE}/${namespace.trim()}`;
+  namespace = cwNamespaceInfix === ''
+    ? `${process.env.TEST_TYPE}/${namespace.trim()}`
+    : `${process.env.TEST_TYPE}/${cwNamespaceInfix}/${namespace.trim()}`;
   metric_name = metric_name.trim();
   console.log(`Emitting metric: ${namespace}/${metric_name} : ${value}`);
   var params = {
@@ -95,7 +99,7 @@ const publishMetricToCloudWatch = async (params) => {
   try {
     await cloudWatch.putMetricData(params).promise();
   } catch (error) {
-    console.log(`Unable to emit metric: ${error}`)
+    console.log(`Unable to emit metric: ${error}`);
   }
 };
 
@@ -125,9 +129,9 @@ const getOSVersion = (capabilities) => {
     case 'LINUX':
       return 'Linux';
     case 'IOS':
-      return capabilities.version? capabilities.version : 'default';
+      return capabilities.version ? capabilities.version : 'default';
     case 'ANDROID':
-      return capabilities.version? capabilities.version : 'default';
+      return capabilities.version ? capabilities.version : 'default';
     default:
       return '';
   }

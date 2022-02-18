@@ -6,6 +6,7 @@ import * as sinon from 'sinon';
 
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import TimeoutScheduler from '../../src/scheduler/TimeoutScheduler';
+import { wait } from '../../src/utils/Utils';
 import DefaultWebSocketAdapter from '../../src/websocketadapter/DefaultWebSocketAdapter';
 import WebSocketReadyState from '../../src/websocketadapter/WebSocketReadyState';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
@@ -83,6 +84,21 @@ describe('DefaultWebSocketAdapter', () => {
     const handler = (_testEvent: Event): void => {};
     socket.addEventListener('testHandler', handler);
     expect(spy.calledWith('testHandler', handler)).to.be.true;
+  });
+
+  it('removes an event listener from the websocket', async () => {
+    let callCount = 0;
+    domMockBuilder = new DOMMockBuilder();
+    socket.create('http://example.com', ['testProtocol']);
+    const handler = (): void => {
+      callCount += 1;
+    };
+    socket.addEventListener('close', handler);
+    socket.close();
+    await wait(10);
+    socket.removeEventListener('close', handler);
+    socket.close();
+    expect(callCount).to.equal(1);
   });
 
   it('will call close on the websocket', done => {

@@ -805,7 +805,8 @@ describe('DefaultAudioVideoController', () => {
       );
 
       // use this opportunity to verify that these can be called before start
-      audioVideoController.setVideoMaxBandwidthKbps(100);
+      const MAX_BANDWIDTH_KBPS = 100;
+      audioVideoController.setVideoMaxBandwidthKbps(MAX_BANDWIDTH_KBPS);
       audioVideoController.handleHasBandwidthPriority(false);
 
       let sessionStarted = false;
@@ -825,12 +826,15 @@ describe('DefaultAudioVideoController', () => {
       await delay(defaultDelay);
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
-      audioVideoController.setVideoMaxBandwidthKbps(100);
       audioVideoController.handleHasBandwidthPriority(false);
       audioVideoController.handleHasBandwidthPriority(true);
       audioVideoController.handleHasBandwidthPriority(true);
       // @ts-ignore mutate the policy state to trigger bandwidth reduction
       audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.numParticipants = 4;
+      expect(
+        // @ts-ignore to ensure that calling setVideoMaxBandwidthKbps works.
+        audioVideoController.meetingSessionContext.videoUplinkBandwidthPolicy.maxBandwidthKbps()
+      ).to.equal(MAX_BANDWIDTH_KBPS);
       audioVideoController.handleHasBandwidthPriority(false);
       await sendICEEventAndSubscribeAckFrame();
       await delay(defaultDelay);
@@ -1490,7 +1494,7 @@ describe('DefaultAudioVideoController', () => {
         .false;
     });
 
-    it('will skip renegotiation if we are only completing simulcast stream encoding change', async () => {
+    it('will skip renegotiation if simulcast streams do not change', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
       configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
@@ -1519,16 +1523,6 @@ describe('DefaultAudioVideoController', () => {
         }
       }
 
-      let remoteVideoUpdateCalled = false;
-      class TestSignalingClient extends DefaultSignalingClient {
-        remoteVideoUpdate(
-          _addedOrUpdated: SignalingClientVideoSubscriptionConfiguration[],
-          _removedMids: string[]
-        ): void {
-          remoteVideoUpdateCalled = true;
-        }
-      }
-
       // @ts-ignore
       audioVideoController.meetingSessionContext.lastVideosToReceive = new DefaultVideoStreamIdSet([
         1,
@@ -1539,17 +1533,14 @@ describe('DefaultAudioVideoController', () => {
       audioVideoController.meetingSessionContext.videoStreamIndex = new TestVideoStreamIndex();
       // @ts-ignore
       audioVideoController.meetingSessionContext.transceiverController = new TestTransceiverController();
-      // @ts-ignore
-      audioVideoController.meetingSessionContext.signalingClient = new TestSignalingClient(
-        webSocketAdapter,
-        new NoOpDebugLogger()
-      );
 
+      // One that requires subscribe
+      audioVideoController.update({ needsRenegotiation: false });
+      // One that doesn't
       audioVideoController.update({ needsRenegotiation: false });
 
       await stop();
 
-      expect(remoteVideoUpdateCalled).to.be.false;
       // Slightly awkward logger check since subscribe steps are asynchronous and hard to capture
       expect(loggerSpy.calledWith(sinon.match('Update request does not require resubscribe'))).to.be
         .true;

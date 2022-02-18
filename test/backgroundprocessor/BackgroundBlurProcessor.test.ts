@@ -2,21 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import * as loader from '../../libs/voicefocus/loader';
-import * as support from '../../libs/voicefocus/support';
 import BackgroundBlurOptions from '../../src/backgroundblurprocessor/BackgroundBlurOptions';
 import BackgroundBlurProcessorBuiltIn from '../../src/backgroundblurprocessor/BackgroundBlurProcessorBuiltIn';
 import BackgroundBlurProcessorProvided from '../../src/backgroundblurprocessor/BackgroundBlurProcessorProvided';
 import BlurStrength from '../../src/backgroundblurprocessor/BackgroundBlurStrength';
 import BackgroundBlurVideoFrameProcessor from '../../src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessor';
-import BackgroundBlurVideoFrameProcessorObserver, {
+import BackgroundBlurVideoFrameProcessorObserver from '../../src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver';
+import ModelSpecBuilder from '../../src/backgroundblurprocessor/ModelSpecBuilder';
+import BackgroundFilterFrameCounter from '../../src/backgroundfilter/BackgroundFilterFrameCounter';
+import {
   FilterCPUUtilizationHighEvent,
   FilterFrameDurationHighEvent,
-} from '../../src/backgroundblurprocessor/BackgroundBlurVideoFrameProcessorObserver';
-import BackgroundFilterFrameCounter from '../../src/backgroundblurprocessor/BackgroundFilterFrameCounter';
-import ModelSpecBuilder from '../../src/backgroundblurprocessor/ModelSpecBuilder';
+} from '../../src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver';
 import ConsoleLogger from '../../src/logger/ConsoleLogger';
 import LogLevel from '../../src/logger/LogLevel';
 import CanvasVideoFrameBuffer from '../../src/videoframeprocessor/CanvasVideoFrameBuffer';
@@ -24,6 +25,10 @@ import NoOpVideoFrameProcessor from '../../src/videoframeprocessor/NoOpVideoFram
 import VideoFrameBuffer from '../../src/videoframeprocessor/VideoFrameBuffer';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
+import BackgroundFilterCommon from './BackgroundFilterCommon';
+
+chai.use(chaiAsPromised);
+chai.should();
 
 describe('BackgroundBlurProcessor', () => {
   let expect: Chai.ExpectStatic;
@@ -31,103 +36,20 @@ describe('BackgroundBlurProcessor', () => {
   let domMockBehavior: DOMMockBehavior;
   const sandbox: sinon.SinonSandbox = sinon.createSandbox();
   let clock: sinon.SinonFakeTimers;
+  const backgroundFilterCommon = new BackgroundFilterCommon();
 
   beforeEach(() => {
     expect = chai.expect;
     clock = sandbox.useFakeTimers();
     domMockBehavior = new DOMMockBehavior();
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
+    backgroundFilterCommon.setSandbox(sandbox);
   });
 
   afterEach(() => {
     sandbox.restore();
     domMockBuilder.cleanup();
   });
-
-  const stubInit = (
-    options: {
-      initPayload?: number;
-      loadModelPayload?: number;
-      predictPayload?: ImageData;
-      callInvalidMessage?: boolean;
-    } = {
-      initPayload: 1,
-      loadModelPayload: 1,
-      predictPayload: null,
-      callInvalidMessage: false,
-    }
-  ): Worker => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let eventListener: (evt: MessageEvent<any>) => any = () => {
-      console.error('eventListener is not set');
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function handlePostMessage(evt: any): void {
-      switch (evt.msg) {
-        case 'initialize':
-          eventListener(
-            new MessageEvent('message', {
-              data: {
-                msg: 'initialize',
-                payload: options.initPayload,
-              },
-            })
-          );
-          break;
-        case 'loadModel':
-          eventListener(
-            new MessageEvent('message', {
-              data: {
-                msg: 'loadModel',
-                payload: options.loadModelPayload,
-              },
-            })
-          );
-          // send an invalid event to listener after the processor is fully inited in order to test an invalid message
-          // being sent back from the worker.
-          if (options.callInvalidMessage) {
-            eventListener(
-              new MessageEvent('message', {
-                data: {
-                  msg: 'invalidMessage',
-                },
-              })
-            );
-          }
-          break;
-        case 'predict':
-          const predictEvent = new MessageEvent('message', {
-            data: {
-              msg: 'predict',
-              payload: options.predictPayload ?? evt.payload,
-            },
-          });
-          eventListener(predictEvent);
-          break;
-      }
-    }
-    const workerObj = {
-      postMessage: handlePostMessage,
-      onmessage: () => {},
-      onmessageerror: () => {},
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      addEventListener: (type: string, listener: (evt: MessageEvent<any>) => any) => {
-        eventListener = listener;
-      },
-      removeEventListener: () => {},
-      terminate: () => {},
-      dispatchEvent: () => true,
-      onerror: () => {},
-    };
-
-    const workerPromise = new Promise<Worker>(resolve => {
-      resolve(workerObj);
-    });
-
-    sandbox.stub(loader, 'loadWorker').returns(workerPromise);
-    return workerObj;
-  };
 
   const stubSupported = (supported: boolean, providedSupported: boolean = true): void => {
     sandbox.stub(BackgroundBlurVideoFrameProcessor, 'isSupported').callsFake(
@@ -142,50 +64,10 @@ describe('BackgroundBlurProcessor', () => {
     );
   };
 
-  const stubFineGrainSupport = (options: {
-    supportsWorker?: boolean;
-    supportsWASM?: boolean;
-    loadWorkerRejects?: boolean;
-    workerTerminateThrows?: boolean;
-  }): void => {
-    const supportsWorker = options.supportsWorker ?? true;
-    const supportsWASM = options.supportsWASM ?? true;
-    const loadWorkerRejects = options.loadWorkerRejects ?? false;
-    const workerTerminateThrows = options.workerTerminateThrows ?? false;
-
-    const terminate = workerTerminateThrows
-      ? () => {
-          throw new Error('terminate throws');
-        }
-      : () => {};
-
-    const workerPromise = new Promise<Worker>(resolve => {
-      resolve({
-        postMessage: () => {},
-        onmessage: () => {},
-        onmessageerror: () => {},
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        terminate: terminate,
-        dispatchEvent: () => true,
-        onerror: () => {},
-      });
-    });
-
-    if (loadWorkerRejects) {
-      sandbox.stub(loader, 'loadWorker').throws('worker threw');
-    } else {
-      sandbox.stub(loader, 'loadWorker').returns(workerPromise);
-    }
-
-    sandbox.stub(support, 'supportsWorker').returns(supportsWorker);
-    sandbox.stub(support, 'supportsWASM').returns(supportsWASM);
-  };
-
   describe('BackgroundBlurProcessorProvided', () => {
     describe('construction', () => {
       it('can be created when not supported', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(false);
 
         const bbprocessor = await BackgroundBlurVideoFrameProcessor.create();
@@ -253,7 +135,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('can be destroyed when items are null', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         let bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
@@ -270,7 +152,11 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('default event handled', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2, callInvalidMessage: true });
+        backgroundFilterCommon.stubInit({
+          initPayload: 2,
+          loadModelPayload: 2,
+          callInvalidMessage: true,
+        });
         stubSupported(true);
 
         const logger = new ConsoleLogger('BackgroundBlurProcessor', LogLevel.INFO);
@@ -282,7 +168,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('can be created with custom logger', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         const logger = {
@@ -302,7 +188,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('can be created when supported', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         const expectProcessorResults = async (
@@ -458,7 +344,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('init module fails', async () => {
-        stubInit({ initPayload: null, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: null, loadModelPayload: 2 });
         stubSupported(true);
 
         await expect(BackgroundBlurVideoFrameProcessor.create()).to.be.rejectedWith(
@@ -467,7 +353,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('init load model fails', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: null });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: null });
         stubSupported(true);
 
         await expect(BackgroundBlurVideoFrameProcessor.create()).to.be.rejectedWith(
@@ -496,7 +382,7 @@ describe('BackgroundBlurProcessor', () => {
 
     describe('predict', () => {
       it('not supported is no op', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(false);
 
         const buffers: VideoFrameBuffer[] = [
@@ -509,7 +395,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('no canvas is no op', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(null)];
@@ -519,7 +405,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('canvas height or width is 0', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         const canvas = document.createElement('canvas');
@@ -537,7 +423,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('can predict', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         const canvas = document.createElement('canvas');
@@ -561,29 +447,87 @@ describe('BackgroundBlurProcessor', () => {
         bbprocessor.drawImageWithMask(document.createElement('canvas'), new ImageData(10, 10));
       });
 
+      it('process stopped after destroyed', async () => {
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+        stubSupported(true);
+
+        const canvas = document.createElement('canvas');
+        const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+
+        canvas.height = 540;
+        canvas.width = 960;
+
+        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          reportingPeriodMillis: 1,
+        })) as BackgroundBlurProcessorProvided;
+        const drawSpy = sandbox.spy(bbprocessor, 'drawImageWithMask');
+
+        // confirm that draw is not called after processor is destroyed
+        expect(drawSpy.callCount).to.equal(0);
+        await bbprocessor.process(buffers);
+        expect(drawSpy.callCount).to.equal(1);
+        await bbprocessor.destroy();
+        await bbprocessor.process(buffers);
+        expect(drawSpy.callCount).to.equal(1);
+      });
+
+      it('processor destroyed while predicting', async () => {
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+        stubSupported(true);
+
+        const canvas = document.createElement('canvas');
+        const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+
+        canvas.height = 540;
+        canvas.width = 960;
+
+        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          reportingPeriodMillis: 1,
+        })) as BackgroundBlurProcessorProvided;
+
+        let drawCount = 0;
+        sandbox.stub(bbprocessor, 'drawImageWithMask').callsFake(async () => {
+          drawCount++;
+          // add a small delay to allow destroy to be called prior to completing
+          await new Promise<void>(resolve => {
+            setTimeout(() => {
+              resolve();
+            }, 100);
+          });
+        });
+
+        // confirm that draw is not called after processor is destroyed
+        await bbprocessor.process(buffers);
+        expect(drawCount).to.equal(1);
+        const procPromise = bbprocessor.process(buffers);
+        await bbprocessor.destroy();
+        await procPromise;
+        expect(drawCount).to.equal(1);
+      });
+
       it('filter CPU sets defaults when out of range', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         let bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
           filterCPUUtilization: 23,
         })) as BackgroundBlurProcessorProvided;
-        expect(bbprocessor['frameCounter']['filterCPUUtilization'] === 23);
+        expect(bbprocessor['frameCounter']['filterCPUUtilization']).to.equal(23);
 
         bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
           filterCPUUtilization: -1,
         })) as BackgroundBlurProcessorProvided;
-        expect(bbprocessor['frameCounter']['filterCPUUtilization'] === 40);
+        expect(bbprocessor['frameCounter']['filterCPUUtilization']).to.equal(30);
 
         bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
           filterCPUUtilization: 101,
         })) as BackgroundBlurProcessorProvided;
-        expect(bbprocessor['frameCounter']['filterCPUUtilization'] === 40);
+        expect(bbprocessor['frameCounter']['filterCPUUtilization']).to.equal(30);
       });
 
       it('filter rate 1', async () => {
         const worker = sandbox.spy(
-          stubInit({ initPayload: 2, loadModelPayload: 2 }),
+          backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 }),
           'postMessage'
         );
         stubSupported(true);
@@ -606,7 +550,7 @@ describe('BackgroundBlurProcessor', () => {
 
       it('filter rate 5', async () => {
         const worker = sandbox.spy(
-          stubInit({ initPayload: 2, loadModelPayload: 2 }),
+          backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 }),
           'postMessage'
         );
         stubSupported(true);
@@ -638,7 +582,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('predict handles failures', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         const canvas = document.createElement('canvas');
@@ -658,7 +602,7 @@ describe('BackgroundBlurProcessor', () => {
       });
 
       it('can predict when model not initialized', async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         const canvas = document.createElement('canvas');
@@ -686,23 +630,23 @@ describe('BackgroundBlurProcessor', () => {
       };
 
       // everything is supported
-      stubFineGrainSupport({});
+      backgroundFilterCommon.stubFineGrainSupport({});
       await supportedCheck(true);
 
       // worker terminate is swallowed and is still supported
-      stubFineGrainSupport({ workerTerminateThrows: true });
+      backgroundFilterCommon.stubFineGrainSupport({ workerTerminateThrows: true });
       await supportedCheck(true);
 
       // browser does not support worker
-      stubFineGrainSupport({ supportsWorker: false });
+      backgroundFilterCommon.stubFineGrainSupport({ supportsWorker: false });
       await supportedCheck(false);
 
       // browser does not support WASM
-      stubFineGrainSupport({ supportsWASM: false });
+      backgroundFilterCommon.stubFineGrainSupport({ supportsWASM: false });
       await supportedCheck(false);
 
       // browser does not support loading worker
-      stubFineGrainSupport({ loadWorkerRejects: true });
+      backgroundFilterCommon.stubFineGrainSupport({ loadWorkerRejects: true });
       await supportedCheck(false);
     });
 
@@ -713,7 +657,7 @@ describe('BackgroundBlurProcessor', () => {
       };
 
       it('is browser supported', async () => {
-        stubFineGrainSupport({});
+        backgroundFilterCommon.stubFineGrainSupport({});
         const logger = new ConsoleLogger('BackgroundBlurProcessor', LogLevel.INFO);
 
         const supportedUserAgents = [
@@ -769,7 +713,7 @@ describe('BackgroundBlurProcessor', () => {
       };
 
       beforeEach(async () => {
-        stubInit({ initPayload: 2, loadModelPayload: 2 });
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         clock.reset();
@@ -911,7 +855,7 @@ describe('BackgroundBlurProcessor', () => {
     });
 
     it('observer is called without functions defined', async () => {
-      stubInit({ initPayload: 2, loadModelPayload: 2 });
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
       stubSupported(true);
 
       const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorProvided;
@@ -928,7 +872,7 @@ describe('BackgroundBlurProcessor', () => {
 
   describe('BackgroundBlurProcessorBuiltIn', () => {
     it('can predict', async () => {
-      stubInit({ initPayload: 2, loadModelPayload: 2 });
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
       stubSupported(true, false);
 
       const canvas = document.createElement('canvas');
@@ -951,7 +895,7 @@ describe('BackgroundBlurProcessor', () => {
     });
 
     it('set blur strength', async () => {
-      stubInit({ initPayload: 2, loadModelPayload: 2 });
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
       stubSupported(true, false);
 
       const canvas = document.createElement('canvas');
@@ -975,20 +919,40 @@ describe('BackgroundBlurProcessor', () => {
     });
 
     it('can destroy', async () => {
-      stubInit({ initPayload: 2, loadModelPayload: 2 });
+      const worker = sandbox.spy(
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 }),
+        'postMessage'
+      );
       stubSupported(true, false);
 
+      // Verify `stop` is called for BackgroundBlurProcessorBuiltIn
+      // when `blurCanvas` is null.
       let bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
       bbprocessor['blurCanvas'] = null;
       await bbprocessor.destroy();
 
+      // Workers loaded for background blur must maintain API contract
+      // of `stop` command existing. Integration tests should exist on
+      // the worker code to ensure that it does not change. As a result,
+      // a unit test is fine here to ensure that `stop` contract is
+      // fulfilled on the client side.
+      expect(worker.callCount).to.be.equal(4);
+      expect(worker.calledWith({ msg: 'stop' })).to.be.true;
+      worker.resetHistory();
+
+      // Verify `stop` is called for BackgroundBlurProcessorBuiltIn
+      // when `blurCanvas` is not null.
       bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
       bbprocessor['blurCanvas'] = document.createElement('canvas');
       await bbprocessor.destroy();
+
+      expect(worker.callCount).to.be.equal(4);
+      expect(worker.calledWith({ msg: 'stop' })).to.be.true;
+      worker.restore();
     });
 
     it('initialize handles errors', async () => {
-      stubInit({ initPayload: null, loadModelPayload: 2 });
+      backgroundFilterCommon.stubInit({ initPayload: null, loadModelPayload: 2 });
       stubSupported(true, false);
 
       await expect(BackgroundBlurVideoFrameProcessor.create()).to.be.rejectedWith(

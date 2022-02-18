@@ -200,6 +200,7 @@
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/build-a-video-contact-center-with-amazon-connect-and-amazon-chime-sdk/">Amazon Chime SDK and Amazon Connect Integration</a> — Build a video contact center with Amazon Connect and Amazon Chime SDK</li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/using-the-amazon-chime-sdk-for-3rd-party-devices/">Device Integration</a> — Using the Amazon Chime SDK for 3rd party devices</li>
 					<li><a href="https://aws.amazon.com/blogs/business-productivity/build-chat-features-into-your-application-with-amazon-chime-sdk-messaging/">Messaging</a> — Build chat features into your application with Amazon Chime SDK messaging</li>
+					<li><a href="https://aws.amazon.com/blogs/business-productivity/load-testing-applications-built-with-the-amazon-chime-sdk/">Load Testing Applications</a> — A tool to load test audio-video communication applications</li>
 				</ul>
 				<a href="#pstn-audio-examples" id="pstn-audio-examples" style="color: inherit; text-decoration: none;">
 					<h3>PSTN Audio Examples</h3>
@@ -1207,9 +1208,10 @@ appVersion: string;
 					<h2>Notice</h2>
 				</a>
 				<p>The use of Amazon Voice Focus and background blur via this SDK involves the downloading and execution of code at runtime by end users.</p>
-				<p>The use of Amazon Voice Focus and background blur runtime code is subject to additional notices. See <a href="https://static.sdkassets.chime.aws/workers/NOTICES.txt">this Amazon Voice Focus NOTICES file</a> and <a href="https://static.sdkassets.chime.aws/bgblur/workers/NOTICES.txt">background blur NOTICES file</a> for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus and background blur runtime code via this SDK.</p>
-				<p>The browser demo applications in the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/main/demos">demos directory</a> use<a href="https://github.com/tensorflow/tfjs">TensorFlow.js</a> and pre-trained <a href="https://github.com/tensorflow/tfjs-models">TensorFlow.js models</a> for image segmentation. Use of these third party models involves downloading and execution of code at runtime from <a href="https://www.jsdelivr.com/">jsDelivr</a> by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this <a href="https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net">link</a>.</p>
+				<p>The use of Amazon Voice Focus and background blur runtime code is subject to additional notices. See <a href="https://static.sdkassets.chime.aws/workers/NOTICES.txt">this Amazon Voice Focus NOTICES file</a>, <a href="https://static.sdkassets.chime.aws/bgblur/workers/NOTICES.txt">background blur and background replacement NOTICES file</a> for details. You agree to make these additional notices available to all end users who use Amazon Voice Focus and background blur runtime code via this SDK.</p>
+				<p>The browser demo applications in the <a href="https://github.com/aws/amazon-chime-sdk-js/tree/main/demos">demos directory</a> use <a href="https://github.com/tensorflow/tfjs">TensorFlow.js</a> and pre-trained <a href="https://github.com/tensorflow/tfjs-models">TensorFlow.js models</a> for image segmentation. Use of these third party models involves downloading and execution of code at runtime from <a href="https://www.jsdelivr.com/">jsDelivr</a> by end user browsers. For the jsDelivr Acceptable Use Policy, please visit this <a href="https://www.jsdelivr.com/terms/acceptable-use-policy-jsdelivr-net">link</a>.</p>
 				<p>The use of TensorFlow runtime code referenced above may be subject to additional license requirements. See the licenses page for TensorFlow.js <a href="https://github.com/tensorflow/tfjs/blob/master/LICENSE">here</a> and TensorFlow.js models <a href="https://github.com/tensorflow/tfjs-models/blob/master/LICENSE">here</a> for details.</p>
+				<p>You and your end users are responsible for all Content (including any images) uploaded for use with background replacement, and must ensure that such Content does not violate the law, infringe or misappropriate the rights of any third party, or otherwise violate a material term of your agreement with Amazon (including the documentation, the AWS Service Terms, or the Acceptable Use Policy).</p>
 				<p>Live transcription using the Amazon Chime SDK for JavaScript is powered by Amazon Transcribe. Use of Amazon Transcribe is subject to the <a href="https://aws.amazon.com/service-terms/">AWS Service Terms</a>, including the terms specific to the AWS Machine Learning and Artificial Intelligence Services. Standard charges for Amazon Transcribe and Amazon Transcribe Medical will apply.</p>
 				<p>You and your end users understand that recording Amazon Chime SDK meetings may be subject to laws or regulations regarding the recording of electronic communications. It is your and your end users’ responsibility to comply with all applicable laws regarding the recordings, including properly notifying all participants in a recorded session, or communication that the session or communication is being recorded, and obtain their consent.</p>
 				<hr>
@@ -1342,6 +1344,12 @@ appVersion: string;
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/backgroundblurvideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/backgroundfiltervideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Video<wbr>Frame<wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/backgroundreplacementvideoframeprocessor.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Video<wbr>Frame<wbr>Processor</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/baseconnectionhealthpolicy.html" class="tsd-kind-icon">Base<wbr>Connection<wbr>Health<wbr>Policy</a>
@@ -1701,6 +1709,9 @@ appVersion: string;
 						<a href="classes/runnabletask.html" class="tsd-kind-icon">Runnable<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/sdpmediasection.html" class="tsd-kind-icon">SDPMedia<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/sendandreceivedatamessagestask.html" class="tsd-kind-icon">Send<wbr>And<wbr>Receive<wbr>Data<wbr>Messages<wbr>Task</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -1875,10 +1886,25 @@ appVersion: string;
 						<a href="interfaces/backgroundblurvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Blur<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundfilteroptions.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/backgroundfilterpaths.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Paths</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/backgroundfilterspec.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Spec</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundfiltervideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Filter<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundreplacementoptions.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundreplacementprocessor.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/backgroundreplacementvideoframeprocessorobserver.html" class="tsd-kind-icon">Background<wbr>Replacement<wbr>Video<wbr>Frame<wbr>Processor<wbr>Observer</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/backoff.html" class="tsd-kind-icon">Backoff</a>
