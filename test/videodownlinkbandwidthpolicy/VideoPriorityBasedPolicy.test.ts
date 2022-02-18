@@ -825,6 +825,7 @@ describe('VideoPriorityBasedPolicy', () => {
       domMockBuilder.cleanup();
       spyPause.restore();
       spyUnpause.restore();
+      policy.removeObserver(observer);
     });
 
     it('Stream not added until enough bandwidth', () => {
