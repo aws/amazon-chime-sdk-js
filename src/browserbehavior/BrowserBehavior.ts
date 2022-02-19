@@ -28,24 +28,9 @@ export default interface BrowserBehavior {
   hasFirefoxWebRTC(): boolean;
 
   /**
-   * Returns whether the browser requires the use of Unified Plan implementation
-   */
-  requiresUnifiedPlan(): boolean;
-
-  /**
    * Returns whether the browser requires an ICE connection gathering timeout workaround
    */
   requiresIceCandidateGatheringTimeoutWorkaround(): boolean;
-
-  /**
-   * Returns whether the browser requires munging of Unified Plan SDP
-   */
-  requiresUnifiedPlanMunging(): boolean;
-
-  /**
-   * Returns whether the browser requires munging to activate simulcast
-   */
-  requiresSimulcastMunging(): boolean;
 
   /**
    * Returns the bundle policy for the browser
@@ -63,11 +48,6 @@ export default interface BrowserBehavior {
   requiresCheckForSdpConnectionAttributes(): boolean;
 
   /**
-   * Returns whether it is needed to sort video section codec preference
-   */
-  requiresSortCodecPreferencesForSdpAnswer(): boolean;
-
-  /**
    * Returns whether the keyword "exact" should be omitted in a MediaStreamConstraints object
    */
   requiresNoExactMediaStreamConstraints(): boolean;
@@ -77,11 +57,6 @@ export default interface BrowserBehavior {
    * with some Bluetooth devices.
    */
   requiresContextRecreationForAudioWorklet(): boolean;
-
-  /**
-   * Returns whether screen share is unsupported by the browser
-   */
-  screenShareUnsupported(): boolean;
 
   /**
    * Returns whether the browser is supported

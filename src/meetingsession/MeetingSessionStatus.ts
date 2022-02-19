@@ -89,8 +89,6 @@ export default class MeetingSessionStatus {
         return 'The meeting rejected the attendee.';
       case MeetingSessionStatusCode.AudioCallAtCapacity:
         return "The attendee couldn't join because the meeting was at capacity.";
-      case MeetingSessionStatusCode.AudioCallEnded:
-      case MeetingSessionStatusCode.TURNMeetingEnded:
       case MeetingSessionStatusCode.MeetingEnded:
         return 'The meeting ended.';
       case MeetingSessionStatusCode.AudioInternalServerError:

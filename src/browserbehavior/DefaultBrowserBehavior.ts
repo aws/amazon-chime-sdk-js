@@ -14,8 +14,8 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     'edge-chromium': 79,
     electron: 7,
     firefox: 75,
-    ios: 12,
-    safari: 12,
+    ios: 13,
+    safari: 13,
     opera: 66,
     samsung: 12,
     crios: 86,
@@ -55,7 +55,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     // Temporarily disable this workaround while we work out the kinks.
     recreateAudioContextIfNeeded = false,
   }: {
-    enableUnifiedPlanForChromiumBasedBrowsers?: boolean;
     recreateAudioContextIfNeeded?: boolean;
   } = {}) {
     this.recreateAudioContextIfNeeded = recreateAudioContextIfNeeded;
@@ -113,14 +112,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return true;
   }
 
-  requiresUnifiedPlan(): boolean {
-    return (
-      this.isFirefox() ||
-      this.hasChromiumWebRTC() ||
-      (this.hasWebKitWebRTC() && this.isUnifiedPlanSupported())
-    );
-  }
-
   requiresResolutionAlignment(width: number, height: number): [number, number] {
     if (this.isAndroid() && this.isPixel3()) {
       return [Math.ceil(width / 64) * 64, Math.ceil(height / 64) * 64];
@@ -136,18 +127,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return this.hasChromiumWebRTC();
   }
 
-  requiresUnifiedPlanMunging(): boolean {
-    return this.hasChromiumWebRTC() || (this.hasWebKitWebRTC() && this.isUnifiedPlanSupported());
-  }
-
-  requiresSortCodecPreferencesForSdpAnswer(): boolean {
-    return this.isFirefox() && this.majorVersion() <= 68;
-  }
-
-  requiresSimulcastMunging(): boolean {
-    return this.isSafari();
-  }
-
   requiresBundlePolicy(): RTCBundlePolicy {
     return 'max-bundle';
   }
@@ -156,15 +135,8 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return !this.hasChromiumWebRTC();
   }
 
-  requiresVideoElementWorkaround(): boolean {
-    return this.isSafari() && this.majorVersion() === 12;
-  }
-
   requiresNoExactMediaStreamConstraints(): boolean {
-    return (
-      this.isSamsungInternet() ||
-      (this.isIOSSafari() && (this.version() === '12.0.0' || this.version() === '12.1.0'))
-    );
+    return this.isSamsungInternet();
   }
 
   requiresGroupIdMediaStreamConstraints(): boolean {
@@ -212,12 +184,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
   // https://bugs.chromium.org/p/chromium/issues/detail?id=669492
   doesNotSupportMediaDeviceLabels(): boolean {
     return this.browser.name === 'chromium-webview';
-  }
-
-  // TODO: Deprecated, needs to be removed
-  screenShareUnsupported(): boolean {
-    console.warn('This function is no longer supported.');
-    return true;
   }
 
   isSupported(): boolean {
@@ -336,9 +302,5 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
 
   private isPixel3(): boolean {
     return /( pixel 3)/i.test(navigator.userAgent);
-  }
-
-  private isUnifiedPlanSupported(): boolean {
-    return RTCRtpTransceiver.prototype.hasOwnProperty('currentDirection');
   }
 }

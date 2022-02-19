@@ -191,16 +191,6 @@ export default class DefaultMeetingSession implements MeetingSession, Destroyabl
       );
     }
 
-    if (
-      browserBehavior.hasChromiumWebRTC() &&
-      !this._configuration.enableUnifiedPlanForChromiumBasedBrowsers
-    ) {
-      this.logger.error(
-        'Plan B SDP has been deprecated on Chromium-based browsers. ' +
-          `Overriding configured value of 'enableUnifiedPlanForChromiumBasedBrowsers' to be true`
-      );
-    }
-
     // Validation if a custom video uplink policy is specified
     if (this._configuration.videoUplinkBandwidthPolicy) {
       if (this.isSimulcastUplinkPolicy(this._configuration.videoUplinkBandwidthPolicy)) {

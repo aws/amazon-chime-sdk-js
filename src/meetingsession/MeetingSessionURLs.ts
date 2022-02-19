@@ -12,21 +12,6 @@ export default class MeetingSessionURLs {
   private _audioHostURL: string | null = null;
 
   /**
-   * The screen data URL of the session
-   */
-  private _screenDataURL: string | null = null;
-
-  /**
-   * The screen sharing URL of the session
-   */
-  private _screenSharingURL: string | null = null;
-
-  /**
-   * The screen viewing URL of the session
-   */
-  private _screenViewingURL: string | null = null;
-
-  /**
    * The signaling URL of the session
    */
   private _signalingURL: string | null = null;
@@ -50,39 +35,6 @@ export default class MeetingSessionURLs {
 
   set audioHostURL(value: string | null) {
     this._audioHostURL = value;
-  }
-
-  /**
-   * Gets or sets the screen data URL with gets reflecting the result of the {@link MeetingSessionURLs.urlRewriter} function.
-   */
-  get screenDataURL(): string | null {
-    return this.urlRewriter(this._screenDataURL);
-  }
-
-  set screenDataURL(value: string | null) {
-    this._screenDataURL = value;
-  }
-
-  /**
-   * Gets or sets the screen sharing URL with gets reflecting the result of the {@link MeetingSessionURLs.urlRewriter} function.
-   */
-  get screenSharingURL(): string | null {
-    return this.urlRewriter(this._screenSharingURL);
-  }
-
-  set screenSharingURL(value: string | null) {
-    this._screenSharingURL = value;
-  }
-
-  /**
-   * Gets or sets the screen viewing URL with gets reflecting the result of the {@link MeetingSessionURLs.urlRewriter} function.
-   */
-  get screenViewingURL(): string | null {
-    return this.urlRewriter(this._screenViewingURL);
-  }
-
-  set screenViewingURL(value: string | null) {
-    this._screenViewingURL = value;
   }
 
   /**

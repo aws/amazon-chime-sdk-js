@@ -40,16 +40,6 @@ export default class MeetingSessionConfiguration {
   connectionTimeoutMs: number = 15000;
 
   /**
-   * Maximum amount of time in milliseconds to allow for a screen sharing connection.
-   */
-  screenSharingTimeoutMs: number = 5000;
-
-  /**
-   * Maximum amount of time in milliseconds to allow for a screen viewing connection.
-   */
-  screenViewingTimeoutMs: number = 5000;
-
-  /**
    * Maximum amount of time in milliseconds to wait for the current attendee to be present
    * after initial connection.
    */
@@ -80,14 +70,6 @@ export default class MeetingSessionConfiguration {
    * The long back-off time in milliseconds between reconnecting attempts.
    */
   reconnectLongBackOffMs = 5 * 1000;
-
-  /**
-   * Feature flag to enable Chromium-based browsers.
-   *
-   * This field is deprecated and will be removed in future version. Right now it will always be regarded as true,
-   * since Plan B is not supported for Chromium-based browsers any more.
-   */
-  enableUnifiedPlanForChromiumBasedBrowsers: boolean = true;
 
   /**
    * Feature flag to enable Simulcast
@@ -130,9 +112,6 @@ export default class MeetingSessionConfiguration {
    *      "MeetingId": "...",
    *      "MediaPlacement": {
    *        "AudioHostUrl": "...",
-   *        "ScreenDataUrl": "...",
-   *        "ScreenSharingUrl": "...",
-   *        "ScreenViewingUrl": "...",
    *        "SignalingUrl": "...",
    *        "TurnControlUrl": "..."
    *      }
@@ -152,9 +131,6 @@ export default class MeetingSessionConfiguration {
    *   "MeetingId": "...",
    *   "MediaPlacement": {
    *     "AudioHostUrl": "...",
-   *     "ScreenDataUrl": "...",
-   *     "ScreenSharingUrl": "...",
-   *     "ScreenViewingUrl": "...",
    *     "SignalingUrl": "...",
    *     "TurnControlUrl": "..."
    *   }
@@ -175,9 +151,6 @@ export default class MeetingSessionConfiguration {
       this.externalMeetingId = createMeetingResponse.externalmeetingid;
       this.urls = new MeetingSessionURLs();
       this.urls.audioHostURL = createMeetingResponse.mediaplacement.audiohosturl;
-      this.urls.screenDataURL = createMeetingResponse.mediaplacement.screendataurl;
-      this.urls.screenSharingURL = createMeetingResponse.mediaplacement.screensharingurl;
-      this.urls.screenViewingURL = createMeetingResponse.mediaplacement.screenviewingurl;
       this.urls.signalingURL = createMeetingResponse.mediaplacement.signalingurl;
       this.urls.turnControlURL = createMeetingResponse.mediaplacement.turncontrolurl;
       if (createMeetingResponse.mediaplacement.eventingestionurl) {

@@ -34,18 +34,6 @@ export enum MeetingSessionStatusCode {
   AudioCallAtCapacity = 5,
 
   /**
-   * Deprecated. The meeting has ended. This is a legacy alias for MeetingEnded and will
-   * be removed in v3.0.0.
-   */
-  AudioCallEnded = 6,
-
-  /**
-   * Deprecated. The meeting has ended. This is a legacy alias for MeetingEnded and will
-   * be removed in v3.0.0.
-   */
-  TURNMeetingEnded = 6,
-
-  /**
    * The attendee attempted to join a meeting that has already ended.
    */
   MeetingEnded = 6,

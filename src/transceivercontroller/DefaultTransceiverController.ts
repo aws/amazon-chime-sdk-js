@@ -122,11 +122,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   }
 
   useTransceivers(): boolean {
-    if (!this.peer || !this.browserBehavior.requiresUnifiedPlan()) {
-      return false;
-    }
-
-    return typeof this.peer.getTransceivers !== 'undefined';
+    return !!this.peer && typeof this.peer.getTransceivers !== 'undefined';
   }
 
   hasVideoInput(): boolean {
