@@ -88,10 +88,6 @@ export default class DefaultSignalingClient implements SignalingClient {
     joinFrame.protocolVersion = 2;
     joinFrame.flags = SdkJoinFlags.HAS_STREAM_UPDATE;
     const browserBehavior = new DefaultBrowserBehavior();
-    if (browserBehavior.supportsSenderSideBandwidthEstimation()) {
-      joinFrame.flags |= SdkJoinFlags.USE_SEND_SIDE_BWE;
-    }
-    joinFrame.flags |= settings.sendBitrates ? SdkJoinFlags.SEND_BITRATES : 0;
     const sdkClientDetails: ISdkClientDetails = {
       platformName: browserBehavior.name(),
       platformVersion: browserBehavior.version(),

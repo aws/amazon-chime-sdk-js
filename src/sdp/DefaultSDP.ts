@@ -113,36 +113,10 @@ export default class DefaultSDP implements SDP {
     return cameraLineIndex;
   }
 
-  static parseSSRCMedia(ssrcMediaAttributeLine: string): [number, string, string] {
-    const separator = ssrcMediaAttributeLine.indexOf(' ');
-    let ssrc = 0;
-    let attribute = '';
-    let value = '';
-
-    ssrc = DefaultSDP.extractSSRCFromAttributeLine(ssrcMediaAttributeLine);
-    const secondColon = ssrcMediaAttributeLine.indexOf(':', separator);
-    if (secondColon > -1) {
-      attribute = ssrcMediaAttributeLine.substr(separator + 1, secondColon - separator - 1);
-      value = ssrcMediaAttributeLine.substr(secondColon + 1);
-    } else {
-      attribute = ssrcMediaAttributeLine.substr(separator + 1);
-    }
-    return [ssrc, attribute, value];
-  }
-
   // a=ssrc-group:<semantics> <ssrc-id> ...
   static extractSSRCsFromFIDGroupLine(figGroupLine: string): string {
     const ssrcStringMatch = /^a=ssrc-group:FID\s(.+)/.exec(figGroupLine);
     return ssrcStringMatch[1];
-  }
-
-  // a=ssrc:<ssrc-id> <attribute> or a=ssrc:<ssrc-id> <attribute>:<value>, ssrc-id is a 32bit integer
-  static extractSSRCFromAttributeLine(ssrcMediaAttributeLine: string): number {
-    const ssrcStringMatch = /^a=ssrc:([0-9]+)\s/.exec(ssrcMediaAttributeLine);
-    if (ssrcStringMatch === null) {
-      return 0;
-    }
-    return parseInt(ssrcStringMatch[1], 10);
   }
 
   static matchPrefix(blob: string, prefix: string): string[] {

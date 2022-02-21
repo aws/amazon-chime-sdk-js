@@ -83,7 +83,6 @@ class TestObjects {
 describe('DefaultSignalingClient', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const activeTestObjects: TestObjects[] = [];
-  const _maxNumVideos = 16;
   const _messageType = 5;
   const _streamId = 1;
   const _groupId = 1;
@@ -264,35 +263,10 @@ describe('DefaultSignalingClient', () => {
               expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
               expect(frame.join.maxNumOfVideos).to.equal(0);
               expect(frame.join.protocolVersion).to.equal(2);
-              expect(frame.join.flags).to.equal(
-                SdkJoinFlags.SEND_BITRATES | SdkJoinFlags.HAS_STREAM_UPDATE
-              );
-              done();
-            });
-            event.client.join(new SignalingClientJoin(_maxNumVideos, true));
-          }
-        }
-      }
-      testObjects.signalingClient.registerObserver(new TestObserver());
-      testObjects.signalingClient.openConnection(testObjects.request);
-    });
-
-    it('will send a join with disabled sendBitrates', done => {
-      const testObjects = createTestObjects();
-      class TestObserver implements SignalingClientObserver {
-        handleSignalingClientEvent(event: SignalingClientEvent): void {
-          if (event.type === SignalingClientEventType.WebSocketOpen) {
-            testObjects.webSocketAdapter.addEventListener('message', (event: MessageEvent) => {
-              const buffer = new Uint8Array(event.data);
-              const frame = SdkSignalFrame.decode(buffer.slice(1));
-              expect(buffer[0]).to.equal(_messageType);
-              expect(frame.type).to.equal(SdkSignalFrame.Type.JOIN);
-              expect(frame.join.maxNumOfVideos).to.equal(0);
-              expect(frame.join.protocolVersion).to.equal(2);
               expect(frame.join.flags).to.equal(SdkJoinFlags.HAS_STREAM_UPDATE);
               done();
             });
-            event.client.join(new SignalingClientJoin(_maxNumVideos, false));
+            event.client.join(new SignalingClientJoin());
           }
         }
       }
@@ -321,11 +295,7 @@ describe('DefaultSignalingClient', () => {
               'AmazonChimeJSSDKDemoApp',
               '1.0.0'
             );
-            const signalingClientJoin = new SignalingClientJoin(
-              _maxNumVideos,
-              false,
-              applicationMetadata
-            );
+            const signalingClientJoin = new SignalingClientJoin(applicationMetadata);
             event.client.join(signalingClientJoin);
           }
         }

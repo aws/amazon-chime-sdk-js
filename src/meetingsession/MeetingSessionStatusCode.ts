@@ -5,60 +5,54 @@ export enum MeetingSessionStatusCode {
   /**
    * Everything is OK so far.
    */
-  OK = 0,
+  OK,
 
   /**
    * The attendee left the meeting normally.
    */
-  Left = 1,
+  Left,
 
   /**
    * The attendee joined from another device.
    */
-  AudioJoinedFromAnotherDevice = 2,
-
-  /**
-   * Deprecated. The attendee should explicitly switch itself from joined with audio to
-   * checked-in. This will be removed in v3.0.0.
-   */
-  AudioDisconnectAudio = 3,
+  AudioJoinedFromAnotherDevice,
 
   /**
    * Authentication was rejected. The client is not allowed on this meeting.
    */
-  AudioAuthenticationRejected = 4,
+  AudioAuthenticationRejected,
 
   /**
    * The client can not join because the meeting is at capacity.
    */
-  AudioCallAtCapacity = 5,
+  AudioCallAtCapacity,
 
   /**
    * The attendee attempted to join a meeting that has already ended.
    */
-  MeetingEnded = 6,
+  MeetingEnded,
 
   /**
    * There was an internal server error with the audio leg.
    */
-  AudioInternalServerError = 7,
+  AudioInternalServerError,
 
   /**
    * Could not connect the audio leg due to the service being unavailable.
    */
-  AudioServiceUnavailable = 8,
+  AudioServiceUnavailable,
 
   /**
    * The audio leg failed.
    */
-  AudioDisconnected = 9,
+  AudioDisconnected,
 
   /**
    * The client has asked to send and receive video, but it is only possible to
    * continue in view-only mode (receiving video). This should be handled by
    * explicitly switching to view-only mode.
    */
-  VideoCallSwitchToViewOnly = 10,
+  VideoCallSwitchToViewOnly,
 
   /**
    * This can happen when you attempt to join a video meeting in "send only" mode
@@ -66,7 +60,7 @@ export enum MeetingSessionStatusCode {
    * we ever do in practice, but it is supported on the server). It should be
    * treated as "fatal" and probably should not be retried (despite the 5xx nature).
    */
-  VideoCallAtSourceCapacity = 11,
+  VideoCallAtSourceCapacity,
 
   /**
    * The Chime SDK for JavaScript failed to establish a signaling connection because
@@ -76,24 +70,18 @@ export enum MeetingSessionStatusCode {
    * before.
    * https://docs.aws.amazon.com/chime/latest/APIReference/API_DeleteAttendee.html
    */
-  SignalingBadRequest = 12,
+  SignalingBadRequest,
 
   /**
    * The Chime SDK for JavaScript failed to establish a signaling connection to the Chime
    * backend due to an internal server error.
    */
-  SignalingInternalServerError = 13,
+  SignalingInternalServerError,
 
   /**
    * Received unknown signaling error frame
    */
-  SignalingRequestFailed = 14,
-
-  /**
-   * Deprecated. Failed to transition between two states for some reason
-   * This will be removed in v3.0.0.
-   */
-  StateMachineTransitionFailed = 15,
+  SignalingRequestFailed,
 
   /**
    * Timed out gathering ICE candidates. If in Chrome, this could be an
@@ -101,48 +89,42 @@ export enum MeetingSessionStatusCode {
    * the user should try quitting and relaunching the app. See:
    * https://bugs.chromium.org/p/webrtc/issues/detail?id=9097
    */
-  ICEGatheringTimeoutWorkaround = 16,
+  ICEGatheringTimeoutWorkaround,
 
   /**
    * Due to connection health, a reconnect has been triggered.
    */
-  ConnectionHealthReconnect = 17,
+  ConnectionHealthReconnect,
 
   /**
    * The realtime API failed in some way. This indicates a fatal problem.
    */
-  RealtimeApiFailed = 18,
+  RealtimeApiFailed,
 
   /**
    * A task failed for an unknown reason.
    */
-  TaskFailed = 19,
-
-  /**
-   * Deprecated. Audio device has switched.
-   * This will be removed in v3.0.0.
-   */
-  AudioDeviceSwitched = 20,
+  TaskFailed,
 
   /**
    * Session update produces incompatible SDP.
    */
-  IncompatibleSDP = 21,
+  IncompatibleSDP,
 
   /**
    * This can happen when you attempt to join a meeting which has ended or attendee got removed
    */
-  TURNCredentialsForbidden = 22,
+  TURNCredentialsForbidden,
 
   /**
    * The attendee is not present.
    */
-  NoAttendeePresent = 23,
+  NoAttendeePresent,
 
   /**
    * The meeting was ended because the attendee has been removed.
    */
-  AudioAttendeeRemoved = 24,
+  AudioAttendeeRemoved,
 }
 
 export default MeetingSessionStatusCode;

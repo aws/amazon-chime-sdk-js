@@ -176,10 +176,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
     return this.isChrome() || this.isEdge();
   }
 
-  supportsSenderSideBandwidthEstimation(): boolean {
-    return this.hasChromiumWebRTC() || this.isSafari();
-  }
-
   // There's a issue in Chormium WebView that causes enumerate devices to return empty labels, this is a check for this issue.
   // https://bugs.chromium.org/p/chromium/issues/detail?id=669492
   doesNotSupportMediaDeviceLabels(): boolean {
@@ -266,10 +262,6 @@ export default class DefaultBrowserBehavior implements BrowserBehavior, Extended
         /( Mac )/i.test(navigator.userAgent) &&
         navigator.maxTouchPoints > 1) //Ipad
     );
-  }
-
-  private isSafari(): boolean {
-    return this.browser.name === 'safari' || this.browser.name === 'ios';
   }
 
   private isFirefox(): boolean {

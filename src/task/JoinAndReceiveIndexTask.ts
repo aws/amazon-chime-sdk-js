@@ -104,7 +104,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       this.context.signalingClient.registerObserver(interceptor);
       this.taskCanceler = interceptor;
       this.context.signalingClient.join(
-        new SignalingClientJoin(true, this.context.meetingSessionConfiguration.applicationMetadata)
+        new SignalingClientJoin(this.context.meetingSessionConfiguration.applicationMetadata)
       );
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);

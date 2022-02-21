@@ -25,7 +25,6 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.SignalingBadRequest:
       case MeetingSessionStatusCode.SignalingInternalServerError:
       case MeetingSessionStatusCode.SignalingRequestFailed:
-      case MeetingSessionStatusCode.StateMachineTransitionFailed:
       case MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround:
       case MeetingSessionStatusCode.ConnectionHealthReconnect:
       case MeetingSessionStatusCode.RealtimeApiFailed:
@@ -62,7 +61,6 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.AudioAuthenticationRejected:
       case MeetingSessionStatusCode.AudioInternalServerError:
       case MeetingSessionStatusCode.AudioServiceUnavailable:
-      case MeetingSessionStatusCode.StateMachineTransitionFailed:
       case MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround:
       case MeetingSessionStatusCode.SignalingBadRequest:
       case MeetingSessionStatusCode.SignalingInternalServerError:
@@ -83,8 +81,6 @@ export default class MeetingSessionStatus {
         return 'The attendee left the meeting.';
       case MeetingSessionStatusCode.AudioJoinedFromAnotherDevice:
         return 'The attendee joined from another device.';
-      case MeetingSessionStatusCode.AudioDisconnectAudio:
-        return 'The audio connection failed.';
       case MeetingSessionStatusCode.AudioAuthenticationRejected:
         return 'The meeting rejected the attendee.';
       case MeetingSessionStatusCode.AudioCallAtCapacity:
@@ -103,8 +99,6 @@ export default class MeetingSessionStatus {
       case MeetingSessionStatusCode.SignalingInternalServerError:
       case MeetingSessionStatusCode.SignalingRequestFailed:
         return 'The signaling connection failed.';
-      case MeetingSessionStatusCode.StateMachineTransitionFailed:
-        return 'The state transition failed.';
       case MeetingSessionStatusCode.ICEGatheringTimeoutWorkaround:
         return 'Gathering ICE candidates timed out. In Chrome, this might indicate that the browser is in a bad state after reconnecting to VPN.';
       case MeetingSessionStatusCode.ConnectionHealthReconnect:
@@ -113,8 +107,6 @@ export default class MeetingSessionStatus {
         return 'The real-time API failed. This status code might indicate that the callback you passed to the real-time API threw an exception.';
       case MeetingSessionStatusCode.TaskFailed:
         return 'The connection failed. See the error message for more details.';
-      case MeetingSessionStatusCode.AudioDeviceSwitched:
-        return 'The attendee chose another audio device.';
       case MeetingSessionStatusCode.IncompatibleSDP:
         return 'The connection failed due to incompatible SDP.';
       case MeetingSessionStatusCode.TURNCredentialsForbidden:
@@ -151,8 +143,6 @@ export default class MeetingSessionStatus {
         return new MeetingSessionStatus(MeetingSessionStatusCode.OK);
       case 301:
         return new MeetingSessionStatus(MeetingSessionStatusCode.AudioJoinedFromAnotherDevice);
-      case 302:
-        return new MeetingSessionStatus(MeetingSessionStatusCode.AudioDisconnectAudio);
       case 403:
         return new MeetingSessionStatus(MeetingSessionStatusCode.AudioAuthenticationRejected);
       case 409:
