@@ -16,5 +16,5 @@ export default interface SigV4 {
     path: string,
     payload: string,
     queryParams: Map<string, string[]> | null
-  ): string;
+  ): Promise<string>;
 }

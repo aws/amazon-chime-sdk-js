@@ -59,8 +59,8 @@ describe('DefaultMessagingSession', () => {
       _path: string,
       _payload: string,
       _queryParams: Map<string, string[]>
-    ): string {
-      return hostname;
+    ): Promise<string> {
+      return Promise.resolve(hostname);
     }
   }
 
@@ -79,13 +79,7 @@ describe('DefaultMessagingSession', () => {
     dommMockBehavior = new DOMMockBehavior();
     dommMockBehavior.webSocketSendEcho = true;
     domMockBuilder = new DOMMockBuilder(dommMockBehavior);
-    configuration = new MessagingSessionConfiguration(
-      'userArn',
-      '123',
-      ENDPOINT_URL,
-      chimeClient,
-      {}
-    );
+    configuration = new MessagingSessionConfiguration('userArn', '123', ENDPOINT_URL, chimeClient);
     configuration.reconnectTimeoutMs = 100;
     configuration.reconnectFixedWaitMs = 40;
     configuration.reconnectShortBackoffMs = 10;
@@ -129,9 +123,10 @@ describe('DefaultMessagingSession', () => {
           done();
         },
       });
-      messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
       });
     });
 
@@ -146,10 +141,11 @@ describe('DefaultMessagingSession', () => {
           messageCount++;
         },
       });
-      messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(createChannelMessage('message1'));
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(createChannelMessage('message1'));
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
       });
     });
 
@@ -171,10 +167,11 @@ describe('DefaultMessagingSession', () => {
           done();
         },
       });
-      messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
-        webSocket.send(createChannelMessage('message1'));
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+          webSocket.send(createChannelMessage('message1'));
+        });
       });
     });
 
@@ -185,18 +182,19 @@ describe('DefaultMessagingSession', () => {
           count++;
         },
       });
-      messagingSession.start();
-      webSocket.addEventListener('close', (_event: CloseEvent) => {
-        expect(count).to.be.eq(0);
-        done();
+      messagingSession.start().then(() => {
+        webSocket.addEventListener('close', (_event: CloseEvent) => {
+          expect(count).to.be.eq(0);
+          done();
+        });
+        webSocket.close(4401);
       });
-      webSocket.close(4401);
     });
 
-    it('Do not start if there is an existing connection', () => {
+    it('Do not start if there is an existing connection', async () => {
       const logSpy = sinon.spy(logger, 'info');
-      messagingSession.start();
-      messagingSession.start();
+      await messagingSession.start();
+      await messagingSession.start();
       expect(logSpy.calledWith('messaging session already started'));
       logSpy.restore();
     });
@@ -205,11 +203,12 @@ describe('DefaultMessagingSession', () => {
       dommMockBehavior.webSocketOpenSucceeds = false;
       domMockBuilder = new DOMMockBuilder(dommMockBehavior);
       const logSpy = sinon.spy(logger, 'error');
-      messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
-        expect(logSpy.calledOnce).to.be.true;
-        logSpy.restore();
-        done();
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          expect(logSpy.calledOnce).to.be.true;
+          logSpy.restore();
+          done();
+        });
       });
     });
   });
@@ -224,9 +223,10 @@ describe('DefaultMessagingSession', () => {
           done();
         },
       });
-      messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
       });
     });
 
@@ -313,9 +313,10 @@ describe('DefaultMessagingSession', () => {
           done();
         },
       });
-      messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
       });
     });
   });
@@ -329,11 +330,12 @@ describe('DefaultMessagingSession', () => {
         },
       };
       messagingSession.addObserver(observer);
-      messagingSession.start();
-      messagingSession.removeObserver(observer);
-      webSocket.addEventListener('open', () => {
-        expect(didStartConnecting).to.be.eq(0);
-        done();
+      messagingSession.start().then(() => {
+        messagingSession.removeObserver(observer);
+        webSocket.addEventListener('open', () => {
+          expect(didStartConnecting).to.be.eq(0);
+          done();
+        });
       });
     });
 
@@ -346,9 +348,10 @@ describe('DefaultMessagingSession', () => {
           });
         },
       });
-      messagingSession.start();
-      new TimeoutScheduler(10).start(() => {
-        webSocket.send(SESSION_SUBSCRIBED_MSG);
+      messagingSession.start().then(() => {
+        new TimeoutScheduler(10).start(() => {
+          webSocket.send(SESSION_SUBSCRIBED_MSG);
+        });
       });
     });
   });
@@ -356,12 +359,13 @@ describe('DefaultMessagingSession', () => {
   describe('message', () => {
     it('Catch JSON parse error', done => {
       const logSpy = sinon.spy(logger, 'error');
-      messagingSession.start();
-      webSocket.send(INVALID_MSG);
-      new TimeoutScheduler(10).start(() => {
-        expect(logSpy.calledOnce).to.be.true;
-        logSpy.restore();
-        done();
+      messagingSession.start().then(() => {
+        webSocket.send(INVALID_MSG);
+        new TimeoutScheduler(10).start(() => {
+          expect(logSpy.calledOnce).to.be.true;
+          logSpy.restore();
+          done();
+        });
       });
     });
   });

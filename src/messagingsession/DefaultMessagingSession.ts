@@ -43,7 +43,7 @@ export default class DefaultMessagingSession implements MessagingSession {
       );
     }
     if (!this.sigV4) {
-      this.sigV4 = new DefaultSigV4(this.configuration.chimeClient, this.configuration.awsClient);
+      this.sigV4 = new DefaultSigV4(this.configuration.chimeClient);
     }
 
     CSPMonitor.addLogger(this.logger);
@@ -60,9 +60,9 @@ export default class DefaultMessagingSession implements MessagingSession {
     this.observerQueue.delete(observer);
   }
 
-  start(): void {
+  async start(): Promise<void> {
     if (this.isClosed()) {
-      this.startConnecting(false);
+      await this.startConnecting(false);
     } else {
       this.logger.info('messaging session already started');
     }
@@ -103,8 +103,8 @@ export default class DefaultMessagingSession implements MessagingSession {
     });
   }
 
-  private startConnecting(reconnecting: boolean): void {
-    const signedUrl = this.prepareWebSocketUrl();
+  private async startConnecting(reconnecting: boolean): Promise<void> {
+    const signedUrl = await this.prepareWebSocketUrl();
     this.logger.info(`opening connection to ${signedUrl}`);
     if (!reconnecting) {
       this.reconnectController.reset();
@@ -123,11 +123,11 @@ export default class DefaultMessagingSession implements MessagingSession {
     this.setUpEventListeners();
   }
 
-  private prepareWebSocketUrl(): string {
+  private async prepareWebSocketUrl(): Promise<string> {
     const queryParams = new Map<string, string[]>();
     queryParams.set('userArn', [this.configuration.userArn]);
     queryParams.set('sessionId', [this.configuration.messagingSessionId]);
-    return this.sigV4.signURL(
+    return await this.sigV4.signURL(
       'GET',
       'wss',
       'chime',

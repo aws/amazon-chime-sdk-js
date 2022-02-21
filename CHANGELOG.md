@@ -14,10 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Add support for pre-release in Versioning.
 - Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.
+- Add support for aws-sdk js v3 for messaging session.
     
 ### Fixed
-- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy 
-  for Chromium browsers version 98 on Windows and use 360p instead.
 - Fix a worker resource leak with `BackgroundBlurProcessor` and `BackgroundReplacementProcessor`.
     
 ## [2.27.0] - 2022-01-27
@@ -32,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
 ### Fixed
 - Fix the reconnecting issue (#1985) by skipping the "close" event if it does not arrive in two seconds.
+- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy
+  for Chromium browsers version 98 on Windows and use 360p instead.
     
 ## [2.26.0] - 2022-01-14
     
