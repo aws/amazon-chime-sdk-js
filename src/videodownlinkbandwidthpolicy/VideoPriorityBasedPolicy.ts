@@ -304,19 +304,20 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     const currentEstimated = this.downlinkStats.bandwidthEstimateKbps;
 
     // Use videoPriorityBasedPolicyConfig to add additional delays based on network conditions
-    if (
-      noMajorChange &&
-      this.probeFailed &&
-      !this.videoPriorityBasedPolicyConfig.allowSubscribe(numberOfParticipants, currentEstimated)
-    ) {
-      return;
-    }
+    const dontAllowSubscribe = !this.videoPriorityBasedPolicyConfig.allowSubscribe(
+      numberOfParticipants,
+      currentEstimated
+    );
 
-    // When probe failed, we set timeBeforeAllowSubscribeMs to 3x longer
-    // Since we have passed the subscribe interval now, we will try to probe again
-    this.probeFailed = false;
-    // For the same reason above, reset time before allow subscribe to default
-    this.timeBeforeAllowSubscribeMs = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS;
+    if (this.probeFailed) {
+      // When probe failed, we set timeBeforeAllowSubscribeMs to 3x longer
+      // Since we have passed the subscribe interval now, we will try to probe again
+      this.probeFailed = false;
+      // For the same reason above, reset time before allow subscribe to default
+      this.timeBeforeAllowSubscribeMs = VideoPriorityBasedPolicy.MIN_TIME_BETWEEN_SUBSCRIBE_MS;
+
+      if (noMajorChange && dontAllowSubscribe) return;
+    }
 
     const upgradeStream: VideoStreamDescription = this.priorityPolicy(
       rates,
