@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
 ### Changed
 - Add support for pre-release in Versioning.
-- Removed upward logic in VideoPriorityBasedPolicyConfig.
+- Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.
     
 ### Fixed
 - Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy 
