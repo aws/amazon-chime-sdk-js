@@ -72,31 +72,9 @@ describe('VideoPriorityBasedPolicyConfig', () => {
   });
 
   describe('allowSubscribe', () => {
-    it('not allowed subscribe when bandwidth increases within recovery delay', () => {
-      const videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig();
-
-      incrementTime(1000);
-      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.false;
-      incrementTime(1000);
-      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.false;
-    });
-
-    it('allowed subscribe when bandwidth increases after recovery delay', () => {
-      const videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig();
-
-      incrementTime(1000);
-      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.false;
-      incrementTime(2100);
-      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.true;
-      incrementTime(2100);
-      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.false;
-    });
-
     it('not allowed subscribe when bandwidth decreases within response delay', () => {
       const videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig();
 
-      incrementTime(1000);
-      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.false;
       incrementTime(2100);
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.true;
       incrementTime(1000);
@@ -105,17 +83,17 @@ describe('VideoPriorityBasedPolicyConfig', () => {
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 300)).to.be.false;
     });
 
-    it('not allowed subscribe when bandwidth increases within recovery delay', () => {
+    it('allowed subscribe when bandwidth decreases within response delay', () => {
       const videoPriorityBasedPolicyConfig = new VideoPriorityBasedPolicyConfig();
 
-      incrementTime(1000);
-      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.false;
       incrementTime(2100);
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 1000)).to.be.true;
       incrementTime(1000);
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 300)).to.be.false;
       incrementTime(2100);
       expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 300)).to.be.true;
+      incrementTime(2100);
+      expect(videoPriorityBasedPolicyConfig.allowSubscribe(1, 300)).to.be.false;
     });
   });
 });
