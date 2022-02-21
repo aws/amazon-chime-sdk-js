@@ -34,7 +34,7 @@
     "doc": "ruby script/generate-docs",
     "postdoc": "node script/update-typedoc-link.js",
     "test": "npm run test:fast",
-    "test:glob": "cross-env TS_NODE_PROJECT=test/tsconfig.json TS_NODE_CACHE=false nyc --reporter=text mocha --stack-trace-limit=1000  --async-stack-traces -v -r esm -rv ts-node/register -- ",
+    "test:glob": "cross-env TS_NODE_PROJECT=test/tsconfig.json TS_NODE_CACHE=false nyc mocha --stack-trace-limit=1000  --async-stack-traces -v -r esm -rv ts-node/register -- ",
     "test:fast": "npm run test:glob \"test/**/*.test.ts\"",
     "test:slow": "cross-env MOCHA_TEST_DELAY_MS=100 npm run test:fast",
     "test:retry": "(npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast)",
@@ -98,6 +98,8 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
+    "@aws-crypto/sha256-js": "^2.0.1",
+    "@aws-sdk/util-hex-encoding": "^3.47.0",
     "@types/dom-mediacapture-record": "^1.0.7",
     "@types/ua-parser-js": "^0.7.35",
     "detect-browser": "^5.2.0",
