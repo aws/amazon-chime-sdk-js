@@ -23,9 +23,6 @@ export default class NoOpAudioVideoController extends DefaultAudioVideoControlle
     emptyConfiguration.urls = new MeetingSessionURLs();
     emptyConfiguration.urls.turnControlURL = '';
     emptyConfiguration.urls.audioHostURL = '';
-    emptyConfiguration.urls.screenViewingURL = '';
-    emptyConfiguration.urls.screenDataURL = '';
-    emptyConfiguration.urls.screenSharingURL = 'wss://localhost/';
     emptyConfiguration.urls.signalingURL = 'wss://localhost/';
     super(
       configuration ? configuration : emptyConfiguration,

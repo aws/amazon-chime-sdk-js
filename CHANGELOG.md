@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
     
 ### Removed
+- Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13. Also clean up all plan-B code path.
+- Remove all deprecated meeting status code.  
     
 ### Changed
 - Add support for pre-release in Versioning.

@@ -46,7 +46,6 @@ export default class CleanStoppedSessionTask extends BaseTask {
         this.context.peer.close();
       }
       this.context.peer = null;
-      this.context.localVideoSender = null;
       this.context.sdpAnswer = null;
       this.context.sdpOfferInit = null;
       this.context.indexFrame = null;

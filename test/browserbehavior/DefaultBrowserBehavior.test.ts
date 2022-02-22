@@ -89,14 +89,10 @@ describe('DefaultBrowserBehavior', () => {
       setUserAgent(FIREFOX_MAC_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('firefox');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().screenShareUnsupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(75);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.false;
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
       expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.false;
     });
 
@@ -118,39 +114,17 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
       expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.true;
-      const enableUnifiedPlan = true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
-        }).requiresUnifiedPlan()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
-        }).requiresUnifiedPlanMunging()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
-        }).requiresUnifiedPlan()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
-        }).requiresUnifiedPlanMunging()
-      ).to.be.true;
     });
 
     it('can detect Edge Chromium', () => {
       function check(): void {
         expect(new DefaultBrowserBehavior().name()).to.eq('edge-chromium');
         expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+        expect(new DefaultBrowserBehavior().hasWebKitWebRTC()).to.be.false;
         expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
         expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.true;
         expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-        expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
       }
 
       setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
@@ -162,27 +136,6 @@ describe('DefaultBrowserBehavior', () => {
       check();
 
       setUserAgent(CHROMIUM_EDGE_WINDOWS_USER_AGENT);
-      const enableUnifiedPlan = true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
-        }).requiresUnifiedPlan()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
-        }).requiresUnifiedPlanMunging()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
-        }).requiresUnifiedPlan()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
-        }).requiresUnifiedPlanMunging()
-      ).to.be.true;
     });
 
     it('can detect Samsung Internet', () => {
@@ -194,31 +147,9 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresGroupIdMediaStreamConstraints()).to.be.true;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
       expect(new DefaultBrowserBehavior().supportString()).to.eq(
         'Google Chrome 78+, Samsung Internet 12+'
       );
-      const enableUnifiedPlan = true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
-        }).requiresUnifiedPlan()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
-        }).requiresUnifiedPlanMunging()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
-        }).requiresUnifiedPlan()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
-        }).requiresUnifiedPlanMunging()
-      ).to.be.true;
     });
 
     it('can detect Safari', () => {
@@ -226,12 +157,10 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(13);
+      expect(new DefaultBrowserBehavior().hasWebKitWebRTC()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.true;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
       expect(new DefaultBrowserBehavior().supportDownlinkBandwidthEstimation()).to.be.true;
     });
 
@@ -245,55 +174,40 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.true;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
     });
 
     it('can detect iOS Chrome', () => {
       setUserAgent(ELECTRON_WINDOWS_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.not.eq('crios');
-
       setUserAgent(CHROME_IOS_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('crios');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
+      expect(new DefaultBrowserBehavior().hasWebKitWebRTC()).to.be.true;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(95);
       expect(new DefaultBrowserBehavior().requiresDisablingH264Encoding()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.true;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
     });
 
     it('can detect iOS Firefox', () => {
       setUserAgent(FIREFOX_IOS_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('fxios');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(29);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.true;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
     });
 
     it('can detect iOS WKWebView', () => {
       setUserAgent(WKWEBVIEW_IOS_USER_AGENT);
       expect(new DefaultBrowserBehavior().name()).to.eq('ios-webview');
       expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.false;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(605);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.true;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.false;
     });
 
     it('can detect Chromium Webview', () => {
@@ -304,49 +218,22 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().getDisplayMediaAudioCaptureSupport()).to.be.false;
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().supportsSenderSideBandwidthEstimation()).to.be.true;
       expect(new DefaultBrowserBehavior().doesNotSupportMediaDeviceLabels()).to.be.true;
-      const enableUnifiedPlan = true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
-        }).requiresUnifiedPlan()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: enableUnifiedPlan,
-        }).requiresUnifiedPlanMunging()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
-        }).requiresUnifiedPlan()
-      ).to.be.true;
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: !enableUnifiedPlan,
-        }).requiresUnifiedPlanMunging()
-      ).to.be.true;
     });
 
     it('can test Safari version 12', () => {
       domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.isUnifiedPlanSupported = false;
       domMockBehavior.browserName = 'safari12';
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
-      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
+      expect(new DefaultBrowserBehavior().isSupported()).to.be.false;
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
-      expect(new DefaultBrowserBehavior().requiresVideoElementWorkaround()).to.be.true;
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.false;
     });
 
     it('can test Safari version 11', () => {
       domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.isUnifiedPlanSupported = false;
       domMockBehavior.browserName = 'safari11';
       mockBuilder = new DOMMockBuilder(domMockBehavior);
       expect(new DefaultBrowserBehavior().name()).to.eq('safari');
@@ -354,36 +241,6 @@ describe('DefaultBrowserBehavior', () => {
       expect(new DefaultBrowserBehavior().majorVersion()).to.eq(11);
       expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
       expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.false;
-    });
-
-    it('can test iOS Safari version 12.0', () => {
-      domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'ios12.0';
-      mockBuilder = new DOMMockBuilder(domMockBehavior);
-      expect(new DefaultBrowserBehavior().name()).to.eq('ios');
-      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
-      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
-      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.false;
-    });
-
-    it('can test iOS Safari version 12.1', () => {
-      domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'ios12.1';
-      mockBuilder = new DOMMockBuilder(domMockBehavior);
-      expect(new DefaultBrowserBehavior().name()).to.eq('ios');
-      expect(new DefaultBrowserBehavior().isSupported()).to.be.true;
-      expect(new DefaultBrowserBehavior().majorVersion()).to.eq(12);
-      expect(new DefaultBrowserBehavior().requiresBundlePolicy()).to.eq('max-bundle');
-      expect(new DefaultBrowserBehavior().requiresNoExactMediaStreamConstraints()).to.be.true;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlan()).to.be.false;
-      expect(new DefaultBrowserBehavior().requiresUnifiedPlanMunging()).to.be.false;
     });
 
     it('can handle an unknown user agent', () => {
@@ -397,15 +254,6 @@ describe('DefaultBrowserBehavior', () => {
       const codecs = await new DefaultBrowserBehavior().supportedVideoCodecs();
       expect(codecs.includes('H264')).to.equal(true);
       expect(codecs.includes('VP8')).to.equal(true);
-    });
-  });
-
-  describe('requiresSimulcastMunging', () => {
-    it('can determine if simulcast requires munging', () => {
-      setUserAgent(CHROME_WINDOWS_USER_AGENT);
-      expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.be.false;
-      setUserAgent(SAFARI_USER_AGENT);
-      expect(new DefaultBrowserBehavior().requiresSimulcastMunging()).to.be.true;
     });
   });
 
@@ -488,26 +336,7 @@ describe('DefaultBrowserBehavior', () => {
   describe('support Simulcast', () => {
     it('Supports for Chrome and unified plan (always enabled and not configurable)', () => {
       setUserAgent(CHROME_MAC_USER_AGENT);
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: true,
-        }).isSimulcastSupported()
-      ).to.be.true;
-
-      expect(
-        new DefaultBrowserBehavior({
-          enableUnifiedPlanForChromiumBasedBrowsers: false,
-        }).isSimulcastSupported()
-      ).to.be.true;
-    });
-
-    it('Does not support for browsers using Plan B', () => {
-      setUserAgent(SAFARI_USER_AGENT);
-      domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'ios12.0';
-      mockBuilder = new DOMMockBuilder(domMockBehavior);
-      expect(new DefaultBrowserBehavior().isSimulcastSupported()).to.be.false;
+      expect(new DefaultBrowserBehavior().isSimulcastSupported()).to.be.true;
     });
 
     it('Does not support for non-Chrome browsers', () => {

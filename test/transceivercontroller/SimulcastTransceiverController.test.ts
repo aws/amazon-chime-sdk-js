@@ -775,26 +775,4 @@ describe('SimulcastTransceiverController', () => {
       expect(audioTransceiver.sender.track).to.equal(newAudioTrack2);
     });
   });
-
-  describe('replaceAudioTrackForSender', () => {
-    it('returns false if input sender is null', async () => {
-      const audioTrack = new MediaStreamTrack();
-      const success = await SimulcastTransceiverController.replaceAudioTrackForSender(
-        null,
-        audioTrack
-      );
-      expect(success).to.be.false;
-    });
-
-    it('returns true if audio track is replaced', async () => {
-      const sender = new RTCRtpSender();
-      const audioTrack = new MediaStreamTrack();
-      const success = await SimulcastTransceiverController.replaceAudioTrackForSender(
-        sender,
-        audioTrack
-      );
-      expect(success).to.be.true;
-      expect(sender.track).to.equal(audioTrack);
-    });
-  });
 });

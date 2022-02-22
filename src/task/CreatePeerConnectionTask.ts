@@ -82,9 +82,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       : {};
     configuration.bundlePolicy = this.context.browserBehavior.requiresBundlePolicy();
     // @ts-ignore
-    configuration.sdpSemantics = this.context.browserBehavior.requiresUnifiedPlan()
-      ? 'unified-plan'
-      : 'plan-b';
+    configuration.sdpSemantics = 'unified-plan';
     // @ts-ignore
     this.logger.info(`SDP semantics are ${configuration.sdpSemantics}`);
     const connectionConstraints = {
@@ -134,28 +132,15 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
   private trackIsVideoInput(track: MediaStreamTrack): boolean {
     if (this.context.transceiverController.useTransceivers()) {
       this.logger.debug(() => {
-        return `getting video track type (unified-plan)`;
+        return `getting video track type`;
       });
       return this.context.transceiverController.trackIsVideoInput(track);
-    }
-    this.logger.debug(() => {
-      return `getting video track type (plan-b)`;
-    });
-    if (this.context.activeVideoInput) {
-      const tracks = this.context.activeVideoInput.getVideoTracks();
-      if (tracks && tracks.length > 0 && tracks[0].id === track.id) {
-        return true;
-      }
     }
     return false;
   }
 
   private addRemoteVideoTrack(track: MediaStreamTrack, stream: MediaStream): void {
-    let trackId = stream.id;
-    if (!this.context.browserBehavior.requiresUnifiedPlan()) {
-      stream = new MediaStream([track]);
-      trackId = track.id;
-    }
+    const trackId = stream.id;
     const attendeeId = this.context.videoStreamIndex.attendeeIdForTrack(trackId);
     let skipAdding: boolean;
     let tile: VideoTile;
@@ -195,7 +180,7 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
               track.id
             } streamId=${streamId}`
           );
-          if (trackEvent === 'ended' && this.context.browserBehavior.requiresUnifiedPlan()) {
+          if (trackEvent === 'ended') {
             this.removeRemoteVideoTrack(track, tile.state());
           }
         };
@@ -226,16 +211,8 @@ export default class CreatePeerConnectionTask extends BaseTask implements Remova
       `video track added, use tile=${tile.id()} track=${trackId} streamId=${streamId}`
     );
 
-    let endEvent = 'removetrack';
-    let target: MediaStream = stream;
-    if (!this.context.browserBehavior.requiresUnifiedPlan()) {
-      this.logger.debug(() => {
-        return 'updating end event and target track (plan-b)';
-      });
-      endEvent = 'ended';
-      // @ts-ignore
-      target = track;
-    }
+    const endEvent = 'removetrack';
+    const target: MediaStream = stream;
 
     const trackRemovedHandler = (): void => this.removeRemoteVideoTrack(track, tile.state());
     this.removeTrackRemovedEventListeners[track.id] = () => {

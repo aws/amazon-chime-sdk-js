@@ -70,27 +70,6 @@ describe('DefaultMeetingSession', () => {
       mockBuilder.cleanup();
     });
 
-    describe('construct with Unified Plan', function () {
-      it('can be constructed with Unified Plan regardless of if configured enableUnifiedPlanForChromiumBasedBrowsers', () => {
-        const domBehavior = new DOMMockBehavior();
-        domBehavior.browserName = 'chrome';
-        const mockBuilder = new DOMMockBuilder(domBehavior);
-        const config = new NoOpAudioVideoController().configuration;
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
-        let session = new DefaultMeetingSession(
-          config,
-          new NoOpLogger(),
-          new NoOpDeviceController()
-        );
-        expect(session).to.exist;
-
-        config.enableUnifiedPlanForChromiumBasedBrowsers = false;
-        session = new DefaultMeetingSession(config, new NoOpLogger(), new NoOpDeviceController());
-        expect(session).to.exist;
-        mockBuilder.cleanup();
-      });
-    });
-
     describe('construct with simulcast', function () {
       it('can be constructed with simulcast feature for chromium-based browsers', () => {
         const domBehavior = new DOMMockBehavior();
@@ -98,7 +77,6 @@ describe('DefaultMeetingSession', () => {
         const mockBuilder = new DOMMockBuilder(domBehavior);
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         const session = new DefaultMeetingSession(
           config,
@@ -108,26 +86,6 @@ describe('DefaultMeetingSession', () => {
         expect(session).to.exist;
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           true
-        );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
-        mockBuilder.cleanup();
-      });
-
-      it('can be constructed with simulcast feature switched off when configured on Plan B', () => {
-        const domBehavior = new DOMMockBehavior();
-        domBehavior.browserName = 'safari12';
-        domBehavior.isUnifiedPlanSupported = false;
-        const mockBuilder = new DOMMockBuilder(domBehavior);
-        const config = new NoOpAudioVideoController().configuration;
-        config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-        const session = new DefaultMeetingSession(
-          config,
-          new NoOpLogger(),
-          new NoOpDeviceController()
-        );
-        expect(session).to.exist;
-        expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
-          false
         );
         mockBuilder.cleanup();
       });
@@ -139,7 +97,6 @@ describe('DefaultMeetingSession', () => {
 
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         const session = new DefaultMeetingSession(
           config,
@@ -150,7 +107,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           false
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         mockBuilder.cleanup();
       });
 
@@ -160,7 +116,6 @@ describe('DefaultMeetingSession', () => {
         const mockBuilder = new DOMMockBuilder(domBehavior);
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         config.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
           'test',
@@ -175,7 +130,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           true
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         expect(
           session.configuration.videoUplinkBandwidthPolicy instanceof DefaultSimulcastUplinkPolicy
         ).to.be.true;
@@ -202,7 +156,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           true
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         expect(
           session.configuration.videoUplinkBandwidthPolicy instanceof DefaultSimulcastUplinkPolicy
         ).to.be.true;
@@ -215,7 +168,6 @@ describe('DefaultMeetingSession', () => {
         const mockBuilder = new DOMMockBuilder(domBehavior);
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         config.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
           'test',
@@ -234,7 +186,6 @@ describe('DefaultMeetingSession', () => {
         const mockBuilder = new DOMMockBuilder(domBehavior);
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         config.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('test');
         const session = new DefaultMeetingSession(
@@ -246,7 +197,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           false
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         expect(
           session.configuration.videoUplinkBandwidthPolicy instanceof
             NScaleVideoUplinkBandwidthPolicy
@@ -271,7 +221,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           false
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         expect(
           session.configuration.videoUplinkBandwidthPolicy instanceof
             NScaleVideoUplinkBandwidthPolicy

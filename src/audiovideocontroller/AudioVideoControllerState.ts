@@ -88,10 +88,6 @@ export default class AudioVideoControllerState {
 
   lastKnownVideoAvailability: MeetingSessionVideoAvailability | null = null;
 
-  localVideoSender: RTCRtpSender | null = null;
-
-  localAudioSender: RTCRtpSender | null = null;
-
   videoCaptureAndEncodeParameter: VideoCaptureAndEncodeParameter | null = null;
 
   // An unordered list of IDs provided by the downlink policy that

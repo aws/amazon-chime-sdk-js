@@ -13,8 +13,6 @@ npm install --save amazon-chime-sdk-js@3
 Version 3 of the Amazon Chime SDK for JavaScript makes a small number of interface
 changes, as well as removing some deprecated interfaces.
 
-In many cases you should not need to adjust your application code at all. This will be the case if:
-
 ### Messaging
 #### Remove AWS global object from `MessagingSessionConfiguration.ts`
 `MessagingSessionConfiguration` used to require to pass in the AWS global object for sigV4 signing which does not 
@@ -47,3 +45,12 @@ change it to
 ```typescript
 await messagingSession.start();
 ```
+
+### MeetingStatusCode
+The following meeting status code have been deprecated in v2.x and are now removed in v3.x, if your applications 
+handle them please remove.
+- AudioDisconnectAudio
+- AudioCallEnded
+- TURNMeetingEnded
+- StateMachineTransitionFailed
+- AudioDeviceSwitched
