@@ -78,7 +78,6 @@ export default class DOMMockBehavior {
   audioContextDefaultSampleRate = 48000;
   audioContextCreateBufferSucceeds = true;
   createMediaStreamDestinationSuccess: boolean = true;
-  isUnifiedPlanSupported: boolean = true;
 
   videoElementStartPlayDelay = 25;
   videoElementShouldFail = false;

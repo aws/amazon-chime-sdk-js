@@ -538,8 +538,7 @@ export default class DefaultAudioVideoController
 
       if (
         this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController &&
-        this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController &&
-        this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController
       ) {
         this.useUpdateTransceiverControllerForUplink = true;
         this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController(
@@ -1004,11 +1003,7 @@ export default class DefaultAudioVideoController
       throw new Error('no active meeting and peer connection');
     }
 
-    if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
-      await this.meetingSessionContext.transceiverController.setVideoInput(videoTrack);
-    } else {
-      throw new Error('cannot replace track on Plan B');
-    }
+    await this.meetingSessionContext.transceiverController.setVideoInput(videoTrack);
 
     // if there is a local tile, a video tile update event should be fired.
     const localTile = this.meetingSessionContext.videoTileController.getLocalVideoTile();
@@ -1051,16 +1046,10 @@ export default class DefaultAudioVideoController
     }
     let replaceTrackSuccess = false;
 
-    if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
-      replaceTrackSuccess = await this.meetingSessionContext.transceiverController.replaceAudioTrack(
-        audioTrack
-      );
-    } else {
-      replaceTrackSuccess = await DefaultTransceiverController.replaceAudioTrackForSender(
-        this.meetingSessionContext.localAudioSender,
-        audioTrack
-      );
-    }
+    replaceTrackSuccess = await this.meetingSessionContext.transceiverController.replaceAudioTrack(
+      audioTrack
+    );
+
     this._realtimeController.realtimeSetLocalAudioInput(audioStream);
     this.meetingSessionContext.activeAudioInput = audioStream;
     callback();
@@ -1293,17 +1282,9 @@ export default class DefaultAudioVideoController
   }
 
   private async enforceBandwidthLimitationForSender(maxBitrateKbps: number): Promise<void> {
-    if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
-      await this.meetingSessionContext.transceiverController.setVideoSendingBitrateKbps(
-        maxBitrateKbps
-      );
-    } else {
-      await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
-        this.meetingSessionContext.localVideoSender,
-        maxBitrateKbps,
-        this.meetingSessionContext.logger
-      );
-    }
+    await this.meetingSessionContext.transceiverController.setVideoSendingBitrateKbps(
+      maxBitrateKbps
+    );
   }
 
   handleMeetingSessionStatus(status: MeetingSessionStatus, error: Error | null): boolean {

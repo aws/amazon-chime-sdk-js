@@ -1659,7 +1659,10 @@ export default class DefaultDeviceController
         // To handle this, we select appropriate device using deviceId + groupId.
         trackConstraints.deviceId = device;
         trackConstraints.groupId = this.getGroupIdFromDeviceId(kind, device);
-      } else if (this.browserBehavior.requiresNoExactMediaStreamConstraints()) {
+      } /* istanbul ignore next */ else if (
+        this.browserBehavior.requiresNoExactMediaStreamConstraints()
+      ) {
+        // This branch is used to be for iOS 12 and 12.1 which are no longer supported
         trackConstraints.deviceId = device;
       } else {
         trackConstraints.deviceId = { exact: device };

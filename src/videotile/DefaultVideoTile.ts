@@ -1,11 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import DevicePixelRatioMonitor from '../devicepixelratiomonitor/DevicePixelRatioMonitor';
 import DevicePixelRatioObserver from '../devicepixelratioobserver/DevicePixelRatioObserver';
 import DefaultModality from '../modality/DefaultModality';
-import AsyncScheduler from '../scheduler/AsyncScheduler';
 import VideoTileController from '../videotilecontroller/VideoTileController';
 import VideoTile from './VideoTile';
 import VideoTileState from './VideoTileState';
@@ -61,14 +59,6 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
     if (videoElement.srcObject !== videoStream) {
       videoElement.srcObject = videoStream;
     }
-
-    if (new DefaultBrowserBehavior().requiresVideoElementWorkaround()) {
-      AsyncScheduler.nextTick(async () => {
-        try {
-          await videoElement.play();
-        } catch (error) {}
-      });
-    }
   }
 
   /**
@@ -113,18 +103,7 @@ export default class DefaultVideoTile implements DevicePixelRatioObserver, Video
         mediaStream.removeTrack(track);
       }
 
-      // Need to yield the message loop before clearing `srcObject` to
-      // prevent Safari from crashing.
-      if (new DefaultBrowserBehavior().requiresVideoElementWorkaround()) {
-        const prevSrcObject = videoElement.srcObject;
-        AsyncScheduler.nextTick(() => {
-          if (videoElement.srcObject === prevSrcObject) {
-            videoElement.srcObject = null;
-          }
-        });
-      } else {
-        videoElement.srcObject = null;
-      }
+      videoElement.srcObject = null;
     }
   }
 

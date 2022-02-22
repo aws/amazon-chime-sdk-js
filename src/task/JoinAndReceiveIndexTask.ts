@@ -21,7 +21,6 @@ import BaseTask from './BaseTask';
 export default class JoinAndReceiveIndexTask extends BaseTask {
   protected taskName = 'JoinAndReceiveIndexTask';
   private taskCanceler: TaskCanceler | null = null;
-  private maxVideos = 25;
 
   constructor(private context: AudioVideoControllerState) {
     super(context.logger);
@@ -105,11 +104,7 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       this.context.signalingClient.registerObserver(interceptor);
       this.taskCanceler = interceptor;
       this.context.signalingClient.join(
-        new SignalingClientJoin(
-          this.maxVideos,
-          true,
-          this.context.meetingSessionConfiguration.applicationMetadata
-        )
+        new SignalingClientJoin(this.context.meetingSessionConfiguration.applicationMetadata)
       );
     });
     this.context.logger.info(`received first index ${JSON.stringify(indexFrame)}`);

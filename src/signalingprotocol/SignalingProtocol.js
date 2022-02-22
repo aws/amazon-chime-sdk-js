@@ -1072,17 +1072,13 @@ $root.SdkErrorFrame = (function() {
  * SdkJoinFlags enum.
  * @exports SdkJoinFlags
  * @enum {string}
- * @property {number} SEND_BITRATES=1 SEND_BITRATES value
  * @property {number} HAS_STREAM_UPDATE=2 HAS_STREAM_UPDATE value
- * @property {number} USE_SEND_SIDE_BWE=8 USE_SEND_SIDE_BWE value
  * @property {number} COMPLETE_VIDEO_SOURCES_LIST=16 COMPLETE_VIDEO_SOURCES_LIST value
  * @property {number} EXCLUDE_SELF_CONTENT_IN_INDEX=32 EXCLUDE_SELF_CONTENT_IN_INDEX value
  */
 $root.SdkJoinFlags = (function() {
     var valuesById = {}, values = Object.create(valuesById);
-    values[valuesById[1] = "SEND_BITRATES"] = 1;
     values[valuesById[2] = "HAS_STREAM_UPDATE"] = 2;
-    values[valuesById[8] = "USE_SEND_SIDE_BWE"] = 8;
     values[valuesById[16] = "COMPLETE_VIDEO_SOURCES_LIST"] = 16;
     values[valuesById[32] = "EXCLUDE_SELF_CONTENT_IN_INDEX"] = 32;
     return values;
@@ -1764,7 +1760,7 @@ $root.SdkJoinAckFrame = (function() {
      * @memberof SdkJoinAckFrame
      * @instance
      */
-    SdkJoinAckFrame.prototype.videoSubscriptionLimit = 0;
+    SdkJoinAckFrame.prototype.videoSubscriptionLimit = 25;
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.
@@ -1917,7 +1913,7 @@ $root.SdkJoinAckFrame = (function() {
         var object = {};
         if (options.defaults) {
             object.turnCredentials = null;
-            object.videoSubscriptionLimit = 0;
+            object.videoSubscriptionLimit = 25;
         }
         if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
             object.turnCredentials = $root.SdkTurnCredentials.toObject(message.turnCredentials, options);

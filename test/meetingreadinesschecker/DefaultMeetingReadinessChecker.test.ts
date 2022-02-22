@@ -64,9 +64,6 @@ describe('DefaultMeetingReadinessChecker', () => {
     configuration.urls.audioHostURL = 'https://audiohost.test.example.com';
     configuration.urls.turnControlURL = 'https://turncontrol.test.example.com';
     configuration.urls.signalingURL = 'https://signaling.test.example.com';
-    configuration.urls.screenSharingURL = 'https://signaling.test.example.com';
-    configuration.urls.screenDataURL = 'https://signaling.test.example.com';
-    configuration.urls.screenViewingURL = 'https://signaling.test.example.com';
     configuration.urls.urlRewriter = (url: string) => {
       return url;
     };
@@ -496,7 +493,7 @@ describe('DefaultMeetingReadinessChecker', () => {
 
     it('Do not use exact if browser does not support', async () => {
       domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.browserName = 'ios12.0';
+      domMockBehavior.browserName = 'samsung';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       meetingReadinessCheckerController = new DefaultMeetingReadinessChecker(
         logger,

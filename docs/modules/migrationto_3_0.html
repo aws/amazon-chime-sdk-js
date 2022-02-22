@@ -84,7 +84,6 @@
 					</a>
 					<p>Version 3 of the Amazon Chime SDK for JavaScript makes a small number of interface
 					changes, as well as removing some deprecated interfaces.</p>
-					<p>In many cases you should not need to adjust your application code at all. This will be the case if:</p>
 					<a href="#messaging" id="messaging" style="color: inherit; text-decoration: none;">
 						<h3>Messaging</h3>
 					</a>
@@ -110,7 +109,19 @@
 					<p>change it to</p>
 					<pre><code class="language-typescript"><span class="hljs-keyword">await</span> messagingSession.start();
 </code></pre>
-					<p><a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Migration%20to_3_0%20feedback">Give feedback on this guide</a></p>
+					<a href="#meetingstatuscode" id="meetingstatuscode" style="color: inherit; text-decoration: none;">
+						<h3>MeetingStatusCode</h3>
+					</a>
+					<p>The following meeting status code have been deprecated in v2.x and are now removed in v3.x, if your applications
+					handle them please remove.</p>
+					<ul>
+						<li>AudioDisconnectAudio</li>
+						<li>AudioCallEnded</li>
+						<li>TURNMeetingEnded</li>
+						<li>StateMachineTransitionFailed</li>
+						<li>AudioDeviceSwitched
+						<a href="https://github.com/aws/amazon-chime-sdk-js/issues/new?assignees=&amp;labels=documentation&amp;template=documentation-request.md&amp;title=Migration%20to_3_0%20feedback">Give feedback on this guide</a></li>
+					</ul>
 				</div>
 			</section>
 		</div>

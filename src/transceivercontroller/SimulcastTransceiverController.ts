@@ -90,18 +90,6 @@ export default class SimulcastTransceiverController extends DefaultTransceiverCo
     this.logVideoTransceiverParameters();
   }
 
-  static async replaceAudioTrackForSender(
-    sender: RTCRtpSender,
-    track: MediaStreamTrack
-  ): Promise<boolean> {
-    if (!sender) {
-      return false;
-    }
-
-    await sender.replaceTrack(track);
-    return true;
-  }
-
   async setVideoSendingBitrateKbps(_bitrateKbps: number): Promise<void> {
     return;
   }

@@ -23,8 +23,6 @@ import DOMMockBuilder from '../dommock/DOMMockBuilder';
 describe('AttachMediaInputTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
-  const SAFARI_12_USER_AGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.2 Safari/605.1.15';
 
   const logger = new NoOpDebugLogger();
   const domMockBehavior: DOMMockBehavior = new DOMMockBehavior();
@@ -163,19 +161,6 @@ describe('AttachMediaInputTask', () => {
         done();
       });
     });
-
-    it('removes a local video sender if video input is null', done => {
-      context.localVideoSender = context.peer.addTrack(
-        // @ts-ignore
-        new MediaStreamTrack('id', 'video'),
-        context.activeVideoInput
-      );
-      context.activeVideoInput = null;
-      task.run().then(() => {
-        expect(context.localVideoSender).to.equal(null);
-        done();
-      });
-    });
   });
 
   describe('Simulcast', () => {
@@ -187,95 +172,10 @@ describe('AttachMediaInputTask', () => {
       );
       // @ts-ignore
       navigator.userAgent = 'Chrome/77.0.3865.75';
-      context.browserBehavior = new DefaultBrowserBehavior({
-        enableUnifiedPlanForChromiumBasedBrowsers: true,
-      });
+      context.browserBehavior = new DefaultBrowserBehavior();
       const spy = sinon.spy(context.transceiverController, 'setEncodingParameters');
       task.run().then(() => {
         expect(spy.calledOnce).to.equal(true);
-        done();
-      });
-    });
-  });
-
-  describe('Plan B', () => {
-    beforeEach(() => {
-      // @ts-ignore
-      navigator.userAgent = SAFARI_12_USER_AGENT;
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'safari12';
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      context.browserBehavior = new DefaultBrowserBehavior();
-      context.transceiverController = new DefaultTransceiverController(
-        logger,
-        context.browserBehavior
-      );
-      context.statsCollector = new DefaultStatsCollector(
-        context.audioVideoController,
-        logger,
-        context.browserBehavior
-      );
-    });
-
-    it("adds an audio track if the audio input's track ID does not have any matching sender", done => {
-      // @ts-ignore
-      const audioTrack = new MediaStreamTrack('audio-track-id', 'audio');
-      context.activeAudioInput = new MediaStream();
-      context.activeAudioInput.addTrack(audioTrack);
-      const spy = sinon.spy(context.peer, 'addTrack');
-      task.run().then(() => {
-        expect(spy.calledWith(audioTrack, context.activeAudioInput)).to.be.true;
-        done();
-      });
-    });
-
-    it("does not add an audio track if the audio input's track ID has a matching sender", done => {
-      const id = 'audio-track-id';
-
-      // @ts-ignore
-      context.peer.addTrack(new MediaStreamTrack(id, 'audio'), new MediaStream());
-
-      // @ts-ignore
-      const audioTrack = new MediaStreamTrack(id, 'audio');
-      context.activeAudioInput = new MediaStream();
-      context.activeAudioInput.addTrack(audioTrack);
-      const spy = sinon.spy(context.peer, 'addTrack');
-      task.run().then(() => {
-        expect(spy.calledWith(audioTrack, context.activeAudioInput)).to.be.false;
-        done();
-      });
-    });
-
-    it("removes a local video sender and adds a new video track if the video input's track ID does not have any matching sender", done => {
-      // @ts-ignore
-      const videoTrack = new MediaStreamTrack('attach-media-input-task-video-track-id', 'video');
-      context.activeVideoInput = new MediaStream();
-      context.activeVideoInput.addTrack(videoTrack);
-      context.localVideoSender = context.peer.addTrack(
-        // @ts-ignore
-        new MediaStreamTrack('id', 'video'),
-        context.activeVideoInput
-      );
-      const spy = sinon.spy(context.peer, 'addTrack');
-      task.run().then(() => {
-        expect(spy.calledWith(videoTrack, context.activeVideoInput)).to.be.true;
-        done();
-      });
-    });
-
-    it("does not remove a local video sender and add a new video track if the video input's track ID has a matching sender", done => {
-      const id = 'video-track-id';
-
-      // @ts-ignore
-      context.peer.addTrack(new MediaStreamTrack(id, 'video'), new MediaStream());
-
-      // @ts-ignore
-      const videoTrack = new MediaStreamTrack(id, 'video');
-      context.activeVideoInput = new MediaStream();
-      context.activeVideoInput.addTrack(videoTrack);
-      const spy = sinon.spy(context.peer, 'addTrack');
-      task.run().then(() => {
-        expect(spy.calledWith(videoTrack, context.activeVideoInput)).to.be.false;
         done();
       });
     });
