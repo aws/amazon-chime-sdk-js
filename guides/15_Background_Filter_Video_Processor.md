@@ -141,9 +141,9 @@ if (await BackgroundReplacementVideoFrameProcessor.isSupported()) {
 let transformDevice = new DefaultVideoTransformDevice(logger, device, processors);
 ```
 
-### Changing the background image for Background Replacement
+### Replacing the background image for a BackgroundReplacementProcessor mid stream
 
-If you would like to change the background image mid stream for a background replacement processor, you may want to cache a reference to the created BackgroundReplacementProcessor and call the [`setImageBlob`](https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundreplacementprocessor/BackgroundReplacementProcessor.ts#L28) API to change the background image.
+Store a reference to the background replacement processor object. Use BackgroundReplacementProcessor's [`setImageBlob`](https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundreplacementprocessor/BackgroundReplacementProcessor.ts#L28) to update the existing background image within the BackgroundReplacementProcessor anytime after initialization.
 
 ```typescript
 async function changeBackgroundImage(backgroundReplacementProcessor: BackgroundReplacementProcessor) {
