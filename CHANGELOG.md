@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0-beta.0] - 2022-02-08
     
 ### Added
-    
+- Add automatic language identification support from Amazon Transcribe for live transcription.
+
 ### Removed
     
 ### Changed
