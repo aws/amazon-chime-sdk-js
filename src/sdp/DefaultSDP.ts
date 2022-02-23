@@ -387,12 +387,9 @@ export default class DefaultSDP {
     return videoSSRC1.toString();
   }
 
-<<<<<<< HEAD
-=======
   /**
    * Returns whether the sendrecv video sections if exist have two different SSRCs in SDPs
    */
->>>>>>> 609b2d3f (Remove SDP interface)
   videoSendSectionHasDifferentSSRC(prevSdp: DefaultSDP): boolean {
     const ssrc1 = this.ssrcForVideoSendingSection();
     const ssrc2 = prevSdp.ssrcForVideoSendingSection();
