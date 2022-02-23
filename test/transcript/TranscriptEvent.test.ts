@@ -265,11 +265,16 @@ describe('TranscriptEvent', () => {
     expect(actualEvents[0].results[0].alternatives[0].entities[1].confidence).to.eql(0);
   });
 
-  it('handles one transcript event of transcript type with language identifications', async () => {
+  it('handles encoding of one transcript event of transcript type with language identifications', async () => {
     const event = makeSdkTranscriptWithLanguageIdentifications();
     const data = SdkTranscriptFrame.encode(makeSdkTranscriptFrame([event])).finish();
-    logBase64FromUint8Array(data);
-    // The steps above generates data below passed directly as test input
+    const encodedData = logBase64FromUint8Array(data);
+    assert.typeOf(encodedData, 'string');
+  });
+
+  it('handles decoding of one transcript event of transcript type with language identifications', async () => {
+    const event = makeSdkTranscriptWithLanguageIdentifications();
+
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPT_LANGUAGE_IDENTIFICATIONS
     );
