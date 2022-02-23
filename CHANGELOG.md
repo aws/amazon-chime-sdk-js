@@ -5,13 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.0-beta.0] - 2022-02-08
+## [3.0.0-beta.1] - 2022-02-23
     
 ### Added
     
 ### Removed
     
 ### Changed
+    
+### Fixed
+    
+## [3.0.0-beta.0] - 2022-02-08
+    
+### Added
+    
+### Removed
+- Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13. Also clean up all plan-B code path.
+- Remove all deprecated meeting status code.  
+    
+### Changed
+- Decoupled `EventController` from `AudioVideo` and `MeetingSession`.
 - Add support for pre-release in Versioning.
 - Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.
 - Add support for aws-sdk js v3 for messaging session.

@@ -41,12 +41,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
   async run(): Promise<void> {
     let localSdp = '';
     if (this.context.peer && this.context.peer.localDescription) {
-      if (this.context.browserBehavior.requiresUnifiedPlanMunging()) {
-        localSdp = new DefaultSDP(this.context.peer.localDescription.sdp).withUnifiedPlanFormat()
-          .sdp;
-      } else {
-        localSdp = this.context.peer.localDescription.sdp;
-      }
+      localSdp = new DefaultSDP(this.context.peer.localDescription.sdp).withUnifiedPlanFormat().sdp;
     }
 
     if (!this.context.enableSimulcast) {
@@ -70,9 +65,10 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     this.context.videoStreamIndex.subscribeFrameSent();
 
     // See comment above `fixUpSubscriptionOrder`
-    const videoSubscriptions = this.context.browserBehavior.requiresUnifiedPlan()
-      ? this.fixUpSubscriptionOrder(localSdp, this.context.videoSubscriptions)
-      : this.context.videoSubscriptions;
+    const videoSubscriptions = this.fixUpSubscriptionOrder(
+      localSdp,
+      this.context.videoSubscriptions
+    );
 
     const isSendingStreams: boolean =
       this.context.videoDuplexMode === SdkStreamServiceType.TX ||

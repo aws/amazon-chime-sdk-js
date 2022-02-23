@@ -19,6 +19,7 @@ import PermissionDeniedError from '../../src/devicecontroller/PermissionDeniedEr
 import TypeError from '../../src/devicecontroller/TypeError';
 import VideoInputDevice from '../../src/devicecontroller/VideoInputDevice';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
+import EventController from '../../src/eventcontroller/EventController';
 import EventName from '../../src/eventcontroller/EventName';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import MediaDeviceProxyHandler from '../../src/mediadevicefactory/MediaDeviceProxyHandler';
@@ -63,6 +64,7 @@ describe('DefaultDeviceController', () => {
   let audioVideoController: NoOpAudioVideoController;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
+  let eventController: EventController;
 
   function enableWebAudio(enabled = true): void {
     deviceController = new DefaultDeviceController(logger, { enableWebAudio: enabled });
@@ -111,6 +113,8 @@ describe('DefaultDeviceController', () => {
     domMockBuilder = new DOMMockBuilder(domMockBehavior);
     deviceController = new DefaultDeviceController(logger, { enableWebAudio: false });
     audioVideoController = new NoOpAudioVideoController();
+    deviceController.eventController = audioVideoController.eventController;
+    eventController = deviceController.eventController;
   });
 
   afterEach(() => {
@@ -2866,7 +2870,7 @@ describe('DefaultDeviceController', () => {
     it('receives the unknown error message if the error does not exist', done => {
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaError = null;
-      audioVideoController.addObserver({
+      eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           expect(name).to.equal('audioInputFailed');
           expect(attributes.audioInputErrorMessage).includes('UnknownError');
@@ -2883,7 +2887,7 @@ describe('DefaultDeviceController', () => {
       const errorMessage = 'Permission denied';
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
-      audioVideoController.addObserver({
+      eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           expect(name).to.equal('audioInputFailed');
           expect(attributes.audioInputErrorMessage).includes(errorMessage);
@@ -2901,7 +2905,7 @@ describe('DefaultDeviceController', () => {
       const errorMessage = '';
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaError = new MockError('NotAllowedError', errorMessage);
-      audioVideoController.addObserver({
+      eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           expect(name).to.equal('audioInputFailed');
           expect(attributes.audioInputErrorMessage).to.equal('NotAllowedError');
@@ -2920,7 +2924,7 @@ describe('DefaultDeviceController', () => {
       error.name = '';
       domMockBehavior.getUserMediaSucceeds = false;
       domMockBehavior.getUserMediaError = error;
-      audioVideoController.addObserver({
+      eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           expect(name).to.equal('audioInputFailed');
           expect(attributes.audioInputErrorMessage).includes(errorMessage);

@@ -29,16 +29,6 @@ export default interface SDP {
   hasCandidatesForAllMLines(): boolean;
 
   /**
-   * Replaces group attribute `a=group:` line with `a=group:BUNDLE audio video`
-   */
-  withBundleAudioVideo(): SDP;
-
-  /**
-   * Copies video sections from other SDP to this SDP
-   */
-  copyVideo(otherSDP: string): SDP;
-
-  /**
    * Removes candidates of a given type from SDP
    */
   withoutCandidateType(candidateTypeToExclude: SDPCandidateType): SDP;
@@ -52,14 +42,6 @@ export default interface SDP {
    * Inserts a parameter to the SDP local offer setting the desired average audio bitrate
    */
   withAudioMaxAverageBitrate(maxAverageBitrate: number): SDP;
-
-  /**
-   * Deprecated: `RTCRtpSender.setParameters` has supported setting bitrates for a while and
-   * we no longer use this function in other areas of the SDK. Should remove when possible.
-   *
-   * Inserts a bandwidth limitation attribute to answer SDP for setRemoteDescription and limiting client outbound maximum bitrate
-   */
-  withBandwidthRestriction(maxBitrateKbps: number, isFirefox: boolean): SDP;
 
   /**
    * Munges Unified-Plan SDP from different browsers to conform to one format
@@ -77,11 +59,6 @@ export default interface SDP {
   videoSendSectionHasDifferentSSRC(previousSdp: SDP): boolean;
 
   /**
-   * Sorts the codec preferences in video section.
-   */
-  preferH264IfExists(): SDP;
-
-  /**
    * Removes H.264 from the send section.
    */
   removeH264SupportFromSendSection(): SDP;
@@ -89,5 +66,5 @@ export default interface SDP {
   /**
    * List of parsed media sections sections in order they occur on SDP.
    */
-  mediaSections?(): SDPMediaSection[];
+  mediaSections(): SDPMediaSection[];
 }

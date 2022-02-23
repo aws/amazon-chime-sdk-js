@@ -24,26 +24,8 @@ export default class AttachMediaInputTask extends BaseTask {
 
     if (audioInput) {
       const audioTracks = audioInput.getAudioTracks();
-      if (this.context.browserBehavior.requiresUnifiedPlan()) {
-        this.context.logger.info('attaching audio track to peer connection (unified-plan)');
-        await transceiverController.setAudioInput(audioTracks.length ? audioTracks[0] : null);
-      } else {
-        this.context.logger.info('attaching audio track to peer connection (plan-b)');
-        // @ts-ignore
-        const senders = this.context.peer.getSenders();
-        audioInput.getAudioTracks().forEach((track: MediaStreamTrack) => {
-          if (
-            !senders.find((sender: RTCRtpSender) => {
-              return sender.track.id === track.id;
-            })
-          ) {
-            // unclear why this does not deal with the case of removing
-            // an existing track as we do in attachVideoInput
-            // @ts-ignore
-            this.context.localAudioSender = this.context.peer.addTrack(track, audioInput);
-          }
-        });
-      }
+      this.context.logger.info('attaching audio track to peer connection');
+      await transceiverController.setAudioInput(audioTracks.length ? audioTracks[0] : null);
     } else {
       await transceiverController.setAudioInput(null);
       this.context.logger.info('no audio track');
@@ -53,31 +35,12 @@ export default class AttachMediaInputTask extends BaseTask {
     if (videoInput) {
       const videoTracks = videoInput.getVideoTracks();
       const videoTrack: MediaStreamTrack | null = videoTracks.length ? videoTracks[0] : null;
-      if (this.context.browserBehavior.requiresUnifiedPlan()) {
-        this.context.logger.info('attaching video track to peer connection (unified-plan)');
-        await transceiverController.setVideoInput(videoTrack);
-        if (this.context.enableSimulcast && this.context.videoUplinkBandwidthPolicy) {
-          const encodingParam = this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
-          transceiverController.setEncodingParameters(encodingParam);
-        }
-      } else {
-        this.context.logger.info('attaching video track to peer connection (plan-b)');
-        // @ts-ignore
-        const senders = this.context.peer.getSenders();
-        if (
-          !senders.find((sender: RTCRtpSender) => {
-            return sender.track && sender.track.id === videoTracks[0].id;
-          })
-        ) {
-          if (this.context.localVideoSender) {
-            // @ts-ignore
-            this.context.peer.removeTrack(this.context.localVideoSender);
-            this.context.localVideoSender = null;
-          }
-          this.context.localVideoSender = this.context.peer.addTrack(videoTracks[0], videoInput);
-        }
+      this.context.logger.info('attaching video track to peer connection');
+      await transceiverController.setVideoInput(videoTrack);
+      if (this.context.enableSimulcast && this.context.videoUplinkBandwidthPolicy) {
+        const encodingParam = this.context.videoUplinkBandwidthPolicy.chooseEncodingParameters();
+        transceiverController.setEncodingParameters(encodingParam);
       }
-
       if (videoTrack) {
         this.context.statsCollector.logVideoEvent(
           VideoLogEvent.InputAttached,
@@ -88,12 +51,6 @@ export default class AttachMediaInputTask extends BaseTask {
     } else {
       await transceiverController.setVideoInput(null);
       this.context.logger.info('no video track');
-      if (this.context.localVideoSender) {
-        this.context.logger.info('removing track from peer');
-        // @ts-ignore
-        this.context.peer.removeTrack(this.context.localVideoSender);
-        this.context.localVideoSender = null;
-      }
     }
 
     this.context.videoSubscriptions = transceiverController.updateVideoTransceivers(

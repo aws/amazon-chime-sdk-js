@@ -4,8 +4,6 @@
 import ClientMetricReport from '../clientmetricreport/ClientMetricReport';
 import ClientVideoStreamReceivingReport from '../clientmetricreport/ClientVideoStreamReceivingReport';
 import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData';
-import EventAttributes from '../eventcontroller/EventAttributes';
-import EventName from '../eventcontroller/EventName';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVideoAvailability';
 import SimulcastLayers from '../simulcastlayers/SimulcastLayers';
@@ -111,12 +109,6 @@ export default interface AudioVideoObserver {
    * trigger a message to the user about the situation.
    */
   videoSendDidBecomeUnavailable?(): void;
-
-  /**
-   * Called when specific events occur during the meeting and includes attributes of the event. This can be used to
-   * create analytics around meeting metric.
-   */
-  eventDidReceive?(name: EventName, attributes: EventAttributes): void;
 
   /**
    * Called when the remote video sending sources get changed.

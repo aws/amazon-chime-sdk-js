@@ -3,6 +3,7 @@
 
 import Destroyable from '../destroyable/Destroyable';
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
+import EventController from '../eventcontroller/EventController';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
 import NoOpMediaStreamBroker from '../mediastreambroker/NoOpMediaStreamBroker';
 import AudioInputDevice from './AudioInputDevice';
@@ -68,6 +69,13 @@ export default class NoOpDeviceController
 
   getVideoInputQualitySettings(): VideoQualitySettings | null {
     return null;
+  }
+}
+export class NoOpDeviceControllerWithEventController extends NoOpDeviceController {
+  eventController: EventController | undefined;
+  constructor(eventController?: EventController) {
+    super();
+    this.eventController = eventController;
   }
 }
 

@@ -78,6 +78,7 @@
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
 					<li><a href="../interfaces/eventcontroller.html" class="tsd-signature-type">EventController</a></li>
+					<li><a href="../interfaces/destroyable.html" class="tsd-signature-type">Destroyable</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -91,10 +92,24 @@
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="defaulteventcontroller.html#destroyed" class="tsd-kind-icon">destroyed</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="defaulteventcontroller.html#eventreporter" class="tsd-kind-icon">event<wbr>Reporter</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulteventcontroller.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulteventcontroller.html#destroy" class="tsd-kind-icon">destroy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulteventcontroller.html#publishevent" class="tsd-kind-icon">publish<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulteventcontroller.html#pushmeetingstate" class="tsd-kind-icon">push<wbr>Meeting<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="defaulteventcontroller.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
 							</ul>
 						</section>
 					</div>
@@ -106,19 +121,22 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Event<wbr>Controller<span class="tsd-signature-symbol">(</span>audioVideoController<span class="tsd-signature-symbol">: </span><a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a>, eventReporter<span class="tsd-signature-symbol">?: </span><a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaulteventcontroller.html" class="tsd-signature-type">DefaultEventController</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Default<wbr>Event<wbr>Controller<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a>, eventReporter<span class="tsd-signature-symbol">?: </span><a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="defaulteventcontroller.html" class="tsd-signature-type">DefaultEventController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L38">src/eventcontroller/DefaultEventController.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L43">src/eventcontroller/DefaultEventController.ts:43</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>audioVideoController: <a href="../interfaces/audiovideocontroller.html" class="tsd-signature-type">AudioVideoController</a></h5>
+									<h5>configuration: <a href="meetingsessionconfiguration.html" class="tsd-signature-type">MeetingSessionConfiguration</a></h5>
+								</li>
+								<li>
+									<h5>logger: <a href="../interfaces/logger.html" class="tsd-signature-type">Logger</a></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> eventReporter: <a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a></h5>
@@ -130,7 +148,88 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="destroyed" class="tsd-anchor"></a>
+					<h3>destroyed</h3>
+					<div class="tsd-signature tsd-kind-icon">destroyed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L38">src/eventcontroller/DefaultEventController.ts:38</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="eventreporter" class="tsd-anchor"></a>
+					<h3>event<wbr>Reporter</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> eventReporter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L182">src/eventcontroller/DefaultEventController.ts:182</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/eventreporter.html" class="tsd-signature-type">EventReporter</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="addobserver" class="tsd-anchor"></a>
+					<h3>add<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/eventobserver.html" class="tsd-signature-type">EventObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/eventcontroller.html">EventController</a>.<a href="../interfaces/eventcontroller.html#addobserver">addObserver</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L72">src/eventcontroller/DefaultEventController.ts:72</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="../interfaces/eventobserver.html" class="tsd-signature-type">EventObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="destroy" class="tsd-anchor"></a>
+					<h3>destroy</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">destroy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/destroyable.html">Destroyable</a>.<a href="../interfaces/destroyable.html#destroy">destroy</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L191">src/eventcontroller/DefaultEventController.ts:191</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Clean up this instance and resources that it created.</p>
+								</div>
+								<p>After calling <code>destroy</code>, internal fields like <code>eventReporter</code> will be unavailable.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="publishevent" class="tsd-anchor"></a>
 					<h3>publish<wbr>Event</h3>
@@ -142,7 +241,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/eventcontroller.html">EventController</a>.<a href="../interfaces/eventcontroller.html#publishevent">publishEvent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L63">src/eventcontroller/DefaultEventController.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L91">src/eventcontroller/DefaultEventController.ts:91</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -159,28 +258,26 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="pushmeetingstate" class="tsd-anchor"></a>
-					<h3>push<wbr>Meeting<wbr>State</h3>
+					<a name="removeobserver" class="tsd-anchor"></a>
+					<h3>remove<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">push<wbr>Meeting<wbr>State<span class="tsd-signature-symbol">(</span>state<span class="tsd-signature-symbol">: </span><a href="../globals.html#meetinghistorystate" class="tsd-signature-type">MeetingHistoryState</a>, timestampMs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="../interfaces/eventobserver.html" class="tsd-signature-type">EventObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/eventcontroller.html">EventController</a>.<a href="../interfaces/eventcontroller.html#removeobserver">removeObserver</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L103">src/eventcontroller/DefaultEventController.ts:103</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/DefaultEventController.ts#L76">src/eventcontroller/DefaultEventController.ts:76</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>state: <a href="../globals.html#meetinghistorystate" class="tsd-signature-type">MeetingHistoryState</a></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> timestampMs: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = Date.now()</span></h5>
+									<h5>observer: <a href="../interfaces/eventobserver.html" class="tsd-signature-type">EventObserver</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -204,11 +301,23 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="defaulteventcontroller.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="defaulteventcontroller.html#destroyed" class="tsd-kind-icon">destroyed</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="defaulteventcontroller.html#eventreporter" class="tsd-kind-icon">event<wbr>Reporter</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaulteventcontroller.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="defaulteventcontroller.html#destroy" class="tsd-kind-icon">destroy</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="defaulteventcontroller.html#publishevent" class="tsd-kind-icon">publish<wbr>Event</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="defaulteventcontroller.html#pushmeetingstate" class="tsd-kind-icon">push<wbr>Meeting<wbr>State</a>
+								<a href="defaulteventcontroller.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a>
 							</li>
 						</ul>
 					</li>

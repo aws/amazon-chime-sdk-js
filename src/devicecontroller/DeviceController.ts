@@ -3,6 +3,7 @@
 
 import DeviceChangeObserver from '../devicechangeobserver/DeviceChangeObserver';
 import RemovableAnalyserNode from '../devicecontroller/RemovableAnalyserNode';
+import EventController from '../eventcontroller/EventController';
 import AudioInputDevice from './AudioInputDevice';
 import VideoInputDevice from './VideoInputDevice';
 import VideoQualitySettings from './VideoQualitySettings';
@@ -160,4 +161,9 @@ export default interface DeviceController {
    * Get the current video input quality settings to request when enabling video.
    */
   getVideoInputQualitySettings(): VideoQualitySettings | null;
+
+  /**
+   * EventController for publishing events.
+   */
+  eventController?: EventController | undefined;
 }

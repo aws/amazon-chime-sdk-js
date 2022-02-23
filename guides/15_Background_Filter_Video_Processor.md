@@ -141,6 +141,18 @@ if (await BackgroundReplacementVideoFrameProcessor.isSupported()) {
 let transformDevice = new DefaultVideoTransformDevice(logger, device, processors);
 ```
 
+### Replacing the background image for a BackgroundReplacementProcessor mid stream
+
+Store a reference to the background replacement processor object. Use BackgroundReplacementProcessor's [`setImageBlob`](https://github.com/aws/amazon-chime-sdk-js/blob/main/src/backgroundreplacementprocessor/BackgroundReplacementProcessor.ts#L28) to update the existing background image within the BackgroundReplacementProcessor anytime after initialization.
+
+```typescript
+async function changeBackgroundImage(backgroundReplacementProcessor: BackgroundReplacementProcessor) {
+    const newImage = await fetch('https://pathtoimage.jpeg'); 
+    const newImageBlob = await newImage.blob();
+    await backgroundReplacementProcessor.setImageBlob(newImageBlob);
+}
+```
+
 ## Configuration
 
 Both `isSupported` and `create` accept _specifications_ — `BackgroundFilterSpec` and `BackgroundBlurOptions` or `BackgroundReplacementOptions` structures — as input. The `BackgroundFilterSpec` allows you to describe the model attributes, CDN paths, and other configuration options that define how the feature should operate. The `BackgroundBlurOptions` and `BackgroundReplacementOptions` allow you to configure runtime options like observer reporting period, logging and the amount of blur strength to apply to the video.

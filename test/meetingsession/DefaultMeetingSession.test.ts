@@ -6,8 +6,9 @@ import * as chai from 'chai';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import NoOpDeviceController, {
   DestroyableNoOpDeviceController,
+  NoOpDeviceControllerWithEventController,
 } from '../../src/devicecontroller/NoOpDeviceController';
-import NoOpEventReporter from '../../src/eventreporter/NoOpEventReporter';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultMeetingSession from '../../src/meetingsession/DefaultMeetingSession';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
@@ -70,27 +71,6 @@ describe('DefaultMeetingSession', () => {
       mockBuilder.cleanup();
     });
 
-    describe('construct with Unified Plan', function () {
-      it('can be constructed with Unified Plan regardless of if configured enableUnifiedPlanForChromiumBasedBrowsers', () => {
-        const domBehavior = new DOMMockBehavior();
-        domBehavior.browserName = 'chrome';
-        const mockBuilder = new DOMMockBuilder(domBehavior);
-        const config = new NoOpAudioVideoController().configuration;
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
-        let session = new DefaultMeetingSession(
-          config,
-          new NoOpLogger(),
-          new NoOpDeviceController()
-        );
-        expect(session).to.exist;
-
-        config.enableUnifiedPlanForChromiumBasedBrowsers = false;
-        session = new DefaultMeetingSession(config, new NoOpLogger(), new NoOpDeviceController());
-        expect(session).to.exist;
-        mockBuilder.cleanup();
-      });
-    });
-
     describe('construct with simulcast', function () {
       it('can be constructed with simulcast feature for chromium-based browsers', () => {
         const domBehavior = new DOMMockBehavior();
@@ -98,7 +78,6 @@ describe('DefaultMeetingSession', () => {
         const mockBuilder = new DOMMockBuilder(domBehavior);
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         const session = new DefaultMeetingSession(
           config,
@@ -108,26 +87,6 @@ describe('DefaultMeetingSession', () => {
         expect(session).to.exist;
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           true
-        );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
-        mockBuilder.cleanup();
-      });
-
-      it('can be constructed with simulcast feature switched off when configured on Plan B', () => {
-        const domBehavior = new DOMMockBehavior();
-        domBehavior.browserName = 'safari12';
-        domBehavior.isUnifiedPlanSupported = false;
-        const mockBuilder = new DOMMockBuilder(domBehavior);
-        const config = new NoOpAudioVideoController().configuration;
-        config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-        const session = new DefaultMeetingSession(
-          config,
-          new NoOpLogger(),
-          new NoOpDeviceController()
-        );
-        expect(session).to.exist;
-        expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
-          false
         );
         mockBuilder.cleanup();
       });
@@ -139,7 +98,6 @@ describe('DefaultMeetingSession', () => {
 
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         const session = new DefaultMeetingSession(
           config,
@@ -150,7 +108,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           false
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         mockBuilder.cleanup();
       });
 
@@ -160,7 +117,6 @@ describe('DefaultMeetingSession', () => {
         const mockBuilder = new DOMMockBuilder(domBehavior);
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         config.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
           'test',
@@ -175,7 +131,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           true
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         expect(
           session.configuration.videoUplinkBandwidthPolicy instanceof DefaultSimulcastUplinkPolicy
         ).to.be.true;
@@ -202,7 +157,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           true
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         expect(
           session.configuration.videoUplinkBandwidthPolicy instanceof DefaultSimulcastUplinkPolicy
         ).to.be.true;
@@ -215,7 +169,6 @@ describe('DefaultMeetingSession', () => {
         const mockBuilder = new DOMMockBuilder(domBehavior);
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         config.videoUplinkBandwidthPolicy = new DefaultSimulcastUplinkPolicy(
           'test',
@@ -234,7 +187,6 @@ describe('DefaultMeetingSession', () => {
         const mockBuilder = new DOMMockBuilder(domBehavior);
         const config = new NoOpAudioVideoController().configuration;
 
-        config.enableUnifiedPlanForChromiumBasedBrowsers = true;
         config.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
         config.videoUplinkBandwidthPolicy = new NScaleVideoUplinkBandwidthPolicy('test');
         const session = new DefaultMeetingSession(
@@ -246,7 +198,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           false
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         expect(
           session.configuration.videoUplinkBandwidthPolicy instanceof
             NScaleVideoUplinkBandwidthPolicy
@@ -271,7 +222,6 @@ describe('DefaultMeetingSession', () => {
         expect(session.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers).to.equal(
           false
         );
-        expect(session.configuration.enableUnifiedPlanForChromiumBasedBrowsers).to.equal(true);
         expect(
           session.configuration.videoUplinkBandwidthPolicy instanceof
             NScaleVideoUplinkBandwidthPolicy
@@ -280,7 +230,7 @@ describe('DefaultMeetingSession', () => {
       });
     });
 
-    it('will not construct event reporter if event ingestion URL is not present', async () => {
+    it('will contstruct an event controller', async () => {
       const mockBuilder = new DOMMockBuilder();
       const session = new DefaultMeetingSession(
         new NoOpAudioVideoController().configuration,
@@ -288,45 +238,57 @@ describe('DefaultMeetingSession', () => {
         new NoOpDeviceController()
       );
       expect(session).to.exist;
-      expect(session.eventReporter).to.be.undefined;
+      expect(session.eventController).to.exist;
       mockBuilder.cleanup();
       await session.destroy();
+      expect(session.eventController).to.be.undefined;
 
       // This is safe to call twice.
       await session.destroy();
     });
 
-    it('constructs event reporter if event ingestion URL is valid', async () => {
-      const mockBuilder = new DOMMockBuilder();
-      const configuration = new NoOpAudioVideoController().configuration;
-      configuration.urls.eventIngestionURL = 'https://localhost:8080/client-events';
-      const session = new DefaultMeetingSession(
-        configuration,
-        new NoOpLogger(),
-        new NoOpDeviceController()
-      );
-      expect(session).to.exist;
-      expect(session.eventReporter).to.exist;
-      const eventReporter = session.eventReporter;
-      await session.destroy();
-      expect(session.eventReporter).to.be.undefined;
-      // @ts-ignore
-      expect(eventReporter.destroyed).to.be.true;
-      // This is safe to call twice.
-      mockBuilder.cleanup();
-      await session.destroy();
-    });
-
-    it('can be constructed with a custom event reporter', () => {
+    it('can be constructed with a custom event controler', () => {
       const mockBuilder = new DOMMockBuilder();
       const session = new DefaultMeetingSession(
         new NoOpAudioVideoController().configuration,
         new NoOpLogger(),
         new NoOpDeviceController(),
-        new NoOpEventReporter()
+        new DefaultEventController(new NoOpAudioVideoController().configuration, new NoOpLogger())
       );
       expect(session).to.exist;
-      expect(session.eventReporter).to.exist;
+      expect(session.eventController).to.exist;
+      mockBuilder.cleanup();
+    });
+
+    it('will set event controller for device controller if it does not have one', () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceControllerWithEventController(null)
+      );
+      expect(session).to.exist;
+      expect(session.eventController).to.exist;
+      expect(
+        (session.deviceController as NoOpDeviceControllerWithEventController).eventController
+      ).to.equal(session.eventController);
+      mockBuilder.cleanup();
+    });
+
+    it('will not overwrite a existing device controller event controller', () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceControllerWithEventController(
+          new DefaultEventController(new NoOpAudioVideoController().configuration, new NoOpLogger())
+        )
+      );
+      expect(session).to.exist;
+      expect(session.eventController).to.exist;
+      expect(
+        (session.deviceController as NoOpDeviceControllerWithEventController).eventController
+      ).to.not.equal(session.eventController);
       mockBuilder.cleanup();
     });
   });

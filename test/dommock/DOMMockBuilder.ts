@@ -572,9 +572,9 @@ export default class DOMMockBuilder {
     const mediaDevicesMaker: typeof GlobalAny.MediaDevices = GlobalAny.MediaDevices;
 
     const CHROME_USERAGENT =
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36';
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3865.75 Safari/537.36';
     const FIREFOX_USERAGENT =
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/75.0';
     const SAFARI_USERAGENT =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
     const SAFARI12_USERAGENT =
@@ -905,9 +905,6 @@ export default class DOMMockBuilder {
         this.mid = 'mock-mid-id';
       }
     };
-    if (mockBehavior.isUnifiedPlanSupported) {
-      GlobalAny.RTCRtpTransceiver.prototype.currentDirection = 'sendrecv';
-    }
 
     GlobalAny.RTCRtpReceiver = class MockRTCRtpReceiver {
       readonly track: MediaStreamTrack;

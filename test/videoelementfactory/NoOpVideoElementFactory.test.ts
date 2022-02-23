@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
 
 import NoOpVideoElementFactory from '../../src/videoelementfactory/NoOpVideoElementFactory';
 
@@ -42,6 +45,10 @@ describe('NoOpVideoElementFactory', () => {
 
       element.removeAttribute('name');
       expect(element.hasAttribute('name')).to.equal(false);
+    });
+
+    it('can call play method', async () => {
+      await expect(element.play()).not.to.be.rejected;
     });
   });
 });

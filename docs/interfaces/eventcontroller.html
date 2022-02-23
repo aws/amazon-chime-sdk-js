@@ -69,9 +69,14 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p><a href="eventcontroller.html">EventController</a> keeps track of events and notifies audio-video observers.
-						An event describes the success and failure conditions for the meeting session.</p>
+						<p><a href="eventcontroller.html">EventController</a> keeps track of a list of event observers and notifies them of SDK events.
+							An event can describe success or failure of SDK components that make use of this controller.
+							Example: The success and failure for a meeting session.
+							If <code>EventIngestionUrl</code> is available in <code>MeetingSessionConfiguration</code>, then the generated meeting events will
+						be reported to Amazon Chime&#39;s backend using the <code>EventReporter</code>.</p>
 					</div>
+					<p>In most cases you will want to use the default <code>EventController</code>, but you may want to implement your
+					own if you wish to keep track of more meta data or wish to implement your own custom events.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -93,17 +98,70 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="eventcontroller.html#eventreporter" class="tsd-kind-icon">event<wbr>Reporter</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="eventcontroller.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="eventcontroller.html#publishevent" class="tsd-kind-icon">publish<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="eventcontroller.html#pushmeetingstate" class="tsd-kind-icon">push<wbr>Meeting<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="eventcontroller.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="eventreporter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> event<wbr>Reporter</h3>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Reporter<span class="tsd-signature-symbol">:</span> <a href="eventreporter.html" class="tsd-signature-type">EventReporter</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/EventController.ts#L42">src/eventcontroller/EventController.ts:42</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>EventReporter that the EventController uses to send events to the Amazon Chime backend.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="addobserver" class="tsd-anchor"></a>
+					<h3>add<wbr>Observer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="eventobserver.html" class="tsd-signature-type">EventObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/EventController.ts#L24">src/eventcontroller/EventController.ts:24</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds an observer to receive events.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>observer: <a href="eventobserver.html" class="tsd-signature-type">EventObserver</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="publishevent" class="tsd-anchor"></a>
 					<h3>publish<wbr>Event</h3>
@@ -114,7 +172,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/EventController.ts#L17">src/eventcontroller/EventController.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/EventController.ts#L34">src/eventcontroller/EventController.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -136,30 +194,30 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="pushmeetingstate" class="tsd-anchor"></a>
-					<h3>push<wbr>Meeting<wbr>State</h3>
+					<a name="removeobserver" class="tsd-anchor"></a>
+					<h3>remove<wbr>Observer</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">push<wbr>Meeting<wbr>State<span class="tsd-signature-symbol">(</span>state<span class="tsd-signature-symbol">: </span><a href="../globals.html#meetinghistorystate" class="tsd-signature-type">MeetingHistoryState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Observer<span class="tsd-signature-symbol">(</span>observer<span class="tsd-signature-symbol">: </span><a href="eventobserver.html" class="tsd-signature-type">EventObserver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/EventController.ts#L25">src/eventcontroller/EventController.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/main/src/eventcontroller/EventController.ts#L29">src/eventcontroller/EventController.ts:29</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Adds a state to the meeting history stack.</p>
+									<p>Remove an observer to receive events.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>state: <a href="../globals.html#meetinghistorystate" class="tsd-signature-type">MeetingHistoryState</a></h5>
+									<h5>observer: <a href="eventobserver.html" class="tsd-signature-type">EventObserver</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -180,11 +238,17 @@
 					<li class="current tsd-kind-interface">
 						<a href="eventcontroller.html" class="tsd-kind-icon">Event<wbr>Controller</a>
 						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="eventcontroller.html#eventreporter" class="tsd-kind-icon">event<wbr>Reporter</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="eventcontroller.html#addobserver" class="tsd-kind-icon">add<wbr>Observer</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="eventcontroller.html#publishevent" class="tsd-kind-icon">publish<wbr>Event</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="eventcontroller.html#pushmeetingstate" class="tsd-kind-icon">push<wbr>Meeting<wbr>State</a>
+								<a href="eventcontroller.html#removeobserver" class="tsd-kind-icon">remove<wbr>Observer</a>
 							</li>
 						</ul>
 					</li>

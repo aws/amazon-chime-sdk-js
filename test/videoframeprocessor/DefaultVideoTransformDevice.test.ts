@@ -188,18 +188,17 @@ describe('DefaultVideoTransformDevice', () => {
     });
 
     it('returns the correct intrinsicDevice', async () => {
+      const device = new DefaultVideoTransformDevice(logger, null, []);
+      expect(await device.intrinsicDevice()).to.deep.equal({});
+    });
+
+    it('returns the correct intrinsicDevice for browsers with no exact deviceId', async () => {
       domMockBehavior = new DOMMockBehavior();
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'ios12.1';
+      domMockBehavior.browserName = 'samsung';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       const processor = new NoOpVideoFrameProcessor();
       const device = new DefaultVideoTransformDevice(logger, 'test', [processor]);
       expect(await device.intrinsicDevice()).to.deep.equal({ deviceId: 'test' });
-    });
-
-    it('returns the correct intrinsicDevice', async () => {
-      const device = new DefaultVideoTransformDevice(logger, null, []);
-      expect(await device.intrinsicDevice()).to.deep.equal({});
     });
 
     it('returns the correct intrinsicDevice', async () => {
