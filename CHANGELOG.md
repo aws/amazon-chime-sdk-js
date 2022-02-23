@@ -5,19 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-beta.1] - 2022-02-23
+    
+### Added
+    
+### Removed
+    
+### Changed
+    
+### Fixed
+    
 ## [3.0.0-beta.0] - 2022-02-08
     
 ### Added
 - Add automatic language identification support from Amazon Transcribe for live transcription.
 
 ### Removed
+- Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13. Also clean up all plan-B code path.
+- Remove all deprecated meeting status code.  
     
 ### Changed
+- Decoupled `EventController` from `AudioVideo` and `MeetingSession`.
 - Add support for pre-release in Versioning.
+- Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.
+- Add support for aws-sdk js v3 for messaging session.
     
 ### Fixed
-- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy 
-  for Chromium browsers version 98 on Windows and use 360p instead.
 - Fix a worker resource leak with `BackgroundBlurProcessor` and `BackgroundReplacementProcessor`.
     
 ## [2.27.0] - 2022-01-27
@@ -32,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
 ### Fixed
 - Fix the reconnecting issue (#1985) by skipping the "close" event if it does not arrive in two seconds.
+- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy
+  for Chromium browsers version 98 on Windows and use 360p instead.
     
 ## [2.26.0] - 2022-01-14
     

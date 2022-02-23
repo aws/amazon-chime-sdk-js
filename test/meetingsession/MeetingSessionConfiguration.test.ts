@@ -24,9 +24,6 @@ describe('MeetingSessionConfiguration', () => {
           ExternalMeetingId: null,
           MediaPlacement: {
             AudioHostUrl: 'audio-host-url',
-            ScreenDataUrl: null,
-            ScreenSharingUrl: 'screen-sharing-url',
-            ScreenViewingUrl: 'screen-viewing-url',
             SignalingUrl: 'signaling-url',
             TurnControlUrl: 'turn-control-url',
           },
@@ -67,9 +64,6 @@ describe('MeetingSessionConfiguration', () => {
           ExternalMeetingId: null,
           MediaPlacement: {
             AudioHostUrl: 'audio-host-url',
-            ScreenDataUrl: null,
-            ScreenSharingUrl: 'screen-sharing-url',
-            ScreenViewingUrl: 'screen-viewing-url',
             SignalingUrl: 'signaling-url',
             TurnControlUrl: 'turn-control-url',
           },
@@ -82,7 +76,6 @@ describe('MeetingSessionConfiguration', () => {
       );
       expect(configuration.meetingId).to.eq('meeting-id');
       expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-      expect(configuration.urls.screenDataURL).to.eq(null);
       expect(configuration.credentials.externalUserId).to.eq(undefined);
     });
 
@@ -92,9 +85,6 @@ describe('MeetingSessionConfiguration', () => {
           MeetingId: 'meeting-id',
           MediaPlacement: {
             AudioHostUrl: 'audio-host-url',
-            ScreenDataUrl: null,
-            ScreenSharingUrl: 'screen-sharing-url',
-            ScreenViewingUrl: 'screen-viewing-url',
             SignalingUrl: 'signaling-url',
             TurnControlUrl: 'turn-control-url',
           },
@@ -106,9 +96,6 @@ describe('MeetingSessionConfiguration', () => {
       );
       expect(configuration.meetingId).to.eq('meeting-id');
       expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-      expect(configuration.urls.screenDataURL).to.eq(null);
-      expect(configuration.urls.screenSharingURL).to.eq('screen-sharing-url');
-      expect(configuration.urls.screenViewingURL).to.eq('screen-viewing-url');
       expect(configuration.urls.signalingURL).to.eq('signaling-url');
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
@@ -135,9 +122,6 @@ describe('MeetingSessionConfiguration', () => {
       );
       expect(configuration.meetingId).to.eq('meeting-id');
       expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-      expect(configuration.urls.screenDataURL).to.eq('screen-data-url');
-      expect(configuration.urls.screenSharingURL).to.eq('screen-sharing-url');
-      expect(configuration.urls.screenViewingURL).to.eq('screen-viewing-url');
       expect(configuration.urls.signalingURL).to.eq('signaling-url');
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
@@ -151,9 +135,6 @@ describe('MeetingSessionConfiguration', () => {
             MeetingId: 'meeting-id',
             MediaPlacement: {
               AudioHostUrl: 'audio-host-url',
-              ScreenDataUrl: 'screen-data-url',
-              ScreenSharingUrl: 'screen-sharing-url',
-              ScreenViewingUrl: 'screen-viewing-url',
               SignalingUrl: 'signaling-url',
               TurnControlUrl: 'turn-control-url',
             },
@@ -168,9 +149,6 @@ describe('MeetingSessionConfiguration', () => {
       );
       expect(configuration.meetingId).to.eq('meeting-id');
       expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-      expect(configuration.urls.screenDataURL).to.eq('screen-data-url');
-      expect(configuration.urls.screenSharingURL).to.eq('screen-sharing-url');
-      expect(configuration.urls.screenViewingURL).to.eq('screen-viewing-url');
       expect(configuration.urls.signalingURL).to.eq('signaling-url');
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
@@ -183,9 +161,6 @@ describe('MeetingSessionConfiguration', () => {
           meetingId: 'meeting-id',
           mediaPlacement: {
             audioHostUrl: 'audio-host-url',
-            screenDataUrl: 'screen-data-url',
-            screenSharingUrl: 'screen-sharing-url',
-            screenViewingUrl: 'screen-viewing-url',
             signalingUrl: 'signaling-url',
             turnControlUrl: 'turn-control-url',
           },
@@ -197,9 +172,6 @@ describe('MeetingSessionConfiguration', () => {
       );
       expect(configuration.meetingId).to.eq('meeting-id');
       expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-      expect(configuration.urls.screenDataURL).to.eq('screen-data-url');
-      expect(configuration.urls.screenSharingURL).to.eq('screen-sharing-url');
-      expect(configuration.urls.screenViewingURL).to.eq('screen-viewing-url');
       expect(configuration.urls.signalingURL).to.eq('signaling-url');
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
@@ -213,9 +185,6 @@ describe('MeetingSessionConfiguration', () => {
             meetingId: 'meeting-id',
             mediaPlacement: {
               audioHostUrl: 'audio-host-url',
-              screenDataUrl: 'screen-data-url',
-              screenSharingUrl: 'screen-sharing-url',
-              screenViewingUrl: 'screen-viewing-url',
               signalingUrl: 'signaling-url',
               turnControlUrl: 'turn-control-url',
             },
@@ -230,9 +199,6 @@ describe('MeetingSessionConfiguration', () => {
       );
       expect(configuration.meetingId).to.eq('meeting-id');
       expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-      expect(configuration.urls.screenDataURL).to.eq('screen-data-url');
-      expect(configuration.urls.screenSharingURL).to.eq('screen-sharing-url');
-      expect(configuration.urls.screenViewingURL).to.eq('screen-viewing-url');
       expect(configuration.urls.signalingURL).to.eq('signaling-url');
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
@@ -245,9 +211,6 @@ describe('MeetingSessionConfiguration', () => {
           MeetingId: 'meeting-id',
           MediaPlacement: {
             AudioHostUrl: 'audio-host-url',
-            ScreenDataUrl: 'screen-data-url',
-            ScreenSharingUrl: 'screen-sharing-url',
-            ScreenViewingUrl: 'screen-viewing-url',
             SignalingUrl: 'signaling-url',
             TurnControlUrl: 'turn-control-url',
             // adding for defensive coding where an object can take a string or an array
@@ -261,9 +224,6 @@ describe('MeetingSessionConfiguration', () => {
       );
       expect(configuration.meetingId).to.eq('meeting-id');
       expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-      expect(configuration.urls.screenDataURL).to.eq('screen-data-url');
-      expect(configuration.urls.screenSharingURL).to.eq('screen-sharing-url');
-      expect(configuration.urls.screenViewingURL).to.eq('screen-viewing-url');
       expect(configuration.urls.signalingURL).to.eq('signaling-url');
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
@@ -276,9 +236,6 @@ describe('MeetingSessionConfiguration', () => {
           meetingId: 'meeting-id',
           mediaPlacement: {
             audioHostUrl: 'audio-host-url',
-            screenDataUrl: 'screen-data-url',
-            screenSharingUrl: 'screen-sharing-url',
-            screenViewingUrl: 'screen-viewing-url',
             signalingUrl: 'signaling-url',
             turnControlUrl: 'turn-control-url',
             // adding for defensive coding where an object can take a string or an array
@@ -292,9 +249,6 @@ describe('MeetingSessionConfiguration', () => {
       );
       expect(configuration.meetingId).to.eq('meeting-id');
       expect(configuration.urls.audioHostURL).to.eq('audio-host-url');
-      expect(configuration.urls.screenDataURL).to.eq('screen-data-url');
-      expect(configuration.urls.screenSharingURL).to.eq('screen-sharing-url');
-      expect(configuration.urls.screenViewingURL).to.eq('screen-viewing-url');
       expect(configuration.urls.signalingURL).to.eq('signaling-url');
       expect(configuration.urls.turnControlURL).to.eq('turn-control-url');
       expect(configuration.credentials.attendeeId).to.eq('attendee-id');
@@ -307,9 +261,6 @@ describe('MeetingSessionConfiguration', () => {
           MeetingId: 'meeting-id',
           MediaPlacement: {
             AudioHostUrl: 'audio-host-url',
-            ScreenDataUrl: 'screen-data-url',
-            ScreenSharingUrl: 'screen-sharing-url',
-            ScreenViewingUrl: 'screen-viewing-url',
             SignalingUrl: 'signaling-url',
             TurnControlUrl: 'turn-control-url',
             EventIngestionUrl: 'event-ingestion-url',
@@ -329,9 +280,6 @@ describe('MeetingSessionConfiguration', () => {
           MeetingId: 'meeting-id',
           MediaPlacement: {
             AudioHostUrl: 'audio-host-url',
-            ScreenDataUrl: 'screen-data-url',
-            ScreenSharingUrl: 'screen-sharing-url',
-            ScreenViewingUrl: 'screen-viewing-url',
             SignalingUrl: 'signaling-url',
             TurnControlUrl: 'turn-control-url',
           },

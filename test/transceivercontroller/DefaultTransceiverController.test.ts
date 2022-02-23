@@ -646,6 +646,32 @@ describe('DefaultTransceiverController', () => {
       tc.setVideoSendingBitrateKbps(100);
     });
 
+    it('will not set bitrate if input is not positive', async () => {
+      const peer: RTCPeerConnection = new RTCPeerConnection();
+      tc.setPeer(peer);
+      tc.setupLocalTransceivers();
+
+      const newVideoTrack = new MediaStreamTrack();
+      await tc.setVideoInput(newVideoTrack);
+
+      const videoTransceiver = peer.getTransceivers()[1];
+      expect(videoTransceiver.direction).to.equal('sendrecv');
+      expect(videoTransceiver.sender.track).to.equal(newVideoTrack);
+
+      let parameter = {
+        degradationPreference: null,
+        transactionId: '',
+      } as RTCRtpSendParameters;
+      await videoTransceiver.sender.setParameters(parameter);
+      tc.setVideoSendingBitrateKbps(100);
+      parameter = peer.getTransceivers()[1].sender.getParameters();
+      expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
+
+      tc.setVideoSendingBitrateKbps(0);
+      parameter = peer.getTransceivers()[1].sender.getParameters();
+      expect(parameter.encodings[0].maxBitrate).to.equal(100 * 1000);
+    });
+
     it('sets bitrate on RTCRtpSender correctly', async () => {
       const peer: RTCPeerConnection = new RTCPeerConnection();
       tc.setPeer(peer);
@@ -695,28 +721,6 @@ describe('DefaultTransceiverController', () => {
       expect(success).to.be.true;
       const audioTransceiver = peer.getTransceivers()[0];
       expect(audioTransceiver.sender.track).to.equal(newAudioTrack2);
-    });
-  });
-
-  describe('replaceAudioTrackForSender', () => {
-    it('returns false if input sender is null', async () => {
-      const audioTrack = new MediaStreamTrack();
-      const success = await DefaultTransceiverController.replaceAudioTrackForSender(
-        null,
-        audioTrack
-      );
-      expect(success).to.be.false;
-    });
-
-    it('returns true if audio track is replaced', async () => {
-      const sender = new RTCRtpSender();
-      const audioTrack = new MediaStreamTrack();
-      const success = await DefaultTransceiverController.replaceAudioTrackForSender(
-        sender,
-        audioTrack
-      );
-      expect(success).to.be.true;
-      expect(sender.track).to.equal(audioTrack);
     });
   });
 

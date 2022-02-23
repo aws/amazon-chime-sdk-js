@@ -24,18 +24,12 @@ describe('MessagingSessionConfiguration', () => {
   });
 
   it('Can create a configuration with sessionId', () => {
-    const configuration = new MessagingSessionConfiguration(
-      'userArn',
-      'sessionId',
-      'testUrl',
-      {},
-      {}
-    );
+    const configuration = new MessagingSessionConfiguration('userArn', 'sessionId', 'testUrl', {});
     expect(configuration.messagingSessionId).to.be.eq('sessionId');
   });
 
   it('Generate sessionId if null is passed in', () => {
-    const configuration = new MessagingSessionConfiguration('userArn', null, 'testUrl', {}, {});
+    const configuration = new MessagingSessionConfiguration('userArn', null, 'testUrl', {});
     expect(configuration.messagingSessionId).to.be.not.null;
   });
 });

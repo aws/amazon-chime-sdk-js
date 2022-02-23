@@ -59,36 +59,6 @@ export default class DefaultTransceiverController implements TransceiverControll
     await sender.setParameters(oldParam);
   }
 
-  static async setVideoSendingBitrateKbpsForSender(
-    sender: RTCRtpSender,
-    bitrateKbps: number,
-    _logger: Logger
-  ): Promise<void> {
-    if (!sender || bitrateKbps <= 0) {
-      return;
-    }
-    const param: RTCRtpSendParameters = sender.getParameters();
-    if (!param.encodings) {
-      param.encodings = [{}];
-    }
-    for (const encodeParam of param.encodings) {
-      encodeParam.maxBitrate = bitrateKbps * 1000;
-    }
-    await sender.setParameters(param);
-  }
-
-  static async replaceAudioTrackForSender(
-    sender: RTCRtpSender,
-    track: MediaStreamTrack
-  ): Promise<boolean> {
-    if (!sender) {
-      return false;
-    }
-
-    await sender.replaceTrack(track);
-    return true;
-  }
-
   localAudioTransceiver(): RTCRtpTransceiver {
     return this._localAudioTransceiver;
   }
@@ -102,11 +72,17 @@ export default class DefaultTransceiverController implements TransceiverControll
       return;
     }
     const sender: RTCRtpSender = this._localCameraTransceiver.sender;
-    await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
-      sender,
-      bitrateKbps,
-      this.logger
-    );
+    if (!sender || bitrateKbps <= 0) {
+      return;
+    }
+    const param: RTCRtpSendParameters = sender.getParameters();
+    if (!param.encodings) {
+      param.encodings = [{}];
+    }
+    for (const encodeParam of param.encodings) {
+      encodeParam.maxBitrate = bitrateKbps * 1000;
+    }
+    await sender.setParameters(param);
   }
 
   setPeer(peer: RTCPeerConnection): void {
@@ -122,11 +98,7 @@ export default class DefaultTransceiverController implements TransceiverControll
   }
 
   useTransceivers(): boolean {
-    if (!this.peer || !this.browserBehavior.requiresUnifiedPlan()) {
-      return false;
-    }
-
-    return typeof this.peer.getTransceivers !== 'undefined';
+    return !!this.peer && typeof this.peer.getTransceivers !== 'undefined';
   }
 
   hasVideoInput(): boolean {

@@ -28,8 +28,6 @@ import SDPMock from '../sdp/SDPMock';
 
 describe('CreatePeerConnectionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
-  const SAFARI_12_USER_AGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.2 Safari/605.1.15';
   const logger = new NoOpLogger();
   const videoRemoteDescription: RTCSessionDescription = {
     type: 'answer',
@@ -180,35 +178,6 @@ describe('CreatePeerConnectionTask', () => {
           }
         }
         context.transceiverController = new TestTransceiverController(logger, browser);
-
-        await task.run();
-        await context.peer.setRemoteDescription(videoRemoteDescription);
-        await delay(domMockBehavior.asyncWaitMs + 10);
-        expect(addVideoTileSpy.called).to.be.false;
-      });
-
-      it('does not handle a local video track of an active video input', async () => {
-        const addVideoTileSpy: sinon.SinonSpy = sinon.spy(
-          context.videoTileController,
-          'addVideoTile'
-        );
-
-        class TestTransceiverController extends DefaultTransceiverController {
-          useTransceivers(): boolean {
-            return false;
-          }
-        }
-        context.transceiverController = new TestTransceiverController(logger, browser);
-
-        const videoTrack = new MediaStreamTrack();
-        // @ts-ignore
-        videoTrack.id = '0';
-        // @ts-ignore
-        videoTrack.kind = 'video';
-
-        const activeVideoInput = new MediaStream();
-        activeVideoInput.addTrack(videoTrack);
-        context.activeVideoInput = activeVideoInput;
 
         await task.run();
         await context.peer.setRemoteDescription(videoRemoteDescription);
@@ -605,36 +574,18 @@ describe('CreatePeerConnectionTask', () => {
         expect(addVideoTileSpy.called).to.be.true;
       });
 
-      it('uses a track ID for Plan B', async () => {
-        // @ts-ignore
-        navigator.userAgent = SAFARI_12_USER_AGENT;
-        domMockBehavior.isUnifiedPlanSupported = false;
-        domMockBehavior.browserName = 'safari12';
-        domMockBuilder = new DOMMockBuilder(domMockBehavior);
-        context.browserBehavior = new DefaultBrowserBehavior();
-        let called1 = false;
-        let called2 = false;
-
-        class TestVideoStreamIndex extends DefaultVideoStreamIndex {
-          streamIdForTrack(trackId: string): number {
-            expect(trackId).to.equal('0');
-            called1 = true;
-            return 1;
-          }
-          attendeeIdForTrack(trackId: string): string {
-            expect(trackId).to.equal('0');
-            called2 = true;
-            return 'attendee-id';
-          }
-        }
-        context.videoStreamIndex = new TestVideoStreamIndex(logger);
-
+      it('Trigger event handler for track mute', async () => {
+        const logSpy = sinon.spy(context.logger, 'info');
         await task.run();
+        context.peer.addEventListener('track', (event: RTCTrackEvent) => {
+          const track = event.track;
+          (track as StoppableMediaStreamTrack).externalMute();
+        });
         await context.peer.setRemoteDescription(videoRemoteDescription);
         await delay(domMockBehavior.asyncWaitMs + 10);
-
-        expect(called1).to.be.true;
-        expect(called2).to.be.true;
+        expect(logSpy.called).to.be.true;
+        expect(logSpy.calledWith('received the mute event for tile=1 id=0 streamId=null'));
+        logSpy.restore();
       });
     });
 
@@ -721,39 +672,6 @@ describe('CreatePeerConnectionTask', () => {
             const track = event.track;
             const stream = event.streams[0];
             stream.removeTrack(track);
-          });
-          context.peer.setRemoteDescription(videoRemoteDescription);
-        });
-      });
-
-      it('uses a track for handling the "ended" event in Plan B and removing stream ID from the paused video stream ID set', done => {
-        // @ts-ignore
-        navigator.userAgent = SAFARI_12_USER_AGENT;
-        domMockBehavior.isUnifiedPlanSupported = false;
-        domMockBehavior.browserName = 'safari12';
-        domMockBuilder = new DOMMockBuilder(domMockBehavior);
-        context.browserBehavior = new DefaultBrowserBehavior();
-        let tile: VideoTile;
-        class TestVideoTileController extends DefaultVideoTileController {
-          addVideoTile(): VideoTile {
-            return (tile = super.addVideoTile());
-          }
-
-          removeVideoTile(tileId: number): void {
-            expect(tile.id()).to.equal(tileId);
-            done();
-          }
-        }
-        context.videoTileController = new TestVideoTileController(
-          new DefaultVideoTileFactory(),
-          context.audioVideoController,
-          logger
-        );
-
-        task.run().then(() => {
-          context.peer.addEventListener('track', (event: RTCTrackEvent) => {
-            const track = event.track;
-            (track as StoppableMediaStreamTrack).externalStop();
           });
           context.peer.setRemoteDescription(videoRemoteDescription);
         });

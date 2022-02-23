@@ -1,12 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Sha256 } from '@aws-crypto/sha256-js';
+import { toHex } from '@aws-sdk/util-hex-encoding';
+
 import Versioning from '../versioning/Versioning';
 import SigV4 from './SigV4';
 
 export default class DefaultSigV4 implements SigV4 {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-  constructor(public chimeClient: any, public awsClient: any) {}
+  constructor(public chimeClient: any) {}
 
   private makeTwoDigits(n: number): string {
     /* istanbul ignore if */
@@ -16,6 +19,12 @@ export default class DefaultSigV4 implements SigV4 {
     } else {
       return '0' + n.toString();
     }
+  }
+
+  private hmac(data: string | Uint8Array, secret?: string | Uint8Array): Promise<Uint8Array> {
+    const hash = new Sha256(secret);
+    hash.update(data);
+    return hash.digest();
   }
 
   private getDateTimeString(): string {
@@ -37,20 +46,20 @@ export default class DefaultSigV4 implements SigV4 {
     return dateTimeString.substring(0, dateTimeString.indexOf('T'));
   }
 
-  private getSignatureKey(
+  private async getSignatureKey(
     key: string,
     date: string,
     regionName: string,
     serviceName: string
-  ): string {
-    const kDate = this.awsClient.util.crypto.hmac('AWS4' + key, date, 'buffer');
-    const kRegion = this.awsClient.util.crypto.hmac(kDate, regionName, 'buffer');
-    const kService = this.awsClient.util.crypto.hmac(kRegion, serviceName, 'buffer');
-    const kSigning = this.awsClient.util.crypto.hmac(kService, 'aws4_request', 'buffer');
+  ): Promise<Uint8Array> {
+    const kDate = await this.hmac(date, 'AWS4' + key);
+    const kRegion = await this.hmac(regionName, kDate);
+    const kService = await this.hmac(serviceName, kRegion);
+    const kSigning = await this.hmac('aws4_request', kService);
     return kSigning;
   }
 
-  signURL(
+  async signURL(
     method: string,
     scheme: string,
     serviceName: string,
@@ -58,18 +67,30 @@ export default class DefaultSigV4 implements SigV4 {
     path: string,
     payload: string,
     queryParams: Map<string, string[]> | null
-  ): string {
+  ): Promise<string> {
     const now = this.getDateTimeString();
     const today = this.getDateString(now);
 
     const algorithm = 'AWS4-HMAC-SHA256';
-    const region = this.chimeClient.config.region;
+    let region = '';
+    // in AWS SDK v3 region is a function
+    if (this.chimeClient.config.region instanceof Function) {
+      region = await this.chimeClient.config.region();
+    } else {
+      region = this.chimeClient.config.region;
+    }
 
     const signedHeaders = 'host';
 
     const canonicalHeaders = 'host:' + hostname.toLowerCase() + '\n';
     const credentialScope = today + '/' + region + '/' + serviceName + '/' + 'aws4_request';
-    const credentials = this.chimeClient.config.credentials;
+    let credentials = undefined;
+    // in AWS SDK v3 credentials is a function
+    if (this.chimeClient.config.credentials instanceof Function) {
+      credentials = await this.chimeClient.config.credentials();
+    } else {
+      credentials = this.chimeClient.config.credentials;
+    }
 
     let params: Map<string, string[]> = new Map<string, string[]>();
     params.set('X-Amz-Algorithm', [algorithm]);
@@ -119,9 +140,9 @@ export default class DefaultSigV4 implements SigV4 {
       '\n' +
       signedHeaders +
       '\n' +
-      this.awsClient.util.crypto.sha256(payload, 'hex');
+      toHex(await this.hmac(payload));
 
-    const hashedCanonicalRequest = this.awsClient.util.crypto.sha256(canonicalRequest, 'hex');
+    const hashedCanonicalRequest = toHex(await this.hmac(canonicalRequest));
 
     const stringToSign =
       'AWS4-HMAC-SHA256\n' +
@@ -135,14 +156,14 @@ export default class DefaultSigV4 implements SigV4 {
       '/aws4_request\n' +
       hashedCanonicalRequest;
 
-    const signingKey = this.getSignatureKey(
+    const signingKey = await this.getSignatureKey(
       credentials.secretAccessKey,
       today,
       region,
       serviceName
     );
 
-    const signature = this.awsClient.util.crypto.hmac(signingKey, stringToSign, 'hex');
+    const signature = toHex(await this.hmac(stringToSign, signingKey));
 
     const finalParams = canonicalQuerystring + '&X-Amz-Signature=' + signature;
 

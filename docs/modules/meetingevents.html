@@ -82,7 +82,7 @@
   }
 }
 
-meetingSession.audioVideo.addObserver(observer);
+meetingSession.eventController.addObserver(observer);
 </code></pre>
 					<p>In the <code>eventDidReceive</code> observer method, we recommend that you handle each meeting event so that
 					you don&#39;t have to worry about how your event processing would scale when the later versions of the Chime SDK for JavaScript introduce new meeting events.</p>

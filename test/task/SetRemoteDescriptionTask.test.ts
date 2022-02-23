@@ -11,17 +11,13 @@ import MeetingSessionTURNCredentials from '../../src/meetingsession/MeetingSessi
 import SetRemoteDescriptionTask from '../../src/task/SetRemoteDescriptionTask';
 import Task from '../../src/task/Task';
 import DefaultVideoAndCaptureParameter from '../../src/videocaptureandencodeparameter/DefaultVideoCaptureAndEncodeParameter';
-import DefaultVideoStreamIdSet from '../../src/videostreamidset/DefaultVideoStreamIdSet';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
-import FirefoxSDPMock from '../sdp/FirefoxSDPMock';
 import SDPMock from '../sdp/SDPMock';
 import { delay } from '../utils';
 
 describe('SetRemoteDescriptionTask', () => {
   const expect: Chai.ExpectStatic = chai.expect;
-  const SAFARI_12_USER_AGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.2 Safari/605.1.15';
   let context: AudioVideoControllerState;
   let domMockBehavior: DOMMockBehavior | null = null;
   let domMockBuilder: DOMMockBuilder | null = null;
@@ -124,118 +120,6 @@ describe('SetRemoteDescriptionTask', () => {
       task.run().then(() => {
         const peerSDPAnswer = context.peer.currentRemoteDescription.sdp;
         expect(peerSDPAnswer).to.be.equal(SDPMock.VIDEO_HOST_AUDIO_ANSWER_WITH_STEREO);
-        done();
-      });
-    });
-  });
-
-  describe('run with Firefox 68', () => {
-    beforeEach(() => {
-      // @ts-ignore
-      navigator.userAgent =
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:68.0) Gecko/20100101 Firefox/68.0';
-      context.browserBehavior = new DefaultBrowserBehavior();
-    });
-
-    it('uses the sdp answer if both offer and answer have a video', done => {
-      const localDescription: RTCSessionDescriptionInit = {
-        type: 'offer',
-        sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO,
-      };
-      context.peer.setLocalDescription(localDescription);
-      context.sdpAnswer = FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_H264_UNSORTED;
-
-      task.run().then(() => {
-        expect(context.peer.currentRemoteDescription.sdp).to.deep.equal(
-          FirefoxSDPMock.FIREFOX_REMOTE_ANSWER_WITH_VP8_H264_SORTED
-        );
-        done();
-      });
-    });
-  });
-
-  describe('run in Plan B', () => {
-    beforeEach(() => {
-      // @ts-ignore
-      navigator.userAgent = SAFARI_12_USER_AGENT;
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'safari12';
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      context.browserBehavior = new DefaultBrowserBehavior();
-    });
-
-    it('copies video sections from the offer to the answer if only the offer has a video', done => {
-      const localDescription: RTCSessionDescriptionInit = {
-        type: 'offer',
-        sdp: SDPMock.VIDEO_HOST_AUDIO_VIDEO_ANSWER,
-      };
-      context.peer.setLocalDescription(localDescription);
-
-      const remoteDescription: RTCSessionDescription = {
-        type: 'answer',
-        sdp: context.sdpAnswer,
-        toJSON: null,
-      };
-      context.peer.setRemoteDescription(remoteDescription);
-      context.videosToReceive = new DefaultVideoStreamIdSet();
-
-      task.run().then(() => {
-        expect(context.peer.currentRemoteDescription.sdp).to.equal(
-          SDPMock.VIDEO_HOST_AUDIO_ANSWER_WITH_VIDEO_COPIED
-        );
-        done();
-      });
-    });
-
-    it('uses the sdp answer if both offer and answer have a video', done => {
-      const localDescription: RTCSessionDescriptionInit = {
-        type: 'offer',
-        sdp: SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO,
-      };
-      context.peer.setLocalDescription(localDescription);
-      context.sdpAnswer = SDPMock.VIDEO_HOST_AUDIO_VIDEO_ANSWER;
-
-      const remoteDescription: RTCSessionDescription = {
-        type: 'answer',
-        sdp: context.sdpAnswer,
-        toJSON: null,
-      };
-      context.peer.setRemoteDescription(remoteDescription);
-      context.videosToReceive = new DefaultVideoStreamIdSet();
-
-      task.run().then(() => {
-        expect(context.peer.currentRemoteDescription.sdp).to.equal(context.sdpAnswer);
-        done();
-      });
-    });
-
-    it('uses the sdp answer if the offer does not have a video', done => {
-      const localDescription: RTCSessionDescriptionInit = {
-        type: 'offer',
-        sdp: SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE,
-      };
-      context.peer.setLocalDescription(localDescription);
-      context.sdpAnswer = SDPMock.VIDEO_HOST_AUDIO_VIDEO_ANSWER;
-
-      const remoteDescription: RTCSessionDescription = {
-        type: 'answer',
-        sdp: context.sdpAnswer,
-        toJSON: null,
-      };
-      context.peer.setRemoteDescription(remoteDescription);
-      context.videosToReceive = new DefaultVideoStreamIdSet();
-
-      task.run().then(() => {
-        expect(context.peer.currentRemoteDescription.sdp).to.equal(context.sdpAnswer);
-        done();
-      });
-    });
-
-    it('uses the sdp answer if the remote description is not set before', done => {
-      context.videosToReceive = new DefaultVideoStreamIdSet();
-
-      task.run().then(() => {
-        expect(context.peer.currentRemoteDescription.sdp).to.equal(context.sdpAnswer);
         done();
       });
     });

@@ -157,7 +157,10 @@ describe('MonitorTask', () => {
     context.audioVideoController = new TestAudioVideoController();
     context.logger = logger;
     context.realtimeController = new TestRealtimeController();
-    context.eventController = new DefaultEventController(context.audioVideoController);
+    context.eventController = new DefaultEventController(
+      new NoOpAudioVideoController().configuration,
+      logger
+    );
     context.videoTileController = new DefaultVideoTileController(
       new DefaultVideoTileFactory(),
       context.audioVideoController,
@@ -202,6 +205,10 @@ describe('MonitorTask', () => {
   });
 
   afterEach(() => {
+    if (context.eventController) {
+      (context.eventController as DefaultEventController).destroy();
+      context.eventController = null;
+    }
     if (domMockBuilder) {
       domMockBuilder.cleanup();
       domMockBuilder = null;
@@ -1271,11 +1278,15 @@ describe('MonitorTask', () => {
 
     it('captures the signaling dropped state when the WebSocket has an error', done => {
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
-
-      context.audioVideoController.addObserver({
+      context.eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          expect(attributes.meetingHistory[0].name).to.equal('signalingDropped');
-          done();
+          if (name === 'meetingEnded') {
+            expect(attributes.meetingHistory[0].name).to.equal('signalingDropped');
+            expect(attributes.meetingHistory[1].name).to.equal('meetingEnded');
+            // [signalingDropped, meetingEnded]
+            expect(attributes.meetingHistory.length).to.equal(2);
+            done();
+          }
         },
       });
 
@@ -1294,16 +1305,16 @@ describe('MonitorTask', () => {
 
     it('captures the signaling dropped state when the WebSocket is closed', done => {
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
-
-      context.audioVideoController.addObserver({
+      context.eventController.addObserver({
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          expect(attributes.meetingHistory[0].name).to.equal('signalingDropped');
-          expect(attributes.meetingHistory[1].name).to.equal('meetingEnded');
-
-          // [signalingDropped, meetingEnded]. Note that meeting
-          // history includes only one "signalingDropped."
-          expect(attributes.meetingHistory.length).to.equal(2);
-          done();
+          if (name === 'meetingEnded') {
+            expect(attributes.meetingHistory[0].name).to.equal('signalingDropped');
+            expect(attributes.meetingHistory[1].name).to.equal('meetingEnded');
+            // [signalingDropped, meetingEnded]. Note that meeting
+            // history includes only one "signalingDropped."
+            expect(attributes.meetingHistory.length).to.equal(2);
+            done();
+          }
         },
       });
 
@@ -1324,7 +1335,6 @@ describe('MonitorTask', () => {
           4500
         )
       );
-
       new TimeoutScheduler(100).start(() => {
         context.eventController.publishEvent('meetingEnded');
       });
@@ -1333,17 +1343,7 @@ describe('MonitorTask', () => {
     it('can handle when the event controller does not exist', done => {
       const webSocketAdapter = new DefaultWebSocketAdapter(logger);
 
-      context.audioVideoController.addObserver({
-        eventDidReceive(name: EventName, attributes: EventAttributes): void {
-          expect(attributes.meetingHistory[0].name).to.equal('meetingEnded');
-
-          // Meeting history includes only "meetingEnded" since
-          // the event controller is missing before publishing.
-          expect(attributes.meetingHistory.length).to.equal(1);
-          done();
-        },
-      });
-
+      (context.eventController as DefaultEventController).destroy();
       context.eventController = null;
       task.handleSignalingClientEvent(
         new SignalingClientEvent(
@@ -1353,7 +1353,21 @@ describe('MonitorTask', () => {
         )
       );
 
-      context.eventController = new DefaultEventController(context.audioVideoController);
+      context.eventController = new DefaultEventController(
+        new NoOpAudioVideoController().configuration,
+        logger
+      );
+
+      context.eventController.addObserver({
+        eventDidReceive(name: EventName, attributes: EventAttributes): void {
+          expect(attributes.meetingHistory[0].name).to.equal('meetingEnded');
+
+          // Meeting history includes only "meetingEnded" since
+          // the event controller is missing before publishing.
+          expect(attributes.meetingHistory.length).to.equal(1);
+          done();
+        },
+      });
       new TimeoutScheduler(100).start(() => {
         context.eventController.publishEvent('meetingEnded');
       });

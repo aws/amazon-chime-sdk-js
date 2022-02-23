@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import {
@@ -14,6 +15,7 @@ import {
   DefaultVideoTileController,
   DefaultVideoTileFactory,
   DevicePixelRatioWindowSource,
+  NoOpLogger,
   SignalingClientVideoSubscriptionConfiguration,
   VideoTile,
 } from '../../src';
@@ -24,7 +26,9 @@ import AudioVideoObserver from '../../src/audiovideoobserver/AudioVideoObserver'
 import Backoff from '../../src/backoff/Backoff';
 import ConnectionHealthPolicyConfiguration from '../../src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration';
 import NoOpDeviceController from '../../src/devicecontroller/NoOpDeviceController';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import EventAttributes from '../../src/eventcontroller/EventAttributes';
+import EventController from '../../src/eventcontroller/EventController';
 import EventName from '../../src/eventcontroller/EventName';
 import NoOpDebugLogger from '../../src/logger/NoOpDebugLogger';
 import NoOpMediaStreamBroker from '../../src/mediastreambroker/NoOpMediaStreamBroker';
@@ -70,14 +74,14 @@ const defaultDelay = new DOMMockBehavior().asyncWaitMs * 5;
 const longjohn = require('longjohn');
 longjohn.async_trace_limit = -1; // unlimited
 
+chai.use(chaiAsPromised);
+
 describe('DefaultAudioVideoController', () => {
   const expect: Chai.ExpectStatic = chai.expect;
   const assert: Chai.AssertStatic = chai.assert;
   const rtpCandidateMock =
     'candidate:MOCK9004 1 udp 2122260223 10.88.178.121 52788 typ host generation 0 ufrag PWwO network-id 2 network-cost 50';
 
-  const SAFARI_12_USER_AGENT =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.2 Safari/605.1.15';
   const SAFARI_13_USER_AGENT =
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.2 Safari/605.1.15';
 
@@ -87,6 +91,7 @@ describe('DefaultAudioVideoController', () => {
   let reconnectController: DefaultReconnectController;
   let domMockBuilder: DOMMockBuilder;
   let domMockBehavior: DOMMockBehavior;
+  let eventController: EventController;
 
   const attendeeId = 'foo-attendee';
 
@@ -297,6 +302,7 @@ describe('DefaultAudioVideoController', () => {
     webSocketAdapter = new DefaultWebSocketAdapter(new NoOpDebugLogger());
     configuration = makeSessionConfiguration();
     reconnectController = new DefaultReconnectController(120 * 1000, new TestBackoff());
+    eventController = new DefaultEventController(configuration, new NoOpLogger());
   });
 
   afterEach(() => {
@@ -657,7 +663,6 @@ describe('DefaultAudioVideoController', () => {
       const logger = new NoOpDebugLogger();
       const myDownlinkPolicy = new VideoAdaptiveProbePolicy(logger);
       configuration.videoDownlinkBandwidthPolicy = myDownlinkPolicy;
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -709,7 +714,6 @@ describe('DefaultAudioVideoController', () => {
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
       const logger = new NoOpDebugLogger();
 
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
 
       audioVideoController = new DefaultAudioVideoController(
@@ -757,7 +761,6 @@ describe('DefaultAudioVideoController', () => {
       const logger = new NoOpDebugLogger();
       const myUplinkPolicy = new DefaultSimulcastUplinkPolicy('test', logger);
       configuration.videoUplinkBandwidthPolicy = myUplinkPolicy;
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -1045,18 +1048,12 @@ describe('DefaultAudioVideoController', () => {
         logger,
         webSocketAdapter,
         new NoOpMediaStreamBroker(),
-        reconnectController
+        reconnectController,
+        eventController
       );
 
       const result = new Promise((resolve, _reject) => {
         class TestObserver implements AudioVideoObserver {
-          eventDidReceive(name: EventName, attributes: EventAttributes): void {
-            events.push({
-              name,
-              attributes,
-            });
-          }
-
           async audioVideoDidStop(sessionStatus: MeetingSessionStatus): Promise<void> {
             await delay(defaultDelay);
             expect(sessionStatus.statusCode()).to.equal(MeetingSessionStatusCode.TaskFailed);
@@ -1066,11 +1063,20 @@ describe('DefaultAudioVideoController', () => {
               'meetingStartFailed',
             ]);
             spy.restore();
+            eventController.removeObserver(observer);
             resolve(undefined);
           }
         }
-
+        const observer = {
+          eventDidReceive(name: EventName, attributes: EventAttributes): void {
+            events.push({
+              name,
+              attributes,
+            });
+          },
+        };
         audioVideoController.addObserver(new TestObserver());
+        eventController.addObserver(observer);
       });
 
       // Start and wait for the Join frame in JoinAndReceiveIndexTask.
@@ -1198,38 +1204,6 @@ describe('DefaultAudioVideoController', () => {
   });
 
   describe('update', () => {
-    it('can be started and then start and stop a local video tile for plan-b', async () => {
-      setUserAgent(SAFARI_12_USER_AGENT);
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'safari12';
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController
-      );
-      // @ts-ignore
-      audioVideoController.meetingSessionContext.localVideoSender = new RTCRtpSender();
-      let sessionStarted = false;
-      class TestObserver implements AudioVideoObserver {
-        audioVideoDidStart(): void {
-          sessionStarted = true;
-        }
-      }
-      audioVideoController.addObserver(new TestObserver());
-      expect(audioVideoController.configuration).to.equal(configuration);
-      await start();
-      const tileId = audioVideoController.videoTileController.startLocalVideoTile();
-      expect(tileId).to.equal(1);
-      await sendICEEventAndSubscribeAckFrame();
-      audioVideoController.videoTileController.stopLocalVideoTile();
-      await sendICEEventAndSubscribeAckFrame();
-      await stop();
-      expect(sessionStarted).to.be.true;
-    });
-
     it('can be started and then start and stop a local video tile', async () => {
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -1255,6 +1229,54 @@ describe('DefaultAudioVideoController', () => {
       await stop();
       expect(sessionStarted).to.be.true;
     });
+
+    it(
+      'can be started and then start and stop a local video tile if video uplink does not implement set transceiver' +
+        ' controller',
+      async () => {
+        class TestVideoUplinkBandwidth extends NoVideoUplinkBandwidthPolicy {
+          hasBandwidthPriority: boolean = false;
+
+          setHasBandwidthPriority(hasBandwidthPriority: boolean): void {
+            this.hasBandwidthPriority = hasBandwidthPriority;
+          }
+
+          maxBandwidthKbps(): number {
+            if (this.hasBandwidthPriority) {
+              return 100;
+            }
+            return 0;
+          }
+        }
+        const policy = new TestVideoUplinkBandwidth();
+        configuration.videoUplinkBandwidthPolicy = policy;
+        audioVideoController = new DefaultAudioVideoController(
+          configuration,
+          new NoOpDebugLogger(),
+          webSocketAdapter,
+          new NoOpMediaStreamBroker(),
+          reconnectController
+        );
+        // @ts-ignore
+        audioVideoController.meetingSessionContext.localVideoSender = new RTCRtpSender();
+        let sessionStarted = false;
+        class TestObserver implements AudioVideoObserver {
+          audioVideoDidStart(): void {
+            sessionStarted = true;
+          }
+        }
+        audioVideoController.addObserver(new TestObserver());
+        expect(audioVideoController.configuration).to.equal(configuration);
+        await start();
+        const tileId = audioVideoController.videoTileController.startLocalVideoTile();
+        expect(tileId).to.equal(1);
+        await sendICEEventAndSubscribeAckFrame();
+        audioVideoController.videoTileController.stopLocalVideoTile();
+        await sendICEEventAndSubscribeAckFrame();
+        await stop();
+        expect(sessionStarted).to.be.true;
+      }
+    );
 
     it('restart local video if CreateSDP fails with IncompatibleSDP error', async () => {
       audioVideoController = new DefaultAudioVideoController(
@@ -1444,7 +1466,6 @@ describe('DefaultAudioVideoController', () => {
     it('will not skip renegotiation if we are switching simulcast streams', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -1497,7 +1518,6 @@ describe('DefaultAudioVideoController', () => {
     it('will skip renegotiation if simulcast streams do not change', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -1549,7 +1569,6 @@ describe('DefaultAudioVideoController', () => {
     it('will skip renegotiation if we are updating simulcast layer change with header extension', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -1598,7 +1617,6 @@ describe('DefaultAudioVideoController', () => {
     it('will not skip renegotiation if we are updating simulcast layer change without header extension', async () => {
       const logger = new NoOpDebugLogger();
       const loggerSpy = sinon.spy(logger, 'info');
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -2181,62 +2199,6 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
-    it('fails to replace local video for Plan B', async () => {
-      setUserAgent(SAFARI_12_USER_AGENT);
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'safari12';
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      class TestDeviceController extends NoOpDeviceController {
-        async acquireVideoInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          const track = new MediaStreamTrack();
-          // @ts-ignore
-          track.kind = 'video';
-          mediaStream.addTrack(track);
-          return mediaStream;
-        }
-
-        async acquireAudioInputStream(): Promise<MediaStream> {
-          const mediaStream = new MediaStream();
-          const track = new MediaStreamTrack();
-          mediaStream.addTrack(track);
-          return mediaStream;
-        }
-      }
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new TestDeviceController(),
-        reconnectController
-      );
-
-      let sessionStarted = false;
-      let sessionConnecting = false;
-      class TestObserver implements AudioVideoObserver {
-        audioVideoDidStart(): void {
-          sessionStarted = true;
-        }
-        audioVideoDidStartConnecting(): void {
-          sessionConnecting = true;
-        }
-      }
-      audioVideoController.addObserver(new TestObserver());
-      expect(audioVideoController.configuration).to.equal(configuration);
-      expect(audioVideoController.rtcPeerConnection).to.be.null;
-      await start();
-      expect(sessionStarted).to.be.true;
-      expect(sessionConnecting).to.be.true;
-
-      audioVideoController.videoTileController.startLocalVideoTile();
-      await sendICEEventAndSubscribeAckFrame();
-
-      try {
-        await audioVideoController.replaceLocalVideo();
-      } catch (error) {}
-      await stop();
-    });
-
     it('fails to replace local video if local tile is null', async () => {
       class TestDeviceController extends NoOpDeviceController {
         async acquireVideoInputStream(): Promise<MediaStream> {
@@ -2361,7 +2323,7 @@ describe('DefaultAudioVideoController', () => {
       expect(realtimeSetLocalAudioInput.called).to.be.false;
     });
 
-    it('replaces audio track for unified plan', async () => {
+    it('replaces audio track', async () => {
       class TestDeviceController extends NoOpDeviceController {
         async acquireAudioInputStream(): Promise<MediaStream> {
           const mediaStream = new MediaStream();
@@ -2409,11 +2371,7 @@ describe('DefaultAudioVideoController', () => {
       await stop();
     });
 
-    it('replaces audio track for Plan-B', async () => {
-      setUserAgent(SAFARI_12_USER_AGENT);
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'safari12';
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
+    it('reject if transceiver fails to replaces audio track', async () => {
       class TestDeviceController extends NoOpDeviceController {
         async acquireAudioInputStream(): Promise<MediaStream> {
           const mediaStream = new MediaStream();
@@ -2441,29 +2399,27 @@ describe('DefaultAudioVideoController', () => {
         }
       }
       audioVideoController.addObserver(new TestObserver());
-      expect(audioVideoController.configuration).to.equal(configuration);
-      expect(audioVideoController.rtcPeerConnection).to.be.null;
       const realtimeSetLocalAudioInput = sinon.spy(
         audioVideoController.realtimeController,
         'realtimeSetLocalAudioInput'
       );
+      expect(audioVideoController.configuration).to.equal(configuration);
+      expect(audioVideoController.rtcPeerConnection).to.be.null;
       await start();
 
       expect(sessionStarted).to.be.true;
       expect(sessionConnecting).to.be.true;
+
       let callbackExecuted = false;
-      await audioVideoController.restartLocalAudio(() => {
-        callbackExecuted = true;
-      });
+      // @ts-ignore mutate the context state to trigger rejection
+      audioVideoController.meetingSessionContext.transceiverController._localAudioTransceiver = null;
+      await expect(
+        audioVideoController.restartLocalAudio(() => {
+          callbackExecuted = true;
+        })
+      ).to.be.rejected;
       expect(callbackExecuted).to.be.true;
       expect(realtimeSetLocalAudioInput.called).to.be.true;
-
-      // @ts-ignore mutate the context state to trigger rejection
-      audioVideoController.meetingSessionContext.localAudioSender = null;
-      try {
-        await audioVideoController.restartLocalAudio(() => {});
-        throw Error();
-      } catch (error) {}
       await stop();
     });
   });
@@ -2527,17 +2483,19 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDebugLogger(),
         webSocketAdapter,
         new NoOpMediaStreamBroker(),
-        reconnectController
+        reconnectController,
+        eventController
       );
       const events: { name: EventName; attributes: EventAttributes }[] = [];
-      audioVideoController.addObserver({
+      const observer = {
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           events.push({
             name,
             attributes,
           });
         },
-      });
+      };
+      eventController.addObserver(observer);
       await start();
       await reconnect();
       await stop();
@@ -2550,6 +2508,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingReconnected',
         'meetingEnded',
       ]);
+      eventController.removeObserver(observer);
     }).timeout(5000);
 
     it('does not reconnect if canceled', async () => {
@@ -2573,48 +2532,6 @@ describe('DefaultAudioVideoController', () => {
       await stop();
       expect(called).to.equal(1);
     });
-
-    it('can reconnect in Plan B', async () => {
-      setUserAgent(SAFARI_12_USER_AGENT);
-      domMockBehavior.isUnifiedPlanSupported = false;
-      domMockBehavior.browserName = 'safari12';
-      domMockBuilder = new DOMMockBuilder(domMockBehavior);
-      let startConnectingCalled = 0;
-      let startCalled = 0;
-      let stopCalled = 0;
-      audioVideoController = new DefaultAudioVideoController(
-        configuration,
-        new NoOpDebugLogger(),
-        webSocketAdapter,
-        new NoOpMediaStreamBroker(),
-        reconnectController
-      );
-      class TestObserver implements AudioVideoObserver {
-        audioVideoDidStartConnecting(reconnecting: boolean): void {
-          if (startConnectingCalled > 0) {
-            expect(reconnecting).to.be.true;
-          }
-          startConnectingCalled += 1;
-        }
-        audioVideoDidStart(): void {
-          startCalled += 1;
-        }
-        audioVideoDidStop(_sessionStatus: MeetingSessionStatus): void {
-          stopCalled += 1;
-        }
-      }
-      audioVideoController.addObserver(new TestObserver());
-      await start();
-      await reconnect();
-      await stop();
-
-      // 1 (reconnect) + 1 (start/stop)
-      const expected = 2;
-      expect(startConnectingCalled).to.equal(expected);
-      expect(startCalled).to.equal(expected);
-      // 0 (reconnect) + 1 (stop)
-      expect(stopCalled).to.equal(1);
-    }).timeout(4000);
 
     // FinishGatheringICECandidatesTask does not throw the ICEGatheringTimeoutWorkaround error if
     // the session connection timeout is less than 5000ms.
@@ -3019,7 +2936,7 @@ describe('DefaultAudioVideoController', () => {
       );
       await delay(defaultDelay);
       audioVideoController.handleMeetingSessionStatus(
-        new MeetingSessionStatus(MeetingSessionStatusCode.AudioDisconnectAudio),
+        new MeetingSessionStatus(MeetingSessionStatusCode.OK),
         null
       );
       expect(called).to.be.false;
@@ -3154,7 +3071,6 @@ describe('DefaultAudioVideoController', () => {
 
   describe('when simulcast is enabled', () => {
     it('will be automatically switched off if platform is not Chrome', () => {
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       audioVideoController = new DefaultAudioVideoController(
         configuration,
@@ -3179,7 +3095,6 @@ describe('DefaultAudioVideoController', () => {
     });
 
     it('can be started', async () => {
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -3247,18 +3162,20 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDebugLogger(),
         webSocketAdapter,
         new NoOpDeviceController(),
-        reconnectController
+        reconnectController,
+        eventController
       );
 
       const events: { name: EventName; attributes: EventAttributes }[] = [];
-      audioVideoController.addObserver({
+      const observer = {
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           events.push({
             name,
             attributes,
           });
         },
-      });
+      };
+      eventController.addObserver(observer);
       await start();
       await stop();
 
@@ -3269,6 +3186,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingStartSucceeded',
         'meetingEnded',
       ]);
+      eventController.removeObserver(observer);
     });
 
     it('sends failure events', async () => {
@@ -3277,19 +3195,21 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDebugLogger(),
         webSocketAdapter,
         new NoOpDeviceController(),
-        reconnectController
+        reconnectController,
+        eventController
       );
 
       const errorMessage = 'Something went wrong';
       const events: { name: EventName; attributes: EventAttributes }[] = [];
-      audioVideoController.addObserver({
+      const observer = {
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           events.push({
             name,
             attributes,
           });
         },
-      });
+      };
+      eventController.addObserver(observer);
       await start();
       reconnectController.disableReconnect();
       audioVideoController.reconnect(
@@ -3306,6 +3226,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingFailed',
       ]);
       expect(events[3].attributes.meetingErrorMessage).includes(errorMessage);
+      eventController.removeObserver(observer);
     });
 
     it('sends failure events with a non-empty error message', async () => {
@@ -3314,18 +3235,20 @@ describe('DefaultAudioVideoController', () => {
         new NoOpDebugLogger(),
         webSocketAdapter,
         new NoOpDeviceController(),
-        reconnectController
+        reconnectController,
+        eventController
       );
 
       const events: { name: EventName; attributes: EventAttributes }[] = [];
-      audioVideoController.addObserver({
+      const observer = {
         eventDidReceive(name: EventName, attributes: EventAttributes): void {
           events.push({
             name,
             attributes,
           });
         },
-      });
+      };
+      eventController.addObserver(observer);
       await start();
       reconnectController.disableReconnect();
       audioVideoController.reconnect(
@@ -3342,6 +3265,7 @@ describe('DefaultAudioVideoController', () => {
         'meetingFailed',
       ]);
       expect(events[3].attributes.meetingErrorMessage).not.to.be.empty;
+      eventController.removeObserver(observer);
     });
   });
 
@@ -3416,7 +3340,6 @@ describe('DefaultAudioVideoController', () => {
 
   describe('encodingSimulcastLayersDidChange', () => {
     it('observer should get called only when added', async () => {
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);
@@ -3476,7 +3399,6 @@ describe('DefaultAudioVideoController', () => {
     });
 
     it('observer should get called', async () => {
-      configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
       domMockBehavior.browserName = 'chrome';
       domMockBuilder = new DOMMockBuilder(domMockBehavior);

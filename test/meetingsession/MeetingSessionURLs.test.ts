@@ -12,9 +12,6 @@ describe('MeetingSessionURLs', () => {
     it('can be constructed', () => {
       const urls = new MeetingSessionURLs();
       expect(urls.audioHostURL).to.be.null;
-      expect(urls.screenDataURL).to.be.null;
-      expect(urls.screenSharingURL).to.be.null;
-      expect(urls.screenViewingURL).to.be.null;
       expect(urls.signalingURL).to.be.null;
       expect(urls.turnControlURL).to.be.null;
       expect(urls.eventIngestionURL).to.be.null;
@@ -25,9 +22,6 @@ describe('MeetingSessionURLs', () => {
     it('can use a custom URL rewriter', () => {
       const urls = new MeetingSessionURLs();
       urls.audioHostURL = 'audio-host-url';
-      urls.screenDataURL = 'screen-data-url';
-      urls.screenSharingURL = 'screen-sharing-url';
-      urls.screenViewingURL = 'screen-viewing-url';
       urls.signalingURL = 'signaling-url';
       urls.turnControlURL = 'turn-control-url';
       urls.eventIngestionURL = 'event-ingestion-url';
@@ -37,9 +31,6 @@ describe('MeetingSessionURLs', () => {
       expect(urls.urlRewriter(null)).to.be.null;
       expect(urls.urlRewriter('url')).to.eq('rewritten-url');
       expect(urls.audioHostURL).to.eq('audio-host-rewritten-url');
-      expect(urls.screenDataURL).to.eq('screen-data-rewritten-url');
-      expect(urls.screenSharingURL).to.eq('screen-sharing-rewritten-url');
-      expect(urls.screenViewingURL).to.eq('screen-viewing-rewritten-url');
       expect(urls.signalingURL).to.eq('signaling-rewritten-url');
       expect(urls.turnControlURL).to.eq('turn-control-rewritten-url');
       expect(urls.eventIngestionURL).to.eq('event-ingestion-rewritten-url');

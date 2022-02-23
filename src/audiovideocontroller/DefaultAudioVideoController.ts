@@ -13,9 +13,7 @@ import ConnectionHealthData from '../connectionhealthpolicy/ConnectionHealthData
 import SignalingAndMetricsConnectionMonitor from '../connectionmonitor/SignalingAndMetricsConnectionMonitor';
 import Destroyable from '../destroyable/Destroyable';
 import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttributes';
-import DefaultEventController from '../eventcontroller/DefaultEventController';
 import EventController from '../eventcontroller/EventController';
-import EventReporter from '../eventreporter/EventReporter';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
@@ -141,7 +139,7 @@ export default class DefaultAudioVideoController
     webSocketAdapter: WebSocketAdapter,
     mediaStreamBroker: MediaStreamBroker,
     reconnectController: ReconnectController,
-    eventReporter?: EventReporter
+    eventController?: EventController
   ) {
     this._logger = logger;
     this.sessionStateController = new DefaultSessionStateController(this._logger);
@@ -166,7 +164,7 @@ export default class DefaultAudioVideoController
     );
     this._audioMixController = new DefaultAudioMixController(this._logger);
     this.meetingSessionContext.logger = this._logger;
-    this._eventController = new DefaultEventController(this, eventReporter);
+    this._eventController = eventController;
   }
 
   async destroy(): Promise<void> {
@@ -202,10 +200,6 @@ export default class DefaultAudioVideoController
     return this._audioMixController;
   }
 
-  get eventController(): EventController {
-    return this._eventController;
-  }
-
   get logger(): Logger {
     return this._logger;
   }
@@ -216,6 +210,10 @@ export default class DefaultAudioVideoController
 
   get mediaStreamBroker(): MediaStreamBroker {
     return this._mediaStreamBroker;
+  }
+
+  get eventController(): EventController | undefined {
+    return this._eventController;
   }
 
   getRTCPeerConnectionStats(selector?: MediaStreamTrack): Promise<RTCStatsReport> {
@@ -538,8 +536,7 @@ export default class DefaultAudioVideoController
 
       if (
         this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController &&
-        this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController &&
-        this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()
+        this.meetingSessionContext.videoUplinkBandwidthPolicy.updateTransceiverController
       ) {
         this.useUpdateTransceiverControllerForUplink = true;
         this.meetingSessionContext.videoUplinkBandwidthPolicy.setTransceiverController(
@@ -598,10 +595,7 @@ export default class DefaultAudioVideoController
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(false));
       });
-      /* istanbul ignore else */
-      if (this.eventController) {
-        this.eventController.publishEvent('meetingStartRequested');
-      }
+      this.eventController?.publishEvent('meetingStartRequested');
     }
 
     this.meetingSessionContext.startAudioVideoTimestamp = this.startAudioVideoTimestamp;
@@ -1004,11 +998,7 @@ export default class DefaultAudioVideoController
       throw new Error('no active meeting and peer connection');
     }
 
-    if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
-      await this.meetingSessionContext.transceiverController.setVideoInput(videoTrack);
-    } else {
-      throw new Error('cannot replace track on Plan B');
-    }
+    await this.meetingSessionContext.transceiverController.setVideoInput(videoTrack);
 
     // if there is a local tile, a video tile update event should be fired.
     const localTile = this.meetingSessionContext.videoTileController.getLocalVideoTile();
@@ -1051,16 +1041,10 @@ export default class DefaultAudioVideoController
     }
     let replaceTrackSuccess = false;
 
-    if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
-      replaceTrackSuccess = await this.meetingSessionContext.transceiverController.replaceAudioTrack(
-        audioTrack
-      );
-    } else {
-      replaceTrackSuccess = await DefaultTransceiverController.replaceAudioTrackForSender(
-        this.meetingSessionContext.localAudioSender,
-        audioTrack
-      );
-    }
+    replaceTrackSuccess = await this.meetingSessionContext.transceiverController.replaceAudioTrack(
+      audioTrack
+    );
+
     this._realtimeController.realtimeSetLocalAudioInput(audioStream);
     this.meetingSessionContext.activeAudioInput = audioStream;
     callback();
@@ -1293,17 +1277,9 @@ export default class DefaultAudioVideoController
   }
 
   private async enforceBandwidthLimitationForSender(maxBitrateKbps: number): Promise<void> {
-    if (this.meetingSessionContext.browserBehavior.requiresUnifiedPlan()) {
-      await this.meetingSessionContext.transceiverController.setVideoSendingBitrateKbps(
-        maxBitrateKbps
-      );
-    } else {
-      await DefaultTransceiverController.setVideoSendingBitrateKbpsForSender(
-        this.meetingSessionContext.localVideoSender,
-        maxBitrateKbps,
-        this.meetingSessionContext.logger
-      );
-    }
+    await this.meetingSessionContext.transceiverController.setVideoSendingBitrateKbps(
+      maxBitrateKbps
+    );
   }
 
   handleMeetingSessionStatus(status: MeetingSessionStatus, error: Error | null): boolean {
