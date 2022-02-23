@@ -15,6 +15,9 @@ export default class DefaultSDP {
 
   constructor(public sdp: string) {}
 
+  /**
+   * Clones an SDP
+   */
   clone(): DefaultSDP {
     return new DefaultSDP(this.sdp);
   }
@@ -124,6 +127,9 @@ export default class DefaultSDP {
     });
   }
 
+  /**
+   * Splits SDP string into lines
+   */
   lines(): string[] {
     return this.sdp.split(DefaultSDP.CRLF);
   }
@@ -132,6 +138,9 @@ export default class DefaultSDP {
     return /^m=video/gm.exec(this.sdp) !== null;
   }
 
+  /**
+   * Checks whether the SDP has candidates for any m-line
+   */
   hasCandidates(): boolean {
     const match = /a[=]candidate[:]/g.exec(this.sdp);
     if (match === null) {
@@ -140,22 +149,34 @@ export default class DefaultSDP {
     return true;
   }
 
+  /**
+   * Checks whether the SDP has candidates for all m-lines
+   */
   hasCandidatesForAllMLines(): boolean {
     const isAnyCLineUsingLocalHost = this.sdp.indexOf('c=IN IP4 0.0.0.0') > -1;
     const mLinesHaveCandidates = !isAnyCLineUsingLocalHost;
     return mLinesHaveCandidates;
   }
 
+  /**
+   * Removes candidates of a given type from SDP
+   */
   withoutCandidateType(candidateTypeToExclude: SDPCandidateType): DefaultSDP {
     return DefaultSDP.linesToSDP(
       this.lines().filter(line => DefaultSDP.candidateType(line) !== candidateTypeToExclude)
     );
   }
 
+  /**
+   * Removes server reflexive candidate from SDP
+   */
   withoutServerReflexiveCandidates(): DefaultSDP {
     return this.withoutCandidateType(SDPCandidateType.ServerReflexive);
   }
 
+  /**
+   * Inserts a parameter to the SDP local offer setting the desired average audio bitrate
+   */
   withAudioMaxAverageBitrate(maxAverageBitrate: number | null): DefaultSDP {
     if (!maxAverageBitrate) {
       return this.clone();
@@ -264,7 +285,10 @@ export default class DefaultSDP {
     return dstLines;
   }
 
-  // TODO: will remove this soon.
+  /**
+   * Munges Unified-Plan SDP from different browsers to conform to one format
+   * TODO: will remove this soon.
+   */
   withUnifiedPlanFormat(): DefaultSDP {
     let originalSdp = this.sdp;
     if (originalSdp.includes('mozilla')) {
@@ -336,6 +360,9 @@ export default class DefaultSDP {
     return new DefaultSDP(newSdp);
   }
 
+  /**
+   * Extracts the ssrc for the sendrecv video media section in SDP
+   */
   ssrcForVideoSendingSection(): string {
     const srcSDP: string = this.sdp;
     const sections = DefaultSDP.splitSections(srcSDP);
@@ -360,6 +387,12 @@ export default class DefaultSDP {
     return videoSSRC1.toString();
   }
 
+<<<<<<< HEAD
+=======
+  /**
+   * Returns whether the sendrecv video sections if exist have two different SSRCs in SDPs
+   */
+>>>>>>> 609b2d3f (Remove SDP interface)
   videoSendSectionHasDifferentSSRC(prevSdp: DefaultSDP): boolean {
     const ssrc1 = this.ssrcForVideoSendingSection();
     const ssrc2 = prevSdp.ssrcForVideoSendingSection();
@@ -374,6 +407,9 @@ export default class DefaultSDP {
     return true;
   }
 
+  /**
+   * Removes H.264 from the send section.
+   */
   removeH264SupportFromSendSection(): DefaultSDP {
     const srcSDP: string = this.sdp;
     const sections = DefaultSDP.splitSections(srcSDP);
@@ -453,6 +489,9 @@ export default class DefaultSDP {
     return new DefaultSDP(newSDP);
   }
 
+  /**
+   * List of parsed media sections sections in order they occur on SDP.
+   */
   mediaSections(): SDPMediaSection[] {
     const sections = DefaultSDP.splitSections(this.sdp);
     if (sections.length < 2) {
