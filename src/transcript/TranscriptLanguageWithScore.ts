@@ -19,6 +19,6 @@
             ]
 */
 export default class TranscriptLanguageWithScore {
-    languageCode: string;
-    score: number;
+  languageCode: string;
+  score: number;
 }

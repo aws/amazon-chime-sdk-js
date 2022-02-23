@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import TranscriptAlternative from './TranscriptAlternative';
-import TranscriptLanguageWithScore from "./TranscriptLanguageWithScore";
+import TranscriptLanguageWithScore from './TranscriptLanguageWithScore';
 
 export default class TranscriptResult {
   resultId: string;

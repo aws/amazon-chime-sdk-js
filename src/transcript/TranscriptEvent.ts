@@ -14,8 +14,8 @@ import TranscriptionStatus from './TranscriptionStatus';
 import TranscriptionStatusType from './TranscriptionStatusType';
 import TranscriptItem from './TranscriptItem';
 import TranscriptItemType from './TranscriptItemType';
-import TranscriptResult from './TranscriptResult';
 import TranscriptLanguageWithScore from "./TranscriptLanguageWithScore";
+import TranscriptResult from './TranscriptResult';
 
 const TranscriptionStatusTypes = {
   [SdkTranscriptionStatus.Type.STARTED]: TranscriptionStatusType.STARTED,
@@ -83,7 +83,7 @@ export class TranscriptEventConverter {
               score: languageIdentification.score,
             };
 
-            transcriptResult.languageIdentifications.push(transcriptLanguageWithScore)
+            transcriptResult.languageIdentifications.push(transcriptLanguageWithScore);
           }
 
           for (const alternative of result.alternatives) {
