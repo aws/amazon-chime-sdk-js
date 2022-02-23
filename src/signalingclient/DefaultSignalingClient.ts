@@ -41,6 +41,7 @@ import SignalingClientVideoSubscriptionConfiguration from './SignalingClientVide
 export default class DefaultSignalingClient implements SignalingClient {
   private static FRAME_TYPE_RTC: number = 0x5;
   private static CLOSE_EVENT_TIMEOUT_MS: number = 2000;
+  private static CLIENT_SUPPORTS_COMPRESSION: boolean = true;
 
   private observerQueue: Set<SignalingClientObserver>;
   private wasOpened: boolean;
@@ -101,6 +102,7 @@ export default class DefaultSignalingClient implements SignalingClient {
     }
     joinFrame.clientDetails = SdkClientDetails.create(sdkClientDetails);
     joinFrame.audioSessionId = this.audioSessionId;
+    joinFrame.wantsCompressedSdp = DefaultSignalingClient.CLIENT_SUPPORTS_COMPRESSION;
 
     const message = SdkSignalFrame.create();
     message.type = SdkSignalFrame.Type.JOIN;
@@ -133,6 +135,7 @@ export default class DefaultSignalingClient implements SignalingClient {
         subscribeFrame.sendStreams.push(audioStream);
       }
     }
+    subscribeFrame.compressedSdpOffer = settings.compressedSdpOffer;
 
     subscribeFrame.duplex = SdkStreamServiceType.RX;
     if (settings.localVideoEnabled) {

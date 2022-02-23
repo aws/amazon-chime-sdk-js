@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0-beta.1] - 2022-02-23
     
 ### Added
+- Add compression support when sending and receiving sdp messages.
     
 ### Removed
     
