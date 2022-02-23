@@ -6,8 +6,9 @@ import * as chai from 'chai';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import NoOpDeviceController, {
   DestroyableNoOpDeviceController,
+  NoOpDeviceControllerWithEventController,
 } from '../../src/devicecontroller/NoOpDeviceController';
-import NoOpEventReporter from '../../src/eventreporter/NoOpEventReporter';
+import DefaultEventController from '../../src/eventcontroller/DefaultEventController';
 import NoOpLogger from '../../src/logger/NoOpLogger';
 import DefaultMeetingSession from '../../src/meetingsession/DefaultMeetingSession';
 import DefaultSimulcastUplinkPolicy from '../../src/videouplinkbandwidthpolicy/DefaultSimulcastUplinkPolicy';
@@ -229,7 +230,7 @@ describe('DefaultMeetingSession', () => {
       });
     });
 
-    it('will not construct event reporter if event ingestion URL is not present', async () => {
+    it('will contstruct an event controller', async () => {
       const mockBuilder = new DOMMockBuilder();
       const session = new DefaultMeetingSession(
         new NoOpAudioVideoController().configuration,
@@ -237,45 +238,57 @@ describe('DefaultMeetingSession', () => {
         new NoOpDeviceController()
       );
       expect(session).to.exist;
-      expect(session.eventReporter).to.be.undefined;
+      expect(session.eventController).to.exist;
       mockBuilder.cleanup();
       await session.destroy();
+      expect(session.eventController).to.be.undefined;
 
       // This is safe to call twice.
       await session.destroy();
     });
 
-    it('constructs event reporter if event ingestion URL is valid', async () => {
-      const mockBuilder = new DOMMockBuilder();
-      const configuration = new NoOpAudioVideoController().configuration;
-      configuration.urls.eventIngestionURL = 'https://localhost:8080/client-events';
-      const session = new DefaultMeetingSession(
-        configuration,
-        new NoOpLogger(),
-        new NoOpDeviceController()
-      );
-      expect(session).to.exist;
-      expect(session.eventReporter).to.exist;
-      const eventReporter = session.eventReporter;
-      await session.destroy();
-      expect(session.eventReporter).to.be.undefined;
-      // @ts-ignore
-      expect(eventReporter.destroyed).to.be.true;
-      // This is safe to call twice.
-      mockBuilder.cleanup();
-      await session.destroy();
-    });
-
-    it('can be constructed with a custom event reporter', () => {
+    it('can be constructed with a custom event controler', () => {
       const mockBuilder = new DOMMockBuilder();
       const session = new DefaultMeetingSession(
         new NoOpAudioVideoController().configuration,
         new NoOpLogger(),
         new NoOpDeviceController(),
-        new NoOpEventReporter()
+        new DefaultEventController(new NoOpAudioVideoController().configuration, new NoOpLogger())
       );
       expect(session).to.exist;
-      expect(session.eventReporter).to.exist;
+      expect(session.eventController).to.exist;
+      mockBuilder.cleanup();
+    });
+
+    it('will set event controller for device controller if it does not have one', () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceControllerWithEventController(null)
+      );
+      expect(session).to.exist;
+      expect(session.eventController).to.exist;
+      expect(
+        (session.deviceController as NoOpDeviceControllerWithEventController).eventController
+      ).to.equal(session.eventController);
+      mockBuilder.cleanup();
+    });
+
+    it('will not overwrite a existing device controller event controller', () => {
+      const mockBuilder = new DOMMockBuilder();
+      const session = new DefaultMeetingSession(
+        new NoOpAudioVideoController().configuration,
+        new NoOpLogger(),
+        new NoOpDeviceControllerWithEventController(
+          new DefaultEventController(new NoOpAudioVideoController().configuration, new NoOpLogger())
+        )
+      );
+      expect(session).to.exist;
+      expect(session.eventController).to.exist;
+      expect(
+        (session.deviceController as NoOpDeviceControllerWithEventController).eventController
+      ).to.not.equal(session.eventController);
       mockBuilder.cleanup();
     });
   });

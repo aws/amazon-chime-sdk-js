@@ -436,12 +436,9 @@ export default class MonitorTask
     if (attendeeId === presentAttendeeId && present && !this.presenceHandlerCalled) {
       this.presenceHandlerCalled = true;
       this.context.attendeePresenceDurationMs = Date.now() - this.context.startAudioVideoTimestamp;
-      /* istanbul ignore else */
-      if (this.context.eventController) {
-        this.context.eventController.publishEvent('attendeePresenceReceived', {
-          attendeePresenceDurationMs: this.context.attendeePresenceDurationMs,
-        });
-      }
+      this.context.eventController?.publishEvent('attendeePresenceReceived', {
+        attendeePresenceDurationMs: this.context.attendeePresenceDurationMs,
+      });
     }
   };
 

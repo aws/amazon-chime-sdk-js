@@ -12,7 +12,7 @@ const observer = {
   }
 }
 
-meetingSession.audioVideo.addObserver(observer);
+meetingSession.eventController.addObserver(observer);
 ```
 
 In the `eventDidReceive` observer method, we recommend that you handle each meeting event so that 

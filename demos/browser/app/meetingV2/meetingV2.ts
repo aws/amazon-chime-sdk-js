@@ -75,6 +75,7 @@ import {
   BackgroundFilterSpec,
   BackgroundFilterPaths,
   ModelSpecBuilder,
+  DefaultEventController,
 } from 'amazon-chime-sdk-js';
 
 import TestSound from './audio/TestSound';
@@ -1628,7 +1629,7 @@ export class DemoMeetingApp
       configuration,
       this.meetingLogger,
       deviceController,
-      this.eventReporter
+      new DefaultEventController(configuration, this.meetingLogger, this.eventReporter)
     );
 
     if ((document.getElementById('fullband-speech-mono-quality') as HTMLInputElement).checked) {
@@ -1657,6 +1658,7 @@ export class DemoMeetingApp
     this.setupDataMessage();
     this.setupLiveTranscription();
     this.audioVideo.addObserver(this);
+    this.meetingSession.eventController.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
 
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
