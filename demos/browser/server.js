@@ -190,8 +190,7 @@ function serve(host = '127.0.0.1:8080') {
         const piiEntityTypes = requestUrl.query.piiEntityTypes;
         if (requestUrl.query.engine === 'transcribe') {
           transcriptionConfiguration = {
-            EngineTranscribeSettings: {
-            }
+            EngineTranscribeSettings: {}
           };
           if (languageCode) {
             transcriptionConfiguration.EngineTranscribeSettings.LanguageCode = languageCode;

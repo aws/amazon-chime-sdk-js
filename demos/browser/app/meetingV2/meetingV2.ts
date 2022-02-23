@@ -1086,57 +1086,7 @@ export class DemoMeetingApp
     });
 
     const languageOptionsDropDown = document.getElementById('language-options') as HTMLInputElement;
-    languageOptionsDropDown.addEventListener('click', (event) => {
-      let currentNode = (event.target as HTMLInputElement);
-      let currentNodeOption = (event.target as HTMLOptionElement);
-      let currentNodeValue = currentNode.value;
-      let isValueSelected = currentNodeOption.selected;
-      const languageOptionsSelected = document.querySelectorAll('#language-options option:checked');
-      // to remove all language from preferred selection if multiple languages are unselected to 1 in language options dropdown
-      if (languageOptionsSelected.length == 1 && isValueSelected) {
-        let preferredLanguageDropDown = document.getElementById('preferred-language-selection');
-        if (preferredLanguageDropDown.hasChildNodes) {
-          let options = (preferredLanguageDropDown as HTMLSelectElement).options;
-          for (let i = options.length - 1; i >= 0; i--) {
-            if (options[i].value.length > 0) {
-              preferredLanguageDropDown.removeChild(options[i]);
-            }
-          }
-        }
-      }
-      // add the selected value to preferred language dropdown
-      if (isValueSelected) {
-        let option = document.createElement('option');
-        option.value = currentNodeValue;
-        option.text = currentNode.innerText;
-        document.getElementById('preferred-language-selection').appendChild(option);
-      }
-      // make sure every group in multiple select language options has only one selection
-      let childNodes = currentNode.parentNode.childNodes;
-      childNodes.forEach(node => {
-        if ((node as HTMLInputElement).value !== currentNodeValue && ((node as HTMLOptionElement).selected === true) || !isValueSelected) {
-          (node as HTMLOptionElement).selected = false;
-          let preferredLanguageDropDown = document.getElementById('preferred-language-selection');
-          let options = (preferredLanguageDropDown as HTMLSelectElement).options;
-          for (var i = options.length - 1; i >= 0; i--) {
-            if (options[i].value === (node as HTMLInputElement).value) {
-              preferredLanguageDropDown.removeChild(options[i]);
-            }
-          }
-        }
-      });
-      document.getElementById('language-options-error-message').innerHTML = '';
-      if (document.querySelectorAll('#language-options option:checked').length < 2){
-        let languageOptionsErrorSpan = document.createElement('span');
-        languageOptionsErrorSpan.innerText = "Please select at least 2 language options";
-        languageOptionsErrorSpan.classList.add('error-message-color');
-        document.getElementById('language-options-error-message').appendChild(languageOptionsErrorSpan);
-        (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = true;
-        return false;
-      } else {
-        (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = false;
-      }
-    });
+    languageOptionsDropDown.addEventListener('click', (event => languageOptionsDropDownClickHandler(event)));
 
     const contentIdentificationCb = document.getElementById('content-identification-checkbox') as HTMLInputElement;
     contentIdentificationCb.addEventListener('click', () => {
@@ -1234,6 +1184,7 @@ export class DemoMeetingApp
       return (document.getElementById(id) as HTMLInputElement).checked;
     }
 
+    // fetches checked values of the list from given selector id
     function getSelectedValues(id: string): string {
       let selectors = id + ' ' + 'option:checked';
       const selectedValues = document.querySelectorAll(selectors);
@@ -1242,6 +1193,61 @@ export class DemoMeetingApp
         values = Array.from(selectedValues).filter(node => (node as HTMLInputElement).value !== '').map(el => (el as HTMLInputElement).value).join(',');
       }
       return values;
+    }
+
+    // callback to restrict users from selecting multiple language variant (locale) per language code
+    // e.g. en-US and en-AU as language options cannot be selected for the same transcription
+    // Details in https://docs.aws.amazon.com/transcribe/latest/dg/lang-id-stream.html
+    function languageOptionsDropDownClickHandler(event: Event): boolean {
+      let currentNode = (event.target as HTMLInputElement);
+      let currentNodeOption = (event.target as HTMLOptionElement);
+      let currentNodeValue = currentNode.value;
+      let isValueSelected = currentNodeOption.selected;
+      const languageOptionsSelected = document.querySelectorAll('#language-options option:checked');
+      // to remove all language from preferred selection if multiple languages are unselected to 1 in language options dropdown
+      if (languageOptionsSelected.length == 1 && isValueSelected) {
+        let preferredLanguageDropDown = document.getElementById('preferred-language-selection');
+        if (preferredLanguageDropDown.hasChildNodes) {
+          let options = (preferredLanguageDropDown as HTMLSelectElement).options;
+          for (let i = options.length - 1; i >= 0; i--) {
+            if (options[i].value.length > 0) {
+              preferredLanguageDropDown.removeChild(options[i]);
+            }
+          }
+        }
+      }
+      // add the selected value to preferred language dropdown
+      if (isValueSelected) {
+        let option = document.createElement('option');
+        option.value = currentNodeValue;
+        option.text = currentNode.innerText;
+        document.getElementById('preferred-language-selection').appendChild(option);
+      }
+      // make sure every group in multiple select language options has only one selection
+      let childNodes = currentNode.parentNode.childNodes;
+      childNodes.forEach(node => {
+        if ((node as HTMLInputElement).value !== currentNodeValue && ((node as HTMLOptionElement).selected === true) || !isValueSelected) {
+          (node as HTMLOptionElement).selected = false;
+          let preferredLanguageDropDown = document.getElementById('preferred-language-selection');
+          let options = (preferredLanguageDropDown as HTMLSelectElement).options;
+          for (let i = options.length - 1; i >= 0; i--) {
+            if (options[i].value === (node as HTMLInputElement).value) {
+              preferredLanguageDropDown.removeChild(options[i]);
+            }
+          }
+        }
+      });
+      document.getElementById('language-options-error-message').innerHTML = '';
+      if (document.querySelectorAll('#language-options option:checked').length < 2){
+        let languageOptionsErrorSpan = document.createElement('span');
+        languageOptionsErrorSpan.innerText = "Please select at least 2 language options";
+        languageOptionsErrorSpan.classList.add('error-message-color');
+        document.getElementById('language-options-error-message').appendChild(languageOptionsErrorSpan);
+        (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = true;
+        return false;
+      } else {
+        (document.getElementById('button-start-transcription') as HTMLInputElement).disabled = false;
+      }
     }
 
     const startLiveTranscription = async (engine: string, languageCode: string, region: string, transcriptionStreamParams: TranscriptionStreamParams) => {
