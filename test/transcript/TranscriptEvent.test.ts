@@ -282,28 +282,38 @@ describe('TranscriptEvent', () => {
     expect(actualEvents[0].results.length).to.eql(event.transcript.results.length);
     const results = event.transcript.results;
     expect(actualEvents[0].results[0].alternatives[0].items.length).to.eql(
-      results[0].alternatives[0].items.length);
+      results[0].alternatives[0].items.length
+    );
     expect(actualEvents[0].results[0].alternatives[0].items[0].confidence).to.eql(
-      results[0].alternatives[0].items[0].confidence);
+      results[0].alternatives[0].items[0].confidence
+    );
     expect(actualEvents[0].results[0].alternatives[0].items[1].confidence).to.be.undefined;
     expect(actualEvents[0].results[0].alternatives[0].items[1].stable).eql(
       results[0].alternatives[0].items[1].stable);
     expect(actualEvents[0].results[0].alternatives[0].items[2].stable).to.be.undefined;
     expect(actualEvents[0].results[0].alternatives[0].items[2].confidence).to.eql(
-      results[0].alternatives[0].items[2].confidence);
+      results[0].alternatives[0].items[2].confidence
+    );
     expect(actualEvents[0].results[0].languageIdentifications.length).to.eql(
-      results[0].languageIdentifications.length);
+      results[0].languageIdentifications.length
+    );
     expect(actualEvents[0].results[0].languageIdentifications[0].languageCode).to.eql(
-      results[0].languageIdentifications[0].languageCode);
+      results[0].languageIdentifications[0].languageCode
+    );
     expect(actualEvents[0].results[0].languageIdentifications[0].score).to.eql(
-      results[0].languageIdentifications[0].score);
+      results[0].languageIdentifications[0].score
+    );
     expect(actualEvents[0].results[0].languageIdentifications[1].languageCode).to.eql(
-      results[0].languageIdentifications[1].languageCode);
+      results[0].languageIdentifications[1].languageCode
+    );
     expect(actualEvents[0].results[0].languageIdentifications[1].score).to.eql(
-      results[0].languageIdentifications[1].score);
+      results[0].languageIdentifications[1].score
+    );
     expect(actualEvents[0].results[0].languageIdentifications[2].languageCode).to.eql(
-      results[0].languageIdentifications[2].languageCode);
+      results[0].languageIdentifications[2].languageCode
+    );
     expect(actualEvents[0].results[0].languageIdentifications[2].score).to.eql(
-      results[0].languageIdentifications[2].score);
+      results[0].languageIdentifications[2].score
+    );
   });
 });
