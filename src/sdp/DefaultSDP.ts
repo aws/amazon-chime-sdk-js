@@ -1,14 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import SDP from './SDP';
 import SDPCandidateType from './SDPCandidateType';
 import SDPMediaSection from './SDPMediaSection';
 
 /**
- * Implements [[SDP]]. [[SDP]] also includes a few helper functions for parsing string.
+ * [[DefaultSDP]] includes a few helper functions for parsing sdp string.
  */
-export default class DefaultSDP implements SDP {
+export default class DefaultSDP {
   private static CRLF: string = '\r\n';
 
   static rfc7587LowestBitrate = 6000;
@@ -361,7 +360,7 @@ export default class DefaultSDP implements SDP {
     return videoSSRC1.toString();
   }
 
-  videoSendSectionHasDifferentSSRC(prevSdp: SDP): boolean {
+  videoSendSectionHasDifferentSSRC(prevSdp: DefaultSDP): boolean {
     const ssrc1 = this.ssrcForVideoSendingSection();
     const ssrc2 = prevSdp.ssrcForVideoSendingSection();
     if (ssrc1 === '' || ssrc2 === '') {

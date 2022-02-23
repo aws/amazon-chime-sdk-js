@@ -216,7 +216,6 @@ import ReleaseMediaStreamsTask from './task/ReleaseMediaStreamsTask';
 import RemovableAnalyserNode from './devicecontroller/RemovableAnalyserNode';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
-import SDP from './sdp/SDP';
 import SDPCandidateType from './sdp/SDPCandidateType';
 import SDPMediaSection from './sdp/SDPMediaSection';
 import Scheduler from './scheduler/Scheduler';
@@ -543,7 +542,6 @@ export {
   RemovableAnalyserNode,
   RemovableObserver,
   RunnableTask,
-  SDP,
   SDPCandidateType,
   SDPMediaSection,
   Scheduler,

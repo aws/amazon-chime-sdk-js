@@ -83,9 +83,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
     if (this.context.serverSupportsCompression) {
       // If the server supports compression, then send the compressed version of the sdp
       // and exclude the original sdp offer.
-      const prevOffer = this.context.previousSdpOffer
-        ? (this.context.previousSdpOffer as DefaultSDP).sdp
-        : '';
+      const prevOffer = this.context.previousSdpOffer ? this.context.previousSdpOffer.sdp : '';
       compressedSDPOffer = this.textCompressor.compress(localSdpOffer, prevOffer);
       this.context.logger.info(
         `Compressed the SDP message from ${localSdpOffer.length} to ${compressedSDPOffer.length} bytes.`
