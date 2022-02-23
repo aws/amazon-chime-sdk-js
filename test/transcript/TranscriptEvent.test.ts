@@ -289,7 +289,8 @@ describe('TranscriptEvent', () => {
     );
     expect(actualEvents[0].results[0].alternatives[0].items[1].confidence).to.be.undefined;
     expect(actualEvents[0].results[0].alternatives[0].items[1].stable).eql(
-      results[0].alternatives[0].items[1].stable);
+      results[0].alternatives[0].items[1].stable
+    );
     expect(actualEvents[0].results[0].alternatives[0].items[2].stable).to.be.undefined;
     expect(actualEvents[0].results[0].alternatives[0].items[2].confidence).to.eql(
       results[0].alternatives[0].items[2].confidence

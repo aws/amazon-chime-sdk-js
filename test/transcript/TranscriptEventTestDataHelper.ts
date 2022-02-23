@@ -216,7 +216,11 @@ export function makeSdkTranscriptWithLanguageIdentifications(): SdkTranscriptEve
 
   alternative.transcript = 'Test.';
   result.alternatives = [alternative];
-  result.languageIdentifications = [languageIdentification1, languageIdentification2, languageIdentification3]
+  result.languageIdentifications = [
+    languageIdentification1,
+    languageIdentification2,
+    languageIdentification3,
+  ];
   transcript.results = [result];
   event.transcript = transcript;
   return event;
