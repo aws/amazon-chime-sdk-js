@@ -122,6 +122,22 @@ describe('VideoPreferences', () => {
     expect(p1.equals(p2)).to.be.true;
   });
 
+  it('call build multiple times result in equal video preferences', () => {
+    const b1 = VideoPreferences.prepare();
+    b1.add(new VideoPreference('foo', 1));
+    expect(b1.build().equals(b1.build())).to.be.true;
+  });
+
+  it(' can be cloned', () => {
+    const b1 = VideoPreferences.prepare();
+    b1.add(new VideoPreference('foo', 1));
+    b1.add(new VideoPreference('foo', 1));
+    const p1 = b1.build();
+
+    const p2 = p1.clone();
+    expect(p1.equals(p2)).to.be.true;
+  });
+
   it('can have preferences removed', () => {
     const b1 = VideoPreferences.prepare();
     b1.add(new VideoPreference('foo', 1));
