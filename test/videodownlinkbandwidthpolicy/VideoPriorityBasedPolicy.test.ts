@@ -294,8 +294,34 @@ describe('VideoPriorityBasedPolicy', () => {
   });
 
   describe('chooseRemoteVideoSources', () => {
-    it('Can be called if videoPreferences is undefined', () => {
+    it('Can be called if videoPreferences is empty', () => {
       policy.chooseRemoteVideoSources(VideoPreferences.prepare().build());
+    });
+
+    it('Can be called if videoPreferences is undefined', () => {
+      policy.chooseRemoteVideoSources(undefined);
+    });
+
+    it('Will not be mutated', () => {
+      updateIndexFrame(videoStreamIndex, 2, 0, 600);
+      policy.updateIndex(videoStreamIndex);
+      const preferences = VideoPreferences.prepare();
+      const p1 = new VideoPreference('attendee-1', 5, TargetDisplaySize.High);
+      preferences.add(p1);
+      const p2 = new VideoPreference('attendee-2', 5, TargetDisplaySize.High);
+      preferences.add(p2);
+      policy.chooseRemoteVideoSources(preferences.build());
+      let resub = policy.wantsResubscribe();
+      expect(resub).to.equal(true);
+      let received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4]);
+
+      p1.priority = 10;
+      policy.chooseRemoteVideoSources(preferences.build());
+      resub = policy.wantsResubscribe();
+      expect(resub).to.equal(false);
+      received = policy.chooseSubscriptions();
+      expect(received.array()).to.deep.equal([2, 4]);
     });
 
     it('observer should get called only when added', async () => {

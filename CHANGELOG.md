@@ -8,12 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0-beta.1] - 2022-02-23
     
 ### Added
+- Add compression support when sending and receiving sdp messages.
     
 ### Removed
     
 ### Changed
     
 ### Fixed
+- Clone the video preference input in `chooseRemoteVideoSources` API in `VideoPriorityBasedPolicy` to avoid mutation 
+  that can cause video preferences to not be sorted and lead to wrong video subscription determination by the policy. 
     
 ## [3.0.0-beta.0] - 2022-02-08
     

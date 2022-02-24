@@ -18,6 +18,7 @@ export default class SignalingClientSubscribe {
    * @param localVideoEnabled Whether to send a video stream for the local camera
    * @param array of local video stream description
    * @param connectionTypeHasVideo Whether connection type has video
+   * @param compressedSdpOffer Compressed version of the SDP offer which was created by WebRTC
    */
   constructor(
     public attendeeId: string,
@@ -28,6 +29,7 @@ export default class SignalingClientSubscribe {
     public receiveStreamIds: number[],
     public localVideoEnabled: boolean,
     public videoStreamDescriptions: VideoStreamDescription[],
-    public connectionTypeHasVideo: boolean
+    public connectionTypeHasVideo: boolean,
+    public compressedSdpOffer: Uint8Array
   ) {}
 }

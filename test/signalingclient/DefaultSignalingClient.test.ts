@@ -88,6 +88,7 @@ describe('DefaultSignalingClient', () => {
   const _groupId = 1;
   const _attendeeId = 'some-attendee-id';
   const _sdpOffer = 'some-sdp-offer';
+  const _compressedSdpOffer = new Uint8Array([10, 20, 30, 40, 50]);
   const _audioHost = 'some-audio-host';
   let domMockBuilder: DOMMockBuilder | null = null;
 
@@ -335,7 +336,8 @@ describe('DefaultSignalingClient', () => {
                 [],
                 false,
                 [new VideoStreamDescription()],
-                false
+                false,
+                new Uint8Array()
               )
             );
           }
@@ -358,7 +360,8 @@ describe('DefaultSignalingClient', () => {
               expect(frame.sub.sendStreams.length).to.equal(0);
               expect(frame.sub.duplex).to.equal(SdkStreamServiceType.RX);
               expect(frame.sub.sdpOffer).to.equal(_sdpOffer);
-              expect(frame.sub.audioHost).to.equal('');
+              expect(frame.sub.audioHost).to.eql('');
+              expect(frame.sub.compressedSdpOffer).to.eql(_compressedSdpOffer);
               done();
             });
             event.client.subscribe(
@@ -371,7 +374,8 @@ describe('DefaultSignalingClient', () => {
                 [],
                 false,
                 [new VideoStreamDescription()],
-                false
+                false,
+                _compressedSdpOffer
               )
             );
           }
@@ -397,6 +401,7 @@ describe('DefaultSignalingClient', () => {
               expect(frame.sub.duplex).to.equal(SdkStreamServiceType.DUPLEX);
               expect(frame.sub.sdpOffer).to.equal(_sdpOffer);
               expect(frame.sub.audioHost).to.equal('');
+              expect(frame.sub.compressedSdpOffer).to.eql(_compressedSdpOffer);
               done();
             });
             event.client.subscribe(
@@ -409,7 +414,8 @@ describe('DefaultSignalingClient', () => {
                 [0],
                 true,
                 [new VideoStreamDescription()],
-                true
+                true,
+                _compressedSdpOffer
               )
             );
           }
@@ -435,6 +441,7 @@ describe('DefaultSignalingClient', () => {
               expect(frame.sub.duplex).to.equal(SdkStreamServiceType.DUPLEX);
               expect(frame.sub.sdpOffer).to.equal(_sdpOffer);
               expect(frame.sub.audioHost).to.equal(_audioHost);
+              expect(frame.sub.compressedSdpOffer).to.eql(_compressedSdpOffer);
               done();
             });
             event.client.subscribe(
@@ -447,7 +454,8 @@ describe('DefaultSignalingClient', () => {
                 [0],
                 true,
                 [new VideoStreamDescription()],
-                true
+                true,
+                _compressedSdpOffer
               )
             );
           }

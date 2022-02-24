@@ -236,6 +236,14 @@ export class VideoPreferences implements Iterable<VideoPreference>, Eq {
   isEmpty(): boolean {
     return this.items.isEmpty();
   }
+
+  clone(): VideoPreferences {
+    const videoPreferences = VideoPreferences.prepare();
+    for (const preference of this.items) {
+      videoPreferences.add(preference.clone());
+    }
+    return videoPreferences.build();
+  }
 }
 
 export default VideoPreferences;
