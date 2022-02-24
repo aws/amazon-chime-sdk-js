@@ -483,6 +483,9 @@ export interface ISdkJoinFrame {
 
     /** SdkJoinFrame audioSessionId */
     audioSessionId?: (number|Long|null);
+
+    /** SdkJoinFrame wantsCompressedSdp */
+    wantsCompressedSdp?: (boolean|null);
 }
 
 /** Represents a SdkJoinFrame. */
@@ -508,6 +511,9 @@ export class SdkJoinFrame implements ISdkJoinFrame {
 
     /** SdkJoinFrame audioSessionId. */
     public audioSessionId: (number|Long);
+
+    /** SdkJoinFrame wantsCompressedSdp. */
+    public wantsCompressedSdp: boolean;
 
     /**
      * Creates a new SdkJoinFrame instance using the specified properties.
@@ -588,6 +594,9 @@ export interface ISdkJoinAckFrame {
 
     /** SdkJoinAckFrame videoSubscriptionLimit */
     videoSubscriptionLimit?: (number|null);
+
+    /** SdkJoinAckFrame wantsCompressedSdp */
+    wantsCompressedSdp?: (boolean|null);
 }
 
 /** Represents a SdkJoinAckFrame. */
@@ -604,6 +613,9 @@ export class SdkJoinAckFrame implements ISdkJoinAckFrame {
 
     /** SdkJoinAckFrame videoSubscriptionLimit. */
     public videoSubscriptionLimit: number;
+
+    /** SdkJoinAckFrame wantsCompressedSdp. */
+    public wantsCompressedSdp: boolean;
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.
@@ -880,6 +892,9 @@ export interface ISdkSubscribeFrame {
 
     /** SdkSubscribeFrame audioMuted */
     audioMuted?: (boolean|null);
+
+    /** SdkSubscribeFrame compressedSdpOffer */
+    compressedSdpOffer?: (Uint8Array|null);
 }
 
 /** Represents a SdkSubscribeFrame. */
@@ -911,6 +926,9 @@ export class SdkSubscribeFrame implements ISdkSubscribeFrame {
 
     /** SdkSubscribeFrame audioMuted. */
     public audioMuted: boolean;
+
+    /** SdkSubscribeFrame compressedSdpOffer. */
+    public compressedSdpOffer: Uint8Array;
 
     /**
      * Creates a new SdkSubscribeFrame instance using the specified properties.
@@ -997,6 +1015,9 @@ export interface ISdkSubscribeAckFrame {
 
     /** SdkSubscribeAckFrame tracks */
     tracks?: (ISdkTrackMapping[]|null);
+
+    /** SdkSubscribeAckFrame compressedSdpAnswer */
+    compressedSdpAnswer?: (Uint8Array|null);
 }
 
 /** Represents a SdkSubscribeAckFrame. */
@@ -1019,6 +1040,9 @@ export class SdkSubscribeAckFrame implements ISdkSubscribeAckFrame {
 
     /** SdkSubscribeAckFrame tracks. */
     public tracks: ISdkTrackMapping[];
+
+    /** SdkSubscribeAckFrame compressedSdpAnswer. */
+    public compressedSdpAnswer: Uint8Array;
 
     /**
      * Creates a new SdkSubscribeAckFrame instance using the specified properties.

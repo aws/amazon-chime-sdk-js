@@ -1441,6 +1441,7 @@ $root.SdkJoinFrame = (function() {
      * @property {number|null} [flags] SdkJoinFrame flags
      * @property {ISdkClientDetails|null} [clientDetails] SdkJoinFrame clientDetails
      * @property {number|Long|null} [audioSessionId] SdkJoinFrame audioSessionId
+     * @property {boolean|null} [wantsCompressedSdp] SdkJoinFrame wantsCompressedSdp
      */
 
     /**
@@ -1499,6 +1500,14 @@ $root.SdkJoinFrame = (function() {
     SdkJoinFrame.prototype.audioSessionId = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
 
     /**
+     * SdkJoinFrame wantsCompressedSdp.
+     * @member {boolean} wantsCompressedSdp
+     * @memberof SdkJoinFrame
+     * @instance
+     */
+    SdkJoinFrame.prototype.wantsCompressedSdp = false;
+
+    /**
      * Creates a new SdkJoinFrame instance using the specified properties.
      * @function create
      * @memberof SdkJoinFrame
@@ -1532,6 +1541,8 @@ $root.SdkJoinFrame = (function() {
             $root.SdkClientDetails.encode(message.clientDetails, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
         if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
             writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.audioSessionId);
+        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+            writer.uint32(/* id 7, wireType 0 =*/56).bool(message.wantsCompressedSdp);
         return writer;
     };
 
@@ -1580,6 +1591,9 @@ $root.SdkJoinFrame = (function() {
                 break;
             case 6:
                 message.audioSessionId = reader.uint64();
+                break;
+            case 7:
+                message.wantsCompressedSdp = reader.bool();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -1633,6 +1647,9 @@ $root.SdkJoinFrame = (function() {
         if (message.audioSessionId != null && message.hasOwnProperty("audioSessionId"))
             if (!$util.isInteger(message.audioSessionId) && !(message.audioSessionId && $util.isInteger(message.audioSessionId.low) && $util.isInteger(message.audioSessionId.high)))
                 return "audioSessionId: integer|Long expected";
+        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+            if (typeof message.wantsCompressedSdp !== "boolean")
+                return "wantsCompressedSdp: boolean expected";
         return null;
     };
 
@@ -1668,6 +1685,8 @@ $root.SdkJoinFrame = (function() {
                 message.audioSessionId = object.audioSessionId;
             else if (typeof object.audioSessionId === "object")
                 message.audioSessionId = new $util.LongBits(object.audioSessionId.low >>> 0, object.audioSessionId.high >>> 0).toNumber(true);
+        if (object.wantsCompressedSdp != null)
+            message.wantsCompressedSdp = Boolean(object.wantsCompressedSdp);
         return message;
     };
 
@@ -1694,6 +1713,7 @@ $root.SdkJoinFrame = (function() {
                 object.audioSessionId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
             } else
                 object.audioSessionId = options.longs === String ? "0" : 0;
+            object.wantsCompressedSdp = false;
         }
         if (message.protocolVersion != null && message.hasOwnProperty("protocolVersion"))
             object.protocolVersion = message.protocolVersion;
@@ -1708,6 +1728,8 @@ $root.SdkJoinFrame = (function() {
                 object.audioSessionId = options.longs === String ? String(message.audioSessionId) : message.audioSessionId;
             else
                 object.audioSessionId = options.longs === String ? $util.Long.prototype.toString.call(message.audioSessionId) : options.longs === Number ? new $util.LongBits(message.audioSessionId.low >>> 0, message.audioSessionId.high >>> 0).toNumber(true) : message.audioSessionId;
+        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+            object.wantsCompressedSdp = message.wantsCompressedSdp;
         return object;
     };
 
@@ -1733,6 +1755,7 @@ $root.SdkJoinAckFrame = (function() {
      * @interface ISdkJoinAckFrame
      * @property {ISdkTurnCredentials|null} [turnCredentials] SdkJoinAckFrame turnCredentials
      * @property {number|null} [videoSubscriptionLimit] SdkJoinAckFrame videoSubscriptionLimit
+     * @property {boolean|null} [wantsCompressedSdp] SdkJoinAckFrame wantsCompressedSdp
      */
 
     /**
@@ -1764,7 +1787,15 @@ $root.SdkJoinAckFrame = (function() {
      * @memberof SdkJoinAckFrame
      * @instance
      */
-    SdkJoinAckFrame.prototype.videoSubscriptionLimit = 0;
+    SdkJoinAckFrame.prototype.videoSubscriptionLimit = 25;
+
+    /**
+     * SdkJoinAckFrame wantsCompressedSdp.
+     * @member {boolean} wantsCompressedSdp
+     * @memberof SdkJoinAckFrame
+     * @instance
+     */
+    SdkJoinAckFrame.prototype.wantsCompressedSdp = false;
 
     /**
      * Creates a new SdkJoinAckFrame instance using the specified properties.
@@ -1794,6 +1825,8 @@ $root.SdkJoinAckFrame = (function() {
             $root.SdkTurnCredentials.encode(message.turnCredentials, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
         if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
             writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.videoSubscriptionLimit);
+        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+            writer.uint32(/* id 3, wireType 0 =*/24).bool(message.wantsCompressedSdp);
         return writer;
     };
 
@@ -1833,6 +1866,9 @@ $root.SdkJoinAckFrame = (function() {
                 break;
             case 2:
                 message.videoSubscriptionLimit = reader.uint32();
+                break;
+            case 3:
+                message.wantsCompressedSdp = reader.bool();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -1877,6 +1913,9 @@ $root.SdkJoinAckFrame = (function() {
         if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
             if (!$util.isInteger(message.videoSubscriptionLimit))
                 return "videoSubscriptionLimit: integer expected";
+        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+            if (typeof message.wantsCompressedSdp !== "boolean")
+                return "wantsCompressedSdp: boolean expected";
         return null;
     };
 
@@ -1899,6 +1938,8 @@ $root.SdkJoinAckFrame = (function() {
         }
         if (object.videoSubscriptionLimit != null)
             message.videoSubscriptionLimit = object.videoSubscriptionLimit >>> 0;
+        if (object.wantsCompressedSdp != null)
+            message.wantsCompressedSdp = Boolean(object.wantsCompressedSdp);
         return message;
     };
 
@@ -1917,12 +1958,15 @@ $root.SdkJoinAckFrame = (function() {
         var object = {};
         if (options.defaults) {
             object.turnCredentials = null;
-            object.videoSubscriptionLimit = 0;
+            object.videoSubscriptionLimit = 25;
+            object.wantsCompressedSdp = false;
         }
         if (message.turnCredentials != null && message.hasOwnProperty("turnCredentials"))
             object.turnCredentials = $root.SdkTurnCredentials.toObject(message.turnCredentials, options);
         if (message.videoSubscriptionLimit != null && message.hasOwnProperty("videoSubscriptionLimit"))
             object.videoSubscriptionLimit = message.videoSubscriptionLimit;
+        if (message.wantsCompressedSdp != null && message.hasOwnProperty("wantsCompressedSdp"))
+            object.wantsCompressedSdp = message.wantsCompressedSdp;
         return object;
     };
 
@@ -2303,6 +2347,7 @@ $root.SdkSubscribeFrame = (function() {
      * @property {string|null} [audioHost] SdkSubscribeFrame audioHost
      * @property {boolean|null} [audioCheckin] SdkSubscribeFrame audioCheckin
      * @property {boolean|null} [audioMuted] SdkSubscribeFrame audioMuted
+     * @property {Uint8Array|null} [compressedSdpOffer] SdkSubscribeFrame compressedSdpOffer
      */
 
     /**
@@ -2379,6 +2424,14 @@ $root.SdkSubscribeFrame = (function() {
     SdkSubscribeFrame.prototype.audioMuted = false;
 
     /**
+     * SdkSubscribeFrame compressedSdpOffer.
+     * @member {Uint8Array} compressedSdpOffer
+     * @memberof SdkSubscribeFrame
+     * @instance
+     */
+    SdkSubscribeFrame.prototype.compressedSdpOffer = $util.newBuffer([]);
+
+    /**
      * Creates a new SdkSubscribeFrame instance using the specified properties.
      * @function create
      * @memberof SdkSubscribeFrame
@@ -2418,6 +2471,8 @@ $root.SdkSubscribeFrame = (function() {
             writer.uint32(/* id 6, wireType 0 =*/48).bool(message.audioCheckin);
         if (message.audioMuted != null && message.hasOwnProperty("audioMuted"))
             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.audioMuted);
+        if (message.compressedSdpOffer != null && message.hasOwnProperty("compressedSdpOffer"))
+            writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.compressedSdpOffer);
         return writer;
     };
 
@@ -2481,6 +2536,9 @@ $root.SdkSubscribeFrame = (function() {
                 break;
             case 7:
                 message.audioMuted = reader.bool();
+                break;
+            case 8:
+                message.compressedSdpOffer = reader.bytes();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -2554,6 +2612,9 @@ $root.SdkSubscribeFrame = (function() {
         if (message.audioMuted != null && message.hasOwnProperty("audioMuted"))
             if (typeof message.audioMuted !== "boolean")
                 return "audioMuted: boolean expected";
+        if (message.compressedSdpOffer != null && message.hasOwnProperty("compressedSdpOffer"))
+            if (!(message.compressedSdpOffer && typeof message.compressedSdpOffer.length === "number" || $util.isString(message.compressedSdpOffer)))
+                return "compressedSdpOffer: buffer expected";
         return null;
     };
 
@@ -2608,6 +2669,11 @@ $root.SdkSubscribeFrame = (function() {
             message.audioCheckin = Boolean(object.audioCheckin);
         if (object.audioMuted != null)
             message.audioMuted = Boolean(object.audioMuted);
+        if (object.compressedSdpOffer != null)
+            if (typeof object.compressedSdpOffer === "string")
+                $util.base64.decode(object.compressedSdpOffer, message.compressedSdpOffer = $util.newBuffer($util.base64.length(object.compressedSdpOffer)), 0);
+            else if (object.compressedSdpOffer.length)
+                message.compressedSdpOffer = object.compressedSdpOffer;
         return message;
     };
 
@@ -2634,6 +2700,13 @@ $root.SdkSubscribeFrame = (function() {
             object.audioHost = "";
             object.audioCheckin = false;
             object.audioMuted = false;
+            if (options.bytes === String)
+                object.compressedSdpOffer = "";
+            else {
+                object.compressedSdpOffer = [];
+                if (options.bytes !== Array)
+                    object.compressedSdpOffer = $util.newBuffer(object.compressedSdpOffer);
+            }
         }
         if (message.duplex != null && message.hasOwnProperty("duplex"))
             object.duplex = options.enums === String ? $root.SdkStreamServiceType[message.duplex] : message.duplex;
@@ -2655,6 +2728,8 @@ $root.SdkSubscribeFrame = (function() {
             object.audioCheckin = message.audioCheckin;
         if (message.audioMuted != null && message.hasOwnProperty("audioMuted"))
             object.audioMuted = message.audioMuted;
+        if (message.compressedSdpOffer != null && message.hasOwnProperty("compressedSdpOffer"))
+            object.compressedSdpOffer = options.bytes === String ? $util.base64.encode(message.compressedSdpOffer, 0, message.compressedSdpOffer.length) : options.bytes === Array ? Array.prototype.slice.call(message.compressedSdpOffer) : message.compressedSdpOffer;
         return object;
     };
 
@@ -2682,6 +2757,7 @@ $root.SdkSubscribeAckFrame = (function() {
      * @property {Array.<ISdkStreamAllocation>|null} [allocations] SdkSubscribeAckFrame allocations
      * @property {string|null} [sdpAnswer] SdkSubscribeAckFrame sdpAnswer
      * @property {Array.<ISdkTrackMapping>|null} [tracks] SdkSubscribeAckFrame tracks
+     * @property {Uint8Array|null} [compressedSdpAnswer] SdkSubscribeAckFrame compressedSdpAnswer
      */
 
     /**
@@ -2734,6 +2810,14 @@ $root.SdkSubscribeAckFrame = (function() {
     SdkSubscribeAckFrame.prototype.tracks = $util.emptyArray;
 
     /**
+     * SdkSubscribeAckFrame compressedSdpAnswer.
+     * @member {Uint8Array} compressedSdpAnswer
+     * @memberof SdkSubscribeAckFrame
+     * @instance
+     */
+    SdkSubscribeAckFrame.prototype.compressedSdpAnswer = $util.newBuffer([]);
+
+    /**
      * Creates a new SdkSubscribeAckFrame instance using the specified properties.
      * @function create
      * @memberof SdkSubscribeAckFrame
@@ -2767,6 +2851,8 @@ $root.SdkSubscribeAckFrame = (function() {
         if (message.tracks != null && message.tracks.length)
             for (var i = 0; i < message.tracks.length; ++i)
                 $root.SdkTrackMapping.encode(message.tracks[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+        if (message.compressedSdpAnswer != null && message.hasOwnProperty("compressedSdpAnswer"))
+            writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.compressedSdpAnswer);
         return writer;
     };
 
@@ -2816,6 +2902,9 @@ $root.SdkSubscribeAckFrame = (function() {
                 if (!(message.tracks && message.tracks.length))
                     message.tracks = [];
                 message.tracks.push($root.SdkTrackMapping.decode(reader, reader.uint32()));
+                break;
+            case 5:
+                message.compressedSdpAnswer = reader.bytes();
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -2882,6 +2971,9 @@ $root.SdkSubscribeAckFrame = (function() {
                     return "tracks." + error;
             }
         }
+        if (message.compressedSdpAnswer != null && message.hasOwnProperty("compressedSdpAnswer"))
+            if (!(message.compressedSdpAnswer && typeof message.compressedSdpAnswer.length === "number" || $util.isString(message.compressedSdpAnswer)))
+                return "compressedSdpAnswer: buffer expected";
         return null;
     };
 
@@ -2933,6 +3025,11 @@ $root.SdkSubscribeAckFrame = (function() {
                 message.tracks[i] = $root.SdkTrackMapping.fromObject(object.tracks[i]);
             }
         }
+        if (object.compressedSdpAnswer != null)
+            if (typeof object.compressedSdpAnswer === "string")
+                $util.base64.decode(object.compressedSdpAnswer, message.compressedSdpAnswer = $util.newBuffer($util.base64.length(object.compressedSdpAnswer)), 0);
+            else if (object.compressedSdpAnswer.length)
+                message.compressedSdpAnswer = object.compressedSdpAnswer;
         return message;
     };
 
@@ -2956,6 +3053,13 @@ $root.SdkSubscribeAckFrame = (function() {
         if (options.defaults) {
             object.duplex = options.enums === String ? "RX" : 1;
             object.sdpAnswer = "";
+            if (options.bytes === String)
+                object.compressedSdpAnswer = "";
+            else {
+                object.compressedSdpAnswer = [];
+                if (options.bytes !== Array)
+                    object.compressedSdpAnswer = $util.newBuffer(object.compressedSdpAnswer);
+            }
         }
         if (message.duplex != null && message.hasOwnProperty("duplex"))
             object.duplex = options.enums === String ? $root.SdkStreamServiceType[message.duplex] : message.duplex;
@@ -2971,6 +3075,8 @@ $root.SdkSubscribeAckFrame = (function() {
             for (var j = 0; j < message.tracks.length; ++j)
                 object.tracks[j] = $root.SdkTrackMapping.toObject(message.tracks[j], options);
         }
+        if (message.compressedSdpAnswer != null && message.hasOwnProperty("compressedSdpAnswer"))
+            object.compressedSdpAnswer = options.bytes === String ? $util.base64.encode(message.compressedSdpAnswer, 0, message.compressedSdpAnswer.length) : options.bytes === Array ? Array.prototype.slice.call(message.compressedSdpAnswer) : message.compressedSdpAnswer;
         return object;
     };
 

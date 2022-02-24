@@ -310,6 +310,7 @@ import VolumeIndicatorCallback from './realtimecontroller/VolumeIndicatorCallbac
 import WaitForAttendeePresenceTask from './task/WaitForAttendeePresenceTask';
 import WebSocketAdapter from './websocketadapter/WebSocketAdapter';
 import WebSocketReadyState from './websocketadapter/WebSocketReadyState';
+import ZLIBTextCompressor from './sdp/ZLIBTextCompressor';
 import { MutableVideoPreferences } from './videodownlinkbandwidthpolicy/VideoPreferences';
 import { Some, None, Maybe, MaybeProvider, Eq, PartialOrd } from './utils/Types';
 import { isAudioTransformDevice } from './devicecontroller/AudioTransformDevice';
@@ -636,6 +637,7 @@ export {
   WaitForAttendeePresenceTask,
   WebSocketAdapter,
   WebSocketReadyState,
+  ZLIBTextCompressor,
   isAudioTransformDevice,
   isDestroyable,
   isVideoTransformDevice,
