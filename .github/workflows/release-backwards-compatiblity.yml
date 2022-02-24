@@ -9,7 +9,8 @@ name: Backwards Compatibility Test
 on:
   push:
     branches:
-      - release
+      - 'release-**'
+      - '!release-**.x'
 
 env:
   SELENIUM_GRID_PROVIDER: saucelabs
