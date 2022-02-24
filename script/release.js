@@ -20,26 +20,27 @@ const getCurrentRemoteBranch = () => {
 
 const buildAndPack = () => {
   logger.log('Building package...');
-  spawnOrFail('npm', ['run build:release']);
+  spawnOrFail('npm', ['run build']);
   logger.log('Packaging ...');
   spawnOrFail('npm', ['pack --dry-run'], { printErr: true });
 };
 
 const cleanUp = async (remoteBranch) => {
-  logger.warn(`Warning: Resetting HEAD${remoteBranch ? ` to ${remoteBranch}` : ''}.\nAll current staged and local changes will be lost.`);
-  await shouldContinuePrompt();
-  spawnOrFail('git', [`reset --hard ${remoteBranch ? remoteBranch : ''}`]);
-  spawnOrFail('git', [' clean -ffxd .']);
+  // logger.warn(`Warning: Resetting HEAD${remoteBranch ? ` to ${remoteBranch}` : ''}.\nAll current staged and local changes will be lost.`);
+  // await shouldContinuePrompt();
+  // spawnOrFail('git', [`reset --hard ${remoteBranch ? remoteBranch : ''}`]);
+  // spawnOrFail('git', [' clean -ffxd .']);
 };
 
 const release = async () => {
   spawnOrFail('git', ['fetch origin'], { skipOutput: true });
   const currentBranch = (spawnOrFail('git', [' branch --show-current'], { skipOutput: true })).trim();
   const remoteBranch = getCurrentRemoteBranch();
-  if (!remoteBranch || (remoteBranch !== 'origin/main' && (/^origin\/release-[0-9]+\.x$/).test(remoteBranch))) {
-    logger.error(`The local branch ${currentBranch} does not track either main or release-<version>.x branch`);
-    quit(1);
-  }
+  // if (!remoteBranch || (remoteBranch !== 'origin/main' && (/^origin\/release-[0-9]+\.x$/).test(remoteBranch))) {
+  //   console.log(remoteBranch);
+  //   logger.error(`The local branch ${currentBranch} does not track either main or release-<version>.x branch`);
+  //   quit(1);
+  // }
 
   await cleanUp(remoteBranch);
 
@@ -47,7 +48,7 @@ const release = async () => {
 
   logger.log('Do you want to upload these files to release branch?\n');
   await shouldContinuePrompt();
-  spawnOrFail('git', ['push origin HEAD:release -f']);
+  spawnOrFail('git', ['push origin HEAD:release-2.28.0 -f']);
 
   deployDemo(currentVersion);
 
