@@ -3,7 +3,7 @@
 
 import * as chai from 'chai';
 
-import { DefaultSDP, DefaultTransceiverController, ZLIBTextCompressor } from '../../src';
+import { DefaultTransceiverController, SDP, ZLIBTextCompressor } from '../../src';
 import AudioVideoControllerState from '../../src/audiovideocontroller/AudioVideoControllerState';
 import NoOpAudioVideoController from '../../src/audiovideocontroller/NoOpAudioVideoController';
 import DefaultBrowserBehavior from '../../src/browserbehavior/DefaultBrowserBehavior';
@@ -163,7 +163,7 @@ describe('SubscribeAndReceiveSubscribeAckTask', () => {
         sdp: FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE,
       };
 
-      context.previousSdpOffer = new DefaultSDP(description.sdp);
+      context.previousSdpOffer = new SDP(description.sdp);
 
       await delay(behavior.asyncWaitMs + 10);
       expect(context.signalingClient.ready()).to.equal(true);

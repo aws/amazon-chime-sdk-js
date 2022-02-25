@@ -5,23 +5,29 @@ import SDPCandidateType from './SDPCandidateType';
 import SDPMediaSection from './SDPMediaSection';
 
 /**
- * [[DefaultSDP]] includes a few helper functions for parsing sdp string.
+ * [[SDP]] includes a few helper functions for parsing sdp string.
  */
-export default class DefaultSDP {
+export default class SDP {
   private static CRLF: string = '\r\n';
 
   static rfc7587LowestBitrate = 6000;
   static rfc7587HighestBitrate = 510000;
 
+  /**
+   * Construts a new [[SDP]] object
+   */
   constructor(public sdp: string) {}
 
   /**
    * Clones an SDP
    */
-  clone(): DefaultSDP {
-    return new DefaultSDP(this.sdp);
+  clone(): SDP {
+    return new SDP(this.sdp);
   }
 
+  /**
+   * Checks if the candidate is a valid RTP candidate
+   */
   static isRTPCandidate(candidate: string): boolean {
     const match = /candidate[:](\S+) (\d+)/g.exec(candidate);
     if (match === null || match[2] !== '1') {
@@ -30,10 +36,16 @@ export default class DefaultSDP {
     return true;
   }
 
-  static linesToSDP(lines: string[]): DefaultSDP {
-    return new DefaultSDP(lines.join(DefaultSDP.CRLF));
+  /**
+   * Constructs a new SDP with the given set of SDP lines.
+   */
+  static linesToSDP(lines: string[]): SDP {
+    return new SDP(lines.join(SDP.CRLF));
   }
 
+  /**
+   * Returns an enum of [[candidateType]] for the given string.
+   */
   static candidateTypeFromString(candidateType: string): SDPCandidateType | null {
     switch (candidateType) {
       case SDPCandidateType.Host:
@@ -48,14 +60,20 @@ export default class DefaultSDP {
     return null;
   }
 
+  /**
+   * Returns the candidate type assocaited with the sdpline.
+   */
   static candidateType(sdpLine: string): string | null {
     const match = /a[=]candidate[:].* typ ([a-z]+) /g.exec(sdpLine);
     if (match === null) {
       return null;
     }
-    return DefaultSDP.candidateTypeFromString(match[1]);
+    return SDP.candidateTypeFromString(match[1]);
   }
 
+  /**
+   * Returns the media type associated with the sdp line.
+   */
   private static mediaType(sdpLine: string): 'audio' | 'video' | undefined {
     const match = /m=(audio|video)/g.exec(sdpLine);
     if (match === null) {
@@ -64,6 +82,9 @@ export default class DefaultSDP {
     return match[1] as 'audio' | 'video';
   }
 
+  /**
+   * Erase out "a=mid"  from the sdp line.
+   */
   private static mid(sdpLine: string): string | undefined {
     if (!sdpLine.includes('a=mid:')) {
       return undefined;
@@ -71,6 +92,9 @@ export default class DefaultSDP {
     return sdpLine.replace(/^(a=mid:)/, '');
   }
 
+  /**
+   * Return the direction associated with the sdp line.
+   */
   private static direction(sdpLine: string): RTCRtpTransceiverDirection | undefined {
     const match = /a=(sendrecv|sendonly|recvonly|inactive)/g.exec(sdpLine);
     if (match === null) {
@@ -79,6 +103,9 @@ export default class DefaultSDP {
     return match[1] as RTCRtpTransceiverDirection;
   }
 
+  /**
+   * Format the sdp string into separate lines.
+   */
   static splitLines(blob: string): string[] {
     return blob
       .trim()
@@ -88,15 +115,21 @@ export default class DefaultSDP {
       });
   }
 
+  /**
+   * split the different sdp sections
+   */
   static splitSections(sdp: string): string[] {
     // each section starts with "m="
     const sections = sdp.split('\nm=');
     return sections.map((section: string, index: number) => {
-      return (index > 0 ? 'm=' + section : section).trim() + DefaultSDP.CRLF;
+      return (index > 0 ? 'm=' + section : section).trim() + SDP.CRLF;
     });
   }
 
-  static findActiveCameraSection(sections: string[]): number {
+  /**
+   * split the different sdp sections
+   */
+  private static findActiveCameraSection(sections: string[]): number {
     let cameraLineIndex = 0;
     let hasCamera = false;
     for (const sec of sections) {
@@ -115,14 +148,21 @@ export default class DefaultSDP {
     return cameraLineIndex;
   }
 
-  // a=ssrc-group:<semantics> <ssrc-id> ...
+  /**
+   * Extract the SSRCs from the group line.
+   *
+   * a=ssrc-group:<semantics> <ssrc-id> ...
+   */
   static extractSSRCsFromFIDGroupLine(figGroupLine: string): string {
     const ssrcStringMatch = /^a=ssrc-group:FID\s(.+)/.exec(figGroupLine);
     return ssrcStringMatch[1];
   }
 
+  /**
+   * Extracts the lines from the sdp blob that matches the given prefix.
+   */
   static matchPrefix(blob: string, prefix: string): string[] {
-    return DefaultSDP.splitLines(blob).filter((line: string) => {
+    return SDP.splitLines(blob).filter((line: string) => {
       return line.indexOf(prefix) === 0;
     });
   }
@@ -131,9 +171,12 @@ export default class DefaultSDP {
    * Splits SDP string into lines
    */
   lines(): string[] {
-    return this.sdp.split(DefaultSDP.CRLF);
+    return this.sdp.split(SDP.CRLF);
   }
 
+  /**
+   * Checks if SDP has a video section.
+   */
   hasVideo(): boolean {
     return /^m=video/gm.exec(this.sdp) !== null;
   }
@@ -161,48 +204,48 @@ export default class DefaultSDP {
   /**
    * Removes candidates of a given type from SDP
    */
-  withoutCandidateType(candidateTypeToExclude: SDPCandidateType): DefaultSDP {
-    return DefaultSDP.linesToSDP(
-      this.lines().filter(line => DefaultSDP.candidateType(line) !== candidateTypeToExclude)
+  withoutCandidateType(candidateTypeToExclude: SDPCandidateType): SDP {
+    return SDP.linesToSDP(
+      this.lines().filter(line => SDP.candidateType(line) !== candidateTypeToExclude)
     );
   }
 
   /**
    * Removes server reflexive candidate from SDP
    */
-  withoutServerReflexiveCandidates(): DefaultSDP {
+  withoutServerReflexiveCandidates(): SDP {
     return this.withoutCandidateType(SDPCandidateType.ServerReflexive);
   }
 
   /**
    * Inserts a parameter to the SDP local offer setting the desired average audio bitrate
    */
-  withAudioMaxAverageBitrate(maxAverageBitrate: number | null): DefaultSDP {
+  withAudioMaxAverageBitrate(maxAverageBitrate: number | null): SDP {
     if (!maxAverageBitrate) {
       return this.clone();
     }
     maxAverageBitrate = Math.trunc(
-      Math.min(
-        Math.max(maxAverageBitrate, DefaultSDP.rfc7587LowestBitrate),
-        DefaultSDP.rfc7587HighestBitrate
-      )
+      Math.min(Math.max(maxAverageBitrate, SDP.rfc7587LowestBitrate), SDP.rfc7587HighestBitrate)
     );
     const srcLines: string[] = this.lines();
-    const fmtpAttributes = DefaultSDP.findOpusFmtpAttributes(srcLines);
-    const dstLines = DefaultSDP.updateOpusFmtpAttributes(srcLines, fmtpAttributes, [
+    const fmtpAttributes = SDP.findOpusFmtpAttributes(srcLines);
+    const dstLines = SDP.updateOpusFmtpAttributes(srcLines, fmtpAttributes, [
       `maxaveragebitrate=${maxAverageBitrate}`,
     ]);
-    return DefaultSDP.linesToSDP(dstLines);
+    return SDP.linesToSDP(dstLines);
   }
 
-  withStereoAudio(): DefaultSDP {
+  /**
+   * Update the SDP to include stereo
+   */
+  withStereoAudio(): SDP {
     const srcLines: string[] = this.lines();
-    const fmtpAttributes = DefaultSDP.findOpusFmtpAttributes(srcLines);
-    const dstLines = DefaultSDP.updateOpusFmtpAttributes(srcLines, fmtpAttributes, [
+    const fmtpAttributes = SDP.findOpusFmtpAttributes(srcLines);
+    const dstLines = SDP.updateOpusFmtpAttributes(srcLines, fmtpAttributes, [
       'stereo=1',
       'sprop-stereo=1',
     ]);
-    return DefaultSDP.linesToSDP(dstLines);
+    return SDP.linesToSDP(dstLines);
   }
 
   /**
@@ -289,7 +332,7 @@ export default class DefaultSDP {
    * Munges Unified-Plan SDP from different browsers to conform to one format
    * TODO: will remove this soon.
    */
-  withUnifiedPlanFormat(): DefaultSDP {
+  withUnifiedPlanFormat(): SDP {
     let originalSdp = this.sdp;
     if (originalSdp.includes('mozilla')) {
       return this.clone();
@@ -297,9 +340,12 @@ export default class DefaultSDP {
       originalSdp = originalSdp.replace('o=-', 'o=mozilla-chrome');
     }
 
-    return new DefaultSDP(originalSdp);
+    return new SDP(originalSdp);
   }
 
+  /**
+   * Returns the total number of unique Rtp header extensions.
+   */
   getUniqueRtpHeaderExtensionId(srcLines: string[]): number {
     const headerExtensionIds: number[] = [];
 
@@ -324,16 +370,18 @@ export default class DefaultSDP {
     return previousId === 14 ? -1 : previousId + 1;
   }
 
-  // negotiate with the back end to determine whether to use layers allocation header extension
-  // to avoid resubscribing to preemptively turn off simulcast streams or to switch layers
-  // this will not add the packet overhead unless negotiated to avoid waste
-  withVideoLayersAllocationRtpHeaderExtension(): DefaultSDP {
-    const sections = DefaultSDP.splitSections(this.sdp);
+  /**
+   * To avoid resubscribing to preemptively turn off simulcast streams or to switch layers
+   * negotiate with the back end to determine whether to use layers allocation header extension
+   * this will not add the packet overhead unless negotiated to avoid waste
+   */
+  withVideoLayersAllocationRtpHeaderExtension(): SDP {
+    const sections = SDP.splitSections(this.sdp);
 
     const newSections = [];
     for (let section of sections) {
       if (/^m=video/.test(section)) {
-        const srcLines: string[] = DefaultSDP.splitLines(section);
+        const srcLines: string[] = SDP.splitLines(section);
         const dstLines: string[] = [];
         const id = this.getUniqueRtpHeaderExtensionId(srcLines);
         if (id === -1) {
@@ -352,12 +400,12 @@ export default class DefaultSDP {
             dstLines.push(targetLine);
           }
         }
-        section = dstLines.join(DefaultSDP.CRLF) + DefaultSDP.CRLF;
+        section = dstLines.join(SDP.CRLF) + SDP.CRLF;
       }
       newSections.push(section);
     }
     const newSdp = newSections.join('');
-    return new DefaultSDP(newSdp);
+    return new SDP(newSdp);
   }
 
   /**
@@ -365,23 +413,23 @@ export default class DefaultSDP {
    */
   ssrcForVideoSendingSection(): string {
     const srcSDP: string = this.sdp;
-    const sections = DefaultSDP.splitSections(srcSDP);
+    const sections = SDP.splitSections(srcSDP);
     if (sections.length < 2) {
       return '';
     }
 
-    const cameraLineIndex: number = DefaultSDP.findActiveCameraSection(sections);
+    const cameraLineIndex: number = SDP.findActiveCameraSection(sections);
     if (cameraLineIndex === -1) {
       return '';
     }
 
     // TODO: match for Firefox. Currently all failures are not Firefox induced.
-    const fidGroupMatch = DefaultSDP.matchPrefix(sections[cameraLineIndex], 'a=ssrc-group:FID ');
+    const fidGroupMatch = SDP.matchPrefix(sections[cameraLineIndex], 'a=ssrc-group:FID ');
     if (fidGroupMatch.length < 1) {
       return '';
     }
 
-    const fidGroup = DefaultSDP.extractSSRCsFromFIDGroupLine(fidGroupMatch[0]);
+    const fidGroup = SDP.extractSSRCsFromFIDGroupLine(fidGroupMatch[0]);
     const [videoSSRC1] = fidGroup.split(' ').map(ssrc => parseInt(ssrc, 10));
 
     return videoSSRC1.toString();
@@ -390,7 +438,7 @@ export default class DefaultSDP {
   /**
    * Returns whether the sendrecv video sections if exist have two different SSRCs in SDPs
    */
-  videoSendSectionHasDifferentSSRC(prevSdp: DefaultSDP): boolean {
+  videoSendSectionHasDifferentSSRC(prevSdp: SDP): boolean {
     const ssrc1 = this.ssrcForVideoSendingSection();
     const ssrc2 = prevSdp.ssrcForVideoSendingSection();
     if (ssrc1 === '' || ssrc2 === '') {
@@ -407,15 +455,15 @@ export default class DefaultSDP {
   /**
    * Removes H.264 from the send section.
    */
-  removeH264SupportFromSendSection(): DefaultSDP {
+  removeH264SupportFromSendSection(): SDP {
     const srcSDP: string = this.sdp;
-    const sections = DefaultSDP.splitSections(srcSDP);
-    const cameraLineIndex: number = DefaultSDP.findActiveCameraSection(sections);
+    const sections = SDP.splitSections(srcSDP);
+    const cameraLineIndex: number = SDP.findActiveCameraSection(sections);
     if (cameraLineIndex === -1) {
-      return new DefaultSDP(this.sdp);
+      return new SDP(this.sdp);
     }
     const cameraSection = sections[cameraLineIndex];
-    const cameraSectionLines = DefaultSDP.splitLines(cameraSection);
+    const cameraSectionLines = SDP.splitLines(cameraSection);
     const payloadTypesForH264: number[] = [];
     const primaryPayloadTypeToFeedbackPayloadTypes: Map<number, number[]> = new Map();
     // Loop through camera section (m=video)
@@ -480,17 +528,17 @@ export default class DefaultSDP {
       return true;
     });
 
-    sections[cameraLineIndex] = filteredLines.join(DefaultSDP.CRLF) + DefaultSDP.CRLF;
+    sections[cameraLineIndex] = filteredLines.join(SDP.CRLF) + SDP.CRLF;
 
     const newSDP = sections.join('');
-    return new DefaultSDP(newSDP);
+    return new SDP(newSDP);
   }
 
   /**
    * List of parsed media sections sections in order they occur on SDP.
    */
   mediaSections(): SDPMediaSection[] {
-    const sections = DefaultSDP.splitSections(this.sdp);
+    const sections = SDP.splitSections(this.sdp);
     if (sections.length < 2) {
       return [];
     }
@@ -498,19 +546,19 @@ export default class DefaultSDP {
     const parsedMediaSections: SDPMediaSection[] = [];
     for (let i = 1; i < sections.length; i++) {
       const section = new SDPMediaSection();
-      const lines = DefaultSDP.splitLines(sections[i]);
+      const lines = SDP.splitLines(sections[i]);
       for (const line of lines) {
-        const mediaType = DefaultSDP.mediaType(line);
+        const mediaType = SDP.mediaType(line);
         if (mediaType !== undefined) {
           section.mediaType = mediaType;
           continue;
         }
-        const direction = DefaultSDP.direction(line);
+        const direction = SDP.direction(line);
         if (direction !== undefined) {
           section.direction = direction;
           continue;
         }
-        const mid = DefaultSDP.mid(line);
+        const mid = SDP.mid(line);
         if (mid !== undefined) {
           section.mid = mid;
           continue;

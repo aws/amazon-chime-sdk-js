@@ -4,7 +4,7 @@
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
-import DefaultSDP from '../sdp/DefaultSDP';
+import SDP from '../sdp/SDP';
 import ZLIBTextCompressor from '../sdp/ZLIBTextCompressor';
 import SignalingClient from '../signalingclient/SignalingClient';
 import SignalingClientEvent from '../signalingclient/SignalingClientEvent';
@@ -44,7 +44,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
   async run(): Promise<void> {
     let localSdp = '';
     if (this.context.peer && this.context.peer.localDescription) {
-      localSdp = new DefaultSDP(this.context.peer.localDescription.sdp).withUnifiedPlanFormat().sdp;
+      localSdp = new SDP(this.context.peer.localDescription.sdp).withUnifiedPlanFormat().sdp;
     }
 
     if (!this.context.enableSimulcast) {
@@ -90,7 +90,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       );
       localSdp = '';
     }
-    this.context.previousSdpOffer = new DefaultSDP(localSdpOffer);
+    this.context.previousSdpOffer = new SDP(localSdpOffer);
 
     const subscribe = new SignalingClientSubscribe(
       this.context.meetingSessionConfiguration.credentials.attendeeId,
@@ -163,7 +163,7 @@ export default class SubscribeAndReceiveSubscribeAckTask extends BaseTask {
       midsToStreamIds.set(mid, streamId);
     }
 
-    const sections = new DefaultSDP(sdp).mediaSections();
+    const sections = new SDP(sdp).mediaSections();
     const newSubscriptions: number[] = [];
     for (const section of sections) {
       if (section.mediaType !== 'video') {

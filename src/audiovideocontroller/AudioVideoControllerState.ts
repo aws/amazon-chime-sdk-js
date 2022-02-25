@@ -15,7 +15,7 @@ import MeetingSessionVideoAvailability from '../meetingsession/MeetingSessionVid
 import RealtimeController from '../realtimecontroller/RealtimeController';
 import ReconnectController from '../reconnectcontroller/ReconnectController';
 import RemovableObserver from '../removableobserver/RemovableObserver';
-import DefaultSDP from '../sdp/DefaultSDP';
+import SDP from '../sdp/SDP';
 import SignalingClient from '../signalingclient/SignalingClient';
 import { SdkIndexFrame, SdkStreamServiceType } from '../signalingprotocol/SignalingProtocol.js';
 import StatsCollector from '../statscollector/StatsCollector';
@@ -42,7 +42,7 @@ export default class AudioVideoControllerState {
 
   peer: RTCPeerConnection | null = null;
 
-  previousSdpOffer: DefaultSDP | null = null;
+  previousSdpOffer: SDP | null = null;
 
   sdpOfferInit: RTCSessionDescriptionInit | null = null;
 

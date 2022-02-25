@@ -93,7 +93,6 @@ import DefaultModality from './modality/DefaultModality';
 import DefaultPingPong from './pingpong/DefaultPingPong';
 import DefaultRealtimeController from './realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from './reconnectcontroller/DefaultReconnectController';
-import DefaultSDP from './sdp/DefaultSDP';
 import DefaultSessionStateController from './sessionstatecontroller/DefaultSessionStateController';
 import DefaultSigV4 from './sigv4/DefaultSigV4';
 import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
@@ -216,6 +215,7 @@ import ReleaseMediaStreamsTask from './task/ReleaseMediaStreamsTask';
 import RemovableAnalyserNode from './devicecontroller/RemovableAnalyserNode';
 import RemovableObserver from './removableobserver/RemovableObserver';
 import RunnableTask from './task/RunnableTask';
+import SDP from './sdp/SDP';
 import SDPCandidateType from './sdp/SDPCandidateType';
 import SDPMediaSection from './sdp/SDPMediaSection';
 import Scheduler from './scheduler/Scheduler';
@@ -413,7 +413,6 @@ export {
   DefaultPingPong,
   DefaultRealtimeController,
   DefaultReconnectController,
-  DefaultSDP,
   DefaultSessionStateController,
   DefaultSigV4,
   DefaultSignalingClient,
@@ -542,6 +541,7 @@ export {
   RemovableAnalyserNode,
   RemovableObserver,
   RunnableTask,
+  SDP,
   SDPCandidateType,
   SDPMediaSection,
   Scheduler,
