@@ -60,12 +60,18 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
     spec?: BackgroundFilterSpec,
     options?: BackgroundReplacementOptions
   ): Promise<BackgroundReplacementProcessor | undefined> {
-    spec = this.resolveSpec(spec);
-    options = this.resolveOptions(options);
-    await this.resolveOptionsAsync(options);
-    const { logger } = options;
+    let processorSpecs: BackgroundFilterSpec = { ...spec };
+    let processorOptions: BackgroundReplacementOptions = { ...options };
 
-    const supported = await BackgroundReplacementVideoFrameProcessor.isSupported(spec, options);
+    processorSpecs = this.resolveSpec(processorSpecs);
+    processorOptions = this.resolveOptions(processorOptions);
+    await this.resolveOptionsAsync(processorOptions);
+    const { logger } = processorOptions;
+
+    const supported = await BackgroundReplacementVideoFrameProcessor.isSupported(
+      processorSpecs,
+      processorOptions
+    );
     // if background replacement is not supported do not initialize. The processor will become a no op if not supported.
     if (!supported) {
       logger.warn('Using no-op processor because background replacement is not supported');
@@ -73,7 +79,7 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
     }
 
     logger.info('Using background replacement filter');
-    const processor = new BackgroundReplacementFilter(spec, options);
+    const processor = new BackgroundReplacementFilter(processorSpecs, processorOptions);
 
     await processor.loadAssets();
     return processor;
@@ -121,19 +127,22 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
     spec?: BackgroundFilterSpec,
     options?: BackgroundReplacementOptions
   ): Promise<boolean> {
-    spec = this.resolveSpec(spec);
-    options = this.resolveOptions(options);
-    await this.resolveOptionsAsync(options);
-    const imageBlob = options.imageBlob;
+    let processorSpecs: BackgroundFilterSpec = { ...spec };
+    let processorOptions: BackgroundReplacementOptions = { ...options };
+
+    processorSpecs = this.resolveSpec(processorSpecs);
+    processorOptions = this.resolveOptions(processorOptions);
+    await this.resolveOptionsAsync(processorOptions);
+    const imageBlob = processorOptions.imageBlob;
     const imageUrl = URL.createObjectURL(imageBlob);
     try {
       await BackgroundReplacementFilter.loadImage(imageUrl);
     } catch (e) {
-      options.logger.info(`Failed to fetch load replacement image ${e.message}`);
+      processorOptions.logger.info(`Failed to fetch load replacement image ${e.message}`);
       return false;
     } finally {
       URL.revokeObjectURL(imageUrl);
     }
-    return super.isSupported(spec, options);
+    return super.isSupported(processorSpecs, processorOptions);
   }
 }
