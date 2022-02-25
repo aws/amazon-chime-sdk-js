@@ -17,6 +17,7 @@ import AudioVideoEventAttributes from '../eventcontroller/AudioVideoEventAttribu
 import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import MediaStreamBroker from '../mediastreambroker/MediaStreamBroker';
+import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import MeetingSessionConfiguration from '../meetingsession/MeetingSessionConfiguration';
 import MeetingSessionStatus from '../meetingsession/MeetingSessionStatus';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
@@ -56,7 +57,6 @@ import ReceiveAudioInputTask from '../task/ReceiveAudioInputTask';
 import ReceiveTURNCredentialsTask from '../task/ReceiveTURNCredentialsTask';
 import ReceiveVideoInputTask from '../task/ReceiveVideoInputTask';
 import ReceiveVideoStreamIndexTask from '../task/ReceiveVideoStreamIndexTask';
-import ReleaseMediaStreamsTask from '../task/ReleaseMediaStreamsTask';
 import SendAndReceiveDataMessagesTask from '../task/SendAndReceiveDataMessagesTask';
 import SerialGroupTask from '../task/SerialGroupTask';
 import SetLocalDescriptionTask from '../task/SetLocalDescriptionTask';
@@ -88,7 +88,7 @@ import WebSocketAdapter from '../websocketadapter/WebSocketAdapter';
 import AudioVideoControllerState from './AudioVideoControllerState';
 
 export default class DefaultAudioVideoController
-  implements AudioVideoController, SimulcastUplinkObserver, Destroyable {
+  implements AudioVideoController, SimulcastUplinkObserver, MediaStreamBrokerObserver, Destroyable {
   private _logger: Logger;
   private _configuration: MeetingSessionConfiguration;
   private _webSocketAdapter: WebSocketAdapter;
@@ -157,7 +157,7 @@ export default class DefaultAudioVideoController
       new DefaultBrowserBehavior().hasChromiumWebRTC();
 
     this._webSocketAdapter = webSocketAdapter;
-    this._realtimeController = new DefaultRealtimeController();
+    this._realtimeController = new DefaultRealtimeController(mediaStreamBroker);
     this._realtimeController.realtimeSetLocalAttendeeId(
       configuration.credentials.attendeeId,
       configuration.credentials.externalUserId
@@ -615,6 +615,7 @@ export default class DefaultAudioVideoController
       this.forEachObserver(observer => {
         Maybe.of(observer.audioVideoDidStartConnecting).map(f => f.bind(observer)(false));
       });
+      this._mediaStreamBroker.addMediaStreamBrokerObserver(this);
       this.eventController?.publishEvent('meetingStartRequested');
     }
 
@@ -733,9 +734,8 @@ export default class DefaultAudioVideoController
     if (this.sessionStateController.state() === SessionStateControllerState.NotConnected) {
       // Unfortunately, this does not return a promise.
       this.meetingSessionContext.signalingClient?.closeConnection();
-
-      // Clean up any open streams.
-      return new ReleaseMediaStreamsTask(this.meetingSessionContext).run();
+      this.cleanUpAfterStop();
+      return Promise.resolve();
     }
 
     /*
@@ -786,10 +786,6 @@ export default class DefaultAudioVideoController
           this.configuration.connectionTimeoutMs
         ),
       ];
-
-      if (!reconnecting) {
-        subtasks.push(new ReleaseMediaStreamsTask(this.meetingSessionContext));
-      }
 
       await new SerialGroupTask(this.logger, this.wrapTaskName('AudioVideoClean'), subtasks).run();
     } catch (cleanError) {
@@ -999,27 +995,13 @@ export default class DefaultAudioVideoController
     );
   }
 
-  async replaceLocalVideo(): Promise<void> {
-    let videoStream: MediaStream | null = null;
-    try {
-      videoStream = await this.mediaStreamBroker.acquireVideoInputStream();
-    } catch (error) {
-      throw new Error(
-        `could not acquire video stream from mediaStreamBroker due to ${error.message}`
-      );
-    }
-
+  async replaceLocalVideo(videoStream: MediaStream): Promise<void> {
     if (!videoStream || videoStream.getVideoTracks().length < 1) {
       throw new Error('could not acquire video track');
     }
-
-    const videoTrack = videoStream.getVideoTracks()[0];
-    if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
-      throw new Error('no active meeting and peer connection');
-    }
-
-    await this.meetingSessionContext.transceiverController.setVideoInput(videoTrack);
-
+    // Update the active video input on subscription context to match what we just changed
+    // so that subsequent meeting actions can reuse and destroy it.
+    this.meetingSessionContext.activeVideoInput = videoStream;
     // if there is a local tile, a video tile update event should be fired.
     const localTile = this.meetingSessionContext.videoTileController.getLocalVideoTile();
     if (localTile) {
@@ -1037,37 +1019,34 @@ export default class DefaultAudioVideoController
       );
     }
 
-    // Update the active video input on subscription context to match what we just changed
-    // so that subsequent meeting actions can reuse and destroy it.
-    this.meetingSessionContext.activeVideoInput = videoStream;
+    if (!this.meetingSessionContext.peer) {
+      this.logger.info('no active meeting and peer connection so skip updating local video track.');
+      return Promise.resolve();
+    }
+
+    const videoTrack = videoStream.getVideoTracks()[0];
+
+    await this.meetingSessionContext.transceiverController.setVideoInput(videoTrack);
   }
 
-  async restartLocalAudio(callback: () => void): Promise<void> {
-    let audioStream: MediaStream | null = null;
-    try {
-      audioStream = await this.mediaStreamBroker.acquireAudioInputStream();
-    } catch (error) {
-      this.logger.info('could not acquire audio stream from mediaStreamBroker');
-    }
+  async replaceLocalAudio(audioStream: MediaStream): Promise<void> {
     if (!audioStream || audioStream.getAudioTracks().length < 1) {
       throw new Error('could not acquire audio track');
     }
+    this.meetingSessionContext.activeAudioInput = audioStream;
+
+    if (!this.meetingSessionContext.peer) {
+      this.logger.info('no active meeting and peer connection so skip updating local audio track.');
+      return Promise.resolve();
+    }
+
     this.connectionHealthData.reset();
     this.connectionHealthData.setConnectionStartTime();
-
     const audioTrack = audioStream.getAudioTracks()[0];
-    if (!this.meetingSessionContext || !this.meetingSessionContext.peer) {
-      throw new Error('no active meeting and peer connection');
-    }
-    let replaceTrackSuccess = false;
 
-    replaceTrackSuccess = await this.meetingSessionContext.transceiverController.replaceAudioTrack(
+    const replaceTrackSuccess = await this.meetingSessionContext.transceiverController.replaceAudioTrack(
       audioTrack
     );
-
-    this._realtimeController.realtimeSetLocalAudioInput(audioStream);
-    this.meetingSessionContext.activeAudioInput = audioStream;
-    callback();
     if (replaceTrackSuccess) {
       return Promise.resolve();
     } else {
@@ -1169,6 +1148,8 @@ export default class DefaultAudioVideoController
         this.eventController.publishEvent('meetingEnded', attributes);
       }
     }
+
+    this.cleanUpAfterStop();
   }
 
   private actionFinishUpdating(): void {
@@ -1299,6 +1280,12 @@ export default class DefaultAudioVideoController
     return `${taskName}/${this.configuration.meetingId}/${this.configuration.credentials.attendeeId}`;
   }
 
+  private cleanUpAfterStop(): void {
+    this._mediaStreamBroker?.removeMediaStreamBrokerObserver(this);
+    this.meetingSessionContext.activeAudioInput = null;
+    this.meetingSessionContext.activeVideoInput = null;
+  }
+
   // Extract the meeting status from `Error.message`, relying on specific phrasing
   // 'the meeting status code ${CODE}`.
   //
@@ -1375,6 +1362,10 @@ export default class DefaultAudioVideoController
   }
 
   setVideoMaxBandwidthKbps(maxBandwidthKbps: number): void {
+    if (maxBandwidthKbps <= 0) {
+      throw new Error('Max bandwidth kbps has to be more than 0');
+    }
+
     if (this.meetingSessionContext && this.meetingSessionContext.videoUplinkBandwidthPolicy) {
       this.logger.info(`video send has ideal max bandwidth ${maxBandwidthKbps} kbps`);
       this.meetingSessionContext.videoUplinkBandwidthPolicy.setIdealMaxBandwidthKbps(
@@ -1477,5 +1468,31 @@ export default class DefaultAudioVideoController
         f.bind(observer)(new MeetingSessionStatus(MeetingSessionStatusCode.OK))
       );
     });
+  }
+
+  async selectedVideoInputDidChanged(videoStream: MediaStream | undefined): Promise<void> {
+    if (this._videoTileController.hasStartedLocalVideoTile()) {
+      if (videoStream) {
+        await this.replaceLocalVideo(videoStream);
+      } else {
+        this._videoTileController.stopLocalVideoTile();
+      }
+    }
+  }
+
+  async selectedAudioInputDidChanged(audioStream: MediaStream | undefined): Promise<void> {
+    if (!audioStream) {
+      // If audio input stream stopped, try to get empty audio device from media stream broker
+      try {
+        audioStream = await this.mediaStreamBroker.acquireAudioInputStream();
+      } catch (error) {
+        throw new Error('could not acquire audio track from mediaStreamBroker');
+      }
+    }
+    await this.replaceLocalAudio(audioStream);
+  }
+
+  async selectedAudioOutputDidChanged(device: MediaDeviceInfo | null): Promise<void> {
+    return this.audioMixController.bindAudioDevice(device);
   }
 }

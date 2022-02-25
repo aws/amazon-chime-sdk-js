@@ -513,7 +513,7 @@ describe('DefaultAudioVideoFacade', () => {
       const spy = sinon.spy(deviceController, 'chooseAudioInputDevice');
       const arg1 = '';
       try {
-        await facade.chooseAudioInputDevice(arg1);
+        await facade.startAudioInput(arg1);
       } catch (e) {}
       assert(spy.calledOnceWith(arg1));
     });
@@ -522,13 +522,13 @@ describe('DefaultAudioVideoFacade', () => {
       const spy = sinon.spy(deviceController, 'chooseVideoInputDevice');
       const arg1 = '';
       try {
-        await facade.chooseVideoInputDevice(arg1);
+        await facade.startVideoInput(arg1);
       } catch (e) {}
       assert(spy.calledOnceWith(arg1));
 
       const arg2 = new DefaultVideoTransformDevice(null, '', []);
       try {
-        await facade.chooseVideoInputDevice(arg2);
+        await facade.startVideoInput(arg2);
       } catch (e) {}
       assert(spy.calledWith(arg2));
     });
@@ -553,7 +553,7 @@ describe('DefaultAudioVideoFacade', () => {
       const spy = sinon.spy(deviceController, 'chooseAudioOutputDevice');
       const arg1 = '';
       try {
-        await facade.chooseAudioOutputDevice(arg1);
+        await facade.chooseAudioOutput(arg1);
       } catch (e) {}
       assert(spy.calledOnceWith(arg1));
     });

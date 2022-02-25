@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import AudioVideoController from '../audiovideocontroller/AudioVideoController';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
 import ExtendedBrowserBehavior from '../browserbehavior/ExtendedBrowserBehavior';
 import type { Destroyable } from '../destroyable/Destroyable';
@@ -10,8 +9,8 @@ import EventController from '../eventcontroller/EventController';
 import Logger from '../logger/Logger';
 import DefaultMediaDeviceFactory from '../mediadevicefactory/DefaultMediaDeviceFactory';
 import DeviceControllerBasedMediaStreamBroker from '../mediastreambroker/DeviceControllerBasedMediaStreamBroker';
+import MediaStreamBrokerObserver from '../mediastreambrokerobserver/MediaStreamBrokerObserver';
 import AsyncScheduler from '../scheduler/AsyncScheduler';
-import IntervalScheduler from '../scheduler/IntervalScheduler';
 import { Maybe } from '../utils/Types';
 import DefaultVideoTile from '../videotile/DefaultVideoTile';
 import AudioInputDevice from './AudioInputDevice';
@@ -32,93 +31,12 @@ import VideoTransformDevice, { isVideoTransformDevice } from './VideoTransformDe
 
 type Thunk = () => void;
 
-function fillSMPTEColorBars(canvas: HTMLCanvasElement, xShift: number): void {
-  const w = canvas.width;
-  const h = canvas.height;
-  const h1 = (h * 2) / 3;
-  const h2 = (h * 3) / 4;
-  const h3 = h;
-  const top = ['#c0c0c0', '#c0c000', '#00c0c0', '#00c000', '#c000c0', '#c00000', '#0000c0'];
-  const middle = ['#0000c0', '#000000', '#c000c0', '#000000', '#00c0c0', '#000000', '#c0c0c0'];
-  const bottom = [
-    '#00214c',
-    '#ffffff',
-    '#32006a',
-    '#131313',
-    '#090909',
-    '#131313',
-    '#1d1d1d',
-    '#131313',
-  ];
-  const bottomX = [
-    w * 0,
-    ((w * 1) / 4) * (5 / 7),
-    ((w * 2) / 4) * (5 / 7),
-    ((w * 3) / 4) * (5 / 7),
-    w * (5 / 7),
-    w * (5 / 7 + 1 / 21),
-    w * (5 / 7 + 2 / 21),
-    w * (6 / 7),
-    w * 1,
-  ];
-  const segmentWidth = w / top.length;
-  const ctx = canvas.getContext('2d');
-  for (let i = 0; i < top.length; i++) {
-    ctx.fillStyle = top[i];
-    ctx.fillRect(xShift + i * segmentWidth, 0, segmentWidth, h1);
-    ctx.fillStyle = middle[i];
-    ctx.fillRect(xShift + i * segmentWidth, h1, segmentWidth, h2 - h1);
-  }
-  for (let i = 0; i < bottom.length; i++) {
-    ctx.fillStyle = bottom[i];
-    ctx.fillRect(xShift + bottomX[i], h2, bottomX[i + 1] - bottomX[i], h3 - h2);
-  }
-}
-
-// This is a top-level function so that its captured environment is as small as possible,
-// minimizing leaks -- the interval scheduler will cause everything here to be retained
-// until it is stopped.
-function makeColorBars(
-  canvas: HTMLCanvasElement,
-  colorOrPattern: string
-): undefined | { listener: Thunk; scheduler: IntervalScheduler; stream: MediaStream } {
-  const scheduler = new IntervalScheduler(1000);
-  const context = canvas.getContext('2d');
-
-  // @ts-ignore
-  const stream: MediaStream | null = canvas.captureStream(5) || null;
-  if (!stream) {
-    return undefined;
-  }
-
-  const onTick = (): void => {
-    if (colorOrPattern === 'smpte') {
-      fillSMPTEColorBars(canvas, 0);
-    } else {
-      context.fillStyle = colorOrPattern;
-      context.fillRect(0, 0, canvas.width, canvas.height);
-    }
-  };
-
-  scheduler.start(onTick);
-
-  const listener = (): void => {
-    scheduler.stop();
-  };
-
-  // This event listener will leak unless you remove it.
-  stream.getVideoTracks()[0].addEventListener('ended', listener);
-
-  return { listener, scheduler, stream };
-}
-
 export default class DefaultDeviceController
   implements DeviceControllerBasedMediaStreamBroker, Destroyable {
   private static permissionDeniedOriginDetectionThresholdMs = 500;
   private static defaultVideoWidth = 960;
   private static defaultVideoHeight = 540;
   private static defaultVideoFrameRate = 15;
-  private static defaultVideoMaxBandwidthKbps = 1400;
   private static defaultSampleRate = 48000;
   private static defaultSampleSize = 16;
   private static defaultChannelCount = 1;
@@ -134,9 +52,12 @@ export default class DefaultDeviceController
   // `chosenVideoTransformDevice` is tracked and owned by device controller.
   // It is saved when `chooseVideoInputDevice` is called with VideoTransformDevice object.
   private chosenVideoTransformDevice: VideoTransformDevice | null = null;
-  private audioOutputDeviceId: string | null = null;
+  private audioOutputDeviceId: string | undefined = undefined;
   private deviceChangeObservers: Set<DeviceChangeObserver> = new Set<DeviceChangeObserver>();
-  private boundAudioVideoController: AudioVideoController | null;
+  private mediaStreamBrokerObservers: Set<MediaStreamBrokerObserver> = new Set<
+    MediaStreamBrokerObserver
+  >();
+  // private boundAudioVideoController: AudioVideoController | null;
   private deviceLabelTrigger = (): Promise<MediaStream> => {
     return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
   };
@@ -145,14 +66,13 @@ export default class DefaultDeviceController
 
   private mediaDeviceWrapper: MediaDevices | undefined;
   private onDeviceChangeCallback?: Thunk;
-  private muteCallback: (muted: boolean) => void;
 
   private videoInputQualitySettings: VideoQualitySettings = null;
 
   private readonly useWebAudio: boolean = false;
 
-  private inputDeviceCount: number = 0;
-  private lastNoVideoInputDeviceCount: number;
+  private getAudioInputInProgress: boolean = false;
+  private getVideoInputInProgress: boolean = false;
 
   // This handles the dispatch of `mute` and `unmute` events from audio tracks.
   // There's a bit of a semantic mismatch here if input streams allow individual component tracks to be muted,
@@ -177,15 +97,10 @@ export default class DefaultDeviceController
     const { enableWebAudio = false } = options || {};
     this.useWebAudio = enableWebAudio;
 
-    this.muteCallback = (muted: boolean) => {
-      this.transform?.device.mute(muted);
-    };
-
     this.videoInputQualitySettings = new VideoQualitySettings(
       DefaultDeviceController.defaultVideoWidth,
       DefaultDeviceController.defaultVideoHeight,
-      DefaultDeviceController.defaultVideoFrameRate,
-      DefaultDeviceController.defaultVideoMaxBandwidthKbps
+      DefaultDeviceController.defaultVideoFrameRate
     );
 
     const dimension = this.browserBehavior.requiresResolutionAlignment(
@@ -265,8 +180,8 @@ export default class DefaultDeviceController
     // Deselect any audio input devices and throw away the streams.
     // Discard the current video device, if there is one.
     // Discard any audio or video transforms.
-    await this.chooseAudioInputDevice(null);
-    await this.chooseVideoInputDevice(null);
+    this.stopAudioInput();
+    this.stopVideoInput();
 
     // Tear down any Web Audio infrastructure we have hanging around.
     this.audioInputSourceNode?.disconnect();
@@ -293,131 +208,66 @@ export default class DefaultDeviceController
     return result;
   }
 
-  private pushAudioMeetingStateForPermissions(device: AudioInputDevice): void {
+  private pushAudioMeetingStateForPermissions(audioStream: MediaStream | undefined): void {
     this.eventController?.publishEvent(
-      device === null ? 'audioInputUnselected' : 'audioInputSelected'
+      audioStream === undefined ? 'audioInputUnselected' : 'audioInputSelected'
     );
   }
 
-  private pushVideoMeetingStateForPermissions(device: VideoInputDevice): void {
+  private pushVideoMeetingStateForPermissions(videoStream: MediaStream | undefined): void {
     this.eventController?.publishEvent(
-      device === null ? 'videoInputUnselected' : 'videoInputSelected'
+      videoStream === undefined ? 'videoInputUnselected' : 'videoInputSelected'
     );
   }
 
-  async chooseAudioInputDevice(device: AudioInputDevice): Promise<void> {
+  async startAudioInput(device: AudioInputDevice): Promise<MediaStream | undefined> {
     if (device === undefined) {
       this.logger.error('Audio input device cannot be undefined');
-      return;
+      return undefined;
     }
-
-    /*
-     * This block of code is a workaround for a Chromium bug:
-     * https://bugs.chromium.org/p/chromium/issues/detail?id=1173656
-     *
-     * In short: if we are about to select an audio device with a transform, which we assume for
-     * safety's sake uses AudioWorklet, we recreate the audio context and the nodes that
-     * are linked to it.
-     *
-     * This causes Chrome to rejig its buffers and the second context works correctly.
-     *
-     * This is theoretically worse for performance, but in practice it is fine.
-     *
-     * This is not safe in the general case: an application that already
-     * retrieved the audio context in order to build an audio graph for some other purpose
-     * will fail at this point as we pull the context out from under it.
-     *
-     * An application that always uses the supplied context in an
-     * `AudioTransformDevice.createAudioNode` call should work correctly.
-     *
-     * If you are confident that your application does not use AudioWorklet, does not run in
-     * an un-fixed Chromium version, or will never be used with sample-rate-switching Bluetooth
-     * devices, you can disable this workaround by suppling a custom {@link ExtendedBrowserBehavior}
-     * when you create your device controller.
-     *
-     * We can't tell in advance whether we need to give the device a different audio context,
-     * because checking whether the resulting node is an AudioWorkletNode needs it to have been
-     * created first.
-     */
-
-    // Ideally we would only do this work if we knew the device was going to change.
-
-    // By definition, this is only needed for Web Audio.
-    let recreateAudioContext = this.useWebAudio;
-
-    if (!this.useWebAudio) {
-      this.logger.debug('Not using Web Audio. No need to recreate audio context.');
+    if (this.getAudioInputInProgress) {
+      throw new Error('Another start audio input is in progress');
     }
+    this.getAudioInputInProgress = true;
 
-    // We have a suspended audio context. There's nothing we can do, and there's
-    // certainly no point in recreating it. Choosing the transform device will try to resume.
-    if (DefaultDeviceController.audioContext?.state === 'suspended') {
-      recreateAudioContext = false;
-    }
+    try {
+      let audioStream;
+      if (isAudioTransformDevice(device)) {
+        // N.B., do not JSON.stringify here — for some kinds of devices this
+        // will cause a cyclic object reference error.
+        this.logger.info(`Choosing transform input device ${device}`);
 
-    // Only Chrome needs this fix.
-    if (recreateAudioContext && !this.browserBehavior.requiresContextRecreationForAudioWorklet()) {
-      this.logger.debug('Browser does not require audio context recreation hack.');
-      recreateAudioContext = false;
-    }
-
-    // Only need to do this if either device has an audio worklet.
-    if (recreateAudioContext && !this.transform && isAudioTransformDevice(device)) {
-      this.logger.debug('Neither device is a transform. No need to recreate audio context.');
-      recreateAudioContext = false;
-    }
-
-    if (recreateAudioContext) {
-      this.logger.info('Recreating audio context when selecting new device.');
-
-      /* istanbul ignore else */
-      if (this.transform) {
-        /* istanbul ignore else */
-        if (this.transform.nodes) {
-          this.transform.nodes.end.disconnect();
-          this.transform.nodes = undefined;
-        }
-        this.transform = undefined;
+        await this.chooseAudioTransformInputDevice(device);
+        audioStream = this.getMediaStreamDestinationNode().stream;
+      } else {
+        this.logger.info(`Choosing intrinsic audio input device ${device}`);
+        this.removeTransform();
+        await this.chooseInputIntrinsicDevice('audio', device);
+        audioStream = this.activeDevices['audio'].stream;
       }
+      this.trace('startAudioInputDevice', device, `success`);
+      return audioStream;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.getAudioInputInProgress = false;
+    }
+  }
 
-      /* istanbul ignore else */
-      if (this.audioInputSourceNode) {
-        this.audioInputSourceNode.disconnect();
-        this.audioInputSourceNode = undefined;
+  stopAudioInput(): void {
+    if (this.getAudioInputInProgress) {
+      throw new Error('An audio input is starting');
+    }
+    try {
+      if (this.useWebAudio) {
+        this.releaseAudioTransformStream();
+        return;
       }
-
-      /* istanbul ignore else */
-      if (this.audioInputDestinationNode) {
-        this.audioInputDestinationNode.disconnect();
-        this.audioInputDestinationNode = undefined;
-      }
-
-      DefaultDeviceController.closeAudioContext();
+      this.stopTracksAndRemoveCallbacks('audio');
+    } finally {
+      this.watchForDeviceChangesIfNecessary();
+      this.publishSelectedAudioInputDidChangedEvent(undefined);
     }
-
-    if (isAudioTransformDevice(device)) {
-      // N.B., do not JSON.stringify here — for some kinds of devices this
-      // will cause a cyclic object reference error.
-      this.logger.info(`Choosing transform input device ${device}`);
-
-      await this.chooseAudioTransformInputDevice(device);
-    } else {
-      this.logger.info(`Choosing intrinsic audio input device ${device}`);
-      this.removeTransform();
-      await this.chooseInputIntrinsicDevice('audio', device, false);
-      this.trace('chooseAudioInputDevice', device, `success`);
-    }
-
-    // Only recreate if there's a peer connection, otherwise `restartLocalAudio` will throw.
-    // This hack is off by default, so tests don't cover it. We can remove this skip soon.
-    /* istanbul ignore next */
-    if (recreateAudioContext && this.boundAudioVideoController?.rtcPeerConnection) {
-      this.boundAudioVideoController.restartLocalAudio(() => {
-        this.logger.info('Local audio restarted.');
-      });
-    }
-
-    this.pushAudioMeetingStateForPermissions(device);
   }
 
   private async chooseAudioTransformInputDevice(device: AudioTransformDevice): Promise<void> {
@@ -460,7 +310,7 @@ export default class DefaultDeviceController
     // Pick the plain ol' inner device as the source. It will be
     // connected to the node.
     const inner = await device.intrinsicDevice();
-    await this.chooseInputIntrinsicDevice('audio', inner, false);
+    await this.chooseInputIntrinsicDevice('audio', inner);
     this.logger.debug(`Got inner stream: ${inner}.`);
     // Otherwise, continue: hook up the new node.
     this.setTransform(device, nodes);
@@ -491,7 +341,7 @@ export default class DefaultDeviceController
       this.chosenVideoTransformDevice = device;
       // VideoTransformDevice owns input MediaStream
       this.activeDevices['video'] = null;
-      await this.chooseInputIntrinsicDevice('video', inner, false, true);
+      await this.chooseInputIntrinsicDevice('video', inner);
       return;
     }
 
@@ -519,46 +369,68 @@ export default class DefaultDeviceController
     // `transformStream` will start processing.
     await device.transformStream(this.activeDevices['video'].stream);
 
-    // Replace video to send
-    if (this.boundAudioVideoController?.videoTileController.hasStartedLocalVideoTile()) {
-      if (this.boundAudioVideoController.replaceLocalVideo) {
-        this.restartLocalVideoAfterSelection(false, true);
-      } else {
-        // Non-optimal path for backwards compatibility with self implemented controller which will require renegotiation
-        await this.boundAudioVideoController.update({ needsRenegotiation: true });
+    this.publishSelectedVideoInputDidChangedEvent(
+      this.chosenVideoTransformDevice.outputMediaStream
+    );
+  }
+
+  async startVideoInput(device: VideoInputDevice): Promise<MediaStream | undefined> {
+    if (!device) {
+      this.logger.error('Invalid video input device');
+      return undefined;
+    }
+
+    if (this.getVideoInputInProgress) {
+      throw new Error('Another start video input is in progress');
+    }
+    this.getVideoInputInProgress = true;
+
+    try {
+      if (isVideoTransformDevice(device)) {
+        this.logger.info(`Choosing video transform device ${device}`);
+        await this.chooseVideoTransformInputDevice(device);
+        return this.chosenVideoTransformDevice.outputMediaStream;
       }
+
+      // handle direct switching from VideoTransformDevice to Device
+      // From WebRTC point, it is a device switching.
+      if (this.chosenVideoInputIsTransformDevice()) {
+        // disconnect old stream
+        this.chosenVideoTransformDevice.onOutputStreamDisconnect();
+        this.chosenVideoTransformDevice = null;
+      }
+
+      await this.chooseInputIntrinsicDevice('video', device);
+      this.trace('startVideoInputDevice', device);
+      return this.activeDevices['video']?.stream;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.getVideoInputInProgress = false;
     }
   }
 
-  async chooseVideoInputDevice(device: VideoInputDevice): Promise<void> {
-    if (device === undefined) {
-      this.logger.error('Video input device cannot be undefined');
-      return;
+  stopVideoInput(): void {
+    if (this.getVideoInputInProgress) {
+      throw new Error('A video input is starting');
     }
-    if (isVideoTransformDevice(device)) {
-      this.logger.info(`Choosing video transform device ${device}`);
-      return this.chooseVideoTransformInputDevice(device);
+    try {
+      if (this.chosenVideoInputIsTransformDevice()) {
+        this.releaseVideoTransformStream();
+        return;
+      }
+      this.stopTracksAndRemoveCallbacks('video');
+    } finally {
+      this.watchForDeviceChangesIfNecessary();
+      this.publishSelectedVideoInputDidChangedEvent(undefined);
     }
-
-    this.updateMaxBandwidthKbps();
-
-    // handle direct switching from VideoTransformDevice to Device
-    // From WebRTC point, it is a device switching.
-    if (this.chosenVideoInputIsTransformDevice()) {
-      // disconnect old stream
-      this.chosenVideoTransformDevice.onOutputStreamDisconnect();
-      this.chosenVideoTransformDevice = null;
-    }
-
-    await this.chooseInputIntrinsicDevice('video', device, false);
-    this.trace('chooseVideoInputDevice', device);
-    this.pushVideoMeetingStateForPermissions(device);
   }
 
-  async chooseAudioOutputDevice(deviceId: string | null): Promise<void> {
+  async chooseAudioOutput(deviceId: string | null): Promise<void> {
     this.audioOutputDeviceId = deviceId;
     this.watchForDeviceChangesIfNecessary();
-    await this.bindAudioOutput();
+    const deviceInfo = this.deviceInfoFromDeviceId('audiooutput', this.audioOutputDeviceId);
+    this.publishSelectedAudioOutputDidChangedEvent(deviceInfo);
     this.trace('chooseAudioOutputDevice', deviceId, null);
     return;
   }
@@ -636,47 +508,18 @@ export default class DefaultDeviceController
       this.trace('startVideoPreviewForVideoInput', element.id);
       return;
     }
-
-    const stream = element.srcObject as MediaStream;
-    // TODO: implement MediaDestroyer to provide single release MediaStream function
-    // The video stream should be released only if the video stream in the HTML element is different from current stream.
-    // When a filter is applied the existing stream is reused and in that case the stream should not be released.
-    if (stream && this.activeDevices['video'].stream !== stream) {
-      this.releaseMediaStream(element.srcObject as MediaStream);
-      DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
-    }
-
-    if (this.chosenVideoTransformDevice) {
-      DefaultVideoTile.connectVideoStreamToVideoElement(
-        this.chosenVideoTransformDevice.outputMediaStream,
-        element,
-        true
-      );
-    } else {
-      DefaultVideoTile.connectVideoStreamToVideoElement(
-        this.activeDevices['video'].stream,
-        element,
-        true
-      );
-    }
-
+    DefaultVideoTile.connectVideoStreamToVideoElement(
+      this.chosenVideoTransformDevice
+        ? this.chosenVideoTransformDevice.outputMediaStream
+        : this.activeDevices['video'].stream,
+      element,
+      true
+    );
     this.trace('startVideoPreviewForVideoInput', element.id);
   }
 
   stopVideoPreviewForVideoInput(element: HTMLVideoElement): void {
-    const stream: MediaStream = element.srcObject as MediaStream;
-    const activeVideoDevice = this.activeDevices['video'];
-
-    // Safety.
-    /* istanbul ignore else */
-    if (activeVideoDevice) {
-      this.releaseActiveDevice(activeVideoDevice);
-    }
-
-    if (stream) {
-      this.releaseMediaStream(stream);
-      DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
-    }
+    DefaultVideoTile.disconnectVideoStreamFromVideoElement(element, false);
     this.trace('stopVideoPreviewForVideoInput', element.id);
   }
 
@@ -708,20 +551,13 @@ export default class DefaultDeviceController
     return node;
   }
 
-  chooseVideoInputQuality(
-    width: number,
-    height: number,
-    frameRate: number,
-    maxBandwidthKbps: number
-  ): void {
+  chooseVideoInputQuality(width: number, height: number, frameRate: number): void {
     const dimension = this.browserBehavior.requiresResolutionAlignment(width, height);
     this.videoInputQualitySettings = new VideoQualitySettings(
       dimension[0],
       dimension[1],
-      frameRate,
-      maxBandwidthKbps
+      frameRate
     );
-    this.updateMaxBandwidthKbps();
   }
 
   getVideoInputQualitySettings(): VideoQualitySettings | null {
@@ -736,38 +572,20 @@ export default class DefaultDeviceController
     return this.acquireInputStream('video');
   }
 
-  async acquireDisplayInputStream(streamConstraints: MediaStreamConstraints): Promise<MediaStream> {
-    if (
-      streamConstraints &&
-      streamConstraints.video &&
-      // @ts-ignore
-      streamConstraints.video.mandatory &&
-      // @ts-ignore
-      streamConstraints.video.mandatory.chromeMediaSource &&
-      // @ts-ignore
-      streamConstraints.video.mandatory.chromeMediaSourceId
-    ) {
-      return navigator.mediaDevices.getUserMedia(streamConstraints);
-    }
-    // @ts-ignore https://github.com/microsoft/TypeScript/issues/31821
-    return navigator.mediaDevices.getDisplayMedia(streamConstraints);
+  async acquireDisplayInputStream(
+    _streamConstraints: MediaStreamConstraints
+  ): Promise<MediaStream> {
+    throw new Error('unsupported');
   }
 
   /**
-   * This function helps `releaseMediaStream` do the right thing.
    *
-   * We need to do three things:
+   * We need to do three things to clean up audio input
    *
    * * Close the tracks of the source stream.
    * * Remove the transform.
-   * * Clean up the _source_ stream's callback, as if `releaseMediaStream` had
-   *   been called with that stream -- that's the stream that's tracked in
+   * * Clean up the intrinsic stream's callback -- that's the stream that's tracked in
    *   `activeDevices` and needs to have its callbacks removed.
-   *
-   * This is a little fiddly because the stream broker interface doesn't
-   * know about the innards of the device controller, and only has the
-   * meeting session state's stream to work with.
-   *
    */
   private releaseAudioTransformStream(): void {
     this.logger.info('Stopping audio track for Web Audio graph');
@@ -792,6 +610,15 @@ export default class DefaultDeviceController
     }
   }
 
+  /**
+   *
+   * We need to do three things to clean up video input
+   *
+   * * Close the tracks of the source stream.
+   * * Remove the transform.
+   * * Clean up the intrinsic stream's callback -- that's the stream that's tracked in
+   *   `activeDevices` and needs to have its callbacks removed.
+   */
   private releaseVideoTransformStream(): void {
     this.logger.info('Stopping video track for transform');
 
@@ -839,145 +666,33 @@ export default class DefaultDeviceController
     }
   }
 
-  private releaseOrdinaryStream(mediaStreamToRelease: MediaStream): void {
-    const tracksToStop = mediaStreamToRelease.getTracks();
-
-    if (!tracksToStop.length) {
-      return;
-    }
-
-    for (const track of tracksToStop) {
-      track.stop();
-    }
-
-    // This function is called from `CleanStoppedSessionTask` using the
-    // session state, which does not allow us to clean up any associated 'ended'
-    // or 'mute'/'unmute' callbacks in advance.
-    // Look here to see if we have any to clean up.
-    for (const kind in this.activeDevices) {
-      const activeDevice = this.activeDevices[kind];
-      if (activeDevice?.stream !== mediaStreamToRelease) {
-        continue;
-      }
-
-      switch (kind) {
-        case 'audio': {
-          for (const track of mediaStreamToRelease.getAudioTracks()) {
-            track.removeEventListener('mute', activeDevice.trackMuteCallback);
-            track.removeEventListener('unmute', activeDevice.trackUnmuteCallback);
-            track.removeEventListener('ended', activeDevice.endedCallback);
-          }
-          delete activeDevice.trackMuteCallback;
-          delete activeDevice.trackUnmuteCallback;
-          delete activeDevice.endedCallback;
-          break;
-        }
-        case 'video': {
-          const endedCallback = activeDevice.endedCallback;
-          if (endedCallback) {
-            for (const track of mediaStreamToRelease.getTracks()) {
-              track.removeEventListener('ended', activeDevice.endedCallback);
-            }
-            delete activeDevice.endedCallback;
-          }
-
-          const tileController = this.boundAudioVideoController?.videoTileController;
-          if (tileController?.hasStartedLocalVideoTile()) {
-            tileController.stopLocalVideoTile();
-          }
-          break;
-        }
-      }
-
-      delete this.activeDevices[kind];
-    }
-  }
-
-  releaseMediaStream(mediaStreamToRelease: MediaStream | null): void {
-    if (!mediaStreamToRelease) {
-      return;
-    }
-
-    try {
-      // This method can be called with the output of an audio transform's
-      // Web Audio graph. That graph runs from a `MediaStreamSourceNode`, through
-      // the transform (if present), to a `MediaStreamDestinationNode`, and out to
-      // WebRTC.
-      //
-      // The call teardown task will call `releaseMediaStream` with the stream it
-      // receives — the destination stream.
-      //
-      // This function detects with this comparison:
-      const isReleasingAudioDestinationStream =
-        mediaStreamToRelease === this.audioInputDestinationNode?.stream;
-
-      if (isReleasingAudioDestinationStream) {
-        this.releaseAudioTransformStream();
-        return;
-      }
-
-      // Similarly, it can be called with a video transform's output stream.
-      // As with the Web Audio case, we need to release the actual input stream to
-      // really stop it.
-      const isReleasingVideoOutputStream =
-        mediaStreamToRelease === this.chosenVideoTransformDevice?.outputMediaStream;
-
-      if (isReleasingVideoOutputStream) {
-        this.releaseVideoTransformStream();
-        return;
-      }
-
-      // Otherwise, this is one of our inputs that was plumbed straight through to
-      // WebRTC. Go ahead and release it track by track.
-      this.releaseOrdinaryStream(mediaStreamToRelease);
-    } finally {
-      this.watchForDeviceChangesIfNecessary();
-    }
-  }
-
   private chosenVideoInputIsTransformDevice(): boolean {
     return !!this.chosenVideoTransformDevice;
   }
 
-  bindToAudioVideoController(audioVideoController: AudioVideoController): void {
-    if (this.boundAudioVideoController) {
-      this.unsubscribeFromMuteAndUnmuteLocalAudio();
-    }
-    this.boundAudioVideoController = audioVideoController;
-    this.subscribeToMuteAndUnmuteLocalAudio();
-    if (this.browserBehavior.supportsSetSinkId()) {
-      AsyncScheduler.nextTick(() => {
-        this.bindAudioOutput();
-      });
-    }
+  muteLocalAudioInputStream(): void {
+    this.toggleLocalAudioInputStream(false);
   }
 
-  private subscribeToMuteAndUnmuteLocalAudio(): void {
-    if (!this.boundAudioVideoController) {
-      return;
-    }
-
-    // Safety that's hard to test.
-    /* istanbul ignore next */
-    if (!this.boundAudioVideoController.realtimeController) {
-      return;
-    }
-
-    this.boundAudioVideoController.realtimeController.realtimeSubscribeToMuteAndUnmuteLocalAudio(
-      this.muteCallback
-    );
+  unmuteLocalAudioInputStream(): void {
+    this.toggleLocalAudioInputStream(true);
   }
 
-  private unsubscribeFromMuteAndUnmuteLocalAudio(): void {
-    // Safety that's hard to test.
-    /* istanbul ignore next */
-    if (!this.boundAudioVideoController.realtimeController) {
+  private toggleLocalAudioInputStream(enabled: boolean): void {
+    if (!this.activeDevices['audio']) {
       return;
     }
-
-    this.boundAudioVideoController.realtimeController.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(
-      this.muteCallback
-    );
+    let isChanged = false;
+    for (const track of this.activeDevices['audio'].stream.getTracks()) {
+      if (track.enabled === enabled) {
+        continue;
+      }
+      track.enabled = enabled;
+      isChanged = true;
+    }
+    if (isChanged) {
+      this.transform?.device.mute(!enabled);
+    }
   }
 
   static getIntrinsicDeviceId(device: Device): string | string[] | null {
@@ -1026,10 +741,6 @@ export default class DefaultDeviceController
     return DefaultDeviceController.synthesizeAudioDevice(0);
   }
 
-  static createEmptyVideoDevice(): MediaStream | null {
-    return DefaultDeviceController.synthesizeVideoDevice('black');
-  }
-
   static synthesizeAudioDevice(toneHz: number): MediaStream {
     const audioContext = DefaultDeviceController.getAudioContext();
     const outputNode = audioContext.createMediaStreamDestination();
@@ -1074,31 +785,6 @@ export default class DefaultDeviceController
       oscillatorNode.start();
     }
     return outputNode.stream;
-  }
-
-  static synthesizeVideoDevice(colorOrPattern: string): MediaStream | null {
-    const canvas = document.createElement('canvas') as HTMLCanvasElement;
-    canvas.width = 480;
-    canvas.height = (canvas.width / 16) * 9;
-
-    const colorBars = makeColorBars(canvas, colorOrPattern);
-
-    if (!colorBars) {
-      return null;
-    }
-
-    // `scheduler` and `listener` will leak.
-    const { stream } = colorBars;
-
-    return stream;
-  }
-
-  private updateMaxBandwidthKbps(): void {
-    if (this.boundAudioVideoController) {
-      this.boundAudioVideoController.setVideoMaxBandwidthKbps(
-        this.videoInputQualitySettings.videoMaxBandwidthKbps
-      );
-    }
   }
 
   private async listDevicesOfKind(
@@ -1184,9 +870,13 @@ export default class DefaultDeviceController
     this.alreadyHandlingDeviceChange = false;
   }
 
-  private async handleDeviceStreamEnded(kind: string, deviceId: string): Promise<void> {
+  private async handleDeviceStreamEnded(kind: 'audio' | 'video', deviceId: string): Promise<void> {
     try {
-      await this.chooseInputIntrinsicDevice(kind, null, false);
+      if (kind === 'audio') {
+        await this.chooseInputIntrinsicDevice('audio', null); //Need to switch to empty audio device
+      } else {
+        this.stopVideoInput();
+      }
     } catch (e) {
       /* istanbul ignore next */
       this.logger.error('Failed to choose null device after stream ended.');
@@ -1211,6 +901,14 @@ export default class DefaultDeviceController
           observerFunc(observer);
         }
       });
+    }
+  }
+
+  private forEachMediaStreamBrokerObserver(
+    observerFunc: (obsever: MediaStreamBrokerObserver) => void
+  ): void {
+    for (const observer of this.mediaStreamBrokerObservers) {
+      observerFunc(observer);
     }
   }
 
@@ -1304,29 +1002,6 @@ export default class DefaultDeviceController
     return null;
   }
 
-  private async restartLocalVideoAfterSelection(
-    fromAcquire: boolean,
-    fromVideoTransformDevice: boolean
-  ): Promise<void> {
-    if (
-      !fromAcquire &&
-      this.boundAudioVideoController &&
-      this.boundAudioVideoController.videoTileController.hasStartedLocalVideoTile()
-    ) {
-      if (fromVideoTransformDevice) {
-        // similar to `useWebaudio`, either Device or VideoTransformDevice, `this.activeDevices['video']` tracks the supplied inner Device.
-        // Upon in-meeting switching to VideoTransformDevice, device controller releases old "supplied" stream and
-        // calls replaceLocalVideo to avoid a full stop-start update.
-        await this.boundAudioVideoController.replaceLocalVideo();
-        this.logger.info('successfully replaced video track');
-      } else {
-        // not from VideoTransformDevice, usual behavior.
-        this.logger.info('restarting local video to switch to new device');
-        this.boundAudioVideoController.restartLocalVideo(() => {});
-      }
-    }
-  }
-
   private handleGetUserMediaError(error: Error, errorTimeMs?: number): void {
     if (!error) {
       throw new GetUserMediaError(error);
@@ -1359,26 +1034,6 @@ export default class DefaultDeviceController
       default:
         throw new GetUserMediaError(error);
     }
-  }
-
-  private releaseActiveDevice(device: DeviceSelection): void {
-    /* istanbul ignore next */
-    if (!device || !device.stream) {
-      return;
-    }
-
-    if (device.endedCallback) {
-      const track = device.stream.getTracks()[0];
-      // Safety.
-      /* istanbul ignore else */
-      if (track) {
-        track.removeEventListener('ended', device.endedCallback);
-      }
-    }
-    delete device.endedCallback;
-
-    this.releaseMediaStream(device.stream);
-    delete device.stream;
   }
 
   /**
@@ -1414,26 +1069,7 @@ export default class DefaultDeviceController
     return false;
   }
 
-  private async chooseInputIntrinsicDevice(
-    kind: string,
-    device: Device,
-    fromAcquire: boolean,
-    fromVideoTransformDevice: boolean = false
-  ): Promise<void> {
-    this.inputDeviceCount += 1;
-    const callCount = this.inputDeviceCount;
-
-    if (device === null && kind === 'video') {
-      this.lastNoVideoInputDeviceCount = this.inputDeviceCount;
-      const active = this.activeDevices[kind];
-      if (active) {
-        this.releaseActiveDevice(active);
-        delete this.activeDevices[kind];
-        this.watchForDeviceChangesIfNecessary();
-      }
-      return;
-    }
-
+  private async chooseInputIntrinsicDevice(kind: 'audio' | 'video', device: Device): Promise<void> {
     // N.B.,: the input device might already have augmented constraints supplied
     // by an `AudioTransformDevice`. `calculateMediaStreamConstraints` will respect
     // settings supplied by the device.
@@ -1447,13 +1083,7 @@ export default class DefaultDeviceController
       return;
     }
     if (this.activeDevices[kind] && this.activeDevices[kind].stream) {
-      /* istanbul ignore else */
-      if (kind === 'audio') {
-        this.releaseActiveDevice(this.activeDevices[kind]);
-      } else if (kind === 'video') {
-        this.stopTracksAndRemoveCallbacks('video');
-        delete this.activeDevices[kind];
-      }
+      this.stopTracksAndRemoveCallbacks(kind);
     }
 
     const startTimeMs = Date.now();
@@ -1473,15 +1103,6 @@ export default class DefaultDeviceController
       } else {
         newDevice.stream = await navigator.mediaDevices.getUserMedia(proposedConstraints);
         newDevice.constraints = proposedConstraints;
-        if (kind === 'video' && this.lastNoVideoInputDeviceCount > callCount) {
-          this.logger.warn(
-            `ignored to get video device for constraints ${JSON.stringify(
-              proposedConstraints
-            )} as no device was requested`
-          );
-          this.releaseMediaStream(newDevice.stream);
-          return;
-        }
 
         await this.handleDeviceChange();
 
@@ -1569,7 +1190,7 @@ export default class DefaultDeviceController
         try {
           newDevice.stream = DefaultDeviceController.createEmptyAudioDevice() as MediaStream;
           newDevice.constraints = null;
-          await this.handleNewInputDevice(kind, newDevice, fromAcquire);
+          await this.handleNewInputDevice(kind, newDevice);
         } catch (error) {
           this.logger.error(
             `failed to choose null ${kind} device. ${error.name}: ${error.message}`
@@ -1583,7 +1204,7 @@ export default class DefaultDeviceController
     }
 
     this.logger.info(`got ${kind} device for constraints ${JSON.stringify(proposedConstraints)}`);
-    await this.handleNewInputDevice(kind, newDevice, fromAcquire, fromVideoTransformDevice);
+    await this.handleNewInputDevice(kind, newDevice);
 
     // Notify the device mute state immediately after selection.
     if (kind === 'audio') {
@@ -1599,12 +1220,7 @@ export default class DefaultDeviceController
     return;
   }
 
-  private async handleNewInputDevice(
-    kind: string,
-    newDevice: DeviceSelection,
-    fromAcquire: boolean,
-    fromVideoTransformDevice: boolean = false
-  ): Promise<void> {
+  private async handleNewInputDevice(kind: string, newDevice: DeviceSelection): Promise<void> {
     this.activeDevices[kind] = newDevice;
     this.logger.debug(`Set activeDevice to ${JSON.stringify(newDevice)}`);
     this.watchForDeviceChangesIfNecessary();
@@ -1615,29 +1231,19 @@ export default class DefaultDeviceController
       if (this.chosenVideoInputIsTransformDevice()) {
         this.logger.info('apply processors to transform');
         await this.chosenVideoTransformDevice.transformStream(this.activeDevices['video'].stream);
+        this.publishSelectedVideoInputDidChangedEvent(
+          this.chosenVideoTransformDevice.outputMediaStream
+        );
+      } else {
+        this.publishSelectedVideoInputDidChangedEvent(this.activeDevices['video'].stream);
       }
-      await this.restartLocalVideoAfterSelection(fromAcquire, fromVideoTransformDevice);
     } else {
       if (this.useWebAudio) {
-        this.attachAudioInputStreamToAudioContext(this.activeDevices[kind].stream);
-      } else if (this.boundAudioVideoController) {
-        try {
-          await this.boundAudioVideoController.restartLocalAudio(() => {});
-        } catch (error) {
-          this.logger.info(`cannot replace audio track due to: ${error.message}`);
-        }
+        this.attachAudioInputStreamToAudioContext(this.activeDevices['audio'].stream);
       } else {
-        this.logger.info('no audio-video controller is bound to the device controller');
+        this.publishSelectedAudioInputDidChangedEvent(this.activeDevices['audio'].stream);
       }
     }
-  }
-
-  private async bindAudioOutput(): Promise<void> {
-    if (!this.boundAudioVideoController) {
-      return;
-    }
-    const deviceInfo = this.deviceInfoFromDeviceId('audiooutput', this.audioOutputDeviceId);
-    await this.boundAudioVideoController.audioMixController.bindAudioDevice(deviceInfo);
   }
 
   private calculateMediaStreamConstraints(
@@ -1749,29 +1355,13 @@ export default class DefaultDeviceController
         return this.chosenVideoTransformDevice.outputMediaStream;
       }
     }
-    let existingConstraints: MediaTrackConstraints | null = null;
     if (!this.activeDevices[kind]) {
       if (kind === 'audio') {
         this.logger.info(`no ${kind} device chosen, creating empty ${kind} device`);
+        await this.startAudioInput(null);
       } else {
-        this.logger.error(`no ${kind} device chosen, stopping local video tile`);
-        this.boundAudioVideoController.videoTileController.stopLocalVideoTile();
-        throw new Error(`no ${kind} device chosen, stopping local video tile`);
+        throw new Error(`no ${kind} device chosen`);
       }
-    } else {
-      this.logger.info(`checking whether existing ${kind} input device can be reused`);
-      const active = this.activeDevices[kind];
-      // @ts-ignore
-      existingConstraints = active.constraints ? active.constraints[kind] : null;
-    }
-    try {
-      await this.chooseInputIntrinsicDevice(kind, existingConstraints, true);
-    } catch (e) {
-      this.logger.error(`unable to acquire ${kind} device`);
-      if (e instanceof PermissionDeniedError) {
-        throw e;
-      }
-      throw new GetUserMediaError(e, `unable to acquire ${kind} device`);
     }
     return this.activeDevices[kind].stream;
   }
@@ -1894,6 +1484,40 @@ export default class DefaultDeviceController
       }
     }
     DefaultDeviceController.audioContext = null;
+  }
+
+  addMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+    this.mediaStreamBrokerObservers.add(observer);
+  }
+
+  removeMediaStreamBrokerObserver(observer: MediaStreamBrokerObserver): void {
+    this.mediaStreamBrokerObservers.delete(observer);
+  }
+
+  private publishSelectedVideoInputDidChangedEvent(videoStream: MediaStream | undefined): void {
+    this.forEachMediaStreamBrokerObserver((observer: MediaStreamBrokerObserver) => {
+      if (observer.selectedVideoInputDidChanged) {
+        observer.selectedVideoInputDidChanged(videoStream);
+      }
+    });
+    this.pushVideoMeetingStateForPermissions(videoStream);
+  }
+
+  private publishSelectedAudioInputDidChangedEvent(audioStream: MediaStream | undefined): void {
+    this.forEachMediaStreamBrokerObserver((observer: MediaStreamBrokerObserver) => {
+      if (observer.selectedAudioInputDidChanged) {
+        observer.selectedAudioInputDidChanged(audioStream);
+      }
+    });
+    this.pushAudioMeetingStateForPermissions(audioStream);
+  }
+
+  private publishSelectedAudioOutputDidChangedEvent(device: MediaDeviceInfo | null): void {
+    this.forEachMediaStreamBrokerObserver((observer: MediaStreamBrokerObserver) => {
+      if (observer.selectedAudioOutputDidChanged) {
+        observer.selectedAudioOutputDidChanged(device);
+      }
+    });
   }
 
   private supportSampleRateConstraint(): boolean {

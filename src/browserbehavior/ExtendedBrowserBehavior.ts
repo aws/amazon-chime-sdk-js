@@ -15,7 +15,6 @@ import { BrowserBehavior } from '..';
 export default interface ExtendedBrowserBehavior extends BrowserBehavior {
   requiresResolutionAlignment(width: number, height: number): [number, number];
   requiresGroupIdMediaStreamConstraints(): boolean;
-  requiresContextRecreationForAudioWorklet(): boolean;
   isSimulcastSupported(): boolean;
   supportsBackgroundFilter(): boolean;
   disableResolutionScaleDown(): boolean;

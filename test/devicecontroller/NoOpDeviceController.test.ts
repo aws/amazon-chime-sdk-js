@@ -57,7 +57,7 @@ describe('NoOpDeviceController', () => {
   describe('chooseAudioInputDevice', () => {
     it('fails for intrinsic devices', async () => {
       await deviceController
-        .chooseAudioInputDevice('')
+        .startAudioInput('')
         .then(() => {
           assert.fail();
         })
@@ -66,7 +66,7 @@ describe('NoOpDeviceController', () => {
 
     it('fails for transform devices', async () => {
       await deviceController
-        .chooseAudioInputDevice(new MockPassthroughTransformDevice(''))
+        .startAudioInput(new MockPassthroughTransformDevice(''))
         .then(() => {
           assert.fail();
         })
@@ -77,7 +77,7 @@ describe('NoOpDeviceController', () => {
   describe('chooseVideoInputDevice', () => {
     it('fails', async () => {
       await deviceController
-        .chooseVideoInputDevice('')
+        .startVideoInput('')
         .then(() => {
           assert.fail();
         })
@@ -88,7 +88,7 @@ describe('NoOpDeviceController', () => {
   describe('chooseAudioOutputDevice', () => {
     it('fails', async () => {
       await deviceController
-        .chooseAudioOutputDevice('')
+        .chooseAudioOutput('')
         .then(() => {
           assert.fail();
         })
