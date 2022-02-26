@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { versionBump}  = require('./version-utils');
+const { versionBump } = require('./version-utils');
 
-(async ()=>{
+(async () => {
   await versionBump();
 
 })();
