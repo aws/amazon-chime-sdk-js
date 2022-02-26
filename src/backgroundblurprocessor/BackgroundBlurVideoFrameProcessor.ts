@@ -62,16 +62,13 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
     spec?: BackgroundFilterSpec,
     options?: BackgroundBlurOptions
   ): Promise<BackgroundBlurProcessor | undefined> {
-    let processorSpecs: BackgroundFilterSpec = { ...spec };
-    let processorOptions: BackgroundBlurOptions = { ...options };
-
-    processorSpecs = BackgroundBlurVideoFrameProcessor.resolveSpec(processorSpecs);
-    processorOptions = BackgroundBlurVideoFrameProcessor.resolveOptions(processorOptions);
-    const { logger } = processorOptions;
+    spec = BackgroundBlurVideoFrameProcessor.resolveSpec(spec);
+    options = BackgroundBlurVideoFrameProcessor.resolveOptions(options);
+    const { logger } = options;
 
     const supported = await BackgroundBlurVideoFrameProcessor.isSupported(
-      processorSpecs,
-      processorOptions
+      spec,
+      options
     );
     // if blur is not supported do not initialize. The processor will become a no op if not supported.
     logger.info(`processor is ${supported ? '' : 'not'} supported`);
@@ -83,10 +80,10 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
     let processor: BackgroundBlurProcessor;
     if (await BackgroundBlurProcessorProvided.isSupported()) {
       logger.info('Using browser-provided background blur');
-      processor = new BackgroundBlurProcessorProvided(processorSpecs, processorOptions);
+      processor = new BackgroundBlurProcessorProvided(spec, options);
     } else {
       logger.info('Using built-in background blur');
-      processor = new BackgroundBlurProcessorBuiltIn(processorSpecs, processorOptions);
+      processor = new BackgroundBlurProcessorBuiltIn(spec, options);
     }
 
     await processor.loadAssets();
@@ -99,15 +96,17 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
    * @returns An updated set of options with defaults set
    */
   protected static resolveOptions(options: BackgroundBlurOptions = {}): BackgroundBlurOptions {
-    if (!options.blurStrength) {
-      options.blurStrength = BlurStrength.MEDIUM;
+    let processorOptions: BackgroundBlurOptions = { ...options };
+
+    if (!processorOptions.blurStrength) {
+      processorOptions.blurStrength = BlurStrength.MEDIUM;
     }
 
-    if (!options.logger) {
-      options.logger = new ConsoleLogger('BackgroundBlurProcessor', LogLevel.INFO);
+    if (!processorOptions.logger) {
+      processorOptions.logger = new ConsoleLogger('BackgroundBlurProcessor', LogLevel.INFO);
     }
-    options = super.resolveOptions(options);
-    return options;
+    processorOptions = super.resolveOptions(processorOptions);
+    return processorOptions;
   }
 
   /**
@@ -118,11 +117,8 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
    * @returns a boolean promise that will resolve to true if supported and false if not
    */
   static isSupported(spec?: BackgroundFilterSpec, options?: { logger?: Logger }): Promise<boolean> {
-    let processorSpecs: BackgroundFilterSpec = { ...spec };
-    let processorOptions: BackgroundBlurOptions = { ...options };
-
-    processorSpecs = BackgroundBlurVideoFrameProcessor.resolveSpec(processorSpecs);
-    processorOptions = BackgroundBlurVideoFrameProcessor.resolveOptions(processorOptions);
-    return super.isSupported(processorSpecs, processorOptions);
+    spec = BackgroundBlurVideoFrameProcessor.resolveSpec(spec);
+    options = BackgroundBlurVideoFrameProcessor.resolveOptions(options);
+    return super.isSupported(spec, options);
   }
 }

@@ -965,7 +965,7 @@ describe('BackgroundBlurProcessor', () => {
   describe('BackgroundBlurVideoFrameProcessor', () => {
     const spec: BackgroundFilterSpec = {};
     const options: BackgroundBlurOptions = {
-      blurStrength: BlurStrength.MEDIUM,
+      blurStrength: BlurStrength.LOW,
     };
 
     it('create should not change spec and options by reference', async () => {
@@ -977,7 +977,7 @@ describe('BackgroundBlurProcessor', () => {
 
       // expect spec and options not changed by reference
       expect(spec).to.deep.equal({});
-      expect(options).to.deep.equal({ blurStrength: BlurStrength.MEDIUM });
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
 
       await bbprocessor.destroy();
     });
@@ -990,7 +990,7 @@ describe('BackgroundBlurProcessor', () => {
 
       // expect spec and options not changed by reference
       expect(spec).to.deep.equal({});
-      expect(options).to.deep.equal({ blurStrength: BlurStrength.MEDIUM });
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
     });
   });
 });
