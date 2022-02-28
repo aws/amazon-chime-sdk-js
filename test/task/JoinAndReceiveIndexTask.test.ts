@@ -276,6 +276,9 @@ describe('JoinAndReceiveIndexTask', () => {
       expect(appName).to.eq('AmazonChimeJSSDKDemoApp');
       expect(appVersion).to.eq('1.0.0');
       expect(context.indexFrame).to.not.equal(null);
+      expect(context.previousSdpAnswerAsString).to.equal('');
+      expect(context.previousSdpOffer).to.equal(null);
+      expect(context.serverSupportsCompression).to.be.false;
       expect(context.turnCredentials.username).to.equal('fake-username');
       expect(context.turnCredentials.password).to.equal('fake-password');
       expect(context.turnCredentials.ttl).to.equal(300);
