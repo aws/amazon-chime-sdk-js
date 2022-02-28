@@ -6,111 +6,130 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [3.0.0-beta.1] - 2022-02-23
-    
+
 ### Added
+
 - Add compression support when sending and receiving sdp messages.
-    
+
 ### Removed
-    
+
 ### Changed
-- Change `create` and `isSupported` in BackgroundBlurVideoFrameProcessor and BackgroundReplacementVideoFrameProcessor to clone parameter objects.
-    
+
+- Change `resolveSpec` and `resolveOptions` in BackgroundBlurVideoFrameProcessor and BackgroundReplacementVideoFrameProcessor to clone parameter objects.
+
 ### Fixed
-- Clone the video preference input in `chooseRemoteVideoSources` API in `VideoPriorityBasedPolicy` to avoid mutation 
-  that can cause video preferences to not be sorted and lead to wrong video subscription determination by the policy. 
-    
+
+- Clone the video preference input in `chooseRemoteVideoSources` API in `VideoPriorityBasedPolicy` to avoid mutation that can cause video preferences to not be sorted and lead to wrong video subscription determination by the policy.
+- Fix a screen share issue by resetting the sdp compression state during join requests.
+
 ## [3.0.0-beta.0] - 2022-02-08
-    
+
 ### Added
-    
+
 ### Removed
+
 - Remove support for Plan B as well as Safari (and iOS) 12+. The minimum Safari and iOS supported version is now 13. Also clean up all plan-B code path.
 - Remove all deprecated meeting status code.  
-    
+
 ### Changed
+
 - Decoupled `EventController` from `AudioVideo` and `MeetingSession`.
 - Add support for pre-release in Versioning.
 - Removed upward BWE throttling logic in VideoPriorityBasedPolicyConfig, which was increasing recovery time more then intended, whereas its main focus was towards slowing downturns in BWE when the network is actually stable. We may come back to configuring the recovery delay another time.
 - Add support for aws-sdk js v3 for messaging session.
-    
+
 ### Fixed
+
 - Fix a worker resource leak with `BackgroundBlurProcessor` and `BackgroundReplacementProcessor`.
-    
+
 ## [2.27.0] - 2022-01-27
-    
+
 ### Added
-    
-### Removed
-    
-### Changed
-- Changed `VideoPriorityBasedPolicyConfig` to be dependent on bandwidth fluctuation so that `VideoPriorityBasedPolicy` will not drop/resume video instantly when network bandwidth changes. (#1921)
-- Adjust the recovery behavior of `VideoPriorityBasedPolicy` to not get stuck at low estimates, not overeact to spurious packet loss when probing, and not let the time between probes raise to 60 seconds (reduced to maximum of 30 seconds).
-    
-### Fixed
-- Fix the reconnecting issue (#1985) by skipping the "close" event if it does not arrive in two seconds.
-- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy
-  for Chromium browsers version 98 on Windows and use 360p instead.
-    
-## [2.26.0] - 2022-01-14
-    
-### Added
-    
+
 ### Removed
 
 ### Changed
+
+- Changed `VideoPriorityBasedPolicyConfig` to be dependent on bandwidth fluctuation so that `VideoPriorityBasedPolicy` will not drop/resume video instantly when network bandwidth changes. (#1921).
+- Adjust the recovery behavior of `VideoPriorityBasedPolicy` to not get stuck at low estimates, not overeact to spurious packet loss when probing, and not let the time between probes raise to 60 seconds (reduced to maximum of 30 seconds).
+
+### Fixed
+
+- Fix the reconnecting issue (#1985) by skipping the "close" event if it does not arrive in two seconds.
+- Add a workaround to avoid 480p resolution scale down when there are 5-8 videos for the default video uplink policy for Chromium browsers version 98 on Windows and use 360p instead.
+
+## [2.26.0] - 2022-01-14
+
+### Added
+
+### Removed
+
+### Changed
+
 - Made `SimulcastUplinkObserver.encodingSimulcastLayersDidChange` (*not* `AudioVideoObserver.encodingSimulcastLayersDidChange`) synchronous.
 
 ### Fixed
-- Fixed delays in advertising simulcast stream switches due to asynchronous and out of order checks
+
+- Fixed delays in advertising simulcast stream switches due to asynchronous and out of order checks.
 - Fixed Firefox video tiles containing stale frames from previous transceivers by not attempting to reuse inactive transceivers. This switches to using `RTCRtpTransceiver.stop` when possible and may fix other incorrect tile bugs.
 - Fix the bug that the max bandwidth set by the chooseVideoInputQuality API is ignored when the Chime SDK retries the connection.
-- Added additional pausing of `MonitorTask` and `ReceiveVideoStreamIndexTask` to avoid modifying mutable state mid-subscribe
+- Added additional pausing of `MonitorTask` and `ReceiveVideoStreamIndexTask` to avoid modifying mutable state mid-subscribe.
 - Fix the bug that the max bandwidth is ignored if the chooseVideoInputQuality API is called before starting a meeting.
 - Use optional chaining to prevent an error from undefined transceiverEncoding in FF.
 
 ## [2.25.0] - 2022-01-11
+
 ### Added
-- Ability to choose remote video sources in `AllHighestVideoBandwidthPolicy`. see [guide](https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html#downlink-policy)
+
+- Ability to choose remote video sources in `AllHighestVideoBandwidthPolicy`. see [guide](https://aws.github.io/amazon-chime-sdk-js/modules/videolayout.html#downlink-policy).
 - Add `BackgroundReplacementVideoFrameProcessor` that will create a `VideoFrameProcessor` to apply a background image to an outgoing video stream.
 
 ### Removed
 
 ### Fixed
+
 - Correct the minimum supported Firefox version to `75` to match the official [documentation](https://docs.aws.amazon.com/chime/latest/dg/meetings-sdk.html#mtg-browsers).
 
 ### Changed
+
 - Enforced a video receive limit incase the number of videos shared in the meeting are greater than the limit. The current limit is 25, which can change in future.
 - Clarified a comment in `DefaultSimulcastUplinkPolicy`.
 
 ## [2.24.0] - 2021-12-17
+
 ### Added
-- Add `supportDownlinkBandwidthEstimation` API to check whether browsers support downlink bandwidth estimation 
-  which requires for priority based downlink policy to work.
+
+- Add `supportDownlinkBandwidthEstimation` API to check whether browsers support downlink bandwidth estimation which requires for priority based downlink policy to work.
 - Add `keepLastFrameWhenPaused` in `DefaultVideoTile` as an option to keep last frame when pausing a video tile.
 - Add error name for custom device controller error.
 - Added pagination option to meeting demo when priority downlink policy is used.
 - Add `ApplicationMetadata` to enable builders to send their application name or version to the Amazon Chime backend. This is an opt-in addition.
-- Add a new `AudioProfile` called `fullbandMusicStereo` which can be passed into `setAudioProfile` to support sending and recieving stereo audio through main audio input and output. This can also be passed into `setContentAudioProfile` to support sending stereo audio as content
-- [Demo] Add new checbox on join screen to select new `fullbandMusicStereo` audio profile
-- [Demo] Add new dropdown items in microphone dropdown menu to test sending stereo audio as main audio input
-- [Demo] Add new dropdown items in content share dropdown menu to test sending stereo audio as content
+- Add a new `AudioProfile` called `fullbandMusicStereo` which can be passed into `setAudioProfile` to support sending and receiving stereo audio through main audio input and output. This can also be passed into `setContentAudioProfile` to support sending stereo audio as content.
+- [Demo] Add new checkbox on join screen to select new `fullbandMusicStereo` audio profile.
+- [Demo] Add new dropdown items in microphone dropdown menu to test sending stereo audio as main audio input.
+- [Demo] Add new dropdown items in content share dropdown menu to test sending stereo audio as content.
 
 ### Removed
 
 ### Fixed
+
 - Fixed updates to mutable state during subscribe leading to non-existant/frozen video streams.
 - Fixed inconsistent default maxBitrate values in the NScaleVideoUplinkBandwithPolicy constructor leading to the default ideal max bitrate not being honored.
 
 ### Changed
+
 - Clarified comment in `DefaultSimulcastUplinkPolicy`.
 
 ## [2.23.1] - 2021-12-17
 
 ### Fixed
+
 - Temporararily removed munging of layers allocation extension to mitigate Chrome M97 change which led to `setLocalDescription` failures. This was not yet being negotiated by the remote end, so this will not have any impact on media quality.
 
 ## [2.23.0] - 2021-11-22
+
 ### Added
+
 - Add support for Echo Reduction when using Voice Focus.
 
 ### Removed
@@ -122,7 +141,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ## [2.22.0] - 2021-11-18
+
 ### Added
+
 - Add documentation in video processor on how to add a customized professor with new image loading.
 - Adds support to live transcription for new features including PII content identification and redaction, partial results stabilization, and custom language models for Amazon Transcribe and PHI content identification for Amazon Transcribe Medical.
 
@@ -132,8 +153,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix priority downlink policy bandwidth estimation metrics to work with Safari.
 - Add a workaround to switch to VP8 for iOS 15.1 due to [Safari bug](https://bugs.webkit.org/show_bug.cgi?id=232416) that causes crash with H.264 encoding.
-- Add a workaround to switch to VP8 for iOS 15.1 due to [Safari bug](https://bugs.webkit.org/show_bug.cgi?id=232416) 
-  for iOS WebView that causes crash with H.264 encoding.  
+- Add a workaround to switch to VP8 for iOS 15.1 due to [Safari bug](https://bugs.webkit.org/show_bug.cgi?id=232416) for iOS WebView that causes crash with H.264 encoding.
 - Make `tileWillBePausedByDownlinkPolicy` observer update synchronous without `setTimeout`.
 
 ### Changed
@@ -183,14 +203,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Prevent error `'scaleResolutionDownBy' member of RTCRtpEncodingParameters is not a finite floating-point value` 
-  thrown by NScale video uplink bandwidth policy when there is no height information from the sending video stream.
+- Prevent error `'scaleResolutionDownBy' member of RTCRtpEncodingParameters is not a finite floating-point value` thrown by NScale video uplink bandwidth policy when there is no height information from the sending video stream.
 
 ## [2.20.0] - 2021-10-18
 
 ### Added
 
-- Add background blur video frame processor to enable background blur on streaming video. See [guide](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html)
+- Add background blur video frame processor to enable background blur on streaming video. See [guide](https://aws.github.io/amazon-chime-sdk-js/modules/backgroundfilter_video_processor.html).
 
 ### Removed
 
@@ -218,10 +237,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add safeguard in `ReceivedVideoInputTask` to prevent crashing when video input stream does not contain any video track.
 - Add missing `captureOutputPrefix` param for SDK demo app in release script.
 - Add opt-in region `eu-south-1` to meetings demo in deploy-canary-demo script to support media capture canary.
-- Fix bug: DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22.
+- Fix bug: DOMException: The play() request was interrupted by a new load request. <https://goo.gl/LdLk22>.
 - Fix `removeObserver` function in `DefaultVideoTransformDevice`.
 - Fix handling pausing when using default preference for priority-based video bandwidth policy.
-- Bind tile controller for any downlink policy that implements `bindToTileController` such as 
+- Bind tile controller for any downlink policy that implements `bindToTileController` such as
   `VideoAdaptiveProbePolicy`.
 - Do not pause streams that do not exist in conference in `VideoPriorityBasedPolicy`.
 
@@ -240,7 +259,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events. Currently, these events were only included in the meeting history attribute when a meeting event is published. 
+- Add events `meetingReconnected`, `signalingDropped` and `receivingAudioDropped` to `eventDidReceive` by publishing them as stand alone events. Currently, these events were only included in the meeting history attribute when a meeting event is published.
 - Added support for skipping full SDP renegotiations when switching simulcast streams.  This will result in less freezing when switching between layers in response to a network event as done in `VideoPriorityBasedPolicy`.  This will have no impact if not using simulcast.
 - Add link to SIP Media Application examples in README.
 
@@ -265,8 +284,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `audioInputMuteStateChanged` to the `DeviceChangeObserver` interface. This is called whenever the device is changed or is muted or unmuted, allowing applications to adapt to OS-level mute state for input devices.
 - Added Android WebView Sample UI test to workflow.
 - Add a new optional API `getVideoTileForAttendeeId` in `VideoTileController` and raise the `tileWillBePausedByDownlinkPolicy` event for empty video tiles.
-- Amazon Voice Focus will now trigger the `onCPUWarning` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
-- Amazon Voice Focus will now trigger the `voiceFocusInsufficientResources` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (_e.g._, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (_e.g._, thermal throttling) cause the worklet to take too long for each audio render quantum.
+- Amazon Voice Focus will now trigger the `onCPUWarning` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (*e.g.*, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (*e.g.*, thermal throttling) cause the worklet to take too long for each audio render quantum.
+- Amazon Voice Focus will now trigger the `voiceFocusInsufficientResources` method on the `VoiceFocusTransformDeviceDelegate` when using the default inline execution mode. This will be called when the browser fails to schedule the worklet in a timely fashion (*e.g.*, when the meeting code is running in an iframe /subframe) or when changes in the CPU environment (*e.g.*, thermal throttling) cause the worklet to take too long for each audio render quantum.
 - Add retry logic in FAQs.
 - The Amazon Voice Focus support check, `VoiceFocusDeviceTransformer.isSupported`, now warns to the logger when run in an iframe, and can be configured to fail in that case.
 - Add documentation in Video Processing APIs on how to add filters in the preview window.
@@ -276,25 +295,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clarify why not use default downlink policy with simulcast.
 - Corrected argument `isUnifiedPlan` in `withBandwidthRestriction` to `isFirefox`. Also marked as deprecated since we no longer use it.
 - Update data message limit in the API Overview guide.
-- Do not trigger real time attendee presence event for local attendee if they are not appear in audio info frame 
-  during reconnection.
+- Do not trigger real time attendee presence event for local attendee if they are not appear in audio info frame during reconnection.
 - Update `startVideoPreviewForVideoInput` to support filters in the preview window.
 - Update browser demo to showcase preview filter capability.
 
 ### Removed
 
 ### Fixed
+
 - Fix priority-based downlink policy to not unpaused tiles that are not paused by the policy.
 - Fix empty video tiles when using priority-based downlink policy.
 - Fix simulcast guide that adaptive probe downlink policy is not enabled by default.
 - Fix a link format in simulcast guide.
 - No longer put useless 'pin' and 'pause' buttons on local tile in demo.
-- Choose a null device or media stream without a deviceId without first listing devices no longer logs `Device cache 
-  is not populated`.
+- Choose a null device or media stream without a deviceId without first listing devices no longer logs `Device cache is not populated`.
 
 ## [2.16.1] - 2021-08-23
 
 ### Fixed
+
 - Fix default priority downlink policy to update default preference correctly.
 
 ## [2.16.0] - 2021-08-17
@@ -306,18 +325,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a SignalClientEvent check in `SubscribeAndReceiveSubscribeAckTask` to immediately cancel the task when websocket connection is terminated.
 
 ### Changed
+
 - Update the default behavior of NScale video uplink bandwidth policy to scale down resolution based on the number
 of videos.
 
 ### Removed
 
 ### Fixed
-- Fix race condition in Safari when disconnect and connect stream from video element.
 
+- Fix race condition in Safari when disconnect and connect stream from video element.
 
 ## [2.15.0] - 2021-08-04
 
-### Added 
+### Added
 
 - Supports integration with Amazon Transcribe and Amazon Transcribe Medical for live transcription. The Amazon Chime Service uses its active talker algorithm to select the top two active talkers, and sends their audio to Amazon Transcribe (or Amazon Transcribe Medical) in your AWS account. User-attributed transcriptions are then sent directly to every meeting attendee via data messages. Use transcriptions to overlay subtitles, build a transcript, or perform real-time content analysis. For more information, visit [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html).
 - [Demo] Add live transcription functionality. You will need to have a serverless deployment to create new AWS Lambda endpoints for live transcription. Follow [the live transcription guide](https://docs.aws.amazon.com/chime/latest/dg/meeting-transcription.html) to create necessary service-linked role so that the demo app can call Amazon Transcribe and Amazon Transcribe Medical on your behalf.
@@ -329,11 +349,13 @@ of videos.
 - Add a warning log in `InMemoryJSONEventBuffer`'s `send` function when retrying starts.
 
 ### Changed
+
 - Update `InMemoryJSONEventBuffer` to retry with backoff.
 
 ### Removed
 
 ### Fixed
+
 - Stop `activeDevice` video track before selecting a new device to prevent `NotReadableError` when calling `getUserMedia` for a new video input device.
 - Fix priority-based downlink policy default behavior.
 - Fix client event ingestion guide rendering in typedoc.
@@ -341,6 +363,7 @@ of videos.
 ## [2.14.0] - 2021-07-23
 
 ### Added
+
 - Added `VideoPriorityBasedPolicyConfig` to control video downlink policy with network event response and recovery delays. Check [User Guide for Priority-based Downlink Policy](https://aws.github.io/amazon-chime-sdk-js/modules/prioritybased_downlink_policy.html#user-guide-for-priority-based-downlink-policy) for more information.
 - Amazon Chime SDK Project Board Overview and Guide.
 - Added 25 video tile support for demo app.
@@ -369,6 +392,7 @@ of videos.
 ### Removed
 
 ### Fixed
+
 - Improve the meeting event guide
 
 ## [2.13.0] - 2021-06-29
@@ -412,14 +436,9 @@ of videos.
 ### Added
 
 - Bind tileController during the initialization of DefaultAudioVideoController for VideoPriorityBasedPolicy.
-- Add more debug logging for choose input device. 
+- Add more debug logging for choose input device.
 - Add the meeting and device error sections in the meeting-event guide.
-- Add a `forceUpdate` parameter to use when listing devices. In some cases, builders
-  need to delay the triggering of permission dialogs, _e.g._, when joining a
-  meeting in view-only mode, and then later be able to trigger a permission
-  prompt in order to show device labels. This parameter allows cached device
-  labels to be forcibly discarded and recomputed after the device label trigger
-  is run.
+- Add a `forceUpdate` parameter to use when listing devices. In some cases, builders need to delay the triggering of permission dialogs, *e.g.*, when joining a meeting in view-only mode, and then later be able to trigger a permission prompt in order to show device labels. This parameter allows cached device labels to be forcibly discarded and recomputed after the device label trigger is run.
 
 ### Changed
 
@@ -554,12 +573,14 @@ of videos.
 ## [2.6.2] - 2021-03-24
 
 ### Fixed
+
 - Calling `realtimeSetLocalAudioInput` as part of `AudioVideoController.restartLocalAudio()` to
   fix local mute/unmute issue while switching audio devices.
 
 ## [2.6.1] - 2021-03-17
 
 ### Fixed
+
 - Fix infinite loop when calling `chooseAudioInputDevice` with a
   `MediaDeviceInfo` instance.
 
@@ -593,10 +614,10 @@ of videos.
 - Don't automatically upgrade dev-dependencies to avoid a breaking typedoc upgrade.
 - Safely handle calling logger `debug` methods with `undefined`.
 
-
 ## [2.5.0] - 2021-02-16
 
 ### Added
+
 - Add GatheringICECandidate Finish Duration to Meeting Event and to demo app.
 - Add `attendeePresenceReceived`, `audioInputSelected`, `videoInputSelected`,
   `audioInputUnselected`, and `videoInputUnselected` meeting events.
@@ -606,11 +627,13 @@ of videos.
 - Add support for Chrome for iOS and Firefox for iOS.
 
 ### Changed
+
 - [Demo] Set `attendeePresenceTimeoutMs` to use value passed as parameter in the URL.
 
 ### Removed
 
 ### Fixed
+
 - `DefaultDeviceController` now attempts to resume a suspended `AudioContext`
   when choosing a transform device (#1062).
 - `DefaultVideoStreamIndex` now ignores old group IDs from a given attendee ID (#1029).
@@ -624,6 +647,7 @@ of videos.
 ### Removed
 
 ### Fixed
+
 - Disable reconnecting in AudioVideoControllerFacade's `stop` method.
   Add documentation for the `stop` method.
 - Fix dropped attendee presence during network reconnects.
@@ -632,6 +656,7 @@ of videos.
 ## [2.4.0] - 2021-01-08
 
 ### Added
+
 - Add support for Amazon Voice Focus support in Safari Technology Preview for macOS.
   Builders using an explicit revision or asset group must make sure to use a
   revision no earlier than this; an error will be thrown in Safari if older
@@ -1323,7 +1348,7 @@ of videos.
 - Add meeting demo parameter for recording user
 - Add a script demo to bundle Chime SDK into a single JS file
 - Add device demo
-- Add base infrastucture for demo app in react
+- Add base infrastructure for demo app in react
 - Add pricing link in README
 - Add an overview of API methods
 - Add IoT integration to device demo

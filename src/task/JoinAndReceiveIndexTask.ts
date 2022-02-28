@@ -105,6 +105,12 @@ export default class JoinAndReceiveIndexTask extends BaseTask {
       const interceptor = new IndexFrameInterceptor(this.context.signalingClient);
       this.context.signalingClient.registerObserver(interceptor);
       this.taskCanceler = interceptor;
+
+      // reset SDP compression state
+      this.context.previousSdpAnswerAsString = '';
+      this.context.previousSdpOffer = null;
+      this.context.serverSupportsCompression = false;
+
       this.context.signalingClient.join(
         new SignalingClientJoin(this.context.meetingSessionConfiguration.applicationMetadata)
       );
