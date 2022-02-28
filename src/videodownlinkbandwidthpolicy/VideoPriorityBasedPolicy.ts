@@ -141,7 +141,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
     if (this.videoPreferences?.equals(preferences)) {
       return;
     }
-    this.videoPreferences = preferences;
+    this.videoPreferences = preferences?.clone();
     this.videoPreferencesUpdated = true;
     this.logger.info(
       `bwe: setVideoPreferences bwe: new preferences: ${JSON.stringify(preferences)}`
