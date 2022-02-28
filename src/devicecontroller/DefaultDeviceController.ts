@@ -122,6 +122,7 @@ export default class DefaultDeviceController
   private static defaultSampleRate = 48000;
   private static defaultSampleSize = 16;
   private static defaultChannelCount = 1;
+  private static defaultAudioBuffer: AudioBuffer | undefined;
   private static audioContext: AudioContext | null = null;
 
   private deviceInfoCache: MediaDeviceInfo[] | null = null;
@@ -265,7 +266,11 @@ export default class DefaultDeviceController
     // Deselect any audio input devices and throw away the streams.
     // Discard the current video device, if there is one.
     // Discard any audio or video transforms.
-    await this.chooseAudioInputDevice(null);
+    const active = this.activeDevices['audio'];
+    if (active) {
+      this.releaseActiveDevice(active);
+      delete this.activeDevices['audio'];
+    }
     await this.chooseVideoInputDevice(null);
 
     // Tear down any Web Audio infrastructure we have hanging around.
@@ -1039,27 +1044,30 @@ export default class DefaultDeviceController
       // The AudioContext object uses the sample rate of the default output device
       // if not specified. Creating an AudioBuffer object with the output device's
       // sample rate fails in some browsers, e.g. Safari with a Bluetooth headphone.
-      try {
-        source.buffer = audioContext.createBuffer(
-          1,
-          audioContext.sampleRate * 5,
-          audioContext.sampleRate
-        );
-      } catch (error) {
-        if (error && error.name === 'NotSupportedError') {
-          source.buffer = audioContext.createBuffer(
+      if (!DefaultDeviceController.defaultAudioBuffer) {
+        try {
+          DefaultDeviceController.defaultAudioBuffer = audioContext.createBuffer(
             1,
-            DefaultDeviceController.defaultSampleRate * 5,
-            DefaultDeviceController.defaultSampleRate
+            audioContext.sampleRate * 5,
+            audioContext.sampleRate
           );
-        } else {
-          throw error;
+        } catch (error) {
+          if (error && error.name === 'NotSupportedError') {
+            DefaultDeviceController.defaultAudioBuffer = audioContext.createBuffer(
+              1,
+              DefaultDeviceController.defaultSampleRate * 5,
+              DefaultDeviceController.defaultSampleRate
+            );
+          } else {
+            throw error;
+          }
         }
       }
 
       // Some browsers will not play audio out the MediaStreamDestination
       // unless there is actually audio to play, so we add a small amount of
       // noise here to ensure that audio is played out.
+      source.buffer = DefaultDeviceController.defaultAudioBuffer;
       source.buffer.getChannelData(0)[0] = 0.0003;
       source.loop = true;
       source.connect(outputNode);

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add compression support when sending and receiving sdp messages.
+- Add a static property `defaultAudioBuffer` to `DefaultDeviceController` to store the `AudioBuffer` used to create empty audio devices. When an empty audio device is created, the method reuses this `defaultAudioBuffer` instead of creating a new `AudioBuffer` each time and causing memory leak. ([Issue #1660](https://github.com/aws/amazon-chime-sdk-js/issues/1660)).
 
 ### Removed
 

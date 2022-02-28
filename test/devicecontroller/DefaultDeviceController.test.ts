@@ -2780,6 +2780,9 @@ describe('DefaultDeviceController', () => {
       domMockBehavior.mediaDeviceHasSupportedConstraints = false;
       domMockBehavior.audioContextDefaultSampleRate = Infinity;
       try {
+        // @ts-ignore
+        DefaultDeviceController.defaultAudioBuffer = undefined;
+
         DefaultDeviceController.synthesizeAudioDevice(0);
       } catch (error) {
         throw new Error('This line should not be reached.');
@@ -2789,6 +2792,9 @@ describe('DefaultDeviceController', () => {
     it('fails if the create buffer throws a non-NotSupportedError error', async () => {
       domMockBehavior.audioContextCreateBufferSucceeds = false;
       try {
+        // @ts-ignore
+        DefaultDeviceController.defaultAudioBuffer = undefined;
+
         DefaultDeviceController.synthesizeAudioDevice(0);
         throw new Error('This line should not be reached.');
       } catch (error) {

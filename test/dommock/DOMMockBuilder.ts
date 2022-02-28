@@ -1243,8 +1243,9 @@ export default class DOMMockBuilder {
 
     GlobalAny.AudioBufferSourceNode = class MockAudioBufferSourceNode {
       start(_when?: number, _offset?: number, _duration?: number): void {}
-
-      connect(_destinationParam: AudioParam, _output?: number): void {}
+      stop(_when?: number): void {}
+      connect(_destination: AudioNode | AudioParam, _output?: number): void {}
+      disconnect(_destination?: AudioNode | AudioParam, _output?: number, _input?: number): void {}
     };
 
     GlobalAny.AudioBuffer = class MockAudioBuffer {
