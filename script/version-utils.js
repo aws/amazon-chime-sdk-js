@@ -93,7 +93,7 @@ const versionBump = async (option, branchName) => {
     quit(1);
   }
 
-  branchName = branchName ? branchName : 'version-bump';
+  branchName = branchName ? branchName : `version-bump-${newVersion}`;
 
   const prevReleaseBranch = !isPreRelease(currentVersion) && (option === 3 || option === 4)
     ? `release-${currentVersion.split('.')[0]}.x`
