@@ -67,6 +67,22 @@ export default class BackgroundBlurProcessorProvided
     const { canvasCtx, targetCanvas } = this;
     const { width, height } = targetCanvas;
 
+    screen.orientation.addEventListener('change', _event => {
+      console.log("Arpan");
+      if (
+        (screen.orientation.type.startsWith('portrait') &&
+          canvasCtx.canvas.height < canvasCtx.canvas.width) ||
+        (screen.orientation.type.startsWith('landscape') &&
+          canvasCtx.canvas.height > canvasCtx.canvas.width)
+      ) {
+        console.log("Arpan 2");
+        [canvasCtx.canvas.width, canvasCtx.canvas.height] = [
+          canvasCtx.canvas.height,
+          canvasCtx.canvas.width,
+        ];
+      }
+    });
+
     // draw the mask
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, width, height);

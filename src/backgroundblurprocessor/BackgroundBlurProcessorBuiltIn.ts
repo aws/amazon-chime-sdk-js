@@ -40,6 +40,20 @@ export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProces
     const { canvasCtx, targetCanvas } = this;
     const { width, height } = targetCanvas;
 
+    screen.orientation.addEventListener('change', _event => {
+      if (
+        (screen.orientation.type.startsWith('portrait') &&
+          canvasCtx.canvas.height < canvasCtx.canvas.width) ||
+        (screen.orientation.type.startsWith('landscape') &&
+          canvasCtx.canvas.height > canvasCtx.canvas.width)
+      ) {
+        [canvasCtx.canvas.width, canvasCtx.canvas.height] = [
+          canvasCtx.canvas.height,
+          canvasCtx.canvas.width,
+        ];
+      }
+    });
+
     if (!mask || !blurredImage) {
       canvasCtx.clearRect(0, 0, width, height);
       return;
