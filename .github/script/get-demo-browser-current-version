@@ -1,4 +1,8 @@
 #!/usr/bin/env node
 
-const pjson = require('../../demo/browser/package.json');
-console.log(pjson['dependencies']['amazon-chime-sdk-js']);
+const pjson = require('../../demos/browser/package.json');
+var currentVersion = pjson['dependencies']['amazon-chime-sdk-js'];
+// The package.json may contain special characters like ~, * or ^ etc and these special characters can cause issuess with the publih workflow. 
+// Hence, cleaning the version number. For example, ^2.27.0 to 2.27.0
+currentVersion = currentVersion.replace(/([~^*><=])/g, "");
+console.log(currentVersion);
