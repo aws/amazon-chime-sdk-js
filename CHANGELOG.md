@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix a worker resource leak with `BackgroundBlurProcessor` and `BackgroundReplacementProcessor`.
 - Clone the video preference input in `chooseRemoteVideoSources` API in `VideoPriorityBasedPolicy` to avoid mutation
   that can cause video preferences to not be sorted and lead to wrong video subscription determination by the policy.
+- Fix a screen share issue by resetting the sdp compression state during join requests.
 
 ## [2.27.0] - 2022-01-27
     
