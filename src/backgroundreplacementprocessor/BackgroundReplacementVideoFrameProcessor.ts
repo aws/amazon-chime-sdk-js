@@ -65,10 +65,7 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
     await this.resolveOptionsAsync(options);
     const { logger } = options;
 
-    const supported = await BackgroundReplacementVideoFrameProcessor.isSupported(
-      spec,
-      options
-    );
+    const supported = await BackgroundReplacementVideoFrameProcessor.isSupported(spec, options);
     // if background replacement is not supported do not initialize. The processor will become a no op if not supported.
     if (!supported) {
       logger.warn('Using no-op processor because background replacement is not supported');
@@ -90,7 +87,7 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
   protected static resolveOptions(
     options: BackgroundReplacementOptions = {}
   ): BackgroundReplacementOptions {
-    let processorOptions: BackgroundReplacementOptions = { ...options };
+    const processorOptions: BackgroundReplacementOptions = { ...options };
 
     if (!processorOptions.logger) {
       processorOptions.logger = new ConsoleLogger('BackgroundReplacementProcessor', LogLevel.INFO);

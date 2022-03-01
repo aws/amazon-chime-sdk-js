@@ -66,10 +66,7 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
     options = BackgroundBlurVideoFrameProcessor.resolveOptions(options);
     const { logger } = options;
 
-    const supported = await BackgroundBlurVideoFrameProcessor.isSupported(
-      spec,
-      options
-    );
+    const supported = await BackgroundBlurVideoFrameProcessor.isSupported(spec, options);
     // if blur is not supported do not initialize. The processor will become a no op if not supported.
     logger.info(`processor is ${supported ? '' : 'not'} supported`);
     if (!supported) {

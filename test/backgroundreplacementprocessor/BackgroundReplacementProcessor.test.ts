@@ -241,10 +241,15 @@ describe('BackgroundReplacementProcessor', () => {
   });
 
   describe('BackgroundReplacementVideoFrameProcessor', () => {
-    const spec: BackgroundFilterSpec = undefined;
-    const options: BackgroundReplacementOptions = {
-      imageBlob: undefined,
-    };
+    let spec: BackgroundFilterSpec;
+    let options: BackgroundReplacementOptions;
+
+    beforeEach(() => {
+      spec = undefined;
+      options = {
+        imageBlob: undefined,
+      };
+    });
 
     it('create should not change spec and options by reference', async () => {
       backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });

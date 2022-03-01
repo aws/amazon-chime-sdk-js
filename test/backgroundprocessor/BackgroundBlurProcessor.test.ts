@@ -963,10 +963,15 @@ describe('BackgroundBlurProcessor', () => {
   });
 
   describe('BackgroundBlurVideoFrameProcessor', () => {
-    const spec: BackgroundFilterSpec = {};
-    const options: BackgroundBlurOptions = {
-      blurStrength: BlurStrength.LOW,
-    };
+    let spec: BackgroundFilterSpec;
+    let options: BackgroundBlurOptions;
+
+    beforeEach(() => {
+      spec = {};
+      options = {
+        blurStrength: BlurStrength.LOW,
+      };
+    });
 
     it('create should not change spec and options by reference', async () => {
       backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
