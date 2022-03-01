@@ -20,8 +20,8 @@ logger.log('Packaging...');
 spawnOrFail('npm', ['pack']);
 logger.log('Packaging done!');
 
-const previousRelease = (spawnOrFail('npm', ['view amazon-chime-sdk-js@latest version'], { skipOutput: true })).trim();
-logger.log(`Previous released version in NPM: ${previousRelease}`);
+const previousRelease = (spawnOrFail('node', ['.github/script/get-prev-version'], { skipOutput: true })).trim();
+logger.log(`Previous release version: ${previousRelease}`);
 
 logger.log(`Checking out tags/v${previousRelease} for installing the new SDK version in previous release demo.`);
 spawnOrFail('git', [`fetch --all --tags`]);
