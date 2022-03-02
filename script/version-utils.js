@@ -60,12 +60,14 @@ const updateChangelog = (newVersion) => {
   const filePath = path.resolve(__dirname, '../CHANGELOG.md');
   let changeLog = fs.readFileSync(filePath).toString();
   const latestEntryIndex = changeLog.indexOf('## [');
-  const newEntry = `## [${newVersion}] - ${new Date().toISOString().slice(0, 10)}
-    \n### Added
-    \n### Removed
-    \n### Changed
-    \n### Fixed
-    \n`;
+  const newEntry = [
+    [`## [${newVersion}] - ${new Date().toISOString().slice(0, 10)}`],
+    ['### Added'],
+    ['### Removed'],
+    ['### Changed'],
+    ['### Fixed'],
+    [''],
+  ].join('\n\n');
   changeLog = changeLog.substring(0, latestEntryIndex) + newEntry + changeLog.substring(latestEntryIndex);
   fs.writeFileSync(filePath, changeLog);
 };
@@ -76,7 +78,7 @@ const updateBaseBranch = (branchName) => {
   logger.log(`Updating the base branch in .base-branch to ${branchName}`);
   const filePath = path.resolve(__dirname, '../.base-branch');
   fs.writeFileSync(filePath, `origin/${branchName}`);
-}
+};
 
 const versionBump = async (option, branchName) => {
   process.chdir(path.join(__dirname, '..'));
@@ -93,7 +95,7 @@ const versionBump = async (option, branchName) => {
     quit(1);
   }
 
-  branchName = branchName ? branchName : 'version-bump';
+  branchName = branchName ? branchName : `version-bump-${newVersion}`;
 
   const prevReleaseBranch = !isPreRelease(currentVersion) && (option === 3 || option === 4)
     ? `release-${currentVersion.split('.')[0]}.x`

@@ -232,6 +232,32 @@ describe('JoinAndReceiveIndexTask', () => {
       expect(context.videoSubscriptionLimit).to.equal(defaultVideoSubscriptionLimit);
     });
 
+    it('should set the server-supports-compression value in the application context when server requests for compressed sdp', async () => {
+      const joinAckFrame = SdkJoinAckFrame.create();
+      joinAckFrame.wantsCompressedSdp = true;
+
+      const joinAckSignal = SdkSignalFrame.create();
+      joinAckSignal.type = SdkSignalFrame.Type.JOIN_ACK;
+      joinAckSignal.joinack = joinAckFrame;
+
+      const joinAckBuffer = SdkSignalFrame.encode(joinAckSignal).finish();
+      joinAckSignalBuffer = new Uint8Array(joinAckBuffer.length + 1);
+      joinAckSignalBuffer[0] = 0x5;
+      joinAckSignalBuffer.set(joinAckBuffer, 1);
+
+      await delay(behavior.asyncWaitMs + 10);
+      expect(signalingClient.ready()).to.equal(true);
+      new TimeoutScheduler(100).start(() => {
+        webSocketAdapter.send(joinAckSignalBuffer);
+      });
+      new TimeoutScheduler(200).start(() => {
+        webSocketAdapter.send(indexSignalBuffer);
+      });
+      await task.run();
+      expect(context.indexFrame).to.not.equal(null);
+      expect(context.serverSupportsCompression).to.equal(true);
+    });
+
     it('can run and send join with application metadata if valid', async () => {
       await delay(behavior.asyncWaitMs + 10);
       expect(signalingClient.ready()).to.equal(true);
@@ -250,6 +276,9 @@ describe('JoinAndReceiveIndexTask', () => {
       expect(appName).to.eq('AmazonChimeJSSDKDemoApp');
       expect(appVersion).to.eq('1.0.0');
       expect(context.indexFrame).to.not.equal(null);
+      expect(context.previousSdpAnswerAsString).to.equal('');
+      expect(context.previousSdpOffer).to.equal(null);
+      expect(context.serverSupportsCompression).to.be.false;
       expect(context.turnCredentials.username).to.equal('fake-username');
       expect(context.turnCredentials.password).to.equal('fake-password');
       expect(context.turnCredentials.ttl).to.equal(300);
