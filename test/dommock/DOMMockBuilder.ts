@@ -843,7 +843,7 @@ export default class DOMMockBuilder {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             stat: (_name: string): any => 'stat1-value',
             id: 'send',
-            type: isChrome ? 'ssrc' : 'inbound-rtp',
+            type: 'inbound-rtp',
             ssrc: 1,
             timestamp: 1,
             mediaType: 'video',

@@ -144,8 +144,8 @@ describe('VideoPriorityBasedPolicy', () => {
     streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
     streamReport1.mediaType = ClientMetricReportMediaType.VIDEO;
     if (isGoogStat) {
-      streamReport1.previousMetrics['googNacksSent'] = 0;
-      streamReport1.currentMetrics['googNacksSent'] = nackCnt;
+      streamReport1.previousMetrics['nackCount'] = 0;
+      streamReport1.currentMetrics['nackCount'] = nackCnt;
     } else {
       streamReport1.previousMetrics['nackCount'] = 0;
       streamReport1.currentMetrics['nackCount'] = nackCnt;
@@ -1393,9 +1393,9 @@ describe('VideoPriorityBasedPolicy', () => {
       streamReport1.streamId = 1;
       streamReport1.direction = ClientMetricReportDirection.DOWNSTREAM;
       streamReport1.mediaType = ClientMetricReportMediaType.VIDEO;
-      streamReport1.currentMetrics['googNacksSent'] = 20;
+      streamReport1.currentMetrics['nackCount'] = 20;
       streamReport1.currentMetrics['packetsLost'] = 0;
-      streamReport1.currentMetrics['googFrameRateReceived'] = 30;
+      streamReport1.currentMetrics['framesReceived'] = 30;
       streamReport1.currentMetrics['bytesReceived'] = 20;
 
       metricReport.streamMetricReports[123456] = streamReport1;

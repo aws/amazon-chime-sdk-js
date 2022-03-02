@@ -295,15 +295,15 @@ export default class DefaultStatsCollector implements StatsCollector {
   ): void {
     const type = metricSpec.type;
     const transform = metricSpec.transform;
-    const sourceMetric = metricSpec.source;
+    const source = metricSpec.source;
     const streamMetricFramesLength = clientMetricFrame.streamMetricFrames.length;
     const latestStreamMetricFrame =
       clientMetricFrame.streamMetricFrames[streamMetricFramesLength - 1];
     if (type) {
       const metricFrame = SdkMetric.create();
       metricFrame.type = type;
-      metricFrame.value = sourceMetric
-        ? transform(sourceMetric, ssrc)
+      metricFrame.value = source
+        ? transform(source, ssrc)
         : transform(metricName, ssrc);
       ssrc
         ? latestStreamMetricFrame.metrics.push(metricFrame)
@@ -353,7 +353,12 @@ export default class DefaultStatsCollector implements StatsCollector {
    */
 
   private isStreamRawMetricReport(type: string): boolean {
-    return type === 'ssrc' || type === 'inbound-rtp' || type === 'outbound-rtp';
+    return [
+      "inbound-rtp",
+      "outbound-rtp",
+      "remote-inbound-rtp",
+      "remote-outbound-rtp",
+    ].includes(type);
   }
 
   private getMediaType(rawMetricReport: RawMetricReport): MediaType {
@@ -371,21 +376,12 @@ export default class DefaultStatsCollector implements StatsCollector {
   /**
    * Metric report filter.
    */
-  isValidChromeRawMetric(rawMetricReport: RawMetricReport): boolean {
-    return (
-      this.browserBehavior.hasChromiumWebRTC() &&
-      (rawMetricReport.type === 'ssrc' ||
-        rawMetricReport.type === 'VideoBwe' ||
-        (rawMetricReport.type === 'googCandidatePair' &&
-          rawMetricReport.googWritable === 'true' &&
-          rawMetricReport.googReadable === 'true'))
-    );
-  }
-
   isValidStandardRawMetric(rawMetricReport: RawMetricReport): boolean {
     const valid: boolean =
       rawMetricReport.type === 'inbound-rtp' ||
       rawMetricReport.type === 'outbound-rtp' ||
+      rawMetricReport.type === 'remote-inbound-rtp' ||
+      rawMetricReport.type === 'remote-outbound-rtp' ||
       (rawMetricReport.type === 'candidate-pair' && rawMetricReport.state === 'succeeded');
 
     if (this.browserBehavior.hasFirefoxWebRTC()) {
@@ -414,11 +410,7 @@ export default class DefaultStatsCollector implements StatsCollector {
   }
 
   isValidRawMetricReport(rawMetricReport: RawMetricReport): boolean {
-    return (
-      (this.isValidChromeRawMetric(rawMetricReport) ||
-        this.isValidStandardRawMetric(rawMetricReport)) &&
-      this.isValidSsrc(rawMetricReport)
-    );
+    return this.isValidStandardRawMetric(rawMetricReport) && this.isValidSsrc(rawMetricReport);
   }
 
   filterRawMetricReports(rawMetricReports: RawMetricReport[]): RawMetricReport[] {
@@ -453,44 +445,21 @@ export default class DefaultStatsCollector implements StatsCollector {
     if (!this.audioVideoController.rtcPeerConnection) {
       return;
     }
+
     const rawMetricReports: RawMetricReport[] = [];
-    if (!this.browserBehavior.requiresPromiseBasedWebRTCGetStats()) {
-      // @ts-ignore
-      this.audioVideoController.rtcPeerConnection.getStats(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (res: any) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          res.result().forEach((report: any) => {
-            const item: { [name: string]: StatsReportItem } = {};
-            report.names().forEach((name: string) => {
-              item[name] = report.stat(name);
-            });
-            item.id = report.id;
-            item.type = report.type;
-            item.timestamp = report.timestamp;
-            rawMetricReports.push(item);
-          });
-          this.handleRawMetricReports(rawMetricReports);
-        },
-        // @ts-ignore
-        (error: Error) => {
-          this.logger.error(error.message);
-        }
-      );
-    } else {
-      // @ts-ignore
-      this.audioVideoController.rtcPeerConnection
-        .getStats()
-        .then((report: RTCStatsReport) => {
-          report.forEach((item: StatsReportItem) => {
-            rawMetricReports.push(item);
-          });
-          this.handleRawMetricReports(rawMetricReports);
-        })
-        .catch((error: Error) => {
-          this.logger.error(error.message);
+
+    // @ts-ignore
+    this.audioVideoController.rtcPeerConnection
+      .getStats()
+      .then((report: RTCStatsReport) => {
+        report.forEach((item: StatsReportItem) => {
+          rawMetricReports.push(item);
         });
-    }
+        this.handleRawMetricReports(rawMetricReports);
+      })
+      .catch((error: Error) => {
+        this.logger.error(error.message);
+      });
   }
 
   private compareMajorVersion(version: string): number {

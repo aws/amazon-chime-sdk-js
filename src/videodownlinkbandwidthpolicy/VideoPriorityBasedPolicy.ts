@@ -212,9 +212,7 @@ export default class VideoPriorityBasedPolicy implements VideoDownlinkBandwidthP
       const metrics = clientMetricReport.streamMetricReports[ssrc];
       if (metrics.direction === Direction.DOWNSTREAM && metrics.mediaType === MediaType.VIDEO) {
         // Only use video stream metrics
-        if (metrics.currentMetrics.hasOwnProperty('googNacksSent')) {
-          this.downlinkStats.nackCount += clientMetricReport.countPerSecond('googNacksSent', ssrc);
-        } else if (metrics.currentMetrics.hasOwnProperty('nackCount')) {
+        if (metrics.currentMetrics.hasOwnProperty('nackCount')) {
           this.downlinkStats.nackCount += clientMetricReport.countPerSecond('nackCount', ssrc);
         }
 

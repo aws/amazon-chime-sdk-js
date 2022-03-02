@@ -627,7 +627,7 @@ describe('DefaultStatsCollector', () => {
     });
 
     it('updates the report using the video upstream metrics map', done => {
-      const metric = 'googRtt';
+      const metric = 'currentRoundTripTime';
       const globalMetricReport = new GlobalMetricReport();
       globalMetricReport.currentMetrics[metric] = 10;
       clientMetricReport.globalMetricReport = globalMetricReport;

@@ -148,7 +148,7 @@ function getVoiceFocusSpec(joinInfo: any): VoiceFocusSpec {
   const es = joinInfo.Meeting.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE';
   let spec: VoiceFocusSpec = VOICE_FOCUS_SPEC;
   if (!spec.name) {
-    spec.name =  es ? voiceFocusName('ns_es') : voiceFocusName('default');
+    spec.name = es ? voiceFocusName('ns_es') : voiceFocusName('default');
   }
   return spec;
 };
@@ -165,9 +165,9 @@ const BACKGROUND_BLUR_PATHS: BackgroundFilterPaths = BACKGROUND_BLUR_CDN && {
   simd: `${BACKGROUND_BLUR_CDN}/bgblur/wasm/_cwt-wasm-simd.wasm`,
 };
 const BACKGROUND_BLUR_MODEL = BACKGROUND_BLUR_CDN && ModelSpecBuilder.builder()
-    .withSelfieSegmentationDefaults()
-    .withPath(`${BACKGROUND_BLUR_CDN}/bgblur/models/selfie_segmentation_landscape.tflite`)
-    .build();
+  .withSelfieSegmentationDefaults()
+  .withPath(`${BACKGROUND_BLUR_CDN}/bgblur/models/selfie_segmentation_landscape.tflite`)
+  .build();
 const BACKGROUND_BLUR_ASSET_SPEC = (BACKGROUND_BLUR_ASSET_GROUP || BACKGROUND_BLUR_REVISION_ID) && {
   assetGroup: BACKGROUND_BLUR_ASSET_GROUP,
   revisionID: BACKGROUND_BLUR_REVISION_ID,
@@ -247,8 +247,8 @@ export class DemoMeetingApp
 
   attendeeIdPresenceHandler: (undefined | ((attendeeId: string, present: boolean, externalUserId: string, dropped: boolean) => void)) = undefined;
   activeSpeakerHandler: (undefined | ((attendeeIds: string[]) => void)) = undefined;
-  blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver ) = undefined;
-  replacementObserver: (undefined | BackgroundReplacementVideoFrameProcessorObserver ) = undefined;
+  blurObserver: (undefined | BackgroundBlurVideoFrameProcessorObserver) = undefined;
+  replacementObserver: (undefined | BackgroundReplacementVideoFrameProcessorObserver) = undefined;
 
   showActiveSpeakerScores = false;
   meeting: string | null = null;
@@ -474,13 +474,13 @@ export class DemoMeetingApp
   }
 
   async initBackgroundBlur(): Promise<void> {
-      try {
-        this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
-      }
-      catch (e) {
-        this.log(`[DEMO] Does not support background blur: ${e.message}`);
-        this.supportsBackgroundBlur = false;
-      }
+    try {
+      this.supportsBackgroundBlur = await BackgroundBlurVideoFrameProcessor.isSupported(this.getBackgroundBlurSpec());
+    }
+    catch (e) {
+      this.log(`[DEMO] Does not support background blur: ${e.message}`);
+      this.supportsBackgroundBlur = false;
+    }
   }
 
   async createReplacementImageBlob(startColor: string, endColor: string): Promise<Blob> {
@@ -493,7 +493,7 @@ export class DemoMeetingApp
     grd.addColorStop(1, endColor);
     ctx.fillStyle = grd;
     ctx.fillRect(0, 0, 500, 500);
-    const blob = await new Promise<Blob> (resolve => {
+    const blob = await new Promise<Blob>(resolve => {
       canvas.toBlob(resolve);
     });
     return blob;
@@ -776,7 +776,7 @@ export class DemoMeetingApp
       );
     });
 
-    if(!this.areVideoFiltersSupported())  {
+    if (!this.areVideoFiltersSupported()) {
       document.getElementById('video-input-filter-container').style.display = 'none';
     }
 
@@ -1054,7 +1054,7 @@ export class DemoMeetingApp
         const contentIdentificationChecked = (document.getElementById('content-identification-checkbox') as HTMLInputElement).checked;
         const contentRedactionChecked = (document.getElementById('content-redaction-checkbox') as HTMLInputElement).checked;
         document.getElementById('engine-transcribe-language').classList.toggle('hidden', !engineTranscribeChecked);
-		    document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
+        document.getElementById('engine-transcribe-medical-language').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-region').classList.toggle('hidden', !engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-region').classList.toggle('hidden', engineTranscribeChecked);
         document.getElementById('engine-transcribe-medical-content-identification').classList.toggle('hidden', engineTranscribeChecked);
@@ -1457,18 +1457,8 @@ export class DemoMeetingApp
   metricsDidReceive(clientMetricReport: ClientMetricReport): void {
     const metricReport = clientMetricReport.getObservableMetrics();
     this.videoMetricReport = clientMetricReport.getObservableVideoMetrics();
-
-    this.displayEstimatedUplinkBandwidth(
-      metricReport.availableSendBandwidth
-        ? metricReport.availableSendBandwidth
-        : metricReport.availableOutgoingBitrate
-    );
-    this.displayEstimatedDownlinkBandwidth(
-      metricReport.availableReceiveBandwidth
-        ? metricReport.availableReceiveBandwidth
-        : metricReport.availableIncomingBitrate
-    );
-
+    this.displayEstimatedUplinkBandwidth(metricReport.availableOutgoingBitrate);
+    this.displayEstimatedDownlinkBandwidth(metricReport.availableIncomingBitrate);
     this.isButtonOn('button-video-stats') && this.videoTileCollection.showVideoWebRTCStats(this.videoMetricReport);
   }
 
@@ -1662,9 +1652,9 @@ export class DemoMeetingApp
     this.audioVideo.addContentShareObserver(this);
 
     this.videoTileCollection = new VideoTileCollection(this.audioVideo,
-        this.meetingLogger,
-        this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
-        (document.getElementById('enable-pagination') as HTMLInputElement).checked ? DemoMeetingApp.REDUCED_REMOTE_VIDEO_PAGE_SIZE : DemoMeetingApp.REMOTE_VIDEO_PAGE_SIZE)
+      this.meetingLogger,
+      this.usePriorityBasedDownlinkPolicy ? new VideoPreferenceManager(this.meetingLogger, this.priorityBasedDownlinkPolicy) : undefined,
+      (document.getElementById('enable-pagination') as HTMLInputElement).checked ? DemoMeetingApp.REDUCED_REMOTE_VIDEO_PAGE_SIZE : DemoMeetingApp.REMOTE_VIDEO_PAGE_SIZE)
     this.audioVideo.addObserver(this.videoTileCollection);
 
     this.initContentShareDropDownItems();
@@ -1826,7 +1816,7 @@ export class DemoMeetingApp
       if (!this.roster[attendeeId] || !this.roster[attendeeId].name) {
         this.roster[attendeeId] = {
           ...this.roster[attendeeId],
-          ... {name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '')}
+          ... { name: externalUserId.split('#').slice(-1)[0] + (isContentAttendee ? ' «Content»' : '') }
         };
       }
       this.audioVideo.realtimeSubscribeToVolumeIndicator(
@@ -2131,8 +2121,7 @@ export class DemoMeetingApp
 
   appendNewSpeakerTranscriptDiv = (
     segment: TranscriptSegment,
-    speakerToTranscriptSpanMap: Map<string, HTMLSpanElement>) =>
-  {
+    speakerToTranscriptSpanMap: Map<string, HTMLSpanElement>) => {
     const speakerTranscriptDiv = document.createElement('div') as HTMLDivElement;
     speakerTranscriptDiv.classList.add('transcript');
 
@@ -2180,15 +2169,15 @@ export class DemoMeetingApp
   async startMediaCapture(): Promise<any> {
     await fetch(
       `${DemoMeetingApp.BASE_URL}startCapture?title=${encodeURIComponent(this.meeting)}`, {
-        method: 'POST',
-      });
+      method: 'POST',
+    });
   }
 
   async stopMediaCapture(): Promise<any> {
     await fetch(
       `${DemoMeetingApp.BASE_URL}endCapture?title=${encodeURIComponent(this.meeting)}`, {
-        method: 'POST',
-      });
+      method: 'POST',
+    });
   }
 
 
@@ -2228,8 +2217,7 @@ export class DemoMeetingApp
     // Also note that Firefox has its own device picker, which may be useful
     // for the first device selection. Subsequent device selections could use
     // a custom UX with a specific device id.
-    if(!this.defaultBrowserBehaviour.doesNotSupportMediaDeviceLabels())
-    {
+    if (!this.defaultBrowserBehaviour.doesNotSupportMediaDeviceLabels()) {
       this.audioVideo.setDeviceLabelTrigger(
         async (): Promise<MediaStream> => {
           if (this.isRecorder() || this.isBroadcaster()) {
@@ -2240,7 +2228,7 @@ export class DemoMeetingApp
           this.switchToFlow('flow-devices');
           return stream;
         }
-    );
+      );
     }
   }
 
@@ -2320,7 +2308,7 @@ export class DemoMeetingApp
       });
     }
     if (additionalOptions.length) {
-      this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
+      this.createDropdownMenuItem(menu, '──────────', () => { }).classList.add('text-center');
       for (const additionalOption of additionalOptions) {
         this.createDropdownMenuItem(
           menu,
@@ -2333,7 +2321,7 @@ export class DemoMeetingApp
       }
     }
     if (additionalToggles?.length) {
-      this.createDropdownMenuItem(menu, '──────────', () => {}).classList.add('text-center');
+      this.createDropdownMenuItem(menu, '──────────', () => { }).classList.add('text-center');
       for (const { name, oncreate, action } of additionalToggles) {
         const id = `toggle-${elementId}-${name.replace(/\s/g, '-')}`;
         const elem = this.createDropdownMenuItem(menu, name, action, id);
@@ -2341,7 +2329,7 @@ export class DemoMeetingApp
       }
     }
     if (!menu.firstElementChild) {
-      this.createDropdownMenuItem(menu, 'Device selection unavailable', () => {});
+      this.createDropdownMenuItem(menu, 'Device selection unavailable', () => { });
     }
   }
 
@@ -2385,7 +2373,7 @@ export class DemoMeetingApp
     }
   }
 
-  private async stopVideoProcessor(): Promise<void>  {
+  private async stopVideoProcessor(): Promise<void> {
     this.log('Clearing filter variables and stopping the video transform device');
     this.chosenVideoFilter = 'None';
     this.selectedVideoFilterItem = 'None';
@@ -2435,14 +2423,14 @@ export class DemoMeetingApp
   }
 
   private async populateFilterList(isPreviewWindow: boolean, genericName: string, filters: VideoFilterName[]): Promise<void> {
-    if(isPreviewWindow) {
+    if (isPreviewWindow) {
       this.populateVideoPreviewFilterList(
         'video-input-filter',
         genericName,
         filters
       );
     }
-    else  {
+    else {
       this.populateInMeetingDeviceList(
         'dropdown-menu-filter',
         genericName,
@@ -3037,7 +3025,7 @@ export class DemoMeetingApp
       };
 
       const cpuUtilization: number = Number(videoFilter.match(/([0-9]{2})%/)[1]);
-      this.blurProcessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec(), {filterCPUUtilization: cpuUtilization});
+      this.blurProcessor = await BackgroundBlurVideoFrameProcessor.create(this.getBackgroundBlurSpec(), { filterCPUUtilization: cpuUtilization });
       this.blurProcessor.addObserver(this.blurObserver);
       return this.blurProcessor;
     }
@@ -3271,7 +3259,7 @@ export class DemoMeetingApp
   audioVideoDidStartConnecting(reconnecting: boolean): void {
     this.log(`session connecting. reconnecting: ${reconnecting}`);
     if (reconnecting && this.isAbortingOnReconnect()) {
-        fatal(Error('reconnect occured with abort-on-reconnect set to true'));
+      fatal(Error('reconnect occured with abort-on-reconnect set to true'));
     }
   }
 

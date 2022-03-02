@@ -10,9 +10,13 @@ import MediaType from './ClientMetricReportMediaType';
 import GlobalMetricReport from './GlobalMetricReport';
 import StreamMetricReport from './StreamMetricReport';
 
+// eslint-disable-next-line
+type RawMetricReport = any;
+
 export default class DefaultClientMetricReport implements ClientMetricReport {
   globalMetricReport: GlobalMetricReport = new GlobalMetricReport();
   streamMetricReports: { [id: number]: StreamMetricReport } = {};
+  rawMetricReports: RawMetricReport []; // array or object?
   currentTimestampMs: number = 0;
   previousTimestampMs: number = 0;
   currentSsrcs: { [id: number]: number } = {};
@@ -34,20 +38,20 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
 
   decoderLossPercent = (metricName?: string, ssrc?: number): number => {
     const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
-    const decoderNormal =
-      metricReport.currentMetrics['googDecodingNormal'] -
-      (metricReport.previousMetrics['googDecodingNormal'] || 0);
-    const decoderCalls =
-      metricReport.currentMetrics['googDecodingCTN'] -
-      (metricReport.previousMetrics['googDecodingCTN'] || 0);
-    if (decoderCalls <= 0) {
+    const concealedSamples =
+      metricReport.currentMetrics['concealedSamples'] -
+      (metricReport.previousMetrics['concealedSamples'] || 0);
+    const totalSamplesReceived =
+      metricReport.currentMetrics['totalSamplesReceived'] -
+      (metricReport.previousMetrics['totalSamplesReceived'] || 0);
+    if (totalSamplesReceived <= 0) {
       return 0;
     }
-    const decoderAbnormal = decoderCalls - decoderNormal;
+    const decoderAbnormal = totalSamplesReceived - concealedSamples;
     if (decoderAbnormal <= 0) {
       return 0;
     }
-    return (decoderAbnormal * 100) / decoderCalls;
+    return (concealedSamples / totalSamplesReceived * 100);
   };
 
   packetLossPercent = (sourceMetricName?: string, ssrc?: number): number => {
@@ -105,6 +109,20 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     return Number(metricReport.currentMetrics[metricName] * 1000);
   };
 
+  calculateJitterBufferMs = (metricName?: string, ssrc?: number): number => {
+    const metricReport = ssrc ? this.streamMetricReports[ssrc] : this.globalMetricReport;
+    const jitterBufferDelay =
+      metricReport.currentMetrics['jitterBufferDelay'] -
+      (metricReport.previousMetrics['jitterBufferDelay'] || 0);
+    const jitterBufferEmittedCount =
+      metricReport.currentMetrics['jitterBufferEmittedCount'] -
+      (metricReport.previousMetrics['jitterBufferEmittedCount'] || 0);
+    if (jitterBufferEmittedCount <= 0) {
+      return 0;
+    }
+
+    return (jitterBufferDelay / jitterBufferEmittedCount * 1000);
+  };
   /**
    *  Canonical and derived metric maps
    */
@@ -116,28 +134,18 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       source?: string;
     };
   } = {
-    googActualEncBitrate: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_ACTUAL_ENCODER_BITRATE,
-    },
-    googAvailableSendBandwidth: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_AVAILABLE_SEND_BANDWIDTH,
-    },
-    googRetransmitBitrate: {
-      transform: this.identityValue,
+    retransmittedBytesSent: {
+      transform: this.bitsPerSecond,
       type: SdkMetric.Type.VIDEO_RETRANSMIT_BITRATE,
     },
-    googAvailableReceiveBandwidth: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_AVAILABLE_RECEIVE_BANDWIDTH,
-    },
-    googTargetEncBitrate: {
+    totalEncodedBytesTarget: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_TARGET_ENCODER_BITRATE,
     },
-    googBucketDelay: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_BUCKET_DELAY_MS },
-    googRtt: { transform: this.identityValue, type: SdkMetric.Type.STUN_RTT_MS },
+    totalPacketSendDelay: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_BUCKET_DELAY_MS,
+    },
     packetsDiscardedOnSend: {
       transform: this.countPerSecond,
       type: SdkMetric.Type.SOCKET_DISCARDED_PPS,
@@ -151,7 +159,10 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_AVAILABLE_SEND_BANDWIDTH,
     },
-    currentRoundTripTime: { transform: this.identityValue, type: SdkMetric.Type.STUN_RTT_MS },
+    currentRoundTripTime: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.STUN_RTT_MS,
+    },
   };
 
   readonly audioUpstreamMetricMap: {
@@ -161,11 +172,22 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       source?: string;
     };
   } = {
-    googJitterReceived: { transform: this.identityValue, type: SdkMetric.Type.RTC_MIC_JITTER_MS },
-    jitter: { transform: this.secondsToMilliseconds, type: SdkMetric.Type.RTC_MIC_JITTER_MS },
-    packetsSent: { transform: this.countPerSecond, type: SdkMetric.Type.RTC_MIC_PPS },
-    bytesSent: { transform: this.bitsPerSecond, type: SdkMetric.Type.RTC_MIC_BITRATE },
-    googRtt: { transform: this.identityValue, type: SdkMetric.Type.RTC_MIC_RTT_MS },
+    jitter: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.RTC_MIC_JITTER_MS,
+    },
+    packetsSent: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.RTC_MIC_PPS,
+    },
+    bytesSent: {
+      transform: this.bitsPerSecond,
+      type: SdkMetric.Type.RTC_MIC_BITRATE,
+    },
+    roundTripTime: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.RTC_MIC_RTT_MS,
+    },
     packetsLost: {
       transform: this.packetLossPercent,
       type: SdkMetric.Type.RTC_MIC_FRACTION_PACKET_LOST_PERCENT,
@@ -180,27 +202,41 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       source?: string;
     };
   } = {
-    packetsReceived: { transform: this.countPerSecond, type: SdkMetric.Type.RTC_SPK_PPS },
+    packetsReceived: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.RTC_SPK_PPS,
+    },
     packetsLost: {
       transform: this.packetLossPercent,
       type: SdkMetric.Type.RTC_SPK_FRACTION_PACKET_LOST_PERCENT,
       source: 'packetsReceived',
     },
-    googJitterReceived: { transform: this.identityValue, type: SdkMetric.Type.RTC_SPK_JITTER_MS },
-    jitter: { transform: this.secondsToMilliseconds, type: SdkMetric.Type.RTC_SPK_JITTER_MS },
-    googDecodingCTN: { transform: this.countPerSecond },
-    googDecodingNormal: {
+    concealedSamples: {
+      transform: this.countPerSecond,
+    },
+    totalSamplesReceived: {
+      transform: this.countPerSecond,
+    },
+    decoderLoss: {
       transform: this.decoderLossPercent,
       type: SdkMetric.Type.RTC_SPK_FRACTION_DECODER_LOSS_PERCENT,
-      source: 'googDecodingCTN',
     },
-    bytesReceived: { transform: this.bitsPerSecond, type: SdkMetric.Type.RTC_SPK_BITRATE },
-    googCurrentDelayMs: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.RTC_SPK_CURRENT_DELAY_MS,
+    bytesReceived: {
+      transform: this.bitsPerSecond,
+      type: SdkMetric.Type.RTC_SPK_BITRATE,
     },
-    googJitterBufferMs: {
-      transform: this.identityValue,
+    jitter: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.RTC_SPK_JITTER_MS,
+    },
+    jitterBufferDelay: {
+      transform: this.countPerSecond,
+    },
+    jitterBufferEmittedCount: {
+      transform: this.countPerSecond,
+    },
+    jitterBufferMs: {
+      transform: this.calculateJitterBufferMs,
       type: SdkMetric.Type.RTC_SPK_JITTER_BUFFER_MS,
     },
   };
@@ -212,113 +248,127 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       source?: string;
     };
   } = {
-    googRtt: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_SENT_RTT_MS },
-    googEncodeUsagePercent: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_ENCODE_USAGE_PERCENT,
+    roundTripTime: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.VIDEO_SENT_RTT_MS,
     },
-    googNacksReceived: {
+    nackCount: {
       transform: this.countPerSecond,
       type: SdkMetric.Type.VIDEO_NACKS_RECEIVED,
     },
-    nackCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_NACKS_RECEIVED },
-    googPlisReceived: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PLIS_RECEIVED },
-    pliCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PLIS_RECEIVED },
-    googFirsReceived: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FIRS_RECEIVED },
-    firCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FIRS_RECEIVED },
-    googAvgEncodeMs: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_AVERAGE_ENCODE_MS,
+    pliCount: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_PLIS_RECEIVED,
     },
-    googFrameRateInput: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_INPUT_FPS },
-    framesEncoded: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_ENCODE_FPS },
-    googFrameRateSent: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_SENT_FPS },
-    framerateMean: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_SENT_FPS },
-    packetsSent: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_SENT_PPS },
+    firCount: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_FIRS_RECEIVED,
+    },
+    framesPerSecond: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_INPUT_FPS,
+    },
+    framesEncoded: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_ENCODE_FPS,
+    },
+    packetsSent: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_SENT_PPS,
+    },
     packetsLost: {
       transform: this.packetLossPercent,
       type: SdkMetric.Type.VIDEO_SENT_FRACTION_PACKET_LOST_PERCENT,
       source: 'packetsSent',
     },
-    bytesSent: { transform: this.bitsPerSecond, type: SdkMetric.Type.VIDEO_SENT_BITRATE },
-    droppedFrames: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_DROPPED_FPS },
-    qpSum: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_SENT_QP_SUM },
-    googFrameHeightSent: {
+    bytesSent: {
+      transform: this.bitsPerSecond,
+      type: SdkMetric.Type.VIDEO_SENT_BITRATE,
+    },
+    qpSum: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_SENT_QP_SUM,
+    },
+    frameHeight: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_ENCODE_HEIGHT,
     },
-    googFrameWidthSent: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_ENCODE_WIDTH },
-    frameHeight: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_ENCODE_HEIGHT },
-    frameWidth: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_ENCODE_WIDTH },
+    frameWidth: {
+      transform: this.identityValue,
+      type: SdkMetric.Type.VIDEO_ENCODE_WIDTH,
+    },
   };
 
-  readonly videoDownstreamMetricMap: {
-    [id: string]: {
-      transform?: (metricName?: string, ssrc?: number) => number;
-      type?: SdkMetric.Type;
-      source?: string;
-    };
-  } = {
-    googTargetDelayMs: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_TARGET_DELAY_MS,
+readonly videoDownstreamMetricMap: {
+  [id: string]: {
+    transform?: (metricName?: string, ssrc?: number) => number;
+    type?: SdkMetric.Type;
+    source?: string;
+  };
+} = {
+    totalDecodeTime: {
+      transform: this.secondsToMilliseconds,
+      type: SdkMetric.Type.VIDEO_DECODE_MS,
     },
-    googDecodeMs: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_MS },
-    googFrameRateOutput: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_OUTPUT_FPS },
-    packetsReceived: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_RECEIVED_PPS },
+    packetsReceived: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_RECEIVED_PPS,
+    },
     packetsLost: {
       transform: this.packetLossPercent,
       type: SdkMetric.Type.VIDEO_RECEIVED_FRACTION_PACKET_LOST_PERCENT,
       source: 'packetsReceived',
     },
-    googRenderDelayMs: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_RENDER_DELAY_MS,
-    },
-    googFrameRateReceived: {
-      transform: this.identityValue,
+    framesReceived: {
+      transform: this.countPerSecond,
       type: SdkMetric.Type.VIDEO_RECEIVED_FPS,
     },
-    framerateMean: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_RECEIVED_FPS },
-    framesDecoded: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_DECODE_FPS },
-    googNacksSent: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_NACKS_SENT },
-    nackCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_NACKS_SENT },
-    googFirsSent: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FIRS_SENT },
-    firCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_FIRS_SENT },
-    googPlisSent: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PLIS_SENT },
-    pliCount: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_PLIS_SENT },
-    bytesReceived: { transform: this.bitsPerSecond, type: SdkMetric.Type.VIDEO_RECEIVED_BITRATE },
-    googCurrentDelayMs: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_CURRENT_DELAY_MS,
+    framesDecoded: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_DECODE_FPS,
     },
-    googJitterBufferMs: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_JITTER_BUFFER_MS,
+    nackCount: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_NACKS_SENT,
     },
-    discardedPackets: { transform: this.countPerSecond, type: SdkMetric.Type.VIDEO_DISCARDED_PPS },
-    googJitterReceived: {
-      transform: this.identityValue,
-      type: SdkMetric.Type.VIDEO_RECEIVED_JITTER_MS,
+    firCount: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_FIRS_SENT,
+    },
+    pliCount: {
+      transform: this.countPerSecond,
+      type: SdkMetric.Type.VIDEO_PLIS_SENT,
+    },
+    bytesReceived: {
+      transform: this.bitsPerSecond,
+      type: SdkMetric.Type.VIDEO_RECEIVED_BITRATE,
     },
     jitter: {
       transform: this.secondsToMilliseconds,
       type: SdkMetric.Type.VIDEO_RECEIVED_JITTER_MS,
     },
+    jitterBufferDelay: {
+      transform: this.countPerSecond,
+    },
+    jitterBufferEmittedCount: {
+      transform: this.countPerSecond,
+    },
+    jitterBufferMs: {
+      transform: this.calculateJitterBufferMs,
+      type: SdkMetric.Type.VIDEO_JITTER_BUFFER_MS,
+    },
     qpSum: {
       transform: this.countPerSecond,
       type: SdkMetric.Type.VIDEO_RECEIVED_QP_SUM,
     },
-    googFrameHeightReceived: {
+    frameHeight: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_DECODE_HEIGHT,
     },
-    googFrameWidthReceived: {
+    frameWidth: {
       transform: this.identityValue,
       type: SdkMetric.Type.VIDEO_DECODE_WIDTH,
     },
-    frameHeight: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_HEIGHT },
-    frameWidth: { transform: this.identityValue, type: SdkMetric.Type.VIDEO_DECODE_WIDTH },
   };
 
   getMetricMap(
@@ -382,16 +432,6 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
-    videoUpstreamGoogFrameHeight: {
-      source: 'googFrameHeightSent',
-      media: MediaType.VIDEO,
-      dir: Direction.UPSTREAM,
-    },
-    videoUpstreamGoogFrameWidth: {
-      source: 'googFrameWidthSent',
-      media: MediaType.VIDEO,
-      dir: Direction.UPSTREAM,
-    },
     videoUpstreamFrameHeight: {
       source: 'frameHeight',
       media: MediaType.VIDEO,
@@ -419,16 +459,6 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
     },
     videoDownstreamFramesDecodedPerSecond: {
       source: 'framesDecoded',
-      media: MediaType.VIDEO,
-      dir: Direction.DOWNSTREAM,
-    },
-    videoDownstreamGoogFrameHeight: {
-      source: 'googFrameHeightReceived',
-      media: MediaType.VIDEO,
-      dir: Direction.DOWNSTREAM,
-    },
-    videoDownstreamGoogFrameWidth: {
-      source: 'googFrameWidthReceived',
       media: MediaType.VIDEO,
       dir: Direction.DOWNSTREAM,
     },
@@ -466,7 +496,7 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       dir: Direction.DOWNSTREAM,
     },
     audioDecoderLoss: {
-      source: 'googDecodingNormal',
+      source: 'decoderLoss',
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
@@ -480,31 +510,25 @@ export default class DefaultClientMetricReport implements ClientMetricReport {
       media: MediaType.AUDIO,
       dir: Direction.UPSTREAM,
     },
-    videoUpstreamBitrate: { source: 'bytesSent', media: MediaType.VIDEO, dir: Direction.UPSTREAM },
+    videoUpstreamBitrate: {
+      source: 'bytesSent',
+      media: MediaType.VIDEO,
+      dir: Direction.UPSTREAM
+    },
     videoPacketSentPerSecond: {
       source: 'packetsSent',
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },
-    availableSendBandwidth: { source: 'googAvailableSendBandwidth' },
-    availableReceiveBandwidth: { source: 'googAvailableReceiveBandwidth' },
     audioSpeakerDelayMs: {
-      source: 'googCurrentDelayMs',
+      source: 'jitterBufferMs',
       media: MediaType.AUDIO,
       dir: Direction.DOWNSTREAM,
     },
-
-    // new getStats() API
     availableIncomingBitrate: { source: 'availableIncomingBitrate' },
     availableOutgoingBitrate: { source: 'availableOutgoingBitrate' },
-
     nackCountReceivedPerSecond: {
       source: 'nackCount',
-      media: MediaType.VIDEO,
-      dir: Direction.UPSTREAM,
-    },
-    googNackCountReceivedPerSecond: {
-      source: 'googNacksReceived',
       media: MediaType.VIDEO,
       dir: Direction.UPSTREAM,
     },

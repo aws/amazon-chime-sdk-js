@@ -53,26 +53,26 @@ describe('DefaultClientMetricReport', () => {
   describe('decoderLossPercent', () => {
     const metricName = 'this-name-is-ignored';
 
-    it('returns 0 if decoder calls is 0', () => {
+    it('returns 0 if received samples is 0', () => {
       const report = new GlobalMetricReport();
-      report.currentMetrics['googDecodingNormal'] = 0;
-      report.currentMetrics['googDecodingCTN'] = 0;
+      report.currentMetrics['concealedSamples'] = 0;
+      report.currentMetrics['totalSamplesReceived'] = 0;
       clientMetricReport.globalMetricReport = report;
       expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
     });
 
     it('returns 0 if decoder abnormal is 0', () => {
       const report = new GlobalMetricReport();
-      report.currentMetrics['googDecodingNormal'] = 1;
-      report.currentMetrics['googDecodingCTN'] = 1;
+      report.currentMetrics['concealedSamples'] = 1;
+      report.currentMetrics['totalSamplesReceived'] = 1;
       clientMetricReport.globalMetricReport = report;
       expect(clientMetricReport.decoderLossPercent(metricName)).to.equal(0);
     });
 
     it('returns the loss percent', () => {
       const report = new GlobalMetricReport();
-      report.currentMetrics['googDecodingNormal'] = 1;
-      report.currentMetrics['googDecodingCTN'] = 2;
+      report.currentMetrics['concealedSamples'] = 1;
+      report.currentMetrics['totalSamplesReceived'] = 2;
       clientMetricReport.globalMetricReport = report;
       expect(clientMetricReport.decoderLossPercent(metricName)).to.equal((1 * 100) / 2);
     });
@@ -80,8 +80,8 @@ describe('DefaultClientMetricReport', () => {
     it('returns the loss percent from the stream metric reports', () => {
       const ssrc = 1;
       const report = new StreamMetricReport();
-      report.currentMetrics['googDecodingNormal'] = 1;
-      report.currentMetrics['googDecodingCTN'] = 2;
+      report.currentMetrics['concealedSamples'] = 1;
+      report.currentMetrics['totalSamplesReceived'] = 2;
       clientMetricReport.streamMetricReports[ssrc] = report;
       expect(clientMetricReport.decoderLossPercent(metricName, ssrc)).to.equal((1 * 100) / 2);
     });
