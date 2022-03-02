@@ -15,12 +15,9 @@ const preReleaseName = (spawnOrFail('node', ['.github/script/get-pre-release-nam
 // Check version to release if is a pre-release version or an first major version of a new major version.
 // This satisfies versions like: 3.0.0, 4.0.0, 3.0.0-beta.0, 3.0.0-beta.1
 if (versionToRelease.includes(preReleaseName)) {
-  console.log(`Skipping backward compatibility checks for a pre release ${preReleaseName} version: ${versionToRelease}`);
-  process.exit(1);
+  console.log(`Skip backward compatibility checks for a pre release ${preReleaseName} version: ${versionToRelease}`);
 } else if ((/^[0-9]+\.0\.0$/g).test(versionToRelease)) {
-  console.log(`Skipping backward compatibility checks for a new major version: ${versionToRelease}`);
-  process.exit(1);
+  console.log(`Skip backward compatibility checks for a new major version: ${versionToRelease}`);
 } else {
-  console.log('Version to release should check the backward compatibility checks');
-  process.exit(0);
+  console.log(`Run backward compatibility checks to release ${versionToRelease}`);
 }

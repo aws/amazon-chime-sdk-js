@@ -24,19 +24,22 @@ jobs:
   check-backward-compatibility-run:
     name: Check need for backward compatibility checks
     runs-on: ubuntu-latest
+    outputs:
+      run-check: ${{ steps.version-check.outputs.run-check }}
     steps:
       - name: Checkout Package
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Version check
-        run: node .github/script/backward-compatibility-run-check.js
+      - name: Version check for backward compatibility check
+        id: version-check
+        run: echo "::set-output name=run-check::$(node .github/script/backward-compatibility-run-check.js)"
 
   release-integ-test:
     name: Run Backwards Compatible Integration Tests with Release Tarball
     runs-on: ubuntu-latest
     needs: check-backward-compatibility-run
-    if: ${{ success() }}
+    if: contains(needs.check-backward-compatibility-run.outputs.run-check, 'Run backward compatibility checks')
     steps:
       - name: Setup Node.js - 16.x
         uses: actions/setup-node@v1
