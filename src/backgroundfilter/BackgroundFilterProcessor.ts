@@ -404,6 +404,7 @@ export default abstract class BackgroundFilterProcessor {
     this.scaledCanvas?.remove();
     this.scaledCanvas = undefined;
     this.logger.info(`${this.filterType} frame process destroyed`);
+    screen.orientation.onchange = null;
   }
 
   /**

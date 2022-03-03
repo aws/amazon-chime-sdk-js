@@ -43,6 +43,7 @@ export default class BackgroundReplacementFilter
     this.logger.info(`BackgroundReplacement spec: ${this.stringify(this.spec)}`);
     this.logger.info(`BackgroundReplacement options: ${this.stringify(options)}`);
 
+    // Exchange the height and width of the canvas context if there is a mismatch with the orientation
     screen.orientation.addEventListener('change', _event => {
       if (
         (screen.orientation.type.startsWith('portrait') &&
