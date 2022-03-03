@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+const { spawnOrFail, logger } = require('../../script/cli-utils');
+
+const myArgs = process.argv.splice(2);
+// Browser demo to be deployed
+var demoDeployVersion = myArgs[0];
+
+var npmLatestVersion = spawnOrFail('npm',['view', 'amazon-chime-sdk-js@latest', 'version']);
+var npmBetaVersion = spawnOrFail('npm', ['view', 'amazon-chime-sdk-js@beta', 'version']);
+
+// Removing line breaks from the strings before comparison
+npmLatestVersion = npmLatestVersion.replace(/(\r\n|\n|\r)/gm, '');
+npmBetaVersion = npmBetaVersion.replace(/(\r\n|\n|\r)/gm, '');
+demoDeployVersion = demoDeployVersion.replace(/(\r\n|\n|\r)/gm, '');
+
+logger.log(`NPM latest version: ${npmLatestVersion}`);
+logger.log(`NPM beta version: ${npmBetaVersion}`);
+logger.log(`Demo deploy version: ${demoDeployVersion}`);
+
+// The npm beta version usually have the -beta.0 suffix. Removing this suffix to just leave the semver version number
+npmBetaVersion = npmBetaVersion.replace(/(-beta*)\w+/g, '');
+
+npmLatestVersion = npmLatestVersion.split('.');
+npmBetaVersion = npmBetaVersion.split('.');
+demoDeployVersion = demoDeployVersion.split('.');
+
+var npmHigherMajorVersion = Math.max(Number.parseInt(npmBetaVersion[0], 10), Number.parseInt(npmLatestVersion[0], 10));   // npm latest tag might not have the latest version of code so this comparison is added
+var demoDeployMajorVersion = demoDeployVersion[0];
+
+npmHigherMajorVersion = Number.parseInt(npmHigherMajorVersion, 10);
+demoDeployMajorVersion = Number.parseInt(demoDeployMajorVersion, 10);
+
+logger.log(`NPM higher major version: ${npmHigherMajorVersion}`);
+logger.log(`Demo deploy major version: ${demoDeployMajorVersion}`);
+
+if (demoDeployMajorVersion === npmHigherMajorVersion) {
+  logger.log('Deploying latest version canary demo');
+  spawnOrFail('script/deploy-canary-demo');
+} else if (demoDeployMajorVersion < npmHigherMajorVersion) {
+  logger.log('Deploying previous major version canary demo');
+  spawnOrFail('script/deploy-canary-demo', ['-prev']);
+} else {
+  logger.log('Current version deployment does not match a deployed npm version');
+  process.exit(1);
+}

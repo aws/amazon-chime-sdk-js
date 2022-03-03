@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add compression support when sending and receiving sdp messages.
+- Add automatic language identification support from Amazon Transcribe for live transcription.
 
 ### Removed
-
+- Removed SDP interface.
 ### Changed
+
+- Change `resolveSpec` and `resolveOptions` in BackgroundBlurVideoFrameProcessor and BackgroundReplacementVideoFrameProcessor to clone parameter objects.
 
 ### Fixed
 

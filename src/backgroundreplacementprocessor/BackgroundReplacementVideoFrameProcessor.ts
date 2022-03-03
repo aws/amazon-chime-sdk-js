@@ -87,11 +87,13 @@ export default class BackgroundReplacementVideoFrameProcessor extends Background
   protected static resolveOptions(
     options: BackgroundReplacementOptions = {}
   ): BackgroundReplacementOptions {
-    if (!options.logger) {
-      options.logger = new ConsoleLogger('BackgroundReplacementProcessor', LogLevel.INFO);
+    const processorOptions: BackgroundReplacementOptions = { ...options };
+
+    if (!processorOptions.logger) {
+      processorOptions.logger = new ConsoleLogger('BackgroundReplacementProcessor', LogLevel.INFO);
     }
 
-    return super.resolveOptions(options);
+    return super.resolveOptions(processorOptions);
   }
 
   private static async resolveOptionsAsync(options: BackgroundReplacementOptions): Promise<void> {

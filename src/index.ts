@@ -93,7 +93,6 @@ import DefaultModality from './modality/DefaultModality';
 import DefaultPingPong from './pingpong/DefaultPingPong';
 import DefaultRealtimeController from './realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from './reconnectcontroller/DefaultReconnectController';
-import DefaultSDP from './sdp/DefaultSDP';
 import DefaultSessionStateController from './sessionstatecontroller/DefaultSessionStateController';
 import DefaultSigV4 from './sigv4/DefaultSigV4';
 import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
@@ -261,6 +260,7 @@ import TranscriptEntity from './transcript/TranscriptEntity';
 import TranscriptEvent from './transcript/TranscriptEvent';
 import TranscriptItem from './transcript/TranscriptItem';
 import TranscriptItemType from './transcript/TranscriptItemType';
+import TranscriptLanguageWithScore from './transcript/TranscriptLanguageWithScore';
 import TranscriptResult from './transcript/TranscriptResult';
 import TranscriptionController from './transcript/TranscriptionController';
 import TranscriptionStatus from './transcript/TranscriptionStatus';
@@ -414,7 +414,6 @@ export {
   DefaultPingPong,
   DefaultRealtimeController,
   DefaultReconnectController,
-  DefaultSDP,
   DefaultSessionStateController,
   DefaultSigV4,
   DefaultSignalingClient,
@@ -589,6 +588,7 @@ export {
   TranscriptEvent,
   TranscriptItem,
   TranscriptItemType,
+  TranscriptLanguageWithScore,
   TranscriptResult,
   TranscriptionController,
   TranscriptionStatus,
