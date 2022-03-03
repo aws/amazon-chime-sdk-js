@@ -3,7 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
-import DefaultSDP from '../sdp/DefaultSDP';
+import SDP from '../sdp/SDP';
 import BaseTask from './BaseTask';
 
 /*
@@ -65,7 +65,7 @@ export default class CreateSDPTask extends BaseTask {
         this.context.logger.info('peer connection created offer');
         if (this.context.previousSdpOffer) {
           if (
-            new DefaultSDP(this.context.sdpOfferInit.sdp).videoSendSectionHasDifferentSSRC(
+            new SDP(this.context.sdpOfferInit.sdp).videoSendSectionHasDifferentSSRC(
               this.context.previousSdpOffer
             )
           ) {

@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add compression support when sending and receiving sdp messages.
 
 ### Removed
-
+- Removed SDP interface.
 ### Changed
 
 ### Fixed

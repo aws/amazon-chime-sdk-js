@@ -93,7 +93,6 @@ import DefaultModality from './modality/DefaultModality';
 import DefaultPingPong from './pingpong/DefaultPingPong';
 import DefaultRealtimeController from './realtimecontroller/DefaultRealtimeController';
 import DefaultReconnectController from './reconnectcontroller/DefaultReconnectController';
-import DefaultSDP from './sdp/DefaultSDP';
 import DefaultSessionStateController from './sessionstatecontroller/DefaultSessionStateController';
 import DefaultSigV4 from './sigv4/DefaultSigV4';
 import DefaultSignalingClient from './signalingclient/DefaultSignalingClient';
@@ -414,7 +413,6 @@ export {
   DefaultPingPong,
   DefaultRealtimeController,
   DefaultReconnectController,
-  DefaultSDP,
   DefaultSessionStateController,
   DefaultSigV4,
   DefaultSignalingClient,
