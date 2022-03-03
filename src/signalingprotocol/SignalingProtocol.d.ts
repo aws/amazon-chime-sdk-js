@@ -3568,6 +3568,102 @@ export class SdkTranscriptAlternative implements ISdkTranscriptAlternative {
     public toJSON(): { [k: string]: any };
 }
 
+/** Properties of a SdkTranscriptLanguageWithScore. */
+export interface ISdkTranscriptLanguageWithScore {
+
+    /** SdkTranscriptLanguageWithScore languageCode */
+    languageCode?: (string|null);
+
+    /** SdkTranscriptLanguageWithScore score */
+    score?: (number|null);
+}
+
+/** Represents a SdkTranscriptLanguageWithScore. */
+export class SdkTranscriptLanguageWithScore implements ISdkTranscriptLanguageWithScore {
+
+    /**
+     * Constructs a new SdkTranscriptLanguageWithScore.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ISdkTranscriptLanguageWithScore);
+
+    /** SdkTranscriptLanguageWithScore languageCode. */
+    public languageCode: string;
+
+    /** SdkTranscriptLanguageWithScore score. */
+    public score: number;
+
+    /**
+     * Creates a new SdkTranscriptLanguageWithScore instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SdkTranscriptLanguageWithScore instance
+     */
+    public static create(properties?: ISdkTranscriptLanguageWithScore): SdkTranscriptLanguageWithScore;
+
+    /**
+     * Encodes the specified SdkTranscriptLanguageWithScore message. Does not implicitly {@link SdkTranscriptLanguageWithScore.verify|verify} messages.
+     * @param message SdkTranscriptLanguageWithScore message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ISdkTranscriptLanguageWithScore, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SdkTranscriptLanguageWithScore message, length delimited. Does not implicitly {@link SdkTranscriptLanguageWithScore.verify|verify} messages.
+     * @param message SdkTranscriptLanguageWithScore message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ISdkTranscriptLanguageWithScore, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a SdkTranscriptLanguageWithScore message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SdkTranscriptLanguageWithScore
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SdkTranscriptLanguageWithScore;
+
+    /**
+     * Decodes a SdkTranscriptLanguageWithScore message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SdkTranscriptLanguageWithScore
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SdkTranscriptLanguageWithScore;
+
+    /**
+     * Verifies a SdkTranscriptLanguageWithScore message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a SdkTranscriptLanguageWithScore message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SdkTranscriptLanguageWithScore
+     */
+    public static fromObject(object: { [k: string]: any }): SdkTranscriptLanguageWithScore;
+
+    /**
+     * Creates a plain object from a SdkTranscriptLanguageWithScore message. Also converts values to other types if specified.
+     * @param message SdkTranscriptLanguageWithScore
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: SdkTranscriptLanguageWithScore, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this SdkTranscriptLanguageWithScore to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
 /** Properties of a SdkTranscriptResult. */
 export interface ISdkTranscriptResult {
 
@@ -3588,6 +3684,12 @@ export interface ISdkTranscriptResult {
 
     /** SdkTranscriptResult startTime */
     startTime?: (number|Long|null);
+
+    /** SdkTranscriptResult languageCode */
+    languageCode?: (string|null);
+
+    /** SdkTranscriptResult languageIdentifications */
+    languageIdentifications?: (ISdkTranscriptLanguageWithScore[]|null);
 }
 
 /** Represents a SdkTranscriptResult. */
@@ -3616,6 +3718,12 @@ export class SdkTranscriptResult implements ISdkTranscriptResult {
 
     /** SdkTranscriptResult startTime. */
     public startTime: (number|Long);
+
+    /** SdkTranscriptResult languageCode. */
+    public languageCode: string;
+
+    /** SdkTranscriptResult languageIdentifications. */
+    public languageIdentifications: ISdkTranscriptLanguageWithScore[];
 
     /**
      * Creates a new SdkTranscriptResult instance using the specified properties.

@@ -260,6 +260,7 @@ import TranscriptEntity from './transcript/TranscriptEntity';
 import TranscriptEvent from './transcript/TranscriptEvent';
 import TranscriptItem from './transcript/TranscriptItem';
 import TranscriptItemType from './transcript/TranscriptItemType';
+import TranscriptLanguageWithScore from './transcript/TranscriptLanguageWithScore';
 import TranscriptResult from './transcript/TranscriptResult';
 import TranscriptionController from './transcript/TranscriptionController';
 import TranscriptionStatus from './transcript/TranscriptionStatus';
@@ -587,6 +588,7 @@ export {
   TranscriptEvent,
   TranscriptItem,
   TranscriptItemType,
+  TranscriptLanguageWithScore,
   TranscriptResult,
   TranscriptionController,
   TranscriptionStatus,
