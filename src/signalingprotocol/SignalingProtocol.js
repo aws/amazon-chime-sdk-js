@@ -9346,6 +9346,216 @@ $root.SdkTranscriptAlternative = (function() {
     return SdkTranscriptAlternative;
 })();
 
+$root.SdkTranscriptLanguageWithScore = (function() {
+
+    /**
+     * Properties of a SdkTranscriptLanguageWithScore.
+     * @exports ISdkTranscriptLanguageWithScore
+     * @interface ISdkTranscriptLanguageWithScore
+     * @property {string|null} [languageCode] SdkTranscriptLanguageWithScore languageCode
+     * @property {number|null} [score] SdkTranscriptLanguageWithScore score
+     */
+
+    /**
+     * Constructs a new SdkTranscriptLanguageWithScore.
+     * @exports SdkTranscriptLanguageWithScore
+     * @classdesc Represents a SdkTranscriptLanguageWithScore.
+     * @implements ISdkTranscriptLanguageWithScore
+     * @constructor
+     * @param {ISdkTranscriptLanguageWithScore=} [properties] Properties to set
+     */
+    function SdkTranscriptLanguageWithScore(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * SdkTranscriptLanguageWithScore languageCode.
+     * @member {string} languageCode
+     * @memberof SdkTranscriptLanguageWithScore
+     * @instance
+     */
+    SdkTranscriptLanguageWithScore.prototype.languageCode = "";
+
+    /**
+     * SdkTranscriptLanguageWithScore score.
+     * @member {number} score
+     * @memberof SdkTranscriptLanguageWithScore
+     * @instance
+     */
+    SdkTranscriptLanguageWithScore.prototype.score = 0;
+
+    /**
+     * Creates a new SdkTranscriptLanguageWithScore instance using the specified properties.
+     * @function create
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {ISdkTranscriptLanguageWithScore=} [properties] Properties to set
+     * @returns {SdkTranscriptLanguageWithScore} SdkTranscriptLanguageWithScore instance
+     */
+    SdkTranscriptLanguageWithScore.create = function create(properties) {
+        return new SdkTranscriptLanguageWithScore(properties);
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptLanguageWithScore message. Does not implicitly {@link SdkTranscriptLanguageWithScore.verify|verify} messages.
+     * @function encode
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {ISdkTranscriptLanguageWithScore} message SdkTranscriptLanguageWithScore message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptLanguageWithScore.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.languageCode);
+        if (message.score != null && message.hasOwnProperty("score"))
+            writer.uint32(/* id 2, wireType 1 =*/17).double(message.score);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified SdkTranscriptLanguageWithScore message, length delimited. Does not implicitly {@link SdkTranscriptLanguageWithScore.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {ISdkTranscriptLanguageWithScore} message SdkTranscriptLanguageWithScore message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    SdkTranscriptLanguageWithScore.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a SdkTranscriptLanguageWithScore message from the specified reader or buffer.
+     * @function decode
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {SdkTranscriptLanguageWithScore} SdkTranscriptLanguageWithScore
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptLanguageWithScore.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SdkTranscriptLanguageWithScore();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.languageCode = reader.string();
+                break;
+            case 2:
+                message.score = reader.double();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a SdkTranscriptLanguageWithScore message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {SdkTranscriptLanguageWithScore} SdkTranscriptLanguageWithScore
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    SdkTranscriptLanguageWithScore.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a SdkTranscriptLanguageWithScore message.
+     * @function verify
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    SdkTranscriptLanguageWithScore.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+            if (!$util.isString(message.languageCode))
+                return "languageCode: string expected";
+        if (message.score != null && message.hasOwnProperty("score"))
+            if (typeof message.score !== "number")
+                return "score: number expected";
+        return null;
+    };
+
+    /**
+     * Creates a SdkTranscriptLanguageWithScore message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {SdkTranscriptLanguageWithScore} SdkTranscriptLanguageWithScore
+     */
+    SdkTranscriptLanguageWithScore.fromObject = function fromObject(object) {
+        if (object instanceof $root.SdkTranscriptLanguageWithScore)
+            return object;
+        var message = new $root.SdkTranscriptLanguageWithScore();
+        if (object.languageCode != null)
+            message.languageCode = String(object.languageCode);
+        if (object.score != null)
+            message.score = Number(object.score);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a SdkTranscriptLanguageWithScore message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof SdkTranscriptLanguageWithScore
+     * @static
+     * @param {SdkTranscriptLanguageWithScore} message SdkTranscriptLanguageWithScore
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    SdkTranscriptLanguageWithScore.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.languageCode = "";
+            object.score = 0;
+        }
+        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+            object.languageCode = message.languageCode;
+        if (message.score != null && message.hasOwnProperty("score"))
+            object.score = options.json && !isFinite(message.score) ? String(message.score) : message.score;
+        return object;
+    };
+
+    /**
+     * Converts this SdkTranscriptLanguageWithScore to JSON.
+     * @function toJSON
+     * @memberof SdkTranscriptLanguageWithScore
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    SdkTranscriptLanguageWithScore.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return SdkTranscriptLanguageWithScore;
+})();
+
 $root.SdkTranscriptResult = (function() {
 
     /**
@@ -9358,6 +9568,8 @@ $root.SdkTranscriptResult = (function() {
      * @property {boolean|null} [isPartial] SdkTranscriptResult isPartial
      * @property {string|null} [resultId] SdkTranscriptResult resultId
      * @property {number|Long|null} [startTime] SdkTranscriptResult startTime
+     * @property {string|null} [languageCode] SdkTranscriptResult languageCode
+     * @property {Array.<ISdkTranscriptLanguageWithScore>|null} [languageIdentifications] SdkTranscriptResult languageIdentifications
      */
 
     /**
@@ -9370,6 +9582,7 @@ $root.SdkTranscriptResult = (function() {
      */
     function SdkTranscriptResult(properties) {
         this.alternatives = [];
+        this.languageIdentifications = [];
         if (properties)
             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                 if (properties[keys[i]] != null)
@@ -9425,6 +9638,22 @@ $root.SdkTranscriptResult = (function() {
     SdkTranscriptResult.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
     /**
+     * SdkTranscriptResult languageCode.
+     * @member {string} languageCode
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.languageCode = "";
+
+    /**
+     * SdkTranscriptResult languageIdentifications.
+     * @member {Array.<ISdkTranscriptLanguageWithScore>} languageIdentifications
+     * @memberof SdkTranscriptResult
+     * @instance
+     */
+    SdkTranscriptResult.prototype.languageIdentifications = $util.emptyArray;
+
+    /**
      * Creates a new SdkTranscriptResult instance using the specified properties.
      * @function create
      * @memberof SdkTranscriptResult
@@ -9461,6 +9690,11 @@ $root.SdkTranscriptResult = (function() {
             writer.uint32(/* id 5, wireType 2 =*/42).string(message.resultId);
         if (message.startTime != null && message.hasOwnProperty("startTime"))
             writer.uint32(/* id 6, wireType 0 =*/48).int64(message.startTime);
+        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+            writer.uint32(/* id 7, wireType 2 =*/58).string(message.languageCode);
+        if (message.languageIdentifications != null && message.languageIdentifications.length)
+            for (var i = 0; i < message.languageIdentifications.length; ++i)
+                $root.SdkTranscriptLanguageWithScore.encode(message.languageIdentifications[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
         return writer;
     };
 
@@ -9514,6 +9748,14 @@ $root.SdkTranscriptResult = (function() {
                 break;
             case 6:
                 message.startTime = reader.int64();
+                break;
+            case 7:
+                message.languageCode = reader.string();
+                break;
+            case 8:
+                if (!(message.languageIdentifications && message.languageIdentifications.length))
+                    message.languageIdentifications = [];
+                message.languageIdentifications.push($root.SdkTranscriptLanguageWithScore.decode(reader, reader.uint32()));
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -9574,6 +9816,18 @@ $root.SdkTranscriptResult = (function() {
         if (message.startTime != null && message.hasOwnProperty("startTime"))
             if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
                 return "startTime: integer|Long expected";
+        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+            if (!$util.isString(message.languageCode))
+                return "languageCode: string expected";
+        if (message.languageIdentifications != null && message.hasOwnProperty("languageIdentifications")) {
+            if (!Array.isArray(message.languageIdentifications))
+                return "languageIdentifications: array expected";
+            for (var i = 0; i < message.languageIdentifications.length; ++i) {
+                var error = $root.SdkTranscriptLanguageWithScore.verify(message.languageIdentifications[i]);
+                if (error)
+                    return "languageIdentifications." + error;
+            }
+        }
         return null;
     };
 
@@ -9623,6 +9877,18 @@ $root.SdkTranscriptResult = (function() {
                 message.startTime = object.startTime;
             else if (typeof object.startTime === "object")
                 message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
+        if (object.languageCode != null)
+            message.languageCode = String(object.languageCode);
+        if (object.languageIdentifications) {
+            if (!Array.isArray(object.languageIdentifications))
+                throw TypeError(".SdkTranscriptResult.languageIdentifications: array expected");
+            message.languageIdentifications = [];
+            for (var i = 0; i < object.languageIdentifications.length; ++i) {
+                if (typeof object.languageIdentifications[i] !== "object")
+                    throw TypeError(".SdkTranscriptResult.languageIdentifications: object expected");
+                message.languageIdentifications[i] = $root.SdkTranscriptLanguageWithScore.fromObject(object.languageIdentifications[i]);
+            }
+        }
         return message;
     };
 
@@ -9639,8 +9905,10 @@ $root.SdkTranscriptResult = (function() {
         if (!options)
             options = {};
         var object = {};
-        if (options.arrays || options.defaults)
+        if (options.arrays || options.defaults) {
             object.alternatives = [];
+            object.languageIdentifications = [];
+        }
         if (options.defaults) {
             object.channelId = "";
             if ($util.Long) {
@@ -9655,6 +9923,7 @@ $root.SdkTranscriptResult = (function() {
                 object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
             } else
                 object.startTime = options.longs === String ? "0" : 0;
+            object.languageCode = "";
         }
         if (message.alternatives && message.alternatives.length) {
             object.alternatives = [];
@@ -9677,6 +9946,13 @@ $root.SdkTranscriptResult = (function() {
                 object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
             else
                 object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
+        if (message.languageCode != null && message.hasOwnProperty("languageCode"))
+            object.languageCode = message.languageCode;
+        if (message.languageIdentifications && message.languageIdentifications.length) {
+            object.languageIdentifications = [];
+            for (var j = 0; j < message.languageIdentifications.length; ++j)
+                object.languageIdentifications[j] = $root.SdkTranscriptLanguageWithScore.toObject(message.languageIdentifications[j], options);
+        }
         return object;
     };
 

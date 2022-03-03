@@ -150,9 +150,11 @@ exports.start_transcription = async (event, context) => {
   if (event.queryStringParameters.engine === 'transcribe') {
     transcriptionConfiguration = {
       EngineTranscribeSettings: {
-        LanguageCode: languageCode,
       }
     };
+    if (languageCode) {
+      transcriptionConfiguration.EngineTranscribeSettings.LanguageCode = languageCode;
+    }
     if (region) {
       transcriptionConfiguration.EngineTranscribeSettings.Region = region;
     }
@@ -173,6 +175,15 @@ exports.start_transcription = async (event, context) => {
     }
     if (transcriptionStreamParams.hasOwnProperty('languageModelName')) {
       transcriptionConfiguration.EngineTranscribeSettings.LanguageModelName = transcriptionStreamParams.languageModelName;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('identifyLanguage')) {
+      transcriptionConfiguration.EngineTranscribeSettings.IdentifyLanguage = transcriptionStreamParams.identifyLanguage;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('languageOptions')) {
+      transcriptionConfiguration.EngineTranscribeSettings.LanguageOptions = transcriptionStreamParams.languageOptions;
+    }
+    if (transcriptionStreamParams.hasOwnProperty('preferredLanguage')) {
+      transcriptionConfiguration.EngineTranscribeSettings.PreferredLanguage = transcriptionStreamParams.preferredLanguage;
     }
   } else if (event.queryStringParameters.engine === 'transcribe_medical') {
     transcriptionConfiguration = {
