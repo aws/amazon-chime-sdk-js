@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
+import { BackgroundFilterSpec, BackgroundReplacementOptions } from '../../src';
 import BackgroundFilterFrameCounter from '../../src/backgroundfilter/BackgroundFilterFrameCounter';
 import { FilterFrameDurationHighEvent } from '../../src/backgroundfilter/BackgroundFilterVideoFrameProcessorObserver';
 import BackgroundReplacementFilter from '../../src/backgroundreplacementprocessor/BackgroundReplacementFilter';
@@ -236,6 +237,44 @@ describe('BackgroundReplacementProcessor', () => {
         brprocessor.drawImageWithMask(document.createElement('canvas'), null);
         brprocessor.drawImageWithMask(document.createElement('canvas'), new ImageData(10, 10));
       });
+    });
+  });
+
+  describe('BackgroundReplacementVideoFrameProcessor', () => {
+    let spec: BackgroundFilterSpec;
+    let options: BackgroundReplacementOptions;
+
+    beforeEach(() => {
+      spec = undefined;
+      options = {
+        imageBlob: undefined,
+      };
+    });
+
+    it('create should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      // create processor
+      const bbprocessor = await BackgroundReplacementVideoFrameProcessor.create(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal(undefined);
+      expect(options).to.deep.equal({ imageBlob: undefined });
+
+      await bbprocessor.destroy();
+    });
+
+    it('isSupported should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      // create processor
+      await BackgroundReplacementVideoFrameProcessor.isSupported(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal(undefined);
+      expect(options).to.deep.equal({ imageBlob: undefined });
     });
   });
 });

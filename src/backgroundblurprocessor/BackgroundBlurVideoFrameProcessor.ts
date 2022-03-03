@@ -93,15 +93,17 @@ export default class BackgroundBlurVideoFrameProcessor extends BackgroundFilterV
    * @returns An updated set of options with defaults set
    */
   protected static resolveOptions(options: BackgroundBlurOptions = {}): BackgroundBlurOptions {
-    if (!options.blurStrength) {
-      options.blurStrength = BlurStrength.MEDIUM;
+    let processorOptions: BackgroundBlurOptions = { ...options };
+
+    if (!processorOptions.blurStrength) {
+      processorOptions.blurStrength = BlurStrength.MEDIUM;
     }
 
-    if (!options.logger) {
-      options.logger = new ConsoleLogger('BackgroundBlurProcessor', LogLevel.INFO);
+    if (!processorOptions.logger) {
+      processorOptions.logger = new ConsoleLogger('BackgroundBlurProcessor', LogLevel.INFO);
     }
-    options = super.resolveOptions(options);
-    return options;
+    processorOptions = super.resolveOptions(processorOptions);
+    return processorOptions;
   }
 
   /**
