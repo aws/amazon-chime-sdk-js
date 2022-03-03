@@ -34,7 +34,12 @@ class SdkBaseTest extends KiteBaseTest {
     this.originalURL = this.url;
     this.testReady = false;
     this.testFinish = false;
-    this.testName = testName;
+    if(kiteConfig.capabilities.platform == 'IOS' || kiteConfig.capabilities.platform == 'ANDROID') {
+      this.testName = 'Mobile_'+testName;
+    }
+    else {
+      this.testName = testName;
+    }
     this.useSimulcast = !!this.payload.useSimulcast;
     this.cwNamespaceInfix = this.payload.cwNamespaceInfix || '';
 
