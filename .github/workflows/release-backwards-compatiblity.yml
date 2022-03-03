@@ -21,10 +21,25 @@ env:
   MESSAGING_USER_ARN: ${{secrets.MESSAGING_USER_ARN}}
 
 jobs:
+  check-backward-compatibility-run:
+    name: Check need for backward compatibility checks
+    runs-on: ubuntu-latest
+    outputs:
+      run-check: ${{ steps.version-check.outputs.run-check }}
+    steps:
+      - name: Checkout Package
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Version check for backward compatibility check
+        id: version-check
+        run: echo "::set-output name=run-check::$(node .github/script/backward-compatibility-run-check.js)"
+
   release-integ-test:
     name: Run Backwards Compatible Integration Tests with Release Tarball
     runs-on: ubuntu-latest
-
+    needs: check-backward-compatibility-run
+    if: contains(needs.check-backward-compatibility-run.outputs.run-check, 'Run backward compatibility checks')
     steps:
       - name: Setup Node.js - 16.x
         uses: actions/setup-node@v1
@@ -35,16 +50,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Pack the Chime SDK and install the tarball into the previous version Demo
-        run: |
-          current_version=$(.github/script/get-current-version)
-          echo "Packing current version:" $current_version
-          npm run build
-          npm pack
-          previousVersion=$(git describe --abbrev=0 --tags $(git rev-list --tags --max-count=1))
-          git checkout $previousVersion
-          cd ./demos/browser
-          npm uninstall amazon-chime-sdk-js
-          npm install ../../amazon-chime-sdk-js-$current_version.tgz
+        run: node script/backward-compatibility-demo-setup.js
       - name: Create a Job ID
         id: create-job-id
         uses: filipstefansson/uuid-action@ce29ebbb0981ac2448c2e406e848bfaa30ddf04c

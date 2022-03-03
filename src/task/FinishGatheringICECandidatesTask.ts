@@ -3,7 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import MeetingSessionStatusCode from '../meetingsession/MeetingSessionStatusCode';
-import DefaultSDP from '../sdp/DefaultSDP';
+import SDP from '../sdp/SDP';
 import BaseTask from './BaseTask';
 
 /*
@@ -69,7 +69,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
       this.logAndThrow(`session does not have peer connection; bypass ice gathering`);
     }
     if (this.context.browserBehavior.requiresCheckForSdpConnectionAttributes()) {
-      if (new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidatesForAllMLines()) {
+      if (new SDP(this.context.peer.localDescription.sdp).hasCandidatesForAllMLines()) {
         this.context.logger.info(
           `ice gathering already complete; bypass gathering, current local description ${this.context.peer.localDescription.sdp}`
         );
@@ -89,7 +89,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
     if (
       (this.context.browserBehavior.hasFirefoxWebRTC() ||
         this.context.peer.iceGatheringState === 'complete') &&
-      new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidates()
+      new SDP(this.context.peer.localDescription.sdp).hasCandidates()
     ) {
       this.context.logger.info(
         'ice gathering state is complete and candidates are in SDP; bypass gathering'
@@ -129,7 +129,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
           // Ice candidate arrives, do not need to wait anymore.
           // https://webrtcglossary.com/trickle-ice/
           if (event.candidate) {
-            if (DefaultSDP.isRTPCandidate(event.candidate.candidate)) {
+            if (SDP.isRTPCandidate(event.candidate.candidate)) {
               this.context.iceCandidates.push(event.candidate);
             }
 
@@ -149,7 +149,7 @@ export default class FinishGatheringICECandidatesTask extends BaseTask {
             this.context.logger.info('done gathering ice candidates');
             this.removeEventListener();
             if (
-              !new DefaultSDP(this.context.peer.localDescription.sdp).hasCandidates() ||
+              !new SDP(this.context.peer.localDescription.sdp).hasCandidates() ||
               this.context.iceCandidates.length === 0
             ) {
               reject(new Error('no ice candidates were gathered'));

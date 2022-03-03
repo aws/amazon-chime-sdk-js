@@ -3,7 +3,7 @@
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
 import DefaultBrowserBehavior from '../browserbehavior/DefaultBrowserBehavior';
-import DefaultSDP from '../sdp/DefaultSDP';
+import SDP from '../sdp/SDP';
 import BaseTask from './BaseTask';
 
 /*
@@ -34,14 +34,12 @@ export default class SetLocalDescriptionTask extends BaseTask {
     let sdp = sdpOfferInit.sdp;
 
     if (new DefaultBrowserBehavior().requiresDisablingH264Encoding()) {
-      sdp = new DefaultSDP(sdp).removeH264SupportFromSendSection().sdp;
+      sdp = new SDP(sdp).removeH264SupportFromSendSection().sdp;
     }
     if (this.context.audioProfile) {
-      sdp = new DefaultSDP(sdp).withAudioMaxAverageBitrate(
-        this.context.audioProfile.audioBitrateBps
-      ).sdp;
+      sdp = new SDP(sdp).withAudioMaxAverageBitrate(this.context.audioProfile.audioBitrateBps).sdp;
       if (this.context.audioProfile.isStereo()) {
-        sdp = new DefaultSDP(sdp).withStereoAudio().sdp;
+        sdp = new SDP(sdp).withStereoAudio().sdp;
       }
     }
 
