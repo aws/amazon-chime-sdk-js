@@ -6,6 +6,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import * as loader from '../../libs/voicefocus/loader';
+import { BackgroundFilterSpec } from '../../src';
 import BackgroundBlurOptions from '../../src/backgroundblurprocessor/BackgroundBlurOptions';
 import BackgroundBlurProcessorBuiltIn from '../../src/backgroundblurprocessor/BackgroundBlurProcessorBuiltIn';
 import BackgroundBlurProcessorProvided from '../../src/backgroundblurprocessor/BackgroundBlurProcessorProvided';
@@ -1126,6 +1127,43 @@ describe('BackgroundBlurProcessor', () => {
 
       expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(960);
       expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(540);
+    });
+  });
+
+  describe('BackgroundBlurVideoFrameProcessor', () => {
+    let spec: BackgroundFilterSpec;
+    let options: BackgroundBlurOptions;
+
+    beforeEach(() => {
+      spec = {};
+      options = {
+        blurStrength: BlurStrength.LOW,
+      };
+    });
+
+    it('create should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      // create processor
+      const bbprocessor = await BackgroundBlurVideoFrameProcessor.create(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal({});
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
+
+      await bbprocessor.destroy();
+    });
+
+    it('isSupported should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      await BackgroundBlurVideoFrameProcessor.isSupported(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal({});
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
     });
   });
 });
