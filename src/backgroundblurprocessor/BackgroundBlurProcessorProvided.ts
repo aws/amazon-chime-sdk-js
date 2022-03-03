@@ -47,6 +47,20 @@ export default class BackgroundBlurProcessorProvided
     this.logger.info('BackgroundBlur processor successfully created');
     this.logger.info(`BackgroundBlur spec: ${this.stringify(this.spec)}`);
     this.logger.info(`BackgroundBlur options: ${this.stringify(options)}`);
+
+    screen.orientation.addEventListener('change', _event => {
+      if (
+        (screen.orientation.type.startsWith('portrait') &&
+          this.canvasCtx.canvas.height < this.canvasCtx.canvas.width) ||
+        (screen.orientation.type.startsWith('landscape') &&
+          this.canvasCtx.canvas.height > this.canvasCtx.canvas.width)
+      ) {
+        [this.canvasCtx.canvas.width, this.canvasCtx.canvas.height] = [
+          this.canvasCtx.canvas.height,
+          this.canvasCtx.canvas.width,
+        ];
+      }
+    });
   }
 
   initOnFirstExecution(): void {
@@ -66,22 +80,6 @@ export default class BackgroundBlurProcessorProvided
 
     const { canvasCtx, targetCanvas } = this;
     const { width, height } = targetCanvas;
-
-    screen.orientation.addEventListener('change', _event => {
-      console.log("Arpan");
-      if (
-        (screen.orientation.type.startsWith('portrait') &&
-          canvasCtx.canvas.height < canvasCtx.canvas.width) ||
-        (screen.orientation.type.startsWith('landscape') &&
-          canvasCtx.canvas.height > canvasCtx.canvas.width)
-      ) {
-        console.log("Arpan 2");
-        [canvasCtx.canvas.width, canvasCtx.canvas.height] = [
-          canvasCtx.canvas.height,
-          canvasCtx.canvas.width,
-        ];
-      }
-    });
 
     // draw the mask
     canvasCtx.save();

@@ -42,6 +42,20 @@ export default class BackgroundReplacementFilter
     this.logger.info('BackgroundReplacement processor successfully created');
     this.logger.info(`BackgroundReplacement spec: ${this.stringify(this.spec)}`);
     this.logger.info(`BackgroundReplacement options: ${this.stringify(options)}`);
+
+    screen.orientation.addEventListener('change', _event => {
+      if (
+        (screen.orientation.type.startsWith('portrait') &&
+          this.canvasCtx.canvas.height < this.canvasCtx.canvas.width) ||
+        (screen.orientation.type.startsWith('landscape') &&
+          this.canvasCtx.canvas.height > this.canvasCtx.canvas.width)
+      ) {
+        [this.canvasCtx.canvas.width, this.canvasCtx.canvas.height] = [
+          this.canvasCtx.canvas.height,
+          this.canvasCtx.canvas.width,
+        ];
+      }
+    });
   }
 
   async setImageBlob(blob: Blob): Promise<void> {
@@ -66,20 +80,6 @@ export default class BackgroundReplacementFilter
 
     const { canvasCtx, targetCanvas } = this;
     const { width, height } = targetCanvas;
-
-    screen.orientation.addEventListener('change', _event => {
-      if (
-        (screen.orientation.type.startsWith('portrait') &&
-          canvasCtx.canvas.height < canvasCtx.canvas.width) ||
-        (screen.orientation.type.startsWith('landscape') &&
-          canvasCtx.canvas.height > canvasCtx.canvas.width)
-      ) {
-        [canvasCtx.canvas.width, canvasCtx.canvas.height] = [
-          canvasCtx.canvas.height,
-          canvasCtx.canvas.width,
-        ];
-      }
-    });
 
     // draw the mask
     canvasCtx.save();

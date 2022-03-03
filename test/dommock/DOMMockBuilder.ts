@@ -1030,6 +1030,31 @@ export default class DOMMockBuilder {
       return new GlobalAny.MediaQueryList();
     };
 
+    GlobalAny.orientation = class MockScreenOrientationElement {
+      type = 'landscape-primary';
+      private listeners: { [type: string]: MockListener[] } = {};
+
+      addEventListener(type: string, listener: (event?: Event) => void): void {
+        if (!this.listeners.hasOwnProperty(type)) {
+          this.listeners[type] = [];
+        }
+        this.listeners[type].push(listener);
+      }
+
+      dispatchEvent(event: typeof GlobalAny.Event): void {
+        const eventType: string = event.type;
+        if (this.listeners.hasOwnProperty(eventType)) {
+          this.listeners[eventType].forEach((listener: MockListener) => {
+            listener(event);
+          });
+        }
+      }
+    };
+
+    GlobalAny.screen = {
+      orientation: new GlobalAny.orientation(),
+    };
+
     GlobalAny.HTMLAudioElement = class MockHTMLAudioElement {
       sinkId = 'fakeSinkId';
       async setSinkId(deviceId: string): Promise<void> {
@@ -1046,6 +1071,8 @@ export default class DOMMockBuilder {
       delete GlobalAny.HTMLAudioElement.prototype.setSinkId;
     }
 
+    const htmlCanvasElements: HTMLElement[] = [];
+
     GlobalAny.document = {
       createElement(_tagName: string): HTMLElement {
         switch (_tagName) {
@@ -1053,11 +1080,20 @@ export default class DOMMockBuilder {
             return new GlobalAny.HTMLVideoElement();
           }
           case 'canvas': {
-            return new GlobalAny.HTMLCanvasElement();
+            const htmlCanvasElement = new GlobalAny.HTMLCanvasElement();
+            htmlCanvasElements.push(htmlCanvasElement);
+            return htmlCanvasElement;
           }
         }
       },
       visibilityState: mockBehavior.documentVisibilityState,
+      getElementsByTagName(_tagName: string): HTMLElement[] {
+        switch (_tagName) {
+          case 'canvas': {
+            return htmlCanvasElements;
+          }
+        }
+      },
     };
 
     GlobalAny.ImageData = class MockImageData {
@@ -1424,6 +1460,7 @@ export default class DOMMockBuilder {
           restore(): void {},
           putImageData(): void {},
           clearRect(): void {},
+          canvas: this,
         };
         // @ts-ignore
         return context;
@@ -1441,6 +1478,10 @@ export default class DOMMockBuilder {
     };
 
     GlobalAny.performance = Date;
+  }
+
+  setOrientation(screenOrientation: string): void {
+    GlobalAny.screen.orientation.type = screenOrientation;
   }
 
   cleanup(): void {
@@ -1485,5 +1526,7 @@ export default class DOMMockBuilder {
     delete GlobalAny.MediaStreamAudioDestinationNode;
     delete GlobalAny.MediaStreamAudioSourceNode;
     delete GlobalAny.crypto;
+    delete GlobalAny.screen;
+    delete GlobalAny.orientation;
   }
 }

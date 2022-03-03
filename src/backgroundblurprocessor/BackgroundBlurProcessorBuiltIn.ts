@@ -31,6 +31,20 @@ export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProces
     this.blurCanvas.width = this.spec.model.input.width;
     this.blurCanvas.height = this.spec.model.input.height;
     this.logger.info('BackgroundBlur processor using builtin blur');
+
+    screen.orientation.addEventListener('change', _event => {
+      if (
+        (screen.orientation.type.startsWith('portrait') &&
+          this.canvasCtx.canvas.height < this.canvasCtx.canvas.width) ||
+        (screen.orientation.type.startsWith('landscape') &&
+          this.canvasCtx.canvas.height > this.canvasCtx.canvas.width)
+      ) {
+        [this.canvasCtx.canvas.width, this.canvasCtx.canvas.height] = [
+          this.canvasCtx.canvas.height,
+          this.canvasCtx.canvas.width,
+        ];
+      }
+    });
   }
 
   drawImageWithMask(inputCanvas: HTMLCanvasElement, mask: ImageData): void {
@@ -39,20 +53,6 @@ export default class BackgroundBlurProcessorBuiltIn extends BackgroundBlurProces
     const blurredImage = this.blurredImage;
     const { canvasCtx, targetCanvas } = this;
     const { width, height } = targetCanvas;
-
-    screen.orientation.addEventListener('change', _event => {
-      if (
-        (screen.orientation.type.startsWith('portrait') &&
-          canvasCtx.canvas.height < canvasCtx.canvas.width) ||
-        (screen.orientation.type.startsWith('landscape') &&
-          canvasCtx.canvas.height > canvasCtx.canvas.width)
-      ) {
-        [canvasCtx.canvas.width, canvasCtx.canvas.height] = [
-          canvasCtx.canvas.height,
-          canvasCtx.canvas.width,
-        ];
-      }
-    });
 
     if (!mask || !blurredImage) {
       canvasCtx.clearRect(0, 0, width, height);
