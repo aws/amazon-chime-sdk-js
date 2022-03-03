@@ -3,7 +3,7 @@
 
 import * as chai from 'chai';
 
-import DefaultSDP from '../../src/sdp/DefaultSDP';
+import SDP from '../../src/sdp/SDP';
 import SDPCandidateType from '../../src/sdp/SDPCandidateType';
 import DOMMockBehavior from '../dommock/DOMMockBehavior';
 import DOMMockBuilder from '../dommock/DOMMockBuilder';
@@ -12,7 +12,7 @@ import FirefoxSDPMock from './FirefoxSDPMock';
 import SafariSDPMock from './SafariSDPMock';
 import SDPMock from './SDPMock';
 
-describe('DefaultSDP', () => {
+describe('SDP', () => {
   let expect: Chai.ExpectStatic;
   const mockBehavior = new DOMMockBehavior();
   let mockBuilder: DOMMockBuilder;
@@ -32,14 +32,14 @@ describe('DefaultSDP', () => {
 
   describe('construction', () => {
     it('can be constructed', () => {
-      const sdp = new DefaultSDP(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
+      const sdp = new SDP(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
       expect(sdp).to.not.equal(null);
     });
   });
 
   describe('clone', () => {
     it('clones the SDP object', () => {
-      const sdpA = new DefaultSDP(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
+      const sdpA = new SDP(SDPMock.VIDEO_HOST_AUDIO_ANSWER);
       const sdpB = sdpA.clone();
       expect(sdpA.sdp).to.equal(sdpB.sdp);
     });
@@ -47,20 +47,20 @@ describe('DefaultSDP', () => {
 
   describe('hasVideo', () => {
     it('returns true if the sdp has a line for the video', () => {
-      const sdp = new DefaultSDP(SDPMock.VIDEO_HOST_AUDIO_VIDEO_ANSWER);
+      const sdp = new SDP(SDPMock.VIDEO_HOST_AUDIO_VIDEO_ANSWER);
       expect(sdp.hasVideo()).to.be.true;
     });
   });
 
   describe('hasCandidates', () => {
     it('returns false if SDP has no candidates', () => {
-      const sdp = new DefaultSDP(SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      const sdp = new SDP(SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       const candidateExists = sdp.hasCandidates();
       expect(candidateExists).to.equal(false);
     });
 
     it('returns true if SDP has candidates', () => {
-      const sdp = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdp = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const candidateExists = sdp.hasCandidates();
       expect(candidateExists).to.equal(true);
     });
@@ -68,19 +68,19 @@ describe('DefaultSDP', () => {
 
   describe('isRTPCandidate', () => {
     it('returns false if component type of ICE candidate is not RTP', () => {
-      const isRTPCandidate = DefaultSDP.isRTPCandidate(SDPMock.TEST_CANDIDATE);
+      const isRTPCandidate = SDP.isRTPCandidate(SDPMock.TEST_CANDIDATE);
       expect(isRTPCandidate).to.equal(false);
     });
 
     it('returns true if component type of ICE candidate is RTP', () => {
-      const isRTPCandidate = DefaultSDP.isRTPCandidate(SDPMock.IS_CANDIDATE);
+      const isRTPCandidate = SDP.isRTPCandidate(SDPMock.IS_CANDIDATE);
       expect(isRTPCandidate).to.equal(true);
     });
   });
 
   describe('withAudioMaxAverageBitrate', () => {
     it('adds the bitrate parameter', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const sdpB = sdpA.withAudioMaxAverageBitrate(64000);
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_AUDIO_BITRATE.replace('$VALUE', '64000')
@@ -88,7 +88,7 @@ describe('DefaultSDP', () => {
     });
 
     it('updates an old bitrate parameter', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const sdpB = sdpA.withAudioMaxAverageBitrate(64000).withAudioMaxAverageBitrate(48000);
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_AUDIO_BITRATE.replace('$VALUE', '48000')
@@ -96,41 +96,41 @@ describe('DefaultSDP', () => {
     });
 
     it('returns same SDP if null passed in', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const sdpB = sdpA.withAudioMaxAverageBitrate(null);
       expect(sdpB.sdp).to.equal(sdpA.sdp);
     });
 
     it('returns same SDP if zero passed in', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const sdpB = sdpA.withAudioMaxAverageBitrate(0);
       expect(sdpB.sdp).to.equal(sdpA.sdp);
     });
 
     it('returns same SDP if undefined passed in', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const sdpB = sdpA.withAudioMaxAverageBitrate(undefined);
       expect(sdpB.sdp).to.equal(sdpA.sdp);
     });
 
     it('clamps to the lowest bitrate', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const sdpB = sdpA.withAudioMaxAverageBitrate(1);
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_AUDIO_BITRATE.replace(
           '$VALUE',
-          `${DefaultSDP.rfc7587LowestBitrate}`
+          `${SDP.rfc7587LowestBitrate}`
         )
       );
     });
 
     it('clamps to the highest bitrate', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const sdpB = sdpA.withAudioMaxAverageBitrate(Infinity);
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_AUDIO_BITRATE.replace(
           '$VALUE',
-          `${DefaultSDP.rfc7587HighestBitrate}`
+          `${SDP.rfc7587HighestBitrate}`
         )
       );
     });
@@ -138,13 +138,13 @@ describe('DefaultSDP', () => {
 
   describe('withStereoAudio', () => {
     it('adds the stereo parameters correctly for fmtp that follows opus rtpmap', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO);
       const sdpB = sdpA.withAudioMaxAverageBitrate(128000).withStereoAudio();
       expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_STEREO);
     });
 
     it('adds the stereo parameters correctly for fmtp that precedes opus rtpmap', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FIREFOX);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_FIREFOX);
       const sdpB = sdpA.withAudioMaxAverageBitrate(128000).withStereoAudio();
       expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_WITH_STEREO_FIREFOX);
     });
@@ -152,13 +152,13 @@ describe('DefaultSDP', () => {
 
   describe('withVideoLayersAllocationRtpHeaderExtension', () => {
     it('does not add layers allocation line if no id is available', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
       const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
       expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITH_ALL_HEADER_EXTENSIONS);
     });
 
     it('adds layers allocation line if available', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS);
       const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_CONSECUTIVE_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
@@ -166,7 +166,7 @@ describe('DefaultSDP', () => {
     });
 
     it('adds layers allocation line if available in gap', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS);
       const sdpB = sdpA.withVideoLayersAllocationRtpHeaderExtension();
       expect(sdpB.sdp).to.equal(
         SDPMock.LOCAL_OFFER_WITH_GAP_IN_HEADER_EXTENSIONS_AND_LAYERS_ALLOCATION_EXTENSION
@@ -182,7 +182,7 @@ describe('DefaultSDP', () => {
         SDPMock.RELAY_CANDIDATE,
         SDPMock.TEST_CANDIDATE,
       ];
-      const sdpA = new DefaultSDP(candidates.join('\r\n'));
+      const sdpA = new SDP(candidates.join('\r\n'));
       const sdpB = sdpA.withoutServerReflexiveCandidates();
       const candidatesB = [
         SDPMock.PEER_REFLEXIVE_CANDIDATE,
@@ -201,7 +201,7 @@ describe('DefaultSDP', () => {
         SDPMock.RELAY_CANDIDATE,
         SDPMock.TEST_CANDIDATE,
       ];
-      const sdpA = new DefaultSDP(candidates.join('\r\n'));
+      const sdpA = new SDP(candidates.join('\r\n'));
       const sdpB = sdpA.withoutCandidateType(SDPCandidateType.Relay);
       const candidatesB = [
         SDPMock.PEER_REFLEXIVE_CANDIDATE,
@@ -226,13 +226,13 @@ describe('DefaultSDP', () => {
     });
 
     it('returns same SDP when no candidate', () => {
-      const sdpA = new DefaultSDP(SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
+      const sdpA = new SDP(SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
       const sdpB = sdpA.withoutCandidateType(SDPCandidateType.Relay);
       expect(sdpB.sdp).to.equal(SDPMock.LOCAL_OFFER_WITHOUT_CANDIDATE);
     });
 
     it('returns same SDP when SDP candidate type is unknown', () => {
-      const sdpA = new DefaultSDP(SDPMock.UNKNOWN_CANDIDATE);
+      const sdpA = new SDP(SDPMock.UNKNOWN_CANDIDATE);
       const sdpB = sdpA.withoutCandidateType(SDPCandidateType.Relay);
       expect(sdpB.sdp).to.equal(SDPMock.UNKNOWN_CANDIDATE);
     });
@@ -240,14 +240,14 @@ describe('DefaultSDP', () => {
 
   describe('withUnifiedPlanFormat', () => {
     it('returns same sdp for mozilla unified plan type sdp', () => {
-      const sdpAudio = new DefaultSDP(SDPMock.MOZILLA_AUDIO_SDP).withUnifiedPlanFormat().sdp;
+      const sdpAudio = new SDP(SDPMock.MOZILLA_AUDIO_SDP).withUnifiedPlanFormat().sdp;
       expect(sdpAudio).to.equal(SDPMock.MOZILLA_AUDIO_SDP);
-      const newSdp = new DefaultSDP(SDPMock.MOZILLA_AV_SENDING).withUnifiedPlanFormat().sdp;
+      const newSdp = new SDP(SDPMock.MOZILLA_AV_SENDING).withUnifiedPlanFormat().sdp;
       expect(newSdp).to.equal(SDPMock.MOZILLA_AV_SENDING);
     });
 
     it('replaces user origin attribute with mozilla-chrome keyword for Chrome sdp', () => {
-      const newSdp = new DefaultSDP(
+      const newSdp = new SDP(
         SDPMock.CHROME_UNIFIED_PLAN_AUDIO_ONLY_WITH_VIDEO_CHECK_IN
       ).withUnifiedPlanFormat().sdp;
       expect(newSdp.includes('o=mozilla-chrome')).to.be.true;
@@ -256,66 +256,64 @@ describe('DefaultSDP', () => {
 
   describe('hasCandidatesForAllMLines', () => {
     it('returns true if sdp does not have dummy ip in connection attributes', () => {
-      const checkResult = new DefaultSDP(
+      const checkResult = new SDP(
         SDPMock.CHROME_UNIFIED_PLAN_AUDIO_ONLY_WITH_VIDEO_CHECK_IN
       ).hasCandidatesForAllMLines();
       expect(checkResult).to.be.true;
     });
 
     it('returns false if sdp does have dummy ip in connection attributes', () => {
-      let checkResult = new DefaultSDP(
+      let checkResult = new SDP(
         SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE
       ).hasCandidatesForAllMLines();
       expect(checkResult).to.be.false;
 
-      checkResult = new DefaultSDP(
-        SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE
-      ).hasCandidates();
+      checkResult = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE).hasCandidates();
       expect(checkResult).to.be.false;
     });
   });
 
   describe('ssrcForVideoSendingSection', () => {
     it('audio only', () => {
-      const sdp = new DefaultSDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      const sdp = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
       expect(sdp.ssrcForVideoSendingSection()).to.deep.equal('');
-      const sdpFirefox = new DefaultSDP(FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_INACTIVE);
+      const sdpFirefox = new SDP(FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_INACTIVE);
       expect(sdpFirefox.ssrcForVideoSendingSection()).to.deep.equal('');
     });
 
     it('video recvonly', () => {
-      const sdp = new DefaultSDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_RECV);
+      const sdp = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_RECV);
       expect(sdp.ssrcForVideoSendingSection()).to.deep.equal('');
-      const sdpPlanB = new DefaultSDP(ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_RECVONLY);
+      const sdpPlanB = new SDP(ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_RECVONLY);
       expect(sdpPlanB.ssrcForVideoSendingSection()).to.deep.equal('');
     });
 
     it('video sendrecv', () => {
-      const sdp = new DefaultSDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING);
+      const sdp = new SDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING);
       expect(sdp.ssrcForVideoSendingSection()).to.deep.equal('2209845614');
       // TODO: Not expecting Firefox to suffer from this issue
-      const sdpFirefox = new DefaultSDP(FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_SENDRECV);
+      const sdpFirefox = new SDP(FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_SENDRECV);
       expect(sdpFirefox.ssrcForVideoSendingSection()).to.deep.equal('');
 
-      const sdpChromePlanB = new DefaultSDP(ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV);
+      const sdpChromePlanB = new SDP(ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV);
       expect(sdpChromePlanB.ssrcForVideoSendingSection()).to.deep.equal('515437170');
     });
   });
 
   describe('videoSendSectionHasDifferentSSRC', () => {
     it('returns true if the ssrc for video sending changes', () => {
-      const sdp1 = new DefaultSDP(ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV);
-      const sdp2 = new DefaultSDP(ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV_2);
+      const sdp1 = new SDP(ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV);
+      const sdp2 = new SDP(ChromeSDPMock.PLAN_B_AUDIO_SENDRECV_VIDEO_SENDRECV_2);
       expect(sdp1.videoSendSectionHasDifferentSSRC(sdp2)).to.equal(true);
       // from sending to sending and receiving
-      const sdp3 = new DefaultSDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING);
-      const sdp4 = new DefaultSDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING_RECEIVING);
+      const sdp3 = new SDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING);
+      const sdp4 = new SDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING_RECEIVING);
       expect(sdp3.videoSendSectionHasDifferentSSRC(sdp4)).to.equal(false);
     });
 
     it('return false if the ssrc for video sending do not change', () => {
-      const sdp1 = new DefaultSDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_RECV);
-      const sdp2 = new DefaultSDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING);
+      const sdp1 = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_RECV);
+      const sdp2 = new SDP(SafariSDPMock.SAFARI_AUDIO_VIDEO_SENDING);
       expect(sdp1.videoSendSectionHasDifferentSSRC(sdp2)).to.equal(false);
       expect(sdp2.videoSendSectionHasDifferentSSRC(sdp1)).to.equal(false);
     });
@@ -323,26 +321,26 @@ describe('DefaultSDP', () => {
 
   describe('removeH264SupportFromSendSection', () => {
     it('Remove H264 codec from video section', () => {
-      const sdpObj = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING);
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING);
       expect(sdpObj.removeH264SupportFromSendSection().sdp).to.deep.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY
       );
 
-      const sdpObj2 = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_MULTIPLE_FMTP);
+      const sdpObj2 = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_MULTIPLE_FMTP);
       expect(sdpObj2.removeH264SupportFromSendSection().sdp).to.deep.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY
       );
     });
 
     it('Does not do anything if no video', () => {
-      const sdpObj = new DefaultSDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
+      const sdpObj = new SDP(SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE);
       expect(sdpObj.removeH264SupportFromSendSection().sdp).to.deep.equal(
         SafariSDPMock.IOS_SAFARI_AUDIO_SENDRECV_VIDEO_INACTIVE
       );
     });
 
     it('Does not do anything if VP8 only', () => {
-      const sdpObj = new DefaultSDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY);
+      const sdpObj = new SDP(SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY);
       expect(sdpObj.removeH264SupportFromSendSection().sdp).to.deep.equal(
         SDPMock.LOCAL_OFFER_WITH_AUDIO_VIDEO_SENDING_VP8_ONLY
       );
@@ -351,14 +349,14 @@ describe('DefaultSDP', () => {
 
   describe('mediaSections', () => {
     it('Returns empty list without media sections', () => {
-      const sdpObj = new DefaultSDP(FirefoxSDPMock.NO_MEDIA_SECTION);
+      const sdpObj = new SDP(FirefoxSDPMock.NO_MEDIA_SECTION);
       const mediaSections = sdpObj.mediaSections();
 
       expect(mediaSections.length).to.equal(0);
     });
 
     it('Returns correct list', () => {
-      const sdpObj = new DefaultSDP(FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE);
+      const sdpObj = new SDP(FirefoxSDPMock.AUDIO_SENDRECV_VIDEO_MULTIPLE);
       const mediaSections = sdpObj.mediaSections();
 
       expect(mediaSections.length).to.equal(6);

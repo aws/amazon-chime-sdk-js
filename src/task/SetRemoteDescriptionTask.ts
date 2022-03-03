@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AudioVideoControllerState from '../audiovideocontroller/AudioVideoControllerState';
-import DefaultSDP from '../sdp/DefaultSDP';
+import SDP from '../sdp/SDP';
 import BaseTask from './BaseTask';
 
 /*
@@ -32,13 +32,11 @@ export default class SetRemoteDescriptionTask extends BaseTask {
     }
 
     let sdp = this.context.sdpAnswer;
-    sdp = new DefaultSDP(sdp).withoutServerReflexiveCandidates().sdp;
+    sdp = new SDP(sdp).withoutServerReflexiveCandidates().sdp;
     if (this.context.audioProfile) {
-      sdp = new DefaultSDP(sdp).withAudioMaxAverageBitrate(
-        this.context.audioProfile.audioBitrateBps
-      ).sdp;
+      sdp = new SDP(sdp).withAudioMaxAverageBitrate(this.context.audioProfile.audioBitrateBps).sdp;
       if (this.context.audioProfile.isStereo()) {
-        sdp = new DefaultSDP(sdp).withStereoAudio().sdp;
+        sdp = new SDP(sdp).withStereoAudio().sdp;
       }
     }
 

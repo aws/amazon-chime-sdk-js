@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add automatic language identification support from Amazon Transcribe for live transcription.
 
 ### Removed
-
+- Removed SDP interface.
 ### Changed
 
 ### Fixed
