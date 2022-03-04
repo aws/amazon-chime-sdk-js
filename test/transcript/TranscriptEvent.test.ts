@@ -21,7 +21,7 @@ import {
   makeSdkTranscriptFrame,
   makeSdkTranscriptionStatus,
   makeSdkTranscriptWithEntities,
-  makeSdkTranscriptWithLanguageIdentifications,
+  makeSdkTranscriptWithLanguageIdentification,
   TRANSCRIPT_EVENT_TEST_VECTORS,
 } from './TranscriptEventTestDataHelper';
 
