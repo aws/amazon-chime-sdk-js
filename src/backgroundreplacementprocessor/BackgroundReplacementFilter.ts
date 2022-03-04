@@ -42,21 +42,6 @@ export default class BackgroundReplacementFilter
     this.logger.info('BackgroundReplacement processor successfully created');
     this.logger.info(`BackgroundReplacement spec: ${this.stringify(this.spec)}`);
     this.logger.info(`BackgroundReplacement options: ${this.stringify(options)}`);
-
-    // Exchange the height and width of the canvas context if there is a mismatch with the orientation
-    screen.orientation.addEventListener('change', _event => {
-      if (
-        (screen.orientation.type.startsWith('portrait') &&
-          this.canvasCtx.canvas.height < this.canvasCtx.canvas.width) ||
-        (screen.orientation.type.startsWith('landscape') &&
-          this.canvasCtx.canvas.height > this.canvasCtx.canvas.width)
-      ) {
-        [this.canvasCtx.canvas.width, this.canvasCtx.canvas.height] = [
-          this.canvasCtx.canvas.height,
-          this.canvasCtx.canvas.width,
-        ];
-      }
-    });
   }
 
   async setImageBlob(blob: Blob): Promise<void> {

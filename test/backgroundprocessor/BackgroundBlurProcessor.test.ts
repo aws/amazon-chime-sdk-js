@@ -620,56 +620,12 @@ describe('BackgroundBlurProcessor', () => {
         expect(output[0]).to.be.equal(buffers[0]);
       });
 
-      it('interchanges height and width for landscape orientation', async () => {
+      it('can predict when input dimensions are interchanged', async () => {
         backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
         stubSupported(true);
 
         const canvas = document.createElement('canvas');
-        const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
-
-        canvas.height = 960;
-        canvas.width = 540;
-
-        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
-          reportingPeriodMillis: 1,
-        })) as BackgroundBlurProcessorProvided;
-
-        bbprocessor.process(buffers);
-        screen.orientation.dispatchEvent(new Event('change'));
-
-        expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(540);
-        expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(960);
-      });
-
-      it('interchanges height and width for portrait orientation', async () => {
-        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
-        stubSupported(true);
-
-        const canvas = document.createElement('canvas');
-        const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
-
-        canvas.height = 540;
-        canvas.width = 960;
-
-        domMockBuilder.setOrientation('portrait-primary');
-
-        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
-          reportingPeriodMillis: 1,
-        })) as BackgroundBlurProcessorProvided;
-
-        bbprocessor.process(buffers);
-        screen.orientation.dispatchEvent(new Event('change'));
-
-        expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(960);
-        expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(540);
-      });
-
-      it('does not interchange height and width when orientation is correct for landscape orientation', async () => {
-        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
-        stubSupported(true);
-
-        const canvas = document.createElement('canvas');
-        const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+        let buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
 
         canvas.height = 540;
         canvas.width = 960;
@@ -678,34 +634,16 @@ describe('BackgroundBlurProcessor', () => {
           reportingPeriodMillis: 1,
         })) as BackgroundBlurProcessorProvided;
 
-        bbprocessor.process(buffers);
-        screen.orientation.dispatchEvent(new Event('change'));
-
-        expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(540);
-        expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(960);
-      });
-
-      it('does not interchange height and width when orientation is correct for portrait orientation', async () => {
-        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
-        stubSupported(true);
-
-        const canvas = document.createElement('canvas');
-        const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+        let output = await bbprocessor.process(buffers);
+        expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
 
         canvas.height = 960;
         canvas.width = 540;
+        buffers = [new CanvasVideoFrameBuffer(canvas)];
+        output = await bbprocessor.process(buffers);
+        expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
 
-        domMockBuilder.setOrientation('portrait-primary');
-
-        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
-          reportingPeriodMillis: 1,
-        })) as BackgroundBlurProcessorProvided;
-
-        bbprocessor.process(buffers);
-        screen.orientation.dispatchEvent(new Event('change'));
-
-        expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(960);
-        expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(540);
+        await bbprocessor.destroy();
       });
     });
 
@@ -1049,84 +987,66 @@ describe('BackgroundBlurProcessor', () => {
       );
     });
 
-    it('interchanges height and width for landscape orientation', async () => {
+    it('can predict when input dimensions are interchanged', async () => {
       backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
       stubSupported(true, false);
 
       const canvas = document.createElement('canvas');
-      const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
-
-      canvas.height = 960;
-      canvas.width = 540;
-
-      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
-
-      bbprocessor.process(buffers);
-      screen.orientation.dispatchEvent(new Event('change'));
-
-      expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(540);
-      expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(960);
-    });
-
-    it('interchanges height and width for portrait orientation', async () => {
-      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
-      stubSupported(true, false);
-
-      const canvas = document.createElement('canvas');
-      const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
-
-      canvas.height = 540;
-      canvas.width = 960;
-
-      domMockBuilder.setOrientation('portrait-primary');
-
-      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
-
-      bbprocessor.process(buffers);
-      screen.orientation.dispatchEvent(new Event('change'));
-
-      expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(960);
-      expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(540);
-    });
-
-    it('does not interchange height and width when orientation is correct for landscape orientation', async () => {
-      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
-      stubSupported(true, false);
-
-      const canvas = document.createElement('canvas');
-      const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+      let buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
 
       canvas.height = 540;
       canvas.width = 960;
 
       const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
 
-      bbprocessor.process(buffers);
-      screen.orientation.dispatchEvent(new Event('change'));
-
-      expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(540);
-      expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(960);
-    });
-
-    it('does not interchange height and width when orientation is correct for portrait orientation', async () => {
-      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
-      stubSupported(true, false);
-
-      const canvas = document.createElement('canvas');
-      const buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+      let output = await bbprocessor.process(buffers);
+      expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
 
       canvas.height = 960;
       canvas.width = 540;
+      buffers = [new CanvasVideoFrameBuffer(canvas)];
+      output = await bbprocessor.process(buffers);
+      expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
 
-      domMockBuilder.setOrientation('portrait-primary');
+      await bbprocessor.destroy();
+      expect(bbprocessor).to.be.instanceOf(BackgroundBlurProcessorBuiltIn);
+    });
+  });
 
-      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
+  describe('BackgroundBlurVideoFrameProcessor', () => {
+    let spec: BackgroundFilterSpec;
+    let options: BackgroundBlurOptions;
 
-      bbprocessor.process(buffers);
-      screen.orientation.dispatchEvent(new Event('change'));
+    beforeEach(() => {
+      spec = {};
+      options = {
+        blurStrength: BlurStrength.LOW,
+      };
+    });
 
-      expect(document.getElementsByTagName('canvas')[1].height).to.be.equal(960);
-      expect(document.getElementsByTagName('canvas')[1].width).to.be.equal(540);
+    it('create should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      // create processor
+      const bbprocessor = await BackgroundBlurVideoFrameProcessor.create(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal({});
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
+
+      await bbprocessor.destroy();
+    });
+
+    it('isSupported should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      await BackgroundBlurVideoFrameProcessor.isSupported(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal({});
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
     });
   });
 
