@@ -51,4 +51,40 @@ ChimeSDKMeetingsGamma)
     npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-gamma-canary-ap-southeast-1$canarySuffix -s chime-sdk-meetings-demo-gamma-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-gamma-canary$canarySuffix -t -l
     ;;
 
+ChimeProd)
+    echo "Deploying to prod stage for canary that talks to prod Chime client"
+
+    # Uses Chime Client
+    npm run deploy -- -b chime-sdk-demo-prod-canary$canarySuffix -o chime-sdk-demo-prod-canary$canarySuffix -s chime-sdk-demo-prod-canary$canarySuffix -u false -t -l
+    npm run deploy -- -b chime-sdk-meeting-readiness-checker-prod-canary$canarySuffix -s chime-sdk-meeting-readiness-checker-prod-canary$canarySuffix -a meetingReadinessChecker -u false -t -l
+    ;;
+
+ChimeSDKMeetingsProdIAD)
+    echo "Deploying to prod stage for canary that talks to prod IAD ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r us-east-1 -b chime-sdk-meetings-demo-prod-canary-us-east-1$canarySuffix -o chime-sdk-meetings-iad-demo-prod-canary$canarySuffix -s chime-sdk-meetings-demo-prod-canary-us-east-1$canarySuffix -t -l
+    ;;
+
+ChimeSDKMeetingsProdPDX)
+    echo "Deploying to prod stage for canary that talks to prod PDX ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r us-west-2 -b chime-sdk-meetings-demo-prod-canary-us-west-2$canarySuffix -o chime-sdk-meetings-pdx-demo-prod-canary$canarySuffix -s chime-sdk-meetings-demo-prod-canary-us-west-2$canarySuffix -t -l
+    ;;
+
+ChimeSDKMeetingsProdFRA)
+    echo "Deploying to prod stage for canary that talks to prod FRA ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r eu-central-1 -b chime-sdk-meetings-demo-prod-canary-eu-central-1$canarySuffix -o chime-sdk-meetings-fra-demo-prod-canary$canarySuffix -s chime-sdk-meetings-demo-prod-canary-eu-central-1$canarySuffix -t -l
+    ;;
+
+ChimeSDKMeetingsProdSIN)
+    echo "Deploying to prod stage for canary that talks to prod SIN ChimeSDKMeetings client"
+
+    # Uses ChimeSDKMeetings client
+    npm run deploy -- -r ap-southeast-1 -b chime-sdk-meetings-demo-prod-canary-ap-southeast-1$canarySuffix -o chime-sdk-meetings-sin-demo-prod-canary$canarySuffix -s chime-sdk-meetings-demo-prod-canary-ap-southeast-1$canarySuffix -t -l
+    ;;
+
 esac
