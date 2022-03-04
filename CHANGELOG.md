@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
     
 ### Fixed
+- Fix a video orientation issue when Background Blur/Background Replacement is enabled.
     
 ## [2.28.0] - 2022-02-23
 

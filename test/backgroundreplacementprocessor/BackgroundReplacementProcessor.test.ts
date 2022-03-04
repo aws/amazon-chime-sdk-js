@@ -236,6 +236,34 @@ describe('BackgroundReplacementProcessor', () => {
         brprocessor.drawImageWithMask(document.createElement('canvas'), null);
         brprocessor.drawImageWithMask(document.createElement('canvas'), new ImageData(10, 10));
       });
+
+      it('can predict when input dimensions are interchanged', async () => {
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+        stubSupported(true);
+
+        const canvas = document.createElement('canvas');
+        let buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+
+        canvas.height = 540;
+        canvas.width = 960;
+
+        // When replacement image is not passed
+        let brprocessor = (await BackgroundReplacementVideoFrameProcessor.create()) as BackgroundReplacementFilter;
+
+        // When replacement image is passed
+        brprocessor = (await BackgroundReplacementVideoFrameProcessor.create(
+          null,
+          optionWithImagePath
+        )) as BackgroundReplacementFilter;
+        let output = await brprocessor.process(buffers);
+        expect(output[0]).to.equal(brprocessor['canvasVideoFrameBuffer']);
+
+        canvas.height = 960;
+        canvas.width = 540;
+        buffers = [new CanvasVideoFrameBuffer(canvas)];
+        output = await brprocessor.process(buffers);
+        expect(output[0]).to.equal(brprocessor['canvasVideoFrameBuffer']);
+      });
     });
   });
 });
