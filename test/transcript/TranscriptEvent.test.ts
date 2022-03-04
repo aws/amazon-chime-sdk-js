@@ -273,7 +273,7 @@ describe('TranscriptEvent', () => {
   });
 
   it('handles decoding of one transcript event of transcript type with language identification', async () => {
-    const event = makeSdkTranscriptWithLanguageIdentifications();
+    const event = makeSdkTranscriptWithLanguageIdentification();
 
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPT_LANGUAGE_IDENTIFICATIONS
@@ -301,25 +301,25 @@ describe('TranscriptEvent', () => {
       results[0].alternatives[0].items[2].confidence
     );
     expect(actualEvents[0].results[0].languageIdentification.length).to.eql(
-      results[0].languageIdentifications.length
+      results[0].languageIdentification.length
     );
     expect(actualEvents[0].results[0].languageIdentification[0].languageCode).to.eql(
-      results[0].languageIdentifications[0].languageCode
+      results[0].languageIdentification[0].languageCode
     );
     expect(actualEvents[0].results[0].languageIdentification[0].score).to.eql(
-      results[0].languageIdentifications[0].score
+      results[0].languageIdentification[0].score
     );
     expect(actualEvents[0].results[0].languageIdentification[1].languageCode).to.eql(
-      results[0].languageIdentifications[1].languageCode
+      results[0].languageIdentification[1].languageCode
     );
     expect(actualEvents[0].results[0].languageIdentification[1].score).to.eql(
-      results[0].languageIdentifications[1].score
+      results[0].languageIdentification[1].score
     );
     expect(actualEvents[0].results[0].languageIdentification[2].languageCode).to.eql(
-      results[0].languageIdentifications[2].languageCode
+      results[0].languageIdentification[2].languageCode
     );
     expect(actualEvents[0].results[0].languageIdentification[2].score).to.eql(
-      results[0].languageIdentifications[2].score
+      results[0].languageIdentification[2].score
     );
   });
 });

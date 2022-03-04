@@ -216,7 +216,7 @@ export function makeSdkTranscriptWithLanguageIdentification(): SdkTranscriptEven
 
   alternative.transcript = 'Test.';
   result.alternatives = [alternative];
-  result.languageIdentifications = [
+  result.languageIdentification = [
     languageIdentification1,
     languageIdentification2,
     languageIdentification3,
