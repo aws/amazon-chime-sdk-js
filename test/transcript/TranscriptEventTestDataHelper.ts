@@ -167,7 +167,7 @@ export function makeSdkTranscriptWithEntities(): SdkTranscriptEvent {
   return event;
 }
 
-export function makeSdkTranscriptWithLanguageIdentifications(): SdkTranscriptEvent {
+export function makeSdkTranscriptWithLanguageIdentification(): SdkTranscriptEvent {
   const event = SdkTranscriptEvent.create();
   const transcript = SdkTranscript.create();
   const result = SdkTranscriptResult.create();

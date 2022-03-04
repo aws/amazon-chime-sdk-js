@@ -3686,8 +3686,8 @@ export interface ISdkTranscriptResult {
     /** SdkTranscriptResult languageCode */
     languageCode?: (string|null);
 
-    /** SdkTranscriptResult languageIdentifications */
-    languageIdentifications?: (ISdkTranscriptLanguageWithScore[]|null);
+    /** SdkTranscriptResult languageIdentification */
+    languageIdentification?: (ISdkTranscriptLanguageWithScore[]|null);
 }
 
 /** Represents a SdkTranscriptResult. */
@@ -3720,8 +3720,8 @@ export class SdkTranscriptResult implements ISdkTranscriptResult {
     /** SdkTranscriptResult languageCode. */
     public languageCode: string;
 
-    /** SdkTranscriptResult languageIdentifications. */
-    public languageIdentifications: ISdkTranscriptLanguageWithScore[];
+    /** SdkTranscriptResult languageIdentification. */
+    public languageIdentification: ISdkTranscriptLanguageWithScore[];
 
     /**
      * Creates a new SdkTranscriptResult instance using the specified properties.
