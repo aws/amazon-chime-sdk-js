@@ -75,10 +75,6 @@ export class TranscriptEventConverter {
             alternatives: [],
           };
 
-          if (result.languageIdentification && result.languageIdentification.length > 0) {
-            transcriptResult.languageIdentification = [];
-          }
-
           if (result.languageCode) {
             transcriptResult.languageCode = result.languageCode;
           }
