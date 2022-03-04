@@ -83,13 +83,16 @@ export class TranscriptEventConverter {
             transcriptResult.languageCode = result.languageCode;
           }
 
-          for (const languageIdentification of result.languageIdentification) {
-            const transcriptLanguageWithScore: TranscriptLanguageWithScore = {
-              languageCode: languageIdentification.languageCode,
-              score: languageIdentification.score,
-            };
+          if (result.languageIdentification && result.languageIdentification.length > 0) {
+            transcriptResult.languageIdentification = [];
+            for (const languageIdentification of result.languageIdentification) {
+              const transcriptLanguageWithScore: TranscriptLanguageWithScore = {
+                languageCode: languageIdentification.languageCode,
+                score: languageIdentification.score,
+              };
 
-            transcriptResult.languageIdentification.push(transcriptLanguageWithScore);
+              transcriptResult.languageIdentification.push(transcriptLanguageWithScore);
+            }
           }
 
           for (const alternative of result.alternatives) {
