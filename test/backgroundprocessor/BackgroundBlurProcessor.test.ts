@@ -6,6 +6,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 
 import * as loader from '../../libs/voicefocus/loader';
+import { BackgroundFilterSpec } from '../../src';
 import BackgroundBlurOptions from '../../src/backgroundblurprocessor/BackgroundBlurOptions';
 import BackgroundBlurProcessorBuiltIn from '../../src/backgroundblurprocessor/BackgroundBlurProcessorBuiltIn';
 import BackgroundBlurProcessorProvided from '../../src/backgroundblurprocessor/BackgroundBlurProcessorProvided';
@@ -618,6 +619,32 @@ describe('BackgroundBlurProcessor', () => {
         const output = await bbprocessor.process(buffers);
         expect(output[0]).to.be.equal(buffers[0]);
       });
+
+      it('can predict when input dimensions are interchanged', async () => {
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+        stubSupported(true);
+
+        const canvas = document.createElement('canvas');
+        let buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+
+        canvas.height = 540;
+        canvas.width = 960;
+
+        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          reportingPeriodMillis: 1,
+        })) as BackgroundBlurProcessorProvided;
+
+        let output = await bbprocessor.process(buffers);
+        expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
+
+        canvas.height = 960;
+        canvas.width = 540;
+        buffers = [new CanvasVideoFrameBuffer(canvas)];
+        output = await bbprocessor.process(buffers);
+        expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
+
+        await bbprocessor.destroy();
+      });
     });
 
     it('is supported', async () => {
@@ -958,6 +985,105 @@ describe('BackgroundBlurProcessor', () => {
       await expect(BackgroundBlurVideoFrameProcessor.create()).to.be.rejectedWith(
         "could not initialize the background blur video frame processor due to 'failed to initialize the module'"
       );
+    });
+
+    it('can predict when input dimensions are interchanged', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true, false);
+
+      const canvas = document.createElement('canvas');
+      let buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+
+      canvas.height = 540;
+      canvas.width = 960;
+
+      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
+
+      let output = await bbprocessor.process(buffers);
+      expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
+
+      canvas.height = 960;
+      canvas.width = 540;
+      buffers = [new CanvasVideoFrameBuffer(canvas)];
+      output = await bbprocessor.process(buffers);
+      expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
+
+      await bbprocessor.destroy();
+      expect(bbprocessor).to.be.instanceOf(BackgroundBlurProcessorBuiltIn);
+    });
+  });
+
+  describe('BackgroundBlurVideoFrameProcessor', () => {
+    let spec: BackgroundFilterSpec;
+    let options: BackgroundBlurOptions;
+
+    beforeEach(() => {
+      spec = {};
+      options = {
+        blurStrength: BlurStrength.LOW,
+      };
+    });
+
+    it('create should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      // create processor
+      const bbprocessor = await BackgroundBlurVideoFrameProcessor.create(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal({});
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
+
+      await bbprocessor.destroy();
+    });
+
+    it('isSupported should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      await BackgroundBlurVideoFrameProcessor.isSupported(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal({});
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
+    });
+  });
+
+  describe('BackgroundBlurVideoFrameProcessor', () => {
+    let spec: BackgroundFilterSpec;
+    let options: BackgroundBlurOptions;
+
+    beforeEach(() => {
+      spec = {};
+      options = {
+        blurStrength: BlurStrength.LOW,
+      };
+    });
+
+    it('create should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      // create processor
+      const bbprocessor = await BackgroundBlurVideoFrameProcessor.create(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal({});
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
+
+      await bbprocessor.destroy();
+    });
+
+    it('isSupported should not change spec and options by reference', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true);
+
+      await BackgroundBlurVideoFrameProcessor.isSupported(spec, options);
+
+      // expect spec and options not changed by reference
+      expect(spec).to.deep.equal({});
+      expect(options).to.deep.equal({ blurStrength: BlurStrength.LOW });
     });
   });
 });
