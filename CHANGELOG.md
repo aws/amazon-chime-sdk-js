@@ -12,10 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Changed
-- Changed TrancriptResult field name `languageIdentifications` to `languageIdentification` and mark `languageIdentification` as optional
 
 ### Fixed
-- Fix serverless endpoint to correctly render Live Transcription Config on mobile browser
 
 ## [3.0.0-beta.1] - 2022-02-23
 
