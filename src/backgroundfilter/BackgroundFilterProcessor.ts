@@ -328,6 +328,15 @@ export default abstract class BackgroundFilterProcessor {
       this.initOnFirstExecution();
     }
 
+    if (this.sourceWidth !== frameWidth || this.sourceHeight !== frameHeight) {
+      this.sourceWidth = frameWidth;
+      this.sourceHeight = frameHeight;
+
+      // update target canvas size to match the frame size
+      this.targetCanvas.width = this.sourceWidth;
+      this.targetCanvas.height = this.sourceHeight;
+    }
+
     try {
       this.frameCounter.filterSubmitted();
       let mask = this.mask$.value;

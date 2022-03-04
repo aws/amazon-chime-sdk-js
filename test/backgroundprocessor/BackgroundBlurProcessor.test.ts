@@ -618,6 +618,32 @@ describe('BackgroundBlurProcessor', () => {
         const output = await bbprocessor.process(buffers);
         expect(output[0]).to.be.equal(buffers[0]);
       });
+
+      it('can predict when input dimensions are interchanged', async () => {
+        backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+        stubSupported(true);
+
+        const canvas = document.createElement('canvas');
+        let buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+
+        canvas.height = 540;
+        canvas.width = 960;
+
+        const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create(null, {
+          reportingPeriodMillis: 1,
+        })) as BackgroundBlurProcessorProvided;
+
+        let output = await bbprocessor.process(buffers);
+        expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
+
+        canvas.height = 960;
+        canvas.width = 540;
+        buffers = [new CanvasVideoFrameBuffer(canvas)];
+        output = await bbprocessor.process(buffers);
+        expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
+
+        await bbprocessor.destroy();
+      });
     });
 
     it('is supported', async () => {
@@ -955,6 +981,31 @@ describe('BackgroundBlurProcessor', () => {
       await expect(BackgroundBlurVideoFrameProcessor.create()).to.be.rejectedWith(
         "could not initialize the background blur video frame processor due to 'failed to initialize the module'"
       );
+    });
+
+    it('can predict when input dimensions are interchanged', async () => {
+      backgroundFilterCommon.stubInit({ initPayload: 2, loadModelPayload: 2 });
+      stubSupported(true, false);
+
+      const canvas = document.createElement('canvas');
+      let buffers: VideoFrameBuffer[] = [new CanvasVideoFrameBuffer(canvas)];
+
+      canvas.height = 540;
+      canvas.width = 960;
+
+      const bbprocessor = (await BackgroundBlurVideoFrameProcessor.create()) as BackgroundBlurProcessorBuiltIn;
+
+      let output = await bbprocessor.process(buffers);
+      expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
+
+      canvas.height = 960;
+      canvas.width = 540;
+      buffers = [new CanvasVideoFrameBuffer(canvas)];
+      output = await bbprocessor.process(buffers);
+      expect(output[0]).to.equal(bbprocessor['canvasVideoFrameBuffer']);
+
+      await bbprocessor.destroy();
+      expect(bbprocessor).to.be.instanceOf(BackgroundBlurProcessorBuiltIn);
     });
   });
 });
