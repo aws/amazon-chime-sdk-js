@@ -13,6 +13,7 @@ let useEventBridge = false;
 let enableTerminationProtection = false;
 let disablePrintingLogs = false;
 let chimeEndpoint = 'https://service.chime.aws.amazon.com';
+let chimeSDKMeetingsEndpoint = 'https://service.chime.aws.amazon.com';
 let chimeServicePrincipal = 'chime.amazonaws.com'
 let captureOutputPrefix = ''
 let mediaCaptureRegions = [
@@ -48,6 +49,7 @@ function usage() {
   console.log(`  -l, --disable-printing-logs          Disable printing logs`);
   console.log(`  -o, --capture-output-prefix          Prefix for S3 bucket name`);
   console.log(`  -i, --opt-in-regions                 Comma separated list of additional opt-in regions to enable for media capture`);
+  console.log(`  -m, --chime-sdk-meetings-endpoint    AWS SDK Chime Meetings endpoint`);
   console.log(`  -h, --help                           Show help and exit`);
 }
 
@@ -118,6 +120,9 @@ function parseArgs() {
       case '-i': case '--opt-in-regions':
         optInRegions = getArgOrExit(++i, args);
         mediaCaptureRegions = mediaCaptureRegions.concat(optInRegions.split(','));
+        break;
+      case '-m': case '--chime-sdk-meetings-endpoint':
+        chimeSDKMeetingsEndpoint = getArgOrExit(++i, args)
         break;
       default:
         console.log(`Invalid argument ${args[i]}`);
@@ -251,7 +256,7 @@ spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                     `--output-template-file`, `build/packaged.yaml`,
                     '--region',  `${region}`]);
 console.log('Deploying serverless application');
-let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal}`
+let parameterOverrides = `Region=${region} UseChimeSDKMeetings=${useChimeSDKMeetings} UseEventBridge=${useEventBridge} ChimeEndpoint=${chimeEndpoint} ChimeServicePrincipal=${chimeServicePrincipal} ChimeSDKMeetingsEndpoint=${chimeSDKMeetingsEndpoint}`
 if (app === 'meetingV2' && captureOutputPrefix) {
     parameterOverrides += ` ChimeMediaCaptureS3BucketPrefix=${captureOutputPrefix}`;
     createCaptureS3Buckets(captureOutputPrefix, mediaCaptureRegions);

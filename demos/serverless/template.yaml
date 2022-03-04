@@ -24,6 +24,10 @@ Parameters:
     Description: "The principal that will capture to the S3 bucket"
     Default: "chime.amazonaws.com"
     Type: String
+  ChimeSDKMeetingsEndpoint:
+    Description: The AWS Chime SDK Meetings endpoint
+    Default: "https://service.chime.aws.amazon.com"
+    Type: String
   ChimeMediaCaptureS3BucketPrefix:
     Description: Prefix of S3 bucket to write capture artifacts.  The bucket name will be suffixed with the region.
     Default: ""
@@ -44,6 +48,7 @@ Globals:
         CHIME_ENDPOINT: !Ref ChimeEndpoint
         REGION: !Ref Region
         USE_CHIME_SDK_MEETINGS: !Ref UseChimeSDKMeetings
+        CHIME_SDK_MEETINGS_ENDPOINT: !Ref ChimeSDKMeetingsEndpoint
         BROWSER_EVENT_INGESTION_LOG_GROUP_NAME: !Ref ChimeBrowserEventIngestionLogs
         CAPTURE_S3_DESTINATION_PREFIX: !Ref ChimeMediaCaptureS3BucketPrefix
         AWS_ACCOUNT_ID: !Sub "${AWS::AccountId}"
