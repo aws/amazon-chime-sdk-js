@@ -9,7 +9,7 @@ export default class TranscriptResult {
   channelId?: string;
   isPartial: boolean;
   languageCode?: string;
-  languageIdentifications: TranscriptLanguageWithScore[];
+  languageIdentification?: TranscriptLanguageWithScore[];
   startTimeMs: number; // epoch time
   endTimeMs: number; // epoch time
   alternatives: TranscriptAlternative[];

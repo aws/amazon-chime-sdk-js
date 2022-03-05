@@ -37,7 +37,7 @@ export const TRANSCRIPT_EVENT_TEST_VECTORS = {
     'CtYCEtMCCtACCs0CClIKBFRlc3QQtKHF0dIvGhNzcGVha2VyLWF0dGVuZGVlLWlkIhhzcGVha2VyLWV4dGVybmFsLXVzZXItaWQo3pnF0dIvMAE4AUEAAAAAAADwP0gBCkQKAS4QxaHF0dIvGhNzcGVha2VyLWF0dGVuZGVlLWlkIhhzcGVha2VyLWV4dGVybmFsLXVzZXItaWQoxqHF0dIvMAJIAApNCgEuEMShxdHSLxoUc3BlYWtlci1hdHRlbmRlZS1pZDEiGXNwZWFrZXItZXh0ZXJuYWwtdXNlci1pZDEoxqHF0dIvMAFBAAAAAAAAAAASBVRlc3QuGjQKA1BJSREAAAAAAADwPxoVQ29udGVudCBpcyBhIFBJSSBkYXRhILlgKNIJMgdBZGRyZXNzGiUKA1BJSREAAAAAAAAAABoVQ29udGVudCBpcyBhIFBJSSBkYXRh'
   ),
   TRANSCRIPT_LANGUAGE_IDENTIFICATIONS: decode(
-    'Cq8CEqwCCqkCCvABClIKBFRlc3QQsPOYgvAvGhNzcGVha2VyLWF0dGVuZGVlLWlkIhhzcGVha2VyLWV4dGVybmFsLXVzZXItaWQo2uuYgvAvMAE4AUEAAAAAAADwP0gBCkQKAS4QwfOYgvAvGhNzcGVha2VyLWF0dGVuZGVlLWlkIhhzcGVha2VyLWV4dGVybmFsLXVzZXItaWQowvOYgvAvMAJIAApNCgEuEMDzmILwLxoUc3BlYWtlci1hdHRlbmRlZS1pZDEiGXNwZWFrZXItZXh0ZXJuYWwtdXNlci1pZDEowvOYgvAvMAFBAAAAAAAAAAASBVRlc3QuQhAKBWVuLVVTEaRwPQrXo+w/QhAKBWZyLUNBEekmMQisHLo/QhAKBWphLUpQEfp+arx0k2g/'
+    'CrYCErMCCrACCvABClIKBFRlc3QQyqW9u/UvGhNzcGVha2VyLWF0dGVuZGVlLWlkIhhzcGVha2VyLWV4dGVybmFsLXVzZXItaWQo9J29u/UvMAE4AUEAAAAAAADwP0gBCkQKAS4Q26W9u/UvGhNzcGVha2VyLWF0dGVuZGVlLWlkIhhzcGVha2VyLWV4dGVybmFsLXVzZXItaWQo3KW9u/UvMAJIAApNCgEuENqlvbv1LxoUc3BlYWtlci1hdHRlbmRlZS1pZDEiGXNwZWFrZXItZXh0ZXJuYWwtdXNlci1pZDEo3KW9u/UvMAFBAAAAAAAAAAASBVRlc3QuOgVlbi1VU0IQCgVlbi1VUxGkcD0K16PsP0IQCgVmci1DQRHpJjEIrBy6P0IQCgVqYS1KUBH6fmq8dJNoPw=='
   ),
 };
 
@@ -167,7 +167,7 @@ export function makeSdkTranscriptWithEntities(): SdkTranscriptEvent {
   return event;
 }
 
-export function makeSdkTranscriptWithLanguageIdentifications(): SdkTranscriptEvent {
+export function makeSdkTranscriptWithLanguageIdentification(): SdkTranscriptEvent {
   const event = SdkTranscriptEvent.create();
   const transcript = SdkTranscript.create();
   const result = SdkTranscriptResult.create();
@@ -216,7 +216,8 @@ export function makeSdkTranscriptWithLanguageIdentifications(): SdkTranscriptEve
 
   alternative.transcript = 'Test.';
   result.alternatives = [alternative];
-  result.languageIdentifications = [
+  result.languageCode = languageIdentification1.languageCode;
+  result.languageIdentification = [
     languageIdentification1,
     languageIdentification2,
     languageIdentification3,
