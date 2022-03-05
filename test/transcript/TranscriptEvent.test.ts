@@ -303,6 +303,7 @@ describe('TranscriptEvent', () => {
     expect(actualEvents[0].results[0].languageIdentification.length).to.eql(
       results[0].languageIdentification.length
     );
+    expect(actualEvents[0].results[0].languageCode).to.eql(results[0].languageIdentification[0].languageCode)
     expect(actualEvents[0].results[0].languageIdentification[0].languageCode).to.eql(
       results[0].languageIdentification[0].languageCode
     );
