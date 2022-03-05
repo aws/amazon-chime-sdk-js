@@ -339,7 +339,7 @@ message SdkTranscriptResult {
     optional string result_id = 5;
     optional int64 start_time = 6;
     optional string language_code = 7;
-    repeated SdkTranscriptLanguageWithScore language_identifications = 8;
+    repeated SdkTranscriptLanguageWithScore language_identification = 8;
 }
 
 message SdkTranscript {

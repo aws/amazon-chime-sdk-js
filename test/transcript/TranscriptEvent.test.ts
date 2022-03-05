@@ -21,7 +21,7 @@ import {
   makeSdkTranscriptFrame,
   makeSdkTranscriptionStatus,
   makeSdkTranscriptWithEntities,
-  makeSdkTranscriptWithLanguageIdentifications,
+  makeSdkTranscriptWithLanguageIdentification,
   TRANSCRIPT_EVENT_TEST_VECTORS,
 } from './TranscriptEventTestDataHelper';
 
@@ -265,15 +265,15 @@ describe('TranscriptEvent', () => {
     expect(actualEvents[0].results[0].alternatives[0].entities[1].confidence).to.eql(0);
   });
 
-  it('handles encoding of one transcript event of transcript type with language identifications', async () => {
-    const event = makeSdkTranscriptWithLanguageIdentifications();
+  it('handles encoding of one transcript event of transcript type with language identification', async () => {
+    const event = makeSdkTranscriptWithLanguageIdentification();
     const data = SdkTranscriptFrame.encode(makeSdkTranscriptFrame([event])).finish();
     const encodedData = logBase64FromUint8Array(data);
     assert.typeOf(encodedData, 'string');
   });
 
-  it('handles decoding of one transcript event of transcript type with language identifications', async () => {
-    const event = makeSdkTranscriptWithLanguageIdentifications();
+  it('handles decoding of one transcript event of transcript type with language identification', async () => {
+    const event = makeSdkTranscriptWithLanguageIdentification();
 
     const dataMessage = makeTranscriptDataMessageFrom(
       TRANSCRIPT_EVENT_TEST_VECTORS.TRANSCRIPT_LANGUAGE_IDENTIFICATIONS
@@ -300,26 +300,29 @@ describe('TranscriptEvent', () => {
     expect(actualEvents[0].results[0].alternatives[0].items[2].confidence).to.eql(
       results[0].alternatives[0].items[2].confidence
     );
-    expect(actualEvents[0].results[0].languageIdentifications.length).to.eql(
-      results[0].languageIdentifications.length
+    expect(actualEvents[0].results[0].languageIdentification.length).to.eql(
+      results[0].languageIdentification.length
     );
-    expect(actualEvents[0].results[0].languageIdentifications[0].languageCode).to.eql(
-      results[0].languageIdentifications[0].languageCode
+    expect(actualEvents[0].results[0].languageCode).to.eql(
+      results[0].languageIdentification[0].languageCode
     );
-    expect(actualEvents[0].results[0].languageIdentifications[0].score).to.eql(
-      results[0].languageIdentifications[0].score
+    expect(actualEvents[0].results[0].languageIdentification[0].languageCode).to.eql(
+      results[0].languageIdentification[0].languageCode
     );
-    expect(actualEvents[0].results[0].languageIdentifications[1].languageCode).to.eql(
-      results[0].languageIdentifications[1].languageCode
+    expect(actualEvents[0].results[0].languageIdentification[0].score).to.eql(
+      results[0].languageIdentification[0].score
     );
-    expect(actualEvents[0].results[0].languageIdentifications[1].score).to.eql(
-      results[0].languageIdentifications[1].score
+    expect(actualEvents[0].results[0].languageIdentification[1].languageCode).to.eql(
+      results[0].languageIdentification[1].languageCode
     );
-    expect(actualEvents[0].results[0].languageIdentifications[2].languageCode).to.eql(
-      results[0].languageIdentifications[2].languageCode
+    expect(actualEvents[0].results[0].languageIdentification[1].score).to.eql(
+      results[0].languageIdentification[1].score
     );
-    expect(actualEvents[0].results[0].languageIdentifications[2].score).to.eql(
-      results[0].languageIdentifications[2].score
+    expect(actualEvents[0].results[0].languageIdentification[2].languageCode).to.eql(
+      results[0].languageIdentification[2].languageCode
+    );
+    expect(actualEvents[0].results[0].languageIdentification[2].score).to.eql(
+      results[0].languageIdentification[2].score
     );
   });
 });
